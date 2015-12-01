@@ -11,3 +11,5 @@
 /app/logs/*
 !app/logs/.gitkeep
 /app/phpunit.xml
+/legacy/*
+.idea
