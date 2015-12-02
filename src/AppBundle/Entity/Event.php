@@ -1,9 +1,13 @@
 <?php
 namespace AppBundle\Entity;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * @Entity
- * @Table(name="event")
+ * @ORM\Entity
+ * @ORM\Table(name="event")
+ * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  */
 class Event
 {
@@ -25,23 +29,38 @@ class Event
     protected $description;
 
     /**
-     * @Column(type="datetime", name="start_date")
+     * @ORM\Column(type="datetime", name="start_date")
      */
     protected $startDate;
 
     /**
-     * @Column(type="datetime", name="end_date", nullable)
+     * @ORM\Column(type="datetime", name="end_date", nullable=true)
      */
     protected $endDate;
 
     /**
-     * @Column(type="boolean", name="is_active")
+     * @ORM\Column(type="boolean", name="is_active")
      */
     protected $isActive;
 
     /**
-     * @Column(type="boolean", name="is_visible")
+     * @ORM\Column(type="boolean", name="is_visible")
      */
     protected $isVisible;
 
+
+    /**
+     * @ORM\Column(type="datetime", name="created_at")
+     */
+    protected $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime", name="modified_at")
+     */
+    protected $modifiedAt;
+
+    /**
+     * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
+     */
+    protected $deletedAt = null;
 }
