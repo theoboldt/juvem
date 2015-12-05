@@ -190,7 +190,7 @@ class Event
      *
      * @return boolean
      */
-    public function getIsActive()
+    public function isActive()
     {
         return $this->isActive;
     }
@@ -214,7 +214,7 @@ class Event
      *
      * @return boolean
      */
-    public function getIsVisible()
+    public function isVisible()
     {
         return $this->isVisible;
     }
