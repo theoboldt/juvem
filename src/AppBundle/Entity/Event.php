@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="event")
+ * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  */
 class Event
@@ -219,6 +220,14 @@ class Event
     }
 
     /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtNow()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -240,6 +249,14 @@ class Event
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setModifiedAtNow()
+    {
+        $this->modifiedAt = new \DateTime();
     }
 
     /**
