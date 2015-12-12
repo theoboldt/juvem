@@ -17,12 +17,18 @@ class EventController extends Controller
 {
 
     /**
+     * @Route("/event/list")
+     */
+    public function listAction(Request $request)
+    {
+        return $this->render('event/new.html.twig');
+    }
+
+    /**
      * @Route("/event/new")
      */
     public function newAction(Request $request)
     {
-        dump(\Locale::getDefault());
-
         // create a task and give it some dummy data for this example
         $event = new Event();
         $event->setTitle('Title');
