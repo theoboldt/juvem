@@ -3,6 +3,7 @@ namespace AppBundle\Entity;
 
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -21,6 +22,7 @@ class Event
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     protected $title;
 
@@ -31,11 +33,14 @@ class Event
 
     /**
      * @ORM\Column(type="datetime", name="start_date")
+     * @Assert\NotBlank()
+     * @Assert\Type("\DateTime")
      */
     protected $startDate;
 
     /**
      * @ORM\Column(type="datetime", name="end_date", nullable=true)
+     * @Assert\Type("\DateTime")
      */
     protected $endDate;
 
