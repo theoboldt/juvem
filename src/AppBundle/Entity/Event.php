@@ -257,6 +257,7 @@ class Event
     }
 
     /**
+     * @ORM\PrePersist
      * @ORM\PreUpdate
      */
     public function setModifiedAtNow()
