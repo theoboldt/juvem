@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Event
 {
+    const DATE_FORMAT_DAY = 'd.m.y';
+    const DATE_FORMAT_DAY_HOUR = 'd.m.y H:i';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

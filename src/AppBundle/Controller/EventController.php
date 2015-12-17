@@ -81,7 +81,7 @@ class EventController extends Controller
                 'eid' => $event->getEid(),
                 'title' => $event->getTitle(),
                 'description' => $event->getTitle(),
-                'start_date' => $event->getStartDate()->format($eventStartFormat),
+                'start_date' => $event->getStartDate(false)->format($eventStartFormat),
                 'end_date' => $event->getEndDate()->format($eventEndFormat),
                 'status' => $eventStatus
             );
@@ -99,9 +99,14 @@ class EventController extends Controller
      */
     public function listEventAction($eid)
     {
-        dump($eid);
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
 
-        return $this->render('event/list.html.twig');
+        $event = $repository->findOneBy(array('eid' => $eid));
+
+        return $this->render('event/detail.html.twig', array(
+        'event' => $event
+    ));
     }
 
     /**

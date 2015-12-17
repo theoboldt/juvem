@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltung{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="page-header">
+                    <h1>Veranstaltung <small>Detailansicht</small></h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                <a href="{{ asset('faw.png') }}" class="thumbnail">
+                    <img src="{{ asset('faw.png') }}" alt="Veranstaltungs-Bild" title="Veranstaltungs-Bild">
+                </a>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-9">
+                <h3>{{ event.getTitle }}</h3>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                    {% if event.isActive() %}
+                        <span class="label label-primary">Aktiv</span>
+                    {% else %}
+                        <span class="label label-default">Inaktiv</span>
+                    {% endif %}
+                    {% if event.isVisible() %}
+                        <span class="label label-primary">Sichtbar</span>
+                    {% else %}
+                        <span class="label label-default">Versteckt</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DAY')) }} -
+                {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DAY')) }}
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-9">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    {{ event.getDescription|e }}
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        </div>
+    </div>
+{% endblock %}
