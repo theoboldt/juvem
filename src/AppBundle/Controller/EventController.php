@@ -21,14 +21,18 @@ class EventController extends Controller
 {
 
     /**
+     * Page for list of events
+     *
      * @Route("/event/list", name="event_list")
      */
-    public function listAction(Request $request)
+    public function listAction()
     {
         return $this->render('event/list.html.twig');
     }
 
     /**
+     * Data provider for event list grid
+     *
      * @Route("/event/list.json")
      */
     public function listDataAction(Request $request)
@@ -87,7 +91,22 @@ class EventController extends Controller
         return new JsonResponse($eventList);
     }
 
+
     /**
+     * Detail page for one single event
+     *
+     * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event")
+     */
+    public function listEventAction($eid)
+    {
+        dump($eid);
+
+        return $this->render('event/list.html.twig');
+    }
+
+    /**
+     * Create a new event
+     *
      * @Route("/event/new", name="event_new")
      */
     public function newAction(Request $request)
