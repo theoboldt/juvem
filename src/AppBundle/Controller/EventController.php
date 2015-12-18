@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -123,8 +124,10 @@ class EventController extends Controller
         $form = $this->createFormBuilder($event)
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
-            ->add('startDate', DateTimeType::class, array('label' => 'Beginn'))
-            ->add('endDate', DateTimeType::class, array('label' => 'Ende'))
+            ->add('startDate', DateType::class, array('label' => 'Startdatum'))
+            ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
+            ->add('endDate', DateType::class, array('label' => 'Enddatum'))
+            ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add('isActive', ChoiceType::class, array(
                     'label' => 'Status',
                     'choices' => array('Für Anmeldungen offen' => true, 'Keine Anmeldungen möglich' => false),

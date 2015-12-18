@@ -35,17 +35,29 @@ class Event
     protected $description;
 
     /**
-     * @ORM\Column(type="datetime", name="start_date")
+     * @ORM\Column(type="date", name="start_date")
      * @Assert\NotBlank()
-     * @Assert\Type("\DateTime")
+     * @Assert\Type("\Date")
      */
     protected $startDate;
 
     /**
-     * @ORM\Column(type="datetime", name="end_date", nullable=true)
-     * @Assert\Type("\DateTime")
+     * @ORM\Column(type="time", name="start_time")
+     * @Assert\Type("\Time")
+     */
+    protected $startTime;
+
+    /**
+     * @ORM\Column(type="date", name="end_date", nullable=true)
+     * @Assert\Type("\Date")
      */
     protected $endDate;
+
+    /**
+     * @ORM\Column(type="time", name="end_time")
+     * @Assert\Type("\Time")
+     */
+    protected $endTime;
 
     /**
      * @ORM\Column(type="boolean", name="is_active")
@@ -156,6 +168,30 @@ class Event
     }
 
     /**
+     * Set startTime
+     *
+     * @param \DateTime $startTime
+     *
+     * @return Event
+     */
+    public function setStartTime($startTime)
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    /**
+     * Get startTime
+     *
+     * @return \DateTime
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    /**
      * Set endDate
      *
      * @param \DateTime $endDate
@@ -177,6 +213,30 @@ class Event
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set endTime
+     *
+     * @param \DateTime $endTime
+     *
+     * @return Event
+     */
+    public function setEndTime($endTime)
+    {
+        $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    /**
+     * Get endTime
+     *
+     * @return \DateTime
+     */
+    public function getEndTime()
+    {
+        return $this->endTime;
     }
 
     /**
@@ -227,6 +287,25 @@ class Event
         return $this->isVisible;
     }
 
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * Get isVisible
+     *
+     * @return boolean
+     */
+    public function getIsVisible()
+    {
+        return $this->isVisible;
+    }
     /**
      * @ORM\PrePersist
      */
