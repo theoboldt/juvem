@@ -82,7 +82,7 @@ class EventController extends Controller
                 'eid' => $event->getEid(),
                 'title' => $event->getTitle(),
                 'description' => $event->getTitle(),
-                'start_date' => $event->getStartDate(false)->format($eventStartFormat),
+                'start_date' => $event->getStartDate()->format($eventStartFormat),
                 'end_date' => $event->getEndDate()->format($eventEndFormat),
                 'status' => $eventStatus
             );
