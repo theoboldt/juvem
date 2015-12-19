@@ -7,16 +7,19 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="page-header">
-                    <h1>Veranstaltung <small>verwalten</small></h1>
+                    <h1>Veranstaltungen <small>verwalten</small></h1>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
+                <div id="event-list-toolbar">
+                    <a class="btn btn-primary" href="/event/new">{{ 'plus'|glyph }} Neu</a>
+                </div>
                 <table id="eventListTable" class="table table-striped" data-id-field="did"
                        data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-                       data-search-align="right" data-toolbar="#docent-list-toolbar" data-striped="true"
+                       data-search-align="right" data-toolbar="#event-list-toolbar" data-striped="true"
                        data-show-filter="true"  data-search="true" data-url="list.json">
                     <thead>
                         <tr>
