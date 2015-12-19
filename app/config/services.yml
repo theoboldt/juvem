@@ -7,3 +7,10 @@ services:
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+
+services:
+    app.twig_extension:
+        class: AppBundle\Twig\Extension\BootstrapGlyph
+        public: false
+        tags:
+            - { name: twig.extension }
