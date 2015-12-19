@@ -15,7 +15,7 @@
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default">{{ 'list'|glyph }} Anmeldungen</button>
+                        <button type="button" class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></button>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Menü erweitern</span>
@@ -28,11 +28,23 @@
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-primary">{{ 'pencil'|glyph }} Bearbeiten</button>
-                        <button type="button" class="btn btn-default">{{ 'folder-close'|glyph }} Deaktivieren</button>
-                        <button type="button" class="btn btn-default">{{ 'eye-open'|glyph }} Sichtbar schalten</button>
-                        <button type="button" class="btn btn-default">{{ 'trash'|glyph }} Löschen</button>
+                            <button type="button" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></button>
+                            <button type="button" class="btn btn-default">
+                                {% if event.isActive() %}
+                                    {{ 'folder-close'|glyph }} <span class="hidden-xs">Deaktivieren</span>
+                                {% else %}
+                                    {{ 'folder-open'|glyph }} <span class="hidden-xs">Aktivieren</span>
+                                {% endif %}
+                            </button>
+                            <button type="button" class="btn btn-default">
+                                {% if event.isVisible() %}
+                                    {{ 'eye-close'|glyph }} <span class="hidden-xs">Verstecken</span>
+                                {% else %}
+                                    {{ 'eye-open'|glyph }} <span class="hidden-xs">Sichtbar schalten</span>
+                                {% endif %}
+                            </button>
                     </div>
+                    <button type="button" class="btn btn-default">{{ 'trash'|glyph }} <span class="hidden-xs">Löschen</span></button>
                 </div>
             </div>
         </div>
