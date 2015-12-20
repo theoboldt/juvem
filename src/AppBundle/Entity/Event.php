@@ -42,7 +42,9 @@ class Event
     protected $startDate;
 
     /**
-     * @ORM\Column(type="time", name="start_time")
+     * Defines the start time of the event. May be null for so called full day events
+     *
+     * @ORM\Column(type="time", name="start_time", nullable=true)
      * @Assert\Type("\Time")
      */
     protected $startTime;
@@ -54,7 +56,7 @@ class Event
     protected $endDate;
 
     /**
-     * @ORM\Column(type="time", name="end_time")
+     * @ORM\Column(type="time", name="end_time", nullable=true)
      * @Assert\Type("\Time")
      */
     protected $endTime;
@@ -192,6 +194,16 @@ class Event
     }
 
     /**
+     * Returns true if a start time is set
+     *
+     * @return bool
+     */
+    public function hasStartTime()
+    {
+        return (bool)$this->startTime;
+    }
+
+    /**
      * Set endDate
      *
      * @param \DateTime $endDate
@@ -216,6 +228,17 @@ class Event
     }
 
     /**
+     * Returns true if a end date is set
+     *
+     * @return bool
+     */
+    public function hasEndDate()
+    {
+        return (bool)$this->endDate;
+    }
+
+
+    /**
      * Set endTime
      *
      * @param \DateTime $endTime
@@ -238,6 +261,17 @@ class Event
     {
         return $this->endTime;
     }
+
+    /**
+     * Returns true if a end time is set
+     *
+     * @return bool
+     */
+    public function hasEndTime()
+    {
+        return (bool)$this->endTime;
+    }
+
 
     /**
      * Set isActive
