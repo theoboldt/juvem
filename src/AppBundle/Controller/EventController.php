@@ -106,8 +106,8 @@ class EventController extends Controller
         $event = $repository->findOneBy(array('eid' => $eid));
 
         return $this->render('event/detail.html.twig', array(
-        'event' => $event
-    ));
+            'event' => $event
+        ));
     }
 
     /**
