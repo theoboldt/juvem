@@ -2,20 +2,16 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Form\EventType;
+use AppBundle\Form\ModalActionType;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
 class EventController extends Controller
@@ -105,8 +101,17 @@ class EventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
 
+        $eventDeleteModal   = array(
+            'id' => 'evenDeleteModal',
+            'title' => 'Ereignis löschen',
+            'message' => 'Soll dieses Ereignis wirklich gelöscht werden?',
+            'action' => 'Löschen',
+            'form' =>  $this->createForm(ModalActionType::class, array('id' => $eid, 'area' => 'event'))->createView()
+        );
+
         return $this->render('event/detail.html.twig', array(
-            'event' => $event
+            'event' => $event,
+            'eventDeleteModal' => $eventDeleteModal
         ));
     }
 
@@ -120,25 +125,8 @@ class EventController extends Controller
         $event = new Event();
         $event->setStartDate(new \DateTime('today'));
         $event->setEndDate(new \DateTime('tomorrow'));
-        
-        $form = $this->createFormBuilder($event)
-            ->add('title', TextType::class, array('label' => 'Titel'))
-            ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
-            ->add('startDate', DateType::class, array('label' => 'Startdatum'))
-            ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
-            ->add('endDate', DateType::class, array('label' => 'Enddatum'))
-            ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
-            ->add('isActive', ChoiceType::class, array(
-                    'label' => 'Status',
-                    'choices' => array('Für Anmeldungen offen' => true, 'Keine Anmeldungen möglich' => false),
-                    'choices_as_values' => true, 'expanded' => true
-            ))
-            ->add('isVisible', ChoiceType::class, array(
-                'label' => 'Sichtbarkeit', 'choices' => array('Aktiv' => true, 'Versteckt' => false),
-                'choices_as_values' => true, 'expanded' => true
-            ))
-            ->add('save', SubmitType::class, array('label' => 'Veranstaltung erstellen'))
-            ->getForm();
+
+        $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
 
