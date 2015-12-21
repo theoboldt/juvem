@@ -1,0 +1,61 @@
+<div class="modal fade" id="{{ modal.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Schließen</span></button>
+                <h4 class="modal-title">{{ modal.title }}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{ modal.message }}</p>
+            </div>
+            <div class="modal-footer">
+                {{ form_start(modal.form) }}
+                {{ form_widget(modal.form.cancel) }}
+                {{ form_widget(modal.form.submit, {'label': modal.action} ) }}
+                {{ form_end(modal.form) }}
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<script type='text/javascript'>
+    $(function () {
+        $('#{{ modal.id }}').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget),
+                    entityId = button.data('id'),
+                    area = button.data('area'),
+                    modal = $(this);
+
+            modal.find('.btn-primary').unbind('click');
+            modal.find('.btn-primary').click(function (e) {
+                e.preventDefault();
+                $(this).prop('disabled', true);
+                var buttonSubmit = this,
+                    token = modal.find('[name=_token]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: did+'/status/delete',
+                    data: {
+                        _token: token,
+                        area: area,
+                        entityId: entityId
+                    },
+                    complete: function (jqXHR, status) {
+                        $(buttonSubmit).prop('disabled', false);
+                        modal.hide();
+                        if (status == 'success') {
+                            location.reload();
+                        } else {
+                            $.toaster({
+                                title: 'Status',
+                                priority: 'danger',
+                                message: 'Es ist ein Problem mit der Netzwerkkommunikation aufgetreten'
+                            });
+                        }
+                    }
+                });
+            });
+    });
+</script>
+-->
