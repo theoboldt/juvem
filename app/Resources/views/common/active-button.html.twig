@@ -1,0 +1,70 @@
+{% set buttonId = random() %}
+<button type="button" class="btn btn-default" id="{{ buttonId }}">
+    {{ 'folder-close'|glyph }} <span class="hidden-xs">Deaktivieren</span>
+    {{ 'folder-open'|glyph }} <span class="hidden-xs">Aktivieren</span>
+</button>
+<script type='text/javascript'>
+    jQuery(function () {
+        jQuery('#{{ buttonId }}').ready(function () {
+            var button = $('#{{ buttonId }}');
+
+            $(button).prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '/active/button',
+                data: {
+                    _token: '{{ csrf_token(button.entityName ~ button.propertyName ) }}',
+                    entityName: '{{ button.entityName }}',
+                    entityId: '{{ button.entityId }}',
+                    propertyName: '{{ button.propertyName }}',
+                    value: null
+                },
+                datatype:'json',
+                success: function (response) {
+                    button.prop('disabled', false);
+                    button.empty();
+                    button.html(response);
+                }
+            });
+        });
+/*
+        $('#{{ buttonId }}').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget),
+                    entityId = button.data('id'),
+                    area = button.data('area'),
+                    modal = $(this);
+
+            modal.find('.btn-primary').unbind('click');
+            modal.find('.btn-primary').click(function (e) {
+                e.preventDefault();
+                $(this).prop('disabled', true);
+                var buttonSubmit = this,
+                        token = modal.find('[name=_token]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: did+'/status/delete',
+                    data: {
+                        _token: token,
+                        area: area,
+                        entityId: entityId
+                    },
+                    complete: function (jqXHR, status) {
+                        $(buttonSubmit).prop('disabled', false);
+                        modal.hide();
+                        if (status == 'success') {
+                            location.reload();
+                        } else {
+                            $.toaster({
+                                title: 'Status',
+                                priority: 'danger',
+                                message: 'Es ist ein Problem mit der Netzwerkkommunikation aufgetreten'
+                            });
+                        }
+                    }
+                });
+            });
+
+         */
+        });
+</script>
