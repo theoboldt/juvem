@@ -9,8 +9,13 @@ services:
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
 
 services:
-    app.twig_extension:
+    app.twig_extension_glyph:
         class: AppBundle\Twig\Extension\BootstrapGlyph
+        public: false
+        tags:
+            - { name: twig.extension }
+    app.twig_extension_modal:
+        class: AppBundle\Twig\Extension\ModalDialog
         public: false
         tags:
             - { name: twig.extension }

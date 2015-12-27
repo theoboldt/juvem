@@ -1,15 +1,15 @@
-{% if button.isEnabled %}
-    {% if button.buttonDisable.glyph %}
-        {{ button.buttonDisable.glyph|glyph }}
+{% if buttonIsEnabled %}
+    {% if buttons.buttonDisable.glyph is defined %}
+        {{ buttons.buttonDisable.glyph|glyph }}
     {% endif %}
-    {% if button.buttonDisable.label %}
-        <span class="hidden-xs">{{ button.buttonDisable.label}}</span>
+    {% if buttons.buttonDisable.label is defined %}
+        <span class="hidden-xs">{{ buttons.buttonDisable.label}}</span>
     {% endif %}
 {% else %}
-    {% if button.buttonEnable.glyph %}
-        {{ button.buttonEnable.glyph|glyph }}
+    {% if buttons.buttonEnable.glyph is defined %}
+        {{ buttons.buttonEnable.glyph|glyph }}
     {% endif %}
-    {% if button.buttonEnable.label %}
-        <span class="hidden-xs">{{ button.buttonEnable.label}}</span>
+    {% if buttons.buttonEnable.label is defined %}
+        <span class="hidden-xs">{{ buttons.buttonEnable.label}}</span>
     {% endif %}
 {% endif %}

@@ -1,11 +1,10 @@
 {% set buttonId = random() %}
 <button type="button" class="btn btn-default" id="{{ buttonId }}">
-    {{ 'folder-close'|glyph }} <span class="hidden-xs">Deaktivieren</span>
-    {{ 'folder-open'|glyph }} <span class="hidden-xs">Aktivieren</span>
+    {% include 'common/active-button-content.html.twig' with {buttonIsEnabled: button.isEnabled, buttons: button.buttons} %}
 </button>
 <script type='text/javascript'>
     jQuery(function () {
-        jQuery('#{{ buttonId }}').ready(function () {
+        jQuery('#{{ buttonId }}').click(function () {
             var button = $('#{{ buttonId }}');
 
             $(button).prop('disabled', true);
@@ -17,7 +16,18 @@
                     entityName: '{{ button.entityName }}',
                     entityId: '{{ button.entityId }}',
                     propertyName: '{{ button.propertyName }}',
-                    value: null
+                    toggle: 1,
+                    buttons: {
+                        buttonEnable: {
+                            label: '{{ button.buttons.buttonEnable.label }}',
+                            glyph: '{{ button.buttons.buttonEnable.glyph }}'
+                        },
+                        buttonDisable: {
+                            label: '{{ button.buttons.buttonDisable.label }}',
+                            glyph: '{{ button.buttons.buttonDisable .glyph }}'
+                        }
+
+                    }
                 },
                 datatype:'json',
                 success: function (response) {
