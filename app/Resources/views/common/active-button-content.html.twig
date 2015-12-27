@@ -1,0 +1,15 @@
+{% if button.isEnabled %}
+    {% if button.buttonDisable.glyph %}
+        {{ button.buttonDisable.glyph|glyph }}
+    {% endif %}
+    {% if button.buttonDisable.label %}
+        <span class="hidden-xs">{{ button.buttonDisable.label}}</span>
+    {% endif %}
+{% else %}
+    {% if button.buttonEnable.glyph %}
+        {{ button.buttonEnable.glyph|glyph }}
+    {% endif %}
+    {% if button.buttonEnable.label %}
+        <span class="hidden-xs">{{ button.buttonEnable.label}}</span>
+    {% endif %}
+{% endif %}
