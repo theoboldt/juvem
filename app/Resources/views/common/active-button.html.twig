@@ -1,80 +1,49 @@
 {% set buttonId = random() %}
 <button type="button" class="btn btn-default" id="{{ buttonId }}">
     {% include 'common/active-button-content.html.twig' with {buttonIsEnabled: button.isEnabled, buttons: button.buttons} %}
-</button>
-<script type='text/javascript'>
-    jQuery(function () {
-        jQuery('#{{ buttonId }}').click(function () {
-            var button = $('#{{ buttonId }}');
+    <script type='text/javascript'>
+        $(function () {
+            $('#{{ buttonId }}').click(function () {
+                var button = $('#{{ buttonId }}');
 
-            $(button).prop('disabled', true);
-            $.ajax({
-                type: 'POST',
-                url: '/active/button',
-                data: {
-                    _token: '{{ csrf_token(button.entityName ~ button.propertyName ) }}',
-                    entityName: '{{ button.entityName }}',
-                    entityId: '{{ button.entityId }}',
-                    propertyName: '{{ button.propertyName }}',
-                    toggle: 1,
-                    buttons: {
-                        buttonEnable: {
-                            label: '{{ button.buttons.buttonEnable.label }}',
-                            glyph: '{{ button.buttons.buttonEnable.glyph }}'
-                        },
-                        buttonDisable: {
-                            label: '{{ button.buttons.buttonDisable.label }}',
-                            glyph: '{{ button.buttons.buttonDisable .glyph }}'
-                        }
-
-                    }
-                },
-                datatype:'json',
-                success: function (response) {
-                    button.prop('disabled', false);
-                    button.empty();
-                    button.html(response);
-                }
-            });
-        });
-/*
-        $('#{{ buttonId }}').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget),
-                    entityId = button.data('id'),
-                    area = button.data('area'),
-                    modal = $(this);
-
-            modal.find('.btn-primary').unbind('click');
-            modal.find('.btn-primary').click(function (e) {
-                e.preventDefault();
-                $(this).prop('disabled', true);
-                var buttonSubmit = this,
-                        token = modal.find('[name=_token]').val();
-
+                $(button).prop('disabled', true);
                 $.ajax({
                     type: 'POST',
-                    url: did+'/status/delete',
+                    url: '/active/button',
                     data: {
-                        _token: token,
-                        area: area,
-                        entityId: entityId
-                    },
-                    complete: function (jqXHR, status) {
-                        $(buttonSubmit).prop('disabled', false);
-                        modal.hide();
-                        if (status == 'success') {
-                            location.reload();
-                        } else {
-                            $.toaster({
-                                title: 'Status',
-                                priority: 'danger',
-                                message: 'Es ist ein Problem mit der Netzwerkkommunikation aufgetreten'
-                            });
+                        _token: '{{ csrf_token(button.entityName ~ button.propertyName ) }}',
+                        entityName: '{{ button.entityName }}',
+                        entityId: '{{ button.entityId }}',
+                        propertyName: '{{ button.propertyName }}',
+                        toggle: 1,
+                        buttons: {
+                            buttonEnable: {
+                                label: '{{ button.buttons.buttonEnable.label }}',
+                                glyph: '{{ button.buttons.buttonEnable.glyph }}'
+                            },
+                            buttonDisable: {
+                                label: '{{ button.buttons.buttonDisable.label }}',
+                                glyph: '{{ button.buttons.buttonDisable .glyph }}'
+                            }
+
                         }
+                    },
+                    datatype:'json',
+                    success: function (response) {
+                        button.empty();
+                        button.html(response);
+                    },
+                    error: function(response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function() {
+                        button.prop('disabled', false);
                     }
                 });
             });
-
-         */
         });
-</script>
+    </script>
+</button>
