@@ -7,7 +7,6 @@ use AppBundle\Form\ModalActionType;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -36,45 +35,45 @@ class EventController extends Controller
     {
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Event');
-/*
-        $criteria   = array();
-        $eventEntityList    = $repository->findBy(
-            $criteria, array('title' => $request->get('order')), $request->get('limit'), $request->get('offset')
-        );
-// using client side paginations and filtering
-*/
-        $eventEntityList    = $repository->findAll();
+        /*
+                $criteria   = array();
+                $eventEntityList    = $repository->findBy(
+                    $criteria, array('title' => $request->get('order')), $request->get('limit'), $request->get('offset')
+                );
+        // using client side paginations and filtering
+        */
+        $eventEntityList = $repository->findAll();
 
         $dateFormatDay = 'd.m.y';
         $dateFormatDayHour = 'd.m.y H:i';
-        $glyphicon  = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
+        $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
-        $eventList  = array();
+        $eventList = array();
         /** @var Event $event */
-        foreach($eventEntityList as $event) {
-            $eventStatus    = '';
+        foreach ($eventEntityList as $event) {
+            $eventStatus = '';
             if ($event->isVisible()) {
-                $eventStatus    .= sprintf($glyphicon, 'eye-open');
+                $eventStatus .= sprintf($glyphicon, 'eye-open');
             } else {
-                $eventStatus    .= sprintf($glyphicon, 'eye-close');
+                $eventStatus .= sprintf($glyphicon, 'eye-close');
             }
 
             if ($event->isActive()) {
-                $eventStatus    .= sprintf($glyphicon, 'folder-open');
+                $eventStatus .= sprintf($glyphicon, 'folder-open');
             } else {
-                $eventStatus    .= sprintf($glyphicon, 'folder-close');
+                $eventStatus .= sprintf($glyphicon, 'folder-close');
             }
 
-            $eventStartFormat   = $dateFormatDayHour;
+            $eventStartFormat = $dateFormatDayHour;
             if ($event->getStartDate()->format('Hi') == '0000') {
                 $eventStartFormat = $dateFormatDay;
             }
-            $eventEndFormat   = $dateFormatDayHour;
+            $eventEndFormat = $dateFormatDayHour;
             if ($event->getEndDate()->format('Hi') == '0000') {
                 $eventEndFormat = $dateFormatDay;
             }
 
-            $eventList[]    = array(
+            $eventList[] = array(
                 'eid' => $event->getEid(),
                 'title' => $event->getTitle(),
                 'description' => $event->getTitle(),
@@ -87,7 +86,6 @@ class EventController extends Controller
 
         return new JsonResponse($eventList);
     }
-
 
     /**
      * Detail page for one single event
@@ -109,9 +107,44 @@ class EventController extends Controller
             'form' =>  $this->createForm(ModalActionType::class, array('id' => $eid, 'area' => 'event'))->createView()
         );
 
+        $buttonState    = array(
+            'entityName' => 'Event',
+            'propertyName' => 'isActive',
+            'entityId' => $eid,
+            'isEnabled' => $event->isActive(),
+            'buttons' => array(
+                'buttonEnable' => array(
+                    'label' => 'Aktivieren',
+                    'glyph' => 'folder-open'
+                ),
+                'buttonDisable' => array(
+                    'label' => 'Deaktivieren',
+                    'glyph' => 'folder-close'
+                )
+            )
+        );
+        $buttonVisibility    = array(
+            'entityName' => 'Event',
+            'propertyName' => 'isVisible',
+            'entityId' => $eid,
+            'isEnabled' => $event->isVisible(),
+            'buttons' => array(
+                'buttonEnable' => array(
+                    'label' => 'Sichtbar schalten',
+                    'glyph' => 'eye-open'
+                ),
+                'buttonDisable' => array(
+                    'label' => 'Verstecken',
+                    'glyph' => 'eye-close'
+                )
+            )
+        );
+
         return $this->render('event/detail.html.twig', array(
             'event' => $event,
-            'eventDeleteModal' => $eventDeleteModal
+            'eventDeleteModal' => $eventDeleteModal,
+            'buttonState' => $buttonState,
+            'buttonVisibility' => $buttonVisibility
         ));
     }
 

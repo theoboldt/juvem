@@ -3,6 +3,7 @@
 {% block title %}Veranstaltung{% endblock %}
 
 {% block body %}
+    {{ include('modal/formdialog.html.twig', { 'modal': eventDeleteModal}) }}
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
@@ -28,23 +29,11 @@
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></button>
-                            <button type="button" class="btn btn-default">
-                                {% if event.isActive() %}
-                                    {{ 'folder-close'|glyph }} <span class="hidden-xs">Deaktivieren</span>
-                                {% else %}
-                                    {{ 'folder-open'|glyph }} <span class="hidden-xs">Aktivieren</span>
-                                {% endif %}
-                            </button>
-                            <button type="button" class="btn btn-default">
-                                {% if event.isVisible() %}
-                                    {{ 'eye-close'|glyph }} <span class="hidden-xs">Verstecken</span>
-                                {% else %}
-                                    {{ 'eye-open'|glyph }} <span class="hidden-xs">Sichtbar schalten</span>
-                                {% endif %}
-                            </button>
+                        <button type="button" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></button>
+                        {%  include 'common/active-button.html.twig' with {'button': buttonState} %}
+                        {%  include 'common/active-button.html.twig' with {'button': buttonVisibility} %}
                     </div>
-                    <button type="button" class="btn btn-default">{{ 'trash'|glyph }} <span class="hidden-xs">Löschen</span></button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#{{ eventDeleteModal.id }}" >{{ 'trash'|glyph }} <span class="hidden-xs">Löschen</span></button>
                 </div>
             </div>
         </div>
