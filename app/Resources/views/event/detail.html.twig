@@ -4,17 +4,8 @@
 
 {% block body %}
     {{ include('modal/formdialog.html.twig', { 'modal': eventDeleteModal}) }}
+    {%  include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
     <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="page-header">
-                    <h1>Veranstaltung <small>Detailansicht</small></h1>
-                </div>
-                <div id="page-global-messages">
-                    <div data-alerts="alerts" data-fade="5000"></div>
-                </div>
-            </div>
-        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
