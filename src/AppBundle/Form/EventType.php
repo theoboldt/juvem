@@ -18,15 +18,16 @@ class EventType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('save', SubmitType::class)
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
             ->add('startDate', DateType::class, array('label' => 'Startdatum'))
+/*
             ->add('hasStartTime', ChoiceType::class, array(
-                'label' => 'Startdatum eintragen',
-                'choices' => array('Startdatum' => true, 'no' => false),
+                'label' => 'Startzeitpunkt eintragen',
+                'choices' => array('Startzeitpunkt eintragen' => true, 'Keinen Startzeitpunkt eintragen' => false),
                 'choices_as_values' => true, 'expanded' => true, 'multiple' => false
             ), array('mapped' => false))
+*/
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
             ->add('endDate', DateType::class, array('label' => 'Enddatum'))
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
