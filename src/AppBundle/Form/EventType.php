@@ -3,6 +3,7 @@
 namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,15 +22,29 @@ class EventType extends AbstractType
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
             ->add('startDate', DateType::class, array('label' => 'Startdatum'))
-/*
-            ->add('hasStartTime', ChoiceType::class, array(
-                'label' => 'Startzeitpunkt eintragen',
-                'choices' => array('Startzeitpunkt eintragen' => true, 'Keinen Startzeitpunkt eintragen' => false),
-                'choices_as_values' => true, 'expanded' => true, 'multiple' => false
-            ), array('mapped' => false))
-*/
+            ->add('hasStartTime', CheckboxType::class,
+                array(
+                    'attr' => array('class' => 'checkbox-smart'),
+                    'label' => 'Startzeit',
+                    'label_attr' => array('class' => 'control-label')),
+                    array('mapped' => false)
+            )
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
+            ->add('hasEndDate', CheckboxType::class,
+                array(
+                    'attr' => array('class' => 'checkbox-smart'),
+                    'label' => 'Enddatum',
+                    'label_attr' => array('class' => 'control-label')),
+                array('mapped' => false)
+            )
             ->add('endDate', DateType::class, array('label' => 'Enddatum'))
+            ->add('hasEndTime', CheckboxType::class,
+                array(
+                    'attr' => array('class' => 'checkbox-smart'),
+                    'label' => 'Endzeit',
+                    'label_attr' => array('class' => 'control-label')),
+                array('mapped' => false)
+            )
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add('isActive', ChoiceType::class, array(
                 'label' => 'Status',
