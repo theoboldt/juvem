@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltung bearbeiten{% endblock %}
+
+{% block body %}
+    {% include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'bearbeiten'} %}
+    <div class="container">
+        {{ form_start(form) }}
+        {% include '/event/form.html.twig' with {'form': form} %}
+        <div class="row">
+            <div class="col-xs-12">
+            {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Speichern' }) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -23,7 +23,7 @@
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></button>
+                        <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
                         {%  include 'common/active-button.html.twig' with {'button': buttonState} %}
                         {%  include 'common/active-button.html.twig' with {'button': buttonVisibility} %}
                     </div>

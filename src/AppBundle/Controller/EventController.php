@@ -29,7 +29,7 @@ class EventController extends Controller
     /**
      * Data provider for event list grid
      *
-     * @Route("/event/list.json")
+     * @Route("/event/list.json", name="event_list_data")
      */
     public function listDataAction(Request $request)
     {
@@ -88,11 +88,41 @@ class EventController extends Controller
     }
 
     /**
+     * Edit page for one single event
+     *
+         * @Route("/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
+     */
+    public function editAction(Request $request)
+    {
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
+
+        $event = $repository->findOneBy(array('eid' => $request->get('eid')));
+
+        $form = $this->createForm(EventType::class, $event);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($event);
+            $em->flush();
+
+            return $this->redirect('/event/'.$event->getEid());
+        }
+
+        return $this->render('event/edit.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
+
+    /**
      * Detail page for one single event
      *
      * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event")
      */
-    public function listEventAction($eid)
+    public function detailEventAction($eid)
     {
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Event');
