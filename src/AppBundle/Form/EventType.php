@@ -55,7 +55,7 @@ class EventType extends AbstractType
                 'label' => 'Sichtbarkeit', 'choices' => array('Aktiv' => true, 'Versteckt' => false),
                 'choices_as_values' => true, 'expanded' => true
             ))
-            ->add('save', SubmitType::class, array('label' => 'Veranstaltung erstellen'))
+            ->add('save', SubmitType::class)
             ;
     }
 
