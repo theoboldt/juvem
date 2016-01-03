@@ -4,108 +4,14 @@
 
 {% block body %}
     {% include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'erstellen'} %}
-<div class="container">
-    {{ form_start(form) }}
-    <div class="row">
-        <div class="col-xs-12">
-            {{ form_errors(form) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            {{ form_row(form.title) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            {{ form_row(form.description) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            {{ form_row(form.startDate) }}
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="form-group">
-            {{ form_widget(form.hasStartTime) }}
-            {{ form_errors(form.startTime) }}
-            {{ form_widget(form.startTime) }}
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="form-group">
-                {{ form_widget(form.hasEndDate) }}
-                {{ form_errors(form.endDate) }}
-                {{ form_widget(form.endDate) }}
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="form-group">
-                {{ form_widget(form.hasEndTime) }}
-                {{ form_errors(form.endTime) }}
-                {{ form_widget(form.endTime) }}
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6">
-            {{ form_row(form.isVisible) }}
-        </div>
-        <div class="col-xs-12 col-sm-6">
-            {{ form_row(form.isActive) }}
-        </div>
-        <div class="col-xs-12">
-            {{ form_row(form.save, { 'attr': {'class': 'btn-primary'} }) }}
+    <div class="container">
+        {{ form_start(form) }}
+        {% include '/event/form.html.twig' with {'form': form} %}
+        <div class="row">
+            <div class="col-xs-12">
+            {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Veranstaltung erstellen' }) }}
         </div>
         {{ form_end(form) }}
     </div>
-<script type='text/javascript'>
-    $(function () {
-
-        var updateBoxState = function(box) {
-            var name = box.attr('name'),
-                checked = box.prop('checked'),
-                fieldList = [];
-
-            switch(name) {
-                case 'event[hasStartTime]':
-                    fieldList   = [
-                        'event[startTime][hour]',
-                        'event[startTime][minute]'
-                    ];
-                    break;
-                case 'event[hasEndDate]':
-                    fieldList   = [
-                        'event[endDate][year]',
-                        'event[endDate][month]',
-                        'event[endDate][day]'
-                    ];
-                    if (!checked){
-                        $('[name="event[hasEndTime]"]').prop('checked', checked);
-                    }
-                    break;
-                case 'event[hasEndTime]':
-                    fieldList   = [
-                        'event[endTime][hour]',
-                        'event[endTime][minute]'
-                    ];
-                    break;
-                default:
-                    return true;
-            }
-
-            $.each(fieldList, function( i, v) {
-                $( '[name="'+ v +'"]').attr('disabled', !checked);
-            });
-
-            return true;
-        };
-
-        $( "[type=checkbox]" ).change(function() {
-            return updateBoxState($(this));
-        });
-
-        $.each($( "[type=checkbox]" ), function( i, v) {
-            return updateBoxState($(v));
-        });
-    });
-</script>
+</div>
 {% endblock %}
