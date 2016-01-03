@@ -59,18 +59,18 @@
     </div>
 <script type='text/javascript'>
     $(function () {
-        $( "[type=checkbox]" ).change(function(event) {
-            var box = $(this),
-                name = box.attr('name'),
+
+        var updateBoxState = function(box) {
+            var name = box.attr('name'),
                 checked = box.prop('checked'),
-                    fieldList = [];
+                fieldList = [];
 
             switch(name) {
                 case 'event[hasStartTime]':
                     fieldList   = [
-                            'event[startTime][hour]',
-                            'event[startTime][minute]'
-                        ];
+                        'event[startTime][hour]',
+                        'event[startTime][minute]'
+                    ];
                     break;
                 case 'event[hasEndDate]':
                     fieldList   = [
@@ -78,9 +78,9 @@
                         'event[endDate][month]',
                         'event[endDate][day]'
                     ];
-                        if (!checked){
-                            $('[name="event[hasEndTime]"]').prop('checked', checked);
-                        }
+                    if (!checked){
+                        $('[name="event[hasEndTime]"]').prop('checked', checked);
+                    }
                     break;
                 case 'event[hasEndTime]':
                     fieldList   = [
@@ -97,7 +97,15 @@
             });
 
             return true;
+        };
+
+        $( "[type=checkbox]" ).change(function() {
+            return updateBoxState($(this));
+        });
+
+        $.each($( "[type=checkbox]" ), function( i, v) {
+            return updateBoxState($(v));
         });
     });
 </script>
-    {% endblock %}
+{% endblock %}
