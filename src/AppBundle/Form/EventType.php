@@ -24,6 +24,7 @@ class EventType extends AbstractType
             ->add('startDate', DateType::class, array('label' => 'Startdatum'))
             ->add('hasStartTime', CheckboxType::class,
                 array(
+                    'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Startzeit',
                     'label_attr' => array('class' => 'control-label')),
@@ -32,6 +33,7 @@ class EventType extends AbstractType
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
             ->add('hasEndDate', CheckboxType::class,
                 array(
+                    'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Enddatum',
                     'label_attr' => array('class' => 'control-label')),
@@ -40,6 +42,7 @@ class EventType extends AbstractType
             ->add('endDate', DateType::class, array('label' => 'Enddatum'))
             ->add('hasEndTime', CheckboxType::class,
                 array(
+                    'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Endzeit',
                     'label_attr' => array('class' => 'control-label')),
