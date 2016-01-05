@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class EventType extends AbstractType
 {
@@ -31,8 +33,8 @@ class EventType extends AbstractType
                     'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Startzeit',
-                    'label_attr' => array('class' => 'control-label')),
-                    array('mapped' => false)
+                    'label_attr' => array('class' => 'control-label')
+                )
             )
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
             ->add('hasEndDate', CheckboxType::class,
@@ -40,8 +42,8 @@ class EventType extends AbstractType
                     'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Enddatum',
-                    'label_attr' => array('class' => 'control-label')),
-                array('mapped' => false)
+                    'label_attr' => array('class' => 'control-label')
+                )
             )
             ->add('endDate', DateType::class, array('label' => 'Enddatum'))
             ->add('hasEndTime', CheckboxType::class,
@@ -49,8 +51,8 @@ class EventType extends AbstractType
                     'required' => false,
                     'attr' => array('class' => 'checkbox-smart'),
                     'label' => 'Endzeit',
-                    'label_attr' => array('class' => 'control-label')),
-                array('mapped' => false)
+                    'label_attr' => array('class' => 'control-label')
+                )
             )
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add('isActive', ChoiceType::class, array(
@@ -64,6 +66,21 @@ class EventType extends AbstractType
             ))
             ->add('save', SubmitType::class)
             ;
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $form = $event->getForm();
+
+            if (!$form->get('hasStartTime')->getData()) {
+                $form->get('startTime')->setData(null);
+            }
+            if (!$form->get('hasEndDate')->getData()) {
+                $form->get('endDate')->setData(null);
+            }
+            if (!$form->get('hasEndTime')->getData()) {
+                $form->get('endTime')->setData(null);
+            }
+        });
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
