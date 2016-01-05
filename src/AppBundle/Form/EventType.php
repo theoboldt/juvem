@@ -21,7 +21,11 @@ class EventType extends AbstractType
         $builder
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
-            ->add('startDate', DateType::class, array('label' => 'Startdatum'))
+            ->add('startDate', DateType::class, array(
+                'years' => range(Date('Y')-1, Date('Y')+1),
+                'format' => 'dd.M.yyyy',
+                'label' => 'Startdatum'
+            ))
             ->add('hasStartTime', CheckboxType::class,
                 array(
                     'required' => false,
