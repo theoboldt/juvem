@@ -196,9 +196,10 @@ class Event
     /**
      * Returns true if a start time is set
      *
+     * @param  boolean  $value      Unprocessed value
      * @return bool
      */
-    public function hasStartTime()
+    public function hasStartTime($value = null)
     {
         return (bool)$this->startTime;
     }
@@ -230,9 +231,10 @@ class Event
     /**
      * Returns true if a end date is set
      *
+     * @param  boolean  $value      Unprocessed value
      * @return bool
      */
-    public function hasEndDate()
+    public function hasEndDate($value = null)
     {
         return (bool)$this->endDate;
     }
@@ -265,9 +267,10 @@ class Event
     /**
      * Returns true if a end time is set
      *
+     * @param  boolean  $value      Unprocessed value
      * @return bool
      */
-    public function hasEndTime()
+    public function hasEndTime($value = null)
     {
         return (bool)$this->endTime;
     }
