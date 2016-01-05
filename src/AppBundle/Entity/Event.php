@@ -37,7 +37,7 @@ class Event
     /**
      * @ORM\Column(type="date", name="start_date")
      * @Assert\NotBlank()
-     * @Assert\Type("\Date")
+     * @Assert\Type("\DateTime")
      */
     protected $startDate;
 
@@ -45,19 +45,19 @@ class Event
      * Defines the start time of the event. May be null for so called full day events
      *
      * @ORM\Column(type="time", name="start_time", nullable=true)
-     * @Assert\Type("\Time")
+     * @Assert\Type("\DateTime")
      */
     protected $startTime;
 
     /**
      * @ORM\Column(type="date", name="end_date", nullable=true)
-     * @Assert\Type("\Date")
+     * @Assert\Type("\DateTime")
      */
     protected $endDate;
 
     /**
      * @ORM\Column(type="time", name="end_time", nullable=true)
-     * @Assert\Type("\Time")
+     * @Assert\Type("\DateTime")
      */
     protected $endTime;
 
