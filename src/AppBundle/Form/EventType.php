@@ -20,39 +20,33 @@ class EventType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $dateTypeOptions    = array(
+            'years' => range(Date('Y')-1, Date('Y')+1),
+            'format' => 'dd.M.yyyy'
+        );
+        $hasDateCheckbox    = array(
+            'required' => false,
+            'attr' => array('class' => 'checkbox-smart'),
+            'label_attr' => array('class' => 'control-label')
+        );
+
         $builder
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
-            ->add('startDate', DateType::class, array(
-                'years' => range(Date('Y')-1, Date('Y')+1),
-                'format' => 'dd.M.yyyy',
-                'label' => 'Startdatum'
-            ))
+            ->add('startDate', DateType::class,
+                array_merge($dateTypeOptions, array('label' => 'Startdatum'))
+            )
             ->add('hasStartTime', CheckboxType::class,
-                array(
-                    'required' => false,
-                    'attr' => array('class' => 'checkbox-smart'),
-                    'label' => 'Startzeit',
-                    'label_attr' => array('class' => 'control-label')
-                )
+                array_merge($hasDateCheckbox, array('label' => 'Startzeit'))
             )
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
             ->add('hasEndDate', CheckboxType::class,
-                array(
-                    'required' => false,
-                    'attr' => array('class' => 'checkbox-smart'),
-                    'label' => 'Enddatum',
-                    'label_attr' => array('class' => 'control-label')
-                )
+                array_merge($hasDateCheckbox, array('label' => 'Enddatum'))
             )
-            ->add('endDate', DateType::class, array('label' => 'Enddatum'))
-            ->add('hasEndTime', CheckboxType::class,
-                array(
-                    'required' => false,
-                    'attr' => array('class' => 'checkbox-smart'),
-                    'label' => 'Endzeit',
-                    'label_attr' => array('class' => 'control-label')
-                )
+            ->add('endDate', DateType::class,
+                array_merge($dateTypeOptions, array('label' => 'Enddatum'))
+            )
+            ->add('hasEndTime', CheckboxType::class, array_merge($hasDateCheckbox, array('label' => 'Endzeit'))
             )
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add('isActive', ChoiceType::class, array(
