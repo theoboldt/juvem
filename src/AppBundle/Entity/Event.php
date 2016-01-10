@@ -16,8 +16,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Event
 {
-    const DATE_FORMAT_DAY = 'd.m.y';
-    const DATE_FORMAT_DAY_HOUR = 'd.m.y H:i';
+    const DATE_FORMAT_DATE = 'd.m.y';
+    const DATE_FORMAT_TIME = 'H:i';
+    const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
 
     /**
      * @ORM\Column(type="integer")
