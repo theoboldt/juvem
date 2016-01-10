@@ -4,6 +4,7 @@ namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
 {
@@ -57,6 +59,12 @@ class EventType extends AbstractType
             ->add('isVisible', ChoiceType::class, array(
                 'label' => 'Sichtbarkeit', 'choices' => array('Aktiv' => true, 'Versteckt' => false),
                 'choices_as_values' => true, 'expanded' => true
+            ))
+            ->add('imageFile', VichImageType::class, array(
+                'label' => 'Poster',
+                'required'      => false,
+                'allow_delete'  => true, // not mandatory, default is true
+                'download_link' => false, // not mandatory, default is true
             ))
             ->add('save', SubmitType::class)
             ;

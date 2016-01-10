@@ -32,15 +32,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-4 col-md-3">
-                <a href="{{ asset('faw.png') }}" class="thumbnail" style="margin-top: 20px;">
-                    <img src="{{ asset('faw.png') }}" alt="Veranstaltungs-Bild" title="Veranstaltungs-Bild">
-                </a>
-            </div>
-            <div class="col-xs-12 col-sm-8 col-md-9">
+            <div class="col-xs-12">
                 <h3>{{ event.getTitle }}</h3>
             </div>
-            <div class="col-xs-12 col-sm-8 col-md-6">
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-4">
+                <p>
                     {% if event.isActive() %}
                         <span class="label label-primary">Aktiv</span>
                     {% else %}
@@ -52,20 +50,33 @@
                         <span class="label label-default">Versteckt</span>
                     {% endif %}
                 </p>
-            </div>
-            <div class="col-xs-12 col-sm-8 col-md-3">
+                <p>
                 {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DAY')) }} -
                 {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DAY')) }}
+                </p>
+                <div>
+                    {% if event.imageFilename %}
+                        <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
+                            <img src="{{ vich_uploader_asset(event, 'imageFile') }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
+                        </a>
+                    {% else %}
+                        <div class="thumbnail">
+                            <div class="alert alert-info" role="alert">
+                                <p>Es ist keine Bild-Datei als Poster zu dieser Veranstaltung gespeichert.</p>
+                                <p> Beim <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="alert-link">Bearbeiten</a> dieser Veranstaltung kann ein entsprechendes Bild hochgeladen werden.</p>
+                                <p>Dadurch wird die Veranstaltung besser präsentiert.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="col-xs-12 col-sm-8 col-md-9">
+            <div class="col-xs-12 col-sm-8">
                 <div class="panel panel-default">
                   <div class="panel-body">
                     {{ event.getDescription|e }}
                   </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
         </div>
     </div>
 {% endblock %}

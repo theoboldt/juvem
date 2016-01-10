@@ -54,13 +54,22 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-12">
-        {{ form_row(form.title) }}
+    <div class="col-xs-12 col-sm-8">
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_row(form.title) }}
+            </div>
+            <div class="col-xs-12">
+                {{ form_row(form.description) }}
+            </div>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
-        {{ form_row(form.description) }}
+    <div class="col-xs-12 col-sm-4">
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_row(form.imageFile) }}
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">

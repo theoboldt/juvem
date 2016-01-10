@@ -38,6 +38,8 @@ twig:
     form:
         resources: ['bootstrap_3_layout.html.twig']
         # resources: ['bootstrap_3_horizontal_layout.html.twig']
+    form_themes:
+        - 'form/vich-fields.html.twig'
 
 # Doctrine Configuration
 doctrine:
@@ -71,3 +73,11 @@ swiftmailer:
 
 vich_uploader:
     db_driver: orm
+    mappings:
+        event_image:
+            uri_prefix:         /img/event
+            upload_destination: %kernel.root_dir%/../web/img/event
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     false
+            delete_on_update:   true
+            delete_on_remove:   true
