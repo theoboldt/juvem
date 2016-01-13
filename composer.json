@@ -23,7 +23,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "gedmo/doctrine-extensions": "2.4.*",
         "phpoffice/phpexcel": "dev-master",
-        "vich/uploader-bundle": "1.0.x-dev"
+        "vich/uploader-bundle": "1.0.x-dev",
+        "friendsofsymfony/user-bundle": "~2.0@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
