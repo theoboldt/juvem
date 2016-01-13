@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jugendwerk-Veranstaltungen{% endblock %}
+
+{% block body %}
+    {% include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Evangelisches Jugendwerk Stuttgart Vaihingen'} %}
+<div class="container">
+    <div class="row">
+        {% for event in events %}
+            <div class="col-sm-6 col-md-{{ events|length > 2 ? 4 : 6 }}">
+                <div class="thumbnail">
+                    {% if event.imageFilename %}
+                        <img src="{{ vich_uploader_asset(event, 'imageFile') }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
+                    {% endif %}
+                    <div class="caption">
+                        <h3>{{ event.title }}</h3>
+                        <p>
+                            {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                            {% if event.hasStartTime %}
+                                {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                            {% endif %}
+                            {% if event.hasEndDate or event.hasEndTime %}
+                                -
+                                {% if event.hasEndDate %}
+                                    {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                                {% endif %}
+                                {% if event.hasEndTime %}
+                                    {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                                {% endif %}
+                            {% endif %}
+                        </p>
+                        <p>{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
+                        <p>
+                            <a href="#" class="btn btn-primary" role="button">Anmelden</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
