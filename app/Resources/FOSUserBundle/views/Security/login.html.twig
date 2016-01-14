@@ -8,11 +8,15 @@
     {% include 'base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
     {% block fos_user_content %}
         <div class="container">
-            <div class="row">
             {% if error %}
-                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="alert alert-danger" role="alert">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    </div>
+                </div>
             {% endif %}
-            </div>
             <div class="row">
                 <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
                 <form action="{{ path("fos_user_security_check") }}" method="post">
