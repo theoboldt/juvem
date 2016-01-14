@@ -9,7 +9,7 @@
                 $(button).prop('disabled', true);
                 $.ajax({
                     type: 'POST',
-                    url: '/active/button',
+                    url: '{{ path('active_button') }}',
                     data: {
                         _token: '{{ csrf_token(button.entityName ~ button.propertyName ) }}',
                         entityName: '{{ button.entityName }}',

@@ -16,7 +16,7 @@ class ActiveButtonController extends Controller
     /**
      * Detail page for one single event
      *
-     * @Route("/active/button")
+     * @Route("/admin/active/button", name="active_button")
      */
     public function activeButtonHandler(Request $request)
     {

@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class UserController extends Controller
 {
     /**
-     * @Route("/user/list", name="user_list")
+     * @Route("/admin/user/list", name="user_list")
      */
     public function listAction(Request $request)
     {
@@ -23,7 +23,7 @@ class UserController extends Controller
     /**
      * Data provider for event list grid
      *
-     * @Route("/user/list.json", name="user_list_data")
+     * @Route("/admin/user/list.json", name="user_list_data")
      */
     public function listDataAction(Request $request)
     {
@@ -67,4 +67,15 @@ class UserController extends Controller
 
         return new JsonResponse($userList);
     }
+
+    /**
+     * Create a new user
+     *
+     * @Route("/admin/user/new", name="user_new")
+     */
+    public function newAction(Request $request)
+    {
+        throw new \InvalidArgumentException('Not yet implemented');
+    }
+
 }

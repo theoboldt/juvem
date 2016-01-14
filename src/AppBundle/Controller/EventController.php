@@ -19,7 +19,7 @@ class EventController extends Controller
     /**
      * Page for list of events
      *
-     * @Route("/event/list", name="event_list")
+     * @Route("/admin/event/list", name="event_list")
      */
     public function listAction()
     {
@@ -29,7 +29,7 @@ class EventController extends Controller
     /**
      * Data provider for event list grid
      *
-     * @Route("/event/list.json", name="event_list_data")
+     * @Route("/admin/event/list.json", name="event_list_data")
      */
     public function listDataAction(Request $request)
     {
@@ -90,7 +90,7 @@ class EventController extends Controller
     /**
      * Edit page for one single event
      *
-     * @Route("/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
+     * @Route("/admin/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
      */
     public function editAction(Request $request)
     {
@@ -120,7 +120,7 @@ class EventController extends Controller
     /**
      * Detail page for one single event
      *
-     * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event")
+     * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
      */
     public function detailEventAction($eid)
     {
@@ -181,7 +181,7 @@ class EventController extends Controller
     /**
      * Create a new event
      *
-     * @Route("/event/new", name="event_new")
+     * @Route("/admin/event/new", name="event_new")
      */
     public function newAction(Request $request)
     {
