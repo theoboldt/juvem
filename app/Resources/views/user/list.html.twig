@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Benutzer verwalten{% endblock %}
+
+{% block body %}
+    {%  include 'base-page-header.html.twig' with {'title': 'Benutzer', 'subtitle': 'verwalten'} %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="user-list-toolbar">
+                    <a class="btn btn-primary" href="/user/new">{{ 'plus'|glyph }} Neu</a>
+                </div>
+                <table id="userListTable" class="table table-striped" data-id-field="uid"
+                       data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#user-list-toolbar" data-striped="true"
+                       data-show-filter="true"  data-search="true" data-url="list.json">
+                    <thead>
+                        <tr>
+                            <th data-field="uid" data-sortable="true" data-visible="false">#</th>
+                            <th data-field="nameFirst" data-sortable="true">Vorname</th>
+                            <th data-field="nameLast" data-sortable="true" data-order="asc">Nachname</th>
+                            <th data-field="email" data-sortable="true">E-Mail</th>
+                            <th data-field="roles" data-sortable="false" data-width="50">Rollen</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script type='text/javascript'>
+    $(function () {
+        $('#userListTable').on('click-row.bs.table', function (e, row, $element) {
+            location.href = row.uid;
+        });
+    });
+</script>
+{% endblock %}
