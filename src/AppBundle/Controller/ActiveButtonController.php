@@ -28,23 +28,23 @@ class ActiveButtonController extends Controller
         $toggleValue = $request->get('toggle');
         $buttons = $request->get('buttons');
 
-        switch($valueNew) {
+        switch ($valueNew) {
             case 0:
-                $valueNew   = false;
+                $valueNew = false;
                 break;
             case 1:
-                $valueNew   = true;
+                $valueNew = true;
                 break;
             default:
-                $valueNew   = null;
+                $valueNew = null;
                 break;
         }
-        switch($toggleValue) {
+        switch ($toggleValue) {
             case 1:
                 $toggleValue = true;
                 break;
             default:
-                $toggleValue    = false;
+                $toggleValue = false;
                 break;
         }
 
@@ -56,8 +56,8 @@ class ActiveButtonController extends Controller
 
         try {
             $repository = $this->getDoctrine()
-                ->getRepository('AppBundle:'.$entityName);
-        } catch(MappingException $e) {
+                ->getRepository('AppBundle:' . $entityName);
+        } catch (MappingException $e) {
             throw new AccessDeniedHttpException('Unavailable entity');
         }
 
@@ -70,11 +70,11 @@ class ActiveButtonController extends Controller
 
         if ($toggleValue) {
             $valueOriginal = $entity->$property();
-            $valueNew   = !$valueOriginal;
+            $valueNew = !$valueOriginal;
         }
 
         if ($valueNew !== null) {
-            $propertySetter = 'set'.ucfirst($property);
+            $propertySetter = 'set' . ucfirst($property);
             $entity->$propertySetter($valueNew);
 
             $em = $this->getDoctrine()->getManager();
@@ -85,7 +85,7 @@ class ActiveButtonController extends Controller
 
         return $this->render('common/active-button-content.html.twig', array(
             'buttonIsEnabled' => $valuePerformed,
-            'buttons' => $buttons
+            'buttons'         => $buttons
         ));
     }
 }

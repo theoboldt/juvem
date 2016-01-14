@@ -74,12 +74,12 @@ class EventController extends Controller
             }
 
             $eventList[] = array(
-                'eid' => $event->getEid(),
-                'title' => $event->getTitle(),
+                'eid'         => $event->getEid(),
+                'title'       => $event->getTitle(),
                 'description' => $event->getTitle(),
-                'start_date' => $event->getStartDate()->format($eventStartFormat),
-                'end_date' => $event->getEndDate()->format($eventEndFormat),
-                'status' => $eventStatus
+                'start_date'  => $event->getStartDate()->format($eventStartFormat),
+                'end_date'    => $event->getEndDate()->format($eventEndFormat),
+                'status'      => $eventStatus
             );
         }
 
@@ -90,7 +90,7 @@ class EventController extends Controller
     /**
      * Edit page for one single event
      *
-         * @Route("/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
+     * @Route("/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
      */
     public function editAction(Request $request)
     {
@@ -109,7 +109,7 @@ class EventController extends Controller
             $em->persist($event);
             $em->flush();
 
-            return $this->redirect('/event/'.$event->getEid());
+            return $this->redirect('/event/' . $event->getEid());
         }
 
         return $this->render('event/edit.html.twig', array(
@@ -129,21 +129,21 @@ class EventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
 
-        $eventDeleteModal   = array(
-            'id' => 'evenDeleteModal',
-            'title' => 'Ereignis löschen',
+        $eventDeleteModal = array(
+            'id'      => 'evenDeleteModal',
+            'title'   => 'Ereignis löschen',
             'message' => 'Soll dieses Ereignis wirklich gelöscht werden?',
-            'action' => 'Löschen',
-            'form' =>  $this->createForm(ModalActionType::class, array('id' => $eid, 'area' => 'event'))->createView()
+            'action'  => 'Löschen',
+            'form'    => $this->createForm(ModalActionType::class, array('id' => $eid, 'area' => 'event'))->createView()
         );
 
-        $buttonState    = array(
-            'entityName' => 'Event',
+        $buttonState = array(
+            'entityName'   => 'Event',
             'propertyName' => 'isActive',
-            'entityId' => $eid,
-            'isEnabled' => $event->isActive(),
-            'buttons' => array(
-                'buttonEnable' => array(
+            'entityId'     => $eid,
+            'isEnabled'    => $event->isActive(),
+            'buttons'      => array(
+                'buttonEnable'  => array(
                     'label' => 'Aktivieren',
                     'glyph' => 'folder-open'
                 ),
@@ -153,13 +153,13 @@ class EventController extends Controller
                 )
             )
         );
-        $buttonVisibility    = array(
-            'entityName' => 'Event',
+        $buttonVisibility = array(
+            'entityName'   => 'Event',
             'propertyName' => 'isVisible',
-            'entityId' => $eid,
-            'isEnabled' => $event->isVisible(),
-            'buttons' => array(
-                'buttonEnable' => array(
+            'entityId'     => $eid,
+            'isEnabled'    => $event->isVisible(),
+            'buttons'      => array(
+                'buttonEnable'  => array(
                     'label' => 'Sichtbar schalten',
                     'glyph' => 'eye-open'
                 ),
@@ -171,9 +171,9 @@ class EventController extends Controller
         );
 
         return $this->render('event/detail.html.twig', array(
-            'event' => $event,
+            'event'            => $event,
             'eventDeleteModal' => $eventDeleteModal,
-            'buttonState' => $buttonState,
+            'buttonState'      => $buttonState,
             'buttonVisibility' => $buttonVisibility
         ));
     }
