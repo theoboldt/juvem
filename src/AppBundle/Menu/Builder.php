@@ -58,6 +58,7 @@ class Builder implements ContainerAwareInterface
             $menu->addChild('Abmelden', array('route' => 'fos_user_security_logout'));
         } else {
             $menu->addChild('Anmelden', array('route' => 'fos_user_security_login'));
+            $menu->addChild('Registrieren', array('route' => 'fos_user_registration_register'));
         }
 
         return $menu;
