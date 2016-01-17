@@ -86,3 +86,9 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: AppBundle\Entity\User
+
+knp_menu:
+    twig:
+        template: common/knp_menu_template.html.twig
+    templating: false
+    default_renderer: twig

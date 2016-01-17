@@ -8,10 +8,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ path('homepage') }}">Juvem</a>
+            <a class="navbar-brand" href="#">Juvem</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            {{ knp_menu_render('AppBundle:Builder:mainMenu') }}
+            <ul class="nav navbar-nav">
+                {% for page in pages %}
+                    {% include 'navigation-element.html.twig' with {'page': page} %}
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </nav>

@@ -24,7 +24,8 @@
         "gedmo/doctrine-extensions": "2.4.*",
         "phpoffice/phpexcel": "dev-master",
         "vich/uploader-bundle": "1.0.x-dev",
-        "friendsofsymfony/user-bundle": "~2.0@dev"
+        "friendsofsymfony/user-bundle": "~2.0@dev",
+        "knplabs/knp-menu-bundle": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
