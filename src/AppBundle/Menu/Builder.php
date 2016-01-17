@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Menu;
 
+use AppBundle\Entity\User;
 use Knp\Menu\FactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -9,13 +10,23 @@ class Builder implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public function mainMenu(FactoryInterface $factory, array $options = array())
+    /**
+     * Generator for the main menu
+     *
+     * @param FactoryInterface $factory         A menu factory interface
+     * @return \Knp\Menu\ItemInterface          The configured menu
+     */
+    public function mainMenu(FactoryInterface $factory)
     {
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
-        $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
-        $menu->addChild('Benutzer', array('route' => 'user_list'));
+        if ($this->isUserLoggedIn()) {
+            $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
+            $menu->addChild('Benutzer', array('route' => 'user_list'));
+        } else {
+            $menu->addChild('Veranstaltungen', array('route' => 'homepage'));
+        }
 
         /*
         // access services from the container!
@@ -32,4 +43,35 @@ class Builder implements ContainerAwareInterface
         return $menu;
     }
 
+    /**
+     * Generator for the right side menu containing user related content
+     *
+     * @param FactoryInterface $factory         A menu factory interface
+     * @return \Knp\Menu\ItemInterface          The configured menu
+     */
+    public function authenticationMenu(FactoryInterface $factory)
+    {
+        $menu = $factory->createItem('root');
+        $menu->setChildrenAttribute('class', 'nav navbar-nav navbar-right');
+
+        if ($this->isUserLoggedIn()) {
+            $menu->addChild('Abmelden', array('route' => 'fos_user_security_logout'));
+        } else {
+            $menu->addChild('Anmelden', array('route' => 'fos_user_security_login'));
+        }
+
+        return $menu;
+    }
+
+    /**
+     * Check if a user is logged in
+     *
+     * @return bool
+     */
+    protected function isUserLoggedIn() {
+        $token = $this->container->get('security.token_storage')->getToken();
+        $user = $token->getUser();
+
+        return ($user instanceof User);
+    }
 }
