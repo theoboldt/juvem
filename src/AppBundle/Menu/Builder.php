@@ -13,7 +13,7 @@ class Builder implements ContainerAwareInterface
     /**
      * Generator for the main menu
      *
-     * @param FactoryInterface $factory         A menu factory interface
+     * @param FactoryInterface $factory A menu factory interface
      * @return \Knp\Menu\ItemInterface          The configured menu
      */
     public function mainMenu(FactoryInterface $factory)
@@ -46,7 +46,7 @@ class Builder implements ContainerAwareInterface
     /**
      * Generator for the right side menu containing user related content
      *
-     * @param FactoryInterface $factory         A menu factory interface
+     * @param FactoryInterface $factory A menu factory interface
      * @return \Knp\Menu\ItemInterface          The configured menu
      */
     public function authenticationMenu(FactoryInterface $factory)
@@ -69,7 +69,8 @@ class Builder implements ContainerAwareInterface
      *
      * @return bool
      */
-    protected function isUserLoggedIn() {
+    protected function isUserLoggedIn()
+    {
         $token = $this->container->get('security.token_storage')->getToken();
         $user = $token->getUser();
 
