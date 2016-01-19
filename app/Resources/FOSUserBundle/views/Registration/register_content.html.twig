@@ -1,0 +1,37 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltungen registrieren{% endblock %}
+
+{% block body %}
+    {% include 'base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Registrierung'} %}
+    <div class="container">
+        {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                {{ form_row(form.email) }}
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                {{ form_row(form.username) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.plainPassword.first) }}
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.plainPassword.second) }}
+            </div>
+        </div>
+
+        <div class="col-sm-12">
+            <div>
+                <input type="submit" class="btn btn-primary" value="{{ 'registration.submit'|trans }}"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+        </div>
+    </div>
+
+{% endblock body %}
