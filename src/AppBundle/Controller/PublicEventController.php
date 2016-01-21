@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
+use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -33,4 +34,33 @@ class PublicEventController extends Controller
         ));
     }
 
+    /**
+     * Page for list of events
+     *
+     * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
+     */
+    public function participateAction($eid)
+    {
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
+
+        $event = $repository->findOneBy(array('eid' => $eid));
+        $form = $this->createForm(ParticipationType::class);
+
+#        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+#            $em->persist($event);
+            $em->flush();
+
+#            return $this->redirect('/event/' . $event->getEid());
+        }
+
+        return $this->render('event/public/participate.html.twig', array(
+            'event' => $event,
+            'form'  => $form->createView()
+        ));
+    }
 }
