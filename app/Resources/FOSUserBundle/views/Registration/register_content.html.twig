@@ -9,9 +9,15 @@
     <div class="container">
         {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
         <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        <div class="row">
             <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                {{ form_row(form.nameFirst) }}
+                {{ form_row(form.nameLast) }}
                 {{ form_row(form.email) }}
-                {{ form_row(form.username) }}
                 {{ form_row(form.plainPassword.first) }}
                 {{ form_row(form.plainPassword.second) }}
             </div>
@@ -23,5 +29,4 @@
         </div>
         {{ form_end(form) }}
     </div>
-
 {% endblock body %}

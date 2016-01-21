@@ -86,6 +86,14 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: AppBundle\Entity\User
+    registration:
+        form:
+            type: AppBundle\Form\UserRegistrationFormType
+            validation_groups: [AppBundleRegistration]
+    profile:
+        form:
+            type: app_bundle_user_profile
+            validation_groups: [AppBundleProfile]
 
 knp_menu:
     twig:
