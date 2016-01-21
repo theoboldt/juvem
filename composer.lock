@@ -1770,12 +1770,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/form.git",
-                "reference": "7fd5e4034cb8e215887136f5e176430bbf5ef085"
+                "reference": "1dbe16ed1a8d972d43e7a3326539027d71905051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/form/zipball/7fd5e4034cb8e215887136f5e176430bbf5ef085",
-                "reference": "7fd5e4034cb8e215887136f5e176430bbf5ef085",
+                "url": "https://api.github.com/repos/symfony/form/zipball/1dbe16ed1a8d972d43e7a3326539027d71905051",
+                "reference": "1dbe16ed1a8d972d43e7a3326539027d71905051",
                 "shasum": ""
             },
             "require": {
@@ -1836,7 +1836,7 @@
             ],
             "description": "Symfony Form Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-12 17:46:01"
+            "time": "2016-01-20 20:05:54"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -2610,12 +2610,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "9d481b0b734ca1c832be9e8da572e69650bdf1bb"
+                "reference": "7ea268e78f0bfbbff03e01ee27a6843b97ec3a34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/9d481b0b734ca1c832be9e8da572e69650bdf1bb",
-                "reference": "9d481b0b734ca1c832be9e8da572e69650bdf1bb",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/7ea268e78f0bfbbff03e01ee27a6843b97ec3a34",
+                "reference": "7ea268e78f0bfbbff03e01ee27a6843b97ec3a34",
                 "shasum": ""
             },
             "require": {
@@ -2673,7 +2673,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-01-03 23:16:53"
+            "time": "2016-01-20 14:42:01"
         },
         {
             "name": "zendframework/zend-code",
