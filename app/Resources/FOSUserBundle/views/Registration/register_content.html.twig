@@ -9,30 +9,19 @@
     <div class="container">
         {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
         <div class="row">
-            <div class="col-xs-12 col-sm-6">
+            <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
                 {{ form_row(form.email) }}
-            </div>
-            <div class="col-xs-12 col-sm-6">
                 {{ form_row(form.username) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-6">
                 {{ form_row(form.plainPassword.first) }}
-            </div>
-            <div class="col-xs-12 col-sm-6">
                 {{ form_row(form.plainPassword.second) }}
             </div>
         </div>
-
         <div class="row">
-            <div class="col-sm-12">
-                <div>
-                    <input type="submit" class="btn btn-primary" value="{{ 'registration.submit'|trans }}"/>
-                </div>
-                {{ form_end(form) }}
+            <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                <input type="submit" class="btn btn-primary" value="{{ 'registration.submit'|trans }}"/>
             </div>
         </div>
+        {{ form_end(form) }}
     </div>
 
 {% endblock body %}
