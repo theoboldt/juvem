@@ -13,3 +13,4 @@
 /app/phpunit.xml
 /legacy/*
 .idea
+/node_modules/*
