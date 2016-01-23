@@ -2,8 +2,10 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\PhoneNumber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,20 +24,20 @@ class ParticipationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $dateTypeOptions    = array(
-            'years' => range(Date('Y')-1, Date('Y')+1),
+        $dateTypeOptions = array(
+            'years'  => range(Date('Y') - 1, Date('Y') + 1),
             'format' => 'dd.M.yyyy'
         );
-        $hasDateCheckbox    = array(
-            'required' => false,
-            'attr' => array('class' => 'checkbox-smart'),
+        $hasDateCheckbox = array(
+            'required'   => false,
+            'attr'       => array('class' => 'checkbox-smart'),
             'label_attr' => array('class' => 'control-label')
         );
 
         $builder
             ->add('parentSalution', ChoiceType::class, array(
-                'label' => 'Anrede',
-                'choices' => array('Frau', 'Herr'),
+                'label'             => 'Anrede',
+                'choices'           => array('Frau', 'Herr'),
                 'choices_as_values' => false, 'expanded' => false
             ))
             ->add('parentNameFirst', TextType::class, array('label' => 'Vorname'))
@@ -44,10 +46,11 @@ class ParticipationType extends AbstractType
             ->add('parentAdressZip', TextType::class, array('label' => 'Postleitzahl'))
             ->add('parentAdressCity', TextType::class, array('label' => 'Stadt'))
 //            ->add('parentEmail', TextType::class, array('label' => 'E-Mail'))
-
-            ->add('save', SubmitType::class)
-            ;
-
+            ->add('parentPhoneNumber', CollectionType::class, array(
+                'entry_type' => PhoneNumber::class,
+                'allow_add'  => true,
+            ))
+            ->add('save', SubmitType::class);
 
 
     }
