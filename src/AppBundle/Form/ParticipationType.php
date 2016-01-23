@@ -43,7 +43,7 @@ class ParticipationType extends AbstractType
             ->add('parentAdressStreet', TextType::class, array('label' => 'Straße u. Hausnummer'))
             ->add('parentAdressZip', TextType::class, array('label' => 'Postleitzahl'))
             ->add('parentAdressCity', TextType::class, array('label' => 'Stadt'))
-            ->add('parentEmail', TextType::class, array('label' => 'E-Mail'))
+//            ->add('parentEmail', TextType::class, array('label' => 'E-Mail'))
 
             ->add('save', SubmitType::class)
             ;
@@ -55,7 +55,7 @@ class ParticipationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-//            'data_class' => 'AppBundle\Entity\Event',
+            'data_class' => 'AppBundle\Entity\Participation',
         ));
     }
 }

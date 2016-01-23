@@ -76,10 +76,9 @@ class Participation
     /**
      * Contains the phone numbers assigned to this participation
      *
-     * @var
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", mappedBy="pnid")
      */
     protected $phoneNumbers;
-
 
     public function __construct()
     {
@@ -355,12 +354,33 @@ class Participation
 
     /**
      * Get phone Numbers
-     *
-     * @return
      */
     public function getPhoneNumbers()
     {
         return $this->phoneNumbers;
     }
-}
 
+    /**
+     * Add phoneNumber
+     *
+     * @param \AppBundle\Entity\PhoneNumber $phoneNumber
+     *
+     * @return Participation
+     */
+    public function addPhoneNumber(\AppBundle\Entity\PhoneNumber $phoneNumber)
+    {
+        $this->phoneNumbers[] = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Remove phoneNumber
+     *
+     * @param \AppBundle\Entity\PhoneNumber $phoneNumber
+     */
+    public function removePhoneNumber(\AppBundle\Entity\PhoneNumber $phoneNumber)
+    {
+        $this->phoneNumbers->removeElement($phoneNumber);
+    }
+}

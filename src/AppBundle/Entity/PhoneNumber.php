@@ -29,6 +29,11 @@ class PhoneNumber
      */
     protected $description;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
+     * @ORM\JoinColumn(name="paid", referencedColumnName="paid")
+     */
+    protected $participation;
 
     /**
      * Get pnid
@@ -86,5 +91,29 @@ class PhoneNumber
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set participation
+     *
+     * @param \AppBundle\Entity\Participation $participation
+     *
+     * @return PhoneNumber
+     */
+    public function setParticipation(\AppBundle\Entity\Participation $participation = null)
+    {
+        $this->participation = $participation;
+
+        return $this;
+    }
+
+    /**
+     * Get participation
+     *
+     * @return \AppBundle\Entity\Participation
+     */
+    public function getParticipation()
+    {
+        return $this->participation;
     }
 }
