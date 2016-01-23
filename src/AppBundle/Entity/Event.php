@@ -75,7 +75,6 @@ class Event
      */
     protected $isVisible;
 
-
     /**
      * @ORM\Column(type="datetime", name="created_at")
      */
