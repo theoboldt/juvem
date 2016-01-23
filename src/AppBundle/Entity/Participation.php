@@ -12,7 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  */
-class ParticipationType
+class Participation
 {
     /**
      * @ORM\Column(type="integer", name="paid")
