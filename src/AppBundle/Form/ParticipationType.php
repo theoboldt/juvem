@@ -47,7 +47,7 @@ class ParticipationType extends AbstractType
             ->add('parentAdressCity', TextType::class, array('label' => 'Stadt'))
 //            ->add('parentEmail', TextType::class, array('label' => 'E-Mail'))
             ->add('parentPhoneNumber', CollectionType::class, array(
-                'label' => 'Telefonnummer',
+                'label' => 'Telefonnummern',
                 'entry_type' => PhoneNumberType::class,
                 'allow_add'  => true,
             ))
