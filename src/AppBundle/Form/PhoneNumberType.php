@@ -14,7 +14,7 @@ class PhoneNumberType extends AbstractType
         $builder->add('number', TextType::class, array(
                 'label' => 'Telefonnummer')
         )
-            ->add('description', TextType::class, array('label' => 'Hinweise'));
+            ->add('description', TextType::class, array('label' => 'Hinweise', 'required' => false));
     }
 
     public function configureOptions(OptionsResolver $resolver)
