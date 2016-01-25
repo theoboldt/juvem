@@ -64,9 +64,18 @@
         </div>
         <div class="row ">
             <div class="col-xs-12 phone-numbers" data-prototype="
-        <div class='col-xs-12 col-sm-4'>{{ form_row(form.parentPhoneNumber.vars.prototype.number)|e }}</div>
+        <div class='col-xs-12 col-sm-4'>
+            <div class='form-group'>
+            {{ form_label(form.parentPhoneNumber.vars.prototype.number)|e }}
+              <div class='input-group'>
+                <div class='input-group-addon'><span class='glyphicon glyphicon-phone-alt' aria-hidden='true'></span></div>
+                    {{ form_widget(form.parentPhoneNumber.vars.prototype.number)|e }}
+                </div>
+            </div>
+        </div>
         <div class='col-xs-12 col-sm-8'>{{ form_row(form.parentPhoneNumber.vars.prototype.description)|e }}</div>
         ">
+
                 <div class="form-group">
                     {{ form_label(form.parentPhoneNumber) }}
                     {{ form_errors(form.parentPhoneNumber) }}

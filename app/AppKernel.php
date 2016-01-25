@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+        	new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new AppBundle\AppBundle(),
         );
 

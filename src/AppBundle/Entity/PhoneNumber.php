@@ -19,7 +19,7 @@ class PhoneNumber
     protected $pnid;
 
     /**
-     * @ORM\Column(type="string", length=64, name="number")
+     * @ORM\Column(type="phone_number", name="number")
      * @Assert\NotBlank()
      */
     protected $number;
