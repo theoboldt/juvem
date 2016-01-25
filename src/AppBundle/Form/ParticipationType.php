@@ -50,11 +50,14 @@ class ParticipationType extends AbstractType
                 'label' => 'Telefonnummern',
                 'entry_type' => PhoneNumberType::class,
                 'allow_add'  => true,
+                'allow_delete' => true,
+                'attr' => array('aria-describedby' => 'help-info-phone-numbers')
             ))
             ->add('participant', CollectionType::class, array(
                 'label' => 'Teilnehmer',
                 'entry_type' => ParticipantType::class,
                 'allow_add'  => true,
+                'allow_delete' => true,
             ))
             ->add('save', SubmitType::class);
 

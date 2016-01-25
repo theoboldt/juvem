@@ -16,21 +16,41 @@ class ParticipantType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
-            ->add('nameLast', TextType::class, array('label' => 'Nachname'))
-            ->add('birthday', DateType::class, array('label' => 'Geburtsdatum'))
-            ->add('infoMedical', TextareaType::class, array('label' => 'Medizinische Hinweise'))
-            ->add('infoGeneral', TextareaType::class, array('label' => 'Allgemeine Hinweise'))
+            ->add(
+                'nameFirst',
+                TextType::class,
+                array('label' => 'Vorname')
+            )
+            ->add(
+                'nameLast',
+                TextType::class,
+                array('label' => 'Nachname')
+            )
+            ->add(
+                'birthday',
+                DateType::class,
+                array('label' => 'Geburtsdatum')
+            )
+            ->add(
+                'infoMedical',
+                TextareaType::class,
+                array('label' => 'Medizinische Hinweise', 'attr' => array('aria-describedby' => 'help-info-medical'))
+            )
+            ->add(
+                'infoGeneral',
+                TextareaType::class,
+                array('label' => 'Allgemeine Hinweise', 'attr' => array('aria-describedby' => 'help-info-general'))
+            )
             ->add('food', ChoiceType::class, array(
-                'label' => 'Ernährung',
-                'choices' => array(
-                    Participant::TYPE_FOOD_VEGAN => Participant::LABEL_FOOD_VEGAN,
-                    Participant::TYPE_FOOD_VEGETARIAN => Participant::LABEL_FOOD_VEGETARIAN,
-                    Participant::TYPE_FOOD_NO_PORK => Participant::LABEL_FOOD_NO_PORK
+                'label'             => 'Ernährung',
+                'choices'           => array(
+                    Participant::LABEL_FOOD_VEGAN      => Participant::TYPE_FOOD_VEGAN,
+                    Participant::LABEL_FOOD_VEGETARIAN => Participant::TYPE_FOOD_VEGETARIAN,
+                    Participant::LABEL_FOOD_NO_PORK    => Participant::TYPE_FOOD_NO_PORK
                 ),
-                'choices_as_values' => true, 'expanded' => true, 'multiple' => true
-            ))
-            ;
+                'choices_as_values' => true, 'expanded' => true, 'multiple' => true,
+                'attr'              => array('aria-describedby' => 'help-food')
+            ));
     }
 
     public function getName()
