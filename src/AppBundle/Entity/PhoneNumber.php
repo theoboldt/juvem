@@ -12,11 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PhoneNumber
 {
     /**
-     * @ORM\Column(type="integer", name="pnid")
+     * @ORM\Column(type="integer", name="nid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $pnid;
+    protected $nid;
 
     /**
      * @ORM\Column(type="phone_number", name="number")
@@ -31,18 +31,18 @@ class PhoneNumber
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
-     * @ORM\JoinColumn(name="paid", referencedColumnName="paid")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
      */
     protected $participation;
 
     /**
-     * Get pnid
+     * Get number id
      *
      * @return integer
      */
-    public function getPnid()
+    public function getNid()
     {
-        return $this->pnid;
+        return $this->nid;
     }
 
     /**
@@ -96,11 +96,11 @@ class PhoneNumber
     /**
      * Set participation
      *
-     * @param \AppBundle\Entity\Participation $participation
+     * @param Participation $participation
      *
      * @return PhoneNumber
      */
-    public function setParticipation(\AppBundle\Entity\Participation $participation = null)
+    public function setParticipation(Participation $participation = null)
     {
         $this->participation = $participation;
 
@@ -110,7 +110,7 @@ class PhoneNumber
     /**
      * Get participation
      *
-     * @return \AppBundle\Entity\Participation
+     * @return Participation
      */
     public function getParticipation()
     {

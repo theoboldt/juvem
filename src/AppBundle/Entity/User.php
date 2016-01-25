@@ -22,13 +22,13 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="string", length=128)
      */
-    protected $nameFirst;
+    protected $nameFirst='Erik';
 
     /**
      * @ORM\Column(type="string", length=128)
      * @Assert\NotBlank()
      */
-    protected $nameLast;
+    protected $nameLast="Theoboldt";
 
     /**
      * @see getUid()

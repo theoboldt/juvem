@@ -2,9 +2,11 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\Participant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,13 +16,18 @@ class ParticipantType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('participantNameFirst', TextType::class, array('label' => 'Vorname'))
-            ->add('participantNameLast', TextType::class, array('label' => 'Nachname'))
-            ->add('participantBirthday', DateType::class, array('label' => 'Geburtsdatum'))
-            ->add('participantInfo', DateType::class, array('label' => 'Hinweise'))
-            ->add('isVisible', ChoiceType::class, array(
+            ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
+            ->add('nameLast', TextType::class, array('label' => 'Nachname'))
+            ->add('birthday', DateType::class, array('label' => 'Geburtsdatum'))
+            ->add('infoMedical', TextareaType::class, array('label' => 'Medizinische Hinweise'))
+            ->add('infoGeneral', TextareaType::class, array('label' => 'Allgemeine Hinweise'))
+            ->add('food', ChoiceType::class, array(
                 'label' => 'Ernährung',
-                'choices' => array('vegan' => 'vegan', 'vegetarisch' => 'vegetarian', 'ohne Schweine' => 'no_pork'),
+                'choices' => array(
+                    Participant::TYPE_FOOD_VEGAN => Participant::LABEL_FOOD_VEGAN,
+                    Participant::TYPE_FOOD_VEGETARIAN => Participant::LABEL_FOOD_VEGETARIAN,
+                    Participant::TYPE_FOOD_NO_PORK => Participant::LABEL_FOOD_NO_PORK
+                ),
                 'choices_as_values' => true, 'expanded' => true, 'multiple' => true
             ))
             ;

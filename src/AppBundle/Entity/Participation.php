@@ -15,11 +15,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Participation
 {
     /**
-     * @ORM\Column(type="integer", name="paid")
+     * @ORM\Column(type="integer", name="pid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $paid;
+    protected $pid;
 
     /**
      * @ORM\Column(type="string", length=64, name="salution")
@@ -76,7 +76,7 @@ class Participation
     /**
      * Contains the phone numbers assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", mappedBy="pnid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", mappedBy="nid")
      */
     protected $phoneNumbers;
 
@@ -175,13 +175,13 @@ class Participation
     }
 
     /**
-     * Get paid
+     * Get pid
      *
      * @return integer
      */
-    public function getPaid()
+    public function getPid()
     {
-        return $this->paid;
+        return $this->pid;
     }
 
     /**
@@ -189,7 +189,7 @@ class Participation
      *
      * @param string $parentSalution
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setParentSalution($parentSalution)
     {
@@ -213,7 +213,7 @@ class Participation
      *
      * @param string $nameFirst
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setNameFirst($nameFirst)
     {
@@ -237,7 +237,7 @@ class Participation
      *
      * @param string $nameLast
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setNameLast($nameLast)
     {
@@ -261,7 +261,7 @@ class Participation
      *
      * @param string $addressStreet
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setAddressStreet($addressStreet)
     {
@@ -285,7 +285,7 @@ class Participation
      *
      * @param string $addressCity
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setAddressCity($addressCity)
     {
@@ -309,7 +309,7 @@ class Participation
      *
      * @param string $addressZip
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setAddressZip($addressZip)
     {
@@ -333,7 +333,7 @@ class Participation
      *
      * @param string $email
      *
-     * @return ParticipationType
+     * @return Participation
      */
     public function setEmail($email)
     {
@@ -363,11 +363,11 @@ class Participation
     /**
      * Add phoneNumber
      *
-     * @param \AppBundle\Entity\PhoneNumber $phoneNumber
+     * @param PhoneNumber $phoneNumber
      *
      * @return Participation
      */
-    public function addPhoneNumber(\AppBundle\Entity\PhoneNumber $phoneNumber)
+    public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
         $this->phoneNumbers[] = $phoneNumber;
 
@@ -377,9 +377,9 @@ class Participation
     /**
      * Remove phoneNumber
      *
-     * @param \AppBundle\Entity\PhoneNumber $phoneNumber
+     * @param PhoneNumber $phoneNumber
      */
-    public function removePhoneNumber(\AppBundle\Entity\PhoneNumber $phoneNumber)
+    public function removePhoneNumber(PhoneNumber $phoneNumber)
     {
         $this->phoneNumbers->removeElement($phoneNumber);
     }

@@ -62,7 +62,7 @@
                 {{ form_row(form.parentAdressCity) }}
             </div>
         </div>
-        <div class="row ">
+        <div class="row">
             <div class="col-xs-12 phone-numbers" data-prototype="
         <div class='col-xs-12 col-sm-4'>
             <div class='form-group'>
@@ -133,6 +133,69 @@
                 </p>
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-12 participant-list" data-prototype="
+        <div class='col-xs-12 col-sm-4'>
+            <div class='form-group'>
+            {{ form_label(form.participant.vars.prototype.nameFirst)|e }}
+              <div class='input-group'>
+                <div class='input-group-addon'><span class='glyphicon ' aria-hidden='true'></span></div>
+                    {{ form_widget(form.participant.vars.prototype.nameFirst)|e }}
+                </div>
+            </div>
+        </div>
+        <div class='col-xs-12 col-sm-8'>{{ form_row(form.participant.vars.prototype.nameLast)|e }}</div>
+        ">
+
+                <div class="form-group">
+                    {{ form_label(form.participant) }}
+                    {{ form_errors(form.participant) }}
+                    {{ form_widget(form.participant) }}
+                </div>
+            </div>
+        </div>
+        <script>
+            var $collectionHolder2;
+
+            // setup an "add a tag" link
+            var $addTagLink2 = $('<a href="#" class="btn btn-default">Teilnehmer hinzufügen</a>');
+            var $newLinkLi2 = $('<div></div>').append($addTagLink2);
+
+            jQuery(document).ready(function() {
+                // Get the ul that holds the collection of tags
+                $collectionHolder2 = $('div.participant-list');
+
+                // add the "add a tag" anchor and li to the tags ul
+                $collectionHolder2.append($newLinkLi2);
+
+                // count the current form inputs we have (e.g. 2), use that as the new
+                // index when inserting a new item (e.g. 2)
+                $collectionHolder2.data('index', $collectionHolder2.find(':input').length);
+
+                $addTagLink2.on('click', function(e) {
+                    // prevent the link from creating a "#" on the URL
+                    e.preventDefault();
+
+                    // Get the data-prototype explained earlier
+                    var prototype = $collectionHolder2.data('prototype');
+
+                    // get the new index
+                    var index = $collectionHolder2.data('index');
+
+                    // Replace '__name__' in the prototype's HTML to
+                    // instead be a number based on how many items we have
+                    var newForm2 = prototype.replace(/__name__/g, index);
+
+                    // increase the index with one for the next item
+                    $collectionHolder2.data('index', index + 1);
+
+                    // Display the form in the page in an li, before the "Add a tag" link li
+                    var $newFormLi2 = $('<div class="row"></div>').append(newForm2);
+                    $newLinkLi2.before($newFormLi2);
+                });
+            });
+
+        </script>
 
 
         <div class="row">

@@ -194,13 +194,12 @@ class EventController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            dump($form->getData());
             $em = $this->getDoctrine()->getManager();
 
             $em->persist($event);
             $em->flush();
 
-            return $this->redirect('/event/list');
+            return $this->redirect('/admin/event/list');
         }
 
         return $this->render('event/new.html.twig', array(

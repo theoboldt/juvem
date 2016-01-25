@@ -51,6 +51,11 @@ class ParticipationType extends AbstractType
                 'entry_type' => PhoneNumberType::class,
                 'allow_add'  => true,
             ))
+            ->add('participant', CollectionType::class, array(
+                'label' => 'Teilnehmer',
+                'entry_type' => ParticipantType::class,
+                'allow_add'  => true,
+            ))
             ->add('save', SubmitType::class);
 
 
