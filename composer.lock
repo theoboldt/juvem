@@ -1342,16 +1342,16 @@
         },
         {
             "name": "misd/phone-number-bundle",
-            "version": "v1.0.6",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/misd-service-development/phone-number-bundle.git",
-                "reference": "dc14d2606f9d632ff00edb90232e2fcead79f8f7"
+                "reference": "8b89d78d28a46f2184114a9afca30686d5780efe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/misd-service-development/phone-number-bundle/zipball/dc14d2606f9d632ff00edb90232e2fcead79f8f7",
-                "reference": "dc14d2606f9d632ff00edb90232e2fcead79f8f7",
+                "url": "https://api.github.com/repos/misd-service-development/phone-number-bundle/zipball/8b89d78d28a46f2184114a9afca30686d5780efe",
+                "reference": "8b89d78d28a46f2184114a9afca30686d5780efe",
                 "shasum": ""
             },
             "require": {
@@ -1382,7 +1382,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -1394,12 +1394,6 @@
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Chris Wilkinson",
-                    "email": "chris.wilkinson@admin.cam.ac.uk"
-                }
-            ],
             "description": "Integrates libphonenumber into your Symfony2 application",
             "homepage": "https://github.com/misd-service-development/phone-number-bundle",
             "keywords": [
@@ -1409,7 +1403,7 @@
                 "phonenumber",
                 "telephone number"
             ],
-            "time": "2015-12-22 21:34:41"
+            "time": "2016-01-25 17:29:04"
         },
         {
             "name": "monolog/monolog",
@@ -2532,19 +2526,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "209d08fe2db9c91d86146775f755e0e78e955dc9"
+                "reference": "fe14e38a5404aea52996187b1973ff3d69ee5f72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/209d08fe2db9c91d86146775f755e0e78e955dc9",
-                "reference": "209d08fe2db9c91d86146775f755e0e78e955dc9",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/fe14e38a5404aea52996187b1973ff3d69ee5f72",
+                "reference": "fe14e38a5404aea52996187b1973ff3d69ee5f72",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "~2.4",
                 "php": ">=5.3.9",
                 "psr/log": "~1.0",
-                "symfony/polyfill-apcu": "~1.0,>=1.0.2",
+                "symfony/polyfill-apcu": "~1.1",
                 "symfony/polyfill-intl-icu": "~1.0",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php54": "~1.0",
@@ -2658,7 +2652,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-01-25 11:59:24"
+            "time": "2016-01-25 16:29:20"
         },
         {
             "name": "twig/twig",
