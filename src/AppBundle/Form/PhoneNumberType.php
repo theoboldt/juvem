@@ -10,26 +10,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PhoneNumberType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
 
-		$builder->add(
-			'number',
-			'tel',
-			array('default_region' => 'DE', 'format' => PhoneNumberFormat::NATIONAL, 'label' => 'Telefonnummer')
-		)
-			->add('description', TextType::class, array('label' => 'Hinweise'));
-	}
+        $builder->add(
+            'number',
+            'tel',
+            array('default_region' => 'DE', 'format' => PhoneNumberFormat::NATIONAL, 'label' => 'Telefonnummer')
+        )
+            ->add('description', TextType::class, array('label' => 'Hinweise', 'required' => false));
+    }
 
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-			'data_class' => 'AppBundle\Entity\PhoneNumber',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'AppBundle\Entity\PhoneNumber',
+        ));
+    }
 
-	public function getName()
-	{
-		return 'app_bundle_phone_number';
-	}
+    public function getName()
+    {
+        return 'app_bundle_phone_number';
+    }
 }
