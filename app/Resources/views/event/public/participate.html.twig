@@ -6,71 +6,78 @@
     {% include 'base-page-header.html.twig' with {'title': event.title, 'subtitle': 'anmelden'} %}
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 col-sm-4">
-                <p>
-                    {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                    {% if event.hasStartTime %}
-                        {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                    {% endif %}
-                    {% if event.hasEndDate or event.hasEndTime %}
-                        -
-                        {% if event.hasEndDate %}
-                            {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                        {% endif %}
-                        {% if event.hasEndTime %}
-                            {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                        {% endif %}
-                    {% endif %}
-                </p>
-            </div>
-            <div class="col-xs-12 col-sm-8">
-                {{ event.getDescription|e }}
-            </div>
-        </div>
-        {{ form_start(form) }}
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_errors(form) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12  col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-                <h3>Daten der Eltern</h3>
+            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <p>
+                            {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                            {% if event.hasStartTime %}
+                                {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                            {% endif %}
+                            {% if event.hasEndDate or event.hasEndTime %}
+                                -
+                                {% if event.hasEndDate %}
+                                    {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                                {% endif %}
+                                {% if event.hasEndTime %}
+                                    {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                                {% endif %}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-8">
+                        {{ event.getDescription|e }}
+                    </div>
+                </div>
+                {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_errors(form) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-10 col-md-8">
+                        <h3>Daten der Eltern</h3>
 
-                <p>Bitte geben Sie hier ihre grundlegenden Kontakdaten an.
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-offset-1 col-sm-2 col-md-offset-2">
-                {{ form_row(form.parentSalution) }}
-            </div>
-            <div class="col-xs-12 col-sm-4 col-md-3">
-                {{ form_row(form.parentNameFirst) }}
-            </div>
-            <div class="col-xs-12 col-sm-4 col-md-3">
-                {{ form_row(form.parentNameLast) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-offset-1 col-sm-4 col-md-offset-2 col-md-3">
-                {{ form_row(form.parentAdressStreet) }}
-            </div>
-            <div class="col-xs-12 col-sm-2 col-md-2">
-                {{ form_row(form.parentAdressZip) }}
-            </div>
-            <div class="col-xs-12 col-sm-4 col-md-3">
-                {{ form_row(form.parentAdressCity) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8 phone-numbers" data-prototype="
+                        <p>Bitte geben Sie hier ihre grundlegenden Kontakdaten an.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3">
+                        {{ form_row(form.parentSalution) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.nameFirst) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.nameLast) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.addressStreet) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-5">
+                        {{ form_row(form.addressZip) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-7">
+                        {{ form_row(form.addressCity) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 phone-numbers"
+                         data-prototype="
         <div class='col-xs-12 col-sm-5'>
             <div class='form-group'>
-            {{ form_label(form.parentPhoneNumber.vars.prototype.number)|e }}
+            {{ form_label(form.phoneNumbers.vars.prototype.number)|e }}
               <div class='input-group'>
                 <div class='input-group-addon'><span class='glyphicon glyphicon-phone-alt' aria-hidden='true'></span></div>
-                    {{ form_widget(form.parentPhoneNumber.vars.prototype.number)|e }}
+                    {{ form_widget(form.phoneNumbers.vars.prototype.number)|e }}
                 </div>
             </div>
             <span id='help-phone-number' class='help-block'>
@@ -78,7 +85,7 @@
             </span>
         </div>
         <div class='col-xs-12 col-sm-7'>
-            {{ form_row(form.parentPhoneNumber.vars.prototype.description)|e }}
+            {{ form_row(form.phoneNumbers.vars.prototype.description)|e }}
             <span id='help-phone-number-description' class='help-block'>
                 Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
                 handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
@@ -87,161 +94,166 @@
         </div>
         ">
 
-                <div class="form-group">
-                    {{ form_label(form.parentPhoneNumber) }}
-                    {{ form_errors(form.parentPhoneNumber) }}
-                    {{ form_widget(form.parentPhoneNumber) }}
-                    <span id='help-phone-numbers' class='help-block'>
+                        <div class="form-group">
+                            {{ form_label(form.phoneNumbers) }}
+                            {{ form_errors(form.phoneNumbers) }}
+                            {{ form_widget(form.phoneNumbers) }}
+                            <span id='help-phone-numbers' class='help-block'>
                         In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
                         Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
                         denen wir Sie bei Notfällen erreichen können.
                     </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <script>
-            var $collectionHolder;
+                <script>
+                    var $collectionHolder;
 
-            // setup an "add a tag" link
-            var $addTagLink = $('<a href="#" class="btn btn-default">Telefonnummer hinzufügen</a>');
-            var $newLinkLi = $('<div></div>').append($addTagLink);
+                    // setup an "add a tag" link
+                    var $addTagLink = $('<a href="#" class="btn btn-default">Telefonnummer hinzufügen</a>');
+                    var $newLinkLi = $('<div></div>').append($addTagLink);
 
-            jQuery(document).ready(function () {
-                // Get the ul that holds the collection of tags
-                $collectionHolder = $('div.phone-numbers');
+                    jQuery(document).ready(function () {
+                        // Get the ul that holds the collection of tags
+                        $collectionHolder = $('div.phone-numbers');
 
-                // add the "add a tag" anchor and li to the tags ul
-                $collectionHolder.append($newLinkLi);
+                        // add the "add a tag" anchor and li to the tags ul
+                        $collectionHolder.append($newLinkLi);
 
-                // count the current form inputs we have (e.g. 2), use that as the new
-                // index when inserting a new item (e.g. 2)
-                $collectionHolder.data('index', $collectionHolder.find(':input').length);
+                        // count the current form inputs we have (e.g. 2), use that as the new
+                        // index when inserting a new item (e.g. 2)
+                        $collectionHolder.data('index', $collectionHolder.find(':input').length);
 
-                $addTagLink.on('click', function (e) {
-                    // prevent the link from creating a "#" on the URL
-                    e.preventDefault();
+                        $addTagLink.on('click', function (e) {
+                            // prevent the link from creating a "#" on the URL
+                            e.preventDefault();
 
-                    // Get the data-prototype explained earlier
-                    var prototype = $collectionHolder.data('prototype');
+                            // Get the data-prototype explained earlier
+                            var prototype = $collectionHolder.data('prototype');
 
-                    // get the new index
-                    var index = $collectionHolder.data('index');
+                            // get the new index
+                            var index = $collectionHolder.data('index');
 
-                    // Replace '__name__' in the prototype's HTML to
-                    // instead be a number based on how many items we have
-                    var newForm = prototype.replace(/__name__/g, index);
+                            // Replace '__name__' in the prototype's HTML to
+                            // instead be a number based on how many items we have
+                            var newForm = prototype.replace(/__name__/g, index);
 
-                    // increase the index with one for the next item
-                    $collectionHolder.data('index', index + 1);
+                            // increase the index with one for the next item
+                            $collectionHolder.data('index', index + 1);
 
-                    // Display the form in the page in an li, before the "Add a tag" link li
-                    var $newFormLi = $('<div class="row"></div>').append(newForm);
-                    $newLinkLi.before($newFormLi);
-                });
-            });
+                            // Display the form in the page in an li, before the "Add a tag" link li
+                            var $newFormLi = $('<div class="row"></div>').append(newForm);
+                            $newLinkLi.before($newFormLi);
+                        });
+                    });
 
-        </script>
+                </script>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-offset-2 col-sm-8">
-                <h3>Daten der Teilnehmer</h3>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>Daten der Teilnehmer</h3>
 
-                <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.
-                </p>
+                        <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.
+                        </p>
 
-                <p>
-                    Abhängig von Art und Dauer der Veranstaltung können mehr oder weniger Informationen nötig sein.
-                    Falls die Aktion eine Mahlzeit umfasst, sollten Sie, falls zutreffend, Angaben zu speziellen
-                    Essgewohneiten ihres Kindes machen. Bei Veranstaltungen mit Übernachtung können spezielle
-                    Informationen zur Nacht wichtig sein.
-                </p>
+                        <p>
+                            Abhängig von Art und Dauer der Veranstaltung können mehr oder weniger Informationen nötig
+                            sein.
+                            Falls die Aktion eine Mahlzeit umfasst, sollten Sie, falls zutreffend, Angaben zu speziellen
+                            Essgewohneiten ihres Kindes machen. Bei Veranstaltungen mit Übernachtung können spezielle
+                            Informationen zur Nacht wichtig sein.
+                        </p>
 
-                <p>
-                    Bitte teilen Sie uns alles mit, was eventuell wichtig sein könnte. Nur dadurch können wir den
-                    Bedürfnissen Ihres Kindes gerecht werden. Wir behandeln diese Informationen vertraulich.
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 participant-list" data-prototype="
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.nameFirst)|e }}
-        </div>
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.nameLast)|e }}
-        </div>
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.birthday)|e }}
-        </div>
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.infoMedical)|e }}
-            <span id='help-food' class='help-block'>
+                        <p>
+                            Bitte teilen Sie uns alles mit, was eventuell wichtig sein könnte. Nur dadurch können wir
+                            den
+                            Bedürfnissen Ihres Kindes gerecht werden. Wir behandeln diese Informationen vertraulich.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    {% set prototype %}
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.nameFirst) }}
+                        </div>
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.nameLast) }}
+                        </div>
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.birthday) }}
+                        </div>
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.infoMedical) }}
+                            <span id='help-food' class='help-block'>
                 Leidet ihr Kind an Allergien oder Krankheiten?
                 Muss ihr Kind während der Veranstaltung Medikamente einnehmen?
                 (Bitte beachten Sie, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)
             </span>
-        </div>
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.infoGeneral)|e }}
-        </div>
-        <div class='col-xs-12 col-sm-4'>
-            {{ form_row(form.participant.vars.prototype.food)|e }}
-            <span id='help-food' class='help-block'>
+                        </div>
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.infoGeneral) }}
+                        </div>
+                        <div class='col-xs-12 col-sm-4'>
+                            {{ form_row(form.participants.vars.prototype.food) }}
+                            <span id='help-food' class='help-block'>
 Hinweise zur Ernährung ihres Kindes
             </span>
-        </div>
-        ">
+                        </div>
+                    {% endset %}
+                    <div class="col-xs-12 participants-list" data-prototype="{{ prototype|e('html_attr') }}">
+                    </div>
+                </div>
+                <script>
+                    var $collectionHolder2;
+
+                    // setup an "add a tag" link
+                    var $addTagLink2 = $('<a href="#" class="btn btn-default">Teilnehmer hinzufügen</a>');
+                    var $newLinkLi2 = $('<div></div>').append($addTagLink2);
+
+                    jQuery(document).ready(function () {
+                        // Get the ul that holds the collection of tags
+                        $collectionHolder2 = $('div.participants-list');
+
+                        // add the "add a tag" anchor and li to the tags ul
+                        $collectionHolder2.append($newLinkLi2);
+
+                        // count the current form inputs we have (e.g. 2), use that as the new
+                        // index when inserting a new item (e.g. 2)
+                        $collectionHolder2.data('index', $collectionHolder2.find(':input').length);
+
+                        $addTagLink2.on('click', function (e) {
+                            // prevent the link from creating a "#" on the URL
+                            e.preventDefault();
+
+                            // Get the data-prototype explained earlier
+                            var prototype = $collectionHolder2.data('prototype');
+
+                            // get the new index
+                            var index = $collectionHolder2.data('index');
+
+                            // Replace '__name__' in the prototype's HTML to
+                            // instead be a number based on how many items we have
+                            var newForm2 = prototype.replace(/__name__/g, index);
+
+                            // increase the index with one for the next item
+                            $collectionHolder2.data('index', index + 1);
+
+                            // Display the form in the page in an li, before the "Add a tag" link li
+                            var $newFormLi2 = $('<div class="row"></div>').append(newForm2);
+                            $newLinkLi2.before($newFormLi2);
+                        });
+                    });
+
+                </script>
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Anmeldung abgeben' }) }}
+                    </div>
+                </div>
+                {{ form_end(form) }}
             </div>
         </div>
-        <script>
-            var $collectionHolder2;
-
-            // setup an "add a tag" link
-            var $addTagLink2 = $('<a href="#" class="btn btn-default">Teilnehmer hinzufügen</a>');
-            var $newLinkLi2 = $('<div></div>').append($addTagLink2);
-
-            jQuery(document).ready(function () {
-                // Get the ul that holds the collection of tags
-                $collectionHolder2 = $('div.participant-list');
-
-                // add the "add a tag" anchor and li to the tags ul
-                $collectionHolder2.append($newLinkLi2);
-
-                // count the current form inputs we have (e.g. 2), use that as the new
-                // index when inserting a new item (e.g. 2)
-                $collectionHolder2.data('index', $collectionHolder2.find(':input').length);
-
-                $addTagLink2.on('click', function (e) {
-                    // prevent the link from creating a "#" on the URL
-                    e.preventDefault();
-
-                    // Get the data-prototype explained earlier
-                    var prototype = $collectionHolder2.data('prototype');
-
-                    // get the new index
-                    var index = $collectionHolder2.data('index');
-
-                    // Replace '__name__' in the prototype's HTML to
-                    // instead be a number based on how many items we have
-                    var newForm2 = prototype.replace(/__name__/g, index);
-
-                    // increase the index with one for the next item
-                    $collectionHolder2.data('index', index + 1);
-
-                    // Display the form in the page in an li, before the "Add a tag" link li
-                    var $newFormLi2 = $('<div class="row"></div>').append(newForm2);
-                    $newLinkLi2.before($newFormLi2);
-                });
-            });
-
-        </script>
-
-
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Anmeldung abgeben' }) }}
-            </div>
-        </div>
-        {{ form_end(form) }}
     </div>
 {% endblock %}
