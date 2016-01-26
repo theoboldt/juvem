@@ -28,6 +28,9 @@ class PublicEventController extends Controller
             ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+        }
 
         return $this->render('event/public/detail.html.twig', array(
             'event' => $event
@@ -45,6 +48,10 @@ class PublicEventController extends Controller
             ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+        }
+
         $form = $this->createForm(ParticipationType::class);
 
 #        $form->handleRequest($request);

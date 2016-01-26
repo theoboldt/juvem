@@ -98,6 +98,9 @@ class EventController extends Controller
             ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $request->get('eid')));
+        if (!$event) {
+			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+        }
 
         $form = $this->createForm(EventType::class, $event);
 
@@ -128,6 +131,9 @@ class EventController extends Controller
             ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+			return $this->redirect('event_miss');
+        }
 
         $eventDeleteModal = array(
             'id'      => 'evenDeleteModal',
@@ -207,4 +213,13 @@ class EventController extends Controller
         ));
     }
 
+    /**
+     * Page for list of events
+     *
+     * @Route("/event/miss/{eid}", requirements={"eid": "\d+"}, name="event_miss")
+     */
+    public function eventNotFoundAction($eid)
+    {
+        return $this->render('event/public/miss.html.twig', array('eid' => $eid));
+    }
 }
