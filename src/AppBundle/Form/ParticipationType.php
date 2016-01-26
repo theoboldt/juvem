@@ -40,24 +40,25 @@ class ParticipationType extends AbstractType
                 'choices'           => array('Frau', 'Herr'),
                 'choices_as_values' => false, 'expanded' => false
             ))
-            ->add('parentNameFirst', TextType::class, array('label' => 'Vorname'))
-            ->add('parentNameLast', TextType::class, array('label' => 'Nachname'))
-            ->add('parentAdressStreet', TextType::class, array('label' => 'Straße u. Hausnummer'))
-            ->add('parentAdressZip', TextType::class, array('label' => 'Postleitzahl'))
-            ->add('parentAdressCity', TextType::class, array('label' => 'Stadt'))
-//            ->add('parentEmail', TextType::class, array('label' => 'E-Mail'))
-            ->add('parentPhoneNumber', CollectionType::class, array(
+            ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
+            ->add('nameLast', TextType::class, array('label' => 'Nachname'))
+            ->add('addressStreet', TextType::class, array('label' => 'Straße u. Hausnummer'))
+            ->add('addressZip', TextType::class, array('label' => 'Postleitzahl'))
+            ->add('addressCity', TextType::class, array('label' => 'Stadt'))
+            ->add('email', TextType::class, array('label' => 'E-Mail'))
+            ->add('phoneNumbers', CollectionType::class, array(
                 'label' => 'Telefonnummern',
                 'entry_type' => PhoneNumberType::class,
                 'allow_add'  => true,
                 'allow_delete' => true,
                 'attr' => array('aria-describedby' => 'help-info-phone-numbers')
             ))
-            ->add('participant', CollectionType::class, array(
+            ->add('participants', CollectionType::class, array(
                 'label' => 'Teilnehmer',
                 'entry_type' => ParticipantType::class,
                 'allow_add'  => true,
                 'allow_delete' => true,
+                'mapped' => false //temporary solution without relation
             ))
             ->add('save', SubmitType::class);
 
