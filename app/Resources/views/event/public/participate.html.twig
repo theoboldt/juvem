@@ -74,30 +74,28 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 phone-numbers"
-                         data-prototype="
-        <div class='col-xs-12 col-sm-5'>
-            <div class='form-group'>
-            {{ form_label(form.phoneNumbers.vars.prototype.number)|e }}
-              <div class='input-group'>
-                <div class='input-group-addon'><span class='glyphicon glyphicon-phone-alt' aria-hidden='true'></span></div>
-                    {{ form_widget(form.phoneNumbers.vars.prototype.number)|e }}
-                </div>
-            </div>
-            <span id='help-phone-number' class='help-block'>
-                Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.
-            </span>
-        </div>
-        <div class='col-xs-12 col-sm-7'>
-            {{ form_row(form.phoneNumbers.vars.prototype.description)|e }}
-            <span id='help-phone-number-description' class='help-block'>
-                Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
-                handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
-            </span>
-
-        </div>
-        ">
-
+                    {% set prototypePhone %}
+                        <div class="col-xs-12 col-sm-5">
+                            <div class="form-group">
+                                {{ form_label(form.phoneNumbers.vars.prototype.number) }}
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span></div>
+                                    {{ form_widget(form.phoneNumbers.vars.prototype.number) }}
+                                </div>
+                            </div>
+                            <span id="help-phone-number" class="help-block">
+                                Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.
+                            </span>
+                        </div>
+                        <div class="col-xs-12 col-sm-7">
+                            {{ form_row(form.phoneNumbers.vars.prototype.description) }}
+                            <span id="help-phone-number-description" class="help-block">
+                                Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
+                                handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
+                            </span>
+                        </div>
+                    {% endset %}
+                    <div class="col-xs-12 phone-numbers" data-prototype="{{ prototypePhone|e('html_attr') }}">
                         <div class="form-group">
                             {{ form_label(form.phoneNumbers) }}
                             {{ form_errors(form.phoneNumbers) }}
@@ -176,35 +174,35 @@
                     </div>
                 </div>
                 <div class="row">
-                    {% set prototype %}
-                        <div class='col-xs-12 col-sm-4'>
+                    {% set prototypeParticipant %}
+                        <div class="col-xs-12 col-sm-6">
                             {{ form_row(form.participants.vars.prototype.nameFirst) }}
                         </div>
-                        <div class='col-xs-12 col-sm-4'>
+                        <div class="col-xs-12 col-sm-6">
                             {{ form_row(form.participants.vars.prototype.nameLast) }}
                         </div>
-                        <div class='col-xs-12 col-sm-4'>
+                        <div class="col-xs-12 col-sm-6">
                             {{ form_row(form.participants.vars.prototype.birthday) }}
                         </div>
-                        <div class='col-xs-12 col-sm-4'>
-                            {{ form_row(form.participants.vars.prototype.infoMedical) }}
-                            <span id='help-food' class='help-block'>
-                Leidet ihr Kind an Allergien oder Krankheiten?
-                Muss ihr Kind während der Veranstaltung Medikamente einnehmen?
-                (Bitte beachten Sie, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)
-            </span>
+                        <div class="col-xs-12 col-sm-6">
+                            {{ form_row(form.participants.vars.prototype.food) }}
+                            <span id="help-food" class="help-block">
+                                Hinweise zur Ernährung ihres Kindes
+                            </span>
                         </div>
-                        <div class='col-xs-12 col-sm-4'>
+                        <div class="col-xs-12">
+                            {{ form_row(form.participants.vars.prototype.infoMedical) }}
+                            <span id="help-food" class="help-block">
+                                Leidet ihr Kind an Allergien oder Krankheiten?
+                                Muss ihr Kind während der Veranstaltung Medikamente einnehmen?
+                                (Bitte beachten Sie, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)
+                            </span>
+                        </div>
+                        <div class="col-xs-12">
                             {{ form_row(form.participants.vars.prototype.infoGeneral) }}
                         </div>
-                        <div class='col-xs-12 col-sm-4'>
-                            {{ form_row(form.participants.vars.prototype.food) }}
-                            <span id='help-food' class='help-block'>
-Hinweise zur Ernährung ihres Kindes
-            </span>
-                        </div>
                     {% endset %}
-                    <div class="col-xs-12 participants-list" data-prototype="{{ prototype|e('html_attr') }}">
+                    <div class="col-xs-12 participants-list" data-prototype="{{ prototypeParticipant|e('html_attr') }}">
                     </div>
                 </div>
                 <script>
