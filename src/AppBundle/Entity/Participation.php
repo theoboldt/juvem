@@ -80,9 +80,21 @@ class Participation
      */
     protected $phoneNumbers;
 
+    /**
+     * Contains the participants assigned to this participation
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", mappedBy="aid")
+     */
+    protected $participants;
+
+
     public function __construct()
     {
         $this->phoneNumbers = new ArrayCollection();
+        $this->addPhoneNumber(new PhoneNumber());
+
+        $this->participants = new ArrayCollection();
+        $this->addParticipant(new Participant());
     }
 
     /**
@@ -382,5 +394,39 @@ class Participation
     public function removePhoneNumber(PhoneNumber $phoneNumber)
     {
         $this->phoneNumbers->removeElement($phoneNumber);
+    }
+
+    /**
+     * Add participant
+     *
+     * @param \AppBundle\Entity\Participant $participant
+     *
+     * @return Participation
+     */
+    public function addParticipant(Participant $participant)
+    {
+        $this->participants[] = $participant;
+
+        return $this;
+    }
+
+    /**
+     * Remove participant
+     *
+     * @param \AppBundle\Entity\Participant $participant
+     */
+    public function removeParticipant(Participant $participant)
+    {
+        $this->participants->removeElement($participant);
+    }
+
+    /**
+     * Get participants
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
     }
 }

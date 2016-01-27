@@ -91,6 +91,11 @@ class Participant
      */
     protected $deletedAt = null;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Participation", inversedBy="participants")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
+     */
+    protected $participation;
 
     /**
      * Get aid
@@ -340,5 +345,29 @@ class Participant
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Set participation
+     *
+     * @param \AppBundle\Entity\Participation $participation
+     *
+     * @return Participant
+     */
+    public function setParticipation(Participation $participation = null)
+    {
+        $this->participation = $participation;
+
+        return $this;
+    }
+
+    /**
+     * Get participation
+     *
+     * @return \AppBundle\Entity\Participation
+     */
+    public function getParticipation()
+    {
+        return $this->participation;
     }
 }

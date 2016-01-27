@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\Participation;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
@@ -52,7 +53,8 @@ class PublicEventController extends Controller
 			return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
 
-        $form = $this->createForm(ParticipationType::class);
+        $participation  = new Participation();
+        $form = $this->createForm(ParticipationType::class, $participation);
 
 #        $form->handleRequest($request);
 
