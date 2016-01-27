@@ -30,7 +30,7 @@ class PublicEventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
 
         return $this->render('event/public/detail.html.twig', array(
@@ -50,10 +50,11 @@ class PublicEventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
 
-        $participation  = new Participation();
+        $participation = new Participation();
+
         $form = $this->createForm(ParticipationType::class, $participation);
 
 #        $form->handleRequest($request);

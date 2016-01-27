@@ -99,7 +99,7 @@ class EventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $request->get('eid')));
         if (!$event) {
-			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
 
         $form = $this->createForm(EventType::class, $event);
@@ -132,7 +132,7 @@ class EventController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-			return $this->redirect('event_miss');
+            return $this->redirect('event_miss');
         }
 
         $eventDeleteModal = array(
