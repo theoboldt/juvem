@@ -22,13 +22,13 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="string", length=128)
      */
-    protected $nameFirst='Erik';
+    protected $nameFirst;
 
     /**
      * @ORM\Column(type="string", length=128)
      * @Assert\NotBlank()
      */
-    protected $nameLast="Theoboldt";
+    protected $nameLast;
 
     /**
      * @see getUid()
@@ -79,18 +79,18 @@ class User extends BaseUser
         $this->nameLast = $nameLast;
     }
 
-	/**
-	 * Set email of this user
-	 *
-	 * @param string $email
-	 * @return self
-	 */
-	public function setEmail($email)
-	{
-		$email = is_null($email) ? '' : $email;
-		parent::setEmail($email);
-		$this->setUsername($email);
+    /**
+     * Set email of this user
+     *
+     * @param string $email
+     * @return self
+     */
+    public function setEmail($email)
+    {
+        $email = is_null($email) ? '' : $email;
+        parent::setEmail($email);
+        $this->setUsername($email);
 
-		return $this;
-	}
+        return $this;
+    }
 }
