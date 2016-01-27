@@ -3,7 +3,7 @@
 {% block title %}Jugendwerk-Veranstaltungen{% endblock %}
 
 {% block body %}
-    {% include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Evangelisches Jugendwerk Stuttgart Vaihingen'} %}
+    {% include 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Evangelisches Jugendwerk Stuttgart Vaihingen'} %}
 <div class="container">
     <div class="row">
         {% for event in events %}

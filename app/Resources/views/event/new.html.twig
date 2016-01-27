@@ -3,7 +3,7 @@
 {% block title %}Veranstaltung anlegen{% endblock %}
 
 {% block body %}
-    {% include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'erstellen'} %}
+    {% include 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'erstellen'} %}
     <div class="container">
         {{ form_start(form) }}
         {% include '/event/form.html.twig' with {'form': form} %}

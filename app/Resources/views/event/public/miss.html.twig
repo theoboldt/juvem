@@ -3,17 +3,57 @@
 {% block title %}Veranstaltung nicht gefunden{% endblock %}
 
 {% block body %}
-    {%  include 'base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'nicht gefunden'} %}
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <h3>Die gesuchte Veranstaltung konnte nicht gefunden werden</h3>
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'nicht gefunden'} %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Die Verknüpfung, der Sie gefolgt sind, hätte zu einer Veranstaltung führen sollen. Wenn Sie
+                            statt einer Veranstaltung jedoch diese Seite sehen, ist etwas schief gelaufen.
+                            Vielleicht sind Sie einem veralteten Link gefolgt.
+                        </p>
+
+                        <h2>Mögliche Ursachen</h2>
+                        <h3>Tippfehler</h3>
+                        <p>
+                            Wenn Sie die URL von Hand eingegeben haben, prüfen Sie ob alle Zeichen richtig übertragen sind.
+                        </p>
+                        <h3>Veranstaltung inaktiv</h3>
+                        <p>
+                            Möglicherweise ist die Veranstaltung die aufgerufen werden sollte nicht mehr aktiv.
+                            Das kann zum Beispiel passieren, wenn die Veranstaltung bereits durchgeführt wurde.
+                        </p>
+
+                        <h3>Veranstaltung nur für registrierte Benutzer</h3>
+                        <p>
+                            Vielleicht steht diese Veranstaltung nur bestimmten Benutzergruppen zur Verfügung.
+                            Wenn Sie nicht angemeldet sind sollten Sie sich anmelden. Möglicherweise haben Sie
+                            anschließend Zugriff auf die Veranstaltung.
+                        </p>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-4">
-                <p>Die ...
+            <div class="col-xs-12 col-md-4">
+                <h4>Aktive Veranstaltungen</h4>
+
+                <p>
+                    Auf dieser Seite könnte eine Liste mit den aktiven Veranstaltungen stehen.
                 </p>
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <h4 class="list-group-item-heading">List group item heading</h4>
+
+                        <p class="list-group-item-text">...</p>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

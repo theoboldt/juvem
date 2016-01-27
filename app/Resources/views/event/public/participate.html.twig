@@ -3,10 +3,14 @@
 {% block title %}Anmelden bei {{ event.title }}{% endblock %}
 
 {% block body %}
-    {% include 'base-page-header.html.twig' with {'title': event.title, 'subtitle': 'anmelden'} %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': event.title} %}
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4">
                         <p>
