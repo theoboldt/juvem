@@ -29,7 +29,10 @@ class ParticipantType extends AbstractType
             ->add(
                 'birthday',
                 DateType::class,
-                array('label' => 'Geburtsdatum')
+                array('label'  => 'Geburtsdatum',
+                      'years'  => range(Date('Y') - 22, Date('Y') -3),
+                      'format' => 'dd.M.yyyy',
+                )
             )
             ->add(
                 'infoMedical',
