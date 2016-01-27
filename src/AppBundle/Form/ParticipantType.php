@@ -44,9 +44,10 @@ class ParticipantType extends AbstractType
             ->add('food', ChoiceType::class, array(
                 'label'             => 'Ernährung',
                 'choices'           => array(
-                    Participant::LABEL_FOOD_VEGAN      => Participant::TYPE_FOOD_VEGAN,
-                    Participant::LABEL_FOOD_VEGETARIAN => Participant::TYPE_FOOD_VEGETARIAN,
-                    Participant::LABEL_FOOD_NO_PORK    => Participant::TYPE_FOOD_NO_PORK
+                    Participant::LABEL_FOOD_LACTOSE_FREE => Participant::TYPE_FOOD_LACTOSE_FREE,
+                    Participant::LABEL_FOOD_VEGAN        => Participant::TYPE_FOOD_VEGAN,
+                    Participant::LABEL_FOOD_VEGETARIAN   => Participant::TYPE_FOOD_VEGETARIAN,
+                    Participant::LABEL_FOOD_NO_PORK      => Participant::TYPE_FOOD_NO_PORK
                 ),
                 'choices_as_values' => true, 'expanded' => true, 'multiple' => true,
                 'attr'              => array('aria-describedby' => 'help-food')
