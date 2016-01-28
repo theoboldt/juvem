@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import _self as m %}
 
 {% block title %}Anmelden bei {{ event.title }}{% endblock %}
 
@@ -74,37 +75,52 @@
                     </div>
                 </div>
                 <div class="row">
-                    {% set prototypePhone %}
+                    <div class="col-xs-12">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+                <div class="row">
+                    {% macro prototypePhone(formElement, showHelp) %}
                         <div class="col-xs-12 col-sm-5">
                             <div class="form-group">
-                                {{ form_label(form.phoneNumbers.vars.prototype.number) }}
+                                {{ form_label(formElement.number) }}
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span></div>
-                                    {{ form_widget(form.phoneNumbers.vars.prototype.number) }}
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-phone-alt"
+                                                                         aria-hidden="true"></span></div>
+                                    {{ form_widget(formElement.number) }}
                                 </div>
                             </div>
-                            <span id="help-phone-number" class="help-block">
+                            {% if showHelp %}
+                                <span id="help-phone-number" class="help-block">
                                 Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.
                             </span>
+                            {% endif %}
                         </div>
                         <div class="col-xs-12 col-sm-7">
-                            {{ form_row(form.phoneNumbers.vars.prototype.description) }}
-                            <span id="help-phone-number-description" class="help-block">
+                            {{ form_row(formElement.description) }}
+                            {% if showHelp %}
+                                <span id="help-phone-number-description" class="help-block">
                                 Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
                                 handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
                             </span>
+                            {% endif %}
                         </div>
-                    {% endset %}
-                    <div class="col-xs-12 phone-numbers" data-prototype="{{ prototypePhone|e('html_attr') }}">
+                    {% endmacro %}
+                    <div class="col-xs-12 phone-numbers"
+                         data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
                         <div class="form-group">
                             {{ form_label(form.phoneNumbers) }}
-                            {{ form_errors(form.phoneNumbers) }}
-                            {{ form_widget(form.phoneNumbers) }}
                             <span id='help-phone-numbers' class='help-block'>
-                        In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
-                        Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
-                        denen wir Sie bei Notfällen erreichen können.
-                    </span>
+                                In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
+                                Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
+                                denen wir Sie bei Notfällen erreichen können.
+                            </span>
+                            {{ form_errors(form.phoneNumbers) }}
+                            {% for phoneNumber in form.phoneNumbers %}
+                                <div class="row">
+                                    {{ m.prototypePhone(phoneNumber, loop.index0 == 0) }}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
