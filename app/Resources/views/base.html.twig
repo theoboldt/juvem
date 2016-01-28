@@ -5,9 +5,10 @@
         <title>{% block title %}{% endblock %} - Juvem</title>
         {% block stylesheets %}{% endblock %}
 
-        {% if app.environment != 'dev' %}
+        {% if app.environment == 'dev' %}
             <link rel="stylesheet" href="{{ asset('css/all.css') }}">
             <script src="{{ asset('js/all.js') }}"></script>
+            <script src="//localhost:35729/livereload.js"></script>
         {% else %}
             <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
             <script src="{{ asset('js/all.min.js') }}"></script>
