@@ -38,7 +38,8 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-table/src/bootstrap-table.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/alert.js',
-                    '<%= resourcesPath %>/js/jquery.bsAlerts.min.js'
+                    '<%= resourcesPath %>/js/jquery.bsAlerts.min.js',
+                    '<%= resourcesPath %>/js/main.js'
                 ],
                 dest: 'web/js/all.js'
             },
