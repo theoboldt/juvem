@@ -18,59 +18,69 @@ use Symfony\Component\HttpFoundation\Request;
 class PublicEventController extends Controller
 {
 
-    /**
-     * Page for list of events
-     *
-     * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
-     */
-    public function listAction($eid)
-    {
-        $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+	/**
+	 * Page for list of events
+	 *
+	 * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
+	 */
+	public function listAction($eid)
+	{
+		$repository = $this->getDoctrine()
+			->getRepository('AppBundle:Event');
 
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->redirectToRoute('event_miss', array('eid' => $eid));
-        }
+		$event = $repository->findOneBy(array('eid' => $eid));
+		if (!$event) {
+			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+		}
 
-        return $this->render('event/public/detail.html.twig', array(
-            'event' => $event
-        ));
-    }
+		return $this->render('event/public/detail.html.twig', array(
+			'event' => $event
+		));
+	}
 
-    /**
-     * Page for list of events
-     *
-     * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
-     */
-    public function participateAction($eid)
-    {
-        $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+	/**
+	 * Page for list of events
+	 *
+	 * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
+	 */
+	public function participateAction(Request $request)
+	{
+		$eid = $request->get('eid');
 
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->redirectToRoute('event_miss', array('eid' => $eid));
-        }
+		$repository = $this->getDoctrine()
+			->getRepository('AppBundle:Event');
 
-        $participation = new Participation();
+		$event = $repository->findOneBy(array('eid' => $eid));
+		if (!$event) {
+			return $this->redirectToRoute('event_miss', array('eid' => $eid));
+		}
+		if (!$event->isActive()) {
+			$this->addFlash(
+				'danger',
+				'Die gewählte Veranstaltung ist nicht aktiv'
+			);
 
-        $form = $this->createForm(ParticipationType::class, $participation);
+			return $this->redirectToRoute('homepage', array('eid' => $eid));
+		}
+
+		$participation = new Participation();
+
+		$form = $this->createForm(ParticipationType::class, $participation);
 
 #        $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+		if ($form->isValid()) {
+			$em = $this->getDoctrine()->getManager();
 
 #            $em->persist($event);
-            $em->flush();
+			$em->flush();
 
 #            return $this->redirect('/event/' . $event->getEid());
-        }
+		}
 
-        return $this->render('event/public/participate.html.twig', array(
-            'event' => $event,
-            'form'  => $form->createView()
-        ));
-    }
+		return $this->render('event/public/participate.html.twig', array(
+			'event' => $event,
+			'form' => $form->createView()
+		));
+	}
 }

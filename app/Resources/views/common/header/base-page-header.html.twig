@@ -2,11 +2,29 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="page-header">
-                <h1>{{ title }} <small>{{ subtitle }}</small></h1>
+                <h1>{{ title }}
+                    <small>{{ subtitle }}</small>
+                </h1>
             </div>
             <div id="page-global-messages">
-                <div data-alerts="alerts" data-fade="5000"></div>
+                <div data-alerts="alerts" data-fade="5000">
+                    {% if app.session.flashBag.has('success') %}
+                        <div class="alert alert-success">
+                            {% for msg in app.session.flashBag.get('success') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if app.session.flashBag.has('danger') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('danger') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 </div>
+
