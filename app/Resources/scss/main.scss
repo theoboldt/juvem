@@ -1,0 +1,15 @@
+/*!
+ * Bootstrap v3.3.6 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+//bootstrap base theme
+$light-orange: #ff8c00;
+$navbar-default-bg: #312312;
+$navbar-default-color: $light-orange;
+
+$brand-primary: darken(#428bca, 6.5%);
+
+$icon-font-path: '../font/';
+@import 'bootstrap';

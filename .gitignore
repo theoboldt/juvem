@@ -13,3 +13,4 @@
 /legacy/*
 .idea
 /node_modules/*
+/.sass-cache

@@ -883,16 +883,16 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.4.10",
+            "version": "v2.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "7e7fc55fa3fad79031727fbc7d8e418b641be875"
+                "reference": "2527d8f93779458e097447b5f92132bc65e672f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/7e7fc55fa3fad79031727fbc7d8e418b641be875",
-                "reference": "7e7fc55fa3fad79031727fbc7d8e418b641be875",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/2527d8f93779458e097447b5f92132bc65e672f4",
+                "reference": "2527d8f93779458e097447b5f92132bc65e672f4",
                 "shasum": ""
             },
             "require": {
@@ -958,20 +958,20 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2015-12-18 20:34:21"
+            "time": "2016-01-28 10:00:33"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "7.2.3",
+            "version": "7.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "43a2132bd4fbd5453d412d15df1504824e5a058f"
+                "reference": "0c9608d59541e8360794f42dc3e18d64e031a39f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/43a2132bd4fbd5453d412d15df1504824e5a058f",
-                "reference": "43a2132bd4fbd5453d412d15df1504824e5a058f",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/0c9608d59541e8360794f42dc3e18d64e031a39f",
+                "reference": "0c9608d59541e8360794f42dc3e18d64e031a39f",
                 "shasum": ""
             },
             "require": {
@@ -979,12 +979,12 @@
             },
             "require-dev": {
                 "pear/pear-core-minimal": "^1.9",
-                "pear/pear_exception": "*",
+                "pear/pear_exception": "^1.0",
                 "pear/versioncontrol_git": "dev-master",
                 "phing/phing": "~2.7",
                 "phpunit/phpunit": "~4.0",
                 "satooshi/php-coveralls": "~0.6",
-                "symfony/console": "~2.4"
+                "symfony/console": "^2.5"
             },
             "suggest": {
                 "ext-intl": "To use the geocoder and carrier mapping"
@@ -1021,7 +1021,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2016-01-08 14:15:34"
+            "time": "2016-01-28 10:46:45"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -1695,12 +1695,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "419c1824af940e2be0f833aca2327e1181a6b503"
+                "reference": "5aa6965baa3a14000d8e5a4fcbcf431c32c144b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/419c1824af940e2be0f833aca2327e1181a6b503",
-                "reference": "419c1824af940e2be0f833aca2327e1181a6b503",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/5aa6965baa3a14000d8e5a4fcbcf431c32c144b7",
+                "reference": "5aa6965baa3a14000d8e5a4fcbcf431c32c144b7",
                 "shasum": ""
             },
             "require": {
@@ -1739,7 +1739,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2015-12-18 17:44:11"
+            "time": "2016-01-28 10:05:39"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2527,12 +2527,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "c8d28b1fa6a1103a8d4ff7f2777eb50419d118cf"
+                "reference": "5dd453fa267328ad9f1a2842c18698d79547ce5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/c8d28b1fa6a1103a8d4ff7f2777eb50419d118cf",
-                "reference": "c8d28b1fa6a1103a8d4ff7f2777eb50419d118cf",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/5dd453fa267328ad9f1a2842c18698d79547ce5a",
+                "reference": "5dd453fa267328ad9f1a2842c18698d79547ce5a",
                 "shasum": ""
             },
             "require": {
@@ -2653,7 +2653,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-01-27 11:34:40"
+            "time": "2016-01-28 08:49:36"
         },
         {
             "name": "twig/twig",
@@ -2722,12 +2722,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "7ea268e78f0bfbbff03e01ee27a6843b97ec3a34"
+                "reference": "e4e2c95e6f4dd05b9ce118aa066b85e13e42c001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/7ea268e78f0bfbbff03e01ee27a6843b97ec3a34",
-                "reference": "7ea268e78f0bfbbff03e01ee27a6843b97ec3a34",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/e4e2c95e6f4dd05b9ce118aa066b85e13e42c001",
+                "reference": "e4e2c95e6f4dd05b9ce118aa066b85e13e42c001",
                 "shasum": ""
             },
             "require": {
@@ -2785,7 +2785,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-01-20 14:42:01"
+            "time": "2016-01-28 15:02:59"
         },
         {
             "name": "zendframework/zend-code",
