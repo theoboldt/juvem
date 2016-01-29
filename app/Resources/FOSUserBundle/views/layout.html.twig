@@ -3,7 +3,7 @@
 {% block title %}Veranstaltung{% endblock %}
 
 {% block body %}
-    {% include 'base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
+    {% include 'common/header/base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
 
     {% if app.request.hasPreviousSession %}
         <div class="col-sm-12">

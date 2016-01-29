@@ -5,7 +5,7 @@
 {% block title %}Veranstaltungen registrieren{% endblock %}
 
 {% block body %}
-    {% include 'base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Registrierung'} %}
+    {% include 'common/header/base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Registrierung'} %}
     <div class="container">
         {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
         <div class="row">
