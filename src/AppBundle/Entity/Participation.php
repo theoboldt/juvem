@@ -57,16 +57,27 @@ class Participation
      */
     protected $email;
 
-
     /**
      * @ORM\Column(type="datetime", name="created_at")
      */
     protected $createdAt;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="uid")
+     * @ORM\Column(type="integer", name="created_by", nullable=true)
+     */
+    protected $createdBy = null;
+
+    /**
      * @ORM\Column(type="datetime", name="modified_at")
      */
     protected $modifiedAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="uid")
+     * @ORM\Column(type="integer", name="modified_by", nullable=true)
+     */
+    protected $modifiedBy = null;
 
     /**
      * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
