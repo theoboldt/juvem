@@ -65,6 +65,13 @@ class PublicEventController extends Controller
 
 		$participation = new Participation();
 
+		/** @var \AppBundle\Entity\User $user */
+		$user = $this->getUser();
+		if ($user) {
+			$participation->setNameLast($user->getNameLast());
+			$participation->setNameFirst($user->getNameFirst());
+		}
+
 		$form = $this->createForm(ParticipationType::class, $participation);
 
 #        $form->handleRequest($request);
