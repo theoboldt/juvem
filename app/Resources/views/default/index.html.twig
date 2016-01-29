@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         {% for event in events %}
-            <div class="col-sm-6 col-md-{{ events|length > 2 ? 4 : 6 }}">
+            <div class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
                 <div class="thumbnail">
                     {% if event.imageFilename %}
                         <img src="{{ vich_uploader_asset(event, 'imageFile') }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
