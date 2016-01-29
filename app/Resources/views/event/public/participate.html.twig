@@ -81,92 +81,67 @@
                 </div>
                 <div class="row">
                     {% macro prototypePhone(formElement, showHelp) %}
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-5">
-                                <div class="form-group">
-                                    {{ form_label(formElement.number) }}
-                                    <div class="input-group">
-                                        <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
-                                        {{ form_widget(formElement.number) }}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-10 col-sm-9">
+                                        Telefonnummer
+                                    </div>
+                                    <div class="col-xs-2 col-sm-3 text-right">
+                                        <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                           title="Telefonnummer entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Telefonnummer entfernen</span></a>
                                     </div>
                                 </div>
-                                {% if showHelp %}
-                                    <span id="help-phone-number" class="help-block">
-                                Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.
-                            </span>
-                                {% endif %}
                             </div>
-                            <div class="col-xs-12 col-sm-7">
-                                {{ form_row(formElement.description) }}
-                                {% if showHelp %}
-                                    <span id="help-phone-number-description" class="help-block">
-                                Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
-                                handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
-                            </span>
-                                {% endif %}
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-5">
+                                        <div class="form-group">
+                                            {{ form_label(formElement.number) }}
+                                            <div class="input-group">
+                                                <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
+                                                {{ form_widget(formElement.number) }}
+                                            </div>
+                                        </div>
+                                        {% if showHelp %}
+                                            <span id="help-phone-number" class="help-block help-block-input">
+                                    Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.
+                                </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-7">
+                                        {{ form_row(formElement.description) }}
+                                        {% if showHelp %}
+                                            <span id="help-phone-number-description"
+                                                  class="help-block help-block-input">
+                                    Sie können einen Hinweis angeben, falls es sich zum Beispiel um einen geschäftlichen Anschluss
+                                    handelt, oder falls unter der angegebenen Nummer die Großeltern erreichbar sind.
+                                </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {% endmacro %}
-                    <div class="col-xs-12 phone-numbers contains-prototype"
+                    <div class="col-xs-12 phone-numbers prototype-container"
                          data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
-                        <div class="form-group">
-                            {{ form_label(form.phoneNumbers) }}
-                            <span id='help-phone-numbers' class='help-block'>
-                                In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
-                                Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
-                                denen wir Sie bei Notfällen erreichen können.
-                            </span>
-                            {{ form_errors(form.phoneNumbers) }}
-                            {% for phoneNumber in form.phoneNumbers %}
-                                {{ m.prototypePhone(phoneNumber, loop.index0 == 0) }}
-                            {% endfor %}
-                            <a href="#" class="btn btn-default" data-prottype-add="phone-numbers">Telefonnummer hinzufügen</a>
+                        <div class="prototype-elements">
+                            <div class="form-group">
+                                {{ form_label(form.phoneNumbers) }}
+                                <span id='help-phone-numbers' class='help-block'>
+                                    In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
+                                    Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
+                                    denen wir Sie bei Notfällen erreichen können.
+                                </span>
+                                {{ form_errors(form.phoneNumbers) }}
+                                {% for phoneNumber in form.phoneNumbers %}
+                                    {{ m.prototypePhone(phoneNumber, loop.index0 == 0) }}
+                                {% endfor %}
+                            </div>
                         </div>
+                        <a href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Telefonnummer hinzufügen</a>
                     </div>
                 </div>
-                <script>
-                    var $collectionHolder;
-
-                    // setup an "add a tag" link
-                    var $addTagLink = $('<a href="#" class="btn btn-default">Telefonnummer hinzufügen</a>');
-                    var $newLinkLi = $('<div></div>').append($addTagLink);
-
-                    jQuery(document).ready(function () {
-
-                        // Get the ul that holds the collection of tags
-                        $collectionHolder = $('div.phone-numbers');
-
-                        // add the "add a tag" anchor and li to the tags ul
-                        $collectionHolder.append($newLinkLi);
-
-                        // count the current form inputs we have (e.g. 2), use that as the new
-                        // index when inserting a new item (e.g. 2)
-                        $collectionHolder.data('index', $collectionHolder.find(':input').length);
-
-                        $addTagLink.on('click', function (e) {
-                            // prevent the link from creating a "#" on the URL
-                            e.preventDefault();
-
-                            // Get the data-prototype explained earlier
-                            var prototype = $collectionHolder.data('prototype');
-
-                            // get the new index
-                            var index = $collectionHolder.data('index');
-
-                            // Replace '__name__' in the prototype's HTML to
-                            // instead be a number based on how many items we have
-                            var newForm = prototype.replace(/__name__/g, index);
-
-                            // increase the index with one for the next item
-                            $collectionHolder.data('index', index + 1);
-
-                            // Display the form in the page in an li, before the "Add a tag" link li
-                            var $newFormLi = $('<div></div>').append(newForm);
-                            $newLinkLi.before($newFormLi);
-                        });
-                    });
-
-                </script>
 
                 <div class="row">
                     <div class="col-xs-12">
@@ -192,92 +167,67 @@
                 </div>
                 <div class="row">
                     {% macro prototypeParticipant(formElement, showHelp) %}
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-6">
-                                {{ form_row(formElement.nameFirst) }}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-10 col-sm-9">
+                                        Teilnehmer
+                                    </div>
+                                    <div class="col-xs-2 col-sm-3 text-right">
+                                        <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                           title="Teilnehmer entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Teilnehmer entfernen</span></a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6">
-                                {{ form_row(formElement.nameLast) }}
-                            </div>
-                            <div class="col-xs-12">
-                                {{ form_row(formElement.birthday) }}
-                            </div>
-                            <div class="col-xs-12">
-                                {{ form_row(formElement.food) }}
-                                {% if showHelp %}
-                                    <span id="help-food" class="help-block">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6">
+                                        {{ form_row(formElement.nameFirst) }}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        {{ form_row(formElement.nameLast) }}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        {{ form_row(formElement.birthday) }}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        {{ form_row(formElement.food) }}
+                                        {% if showHelp %}
+                                            <span id="help-food" class="help-block form-group">
                                     Hinweise zur Ernährung ihres Kindes
                                 </span>
-                                {% endif %}
-                            </div>
-                            <div class="col-xs-12">
-                                {{ form_row(formElement.infoMedical) }}
-                                {% if showHelp %}
-                                    <span id="help-food" class="help-block">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        {{ form_row(formElement.infoMedical) }}
+                                        {% if showHelp %}
+                                            <span id="help-food" class="help-block form-group">
                                     Leidet ihr Kind an Allergien oder Krankheiten?
                                     Muss ihr Kind während der Veranstaltung Medikamente einnehmen?
                                     (Bitte beachten Sie, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)
                                 </span>
-                                {% endif %}
-                            </div>
-                            <div class="col-xs-12">
-                                {{ form_row(formElement.infoGeneral) }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        {{ form_row(formElement.infoGeneral) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {% endmacro %}
-                    <div class="col-xs-12 participants-list contains-prototype"
+                    <div class="col-xs-12 participants-list prototype-container"
                          data-prototype="{{ m.prototypeParticipant(form.participants.vars.prototype, false)|e('html_attr') }}">
-                        <div class="form-group">
-                            {{ form_label(form.participants) }}
-                            {{ form_errors(form.participants) }}
-                            {% for participant in form.participants %}
-                                {{ m.prototypeParticipant(participant, loop.index0 == 0) }}
-                            {% endfor %}
+                        <div class="prototype-elements">
+                            <div class="form-group">
+                                {{ form_errors(form.participants) }}
+                                {% for participant in form.participants %}
+                                    {{ m.prototypeParticipant(participant, loop.index0 == 0) }}
+                                {% endfor %}
+                            </div>
                         </div>
+                        <a href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Teilnehmer hinzufügen</a>
                     </div>
                 </div>
-                <script>
-                    var $collectionHolder2;
-
-                    // setup an "add a tag" link
-                    var $addTagLink2 = $('<a href="#" class="btn btn-default">Teilnehmer hinzufügen</a>');
-                    var $newLinkLi2 = $('<div></div>').append($addTagLink2);
-
-                    jQuery(document).ready(function () {
-                        // Get the ul that holds the collection of tags
-                        $collectionHolder2 = $('div.participants-list');
-
-                        // add the "add a tag" anchor and li to the tags ul
-                        $collectionHolder2.append($newLinkLi2);
-
-                        // count the current form inputs we have (e.g. 2), use that as the new
-                        // index when inserting a new item (e.g. 2)
-                        $collectionHolder2.data('index', $collectionHolder2.find(':input').length);
-
-                        $addTagLink2.on('click', function (e) {
-                            // prevent the link from creating a "#" on the URL
-                            e.preventDefault();
-
-                            // Get the data-prototype explained earlier
-                            var prototype = $collectionHolder2.data('prototype');
-
-                            // get the new index
-                            var index = $collectionHolder2.data('index');
-
-                            // Replace '__name__' in the prototype's HTML to
-                            // instead be a number based on how many items we have
-                            var newForm2 = prototype.replace(/__name__/g, index);
-
-                            // increase the index with one for the next item
-                            $collectionHolder2.data('index', index + 1);
-
-                            // Display the form in the page in an li, before the "Add a tag" link li
-                            var $newFormLi2 = $('<div></div>').append(newForm2);
-                            $newLinkLi2.before($newFormLi2);
-                        });
-                    });
-
-                </script>
 
 
                 <div class="row">
