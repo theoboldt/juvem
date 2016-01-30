@@ -1,5 +1,5 @@
 <?php
-namespace AppBundle\Controller;
+namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Form\EventType;
@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class EventController extends Controller
+class AdminController extends Controller
 {
 
     /**

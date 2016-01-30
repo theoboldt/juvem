@@ -1,5 +1,5 @@
 <?php
-namespace AppBundle\Controller;
+namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\Participation;
@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class PublicEventController extends Controller
+class PublicController extends Controller
 {
 
 	/**
