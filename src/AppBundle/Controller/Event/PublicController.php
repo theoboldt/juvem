@@ -75,14 +75,15 @@ class PublicController extends Controller
 		$form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
-
+		$participation->setEvent($event->getEid());
 		if ($form->isValid()) {
 			$em = $this->getDoctrine()->getManager();
 
-            $em->persist($event);
+            $em->persist($participation);
 			$em->flush();
-
-            return $this->redirect('/event/' . $event->getEid());
+			dump($em);
+			dump($participation);
+#            return $this->redirect('/event/' . $event->getEid());
 		}
 
 		return $this->render('event/public/participate.html.twig', array(
