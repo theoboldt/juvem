@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -103,6 +104,18 @@ class Event
      * @var string
      */
     private $imageFilename;
+
+    /**
+     * Contains the participations assigned to this event
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="pid")
+     */
+    protected $participations;
+
+    public function __construct()
+    {
+        $this->participations = new ArrayCollection();
+    }
 
     /**
      * Get eid
@@ -490,5 +503,39 @@ class Event
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Add participation
+     *
+     * @param \AppBundle\Entity\Participation $participation
+     *
+     * @return Event
+     */
+    public function addParticipation(\AppBundle\Entity\Participation $participation)
+    {
+        $this->participations[] = $participation;
+
+        return $this;
+    }
+
+    /**
+     * Remove participation
+     *
+     * @param \AppBundle\Entity\Participation $participation
+     */
+    public function removeParticipation(\AppBundle\Entity\Participation $participation)
+    {
+        $this->participations->removeElement($participation);
+    }
+
+    /**
+     * Get participations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getParticipations()
+    {
+        return $this->participations;
     }
 }

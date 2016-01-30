@@ -22,6 +22,12 @@ class Participation
     protected $pid;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Event", mappedBy="eid")
+     * @ORM\Column(type="integer", name="eid")
+     */
+    protected $event;
+
+    /**
      * @ORM\Column(type="string", length=64, name="salution")
      */
     protected $parentSalution;
@@ -87,14 +93,14 @@ class Participation
     /**
      * Contains the phone numbers assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", mappedBy="nid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"persist"}, mappedBy="nid")
      */
     protected $phoneNumbers;
 
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", mappedBy="aid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"persist"}, mappedBy="aid")
      */
     protected $participants;
 
@@ -106,13 +112,8 @@ class Participation
 
         $this->participants = new ArrayCollection();
         $this->addParticipant(new Participant());
-    }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedAtNow()
-    {
+        $this->modifiedAt = new \DateTime();
         $this->createdAt = new \DateTime();
     }
 
@@ -487,5 +488,29 @@ class Participation
     public function getModifiedBy()
     {
         return $this->modifiedBy;
+    }
+
+    /**
+     * Set event
+     *
+     * @param integer $event
+     *
+     * @return Participation
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    /**
+     * Get event
+     *
+     * @return integer
+     */
+    public function getEvent()
+    {
+        return $this->event;
     }
 }
