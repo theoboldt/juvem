@@ -27,10 +27,24 @@ class ParticipantType extends AbstractType
                 array('label' => 'Nachname')
             )
             ->add(
+                'gender',
+                ChoiceType::class,
+                array(
+                    'label'   => 'Geschlecht',
+                    'choices' => array(
+                        Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
+                        Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
+                    ),
+                    'choices_as_values' => true, 'required' => false,
+                    'attr'              => array('aria-describedby' => 'help-food')
+
+                )
+            )
+            ->add(
                 'birthday',
                 DateType::class,
                 array('label'  => 'Geburtsdatum',
-                      'years'  => range(Date('Y') - 22, Date('Y') -3),
+                      'years'  => range(Date('Y') - 22, Date('Y') - 3),
                       'format' => 'dd.M.yyyy',
                 )
             )
