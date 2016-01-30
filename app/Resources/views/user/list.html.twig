@@ -3,7 +3,13 @@
 {% block title %}Benutzer verwalten{% endblock %}
 
 {% block body %}
-    {%  include 'common/header/base-page-header.html.twig' with {'title': 'Benutzer', 'subtitle': 'verwalten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Benutzer', 'subtitle': 'verwalten'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li class="active">Benutzer</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-md-12">

@@ -3,7 +3,15 @@
 {% block title %}Teilnehmer verwalten ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {%  include 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'verwalten'} %}
+    {%  embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'verwalten'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li class="active">Teilnehmer</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-md-12">

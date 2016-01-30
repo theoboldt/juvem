@@ -3,15 +3,23 @@
 {% block title %}Veranstaltung bearbeiten{% endblock %}
 
 {% block body %}
-    {% include 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'bearbeiten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li class="active">Veranstaltung bearbeiten</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         {{ form_start(form) }}
         {% include '/event/form.html.twig' with {'form': form} %}
         <div class="row">
             <div class="col-xs-12">
-            {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Speichern' }) }}
+                {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Speichern' }) }}
+            </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
     </div>
-</div>
 {% endblock %}

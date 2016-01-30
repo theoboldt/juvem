@@ -4,7 +4,14 @@
 
 {% block body %}
     {{ include('modal/formdialog.html.twig', { 'modal': eventDeleteModal}) }}
-    {%  include 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li class="active">{{ event.title }}</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-sm-12">

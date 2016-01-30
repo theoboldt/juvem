@@ -3,7 +3,14 @@
 {% block title %}Veranstaltung anlegen{% endblock %}
 
 {% block body %}
-    {% include 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'erstellen'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'erstellen'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li class="active">Veranstaltung erstellen</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         {{ form_start(form) }}
         {% include '/event/form.html.twig' with {'form': form} %}

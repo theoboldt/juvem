@@ -118,6 +118,7 @@ class AdminController extends Controller
         }
 
         return $this->render('event/edit.html.twig', array(
+            'event' => $event,
             'form' => $form->createView(),
         ));
     }
