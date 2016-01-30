@@ -30,12 +30,3 @@
         </div>
     </div>
 {% endblock %}
-{% block javascripts %}
-<script type='text/javascript'>
-    $(function () {
-        $('#participantsListTable').on('click-row.bs.table', function (e, row, $element) {
-            location.href = row.aid;
-        });
-    });
-</script>
-{% endblock %}

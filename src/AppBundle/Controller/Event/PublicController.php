@@ -2,7 +2,9 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
@@ -81,9 +83,25 @@ class PublicController extends Controller
 
             $em->persist($participation);
 			$em->flush();
-			dump($em);
-			dump($participation);
-#            return $this->redirect('/event/' . $event->getEid());
+
+			/** @var Participant $participant */
+			foreach($participation->getParticipants() as $participant){
+				$participant->setParticipation($participation);
+				$em->persist($participant);
+				$em->flush();
+			}
+			/** @var PhoneNumber $participant */
+			foreach($participation->getPhoneNumbers() as $number){
+				$number->setParticipation($participation);
+				$em->persist($number);
+				$em->flush();
+			}
+
+			$this->addFlash(
+				'success',
+				'Die Teilnahme wurde angefragt'
+			);
+			return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
 		}
 
 		return $this->render('event/public/participate.html.twig', array(

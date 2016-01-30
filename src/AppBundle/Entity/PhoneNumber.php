@@ -27,7 +27,7 @@ class PhoneNumber
     /**
      * @ORM\Column(type="string", length=255, name="description")
      */
-    protected $description;
+    protected $description = '';
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
