@@ -2,9 +2,11 @@
 
 namespace AppBundle\Controller\Event;
 
+use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
+use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -81,14 +83,30 @@ class ParticipationController extends Controller
         $participantList = array();
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
+            $participation = $participant->getParticipation();
+
             $participantAge = $event->getStartDate()->diff($participant->getBirthday());
+            $participantPhone = '';
+
+            /** @var PhoneNumber $phoneNumber */
+            /*
+        foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumber) {
+            $number = $this->container->get('libphonenumber.phone_number_util')->parse(
+                $phoneNumber->getNumber(),
+                PhoneNumberUtil::UNKNOWN_REGION
+            );
+
+            $participantPhone   .= sprintf('<span class="label label-primary">%s</span>', $number);
+            }
+            */
 
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),
-                'status'     => ''
+                'phone'     => $participantPhone,
+                'status'    => ''
             );
         }
 
