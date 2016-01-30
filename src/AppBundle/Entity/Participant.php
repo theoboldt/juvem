@@ -70,12 +70,12 @@ class Participant
     /**
      * @ORM\Column(type="text", name="info_medical")
      */
-    protected $infoMedical;
+    protected $infoMedical = '';
 
     /**
      * @ORM\Column(type="text", name="info_general")
      */
-    protected $infoGeneral;
+    protected $infoGeneral = '';
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
@@ -97,6 +97,14 @@ class Participant
      * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
      */
     protected $participation;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->modifiedAt = new \DateTime();
+        $this->createdAt = new \DateTime();
+    }
 
     /**
      * Get aid
@@ -141,6 +149,10 @@ class Participant
      */
     public function setFood($food)
     {
+        if (is_array($food)) {
+            $food   = array_sum($food);
+        }
+
         $this->food = $food;
 
         return $this;
