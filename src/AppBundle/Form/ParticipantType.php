@@ -37,12 +37,12 @@ class ParticipantType extends AbstractType
             ->add(
                 'infoMedical',
                 TextareaType::class,
-                array('label' => 'Medizinische Hinweise', 'attr' => array('aria-describedby' => 'help-info-medical'))
+                array('label' => 'Medizinische Hinweise', 'attr' => array('aria-describedby' => 'help-info-medical', 'required' => false))
             )
             ->add(
                 'infoGeneral',
                 TextareaType::class,
-                array('label' => 'Allgemeine Hinweise', 'attr' => array('aria-describedby' => 'help-info-general'))
+                array('label' => 'Allgemeine Hinweise', 'attr' => array('aria-describedby' => 'help-info-general'), 'required' => false)
             )
             ->add('food', ChoiceType::class, array(
                 'label'             => 'Ernährung',
@@ -52,7 +52,7 @@ class ParticipantType extends AbstractType
                     Participant::LABEL_FOOD_VEGETARIAN   => Participant::TYPE_FOOD_VEGETARIAN,
                     Participant::LABEL_FOOD_NO_PORK      => Participant::TYPE_FOOD_NO_PORK
                 ),
-                'choices_as_values' => true, 'expanded' => true, 'multiple' => true,
+                'choices_as_values' => true, 'expanded' => true, 'multiple' => true, 'required' => false,
                 'attr'              => array('aria-describedby' => 'help-food')
             ));
     }
