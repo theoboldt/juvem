@@ -45,11 +45,6 @@ class Participant
     protected $gender;
 
     /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true})
-     */
-    protected $food;
-
-    /**
      * @ORM\Column(type="string", length=128, name="name_first")
      */
     protected $nameFirst;
@@ -59,6 +54,11 @@ class Participant
      * @Assert\NotBlank()
      */
     protected $nameLast;
+
+    /**
+     * @ORM\Column(type="smallint", options={"unsigned"=true})
+     */
+    protected $food;
 
     /**
      * @ORM\Column(type="date")
