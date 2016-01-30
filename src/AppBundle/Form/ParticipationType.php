@@ -57,8 +57,7 @@ class ParticipationType extends AbstractType
                 'label' => 'Teilnehmer',
                 'entry_type' => ParticipantType::class,
                 'allow_add'  => true,
-                'allow_delete' => true,
-                'mapped' => false //temporary solution without relation
+                'allow_delete' => true
             ))
             ->add('save', SubmitType::class);
 

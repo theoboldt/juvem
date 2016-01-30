@@ -77,7 +77,6 @@ class Participant
      */
     protected $infoGeneral;
 
-
     /**
      * @ORM\Column(type="datetime", name="created_at")
      */

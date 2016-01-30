@@ -440,4 +440,52 @@ class Participation
     {
         return $this->participants;
     }
+
+    /**
+     * Set createdBy
+     *
+     * @param integer $createdBy
+     *
+     * @return Participation
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return integer
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set modifiedBy
+     *
+     * @param integer $modifiedBy
+     *
+     * @return Participation
+     */
+    public function setModifiedBy($modifiedBy)
+    {
+        $this->modifiedBy = $modifiedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedBy
+     *
+     * @return integer
+     */
+    public function getModifiedBy()
+    {
+        return $this->modifiedBy;
+    }
 }
