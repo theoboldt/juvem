@@ -29,6 +29,24 @@ class ParticipationController extends Controller
         if (!$event) {
             return $this->redirect('event_miss');
         }
+        $eventRepository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->redirect('event_miss');
+        }
+
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT p
+                   FROM AppBundle:Participation p
+              WHERE p.event = :eid'
+        )->setParameter('eid', $eid);
+        $participantEntityList = $query->getResult();
+        dump($participantEntityList);
+
 
         return $this->render('event/participants/list.html.twig', array('event' => $event));
     }
@@ -59,19 +77,22 @@ class ParticipationController extends Controller
                 AND p.event = :eid'
         )->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
-dump($participantEntityList);
-        $eventList = array();
+
+        $participantList = array();
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
-            $eventList[] = array(
+            $participantAge = $event->getStartDate()->diff($participant->getBirthday());
+
+            $participantList[] = array(
                 'aid'       => $participant->getAid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
+                'age'       => $participantAge->format('%y'),
+                'status'     => ''
             );
         }
 
-
-        return new JsonResponse($eventList);
+        return new JsonResponse($participantList);
     }
 
 }

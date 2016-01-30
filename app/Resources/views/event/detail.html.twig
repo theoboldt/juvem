@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Veranstaltung{% endblock %}
+{% block title %}Veranstaltung ({{ event.title }}){% endblock %}
 
 {% block body %}
     {{ include('modal/formdialog.html.twig', { 'modal': eventDeleteModal}) }}
@@ -10,7 +10,7 @@
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></button>
+                        <a href="{{ path('event_participants_list', {'eid': event.eid }) }}" class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></a>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Menü erweitern</span>
