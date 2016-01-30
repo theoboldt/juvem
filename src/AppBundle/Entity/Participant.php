@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Participant
 {
+    use HumanTrait;
 
     const TYPE_GENDER_FEMALE = 1;
     const TYPE_GENDER_MALE = 2;
@@ -43,17 +44,6 @@ class Participant
      * @Assert\NotBlank()
      */
     protected $gender;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="name_first")
-     */
-    protected $nameFirst;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="name_last")
-     * @Assert\NotBlank()
-     */
-    protected $nameLast;
 
     /**
      * @ORM\Column(type="smallint", options={"unsigned"=true})
@@ -121,7 +111,7 @@ class Participant
      *
      * @param integer $gender
      *
-     * @return Participant
+     * @return self
      */
     public function setGender($gender)
     {
@@ -166,54 +156,6 @@ class Participant
     public function getFood()
     {
         return $this->food;
-    }
-
-    /**
-     * Set nameFirst
-     *
-     * @param string $nameFirst
-     *
-     * @return Participant
-     */
-    public function setNameFirst($nameFirst)
-    {
-        $this->nameFirst = $nameFirst;
-
-        return $this;
-    }
-
-    /**
-     * Get nameFirst
-     *
-     * @return string
-     */
-    public function getNameFirst()
-    {
-        return $this->nameFirst;
-    }
-
-    /**
-     * Set nameLast
-     *
-     * @param string $nameLast
-     *
-     * @return Participant
-     */
-    public function setNameLast($nameLast)
-    {
-        $this->nameLast = $nameLast;
-
-        return $this;
-    }
-
-    /**
-     * Get nameLast
-     *
-     * @return string
-     */
-    public function getNameLast()
-    {
-        return $this->nameLast;
     }
 
     /**

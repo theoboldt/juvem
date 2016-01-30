@@ -14,6 +14,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Participation
 {
+    use HumanTrait;
+
     /**
      * @ORM\Column(type="integer", name="pid")
      * @ORM\Id
@@ -30,18 +32,7 @@ class Participation
     /**
      * @ORM\Column(type="string", length=64, name="salution")
      */
-    protected $parentSalution;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="name_first")
-     */
-    protected $nameFirst;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="name_last")
-     * @Assert\NotBlank()
-     */
-    protected $nameLast;
+    protected $salution;
 
     /**
      * @ORM\Column(type="string", length=128, name="address_street")
@@ -209,76 +200,29 @@ class Participation
     }
 
     /**
-     * Set parentSalution
+     * Set salution
      *
-     * @param string $parentSalution
+     * @param string salution
      *
      * @return Participation
      */
-    public function setParentSalution($parentSalution)
+    public function setSalution($parentSalution)
     {
-        $this->parentSalution = $parentSalution;
+        $this->salution = $parentSalution;
 
         return $this;
     }
 
     /**
-     * Get parentSalution
+     * Get salution
      *
      * @return string
      */
-    public function getParentSalution()
+    public function getSalution()
     {
-        return $this->parentSalution;
+        return $this->salution;
     }
 
-    /**
-     * Set nameFirst
-     *
-     * @param string $nameFirst
-     *
-     * @return Participation
-     */
-    public function setNameFirst($nameFirst)
-    {
-        $this->nameFirst = $nameFirst;
-
-        return $this;
-    }
-
-    /**
-     * Get nameFirst
-     *
-     * @return string
-     */
-    public function getNameFirst()
-    {
-        return $this->nameFirst;
-    }
-
-    /**
-     * Set nameLast
-     *
-     * @param string $nameLast
-     *
-     * @return Participation
-     */
-    public function setNameLast($nameLast)
-    {
-        $this->nameLast = $nameLast;
-
-        return $this;
-    }
-
-    /**
-     * Get nameLast
-     *
-     * @return string
-     */
-    public function getNameLast()
-    {
-        return $this->nameLast;
-    }
 
     /**
      * Set addressStreet

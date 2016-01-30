@@ -12,23 +12,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User extends BaseUser
 {
+    use HumanTrait;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer", name="uid")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
-    /**
-     * @ORM\Column(type="string", length=128)
-     */
-    protected $nameFirst;
-
-    /**
-     * @ORM\Column(type="string", length=128)
-     * @Assert\NotBlank()
-     */
-    protected $nameLast;
 
     /**
      * @see getUid()
@@ -45,38 +36,6 @@ class User extends BaseUser
     public function getUid()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNameFirst()
-    {
-        return $this->nameFirst;
-    }
-
-    /**
-     * @param string $nameFirst
-     */
-    public function setNameFirst($nameFirst)
-    {
-        $this->nameFirst = $nameFirst;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNameLast()
-    {
-        return $this->nameLast;
-    }
-
-    /**
-     * @param string $nameLast
-     */
-    public function setNameLast($nameLast)
-    {
-        $this->nameLast = $nameLast;
     }
 
     /**
