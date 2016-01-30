@@ -94,10 +94,12 @@ class AdminController extends Controller
      */
     public function editAction(Request $request)
     {
+        $eid    = $request->get('eid');
+
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Event');
 
-        $event = $repository->findOneBy(array('eid' => $request->get('eid')));
+        $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
             return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
