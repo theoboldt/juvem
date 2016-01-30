@@ -8,8 +8,15 @@ jQuery(document).ready(function () {
             prototype;
         if (element.attr('data-prototype')) {
             prototype = element.data('prototype');
-            element.data('index', element.find(':input').length);
 
+            var addElementRemoveHandler = function () {
+                element.find('.prototype-remove').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).parent().parent().parent().parent().remove();
+                });
+            };
+
+            element.data('index', element.find(':input').length);
             element.find('.prototype-add').on('click', function (e) {
                 e.preventDefault();
                 var index = element.data('index');
@@ -17,11 +24,9 @@ jQuery(document).ready(function () {
                 element.data('index', index + 1);
 
                 element.find('.prototype-elements').append(newForm);
+                addElementRemoveHandler();
             });
-            element.find('.prototype-remove').on('click', function (e) {
-                e.preventDefault();
-                $(this).parent().parent().empty();
-            });
+            addElementRemoveHandler();
         }
     });
 
