@@ -40,6 +40,12 @@ class Participant
     protected $aid;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Participation", inversedBy="participants")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
+     */
+    protected $participation;
+
+    /**
      * @ORM\Column(type="smallint", options={"unsigned"=true})
      * @Assert\NotBlank()
      */
@@ -82,11 +88,6 @@ class Participant
      */
     protected $deletedAt = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Participation", inversedBy="participants")
-     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
-     */
-    protected $participation;
 
     /**
      * Constructor
