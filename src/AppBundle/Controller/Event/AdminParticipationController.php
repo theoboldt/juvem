@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ParticipationController extends Controller
+class AdminParticipationController extends Controller
 {
     /**
      * Page for list of participants of an event
