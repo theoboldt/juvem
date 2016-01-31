@@ -99,7 +99,7 @@ class PublicController extends Controller
 
 			$this->addFlash(
 				'success',
-				'Die Teilnahme wurde angefragt'
+				'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
 			);
 			return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
 		}
