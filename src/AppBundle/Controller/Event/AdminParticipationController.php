@@ -103,6 +103,7 @@ class AdminParticipationController extends Controller
 
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
+                'pid'       => $participant->getParticipation()->getPid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),

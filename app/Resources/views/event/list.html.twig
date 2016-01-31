@@ -37,12 +37,3 @@
         </div>
     </div>
 {% endblock %}
-{% block javascripts %}
-<script type='text/javascript'>
-    $(function () {
-        $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
-            location.href = row.eid;
-        });
-    });
-</script>
-{% endblock %}

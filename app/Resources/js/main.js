@@ -1,6 +1,20 @@
 jQuery(document).ready(function () {
 
     /**
+     * Admin event list table
+     */
+    $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
+        location.href = row.eid;
+    });
+
+    /**
+     * Admin event particioation list table
+     */
+    $('#participantsListTable').on('click-row.bs.table', function (e, row, $element) {
+        location.href = 'participation/' + row.pid;
+    });
+
+    /**
      * Handle via prototype injected forms
      */
     $('.prototype-container').each(function (index) {
