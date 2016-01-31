@@ -32,6 +32,16 @@ class Participant
     const LABEL_FOOD_NO_PORK = 'ohne Schweinefleisch';
     const LABEL_FOOD_LACTOSE_FREE = 'laktosefrei';
 
+    const TYPE_STATUS_UNCONFIRMED = 1;
+    const TYPE_STATUS_CONFIRMED = 2;
+    const TYPE_STATUS_PAID = 4;
+    const TYPE_STATUS_WITHDRAWN = 8;
+
+    const LABEL_STATUS_UNCONFIRMED = 'unbestätigt';
+    const LABEL_STATUS_CONFIRMED = 'bestätigt';
+    const LABEL_STATUS_PAID = 'bezahlt';
+    const LABEL_STATUS_WITHDRAWN = 'zurückgezogen';
+
     /**
      * @ORM\Column(type="integer", name="aid")
      * @ORM\Id
@@ -72,6 +82,11 @@ class Participant
      * @ORM\Column(type="text", name="info_general")
      */
     protected $infoGeneral = '';
+
+    /**
+     * @ORM\Column(type="smallint", options={"unsigned"=true}, name="status")
+     */
+    protected $status = 1;
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
@@ -325,5 +340,41 @@ class Participant
     public function getParticipation()
     {
         return $this->participation;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return Participant
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer
+     */
+    public function getStatus($format = false)
+    {
+        if ($format) {
+            $formatLabel = function($text, $type = 'primary') {
+                return sprintf('<span class="label label-%s">%s</span>', $type, $text);
+            };
+            $status = '';
+            $status .= ($this->status%self::TYPE_STATUS_UNCONFIRMED == 0) ? $formatLabel(self::LABEL_STATUS_UNCONFIRMED) : '';
+            $status .= ($this->status%self::TYPE_STATUS_CONFIRMED == 0) ? $formatLabel(self::LABEL_STATUS_CONFIRMED) : '';
+            $status .= ($this->status%self::TYPE_STATUS_PAID == 0) ? $formatLabel(self::LABEL_STATUS_PAID) : '';
+            $status .= ($this->status%self::TYPE_STATUS_WITHDRAWN == 0) ? $formatLabel(self::LABEL_STATUS_WITHDRAWN) : '';
+            return $status;
+        }
+
+        return $this->status;
     }
 }

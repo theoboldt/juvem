@@ -14,6 +14,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ParticipationController extends Controller
 {
@@ -106,7 +107,7 @@ class ParticipationController extends Controller
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),
                 'phone'     => $participantPhone,
-                'status'    => ''
+                'status'    => $participant->getStatus(true)
             );
         }
 
