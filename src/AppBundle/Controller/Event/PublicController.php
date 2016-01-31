@@ -20,93 +20,131 @@ use Symfony\Component\HttpFoundation\Request;
 class PublicController extends Controller
 {
 
-	/**
-	 * Page for list of events
-	 *
-	 * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
-	 */
-	public function listAction($eid)
-	{
-		$repository = $this->getDoctrine()
-			->getRepository('AppBundle:Event');
+    /**
+     * Page for details of an event
+     *
+     * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
+     */
+    public function listAction($eid)
+    {
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
 
-		$event = $repository->findOneBy(array('eid' => $eid));
-		if (!$event) {
-			return $this->redirectToRoute('event_miss', array('eid' => $eid));
-		}
+        $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->redirectToRoute('event_miss', array('eid' => $eid));
+        }
 
-		return $this->render('event/public/detail.html.twig', array(
-			'event' => $event
-		));
-	}
+        return $this->render('event/public/detail.html.twig', array(
+            'event' => $event
+        ));
+    }
 
-	/**
-	 * Page for list of events
-	 *
-	 * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
-	 */
-	public function participateAction(Request $request)
-	{
-		$eid = $request->get('eid');
+    /**
+     * Page for list of events
+     *
+     * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
+     */
+    public function participateAction(Request $request)
+    {
+        $eid = $request->get('eid');
 
-		$repository = $this->getDoctrine()
-			->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
 
-		$event = $repository->findOneBy(array('eid' => $eid));
-		if (!$event) {
-			return $this->redirectToRoute('event_miss', array('eid' => $eid));
-		}
-		if (!$event->isActive()) {
-			$this->addFlash(
-				'danger',
-				'Die gewählte Veranstaltung ist nicht aktiv'
-			);
+        $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->redirectToRoute('event_miss', array('eid' => $eid));
+        }
+        if (!$event->isActive()) {
+            $this->addFlash(
+                'danger',
+                'Die gewählte Veranstaltung ist nicht aktiv'
+            );
 
-			return $this->redirectToRoute('homepage', array('eid' => $eid));
-		}
+            return $this->redirectToRoute('homepage', array('eid' => $eid));
+        }
 
-		$participation = new Participation();
+        $participation = new Participation();
 
-		/** @var \AppBundle\Entity\User $user */
-		$user = $this->getUser();
-		if ($user) {
-			$participation->setNameLast($user->getNameLast());
-			$participation->setNameFirst($user->getNameFirst());
-		}
+        /** @var \AppBundle\Entity\User $user */
+        $user = $this->getUser();
+        if ($user) {
+            $participation->setNameLast($user->getNameLast());
+            $participation->setNameFirst($user->getNameFirst());
+        }
 
-		$form = $this->createForm(ParticipationType::class, $participation);
+        $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
-		$participation->setEvent($event->getEid());
-		if ($form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
+        $participation->setEvent($event->getEid());
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
             $em->persist($participation);
-			$em->flush();
+            $em->flush();
 
-			/** @var Participant $participant */
-			foreach($participation->getParticipants() as $participant){
-				$participant->setParticipation($participation);
-				$em->persist($participant);
-				$em->flush();
-			}
-			/** @var PhoneNumber $participant */
-			foreach($participation->getPhoneNumbers() as $number){
-				$number->setParticipation($participation);
-				$em->persist($number);
-				$em->flush();
-			}
+            /** @var Participant $participant */
+            foreach ($participation->getParticipants() as $participant) {
+                $participant->setParticipation($participation);
+                $em->persist($participant);
+                $em->flush();
+            }
+            /** @var PhoneNumber $participant */
+            foreach ($participation->getPhoneNumbers() as $number) {
+                $number->setParticipation($participation);
+                $em->persist($number);
+                $em->flush();
+            }
 
-			$this->addFlash(
-				'success',
-				'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
-			);
-			return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
-		}
+            $this->addFlash(
+                'success',
+                'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
+            );
 
-		return $this->render('event/public/participate.html.twig', array(
-			'event' => $event,
-			'form' => $form->createView()
-		));
-	}
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Hello Email')
+                ->setFrom('jungschar.vaihingen@gmail.com')
+                ->setTo($participation->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'mail/participation.txt.twig',
+                        array(
+                            'event' => $event,
+                            'participation' => $participation,
+                            'participants'  => $participation->getParticipants()
+                        )
+                    ),
+                    'text/plain'
+                /*
+                $this->renderView(
+                    'mail/participation.html.twig',
+                    array(
+                        'salution' => $participation->getSalution(),
+                        'nameLast' => $participation->getNameLast()
+                    )
+                ),
+                'text/html'
+                )->addPart(
+                    $this->renderView(
+                        'mail/participation.txt.twig',
+                        array(
+                            'event' => $event,
+                            'participation' => $participation,
+                            'participants'  => $participation->getParticipants()
+                        )
+                    ),
+                    'text/plain'
+                */
+                );
+            $this->get('mailer')->send($message);
+
+            return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
+        }
+
+        return $this->render('event/public/participate.html.twig', array(
+            'event' => $event,
+            'form'  => $form->createView()
+        ));
+    }
 }

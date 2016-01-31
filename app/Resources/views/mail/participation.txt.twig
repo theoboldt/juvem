@@ -1,0 +1,12 @@
+{% block salution %}
+{% if participation.salution == 'Herr' %}
+Sehr geehrter Herr {{ participation.nameLast }},
+{% else %}
+Sehr geehrte Frau  {{ participation.nameLast }},
+{% endif %}
+{% endblock %}
+
+ihre Anmeldung für die Veranstaltung für die Veranstaltung "{{ event.title }}" ist eingegangen. Wir werden sie so bald wie möglich bearbeiten.
+
+Viele Grüße vom
+Jugendwerk Stuttgart-Vaihingen
