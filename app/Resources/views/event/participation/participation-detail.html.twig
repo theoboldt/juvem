@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Teilnahmedetails ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
+        {% block breadcrumb %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen</a></li>
+                <li class="active">Anmeldung</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>Daten der Eltern</h2>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <dl>
+                    <dt>Anrede</dt>
+                    <dd>{{ participation.salution }}</dd>
+                </dl>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <dl>
+                    <dt>Anrede</dt>
+                    <dd>{{ participation.nameFirst }}</dd>
+                </dl>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <dl>
+                    <dt>Nachname</dt>
+                    <dd>{{ participation.nameLast }}</dd>
+                </dl>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <dl>
+                    <dt>Nachname</dt>
+                    <dd>{{ participation.nameLast }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}

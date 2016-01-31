@@ -21,17 +21,10 @@ class AdminParticipationController extends Controller
     /**
      * Page for list of participants of an event
      *
-     * @Route("/admin/event/{eid}/participants", name="event_participants_list")
+     * @Route("/admin/event/{eid}/participants", requirements={"eid": "\d+"}, name="event_participants_list")
      */
     public function listParticipantsAction($eid)
     {
-        $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->redirect('event_miss');
-        }
         $eventRepository = $this->getDoctrine()
             ->getRepository('AppBundle:Event');
 
@@ -114,5 +107,36 @@ class AdminParticipationController extends Controller
 
         return new JsonResponse($participantList);
     }
+
+
+    /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"}, name="event_participation_detail")
+     */
+    public function ParticipationDetailAction(Request $request)
+    {
+        $participationRepository = $this->getDoctrine()
+            ->getRepository('AppBundle:Participation');
+
+        $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
+        if (!$participation) {
+            //return $this->redirect('participation_miss');
+        }
+        $event  = $participation->getEvent();
+
+        $eventRepository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(array('eid' => $participation->getEvent()));
+                //dump($event);
+        //dump($participation);
+
+        return $this->render(
+            'event/participation/participation-detail.html.twig',
+            array('event' => $event, 'participation' => $participation)
+        );
+    }
+
 
 }
