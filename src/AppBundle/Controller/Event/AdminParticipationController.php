@@ -51,7 +51,7 @@ class AdminParticipationController extends Controller
         dump($participantEntityList);
 
 
-        return $this->render('event/participants/list.html.twig', array('event' => $event));
+        return $this->render('event/participation/participants-list.html.twig', array('event' => $event));
     }
 
     /**
