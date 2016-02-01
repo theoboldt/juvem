@@ -125,11 +125,7 @@ class AdminParticipationController extends Controller
         }
         $event  = $participation->getEvent();
 
-        $eventRepository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $participation->getEvent()));
-                //dump($event);
+        //dump($event);
         //dump($participation);
 
         return $this->render(

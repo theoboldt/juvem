@@ -24,8 +24,8 @@ class Participation
     protected $pid;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Event", mappedBy="eid")
-     * @ORM\Column(type="integer", name="eid")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations")
+     * @ORM\JoinColumn(name="eid", referencedColumnName="eid")
      */
     protected $event;
 
@@ -437,11 +437,11 @@ class Participation
     /**
      * Set event
      *
-     * @param integer $event
+     * @param Event $event
      *
      * @return Participation
      */
-    public function setEvent($event)
+    public function setEvent(Event $event = null)
     {
         $this->event = $event;
 
@@ -451,7 +451,7 @@ class Participation
     /**
      * Get event
      *
-     * @return integer
+     * @return Event
      */
     public function getEvent()
     {

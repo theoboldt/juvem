@@ -77,7 +77,7 @@ class PublicController extends Controller
         $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
-        $participation->setEvent($event->getEid());
+        $participation->setEvent($event);
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
