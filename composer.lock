@@ -2584,12 +2584,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "5dd453fa267328ad9f1a2842c18698d79547ce5a"
+                "reference": "6232b23591ab67bf3679bb21a7ba48756a294306"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/5dd453fa267328ad9f1a2842c18698d79547ce5a",
-                "reference": "5dd453fa267328ad9f1a2842c18698d79547ce5a",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6232b23591ab67bf3679bb21a7ba48756a294306",
+                "reference": "6232b23591ab67bf3679bb21a7ba48756a294306",
                 "shasum": ""
             },
             "require": {
@@ -2710,7 +2710,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-01-28 08:49:36"
+            "time": "2016-01-31 07:33:49"
         },
         {
             "name": "twig/twig",
@@ -2779,12 +2779,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "e4e2c95e6f4dd05b9ce118aa066b85e13e42c001"
+                "reference": "5aa399d92dd734112f886ee0bbb61e6892456230"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/e4e2c95e6f4dd05b9ce118aa066b85e13e42c001",
-                "reference": "e4e2c95e6f4dd05b9ce118aa066b85e13e42c001",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/5aa399d92dd734112f886ee0bbb61e6892456230",
+                "reference": "5aa399d92dd734112f886ee0bbb61e6892456230",
                 "shasum": ""
             },
             "require": {
@@ -2842,7 +2842,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-01-28 15:02:59"
+            "time": "2016-01-30 10:46:20"
         },
         {
             "name": "zendframework/zend-code",
