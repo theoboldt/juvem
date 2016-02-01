@@ -1,6 +1,14 @@
 jQuery(document).ready(function () {
 
     /**
+     * Enable tooltips and popvers
+     */
+    $('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+    });
+    $('[data-toggle="popover"]').popover();
+
+    /**
      * Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
@@ -23,10 +31,15 @@ jQuery(document).ready(function () {
         if (element.attr('data-prototype')) {
             prototype = element.data('prototype');
 
-            var addElementRemoveHandler = function () {
+            var addElementHandlers = function () {
                 element.find('.prototype-remove').on('click', function (e) {
                     e.preventDefault();
                     $(this).parent().parent().parent().parent().remove();
+                });
+                element.find('[data-toggle="popover"]').popover({
+                    container: 'body',
+                    placement: 'top',
+                    title: 'Hinweis'
                 });
             };
 
@@ -38,9 +51,9 @@ jQuery(document).ready(function () {
                 element.data('index', index + 1);
 
                 element.find('.prototype-elements').append(newForm);
-                addElementRemoveHandler();
+                addElementHandlers();
             });
-            addElementRemoveHandler();
+            addElementHandlers();
         }
     });
 
