@@ -4,16 +4,40 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-//bootstrap base theme
-$light-orange: #ff8c00;
-$navbar-default-bg: #312312;
-$navbar-default-color: $light-orange;
+$ejdvYellow: #fce63b;
+$ejdvLightOrange: #fcc214;
+$ejdvDarkOrange: #fb793d;
 
-$brand-primary: darken(#428bca, 6.5%);
+//bootstrap base theme
+$navbar-default-bg: $ejdvDarkOrange;
+$navbar-default-color: darken($ejdvDarkOrange, 5%);
+
+$brand-primary: darken($ejdvDarkOrange, 6.5%);
+$input-border-focus: lighten($ejdvDarkOrange, 5%);
+$headings-small-color: darken($ejdvDarkOrange, 35%);
+
 
 $icon-font-path: '../font/';
 @import 'bootstrap';
 
+//header
+.navbar-inverse {
+  background-color: darken($ejdvDarkOrange, 35%);
+  border-color: darken($ejdvDarkOrange, 40%);
+
+  /*
+  background-color: #222;
+  border-color: #090909;
+  */
+
+  .navbar-brand {
+    color: lighten($navbar-default-bg, 29%);
+  }
+
+  .navbar-nav > li > a {
+    color: lighten($navbar-default-bg, 35%);
+  }
+}
 
 //remove top additional space from radioboxes
 .checkbox, .radio {
