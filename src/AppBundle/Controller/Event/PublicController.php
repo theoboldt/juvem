@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class PublicController extends Controller
@@ -78,66 +79,70 @@ class PublicController extends Controller
 
         $form->handleRequest($request);
         $participation->setEvent($event);
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+        if ($form->isValid() && $form->isSubmitted()) {
 
-            $em->persist($participation);
-            $em->flush();
+            $request->getSession()->set('participation', $participation);
 
-            /** @var Participant $participant */
-            foreach ($participation->getParticipants() as $participant) {
-                $participant->setParticipation($participation);
-                $em->persist($participant);
-                $em->flush();
-            }
-            /** @var PhoneNumber $participant */
-            foreach ($participation->getPhoneNumbers() as $number) {
-                $number->setParticipation($participation);
-                $em->persist($number);
-                $em->flush();
-            }
 
-            $this->addFlash(
-                'success',
-                'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
-            );
-
-            $message = \Swift_Message::newInstance()
-                ->setSubject('Hello Email')
-                ->setFrom('jungschar.vaihingen@gmail.com')
-                ->setTo($participation->getEmail())
-                ->setBody(
-                    $this->renderView(
-                        'mail/participation.txt.twig',
-                        array(
-                            'event' => $event,
-                            'participation' => $participation,
-                            'participants'  => $participation->getParticipants()
-                        )
-                    ),
-                    'text/plain'
-                /*
-                $this->renderView(
-                    'mail/participation.html.twig',
-                    array(
-                        'salution' => $participation->getSalution(),
-                        'nameLast' => $participation->getNameLast()
-                    )
-                ),
-                'text/html'
-                )->addPart(
-                    $this->renderView(
-                        'mail/participation.txt.twig',
-                        array(
-                            'event' => $event,
-                            'participation' => $participation,
-                            'participants'  => $participation->getParticipants()
-                        )
-                    ),
-                    'text/plain'
-                */
-                );
-            $this->get('mailer')->send($message);
+//            $em = $this->getDoctrine()->getManager();
+//
+//            $em->persist($participation);
+//            $em->flush();
+//
+//            /** @var Participant $participant */
+//            foreach ($participation->getParticipants() as $participant) {
+//                $participant->setParticipation($participation);
+//                $em->persist($participant);
+//                $em->flush();
+//            }
+//            /** @var PhoneNumber $participant */
+//            foreach ($participation->getPhoneNumbers() as $number) {
+//                $number->setParticipation($participation);
+//                $em->persist($number);
+//                $em->flush();
+//            }
+//
+//            $this->addFlash(
+//                'success',
+//                'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
+//            );
+//
+//            $message = \Swift_Message::newInstance()
+//                ->setSubject('Hello Email')
+//                ->setFrom('jungschar.vaihingen@gmail.com')
+//                ->setTo($participation->getEmail())
+//                ->setBody(
+//                    $this->renderView(
+//                        'mail/participation.txt.twig',
+//                        array(
+//                            'event' => $event,
+//                            'participation' => $participation,
+//                            'participants'  => $participation->getParticipants()
+//                        )
+//                    ),
+//                    'text/plain'
+//                /*
+//                $this->renderView(
+//                    'mail/participation.html.twig',
+//                    array(
+//                        'salution' => $participation->getSalution(),
+//                        'nameLast' => $participation->getNameLast()
+//                    )
+//                ),
+//                'text/html'
+//                )->addPart(
+//                    $this->renderView(
+//                        'mail/participation.txt.twig',
+//                        array(
+//                            'event' => $event,
+//                            'participation' => $participation,
+//                            'participants'  => $participation->getParticipants()
+//                        )
+//                    ),
+//                    'text/plain'
+//                */
+//                );
+//            $this->get('mailer')->send($message);
 
             return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
         }
@@ -146,5 +151,35 @@ class PublicController extends Controller
             'event' => $event,
             'form'  => $form->createView()
         ));
+    }
+
+
+    /**
+     * Page for list of events
+     *
+     * @Route("/event/{eid}/participate/confirm", requirements={"eid": "\d+"}, name="event_public_participate_confirm")
+     */
+    public function confirmParticipationAction($eid, Request $request)
+    {
+        if (!$request->getSession()->has('participation')) {
+            return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+        }
+
+        $participation = $request->getSession()->get('participation');
+
+        if (!$participation instanceof Participation
+            || $eid != $participation->getEvent()->getEid()
+        ) {
+            throw new BadRequestHttpException('GIven participation data is invalid');
+        }
+
+        if ($request->query->has('confirm')) {
+            //confirmed
+            $request->getSession()->remove('participation');
+        } else {
+            //show
+        }
+
+
     }
 }
