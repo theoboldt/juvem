@@ -16,7 +16,6 @@ $brand-primary: darken($ejdvLightOrange, 0%);
 $input-border-focus: lighten($ejdvLightOrange, 0%);
 $headings-small-color: $ejdvDarkOrange;
 
-
 $icon-font-path: '../font/';
 @import 'bootstrap';
 
@@ -31,11 +30,16 @@ $icon-font-path: '../font/';
   */
 
   .navbar-brand {
-    color: darken($ejdvYellow, 70%);
+    color: #222;
   }
 
   .navbar-nav > li > a {
-    color: darken($ejdvYellow, 75%);
+    color: lighten(#222, 5%);
+  }
+
+  .navbar-nav > li > a:hover,
+  .navbar-nav > li > a:focus {
+    color: lighten(#222, 25%);
   }
 }
 
@@ -51,6 +55,7 @@ $icon-font-path: '../font/';
 .help-block {
   margin-top: 0;
 }
+
 .help-block-input {
   margin-top: -10px;
 }

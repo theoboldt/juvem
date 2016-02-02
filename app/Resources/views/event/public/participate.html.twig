@@ -99,24 +99,23 @@
                                     <div class="col-xs-12 col-sm-5">
                                         <div class="form-group">
                                             {{ form_label(formElement.number) }}
-                                            <div class="input-group" data-toggle="tooltip"  title="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                            <div class="input-group">
                                                 <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
                                                 {{ form_widget(formElement.number) }}
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default" data-toggle="popover" data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                                    </button>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-7">
                                         {{ form_label(formElement.description) }}
                                         <div class="input-group">
-                                            <!--
-                                            data-toggle="tooltip" title="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt."
-                                            -->
                                             {{ form_widget(formElement.description) }}
                                             <span class="input-group-btn">
-                                                <button type="button" class="btn btn-default"
-                                                        data-container="body" data-trigger="focus"
-                                                        data-toggle="popover" data-placement="top"
-                                                        data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                                <button type="button" class="btn btn-default" data-toggle="popover" data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
                                                     <span class="glyphicon glyphicon-question-sign"></span>
                                                 </button>
                                             </span>
@@ -202,13 +201,13 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12">
+                                    <div class="col-xs-12 col-sm-6">
                                         {{ form_row(formElement.food) }}
-                                        {% if showHelp %}
-                                            <span id="help-food" class="help-block form-group">
-                                    Hinweise zur Ernährung ihres Kindes
-                                </span>
-                                        {% endif %}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <span id="help-food" class="help-block form-group">
+                                            Hinweise zur Ernährung ihres Kindes
+                                        </span>
                                     </div>
                                     <div class="col-xs-12">
                                         {{ form_row(formElement.infoMedical) }}

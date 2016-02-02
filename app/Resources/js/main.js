@@ -6,7 +6,7 @@ jQuery(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
     });
-    $('[data-toggle="popover"]').popover();
+    //$('[data-toggle="popover"]').popover();
 
     /**
      * Admin event list table
@@ -39,7 +39,7 @@ jQuery(document).ready(function () {
                 element.find('[data-toggle="popover"]').popover({
                     container: 'body',
                     placement: 'top',
-                    title: 'Hinweis'
+                    trigger: 'focus|click'
                 });
             };
 
