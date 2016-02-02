@@ -109,6 +109,21 @@ class Participation
     }
 
     /**
+     * Print the name, including first name if available
+     *
+     * @return string
+     */
+    public function getName() {
+        $name   = $this->getNameLast();
+
+        if ($this->getNameFirst()) {
+            $name   .= ', '.$this->getNameFirst();
+        }
+
+        return $name;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt

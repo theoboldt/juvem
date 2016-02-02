@@ -19,3 +19,6 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.participation_manager:
+        class: AppBundle\Manager\ParticipationManager
+        arguments: ['@mailer', '@templating']

@@ -37,7 +37,7 @@ class ParticipationType extends AbstractType
         $builder
             ->add('salution', ChoiceType::class, array(
                 'label'             => 'Anrede',
-                'choices'           => array('Frau', 'Herr'),
+                'choices'           => array('Frau' => 'Frau', 'Herr' => 'Herr'),
                 'choices_as_values' => false, 'expanded' => false
             ))
             ->add('nameFirst', TextType::class, array('label' => 'Vorname'))

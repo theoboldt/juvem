@@ -12,28 +12,7 @@
                         {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': event.title} %}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-4">
-                        <p>
-                            {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                            {% if event.hasStartTime %}
-                                {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                            {% endif %}
-                            {% if event.hasEndDate or event.hasEndTime %}
-                                -
-                                {% if event.hasEndDate %}
-                                    {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                                {% endif %}
-                                {% if event.hasEndTime %}
-                                    {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                                {% endif %}
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="col-xs-12 col-sm-8">
-                        {{ event.getDescription|e }}
-                    </div>
-                </div>
+                {% include 'event/public/participate-event-template.html.twig' with {'event': event} %}
                 {{ form_start(form) }}
                 <div class="row">
                     <div class="col-xs-12">

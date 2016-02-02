@@ -1,5 +1,11 @@
 jQuery(document).ready(function () {
 
+    $('#nav').affix({
+        offset: {
+            top: $('#nav').offset().top
+        }
+    });
+
     /**
      * Enable tooltips and popvers
      */

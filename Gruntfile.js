@@ -44,6 +44,8 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/popover.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/transition.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/collapse.js',
+                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
+                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
                     '<%= resourcesPath %>/js/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/main.js'
                 ],
