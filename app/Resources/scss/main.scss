@@ -12,9 +12,9 @@ $ejdvDarkOrange: #fb793d;
 $navbar-default-bg: $ejdvDarkOrange;
 $navbar-default-color: darken($ejdvDarkOrange, 5%);
 
-$brand-primary: darken($ejdvDarkOrange, 40%);
-$input-border-focus: lighten($ejdvDarkOrange, 5%);
-$headings-small-color: darken($ejdvDarkOrange, 35%);
+$brand-primary: darken($ejdvLightOrange, 0%);
+$input-border-focus: lighten($ejdvLightOrange, 0%);
+$headings-small-color: $ejdvDarkOrange;
 
 
 $icon-font-path: '../font/';
@@ -22,8 +22,8 @@ $icon-font-path: '../font/';
 
 //header
 .navbar-inverse {
-  background-color: darken($ejdvDarkOrange, 35%);
-  border-color: darken($ejdvDarkOrange, 40%);
+  background-color: $ejdvYellow;
+  border-color: $ejdvYellow;
 
   /*
   background-color: #222;
@@ -31,11 +31,11 @@ $icon-font-path: '../font/';
   */
 
   .navbar-brand {
-    color: lighten($navbar-default-bg, 29%);
+    color: darken($ejdvYellow, 70%);
   }
 
   .navbar-nav > li > a {
-    color: lighten($navbar-default-bg, 35%);
+    color: darken($ejdvYellow, 75%);
   }
 }
 
