@@ -37,6 +37,10 @@
                 {{ form_start(form) }}
                 <div class="row">
                     <div class="col-xs-12">
+                        <div class="alert alert-info" role="alert">
+                            Sie können die Daten die Sie hier eingeben im nächsten Schritt noch mal überprüfen,
+                            bevor Sie die Anmeldung engültig abgeben.
+                        </div>
                         {{ form_errors(form) }}
                     </div>
                 </div>
@@ -148,6 +152,8 @@
                     </div>
                 </div>
 
+                <hr />
+
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>Daten der Teilnehmer</h3>
@@ -257,12 +263,15 @@
                     </div>
                 </div>
 
+                <hr />
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <p>Sie können die Daten im nächsten Schritt noch mal überprüfen, bevor Sie die Anmeldung
-                            engültig abgeben.</p>
-
+                        <h3>Überprüfen</h3>
+                        <p>
+                            Sie können die Daten die Sie hier eingeben im nächsten Schritt noch mal überprüfen,
+                            bevor Sie die Anmeldung engültig abgeben.
+                        </p>
                         <p>{{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Anmeldung überprüfen' }) }}</p>
                     </div>
                 </div>
