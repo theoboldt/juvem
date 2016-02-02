@@ -12,10 +12,37 @@ $ejdvDarkOrange: #fb793d;
 $navbar-default-bg: $ejdvDarkOrange;
 $navbar-default-color: darken($ejdvDarkOrange, 5%);
 
+$navbar-inverse-bg: $ejdvYellow;
+$navbar-inverse-border: $ejdvYellow;
+$navbar-inverse-color: #222;
+$navbar-inverse-brand-color: #222;
+
+$navbar-inverse-link-color: lighten(#222, 5%);
+$navbar-inverse-link-hover-color: darken(#222, 25%);
+$navbar-inverse-link-active-color: darken($navbar-inverse-link-hover-color, 2%);
+$navbar-inverse-brand-hover-color: darken($navbar-inverse-link-hover-color, 3%);
+$navbar-inverse-toggle-icon-bar-bg: lighten(#222, 25%);
+$navbar-inverse-link-hover-bg: lighten($navbar-inverse-bg, 15%);
+
 //$brand-primary: #2c60ff;
 $input-border-focus: lighten($ejdvLightOrange, 0%);
 $headings-small-color: $ejdvDarkOrange;
 
+//panel
+$panel-default-heading-bg: lighten($ejdvLightOrange, 45%);
+$panel-default-border: lighten($ejdvLightOrange, 15%);
+
+//input
+$input-border: lighten($ejdvLightOrange, 5%);
+$input-group-addon-bg: darken($panel-default-heading-bg, 10%);
+//$input-color: darken($ejdvDarkOrange, 30%);
+
+$btn-default-bg: darken($panel-default-heading-bg, 2%);
+$btn-default-color: $ejdvDarkOrange;
+$btn-default-border: $input-border;
+
+//$input-border-focus: red;
+$legend-color: darken($ejdvLightOrange, 25%);
 $icon-font-path: '../font/';
 @import 'bootstrap';
 @import 'header';
