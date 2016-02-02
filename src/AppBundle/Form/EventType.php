@@ -24,7 +24,8 @@ class EventType extends AbstractType
     {
         $dateTypeOptions    = array(
             'years' => range(Date('Y')-1, Date('Y')+1),
-            'format' => 'dd.M.yyyy'
+            'widget' => 'single_text',
+            'format' => 'yyyy-MM-dd',
         );
         $hasDateCheckbox    = array(
             'required' => false,

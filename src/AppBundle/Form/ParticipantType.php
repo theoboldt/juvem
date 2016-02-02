@@ -45,7 +45,8 @@ class ParticipantType extends AbstractType
                 DateType::class,
                 array('label'  => 'Geburtsdatum',
                       'years'  => range(Date('Y') - 22, Date('Y') - 3),
-                      'format' => 'dd.M.yyyy',
+                      'widget' => 'single_text',
+                      'format' => 'yyyy-MM-dd',
                 )
             )
             ->add(
