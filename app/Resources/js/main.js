@@ -39,6 +39,7 @@ jQuery(document).ready(function () {
                 element.find('[data-toggle="popover"]').popover({
                     container: 'body',
                     placement: 'top',
+                    html: true,
                     trigger: 'focus|click'
                 });
             };
