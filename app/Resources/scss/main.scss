@@ -12,50 +12,11 @@ $ejdvDarkOrange: #fb793d;
 $navbar-default-bg: $ejdvDarkOrange;
 $navbar-default-color: darken($ejdvDarkOrange, 5%);
 
-$brand-primary: darken($ejdvLightOrange, 0%);
+//$brand-primary: #2c60ff;
 $input-border-focus: lighten($ejdvLightOrange, 0%);
 $headings-small-color: $ejdvDarkOrange;
 
 $icon-font-path: '../font/';
 @import 'bootstrap';
-
-//header
-.navbar-inverse {
-  background-color: $ejdvYellow;
-  border-color: $ejdvYellow;
-
-  /*
-  background-color: #222;
-  border-color: #090909;
-  */
-
-  .navbar-brand {
-    color: #222;
-  }
-
-  .navbar-nav > li > a {
-    color: lighten(#222, 5%);
-  }
-
-  .navbar-nav > li > a:hover,
-  .navbar-nav > li > a:focus {
-    color: lighten(#222, 25%);
-  }
-}
-
-//remove top additional space from radioboxes
-.checkbox, .radio {
-  margin-top: 0;
-}
-
-.input-group-btn button {
-  min-height: 34px;
-}
-
-.help-block {
-  margin-top: 0;
-}
-
-.help-block-input {
-  margin-top: -10px;
-}
+@import 'header';
+@import 'form';
