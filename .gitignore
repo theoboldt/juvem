@@ -14,3 +14,11 @@
 .idea
 /node_modules/*
 /.sass-cache
+/web/css/*
+!web/css/.gitkeep
+/web/font/*
+!web/font/.gitkeep
+/web/js/*
+!web/js/.gitkeep
+/web/uploads/*
+!web/uploads/.gitkeep
