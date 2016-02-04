@@ -37,9 +37,16 @@ $input-border: lighten($ejdvLightOrange, 5%);
 $input-group-addon-bg: darken($panel-default-heading-bg, 10%);
 //$input-color: darken($ejdvDarkOrange, 30%);
 
+//button
 $btn-default-bg: darken($panel-default-heading-bg, 2%);
 $btn-default-color: $ejdvDarkOrange;
 $btn-default-border: $input-border;
+
+
+//alert
+$state-info-bg: lighten(#9cdeff, 15%);
+$state-info-text: darken($state-info-bg, 70%);
+
 
 //$input-border-focus: red;
 $legend-color: darken($ejdvLightOrange, 25%);
