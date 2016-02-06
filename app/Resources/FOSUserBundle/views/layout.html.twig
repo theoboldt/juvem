@@ -3,7 +3,11 @@
 {% block title %}Veranstaltung{% endblock %}
 
 {% block body %}
-    {% include 'common/header/base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
+        {% block breadcrumb %}
+            <li class="active">Anmeldung</li>
+        {% endblock %}
+    {% endembed %}
 
     {% if app.request.hasPreviousSession %}
         <div class="col-sm-12">
