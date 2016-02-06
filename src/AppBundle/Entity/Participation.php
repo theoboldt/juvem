@@ -84,14 +84,14 @@ class Participation
     /**
      * Contains the phone numbers assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"persist"}, mappedBy="nid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"persist"}, mappedBy="participation")
      */
     protected $phoneNumbers;
 
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"persist"}, mappedBy="aid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"persist"}, mappedBy="participation")
      */
     protected $participants;
 

@@ -108,10 +108,13 @@ class Event
     /**
      * Contains the participations assigned to this event
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="pid")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="event")
      */
     protected $participations;
 
+    /**
+     * CONSTRUCTOR
+     */
     public function __construct()
     {
         $this->participations = new ArrayCollection();
