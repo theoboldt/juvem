@@ -3,7 +3,11 @@
 {% block title %}{{ event.title }}{% endblock %}
 
 {% block body %}
-    {%  include 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Veranstaltung'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Veranstaltung'} %}
+        {% block breadcrumb %}
+            <li class="active">{{ event.title }}</li>
+        {% endblock %}
+    {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
