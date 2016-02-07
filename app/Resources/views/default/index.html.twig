@@ -12,6 +12,13 @@
     {% endembed %}
 <div class="container">
     <div class="row">
+        {% if events|length == 0 %}
+            <div class="col-xs-12">
+                <div class="alert alert-info" role="alert">
+                    Im Moment scheint leider keine Veranstaltung zur Teilnahme freigegeben zu sein.
+                </div>
+            </div>
+        {% endif %}
         {% for event in events %}
             <div class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
                 <div class="thumbnail">
