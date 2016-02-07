@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04d343c9c4426f9f7ecb4bd155877d45",
-    "content-hash": "d9e44c649c5e7c505cec54bb6b968522",
+    "hash": "be23f29dbadb335432967679ee8cdd37",
+    "content-hash": "74659e4ffd303aab12638b46b7a5b689",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -818,12 +818,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "8f1fc2273b37c61ddcc1620abf4500320a23763e"
+                "reference": "140cc28026304d3023c880f441689986f99b913b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/8f1fc2273b37c61ddcc1620abf4500320a23763e",
-                "reference": "8f1fc2273b37c61ddcc1620abf4500320a23763e",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/140cc28026304d3023c880f441689986f99b913b",
+                "reference": "140cc28026304d3023c880f441689986f99b913b",
                 "shasum": ""
             },
             "require": {
@@ -879,7 +879,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-01-27 09:36:48"
+            "time": "2016-02-05 08:53:49"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1605,16 +1605,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "1.1.6",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "e6f80ab77885151908d0ec743689ca700886e8b0"
+                "reference": "b0e69d10852716b2ccbdff69c75c477637220790"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/e6f80ab77885151908d0ec743689ca700886e8b0",
-                "reference": "e6f80ab77885151908d0ec743689ca700886e8b0",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/b0e69d10852716b2ccbdff69c75c477637220790",
+                "reference": "b0e69d10852716b2ccbdff69c75c477637220790",
                 "shasum": ""
             },
             "require": {
@@ -1649,7 +1649,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-01-29 16:19:52"
+            "time": "2016-02-06 03:52:05"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -2584,12 +2584,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "afe4cbbfae356420c8126acab096a4e628771009"
+                "reference": "6e755c50f5310b2f47040ed4833604a88adbc582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/afe4cbbfae356420c8126acab096a4e628771009",
-                "reference": "afe4cbbfae356420c8126acab096a4e628771009",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6e755c50f5310b2f47040ed4833604a88adbc582",
+                "reference": "6e755c50f5310b2f47040ed4833604a88adbc582",
                 "shasum": ""
             },
             "require": {
@@ -2710,7 +2710,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-02-04 14:44:13"
+            "time": "2016-02-05 11:35:35"
         },
         {
             "name": "twig/twig",
@@ -2779,12 +2779,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "5aa399d92dd734112f886ee0bbb61e6892456230"
+                "reference": "a9d98916f7c8454df67681e979266b7a0be81594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/5aa399d92dd734112f886ee0bbb61e6892456230",
-                "reference": "5aa399d92dd734112f886ee0bbb61e6892456230",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/a9d98916f7c8454df67681e979266b7a0be81594",
+                "reference": "a9d98916f7c8454df67681e979266b7a0be81594",
                 "shasum": ""
             },
             "require": {
@@ -2842,7 +2842,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-01-30 10:46:20"
+            "time": "2016-02-05 16:59:23"
         },
         {
             "name": "zendframework/zend-code",
