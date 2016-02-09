@@ -22,3 +22,8 @@ services:
     app.participation_manager:
         class: AppBundle\Manager\ParticipationManager
         arguments: ['@mailer', '@templating']
+    app.upload_image_manager:
+        class: AppBundle\Manager\UploadImageManager
+        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%']
+
+
