@@ -1,0 +1,19 @@
+.page-participate {
+  dd {
+    margin-bottom: 4px;
+  }
+
+  dd.address-container {
+    margin-bottom: 0;
+  }
+  dd.address-container address {
+    margin-bottom: 4px;
+  }
+
+  dl:last-child {
+    margin-bottom: 0;
+    dd {
+      margin-bottom: 0;
+    }
+  }
+}

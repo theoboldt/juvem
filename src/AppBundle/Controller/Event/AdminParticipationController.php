@@ -88,17 +88,16 @@ class AdminParticipationController extends Controller
             $participantPhone = '';
 
             /** @var PhoneNumber $phoneNumber */
-            /*
+/*
         foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumber) {
-            $number = $this->container->get('libphonenumber.phone_number_util')->parse(
+                $number = $this->container->get('libphonenumber.phone_number_util')->parse(
                 $phoneNumber->getNumber(),
                 PhoneNumberUtil::UNKNOWN_REGION
             );
 
             $participantPhone   .= sprintf('<span class="label label-primary">%s</span>', $number);
             }
-            */
-
+*/
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
                 'pid'       => $participant->getParticipation()

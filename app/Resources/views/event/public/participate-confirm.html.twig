@@ -4,7 +4,7 @@
 {% block title %}Anmelden bei {{ event.title }}{% endblock %}
 
 {% block body %}
-    <div class="container">
+    <div class="container page-participate">
     <div class="row">
         <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-lg-offset-2 col-lg-8">
             <div class="row">
@@ -20,57 +20,72 @@
             {% include 'event/public/participate-event-template.html.twig' with {'event': event} %}
             <div class="row" data-spy="scroll">
                 <div class="col-xs-12 col-sm-8">
-                    <h3 id="data-participation">Daten der Eltern</h3>
-                    <dl class="dl-horizontal">
-                        <dt>Anrede</dt>
-                        <dd>{{ participation.salution }}</dd>
-                        <dt>Vorname</dt>
-                        <dd>{{ participation.nameFirst }}</dd>
-                        <dt>Nachname</dt>
-                        <dd>{{ participation.nameLast }}</dd>
-                        <dt>Telefonnummern</dt>
-                        <dd>
-                            {% for phoneNumber in participation.phoneNumbers %}
-                                <address>
-                                    <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
-                                    {% if phoneNumber.description %}
-                                        <br>{{ phoneNumber.description }}
-                                    {% endif %}
-                                </address>
-                            {% endfor %}
-                        </dd>
-                        <dt>Anschrift</dt>
-                        <dd>
-                            <address>
-                                <strong>{{ participation.getName() }}</strong><br>
-                                {{ participation.addressStreet }}<br>
-                                {{ participation.addressZip }} {{ participation.addressCity }}
-                            </address>
-                        </dd>
-                        <dt>E-Mail Adresse</dt>
-                        <dd>
-                            <address>
-                                {{ participation.email }}
-                            </address>
-                        </dd>
-                    </dl>
+                    <h4 id="data-participation">Daten der Eltern</h4>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+                                <dt>Anrede</dt>
+                                <dd>{{ participation.salution }}</dd>
+                                <dt>Vorname</dt>
+                                <dd>{{ participation.nameFirst }}</dd>
+                                <dt>Nachname</dt>
+                                <dd>{{ participation.nameLast }}</dd>
+                                <dt>Telefonnummern</dt>
+                                <dd class="address-container">
+                                    {% for phoneNumber in participation.phoneNumbers %}
+                                        <address>
+                                            <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                                            {% if phoneNumber.description %}
+                                                <br>{{ phoneNumber.description }}
+                                            {% endif %}
+                                        </address>
+                                    {% endfor %}
+                                </dd>
+                                <dt>Anschrift</dt>
+                                <dd class="address-container">
+                                    <address>
+                                        <strong>{{ participation.getName() }}</strong><br>
+                                        {{ participation.addressStreet }}<br>
+                                        {{ participation.addressZip }} {{ participation.addressCity }}
+                                    </address>
+                                </dd>
+                                <dt>E-Mail Adresse</dt>
+                                <dd>
+                                    <address>
+                                        {{ participation.email }}
+                                    </address>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
                     <h3 id="data-participants">Daten der Teilnehmer</h3>
                     {% for participant in participation.participants %}
-                        <div class="row" id="participant-{{ loop.index }}">
-                            <div class="col-xs-12 col-sm-6">
-                                <dl class="dl-horizontal">
-                                    <dt>Vorname</dt>
-                                    <dd>{{ participant.nameFirst }}</dd>
-                                    <dt>Nachname</dt>
-                                    <dd>{{ participant.nameLast }}</dd>
-                                    <dt>Geschlecht</dt>
-                                    <dd>{{ participant.gender }}</dd>
-                                </dl>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row" id="participant-{{ loop.index }}">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Vorname</dt>
+                                            <dd>{{ participant.nameFirst }}</dd>
+                                            <dt>Nachname</dt>
+                                            <dd>{{ participant.nameLast }}</dd>
+                                            <dt>Geschlecht</dt>
+                                            <dd>{{ participant.gender }}</dd>
+                                        </dl>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="hidden-xs col-sm-4 scrollspy">
+                <!--
                     <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix">
                         <li>
                             <a href="#data-participation">Daten der Eltern</a>
@@ -86,13 +101,10 @@
                                     </li>
                                 {% endfor %}
                             </ul>
-                            <!--end of sub navigation-->
                         </li>
-
                     </ul>
-                    <!-- end of main navigation -->
-                    </d
                 </div>
+                -->
             </div>
         </div>
     </div>
