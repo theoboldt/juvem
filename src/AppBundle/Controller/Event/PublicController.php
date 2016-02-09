@@ -16,11 +16,35 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class PublicController extends Controller
 {
+    /**
+     * Detail page for one single event
+     *
+     * @Route("/event/{eid}/image/thumbnail", requirements={"eid": "\d+"}, name="event_image_thumbnail")
+     */
+    public function eventThumbnailAction($eid)
+    {
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Event');
+
+        $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->redirect('event_miss');
+        }
+
+        $uploadManager = $this->get('app.upload_image_manager');
+
+
+        return new Response($uploadManager->fetchPresentationThumbnail($event->getImageFilename()), 200, array(
+                'Content-Disposition' => 'inline')
+        );
+    }
+
 
     /**
      * Page for details of an event
@@ -88,7 +112,7 @@ class PublicController extends Controller
 
         return $this->render('event/public/participate.html.twig', array(
             'event' => $event,
-            'form'  => $form->createView()
+            'form' => $form->createView()
         ));
     }
 
