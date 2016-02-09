@@ -6,10 +6,8 @@
  * Time: 08:09
  */
 
-namespace AppBundle\Response;
+namespace AppBundle;
 
-
-use AppBundle\Image\LazyImage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -22,7 +20,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ImageResponse extends StreamedResponse
 {
     /**
-     * @param LazyImage $image
+     * @param UploadImage $image
      * @param string $format
      * @param Request $request
      * @param int|null $defaultWidth
@@ -30,7 +28,7 @@ class ImageResponse extends StreamedResponse
      * @return static
      */
     public static function createFromRequest(
-        LazyImage $image,
+        UploadImage $image,
         $format,
         Request $request,
         $defaultWidth = 128,
@@ -44,20 +42,21 @@ class ImageResponse extends StreamedResponse
             return $response;
         }
 
-        $width = $request->query->get('width', $defaultWidth);
+//        $image  = $request->query->get('image');
+        $width  = $request->query->get('width', $defaultWidth);
         $height = $request->query->get('height', $defaultHeight);
 
         return new static($image, $format, $width, $height);
     }
 
     /**
-     * @param LazyImage $image
+     * @param UploadImage $image
      * @param Response $response
      */
-    private static function setCacheHeaders(LazyImage $image, Response $response)
+    private static function setCacheHeaders(UploadImage $image, Response $response)
     {
-        $response->setEtag($image->computeETag())
-                 ->setLastModified(\DateTime::createFromFormat('U', $image->getMTime()))
+        $response->setEtag($image->getETag())
+                 ->setLastModified($image->getMTime())
                  ->setMaxAge(24 * 60 * 60)
                  ->setPublic();
     }
@@ -72,26 +71,18 @@ class ImageResponse extends StreamedResponse
     }
 
     /**
-     * @param LazyImage $image
-     * @param string $format
-     * @param int|null $width
-     * @param int|null $height
+     * Constructor
+     *
+     * @param UploadImage $image
      */
-    public function __construct(LazyImage $image, $format = 'png', $width = 128, $height = 128)
+    public function __construct(UploadImage $image)
     {
-        if ($width !== null) {
-            $width = (int)$width;
-        }
-        if ($height !== null) {
-            $height = (int)$height;
-        }
-
         parent::__construct(
-            function () use ($image, $width, $height, $format) {
-                echo $image->get($width, $height, $format);
+            function () use ($image) {
+                echo $image->get();
             },
             Response::HTTP_OK,
-            ['Content-Type' => self::getMimeType($format)]
+            ['Content-Type' => $image->getType(true)]
         );
 
         self::setCacheHeaders($image, $this);

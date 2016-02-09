@@ -9,6 +9,7 @@ use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
 use AppBundle\Form\ParticipationType;
+use AppBundle\ImageResponse;
 use AppBundle\Manager\ParticipationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,9 +26,9 @@ class PublicController extends Controller
     /**
      * Detail page for one single event
      *
-     * @Route("/event/{eid}/image/thumbnail", requirements={"eid": "\d+"}, name="event_image_thumbnail")
+     * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"}, name="event_image")
      */
-    public function eventThumbnailAction($eid)
+    public function eventImageAction($eid, $width, $height)
     {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
@@ -38,14 +39,9 @@ class PublicController extends Controller
         }
 
         $uploadManager = $this->get('app.upload_image_manager');
+        $image = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
 
-
-        return new Response(
-            $uploadManager->fetchPresentationThumbnail(
-                $event->getImageFilename()), 200, array(
-                'Content-Disposition' => 'inline'
-            )
-        );
+        return new ImageResponse($image);
     }
 
 
