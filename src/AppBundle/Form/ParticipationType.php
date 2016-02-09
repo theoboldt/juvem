@@ -35,10 +35,14 @@ class ParticipationType extends AbstractType
         );
 
         $builder
-            ->add('salution', ChoiceType::class, array(
+            ->add(
+                'salution', ChoiceType::class, array(
                 'label'             => 'Anrede',
-                'choices'           => array('Frau' => 'Frau', 'Herr' => 'Herr'),
-                'choices_as_values' => false, 'expanded' => false
+                'choices'           => array('Frau' => 'Frau',
+                                             'Herr' => 'Herr'
+                ),
+                'choices_as_values' => false,
+                'expanded'          => false
             ))
             ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
             ->add('nameLast', TextType::class, array('label' => 'Nachname'))
@@ -46,17 +50,19 @@ class ParticipationType extends AbstractType
             ->add('addressZip', TextType::class, array('label' => 'Postleitzahl'))
             ->add('addressCity', TextType::class, array('label' => 'Stadt'))
             ->add('email', TextType::class, array('label' => 'E-Mail'))
-            ->add('phoneNumbers', CollectionType::class, array(
-                'label' => 'Telefonnummern',
-                'entry_type' => PhoneNumberType::class,
-                'allow_add'  => true,
+            ->add(
+                'phoneNumbers', CollectionType::class, array(
+                'label'        => 'Telefonnummern',
+                'entry_type'   => PhoneNumberType::class,
+                'allow_add'    => true,
                 'allow_delete' => true,
-                'attr' => array('aria-describedby' => 'help-info-phone-numbers')
+                'attr'         => array('aria-describedby' => 'help-info-phone-numbers')
             ))
-            ->add('participants', CollectionType::class, array(
-                'label' => 'Teilnehmer',
-                'entry_type' => ParticipantType::class,
-                'allow_add'  => true,
+            ->add(
+                'participants', CollectionType::class, array(
+                'label'        => 'Teilnehmer',
+                'entry_type'   => ParticipantType::class,
+                'allow_add'    => true,
                 'allow_delete' => true
             ))
             ->add('save', SubmitType::class);
@@ -66,8 +72,9 @@ class ParticipationType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Participation',
-        ));
+        $resolver->setDefaults(
+            array(
+                'data_class' => 'AppBundle\Entity\Participation',
+            ));
     }
 }

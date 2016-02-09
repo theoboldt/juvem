@@ -16,8 +16,16 @@ class ModalActionType extends AbstractType
             ->add('area', HiddenType::class)
             ->add('action', HiddenType::class)
             ->add('id', HiddenType::class)
-            ->add('cancel', ButtonType::class, array('attr' => array('class' => 'btn-default', 'data-dismiss' => 'modal'), 'label' => 'Abbrechen'))
-            ->add('submit', SubmitType::class, array('attr' => array('class' => 'btn-primary', 'label' => 'Speichern')))
-        ;
+            ->add(
+                'cancel', ButtonType::class, array('attr'  => array('class'        => 'btn-default',
+                                                                    'data-dismiss' => 'modal'
+            ),
+                                                   'label' => 'Abbrechen'
+            ))
+            ->add(
+                'submit', SubmitType::class, array('attr' => array('class' => 'btn-primary',
+                                                                   'label' => 'Speichern'
+            )
+            ));
     }
 }

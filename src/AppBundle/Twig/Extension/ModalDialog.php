@@ -9,8 +9,13 @@ class ModalDialog extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter(
                 'modalDialog',
-                array($this, 'modalDialog'),
-                array('pre_escape' => 'html', 'is_safe' => array('html'), 'needs_environment' => true)
+                array($this,
+                      'modalDialog'
+                ),
+                array('pre_escape'        => 'html',
+                      'is_safe'           => array('html'),
+                      'needs_environment' => true
+                )
             ),
         );
 
@@ -25,10 +30,11 @@ class ModalDialog extends \Twig_Extension
      */
     public function modalDialog(\Twig_Environment $twig, $title)
     {
-        $data   = array('modalId' => 'xxx',
-            'modalTitle' => $title,
-            'modalYes' => 1,
-            'modalNo' => 2);
+        $data = array('modalId'    => 'xxx',
+                      'modalTitle' => $title,
+                      'modalYes'   => 1,
+                      'modalNo'    => 2
+        );
 
         return $twig->render('modal/dialog.html.twig', $data);
     }

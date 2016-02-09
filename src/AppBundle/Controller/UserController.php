@@ -37,9 +37,9 @@ class UserController extends Controller
 
         /** @var User $entity */
         foreach ($entityList as $entity) {
-            $entityRoles    = $entity->getRoles();
+            $entityRoles = $entity->getRoles();
 
-            $roles  = '';
+            $roles = '';
             if (in_array('ROLE_USER', $entityRoles)) {
                 $roles .= sprintf(
                     '<span title="%s">%s</span>',

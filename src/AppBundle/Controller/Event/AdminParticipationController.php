@@ -26,7 +26,7 @@ class AdminParticipationController extends Controller
     public function listParticipantsAction($eid)
     {
         $eventRepository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                                ->getRepository('AppBundle:Event');
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -34,12 +34,14 @@ class AdminParticipationController extends Controller
         }
 
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()
+                   ->getManager();
         $query = $em->createQuery(
             'SELECT p
                    FROM AppBundle:Participation p
               WHERE p.event = :eid'
-        )->setParameter('eid', $eid);
+        )
+                    ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
         dump($participantEntityList);
 
@@ -56,7 +58,7 @@ class AdminParticipationController extends Controller
     {
         $eid = $request->get('eid');
         $eventRepository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                                ->getRepository('AppBundle:Event');
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -64,14 +66,16 @@ class AdminParticipationController extends Controller
         }
 
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()
+                   ->getManager();
         $query = $em->createQuery(
             'SELECT a
                FROM AppBundle:Participant a,
                     AppBundle:Participation p
               WHERE a.participation = p.pid
                 AND p.event = :eid'
-        )->setParameter('eid', $eid);
+        )
+                    ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
 
         $participantList = array();
@@ -79,7 +83,8 @@ class AdminParticipationController extends Controller
         foreach ($participantEntityList as $participant) {
             $participation = $participant->getParticipation();
 
-            $participantAge = $event->getStartDate()->diff($participant->getBirthday());
+            $participantAge = $event->getStartDate()
+                                    ->diff($participant->getBirthday());
             $participantPhone = '';
 
             /** @var PhoneNumber $phoneNumber */
@@ -96,7 +101,8 @@ class AdminParticipationController extends Controller
 
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
-                'pid'       => $participant->getParticipation()->getPid(),
+                'pid'       => $participant->getParticipation()
+                                           ->getPid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),
@@ -117,20 +123,22 @@ class AdminParticipationController extends Controller
     public function ParticipationDetailAction(Request $request)
     {
         $participationRepository = $this->getDoctrine()
-            ->getRepository('AppBundle:Participation');
+                                        ->getRepository('AppBundle:Participation');
 
         $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
         if (!$participation) {
             //return $this->redirect('participation_miss');
         }
-        $event  = $participation->getEvent();
+        $event = $participation->getEvent();
 
         //dump($event);
         //dump($participation);
 
         return $this->render(
             'event/participation/participation-detail.html.twig',
-            array('event' => $event, 'participation' => $participation)
+            array('event'         => $event,
+                  'participation' => $participation
+            )
         );
     }
 

@@ -71,7 +71,8 @@ class Builder implements ContainerAwareInterface
      */
     protected function isUserLoggedIn()
     {
-        $token = $this->container->get('security.token_storage')->getToken();
+        $token = $this->container->get('security.token_storage')
+                                 ->getToken();
         $user = $token->getUser();
 
         return ($user instanceof User);

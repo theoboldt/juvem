@@ -23,10 +23,10 @@ class ImageResponse extends StreamedResponse
 {
     /**
      * @param LazyImage $image
-     * @param string    $format
-     * @param Request   $request
-     * @param int|null  $defaultWidth
-     * @param int|null  $defaultHeight
+     * @param string $format
+     * @param Request $request
+     * @param int|null $defaultWidth
+     * @param int|null $defaultHeight
      * @return static
      */
     public static function createFromRequest(
@@ -35,7 +35,8 @@ class ImageResponse extends StreamedResponse
         Request $request,
         $defaultWidth = 128,
         $defaultHeight = 128
-    ) {
+    )
+    {
         $response = new Response('', Response::HTTP_OK);
         self::setCacheHeaders($image, $response);
 
@@ -43,7 +44,7 @@ class ImageResponse extends StreamedResponse
             return $response;
         }
 
-        $width  = $request->query->get('width', $defaultWidth);
+        $width = $request->query->get('width', $defaultWidth);
         $height = $request->query->get('height', $defaultHeight);
 
         return new static($image, $format, $width, $height);
@@ -51,7 +52,7 @@ class ImageResponse extends StreamedResponse
 
     /**
      * @param LazyImage $image
-     * @param Response  $response
+     * @param Response $response
      */
     private static function setCacheHeaders(LazyImage $image, Response $response)
     {
@@ -72,9 +73,9 @@ class ImageResponse extends StreamedResponse
 
     /**
      * @param LazyImage $image
-     * @param string    $format
-     * @param int|null  $width
-     * @param int|null  $height
+     * @param string $format
+     * @param int|null $width
+     * @param int|null $height
      */
     public function __construct(LazyImage $image, $format = 'png', $width = 128, $height = 128)
     {

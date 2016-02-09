@@ -14,13 +14,18 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
         $eventList = $repository->findBy(
-            array('isVisible' => true, 'isActive' => true),
-            array('startDate' => 'ASC', 'startTime' => 'ASC')
+            array('isVisible' => true,
+                  'isActive'  => true
+            ),
+            array('startDate' => 'ASC',
+                  'startTime' => 'ASC'
+            )
         );
 
-        return $this->render('default/index.html.twig', array(
+        return $this->render(
+            'default/index.html.twig', array(
             'events' => $eventList
         ));
     }

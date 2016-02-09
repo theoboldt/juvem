@@ -30,12 +30,13 @@ class ParticipantType extends AbstractType
                 'gender',
                 ChoiceType::class,
                 array(
-                    'label'   => 'Geschlecht',
-                    'choices' => array(
+                    'label'             => 'Geschlecht',
+                    'choices'           => array(
                         Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
                         Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
                     ),
-                    'choices_as_values' => true, 'required' => false,
+                    'choices_as_values' => true,
+                    'required'          => false,
                     'attr'              => array('aria-describedby' => 'help-food')
 
                 )
@@ -52,14 +53,22 @@ class ParticipantType extends AbstractType
             ->add(
                 'infoMedical',
                 TextareaType::class,
-                array('label' => 'Medizinische Hinweise', 'attr' => array('aria-describedby' => 'help-info-medical', 'required' => false))
+                array('label' => 'Medizinische Hinweise',
+                      'attr'  => array('aria-describedby' => 'help-info-medical',
+                                       'required'         => false
+                      )
+                )
             )
             ->add(
                 'infoGeneral',
                 TextareaType::class,
-                array('label' => 'Allgemeine Hinweise', 'attr' => array('aria-describedby' => 'help-info-general'), 'required' => false)
+                array('label'    => 'Allgemeine Hinweise',
+                      'attr'     => array('aria-describedby' => 'help-info-general'),
+                      'required' => false
+                )
             )
-            ->add('food', ChoiceType::class, array(
+            ->add(
+                'food', ChoiceType::class, array(
                 'label'             => 'Ernährung',
                 'choices'           => array(
                     Participant::LABEL_FOOD_LACTOSE_FREE => Participant::TYPE_FOOD_LACTOSE_FREE,
@@ -67,16 +76,20 @@ class ParticipantType extends AbstractType
                     Participant::LABEL_FOOD_VEGETARIAN   => Participant::TYPE_FOOD_VEGETARIAN,
                     Participant::LABEL_FOOD_NO_PORK      => Participant::TYPE_FOOD_NO_PORK
                 ),
-                'choices_as_values' => true, 'expanded' => true, 'multiple' => true, 'required' => false,
+                'choices_as_values' => true,
+                'expanded'          => true,
+                'multiple'          => true,
+                'required'          => false,
                 'attr'              => array('aria-describedby' => 'help-food')
             ));
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Participant',
-        ));
+        $resolver->setDefaults(
+            array(
+                'data_class' => 'AppBundle\Entity\Participant',
+            ));
     }
 
     public function getName()

@@ -17,30 +17,30 @@ class Participant
     use HumanTrait;
 
     const TYPE_GENDER_FEMALE = 1;
-    const TYPE_GENDER_MALE = 2;
+    const TYPE_GENDER_MALE   = 2;
 
     const LABEL_GENDER_FEMALE = 'männlich';
-    const LABEL_GENDER_MALE = 'weiblich';
+    const LABEL_GENDER_MALE   = 'weiblich';
 
-    const TYPE_FOOD_VEGAN = 1;
-    const TYPE_FOOD_VEGETARIAN = 2;
-    const TYPE_FOOD_NO_PORK = 4;
+    const TYPE_FOOD_VEGAN        = 1;
+    const TYPE_FOOD_VEGETARIAN   = 2;
+    const TYPE_FOOD_NO_PORK      = 4;
     const TYPE_FOOD_LACTOSE_FREE = 8;
 
-    const LABEL_FOOD_VEGAN = 'vegan';
-    const LABEL_FOOD_VEGETARIAN = 'vegetarisch';
-    const LABEL_FOOD_NO_PORK = 'ohne Schweinefleisch';
+    const LABEL_FOOD_VEGAN        = 'vegan';
+    const LABEL_FOOD_VEGETARIAN   = 'vegetarisch';
+    const LABEL_FOOD_NO_PORK      = 'ohne Schweinefleisch';
     const LABEL_FOOD_LACTOSE_FREE = 'laktosefrei';
 
     const TYPE_STATUS_UNCONFIRMED = 1;
-    const TYPE_STATUS_CONFIRMED = 2;
-    const TYPE_STATUS_PAID = 4;
-    const TYPE_STATUS_WITHDRAWN = 8;
+    const TYPE_STATUS_CONFIRMED   = 2;
+    const TYPE_STATUS_PAID        = 4;
+    const TYPE_STATUS_WITHDRAWN   = 8;
 
     const LABEL_STATUS_UNCONFIRMED = 'unbestätigt';
-    const LABEL_STATUS_CONFIRMED = 'bestätigt';
-    const LABEL_STATUS_PAID = 'bezahlt';
-    const LABEL_STATUS_WITHDRAWN = 'zurückgezogen';
+    const LABEL_STATUS_CONFIRMED   = 'bestätigt';
+    const LABEL_STATUS_PAID        = 'bezahlt';
+    const LABEL_STATUS_WITHDRAWN   = 'zurückgezogen';
 
     /**
      * @ORM\Column(type="integer", name="aid")
@@ -107,7 +107,8 @@ class Participant
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->modifiedAt = new \DateTime();
         $this->createdAt = new \DateTime();
     }
@@ -156,7 +157,7 @@ class Participant
     public function setFood($food)
     {
         if (is_array($food)) {
-            $food   = array_sum($food);
+            $food = array_sum($food);
         }
 
         $this->food = $food;
@@ -364,14 +365,17 @@ class Participant
     public function getStatus($format = false)
     {
         if ($format) {
-            $formatLabel = function($text, $type = 'primary') {
+            $formatLabel = function ($text, $type = 'primary') {
                 return sprintf('<span class="label label-%s">%s</span>', $type, $text);
             };
             $status = '';
-            $status .= ($this->status%self::TYPE_STATUS_UNCONFIRMED == 0) ? $formatLabel(self::LABEL_STATUS_UNCONFIRMED) : '';
-            $status .= ($this->status%self::TYPE_STATUS_CONFIRMED == 0) ? $formatLabel(self::LABEL_STATUS_CONFIRMED) : '';
-            $status .= ($this->status%self::TYPE_STATUS_PAID == 0) ? $formatLabel(self::LABEL_STATUS_PAID) : '';
-            $status .= ($this->status%self::TYPE_STATUS_WITHDRAWN == 0) ? $formatLabel(self::LABEL_STATUS_WITHDRAWN) : '';
+            $status .= ($this->status % self::TYPE_STATUS_UNCONFIRMED == 0) ? $formatLabel(
+                self::LABEL_STATUS_UNCONFIRMED) : '';
+            $status .= ($this->status % self::TYPE_STATUS_CONFIRMED == 0) ? $formatLabel(
+                self::LABEL_STATUS_CONFIRMED) : '';
+            $status .= ($this->status % self::TYPE_STATUS_PAID == 0) ? $formatLabel(self::LABEL_STATUS_PAID) : '';
+            $status .= ($this->status % self::TYPE_STATUS_WITHDRAWN == 0) ? $formatLabel(
+                self::LABEL_STATUS_WITHDRAWN) : '';
             return $status;
         }
 

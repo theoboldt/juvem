@@ -31,40 +31,40 @@ class ParticipationManager
     public function mailParticipationRequested(ParticipationEntity $participation, Event $event)
     {
         $message = \Swift_Message::newInstance()
-            ->setSubject('Hello Email')
-            ->setFrom('jungschar.vaihingen@gmail.com')
-            ->setTo($participation->getEmail())
-            ->setBody(
-                $this->templating->renderView(
-                    'mail/participation.txt.twig',
-                    array(
-                        'event'         => $event,
-                        'participation' => $participation,
-                        'participants'  => $participation->getParticipants()
-                    )
-                ),
-                'text/plain'
-            /*
-            $this->renderView(
-                'mail/participation.html.twig',
-                array(
-                    'salution' => $participation->getSalution(),
-                    'nameLast' => $participation->getNameLast()
-                )
-            ),
-            'text/html'
-            )->addPart(
-                $this->renderView(
-                    'mail/participation.txt.twig',
-                    array(
-                        'event' => $event,
-                        'participation' => $participation,
-                        'participants'  => $participation->getParticipants()
-                    )
-                ),
-                'text/plain'
-            */
-            );
+                                 ->setSubject('Hello Email')
+                                 ->setFrom('jungschar.vaihingen@gmail.com')
+                                 ->setTo($participation->getEmail())
+                                 ->setBody(
+                                     $this->templating->renderView(
+                                         'mail/participation.txt.twig',
+                                         array(
+                                             'event'         => $event,
+                                             'participation' => $participation,
+                                             'participants'  => $participation->getParticipants()
+                                         )
+                                     ),
+                                     'text/plain'
+                                 /*
+                                 $this->renderView(
+                                     'mail/participation.html.twig',
+                                     array(
+                                         'salution' => $participation->getSalution(),
+                                         'nameLast' => $participation->getNameLast()
+                                     )
+                                 ),
+                                 'text/html'
+                                 )->addPart(
+                                     $this->renderView(
+                                         'mail/participation.txt.twig',
+                                         array(
+                                             'event' => $event,
+                                             'participation' => $participation,
+                                             'participants'  => $participation->getParticipants()
+                                         )
+                                     ),
+                                     'text/plain'
+                                 */
+                                 );
         $this->mailer->send($message);
 
     }

@@ -30,7 +30,7 @@ class PublicController extends Controller
     public function eventThumbnailAction($eid)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -40,8 +40,11 @@ class PublicController extends Controller
         $uploadManager = $this->get('app.upload_image_manager');
 
 
-        return new Response($uploadManager->fetchPresentationThumbnail($event->getImageFilename()), 200, array(
-                'Content-Disposition' => 'inline')
+        return new Response(
+            $uploadManager->fetchPresentationThumbnail(
+                $event->getImageFilename()), 200, array(
+                'Content-Disposition' => 'inline'
+            )
         );
     }
 
@@ -54,14 +57,15 @@ class PublicController extends Controller
     public function listAction($eid)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
             return $this->redirectToRoute('event_miss', array('eid' => $eid));
         }
 
-        return $this->render('event/public/detail.html.twig', array(
+        return $this->render(
+            'event/public/detail.html.twig', array(
             'event' => $event
         ));
     }
@@ -76,7 +80,7 @@ class PublicController extends Controller
         $eid = $request->get('eid');
 
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -105,14 +109,16 @@ class PublicController extends Controller
         $form->handleRequest($request);
         $participation->setEvent($event);
         if ($form->isValid() && $form->isSubmitted()) {
-            $request->getSession()->set('participation', $participation);
+            $request->getSession()
+                    ->set('participation', $participation);
 
             return $this->redirectToRoute('event_public_participate_confirm', array('eid' => $eid));
         }
 
-        return $this->render('event/public/participate.html.twig', array(
+        return $this->render(
+            'event/public/participate.html.twig', array(
             'event' => $event,
-            'form' => $form->createView()
+            'form'  => $form->createView()
         ));
     }
 
@@ -124,16 +130,20 @@ class PublicController extends Controller
      */
     public function confirmParticipationAction($eid, Request $request)
     {
-        if (!$request->getSession()->has('participation')) {
+        if (!$request->getSession()
+                     ->has('participation')
+        ) {
             return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
         }
 
         /** @var Participation $participation */
-        $participation = $request->getSession()->get('participation');
+        $participation = $request->getSession()
+                                 ->get('participation');
         $event = $participation->getEvent();
 
         if (!$participation instanceof Participation
-            || $eid != $participation->getEvent()->getEid()
+            || $eid != $participation->getEvent()
+                                     ->getEid()
         ) {
             throw new BadRequestHttpException('Given participation data is invalid');
         }
@@ -167,11 +177,13 @@ class PublicController extends Controller
             //$participationManager->mailParticipationRequested($participation, $event);
 
             //confirmed
-            $request->getSession()->remove('participation');
+            $request->getSession()
+                    ->remove('participation');
         } else {
-            return $this->render('event/public/participate-confirm.html.twig', array(
+            return $this->render(
+                'event/public/participate-confirm.html.twig', array(
                 'participation' => $participation,
-                'event' => $event
+                'event'         => $event
             ));
         }
 

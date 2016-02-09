@@ -18,26 +18,28 @@ class PhoneNumberType extends AbstractType
             'tel',
             array(
                 'default_region' => 'DE',
-                'format' => PhoneNumberFormat::NATIONAL,
-                'label' => 'Telefonnummer',
-                'attr' => array('aria-describedby' => 'help-info-phone-number')
+                'format'         => PhoneNumberFormat::NATIONAL,
+                'label'          => 'Telefonnummer',
+                'attr'           => array('aria-describedby' => 'help-info-phone-number')
             )
         )
-            ->add('description',
-                TextType::class,
-                array(
-                    'label' => 'Hinweis',
-                    'required' => false,
-                    'attr' => array('aria-describedby' => 'help-info-phone-description')
-                )
-            );
+                ->add(
+                    'description',
+                    TextType::class,
+                    array(
+                        'label'    => 'Hinweis',
+                        'required' => false,
+                        'attr'     => array('aria-describedby' => 'help-info-phone-description')
+                    )
+                );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\PhoneNumber',
-        ));
+        $resolver->setDefaults(
+            array(
+                'data_class' => 'AppBundle\Entity\PhoneNumber',
+            ));
     }
 
     public function getName()

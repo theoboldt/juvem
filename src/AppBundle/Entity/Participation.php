@@ -113,11 +113,12 @@ class Participation
      *
      * @return string
      */
-    public function getName() {
-        $name   = $this->getNameLast();
+    public function getName()
+    {
+        $name = $this->getNameLast();
 
         if ($this->getNameFirst()) {
-            $name   .= ', '.$this->getNameFirst();
+            $name .= ', ' . $this->getNameFirst();
         }
 
         return $name;

@@ -17,8 +17,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Event
 {
-    const DATE_FORMAT_DATE = 'd.m.y';
-    const DATE_FORMAT_TIME = 'H:i';
+    const DATE_FORMAT_DATE      = 'd.m.y';
+    const DATE_FORMAT_TIME      = 'H:i';
     const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
 
     /**
@@ -229,7 +229,7 @@ class Event
     /**
      * Returns true if a start time is set
      *
-     * @param  boolean  $value      Unprocessed value
+     * @param  boolean $value Unprocessed value
      * @return bool
      */
     public function hasStartTime($value = null)
@@ -264,7 +264,7 @@ class Event
     /**
      * Returns true if a end date is set
      *
-     * @param  boolean  $value      Unprocessed value
+     * @param  boolean $value Unprocessed value
      * @return bool
      */
     public function hasEndDate($value = null)
@@ -300,7 +300,7 @@ class Event
     /**
      * Returns true if a end time is set
      *
-     * @param  boolean  $value      Unprocessed value
+     * @param  boolean $value Unprocessed value
      * @return bool
      */
     public function hasEndTime($value = null)
@@ -396,6 +396,7 @@ class Event
             $this->modifiedAt = new \DateTime('now');
         }
     }
+
     /**
      * @return File
      */
@@ -419,6 +420,7 @@ class Event
     {
         return $this->imageFilename;
     }
+
     /**
      * @ORM\PrePersist
      */

@@ -34,7 +34,7 @@ class AdminController extends Controller
     public function listDataAction(Request $request)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
         /*
                 $criteria   = array();
                 $eventEntityList    = $repository->findBy(
@@ -65,11 +65,15 @@ class AdminController extends Controller
             }
 
             $eventStartFormat = $dateFormatDayHour;
-            if ($event->getStartDate()->format('Hi') == '0000') {
+            if ($event->getStartDate()
+                      ->format('Hi') == '0000'
+            ) {
                 $eventStartFormat = $dateFormatDay;
             }
             $eventEndFormat = $dateFormatDayHour;
-            if ($event->getEndDate()->format('Hi') == '0000') {
+            if ($event->getEndDate()
+                      ->format('Hi') == '0000'
+            ) {
                 $eventEndFormat = $dateFormatDay;
             }
 
@@ -77,8 +81,10 @@ class AdminController extends Controller
                 'eid'         => $event->getEid(),
                 'title'       => $event->getTitle(),
                 'description' => $event->getTitle(),
-                'start_date'  => $event->getStartDate()->format($eventStartFormat),
-                'end_date'    => $event->getEndDate()->format($eventEndFormat),
+                'start_date'  => $event->getStartDate()
+                                       ->format($eventStartFormat),
+                'end_date'    => $event->getEndDate()
+                                       ->format($eventEndFormat),
                 'status'      => $eventStatus
             );
         }
@@ -94,10 +100,10 @@ class AdminController extends Controller
      */
     public function editAction(Request $request)
     {
-        $eid    = $request->get('eid');
+        $eid = $request->get('eid');
 
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -109,7 +115,8 @@ class AdminController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()
+                       ->getManager();
 
             $em->persist($event);
             $em->flush();
@@ -117,9 +124,10 @@ class AdminController extends Controller
             return $this->redirect('/event/' . $event->getEid());
         }
 
-        return $this->render('event/edit.html.twig', array(
+        return $this->render(
+            'event/edit.html.twig', array(
             'event' => $event,
-            'form' => $form->createView(),
+            'form'  => $form->createView(),
         ));
     }
 
@@ -131,7 +139,7 @@ class AdminController extends Controller
     public function detailEventAction($eid)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('AppBundle:Event');
+                           ->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -143,7 +151,11 @@ class AdminController extends Controller
             'title'   => 'Ereignis löschen',
             'message' => 'Soll dieses Ereignis wirklich gelöscht werden?',
             'action'  => 'Löschen',
-            'form'    => $this->createForm(ModalActionType::class, array('id' => $eid, 'area' => 'event'))->createView()
+            'form'    => $this->createForm(
+                ModalActionType::class, array('id'   => $eid,
+                                              'area' => 'event'
+            ))
+                              ->createView()
         );
 
         $buttonState = array(
@@ -179,7 +191,8 @@ class AdminController extends Controller
             )
         );
 
-        return $this->render('event/detail.html.twig', array(
+        return $this->render(
+            'event/detail.html.twig', array(
             'event'            => $event,
             'eventDeleteModal' => $eventDeleteModal,
             'buttonState'      => $buttonState,
@@ -203,7 +216,8 @@ class AdminController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()
+                       ->getManager();
 
             $em->persist($event);
             $em->flush();
@@ -211,7 +225,8 @@ class AdminController extends Controller
             return $this->redirect('/admin/event/list');
         }
 
-        return $this->render('event/new.html.twig', array(
+        return $this->render(
+            'event/new.html.twig', array(
             'form' => $form->createView(),
         ));
     }

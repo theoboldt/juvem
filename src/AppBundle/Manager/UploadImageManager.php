@@ -30,7 +30,8 @@ class UploadImageManager
      */
     protected $uploadsDir;
 
-    public function __construct($cacheDir, array $uploadMappings) {
+    public function __construct($cacheDir, array $uploadMappings)
+    {
         $this->cache = new FilesystemCache($cacheDir);
 
         if (!array_key_exists('event_image', $uploadMappings)) {
@@ -39,27 +40,29 @@ class UploadImageManager
         $this->uploadsDir = $uploadMappings['event_image']['upload_destination'];
     }
 
-    public function fetchPresentationThumbnail($name) {
+    public function fetchPresentationThumbnail($name)
+    {
         $key = self::key($name, self::TYPE_PRESENTATION_THUMBNAIL);
         if (!$this->cache->contains($key)) {
             $imagine = new Imagine();
-            $size    = new Box(445, 445);
-            $mode    = ImageInterface::THUMBNAIL_INSET;
-            $image = $imagine->open($this->uploadsDir.'/'.$name)
-                ->thumbnail($size, $mode)
-                ->get('jpg');
-            ;
+            $size = new Box(445, 445);
+            $mode = ImageInterface::THUMBNAIL_INSET;
+            $image = $imagine->open($this->uploadsDir . '/' . $name)
+                             ->thumbnail($size, $mode)
+                             ->get('jpg');;
             $this->cache->save($key, $image);
             return $image;
         }
         return $this->cache->fetch($key);
     }
 
-    public function fetch($name, $size) {
+    public function fetch($name, $size)
+    {
 
     }
 
-    public static function key($name, $type) {
+    public static function key($name, $type)
+    {
         return sprintf('%s_%s', $name, $type);
     }
 }

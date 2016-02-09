@@ -239,8 +239,12 @@ class BootstrapGlyph extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter(
                 'glyph',
-                array($this, 'bootstrapGlyph'),
-                array('pre_escape' => 'html', 'is_safe' => array('html'))
+                array($this,
+                      'bootstrapGlyph'
+                ),
+                array('pre_escape' => 'html',
+                      'is_safe'    => array('html')
+                )
             ),
         );
 

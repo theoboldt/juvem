@@ -56,7 +56,7 @@ class ActiveButtonController extends Controller
 
         try {
             $repository = $this->getDoctrine()
-                ->getRepository('AppBundle:' . $entityName);
+                               ->getRepository('AppBundle:' . $entityName);
         } catch (MappingException $e) {
             throw new AccessDeniedHttpException('Unavailable entity');
         }
@@ -77,13 +77,15 @@ class ActiveButtonController extends Controller
             $propertySetter = 'set' . ucfirst($property);
             $entity->$propertySetter($valueNew);
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()
+                       ->getManager();
             $em->persist($entity);
             $em->flush();
         }
         $valuePerformed = $entity->$property();
 
-        return $this->render('common/active-button-content.html.twig', array(
+        return $this->render(
+            'common/active-button-content.html.twig', array(
             'buttonIsEnabled' => $valuePerformed,
             'buttons'         => $buttons
         ));
