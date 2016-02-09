@@ -397,16 +397,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.6.1",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "c4ffef2b2296e9d0179eb0b5248e5ae25c9bba3b"
+                "reference": "e9c2ccf573b59b7cea566390f34254fed3c20ed9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/c4ffef2b2296e9d0179eb0b5248e5ae25c9bba3b",
-                "reference": "c4ffef2b2296e9d0179eb0b5248e5ae25c9bba3b",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/e9c2ccf573b59b7cea566390f34254fed3c20ed9",
+                "reference": "e9c2ccf573b59b7cea566390f34254fed3c20ed9",
                 "shasum": ""
             },
             "require": {
@@ -422,6 +422,7 @@
                 "doctrine/orm": "~2.3",
                 "phpunit/phpunit": "~4",
                 "satooshi/php-coveralls": "~0.6.1",
+                "symfony/phpunit-bridge": "~2.7|~3.0",
                 "symfony/validator": "~2.2|~3.0",
                 "symfony/yaml": "~2.2|~3.0",
                 "twig/twig": "~1.10"
@@ -471,7 +472,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2015-11-16 17:11:46"
+            "time": "2016-01-10 17:21:44"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -2584,12 +2585,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "6e755c50f5310b2f47040ed4833604a88adbc582"
+                "reference": "3c382c54c50ea146c768978b147fd9f347a2df27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/6e755c50f5310b2f47040ed4833604a88adbc582",
-                "reference": "6e755c50f5310b2f47040ed4833604a88adbc582",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/3c382c54c50ea146c768978b147fd9f347a2df27",
+                "reference": "3c382c54c50ea146c768978b147fd9f347a2df27",
                 "shasum": ""
             },
             "require": {
@@ -2710,7 +2711,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-02-05 11:35:35"
+            "time": "2016-02-09 20:05:33"
         },
         {
             "name": "twig/twig",
@@ -2779,12 +2780,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "a9d98916f7c8454df67681e979266b7a0be81594"
+                "reference": "c936f5d43b1103264f6965c8699d844e008b5e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/a9d98916f7c8454df67681e979266b7a0be81594",
-                "reference": "a9d98916f7c8454df67681e979266b7a0be81594",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/c936f5d43b1103264f6965c8699d844e008b5e66",
+                "reference": "c936f5d43b1103264f6965c8699d844e008b5e66",
                 "shasum": ""
             },
             "require": {
@@ -2842,7 +2843,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-02-05 16:59:23"
+            "time": "2016-02-08 14:04:23"
         },
         {
             "name": "zendframework/zend-code",
