@@ -87,17 +87,16 @@ class AdminParticipationController extends Controller
                                       ->diff($participant->getBirthday());
             $participantPhone = '';
 
-            /** @var PhoneNumber $phoneNumber */
-            /*
-                    foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumber) {
-                            $number = $this->container->get('libphonenumber.phone_number_util')->parse(
-                            $phoneNumber->getNumber(),
-                            PhoneNumberUtil::UNKNOWN_REGION
-                        );
+            $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
-                        $participantPhone   .= sprintf('<span class="label label-primary">%s</span>', $number);
-                        }
-            */
+            /** @var PhoneNumber $phoneNumberEntity */
+            foreach ($participation->getPhoneNumbers()
+                                   ->getIterator() as $phoneNumberEntity) {
+                /** @var \libphonenumber\PhoneNumber $phoneNumber */
+                $phoneNumber = $phoneNumberEntity->getNumber();
+                $participantPhone .= sprintf('<span class="label label-primary">%s</span> ', $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE'));
+            }
+
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
                 'pid'       => $participant->getParticipation()
@@ -133,10 +132,20 @@ class AdminParticipationController extends Controller
         //dump($event);
         //dump($participation);
 
+        $phoneNumberList = array();
+        /** @var PhoneNumber $phoneNumberEntity */
+        foreach ($participation->getPhoneNumbers()
+                               ->getIterator() as $phoneNumberEntity) {
+            /** @var \libphonenumber\PhoneNumber $phoneNumber */
+            $phoneNumber       = $phoneNumberEntity->getNumber();
+            $phoneNumberList[] = $phoneNumber;
+        }
+
         return $this->render(
             'event/participation/participation-detail.html.twig',
-            array('event'         => $event,
-                  'participation' => $participation
+            array('event'           => $event,
+                  'participation'   => $participation,
+                  'phoneNumberList' => $phoneNumberList
             )
         );
     }
