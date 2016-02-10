@@ -110,7 +110,7 @@ class Participant
     public function __construct()
     {
         $this->modifiedAt = new \DateTime();
-        $this->createdAt = new \DateTime();
+        $this->createdAt  = new \DateTime();
     }
 
     /**
@@ -368,14 +368,17 @@ class Participant
             $formatLabel = function ($text, $type = 'primary') {
                 return sprintf('<span class="label label-%s">%s</span>', $type, $text);
             };
-            $status = '';
+            $status      = '';
             $status .= ($this->status % self::TYPE_STATUS_UNCONFIRMED == 0) ? $formatLabel(
-                self::LABEL_STATUS_UNCONFIRMED) : '';
+                self::LABEL_STATUS_UNCONFIRMED
+            ) : '';
             $status .= ($this->status % self::TYPE_STATUS_CONFIRMED == 0) ? $formatLabel(
-                self::LABEL_STATUS_CONFIRMED) : '';
+                self::LABEL_STATUS_CONFIRMED
+            ) : '';
             $status .= ($this->status % self::TYPE_STATUS_PAID == 0) ? $formatLabel(self::LABEL_STATUS_PAID) : '';
             $status .= ($this->status % self::TYPE_STATUS_WITHDRAWN == 0) ? $formatLabel(
-                self::LABEL_STATUS_WITHDRAWN) : '';
+                self::LABEL_STATUS_WITHDRAWN
+            ) : '';
             return $status;
         }
 

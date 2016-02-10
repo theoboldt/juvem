@@ -65,7 +65,8 @@ class EventType extends AbstractType
                 ),
                 'choices_as_values' => true,
                 'expanded'          => true
-            ))
+            )
+            )
             ->add(
                 'isVisible', ChoiceType::class, array(
                 'label'             => 'Sichtbarkeit',
@@ -74,7 +75,8 @@ class EventType extends AbstractType
                 ),
                 'choices_as_values' => true,
                 'expanded'          => true
-            ))
+            )
+            )
             ->add(
                 'imageFile', VichImageType::class, array(
                 'label'         => 'Poster',
@@ -83,7 +85,8 @@ class EventType extends AbstractType
                 // not mandatory, default is true
                 'download_link' => false,
                 // not mandatory, default is true
-            ))
+            )
+            )
             ->add('save', SubmitType::class);
 
         $builder->addEventListener(
@@ -108,7 +111,8 @@ class EventType extends AbstractType
                 $form->get('endTime')
                      ->setData(null);
             }
-        });
+        }
+        );
 
     }
 
@@ -117,6 +121,7 @@ class EventType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'AppBundle\Entity\Event',
-            ));
+            )
+        );
     }
 }

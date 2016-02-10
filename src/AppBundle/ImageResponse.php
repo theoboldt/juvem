@@ -21,10 +21,10 @@ class ImageResponse extends StreamedResponse
 {
     /**
      * @param UploadImage $image
-     * @param string $format
-     * @param Request $request
-     * @param int|null $defaultWidth
-     * @param int|null $defaultHeight
+     * @param string      $format
+     * @param Request     $request
+     * @param int|null    $defaultWidth
+     * @param int|null    $defaultHeight
      * @return static
      */
     public static function createFromRequest(
@@ -51,7 +51,7 @@ class ImageResponse extends StreamedResponse
 
     /**
      * @param UploadImage $image
-     * @param Response $response
+     * @param Response    $response
      */
     private static function setCacheHeaders(UploadImage $image, Response $response)
     {

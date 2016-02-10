@@ -44,9 +44,9 @@ class AdminController extends Controller
         */
         $eventEntityList = $repository->findAll();
 
-        $dateFormatDay = 'd.m.y';
+        $dateFormatDay     = 'd.m.y';
         $dateFormatDayHour = 'd.m.y H:i';
-        $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
+        $glyphicon         = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
         $eventList = array();
         /** @var Event $event */
@@ -128,7 +128,8 @@ class AdminController extends Controller
             'event/edit.html.twig', array(
             'event' => $event,
             'form'  => $form->createView(),
-        ));
+        )
+        );
     }
 
     /**
@@ -154,11 +155,12 @@ class AdminController extends Controller
             'form'    => $this->createForm(
                 ModalActionType::class, array('id'   => $eid,
                                               'area' => 'event'
-            ))
+            )
+            )
                               ->createView()
         );
 
-        $buttonState = array(
+        $buttonState      = array(
             'entityName'   => 'Event',
             'propertyName' => 'isActive',
             'entityId'     => $eid,
@@ -197,7 +199,8 @@ class AdminController extends Controller
             'eventDeleteModal' => $eventDeleteModal,
             'buttonState'      => $buttonState,
             'buttonVisibility' => $buttonVisibility
-        ));
+        )
+        );
     }
 
     /**
@@ -228,7 +231,8 @@ class AdminController extends Controller
         return $this->render(
             'event/new.html.twig', array(
             'form' => $form->createView(),
-        ));
+        )
+        );
     }
 
     /**

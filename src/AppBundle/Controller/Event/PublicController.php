@@ -39,7 +39,7 @@ class PublicController extends Controller
         }
 
         $uploadManager = $this->get('app.upload_image_manager');
-        $image = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
+        $image         = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
 
         return new ImageResponse($image);
     }
@@ -63,7 +63,8 @@ class PublicController extends Controller
         return $this->render(
             'event/public/detail.html.twig', array(
             'event' => $event
-        ));
+        )
+        );
     }
 
     /**
@@ -115,7 +116,8 @@ class PublicController extends Controller
             'event/public/participate.html.twig', array(
             'event' => $event,
             'form'  => $form->createView()
-        ));
+        )
+        );
     }
 
 
@@ -135,7 +137,7 @@ class PublicController extends Controller
         /** @var Participation $participation */
         $participation = $request->getSession()
                                  ->get('participation');
-        $event = $participation->getEvent();
+        $event         = $participation->getEvent();
 
         if (!$participation instanceof Participation
             || $eid != $participation->getEvent()
@@ -180,7 +182,8 @@ class PublicController extends Controller
                 'event/public/participate-confirm.html.twig', array(
                 'participation' => $participation,
                 'event'         => $event
-            ));
+            )
+            );
         }
 
 

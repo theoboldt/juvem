@@ -22,8 +22,8 @@ class UploadImage
     /**
      * UploadImage constructor.
      *
-     * @param string $fileName          Path to original image
-     * @param string $imageContent      Binary Content of image
+     * @param string $fileName Path to original image
+     * @param string $imageContent Binary Content of image
      */
     public function __construct($fileName, $imageContent = null)
     {

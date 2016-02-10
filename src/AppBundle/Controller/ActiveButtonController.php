@@ -20,13 +20,13 @@ class ActiveButtonController extends Controller
      */
     public function activeButtonHandler(Request $request)
     {
-        $token = $request->get('_token');
-        $entityName = $request->get('entityName');
-        $entityId = $request->get('entityId');
-        $property = $request->get('propertyName');
-        $valueNew = $request->get('value');
+        $token       = $request->get('_token');
+        $entityName  = $request->get('entityName');
+        $entityId    = $request->get('entityId');
+        $property    = $request->get('propertyName');
+        $valueNew    = $request->get('value');
         $toggleValue = $request->get('toggle');
-        $buttons = $request->get('buttons');
+        $buttons     = $request->get('buttons');
 
         switch ($valueNew) {
             case 0:
@@ -70,7 +70,7 @@ class ActiveButtonController extends Controller
 
         if ($toggleValue) {
             $valueOriginal = $entity->$property();
-            $valueNew = !$valueOriginal;
+            $valueNew      = !$valueOriginal;
         }
 
         if ($valueNew !== null) {
@@ -88,6 +88,7 @@ class ActiveButtonController extends Controller
             'common/active-button-content.html.twig', array(
             'buttonIsEnabled' => $valuePerformed,
             'buttons'         => $buttons
-        ));
+        )
+        );
     }
 }

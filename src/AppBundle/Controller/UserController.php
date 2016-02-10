@@ -31,7 +31,7 @@ class UserController extends Controller
 
 
         $userManager = $this->container->get('fos_user.user_manager');
-        $entityList = $userManager->findUsers();
+        $entityList  = $userManager->findUsers();
 
         $userList = array();
 

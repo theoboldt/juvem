@@ -81,7 +81,8 @@ class ParticipantType extends AbstractType
                 'multiple'          => true,
                 'required'          => false,
                 'attr'              => array('aria-describedby' => 'help-food')
-            ));
+            )
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -89,7 +90,8 @@ class ParticipantType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'AppBundle\Entity\Participant',
-            ));
+            )
+        );
     }
 
     public function getName()

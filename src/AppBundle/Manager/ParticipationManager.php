@@ -24,7 +24,7 @@ class ParticipationManager
 
     public function __construct(Swift_Mailer $mailer, EngineInterface $templating)
     {
-        $this->mailer = $mailer;
+        $this->mailer     = $mailer;
         $this->templating = $templating;
     }
 

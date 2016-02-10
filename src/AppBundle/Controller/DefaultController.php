@@ -15,7 +15,7 @@ class DefaultController extends Controller
     {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
-        $eventList = $repository->findBy(
+        $eventList  = $repository->findBy(
             array('isVisible' => true,
                   'isActive'  => true
             ),
@@ -27,6 +27,7 @@ class DefaultController extends Controller
         return $this->render(
             'default/index.html.twig', array(
             'events' => $eventList
-        ));
+        )
+        );
     }
 }

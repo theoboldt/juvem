@@ -34,14 +34,14 @@ class AdminParticipationController extends Controller
         }
 
 
-        $em = $this->getDoctrine()
-                   ->getManager();
-        $query = $em->createQuery(
+        $em                    = $this->getDoctrine()
+                                      ->getManager();
+        $query                 = $em->createQuery(
             'SELECT p
                    FROM AppBundle:Participation p
               WHERE p.event = :eid'
         )
-                    ->setParameter('eid', $eid);
+                                    ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
         dump($participantEntityList);
 
@@ -56,7 +56,7 @@ class AdminParticipationController extends Controller
      */
     public function listParticipantsDataAction(Request $request)
     {
-        $eid = $request->get('eid');
+        $eid             = $request->get('eid');
         $eventRepository = $this->getDoctrine()
                                 ->getRepository('AppBundle:Event');
 
@@ -66,16 +66,16 @@ class AdminParticipationController extends Controller
         }
 
 
-        $em = $this->getDoctrine()
-                   ->getManager();
-        $query = $em->createQuery(
+        $em                    = $this->getDoctrine()
+                                      ->getManager();
+        $query                 = $em->createQuery(
             'SELECT a
                FROM AppBundle:Participant a,
                     AppBundle:Participation p
               WHERE a.participation = p.pid
                 AND p.event = :eid'
         )
-                    ->setParameter('eid', $eid);
+                                    ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
 
         $participantList = array();
@@ -83,21 +83,21 @@ class AdminParticipationController extends Controller
         foreach ($participantEntityList as $participant) {
             $participation = $participant->getParticipation();
 
-            $participantAge = $event->getStartDate()
-                                    ->diff($participant->getBirthday());
+            $participantAge   = $event->getStartDate()
+                                      ->diff($participant->getBirthday());
             $participantPhone = '';
 
             /** @var PhoneNumber $phoneNumber */
-/*
-        foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumber) {
-                $number = $this->container->get('libphonenumber.phone_number_util')->parse(
-                $phoneNumber->getNumber(),
-                PhoneNumberUtil::UNKNOWN_REGION
-            );
+            /*
+                    foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumber) {
+                            $number = $this->container->get('libphonenumber.phone_number_util')->parse(
+                            $phoneNumber->getNumber(),
+                            PhoneNumberUtil::UNKNOWN_REGION
+                        );
 
-            $participantPhone   .= sprintf('<span class="label label-primary">%s</span>', $number);
-            }
-*/
+                        $participantPhone   .= sprintf('<span class="label label-primary">%s</span>', $number);
+                        }
+            */
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
                 'pid'       => $participant->getParticipation()

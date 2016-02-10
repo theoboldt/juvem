@@ -105,7 +105,7 @@ class Participation
         $this->addParticipant(new Participant());
 
         $this->modifiedAt = new \DateTime();
-        $this->createdAt = new \DateTime();
+        $this->createdAt  = new \DateTime();
     }
 
     /**

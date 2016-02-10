@@ -21,11 +21,13 @@ class ModalActionType extends AbstractType
                                                                     'data-dismiss' => 'modal'
             ),
                                                    'label' => 'Abbrechen'
-            ))
+            )
+            )
             ->add(
                 'submit', SubmitType::class, array('attr' => array('class' => 'btn-primary',
                                                                    'label' => 'Speichern'
             )
-            ));
+            )
+            );
     }
 }

@@ -43,7 +43,8 @@ class ParticipationType extends AbstractType
                 ),
                 'choices_as_values' => false,
                 'expanded'          => false
-            ))
+            )
+            )
             ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
             ->add('nameLast', TextType::class, array('label' => 'Nachname'))
             ->add('addressStreet', TextType::class, array('label' => 'Straße u. Hausnummer'))
@@ -57,14 +58,16 @@ class ParticipationType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true,
                 'attr'         => array('aria-describedby' => 'help-info-phone-numbers')
-            ))
+            )
+            )
             ->add(
                 'participants', CollectionType::class, array(
                 'label'        => 'Teilnehmer',
                 'entry_type'   => ParticipantType::class,
                 'allow_add'    => true,
                 'allow_delete' => true
-            ))
+            )
+            )
             ->add('save', SubmitType::class);
 
 
@@ -75,6 +78,7 @@ class ParticipationType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'AppBundle\Entity\Participation',
-            ));
+            )
+        );
     }
 }
