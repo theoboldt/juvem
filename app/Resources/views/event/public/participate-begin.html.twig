@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+{% import _self as m %}
+
+{% block title %}Anmelden bei {{ event.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-lg-offset-2 col-lg-8">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                        <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                        <li class="active">Anmeldung ausfüllen (1/3)</li>
+                    </ol>
+                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung ausfüllen (1/3)', 'subtitle': event.title} %}
+                </div>
+            </div>
+            {{ form_start(form) }}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="alert alert-info" role="alert">
+                        Sie können die Daten die Sie hier eingeben im nächsten Schritt noch mal überprüfen,
+                        bevor Sie die Anmeldung engültig abgeben.
+                    </div>
+                    {{ form_errors(form) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-10 col-md-8">
+                    <h3>Daten der Eltern</h3>
+
+                    <p>Bitte geben Sie hier ihre grundlegenden Kontakdaten an.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-3">
+                    {{ form_row(form.salution) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    {{ form_row(form.nameFirst) }}
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    {{ form_row(form.nameLast) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ form_row(form.addressStreet) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5">
+                    {{ form_row(form.addressZip) }}
+                </div>
+                <div class="col-xs-12 col-sm-7">
+                    {{ form_row(form.addressCity) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ form_row(form.email) }}
+                </div>
+            </div>
+            <div class="row">
+                {% macro prototypePhone(formElement, showHelp) %}
+                    <div class="panel panel-default prototype-element">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-10 col-sm-8">
+                                    <h4 class="panel-title">Telefonnummer</h4>
+                                </div>
+                                <div class="col-xs-2 col-sm-4 text-right">
+                                    <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                       title="Telefonnummer entfernen">{{ 'remove-sign'|glyph }} <span
+                                                class="hidden-xs">Telefonnummer entfernen</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-5">
+                                    <div class="form-group">
+                                        {{ form_label(formElement.number) }}
+                                        <div class="input-group">
+                                            <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
+                                            {{ form_widget(formElement.number) }}
+                                            <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default" data-toggle="popover"
+                                                            data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                                    </button>
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-7">
+                                    {{ form_label(formElement.description) }}
+                                    <div class="input-group">
+                                        {{ form_widget(formElement.description) }}
+                                        <span class="input-group-btn">
+                                                <button type="button" class="btn btn-default" data-toggle="popover"
+                                                        data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                                </button>
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endmacro %}
+                <div class="col-xs-12 phone-numbers prototype-container"
+                     data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
+                    <div class="prototype-elements">
+                        <div class="form-group">
+                            {{ form_label(form.phoneNumbers) }}
+                            <span id='help-phone-numbers' class='help-block'>
+                                    In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
+                                    Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter
+                                    denen wir Sie bei Notfällen erreichen können.
+                                </span>
+                            {{ form_errors(form.phoneNumbers) }}
+                            {% for phoneNumber in form.phoneNumbers %}
+                                {{ m.prototypePhone(phoneNumber, loop.index0 == 0) }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Telefonnummer
+                        hinzufügen</a>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Daten der Teilnehmer</h3>
+
+                    <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.
+                    </p>
+
+                    <p>
+                        Abhängig von Art und Dauer der Veranstaltung können mehr oder weniger Informationen nötig
+                        sein.
+                        Falls die Aktion eine Mahlzeit umfasst, sollten Sie, falls zutreffend, Angaben zu speziellen
+                        Essgewohneiten ihres Kindes machen. Bei Veranstaltungen mit Übernachtung können spezielle
+                        Informationen zur Nacht wichtig sein.
+                    </p>
+
+                    <p>
+                        Bitte teilen Sie uns alles mit, was eventuell wichtig sein könnte. Nur dadurch können wir
+                        den
+                        Bedürfnissen Ihres Kindes gerecht werden. Wir behandeln diese Informationen vertraulich.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                {% macro prototypeParticipant(formElement, showHelp) %}
+                    <div class="panel panel-default prototype-element" data-toggle="collapse">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-10 col-sm-8">
+                                    <h4 class="panel-title">Teilnehmer</h4>
+                                </div>
+                                <div class="col-xs-2 col-sm-4 text-right">
+                                    <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                       title="Teilnehmer entfernen">{{ 'remove-sign'|glyph }} <span
+                                                class="hidden-xs">Teilnehmer entfernen</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">
+                                    {{ form_row(formElement.nameFirst) }}
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    {{ form_row(formElement.nameLast) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">
+                                    {{ form_row(formElement.birthday) }}
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    {{ form_row(formElement.gender) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 ">
+                                    <div class="form-group">
+                                        {{ form_label(formElement.food) }}
+                                        <button type="button" class="btn btn-default btn-xs btn-round"
+                                                data-toggle="popover"
+                                                data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte unter <i>Medizinische Hinweise</i> ein.">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </button>
+                                        {{ form_widget(formElement.food) }}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        {{ form_label(formElement.infoMedical) }}
+                                        <button type="button" class="btn btn-default btn-xs btn-round"
+                                                data-toggle="popover"
+                                                data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </button>
+                                        {{ form_widget(formElement.infoMedical) }}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        {{ form_label(formElement.infoGeneral) }}
+                                        <button type="button" class="btn btn-default btn-xs btn-round"
+                                                data-toggle="popover"
+                                                data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </button>
+                                        {{ form_widget(formElement.infoGeneral) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endmacro %}
+                <div class="col-xs-12 participants-list prototype-container"
+                     data-prototype="{{ m.prototypeParticipant(form.participants.vars.prototype, false)|e('html_attr') }}">
+                    <div class="prototype-elements">
+                        <div class="form-group">
+                            {{ form_errors(form.participants) }}
+                            {% for participant in form.participants %}
+                                {{ m.prototypeParticipant(participant, loop.index0 == 0) }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Teilnehmer
+                        hinzufügen</a>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Fortfahren</h3>
+                    <p>
+                        Sie können die Daten im nächsten Schritt noch mal überprüfen,
+                        bevor Sie die Anmeldung engültig abgeben.
+                    </p>
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <input type="submit" class="btn btn-primary navbar-btn" value="Anmeldung überprüfen (2/3)" />
+                        </div>
+                    </nav>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

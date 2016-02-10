@@ -142,15 +142,24 @@ class Participant
      *
      * @return integer
      */
-    public function getGender()
+    public function getGender($formatted = false)
     {
+        if ($formatted) {
+            switch ($this->gender) {
+                case self::TYPE_GENDER_MALE:
+                    return self::LABEL_GENDER_MALE;
+                case self::TYPE_GENDER_FEMALE:
+                    return self::LABEL_GENDER_FEMALE;
+            }
+        }
+
         return $this->gender;
     }
 
     /**
      * Set food
      *
-     * @param integer $food
+     * @param integer|array $food
      *
      * @return Participant
      */
@@ -168,10 +177,28 @@ class Participant
     /**
      * Get food
      *
-     * @return integer
+     * @param   bool    $asArray   Set to true to return food as array
+     * @return integer|array
      */
-    public function getFood()
+    public function getFood($asArray = true)
     {
+        if ($asArray) {
+            $result = array();
+
+            $check = function ($type, $label) use ($result) {
+                if ($this->food & $type) {
+                    $result[] = $label;
+                }
+            };
+            $check(self::TYPE_FOOD_NO_PORK, self::LABEL_FOOD_NO_PORK);
+            $check(self::TYPE_FOOD_VEGETARIAN, self::LABEL_FOOD_VEGETARIAN);
+            $check(self::TYPE_FOOD_VEGAN, self::LABEL_FOOD_VEGAN);
+            $check(self::TYPE_FOOD_LACTOSE_FREE, self::LABEL_FOOD_LACTOSE_FREE);
+
+            sort($result);
+            return $result;
+        }
+
         return $this->food;
     }
 

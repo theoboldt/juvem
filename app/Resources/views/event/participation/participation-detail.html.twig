@@ -39,6 +39,11 @@
                     <dt>Nachname</dt>
                     <dd>{{ participation.nameLast }}</dd>
                 </dl>
+//$phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE'));
+
+                {% for phoneNumber in phoneNumberList %}
+                    {{ phone_number_format(phoneNumber, 'INTERNATIONAL') }}
+                {% endfor %}
             </div>
         </div>
     </div>

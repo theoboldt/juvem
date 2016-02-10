@@ -24,7 +24,7 @@ class Participation
     protected $pid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations",cascade={"persist"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid")
      */
     protected $event;

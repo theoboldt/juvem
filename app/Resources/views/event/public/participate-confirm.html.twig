@@ -11,16 +11,24 @@
                 <div class="col-xs-12">
                     <ol class="breadcrumb">
                         <li><a href="{{ path('homepage') }}">Juvem</a></li>
-                        <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li class="active">Anmeldung überprüfen und bestätigen</li>
+                        <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a>
+                        </li>
+                        <li class="active">Anmeldung überprüfen (2/3)</li>
                     </ol>
-                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': event.title} %}
+                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung überprüfen (2/3)', 'subtitle': event.title} %}
                 </div>
             </div>
-            {% include 'event/public/participate-event-template.html.twig' with {'event': event} %}
-            <div class="row" data-spy="scroll">
-                <div class="col-xs-12 col-sm-8">
-                    <h4 id="data-participation">Daten der Eltern</h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="alert alert-info" role="alert">
+                        Überprüfen Sie jetzt bitte die Angaben auf Richtigkeit.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3 id="data-participation">Daten der Eltern</h3>
+
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
@@ -69,14 +77,43 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row" id="participant-{{ loop.index }}">
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12">
                                         <dl class="dl-horizontal">
                                             <dt>Vorname</dt>
                                             <dd>{{ participant.nameFirst }}</dd>
                                             <dt>Nachname</dt>
                                             <dd>{{ participant.nameLast }}</dd>
                                             <dt>Geschlecht</dt>
-                                            <dd>{{ participant.gender }}</dd>
+                                            <dd>{{ participant.getGender(true) }}</dd>
+                                            <dt>Geburtsdatum</dt>
+                                            <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
+                                            <dt>Ernährung</dt>
+                                            <dd>
+                                                {% set participantFood = participant.getFood(true) %}
+                                                {% if participantFood|length %}
+                                                    {{ participant.getFood(true)|join(', ') }}
+                                                {% else %}
+                                                    <i>(keine Besonderheiten)</i>
+                                                {% endif %}
+                                            </dd>
+                                            <dt>Medizinische Hinweise</dt>
+                                            <dd>
+                                                {% if participant.infoMedical %}
+                                                    {{ participant.infoMedical }}
+                                                {% else %}
+                                                    <i>(keine Besonderheiten)</i>
+                                                {% endif %}
+                                            </dd>
+                                            <dd>
+                                            <dt>Allgemeine Hinweise</dt>
+                                            <dd>
+                                                {% if participant.infoGeneral %}
+                                                    {{ participant.infoGeneral }}
+                                                {% else %}
+                                                    <i>(keine Besonderheiten)</i>
+                                                {% endif %}
+                                            </dd>
+                                            <dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -84,27 +121,20 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="hidden-xs col-sm-4 scrollspy">
-                <!--
-                    <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix">
-                        <li>
-                            <a href="#data-participation">Daten der Eltern</a>
-                        </li>
-                        <li>
-                            <a href="#data-participants">Daten der Teilnehmer</a>
-                            <ul class="nav">
-                                {% for participant in participation.participants %}
-                                    <li>
-                                        <a href="#participant-{{ loop.index }}">
-                                            {{ participant.nameFirst }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    </ul>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Fortfahren</h3>
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                               class="btn btn-warning navbar-btn">Daten korrigieren (1/3)</a>
+                            <a href="{{ path('event_public_participate_confirm', {'eid': event.eid }) }}?confirm"
+                               class="btn btn-success navbar-btn">Anmeldung Bestätigen (3/3)</a>
+                        </div>
+                    </nav>
+
                 </div>
-                -->
             </div>
         </div>
     </div>
