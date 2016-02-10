@@ -57,7 +57,7 @@ class ImageResponse extends StreamedResponse
     {
         $response->setEtag($image->getETag())
                  ->setLastModified($image->getMTime())
-                 ->setMaxAge(24 * 60 * 60)
+                 ->setMaxAge(14 * 24 * 60 * 60)
                  ->setPublic();
     }
 
