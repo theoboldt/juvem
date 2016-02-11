@@ -7,24 +7,44 @@
 $ejdvYellow: #fce63b;
 $ejdvLightOrange: #fcc214;
 $ejdvDarkOrange: #fb793d;
+
+$brand-primary: $ejdvLightOrange;
+
 /*
 //bootstrap base theme
 $navbar-default-bg: $ejdvDarkOrange;
 $navbar-default-color: darken($ejdvDarkOrange, 5%);
+*/
 
+//inverse navbar
 $navbar-inverse-bg: $ejdvLightOrange;
 $navbar-inverse-border: $ejdvLightOrange;
+
 $navbar-inverse-color: #222;
-$navbar-inverse-brand-color: #222;
+$navbar-inverse-color: #222;
 
 $navbar-inverse-link-color: lighten(#222, 5%);
 $navbar-inverse-link-hover-color: darken(#222, 25%);
-$navbar-inverse-link-active-color: darken($navbar-inverse-link-hover-color, 2%);
-$navbar-inverse-brand-hover-color: darken($navbar-inverse-link-hover-color, 3%);
-$navbar-inverse-toggle-icon-bar-bg: lighten(#222, 25%);
-$navbar-inverse-link-hover-bg: lighten($navbar-inverse-bg, 15%);
+$navbar-inverse-link-active-color: darken($navbar-inverse-link-hover-color, 4%);
+$navbar-inverse-brand-hover-color: darken($navbar-inverse-link-hover-color, 4%);
+$navbar-inverse-toggle-icon-bar-bg: lighten(#222, 10%);
+$navbar-inverse-link-hover-bg: lighten($navbar-inverse-bg, 10%);
 
-//$brand-primary: #2c60ff;
+//breadcrumb
+$breadcrumb-bg: lighten($ejdvLightOrange, 35%);
+$breadcrumb-color: #222;
+$breadcrumb-active-color: lighten($breadcrumb-color, 10%);
+
+.breadcrumb {
+  a {
+    color: darken($brand-primary, 25%);
+  }
+  a:hover {
+    color: darken($brand-primary, 15%);
+  }
+}
+
+/*
 $input-border-focus: lighten($ejdvLightOrange, 0%);
 $headings-small-color: $ejdvDarkOrange;
 
