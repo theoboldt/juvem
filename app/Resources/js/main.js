@@ -52,7 +52,7 @@ jQuery(document).ready(function () {
                 });
             };
 
-            element.data('index', element.find(':input').length);
+            element.data('index', element.find('.prototype-element').length);
             element.find('.prototype-add').on('click', function (e) {
                 e.preventDefault();
                 var index = element.data('index');
