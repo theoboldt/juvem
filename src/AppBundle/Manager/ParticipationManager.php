@@ -35,7 +35,7 @@ class ParticipationManager
                                  ->setFrom('jungschar.vaihingen@gmail.com')
                                  ->setTo($participation->getEmail())
                                  ->setBody(
-                                     $this->templating->renderView(
+                                     $this->templating->render(
                                          'mail/participation.txt.twig',
                                          array(
                                              'event'         => $event,
