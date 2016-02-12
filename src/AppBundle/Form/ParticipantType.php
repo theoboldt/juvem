@@ -4,6 +4,7 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Participant;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -68,21 +69,36 @@ class ParticipantType extends AbstractType
                 )
             )
             ->add(
-                'food', ChoiceType::class, array(
-                'label'             => 'Ernährung',
-                'choices'           => array(
-                    Participant::LABEL_FOOD_LACTOSE_FREE => Participant::TYPE_FOOD_LACTOSE_FREE,
-                    Participant::LABEL_FOOD_VEGAN        => Participant::TYPE_FOOD_VEGAN,
-                    Participant::LABEL_FOOD_VEGETARIAN   => Participant::TYPE_FOOD_VEGETARIAN,
-                    Participant::LABEL_FOOD_NO_PORK      => Participant::TYPE_FOOD_NO_PORK
-                ),
-                'choices_as_values' => true,
-                'expanded'          => true,
-                'multiple'          => true,
-                'required'          => false,
-                'attr'              => array('aria-describedby' => 'help-food')
-            )
+                'food',
+                ChoiceType::class,
+                array(
+                    'label'      => 'Ernährung',
+                    'choices'    => array(
+                        Participant::TYPE_FOOD_LACTOSE_FREE => Participant::LABEL_FOOD_LACTOSE_FREE,
+                        Participant::TYPE_FOOD_VEGAN        => Participant::LABEL_FOOD_VEGAN,
+                        Participant::TYPE_FOOD_VEGETARIAN   => Participant::LABEL_FOOD_VEGETARIAN,
+                        Participant::TYPE_FOOD_NO_PORK      => Participant::LABEL_FOOD_NO_PORK
+                    ),
+                    'expanded'   => true,
+                    'multiple'   => true,
+                    'required'   => false,
+                    'empty_data' => 0,
+                    'attr'       => array('aria-describedby' => 'help-food')
+                )
             );
+
+        $builder->get('food')
+                ->addModelTransformer(
+                    new CallbackTransformer(
+                        function ($originalFood) {
+                            return $originalFood;
+                        },
+                        function ($submittedFood) {
+                            return array_sum($submittedFood);
+                        }
+                    )
+                );
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
