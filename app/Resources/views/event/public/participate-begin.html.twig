@@ -66,12 +66,16 @@
                 </div>
             </div>
             <div class="row">
-                {% macro prototypePhone(formElement, showHelp) %}
+                {% macro prototypePhone(formElement) %}
                     <div class="panel panel-default prototype-element">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-10 col-sm-8">
-                                    <h4 class="panel-title">Telefonnummer</h4>
+                                    <h4 class="panel-title">
+                                        <!--<a role="button" data-toggle="collapse">-->
+                                            Telefonnummer
+                                        <!--</a>-->
+                                    </h4>
                                 </div>
                                 <div class="col-xs-2 col-sm-4 text-right">
                                     <a href="#" class="btn btn-danger btn-xs prototype-remove"
@@ -125,7 +129,7 @@
                                 </span>
                             {{ form_errors(form.phoneNumbers) }}
                             {% for phoneNumber in form.phoneNumbers %}
-                                {{ m.prototypePhone(phoneNumber, loop.index0 == 0) }}
+                                {{ m.prototypePhone(phoneNumber) }}
                             {% endfor %}
                         </div>
                     </div>
@@ -159,12 +163,16 @@
                 </div>
             </div>
             <div class="row">
-                {% macro prototypeParticipant(formElement, showHelp) %}
-                    <div class="panel panel-default prototype-element" data-toggle="collapse">
+                {% macro prototypeParticipant(formElement) %}
+                    <div class="panel panel-default prototype-element">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-10 col-sm-8">
-                                    <h4 class="panel-title">Teilnehmer</h4>
+                                    <h4 class="panel-title">
+                                        <!--<a role="button" data-toggle="collapse">-->
+                                            Teilnehmer
+                                        <!--</a>-->
+                                    </h4>
                                 </div>
                                 <div class="col-xs-2 col-sm-4 text-right">
                                     <a href="#" class="btn btn-danger btn-xs prototype-remove"
@@ -173,7 +181,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body panel-collapse collapse in">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6">
                                     {{ form_row(formElement.nameFirst) }}
@@ -236,7 +244,7 @@
                         <div class="form-group">
                             {{ form_errors(form.participants) }}
                             {% for participant in form.participants %}
-                                {{ m.prototypeParticipant(participant, loop.index0 == 0) }}
+                                {{ m.prototypeParticipant(participant) }}
                             {% endfor %}
                         </div>
                     </div>
@@ -256,7 +264,7 @@
                     </p>
                     <nav class="navbar navbar-default">
                         <div class="container-fluid">
-                            <input type="submit" class="btn btn-primary navbar-btn" value="Anmeldung überprüfen (2/3)" />
+                            <input type="submit" class="btn btn-primary navbar-btn" value="Anmeldung überprüfen (2/3)"/>
                         </div>
                     </nav>
                 </div>

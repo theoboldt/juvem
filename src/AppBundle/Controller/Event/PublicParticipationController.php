@@ -51,14 +51,14 @@ class PublicParticipationController extends Controller
 
         $participation = new Participation();
         if ($request->getSession()
-                     ->has('participation-'.$eid)
+                    ->has('participation-' . $eid)
         ) {
-        /** @var Participation $participation */
+            /** @var Participation $participation */
             $participation = $request->getSession()
-                                     ->get('participation-'.$eid);
-            $sessionEvent = $participation->getEvent();
+                                     ->get('participation-' . $eid);
+            $sessionEvent  = $participation->getEvent();
             if ($sessionEvent->getEid() == $eid) {
-                $event         = $sessionEvent;
+                $event = $sessionEvent;
             } else {
                 $participation = new Participation();
             }
@@ -77,16 +77,16 @@ class PublicParticipationController extends Controller
         $participation->setEvent($event);
         if ($form->isValid() && $form->isSubmitted()) {
             $request->getSession()
-                    ->set('participation-'.$eid, $participation);
+                    ->set('participation-' . $eid, $participation);
 
             return $this->redirectToRoute('event_public_participate_confirm', array('eid' => $eid));
         }
 
         return $this->render(
             'event/public/participate-begin.html.twig', array(
-                                                    'event' => $event,
-                                                    'form'  => $form->createView()
-                                                )
+                                                          'event' => $event,
+                                                          'form'  => $form->createView()
+                                                      )
         );
     }
 
@@ -99,14 +99,14 @@ class PublicParticipationController extends Controller
     public function confirmParticipationAction($eid, Request $request)
     {
         if (!$request->getSession()
-                     ->has('participation-'.$eid)
+                     ->has('participation-' . $eid)
         ) {
             return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
         }
 
         /** @var Participation $participation */
         $participation = $request->getSession()
-                                 ->get('participation-'.$eid);
+                                 ->get('participation-' . $eid);
         $event         = $participation->getEvent();
 
         if (!$participation instanceof Participation
@@ -117,7 +117,8 @@ class PublicParticipationController extends Controller
         }
 
         if ($request->query->has('confirm')) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()
+                       ->getManager();
 
             $em->persist($participation);
             $em->flush();
@@ -138,13 +139,14 @@ class PublicParticipationController extends Controller
             $participationManager->mailParticipationRequested($participation, $event);
 
             $request->getSession()
-                    ->remove('participation-'.$eid);
-            return $this->render(
-                'event/public/participate-confirmed.html.twig', array(
-                                                                  'participation' => $participation,
-                                                                  'event'         => $event
-                                                              )
+                    ->remove('participation-' . $eid);
+
+            $this->addFlash(
+                'success',
+                'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
             );
+
+            return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
         } else {
             return $this->render(
                 'event/public/participate-confirm.html.twig', array(
