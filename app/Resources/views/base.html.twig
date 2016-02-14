@@ -45,7 +45,11 @@
     {% block body %}{% endblock %}
 </div>
 <div id="page-footer">
-    {% include 'common/footer.html.twig' %}
+    {% if app.user is null %}
+    {% include 'common/footer/public.html.twig' %}
+    {% elseif is_granted('ROLE_ADMIN') %}
+    {% include 'common/footer/admin.html.twig' %}
+    {% endif %}
 </div>
 {% block javascripts %}{% endblock %}
 </body>
