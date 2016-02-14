@@ -13,38 +13,107 @@
     {% endembed %}
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <h2>Daten der Eltern</h2>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <dl>
-                    <dt>Anrede</dt>
-                    <dd>{{ participation.salution }}</dd>
-                </dl>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <dl>
-                    <dt>Anrede</dt>
-                    <dd>{{ participation.nameFirst }}</dd>
-                </dl>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <dl>
-                    <dt>Nachname</dt>
-                    <dd>{{ participation.nameLast }}</dd>
-                </dl>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <dl>
-                    <dt>Nachname</dt>
-                    <dd>{{ participation.nameLast }}</dd>
-                </dl>
-//$phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE'));
+            <div class="col-xs-12 col-md-6">
+                <h3 id="data-participation">Daten der Eltern</h3>
 
-                {% for phoneNumber in phoneNumberList %}
-                    {{ phone_number_format(phoneNumber, 'INTERNATIONAL') }}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <dl class="dl-horizontal">
+                            <dt>Anrede</dt>
+                            <dd>{{ participation.salution }}</dd>
+                            <dt>Vorname</dt>
+                            <dd>{{ participation.nameFirst }}</dd>
+                            <dt>Nachname</dt>
+                            <dd>{{ participation.nameLast }}</dd>
+                            <dt>Telefonnummern</dt>
+                            <dd class="address-container">
+                                {% for phoneNumber in participation.phoneNumbers %}
+                                    <address>
+                                        <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                                        {% if phoneNumber.description %}
+                                            <br>{{ phoneNumber.description }}
+                                        {% endif %}
+                                    </address>
+                                {% endfor %}
+                            </dd>
+                            <dt>Anschrift</dt>
+                            <dd class="address-container">
+                                <address>
+                                    <strong>{{ participation.getName() }}</strong><br>
+                                    {{ participation.addressStreet }}<br>
+                                    {{ participation.addressZip }} {{ participation.addressCity }}
+                                </address>
+                            </dd>
+                            <dt>E-Mail Adresse</dt>
+                            <dd>
+                                <address>
+                                    {{ participation.email }}
+                                </address>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+                {% for participant in participation.participants %}
+            <div class="col-xs-12 col-md-6">
+            {% if loop.index0 == 0 %}
+                <h3 id="data-participants">Daten der Teilnehmer</h3>
+                {% endif %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" id="participant-{{ loop.index }}">
+                                <div class="col-xs-12">
+                                    <dl class="dl-horizontal">
+                                        <dt>Vorname</dt>
+                                        <dd>{{ participant.nameFirst }}</dd>
+                                        <dt>Nachname</dt>
+                                        <dd>{{ participant.nameLast }}</dd>
+                                        <dt>Geschlecht</dt>
+                                        <dd>{{ participant.getGender(true) }}</dd>
+                                        <dt>Geburtsdatum</dt>
+                                        <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
+                                        <dt>Ernährung</dt>
+                                        <dd>
+                                            {% set participantFood = participant.getFood(true) %}
+                                            {% if participantFood|length %}
+                                                {{ participant.getFood(true)|join(', ') }}
+                                            {% else %}
+                                                <i>(keine Besonderheiten)</i>
+                                            {% endif %}
+                                        </dd>
+                                        <dt>Medizinische Hinweise</dt>
+                                        <dd>
+                                            {% if participant.infoMedical %}
+                                                {{ participant.infoMedical }}
+                                            {% else %}
+                                                <i>(keine Besonderheiten)</i>
+                                            {% endif %}
+                                        </dd>
+                                        <dd>
+                                        <dt>Allgemeine Hinweise</dt>
+                                        <dd>
+                                            {% if participant.infoGeneral %}
+                                                {{ participant.infoGeneral }}
+                                            {% else %}
+                                                <i>(keine Besonderheiten)</i>
+                                            {% endif %}
+                                        </dd>
+                                        <dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>
+
     </div>
 {% endblock %}
