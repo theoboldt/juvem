@@ -109,10 +109,13 @@
                             </div>
                             <div class="col-xs-10 col-sm-9">
                                 <div class="progress">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}" aria-valuemin="0"
-                                         aria-valuemax="{{ participantsCount }}" style="width: {{ ((count/participantsCount)*100) }}%;">
-                                        <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }} Jahren</span>
-                                        {{ ((count/participantsCount)*100)|round }}%
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="{{ participantsCount }}"
+                                         style="width: {{ ((count/participantsCount)*100) }}%;">
+                                        <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }}
+                                            Jahren</span>
+                                        <span title="Anzahl">{{ count }}</span>
                                     </div>
                                 </div>
                             </div>
