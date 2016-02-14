@@ -49,7 +49,6 @@ class PublicParticipationController extends Controller
             return $this->redirectToRoute('homepage', array('eid' => $eid));
         }
 
-        $participation = new Participation();
         if ($request->getSession()
                     ->has('participation-' . $eid)
         ) {
@@ -60,21 +59,23 @@ class PublicParticipationController extends Controller
             if ($sessionEvent->getEid() == $eid) {
                 $event = $sessionEvent;
             } else {
-                $participation = new Participation();
+                return $this->redirectToRoute('event_miss', array('eid' => $eid));
             }
-        }
+        } else {
+            $participation = new Participation();
 
-        /** @var \AppBundle\Entity\User $user */
-        $user = $this->getUser();
-        if ($user) {
-            $participation->setNameLast($user->getNameLast());
-            $participation->setNameFirst($user->getNameFirst());
+            /** @var \AppBundle\Entity\User $user */
+            $user = $this->getUser();
+            if ($user) {
+                $participation->setNameLast($user->getNameLast());
+                $participation->setNameFirst($user->getNameFirst());
+            }
+            $participation->setEvent($event);
         }
-
+//dump($participation);
         $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
-        $participation->setEvent($event);
         if ($form->isValid() && $form->isSubmitted()) {
             $request->getSession()
                     ->set('participation-' . $eid, $participation);
@@ -115,6 +116,7 @@ class PublicParticipationController extends Controller
         ) {
             throw new BadRequestHttpException('Given participation data is invalid');
         }
+//dump($participation);
 
         if ($request->query->has('confirm')) {
             $em = $this->getDoctrine()
