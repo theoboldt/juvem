@@ -43,6 +43,7 @@
         <div class="row">
             <div class="col-xs-12 col-sm-8">
                 <h3>{{ event.getTitle }}</h3>
+
                 <p>
                     {% if event.isActive() %}
                         <span class="label label-primary">Aktiv</span>
@@ -79,8 +80,8 @@
                 </div>
             </div>
             <div class="col-xs-12 col-sm-4">
-
                 <div>
+                    <h4>Poster</h4>
                     {% if event.imageFilename %}
                         <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
                             <img src="{{ path('event_image',  {'eid': event.eid, 'width': 350, 'height': 350 }) }}"
@@ -98,6 +99,25 @@
                             </div>
                         </div>
                     {% endif %}
+                </div>
+                <div class="flat-progress-bar">
+                    <h4>Altersverteilung</h4>
+                    {% for age, count in ageDistribution %}
+                        <div class="row">
+                            <div class="col-xs-2 col-sm-3 text-right">
+                                {{ age }} <abbr title="Jahre">J.</abbr>
+                            </div>
+                            <div class="col-xs-10 col-sm-9">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}" aria-valuemin="0"
+                                         aria-valuemax="{{ participantsCount }}" style="width: {{ ((count/participantsCount)*100) }}%;">
+                                        <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }} Jahren</span>
+                                        {{ ((count/participantsCount)*100)|round }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ class ParticipationManager
     public function mailParticipationRequested(ParticipationEntity $participation, Event $event)
     {
         $message = \Swift_Message::newInstance()
-                                 ->setSubject('Hello Email')
+                                 ->setSubject($event->getTitle().' Anmeldung eingegangen')
                                  ->setFrom('jungschar.vaihingen@gmail.com')
                                  ->setTo($participation->getEmail())
                                  ->setBody(
