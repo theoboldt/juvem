@@ -1,3 +1,8 @@
+/web/mstile*.png
+/web/favicon*
+/web/android-chrome-*
+/web/apple-touch-icon*
+/web/safari-pinned-tab.svg
 /app/config/parameters.yml
 /bin/
 /build/
