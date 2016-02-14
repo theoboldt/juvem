@@ -14,8 +14,10 @@
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
                     <div class="btn-group" role="group">
-                        <a href="{{ path('event_participants_list', {'eid': event.eid }) }}" class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></a>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
+                           class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></a>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Menü erweitern</span>
                         </button>
@@ -27,21 +29,20 @@
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
-                        <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
-                        {%  include 'common/active-button.html.twig' with {'button': buttonState} %}
-                        {%  include 'common/active-button.html.twig' with {'button': buttonVisibility} %}
+                        <a href="{{ path('event_edit', {'eid': event.eid }) }}"
+                           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+                        {% include 'common/active-button.html.twig' with {'button': buttonState} %}
+                        {% include 'common/active-button.html.twig' with {'button': buttonVisibility} %}
                     </div>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#{{ eventDeleteModal.id }}" >{{ 'trash'|glyph }} <span class="hidden-xs">Löschen</span></button>
+                    <button type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#{{ eventDeleteModal.id }}">{{ 'trash'|glyph }} <span
+                                class="hidden-xs">Löschen</span></button>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-8">
                 <h3>{{ event.getTitle }}</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-4">
                 <p>
                     {% if event.isActive() %}
                         <span class="label label-primary">Aktiv</span>
@@ -54,6 +55,7 @@
                         <span class="label label-default">Versteckt</span>
                     {% endif %}
                 </p>
+
                 <p>
                     {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
                     {% if event.hasStartTime %}
@@ -69,27 +71,33 @@
                         {% endif %}
                     {% endif %}
                 </p>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        {{ event.getDescription|e }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+
                 <div>
                     {% if event.imageFilename %}
                         <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
-                            <img src="{{ path('event_image',  {'eid': event.eid, 'width': 350, 'height': 350 }) }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
+                            <img src="{{ path('event_image',  {'eid': event.eid, 'width': 350, 'height': 350 }) }}"
+                                 alt="Poster-Abbildung wurde nicht geladen" title="Poster">
                         </a>
                     {% else %}
                         <div class="thumbnail">
                             <div class="alert alert-info" role="alert">
                                 <p>Es ist keine Bild-Datei als Poster zu dieser Veranstaltung gespeichert.</p>
-                                <p> Beim <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="alert-link">Bearbeiten</a> dieser Veranstaltung kann ein entsprechendes Bild hochgeladen werden.</p>
+
+                                <p> Beim <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="alert-link">Bearbeiten</a>
+                                    dieser Veranstaltung kann ein entsprechendes Bild hochgeladen werden.</p>
+
                                 <p>Dadurch wird die Veranstaltung besser präsentiert.</p>
                             </div>
                         </div>
                     {% endif %}
-                </div>
-            </div>
-            <div class="col-xs-12 col-sm-8">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    {{ event.getDescription|e }}
-                  </div>
                 </div>
             </div>
         </div>
