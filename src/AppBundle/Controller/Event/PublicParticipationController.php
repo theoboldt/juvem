@@ -132,6 +132,18 @@ class PublicParticipationController extends Controller
             $request->getSession()
                     ->remove('participation-' . $eid);
 
+            if ($request->getSession()
+                        ->has('participationList')
+            ) {
+                $participationList = $request->getSession()
+                                             ->get('participationList');
+            } else {
+                $participationList = array();
+            }
+            $participationList[] = $participation->getPid();
+            $request->getSession()
+                    ->set('participationList', $participationList);
+
             $this->addFlash(
                 'success',
                 'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
