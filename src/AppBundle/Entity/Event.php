@@ -109,7 +109,7 @@ class Event
     /**
      * Contains the participations assigned to this event
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="event")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="event", cascade={"remove"})
      */
     protected $participations;
 

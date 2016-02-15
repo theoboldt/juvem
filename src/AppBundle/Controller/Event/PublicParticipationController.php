@@ -72,7 +72,7 @@ class PublicParticipationController extends Controller
             }
             $participation->setEvent($event);
         }
-//dump($participation);
+
         $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
@@ -116,27 +116,16 @@ class PublicParticipationController extends Controller
         ) {
             throw new BadRequestHttpException('Given participation data is invalid');
         }
-//dump($participation);
 
         if ($request->query->has('confirm')) {
             $em = $this->getDoctrine()
                        ->getManager();
 
-            $em->persist($participation);
+            $managedParticipation = $em->merge($participation);
+
+            $em->persist($managedParticipation);
             $em->flush();
 
-            /** @var Participant $participant */
-            foreach ($participation->getParticipants() as $participant) {
-                $participant->setParticipation($participation);
-                $em->persist($participant);
-                $em->flush();
-            }
-            /** @var PhoneNumber $participant */
-            foreach ($participation->getPhoneNumbers() as $number) {
-                $number->setParticipation($participation);
-                $em->persist($number);
-                $em->flush();
-            }
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailParticipationRequested($participation, $event);
 

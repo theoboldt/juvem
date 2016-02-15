@@ -31,7 +31,7 @@ class PhoneNumber
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
-     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade")
      */
     protected $participation;
 

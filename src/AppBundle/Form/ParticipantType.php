@@ -54,18 +54,21 @@ class ParticipantType extends AbstractType
             ->add(
                 'infoMedical',
                 TextareaType::class,
-                array('label' => 'Medizinische Hinweise',
-                      'attr'  => array('aria-describedby' => 'help-info-medical',
-                                       'required'         => false
-                      )
+                array('label'      => 'Medizinische Hinweise',
+                      'attr'       => array('aria-describedby' => 'help-info-medical'),
+                      'required'   => false,
+                      'empty_data' => '',
+                      //may not work due to issue https://github.com/symfony/symfony/issues/5906
                 )
             )
             ->add(
                 'infoGeneral',
                 TextareaType::class,
-                array('label'    => 'Allgemeine Hinweise',
-                      'attr'     => array('aria-describedby' => 'help-info-general'),
-                      'required' => false
+                array('label'      => 'Allgemeine Hinweise',
+                      'attr'       => array('aria-describedby' => 'help-info-general'),
+                      'required'   => false,
+                      'empty_data' => '',
+                      //may not work due to issue https://github.com/symfony/symfony/issues/5906
                 )
             )
             ->add(
