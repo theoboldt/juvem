@@ -10,6 +10,10 @@ $ejdvDarkOrange: #fb793d;
 
 $brand-primary: $ejdvLightOrange;
 
+html, body {
+  background-color: $ejdvLightOrange;
+}
+
 /*
 //bootstrap base theme
 $navbar-default-bg: $ejdvDarkOrange;
