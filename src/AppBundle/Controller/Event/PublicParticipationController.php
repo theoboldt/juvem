@@ -72,7 +72,7 @@ class PublicParticipationController extends Controller
             }
             $participation->setEvent($event);
         }
-//dump($participation);
+
         $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
@@ -116,36 +116,46 @@ class PublicParticipationController extends Controller
         ) {
             throw new BadRequestHttpException('Given participation data is invalid');
         }
-//dump($participation);
 
         if ($request->query->has('confirm')) {
             $em = $this->getDoctrine()
                        ->getManager();
 
-            $em->persist($participation);
+            $managedParticipation = $em->merge($participation);
+
+            $em->persist($managedParticipation);
             $em->flush();
 
-            /** @var Participant $participant */
-            foreach ($participation->getParticipants() as $participant) {
-                $participant->setParticipation($participation);
-                $em->persist($participant);
-                $em->flush();
-            }
-            /** @var PhoneNumber $participant */
-            foreach ($participation->getPhoneNumbers() as $number) {
-                $number->setParticipation($participation);
-                $em->persist($number);
-                $em->flush();
-            }
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailParticipationRequested($participation, $event);
 
             $request->getSession()
                     ->remove('participation-' . $eid);
 
+            if ($request->getSession()
+                        ->has('participationList')
+            ) {
+                $participationList = $request->getSession()
+                                             ->get('participationList');
+            } else {
+                $participationList = array();
+            }
+            $participationList[] = $participation->getPid();
+            $request->getSession()
+                    ->set('participationList', $participationList);;
+
+            $message = sprintf(
+                '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>
+<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
+                $this->container->get('router')
+                                ->generate(
+                                    'fos_user_registration_register'
+                                )
+            );
+
             $this->addFlash(
                 'success',
-                'Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.'
+                $message
             );
 
             return $this->redirectToRoute('event_public_detail', array('eid' => $eid));

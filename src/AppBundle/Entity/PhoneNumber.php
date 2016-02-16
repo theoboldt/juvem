@@ -31,7 +31,7 @@ class PhoneNumber
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
-     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade")
      */
     protected $participation;
 
@@ -78,6 +78,10 @@ class PhoneNumber
      */
     public function setDescription($description)
     {
+        if ($description === null) {
+            //due to issue https://github.com/symfony/symfony/issues/5906
+            $description = '';
+        }
         $this->description = $description;
 
         return $this;

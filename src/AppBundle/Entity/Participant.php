@@ -51,7 +51,7 @@ class Participant
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="participants")
-     * @ORM\JoinColumn(name="pid", referencedColumnName="pid")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade")
      */
     protected $participation;
 
@@ -235,6 +235,11 @@ class Participant
      */
     public function setInfoMedical($infoMedical)
     {
+        if ($infoMedical === null) {
+            //due to issue https://github.com/symfony/symfony/issues/5906
+            $infoMedical = '';
+        }
+
         $this->infoMedical = $infoMedical;
 
         return $this;
@@ -259,6 +264,11 @@ class Participant
      */
     public function setInfoGeneral($infoGeneral)
     {
+        if ($infoGeneral === null) {
+            //due to issue https://github.com/symfony/symfony/issues/5906
+            $infoGeneral = '';
+        }
+
         $this->infoGeneral = $infoGeneral;
 
         return $this;

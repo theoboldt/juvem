@@ -24,8 +24,8 @@ class Participation
     protected $pid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations",cascade={"persist"})
-     * @ORM\JoinColumn(name="eid", referencedColumnName="eid")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations", cascade={"all"})
+     * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      */
     protected $event;
 
@@ -84,14 +84,14 @@ class Participation
     /**
      * Contains the phone numbers assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"persist"}, mappedBy="participation")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"all"}, mappedBy="participation")
      */
     protected $phoneNumbers;
 
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"persist"}, mappedBy="participation")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"all"}, mappedBy="participation")
      */
     protected $participants;
 
