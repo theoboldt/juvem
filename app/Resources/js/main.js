@@ -1,12 +1,12 @@
 jQuery(document).ready(function () {
 
     /*
-    $('#nav').affix({
-        offset: {
-            top: $('#nav').offset().top
-        }
-    });
-    */
+     $('#nav').affix({
+     offset: {
+     top: $('#nav').offset().top
+     }
+     });
+     */
 
     /**
      * Enable tooltips and popvers
@@ -48,7 +48,10 @@ jQuery(document).ready(function () {
                     container: 'body',
                     placement: 'top',
                     html: true,
-                    trigger: 'focus|click'
+                    trigger: 'focus'
+                }).click(function (e) {
+                    e.preventDefault();
+                    $(this).popover('toggle');
                 });
             };
 
