@@ -60,21 +60,9 @@ class Participation
     protected $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="uid")
-     * @ORM\Column(type="integer", name="created_by", nullable=true)
-     */
-    protected $createdBy = null;
-
-    /**
      * @ORM\Column(type="datetime", name="modified_at")
      */
     protected $modifiedAt;
-
-    /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="uid")
-     * @ORM\Column(type="integer", name="modified_by", nullable=true)
-     */
-    protected $modifiedBy = null;
 
     /**
      * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
@@ -95,6 +83,11 @@ class Participation
      */
     protected $participants;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedParticipations")
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
+     */
+    protected $assignedUser;
 
     public function __construct()
     {
@@ -403,54 +396,6 @@ class Participation
     }
 
     /**
-     * Set createdBy
-     *
-     * @param integer $createdBy
-     *
-     * @return Participation
-     */
-    public function setCreatedBy($createdBy)
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * Get createdBy
-     *
-     * @return integer
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * Set modifiedBy
-     *
-     * @param integer $modifiedBy
-     *
-     * @return Participation
-     */
-    public function setModifiedBy($modifiedBy)
-    {
-        $this->modifiedBy = $modifiedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedBy
-     *
-     * @return integer
-     */
-    public function getModifiedBy()
-    {
-        return $this->modifiedBy;
-    }
-
-    /**
      * Set event
      *
      * @param Event $event
@@ -472,5 +417,29 @@ class Participation
     public function getEvent()
     {
         return $this->event;
+    }
+
+    /**
+     * Set assignedUser
+     *
+     * @param \AppBundle\Entity\User $assignedUser
+     *
+     * @return Participation
+     */
+    public function setAssignedUser(\AppBundle\Entity\User $assignedUser = null)
+    {
+        $this->assignedUser = $assignedUser;
+
+        return $this;
+    }
+
+    /**
+     * Get assignedUser
+     *
+     * @return \AppBundle\Entity\User
+     */
+    public function getAssignedUser()
+    {
+        return $this->assignedUser;
     }
 }

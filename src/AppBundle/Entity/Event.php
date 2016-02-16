@@ -114,6 +114,12 @@ class Event
     protected $participations;
 
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="assignedEvents")
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
+     */
+    protected $assignedUser;
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -543,5 +549,29 @@ class Event
     public function getParticipations()
     {
         return $this->participations;
+    }
+
+    /**
+     * Set assignedUser
+     *
+     * @param \AppBundle\Entity\User $assignedUser
+     *
+     * @return Event
+     */
+    public function setAssignedUser(\AppBundle\Entity\User $assignedUser = null)
+    {
+        $this->assignedUser = $assignedUser;
+
+        return $this;
+    }
+
+    /**
+     * Get assignedUser
+     *
+     * @return \AppBundle\Entity\User
+     */
+    public function getAssignedUser()
+    {
+        return $this->assignedUser;
     }
 }
