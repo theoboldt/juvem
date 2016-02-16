@@ -7,7 +7,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.upload_image_manager.path: %kernel.root_dir%/../cache/%kernel.environment%/upload_image
+    app.upload_image_manager.path: %kernel.root_dir%/cache/%kernel.environment%/upload_image
 
 framework:
     #esi:             ~

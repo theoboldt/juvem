@@ -82,7 +82,7 @@ class UploadImageManager
             $image   = $imagine->open($this->getOriginalImagePath($name))
                                ->thumbnail($size, $mode)
                                ->get(
-                                   $this->getOriginalImageType($name), array('jpeg_quality'          => 60,
+                                   $this->getOriginalImageType($name), array('jpeg_quality'          => 70,
                                                                              'png_compression_level' => 9
                                                                      )
                                );
