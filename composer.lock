@@ -1753,12 +1753,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "2c167426fc24f9de116345195bc1697a748ee847"
+                "reference": "c4c5caff48a2f3b17e3cc988e2b9d7a785779f39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/2c167426fc24f9de116345195bc1697a748ee847",
-                "reference": "2c167426fc24f9de116345195bc1697a748ee847",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/c4c5caff48a2f3b17e3cc988e2b9d7a785779f39",
+                "reference": "c4c5caff48a2f3b17e3cc988e2b9d7a785779f39",
                 "shasum": ""
             },
             "require": {
@@ -1797,7 +1797,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2016-02-12 16:21:30"
+            "time": "2016-02-16 07:20:15"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2585,12 +2585,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "e692752f08f353f93537c01f3fd0b82c4f456382"
+                "reference": "15ecc7bf6313dc597e35ddffe79ab52f63198795"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/e692752f08f353f93537c01f3fd0b82c4f456382",
-                "reference": "e692752f08f353f93537c01f3fd0b82c4f456382",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/15ecc7bf6313dc597e35ddffe79ab52f63198795",
+                "reference": "15ecc7bf6313dc597e35ddffe79ab52f63198795",
                 "shasum": ""
             },
             "require": {
@@ -2711,7 +2711,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-02-15 08:18:17"
+            "time": "2016-02-16 07:16:12"
         },
         {
             "name": "twig/twig",
@@ -2780,12 +2780,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "81cc2fc5bc3772716c93b3d35fcfe4fa8d9acefd"
+                "reference": "de4006e73e3bd14ac3d784f72971ddf5cf112b97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/81cc2fc5bc3772716c93b3d35fcfe4fa8d9acefd",
-                "reference": "81cc2fc5bc3772716c93b3d35fcfe4fa8d9acefd",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/de4006e73e3bd14ac3d784f72971ddf5cf112b97",
+                "reference": "de4006e73e3bd14ac3d784f72971ddf5cf112b97",
                 "shasum": ""
             },
             "require": {
@@ -2843,7 +2843,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-02-13 19:52:44"
+            "time": "2016-02-16 08:43:21"
         },
         {
             "name": "zendframework/zend-code",
