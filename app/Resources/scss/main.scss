@@ -10,10 +10,6 @@ $ejdvDarkOrange: #fb793d;
 
 $brand-primary: $ejdvLightOrange;
 
-html, body {
-  background-color: $ejdvLightOrange;
-}
-
 /*
 //bootstrap base theme
 $navbar-default-bg: $ejdvDarkOrange;
@@ -84,3 +80,12 @@ $icon-font-path: '../font/';
 
 @import 'event';
 @import 'participation';
+
+html, body {
+  background-color: $ejdvLightOrange;
+}
+
+#page {
+  background-color: white;
+}
+
