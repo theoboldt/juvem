@@ -1,0 +1,51 @@
+AppBundle\Entity\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+             fields: email
+             errorPath: email
+             message: fos_user.email.already_used
+             groups: [ "AppBundleRegistration", "AppBundleProfile" ]
+
+    properties:
+        nameFirst:
+            - NotBlank:
+                message: AppBundle_user.name_first.blank
+                groups: [ "AppBundleProfile" ]
+            - Length:
+                min: 0
+                minMessage: AppBundle_user.name_first.short
+                max: 255
+                maxMessage: AppBundle_user.name_first.long
+                groups: [ "AppBundleProfile" ]
+        nameLast:
+            - NotBlank:
+                message: AppBundle_user.name_last.blank
+                groups: [ "AppBundleProfile" ]
+            - Length:
+                min: 2
+                minMessage: AppBundle_user.name_last.short
+                max: 255
+                maxMessage: AppBundle_user.name_last.long
+                groups: [ "AppBundleProfile" ]
+        email:
+            - NotBlank:
+                message: fos_user.email.blank
+                groups: [ "AppBundleRegistration", "AppBundleProfile" ]
+            - Length:
+                min: 2
+                minMessage: fos_user.email.short
+                max: 3
+                maxMessage: fos_user.email.long
+                groups: [ "AppBundleRegistration", "ResetPassword" ]
+            - Email:
+                message: fos_user.email.invalid
+                groups: [ "AppBundleRegistration", "AppBundleProfile" ]
+        plainPassword:
+            - NotBlank:
+                message: fos_user.password.blank
+                groups: [ "AppBundleRegistration", "ResetPassword", "ChangePassword" ]
+            - Length:
+                min: 2
+                max: 4096
+                minMessage: fos_user.password.short
+                groups: [ "AppBundleRegistration", "AppBundleProfile", "ResetPassword", "ChangePassword"]
