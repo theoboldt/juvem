@@ -89,14 +89,26 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: AppBundle\Entity\User
+    from_email:
+        address:        jungschar.vaihingen@gmail.com
+        sender_name:    Evangelisches Jugendwerk Stuttgart-Vaihingen
     registration:
         form:
             type: AppBundle\Form\UserRegistrationFormType
             validation_groups: [AppBundleRegistration]
+        confirmation:
+            enabled: true
+#            email:
+#                template: mail/user/register_confirmation.email.twig
+    resetting:
+        email:
+            template: mail/user/password_resetting.email.twig
     profile:
         form:
             type: app_bundle_user_profile
             validation_groups: [AppBundleProfile]
+    service:
+        mailer: fos_user.mailer.twig_swift
 
 knp_menu:
     twig:

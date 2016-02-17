@@ -1,3 +1,5 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Registrierung{% endblock %}
@@ -11,11 +13,11 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <div class="alert alert-danger" role="alert">
-                    Sie sind bereits im System angemeldet. Wenn ein neuer Benutzer registriert werden soll, müssen Sie
-                    sich zunächst <a href="{{ path('fos_user_security_logout') }}">abmelden</a>.
+                <div class="alert alert-info" role="alert">
+                    {{ 'registration.check_email'|trans({'%email%': user.email}) }}
                 </div>
             </div>
         </div>
     </div>
-{% endblock body %}
+
+{% endblock %}

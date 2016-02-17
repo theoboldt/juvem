@@ -1,0 +1,20 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% block subject %}
+{% autoescape false %}
+{{ 'registration.email.subject'|trans({'%username%': user.nameLast, '%confirmationUrl%': confirmationUrl}) }}
+{% endautoescape %}
+{% endblock %}
+{% block body_text %}
+{% autoescape false %}
+Guten Tag {{ user.nameLast }}!
+
+Besuchen Sie bitte folgende Seite, um Ihr Benutzerkonto zu bestätigen:
+{{ confirmationUrl }}
+
+Mit besten Grüßen,
+Evangelisches Jugendwerk Stuttgart-Vaihingen
+{% endautoescape %}
+{% endblock %}
+{% block body_html %}
+{% include 'mail/user/password_resetting.html.twig' %}
+{% endblock %}

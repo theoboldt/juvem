@@ -1,0 +1,27 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Registrierung bestätigen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Registrierung bestätigen', 'subtitle': 'Juvem'} %}
+        {% block breadcrumb %}
+            <li class="active">Registrierung bestätigen</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="alert alert-info" role="alert">
+                    <p>{{ 'registration.check_email'|trans({'%email%': user.email}) }}</p>
+                    {% if targetUrl %}
+                        <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

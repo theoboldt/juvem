@@ -9,7 +9,9 @@
             {% endblock %}
             <div class="page-header">
                 <h1>{{ title }}
-                    <small>{{ subtitle }}</small>
+                    {% if subtitle %}
+                        <small>{{ subtitle }}</small>
+                    {% endif %}
                 </h1>
             </div>
             <div id="page-global-messages">
