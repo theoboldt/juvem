@@ -25,9 +25,13 @@
 
             <p><a href="{{ path('homepage') }}">Veranstaltungsübersicht</a></p>
         </div>
-        <div class="col-xs-6 col-md-4">
-            <h3><a href="{{ path('fos_user_profile_show') }}">Profil</a></h3>
-            <p><a href="{{ path('fos_user_profile_edit') }}">Profil bearbeiten</a></p>
+        <div class="col-xs-6 col-sm-4 col-md-3">
+            <h3><a href="{{ path('fos_user_profile_show') }}">Benutzerkonto</a></h3>
+            <ul>
+                <li><a href="{{ path('fos_user_profile_edit') }}">Profil bearbeiten</a></li>
+                <li><a href="{{ path('fos_user_change_password') }}">Passwort ändern</a></li>
+            </ul>
+
         </div>
     </div>
 </div>
