@@ -34,7 +34,7 @@ AppBundle\Entity\User:
             - Length:
                 min: 2
                 minMessage: fos_user.email.short
-                max: 3
+                max: 255
                 maxMessage: fos_user.email.long
                 groups: [ "AppBundleRegistration", "ResetPassword" ]
             - Email:
