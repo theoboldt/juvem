@@ -16,7 +16,7 @@ class UserRegistrationFormType extends AbstractType
             ->add(
                 'nameFirst', TextType::class, array('label'    => 'Vorname',
                                                     'required' => false
-            )
+                           )
             )
             ->add('nameLast', TextType::class, array('label' => 'Nachname'))
             ->remove('username');  // we use email as the username
