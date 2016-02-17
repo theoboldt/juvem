@@ -50,6 +50,8 @@
             {% include 'common/footer/public.html.twig' %}
         {% elseif is_granted('ROLE_ADMIN') %}
             {% include 'common/footer/admin.html.twig' %}
+        {% else %}
+            {% include 'common/footer/registered.html.twig' %}
         {% endif %}
     </div>
 </div>

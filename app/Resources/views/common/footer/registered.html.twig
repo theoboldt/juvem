@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-md-4">
+            <h2>Sitemap</h2>
+
+            <h3>Impressum</h3>
+
+            <div itemscope itemtype="http://schema.org/Organization">
+                <address>
+                    <strong itemprop="name">Evangelisches Jugendwerk Vaihingen</strong><br>
+
+                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                        <span itemprop="streetAddress">Ackermannstr. 39</span><br>
+                        <span itemprop="postalCode">70563</span> <span itemprop="addressLocality">Stuttgart</span><br>
+
+                    </div>
+                    {{ 'phone-alt'|glyph }} <span itemprop="telephone">(0711) 735 13 94</span><br>
+                    {{ 'print'|glyph }} <span itemprop="faxNumber">(0711) 133 57 16</span><br>
+                    {{ 'envelope'|glyph }} <span itemprop="email">mail@jugendwerk-vaihingen.de</span>
+                </address>
+            </div>
+        </div>
+        <div class="col-xs-6 col-md-4">
+            <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
+
+            <p><a href="{{ path('homepage') }}">Veranstaltungsübersicht</a></p>
+        </div>
+    </div>
+</div>
