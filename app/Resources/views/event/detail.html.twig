@@ -84,7 +84,7 @@
                     <h4>Poster</h4>
                     {% if event.imageFilename %}
                         <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
-                            <img src="{{ path('event_image',  {'eid': event.eid, 'width': 350, 'height': 350 }) }}"
+                            <img src="{{ path('event_image',  {'eid': event.eid, 'width': 400, 'height': 400 }) }}"
                                  alt="Poster-Abbildung wurde nicht geladen" title="Poster">
                         </a>
                     {% else %}
