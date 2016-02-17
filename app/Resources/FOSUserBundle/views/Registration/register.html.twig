@@ -1,3 +1,7 @@
 {% block fos_user_content %}
-    {% include "FOSUserBundle:Registration:register_content.html.twig" %}
+    {% if app.user is null %}
+        {% include "FOSUserBundle:Registration:register_content.html.twig" %}
+    {% else %}
+        {% include "registration/register_unavailable.html.twig" %}
+    {% endif %}
 {% endblock fos_user_content %}
