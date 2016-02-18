@@ -61,8 +61,19 @@ class ActiveButtonController extends Controller
             throw new AccessDeniedHttpException('Unavailable entity');
         }
 
+        switch($entityName) {
+            case 'Event':
+                $idColumn = 'eid';
+                break;
+            case 'Participation':
+                $idColumn = 'pid';
+                break;
+            default:
+            throw new AccessDeniedHttpException('Unmanaged entity');
+        }
+
         /** @var Event $entity */
-        $entity = $repository->findOneBy(array('eid' => $entityId));
+        $entity = $repository->findOneBy(array($idColumn => $entityId));
 
         if (!method_exists($entity, $property)) {
             throw new AccessDeniedHttpException('Unavailable property');

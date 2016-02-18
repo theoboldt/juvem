@@ -15,6 +15,7 @@ use AppBundle\Entity\Participant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AdminParticipationController extends Controller
 {
@@ -94,8 +95,14 @@ class AdminParticipationController extends Controller
                                    ->getIterator() as $phoneNumberEntity) {
                 /** @var \libphonenumber\PhoneNumber $phoneNumber */
                 $phoneNumber = $phoneNumberEntity->getNumber();
-                $participantPhone .= sprintf('<span class="label label-primary">%s</span> ', $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE'));
+                $participantPhone .= sprintf(
+                    '<span class="label label-primary">%s</span> ',
+                    $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE')
+                );
             }
+
+            $participantAction = '';
+
 
             $participantList[] = array(
                 'aid'       => $participant->getAid(),
@@ -105,7 +112,8 @@ class AdminParticipationController extends Controller
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),
                 'phone'     => $participantPhone,
-                'status'    => $participant->getStatus(true)
+                'status'    => $participant->getStatus(true),
+                'action'    => $participantAction
             );
         }
 
@@ -125,14 +133,43 @@ class AdminParticipationController extends Controller
 
         $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
         if (!$participation) {
-            //return $this->redirect('participation_miss');
+            throw new BadRequestHttpException('Requested participation event not found');
         }
         $event = $participation->getEvent();
 
-        //dump($event);
-        //dump($participation);
-
-        $phoneNumberList = array();
+        $buttonConfirmation    = array(
+            'entityName'   => 'Participation',
+            'propertyName' => 'isConfirmed',
+            'entityId'     => $participation->getPid(),
+            'isEnabled'    => $participation->isConfirmed(),
+            'buttons'      => array(
+                'buttonEnable'  => array(
+                    'label' => 'Bestätigen',
+                    'glyph' => 'ok'
+                ),
+                'buttonDisable' => array(
+                    'label' => 'Bestätigung zurücknehmen',
+                    'glyph' => 'remove'
+                )
+            )
+        );
+        $buttonPayment = array(
+            'entityName'   => 'Participation',
+            'propertyName' => 'isConfirmed',
+            'entityId'     => $participation->getPid(),
+            'isEnabled'    => '',
+            'buttons'      => array(
+                'buttonEnable'  => array(
+                    'label' => 'Sichtbar schalten',
+                    'glyph' => 'eye-open'
+                ),
+                'buttonDisable' => array(
+                    'label' => 'Verstecken',
+                    'glyph' => 'eye-close'
+                )
+            )
+        );
+        $phoneNumberList  = array();
         /** @var PhoneNumber $phoneNumberEntity */
         foreach ($participation->getPhoneNumbers()
                                ->getIterator() as $phoneNumberEntity) {
@@ -145,7 +182,9 @@ class AdminParticipationController extends Controller
             'event/participation/admin/detail.html.twig',
             array('event'           => $event,
                   'participation'   => $participation,
-                  'phoneNumberList' => $phoneNumberList
+                  'phoneNumberList' => $phoneNumberList,
+                  'buttonConfirmation' => $buttonConfirmation,
+                  'buttonPayment' => $buttonPayment
             )
         );
     }

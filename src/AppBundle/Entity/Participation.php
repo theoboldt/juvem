@@ -442,4 +442,29 @@ class Participation
     {
         return $this->assignedUser;
     }
+
+    /**
+     * Check if all related participants are confirmed
+     *
+     * @return bool
+     */
+    public function isConfirmed() {
+        /** @var Participant $participant */
+        foreach($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(false);
+            if ($status % Participant::TYPE_STATUS_CONFIRMED == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if all related participants are confirmed
+     *
+     * @return bool
+     */
+    public function setIsConfirmed() {
+        return true;
+    }
 }
