@@ -173,7 +173,7 @@ class PublicParticipationController extends Controller
 	/**
 	 * Page for list of events
 	 *
-	 * @Route("/participations", name="public_participations")
+	 * @Route("/participation", name="public_participations")
 	 * @Security("has_role('ROLE_USER')")
 	 */
 	public function listParticipationsAction()
@@ -198,19 +198,7 @@ class PublicParticipationController extends Controller
 		$user = $this->getUser();
 
 		$participationList = $participationRepository->findBy(array('assignedUser' => $user->getUid()));
-		/*
-				$em                    = $this->getDoctrine()
-											  ->getManager();
-				$query                 = $em->createQuery(
-					'SELECT a
-					   FROM AppBundle:Participant a,
-							AppBundle:Participation p
-					  WHERE a.participation = p.pid
-						AND p.event = :eid'
-				)
-											->setParameter('eid', $eid);
-				$participantEntityList = $query->getResult();
-		*/
+
 		$participationListResult = array();
 		/** @var Participant $participant */
 		foreach ($participationList as $participation) {
@@ -229,14 +217,24 @@ class PublicParticipationController extends Controller
 				$eventEndFormat = $dateFormatDay;
 			}
 
+            $eventTime = sprintf(
+                '%s - %s',
+                $event->getStartDate()
+                      ->format($eventStartFormat),
+                $event->getEndDate()
+                      ->format($eventEndFormat)
+            );
+
+			$participantsString = '';
+            foreach ($participation->getParticipants() as $participant) {
+                $participantsString .= ' '.$participant->getNameFirst().' '.$participant->getStatus(true);
+            }
+
 			$participationListResult[] = array(
 				'pid' => $participation->getPid(),
 				'eventTitle' => $event->getTitle(),
-				'start_date' => $event->getStartDate()
-					->format($eventStartFormat),
-				'end_date' => $event->getEndDate()
-					->format($eventEndFormat),
-				'status' => ''
+				'eventTime' => $eventTime,
+				'participants' => $participantsString
 			);
 		}
 
