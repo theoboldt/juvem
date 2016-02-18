@@ -1,6 +1,8 @@
 <div class="page-header">
     <h1>{{ title }}
-        <small>{{ subtitle }}</small>
+        {% if subtitle %}
+            <small>{{ subtitle }}</small>
+        {% endif %}
     </h1>
 </div>
 <div id="page-global-messages">
@@ -8,14 +10,14 @@
         {% if app.session.flashBag.has('success') %}
             <div class="alert alert-success">
                 {% for msg in app.session.flashBag.get('success') %}
-                    {{ msg }}
+                    {{ msg|raw }}
                 {% endfor %}
             </div>
         {% endif %}
         {% if app.session.flashBag.has('danger') %}
             <div class="alert alert-danger">
                 {% for msg in app.session.flashBag.get('danger') %}
-                    {{ msg }}
+                    {{ msg|raw }}
                 {% endfor %}
             </div>
         {% endif %}
