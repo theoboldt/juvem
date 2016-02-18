@@ -25,5 +25,9 @@ services:
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
         arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%']
-
+    app.user_registration.participation_listener:
+        class: AppBundle\EventListeners\UserRegistrationListener
+        arguments: ['@doctrine']
+        tags:
+            - { name: kernel.event_subscriber }
 

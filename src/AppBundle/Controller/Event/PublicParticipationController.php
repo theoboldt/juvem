@@ -140,9 +140,9 @@ class PublicParticipationController extends Controller
             } else {
                 $participationList = array();
             }
-            $participationList[] = $participation->getPid();
+            $participationList[] = $managedParticipation->getPid();
             $request->getSession()
-                    ->set('participationList', $participationList);;
+                    ->set('participationList', $participationList);
 
             $message = sprintf(
                 '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>
