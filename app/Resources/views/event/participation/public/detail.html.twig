@@ -5,10 +5,8 @@
 {% block body %}
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen</a></li>
-            <li class="active">Anmeldung</li>
+            <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
+            <li class="active">Anmeldung Detailansicht ({{ event.title }})</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
@@ -114,4 +112,5 @@
                 {% endfor %}
             </div>
         </div>
+
 {% endblock %}
