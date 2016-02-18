@@ -22,8 +22,11 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         if ($this->isUserLoggedIn()) {
-            $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
-            $menu->addChild('Benutzer', array('route' => 'user_list'));
+            $menu->addChild('Anmeldungen', array('route' => 'public_participations'));
+            if ($this->isUserAdmin()) {
+                $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
+                $menu->addChild('Benutzer', array('route' => 'user_list'));
+            }
         } else {
             $menu->addChild('Veranstaltungen', array('route' => 'homepage'));
         }
@@ -76,5 +79,20 @@ class Builder implements ContainerAwareInterface
         $user  = $token->getUser();
 
         return ($user instanceof User);
+    }
+
+    /**
+     * Check if a user is admin
+     *
+     * @return bool
+     */
+    protected function isUserAdmin()
+    {
+        $token = $this->container->get('security.token_storage')
+                                 ->getToken();
+        /** @var User $user */
+        $user  = $token->getUser();
+
+        return ($user && $user->hasRole('ROLE_ADMIN'));
     }
 }
