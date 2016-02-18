@@ -84,7 +84,7 @@ class PublicParticipationController extends Controller
         }
 
         return $this->render(
-            'event/public/participate-begin.html.twig', array(
+            'event/participation/public/begin.html.twig', array(
                                                           'event' => $event,
                                                           'form'  => $form->createView()
                                                       )
@@ -161,7 +161,7 @@ class PublicParticipationController extends Controller
             return $this->redirectToRoute('event_public_detail', array('eid' => $eid));
         } else {
             return $this->render(
-                'event/public/participate-confirm.html.twig', array(
+                'event/participation/public/confirm.html.twig', array(
                                                                 'participation' => $participation,
                                                                 'event'         => $event
                                                             )

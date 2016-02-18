@@ -23,7 +23,7 @@ class AdminController extends Controller
      */
     public function listAction()
     {
-        return $this->render('event/list.html.twig');
+        return $this->render('event/admin/list.html.twig');
     }
 
     /**
@@ -125,7 +125,7 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/edit.html.twig', array(
+            'event/admin/edit.html.twig', array(
                                       'event' => $event,
                                       'form'  => $form->createView(),
                                   )
@@ -199,7 +199,7 @@ class AdminController extends Controller
         );
 
         return $this->render(
-            'event/detail.html.twig', array(
+            'event/admin/detail.html.twig', array(
                                         'event'            => $event,
                                         'eventDeleteModal' => $eventDeleteModal,
                                         'buttonState'      => $buttonState,
@@ -236,7 +236,7 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/new.html.twig', array(
+            'event/admin/new.html.twig', array(
                                      'form' => $form->createView(),
                                  )
         );

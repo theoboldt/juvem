@@ -46,7 +46,7 @@ class AdminParticipationController extends Controller
         dump($participantEntityList);
 
 
-        return $this->render('event/participation/participants-list.html.twig', array('event' => $event));
+        return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
 
     /**
@@ -142,7 +142,7 @@ class AdminParticipationController extends Controller
         }
 
         return $this->render(
-            'event/participation/participation-detail.html.twig',
+            'event/participation/admin/detail.html.twig',
             array('event'           => $event,
                   'participation'   => $participation,
                   'phoneNumberList' => $phoneNumberList
