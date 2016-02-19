@@ -1,0 +1,50 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Benutzerprofil bearbeiten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Benutzerprofil', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('fos_user_profile_show') }}">Benutzerprofil</a></li>
+            <li class="active">Benutzerprofil bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-horizontal">
+                    {{ form_widget(form) }}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Vorname</label>
+
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{ user.nameFirst }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Nachname</label>
+
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{ user.nameLast }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ 'profile.show.email'|trans }}</label>
+
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{ user.email }}</p>
+
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="{{ 'profile.edit.submit'|trans }}"/>
+
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
