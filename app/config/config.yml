@@ -105,7 +105,7 @@ fos_user:
             template: mail/user/password_resetting.email.twig
     profile:
         form:
-            type: app_bundle_user_profile
+            type: AppBundle\Form\UserProfileFormType
             validation_groups: [AppBundleProfile]
     service:
         mailer: fos_user.mailer.twig_swift
