@@ -11,13 +11,13 @@
             <li class="active">Benutzerprofil bearbeiten</li>
         {% endblock %}
     {% endembed %}
-    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig'  %}
+    {% form_theme form 'form/bootstrap_3_horizontal_4-8_layout.html.twig' %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
-                        <input type="submit" value="{{ 'profile.edit.submit'|trans }}" class="btn btn-primary"/>
+                        <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
                     </div>
                     <div class="btn-group" role="group">
                         <a href="{{ path('fos_user_change_password') }}"
@@ -27,15 +27,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-8 col-sm-offset-1">
-                    {{ form_start(form) }}
-                    {{ form_row(form.nameFirst, {'label_attr': {'class': 'col-sm-3'}, 'attr': {'class': 'col-sm-9'}}) }}
-                    {{ form_row(form.nameLast) }}
-                    {{ form_row(form.email) }}
-                    {{ form_row(form.current_password) }}
-                <input type="submit" value="{{ 'profile.edit.submit'|trans }}" class="btn btn-primary"/>
+            <div class="col-xs-12 col-sm-8">
+                {{ form_start(form) }}
+                {{ form_row(form.nameFirst, {'label_attr': {'class': 'col-sm-3'}, 'attr': {'class': 'col-sm-9'}}) }}
+                {{ form_row(form.nameLast) }}
+                {{ form_row(form.email) }}
+                {{ form_row(form.current_password) }}
+                <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
                 {{ form_end(form) }}
-
             </div>
         </div>
     </div>
