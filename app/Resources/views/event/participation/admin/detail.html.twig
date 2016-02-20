@@ -7,7 +7,8 @@
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen</a></li>
+            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen
+                    Familie {{ participation.nameLast }}</a></li>
             <li class="active">Anmeldung</li>
         {% endblock %}
     {% endembed %}
@@ -67,11 +68,11 @@
                     </div>
                 </div>
             </div>
-                {% for participant in participation.participants %}
-            <div class="col-xs-12 col-md-6">
-            {% if loop.index0 == 0 %}
-                <h3 id="data-participants">Daten der Teilnehmer</h3>
-                {% endif %}
+            {% for participant in participation.participants %}
+                <div class="col-xs-12 col-md-6">
+                    {% if loop.index0 == 0 %}
+                        <h3 id="data-participants">Daten der Teilnehmer</h3>
+                    {% endif %}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
@@ -118,10 +119,13 @@
                                     </dl>
                                 </div>
                             </div>
+                            <div class="col-xs-12">
+                                {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+                            </div>
                         </div>
                     </div>
-                    </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
+    </div>
 {% endblock %}

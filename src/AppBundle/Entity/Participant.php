@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\BitMask\ParticipantStatus;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -33,9 +34,8 @@ class Participant
     const LABEL_FOOD_LACTOSE_FREE = 'laktosefrei';
 
     const TYPE_STATUS_UNCONFIRMED = 1;
-    const TYPE_STATUS_CONFIRMED   = 2;
-    const TYPE_STATUS_PAID        = 4;
-    const TYPE_STATUS_WITHDRAWN   = 8;
+    const TYPE_STATUS_PAID        = 2;
+    const TYPE_STATUS_WITHDRAWN   = 4;
 
     const LABEL_STATUS_UNCONFIRMED = 'unbestätigt';
     const LABEL_STATUS_CONFIRMED   = 'bestätigt';
@@ -86,7 +86,7 @@ class Participant
     /**
      * @ORM\Column(type="smallint", options={"unsigned"=true}, name="status")
      */
-    protected $status = 1;
+    protected $status = 0;
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
@@ -383,12 +383,16 @@ class Participant
     /**
      * Set status
      *
-     * @param integer $status
+     * @param integer|ParticipantStatus $status
      *
      * @return Participant
      */
     public function setStatus($status)
     {
+        if ($status instanceof ParticipantStatus) {
+            $status = $status->getValue();
+        }
+
         $this->status = $status;
 
         return $this;
@@ -397,26 +401,13 @@ class Participant
     /**
      * Get status
      *
-     * @return integer
+     * @param bool      $asMask             Set to true to get value as mask
+     * @return integer|ParticipantStatus
      */
-    public function getStatus($format = false)
+    public function getStatus($asMask = false)
     {
-        if ($format) {
-            $formatLabel = function ($text, $type = 'primary') {
-                return sprintf('<span class="label label-%s">%s</span>', $type, $text);
-            };
-            $status      = '';
-            $status .= ($this->status % self::TYPE_STATUS_UNCONFIRMED == 0) ? $formatLabel(
-                self::LABEL_STATUS_UNCONFIRMED
-            ) : '';
-            $status .= ($this->status % self::TYPE_STATUS_CONFIRMED == 0) ? $formatLabel(
-                self::LABEL_STATUS_CONFIRMED
-            ) : '';
-            $status .= ($this->status % self::TYPE_STATUS_PAID == 0) ? $formatLabel(self::LABEL_STATUS_PAID) : '';
-            $status .= ($this->status % self::TYPE_STATUS_WITHDRAWN == 0) ? $formatLabel(
-                self::LABEL_STATUS_WITHDRAWN
-            ) : '';
-            return $status;
+        if ($asMask) {
+            return new ParticipantStatus($this->status);
         }
 
         return $this->status;

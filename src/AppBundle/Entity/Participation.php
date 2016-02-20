@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\BitMask\ParticipantStatus;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -448,11 +449,13 @@ class Participation
      *
      * @return bool
      */
-    public function isConfirmed() {
+    public function isConfirmed()
+    {
         /** @var Participant $participant */
-        foreach($this->getParticipants() as $participant) {
-            $status = $participant->getStatus(false);
-            if ($status % Participant::TYPE_STATUS_CONFIRMED == 1) {
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            dump($status);
+            if (!$status->has(ParticipantStatus::TYPE_STATUS_CONFIRMED)) {
                 return false;
             }
         }
@@ -460,11 +463,64 @@ class Participation
     }
 
     /**
-     * Check if all related participants are confirmed
+     * Set conformation value for all related participants
+     *
+     * @param   bool $confirmed New value
+     * @return bool
+     */
+    public function setIsConfirmed($confirmed = true)
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            dump($status);
+            if ($confirmed) {
+                $status->enable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
+            } else {
+                $status->disable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
+            }
+            dump($status);
+            $participant->setStatus($status->__toString());
+        }
+        return $this;
+    }
+
+
+    /**
+     * Check if all related participants are paid
      *
      * @return bool
      */
-    public function setIsConfirmed() {
+    public function isPaid()
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if (!$status->has(ParticipantStatus::TYPE_STATUS_PAID)) {
+                return false;
+            }
+        }
         return true;
+    }
+
+    /**
+     * Set conformation value for all related participants
+     *
+     * @param   bool $paid New value
+     * @return bool
+     */
+    public function setIsPaid($paid = true)
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if ($paid) {
+                $status->enable(ParticipantStatus::TYPE_STATUS_PAID);
+            } else {
+                $status->disable(ParticipantStatus::TYPE_STATUS_PAID);
+            }
+            $participant->setStatus($status->__toString());
+        }
+        return $this;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller\Event;
 
+use AppBundle\BitMask\LabelFormatter;
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
@@ -44,8 +46,6 @@ class AdminParticipationController extends Controller
         )
                                     ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
-        dump($participantEntityList);
-
 
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
@@ -66,7 +66,6 @@ class AdminParticipationController extends Controller
             return $this->redirect('event_miss');
         }
 
-
         $em                    = $this->getDoctrine()
                                       ->getManager();
         $query                 = $em->createQuery(
@@ -78,6 +77,9 @@ class AdminParticipationController extends Controller
         )
                                     ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
+
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED);
 
         $participantList = array();
         /** @var Participant $participant */
@@ -112,7 +114,7 @@ class AdminParticipationController extends Controller
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $participantAge->format('%y'),
                 'phone'     => $participantPhone,
-                'status'    => $participant->getStatus(true),
+                'status'    => $statusFormatter->formatMask($participant->getStatus(true)),
                 'action'    => $participantAction
             );
         }
@@ -137,7 +139,10 @@ class AdminParticipationController extends Controller
         }
         $event = $participation->getEvent();
 
-        $buttonConfirmation    = array(
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED);
+
+        $buttonConfirmation = array(
             'entityName'   => 'Participation',
             'propertyName' => 'isConfirmed',
             'entityId'     => $participation->getPid(),
@@ -153,23 +158,23 @@ class AdminParticipationController extends Controller
                 )
             )
         );
-        $buttonPayment = array(
+        $buttonPayment      = array(
             'entityName'   => 'Participation',
-            'propertyName' => 'isConfirmed',
+            'propertyName' => 'isPaid',
             'entityId'     => $participation->getPid(),
-            'isEnabled'    => '',
+            'isEnabled'    => $participation->isPaid(),
             'buttons'      => array(
                 'buttonEnable'  => array(
-                    'label' => 'Sichtbar schalten',
-                    'glyph' => 'eye-open'
+                    'label' => 'Zahlungseingang vermerken',
+                    'glyph' => 'ok'
                 ),
                 'buttonDisable' => array(
-                    'label' => 'Verstecken',
-                    'glyph' => 'eye-close'
+                    'label' => 'Zahlung zurücknehmen',
+                    'glyph' => 'remove'
                 )
             )
         );
-        $phoneNumberList  = array();
+        $phoneNumberList    = array();
         /** @var PhoneNumber $phoneNumberEntity */
         foreach ($participation->getPhoneNumbers()
                                ->getIterator() as $phoneNumberEntity) {
@@ -180,11 +185,12 @@ class AdminParticipationController extends Controller
 
         return $this->render(
             'event/participation/admin/detail.html.twig',
-            array('event'           => $event,
-                  'participation'   => $participation,
-                  'phoneNumberList' => $phoneNumberList,
+            array('event'              => $event,
+                  'participation'      => $participation,
+                  'statusFormatter'    => $statusFormatter,
+                  'phoneNumberList'    => $phoneNumberList,
                   'buttonConfirmation' => $buttonConfirmation,
-                  'buttonPayment' => $buttonPayment
+                  'buttonPayment'      => $buttonPayment
             )
         );
     }
