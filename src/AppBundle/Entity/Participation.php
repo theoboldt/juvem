@@ -454,7 +454,6 @@ class Participation
         /** @var Participant $participant */
         foreach ($this->getParticipants() as $participant) {
             $status = $participant->getStatus(true);
-            dump($status);
             if (!$status->has(ParticipantStatus::TYPE_STATUS_CONFIRMED)) {
                 return false;
             }
@@ -473,13 +472,11 @@ class Participation
         /** @var Participant $participant */
         foreach ($this->getParticipants() as $participant) {
             $status = $participant->getStatus(true);
-            dump($status);
             if ($confirmed) {
                 $status->enable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
             } else {
                 $status->disable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
             }
-            dump($status);
             $participant->setStatus($status->__toString());
         }
         return $this;
