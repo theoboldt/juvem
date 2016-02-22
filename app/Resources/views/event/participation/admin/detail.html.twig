@@ -7,9 +7,8 @@
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen
-                    Familie {{ participation.nameLast }}</a></li>
-            <li class="active">Anmeldung</li>
+            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen</a></li>
+            <li class="active">Familie {{ participation.nameLast }}</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
