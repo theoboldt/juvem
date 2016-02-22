@@ -28,19 +28,24 @@
 
                         }
                     },
-                    datatype:'json',
+                    datatype: 'json',
                     success: function (response) {
                         button.empty();
-                        button.html(response);
+                        if (response && response.html) {
+                            button.html(response.html);
+                        }
+                        {% block success %}{% endblock %}
                     },
-                    error: function(response) {
+                    error: function (response) {
                         $(document).trigger('add-alerts', {
                             message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
                             priority: 'error'
                         });
+                        {% block error %}{% endblock %}
                     },
-                    complete: function() {
+                    complete: function (response) {
                         button.prop('disabled', false);
+                        {% block complete %}{% endblock %}
                     }
                 });
             });

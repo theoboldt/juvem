@@ -6,6 +6,7 @@ use AppBundle\Entity\Event;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -61,7 +62,7 @@ class ActiveButtonController extends Controller
             throw new AccessDeniedHttpException('Unavailable entity');
         }
 
-        switch($entityName) {
+        switch ($entityName) {
             case 'Event':
                 $idColumn = 'eid';
                 break;
@@ -69,7 +70,7 @@ class ActiveButtonController extends Controller
                 $idColumn = 'pid';
                 break;
             default:
-            throw new AccessDeniedHttpException('Unmanaged entity');
+                throw new AccessDeniedHttpException('Unmanaged entity');
         }
 
         /** @var Event $entity */
@@ -95,11 +96,23 @@ class ActiveButtonController extends Controller
         }
         $valuePerformed = $entity->$property();
 
-        return $this->render(
+
+        $html = $this->container->get('templating')->render(
             'common/active-button-content.html.twig', array(
             'buttonIsEnabled' => $valuePerformed,
             'buttons'         => $buttons
         )
+        );
+
+        return new JsonResponse(
+            array(
+                'entityName' => $entityName,
+                'entityId' => $entityId,
+                'propery' => $property,
+                'value' => $valuePerformed,
+                'html'  => $html
+            )
+
         );
     }
 }

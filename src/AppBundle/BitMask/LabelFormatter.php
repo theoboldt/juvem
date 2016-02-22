@@ -23,7 +23,7 @@ class LabelFormatter
      *
      * @var string
      */
-    protected $labelTemplate = '<span class="label label-%s">%s</span>';
+    protected $labelTemplate = '<span class="label label-%s option-%d">%s</span>';
 
     /**
      * Contains the default type of formatted labels
@@ -95,9 +95,9 @@ class LabelFormatter
     public function formatOption(BitMaskAbstract $bitMask, $option)
     {
         if ($bitMask->has($option)) {
-            return sprintf($this->labelTemplate, $this->typeForOption($option), $bitMask->label($option));
+            return sprintf($this->labelTemplate, $this->typeForOption($option), $option, $bitMask->label($option));
         } elseif ($this->hasAbsenceLabel($option)) {
-            return sprintf($this->labelTemplate, $this->typeForAbsenceOption($option), $this->absenceLabel($option));
+            return sprintf($this->labelTemplate, $this->typeForAbsenceOption($option), $option, $this->absenceLabel($option));
         }
         return '';
     }
