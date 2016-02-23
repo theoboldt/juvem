@@ -14,11 +14,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="alert alert-info" role="alert">
-                    <p>{{ 'registration.check_email'|trans({'%email%': user.email}) }}</p>
-                    {% if targetUrl %}
-                        <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
-                    {% endif %}
-
+                    <p>Herzlichen Glückwunsch {{ user.nameFirst }} {{ user.nameLast }}, Ihr Benutzerkonto ist jetzt bestätigt.</p>
                 </div>
             </div>
         </div>
