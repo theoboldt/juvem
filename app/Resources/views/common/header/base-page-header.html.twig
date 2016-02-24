@@ -9,7 +9,7 @@
             {% endblock %}
             <div class="page-header">
                 <h1>{{ title }}
-                    {% if subtitle %}
+                    {% if subtitle is defined %}
                         <small>{{ subtitle }}</small>
                     {% endif %}
                 </h1>
