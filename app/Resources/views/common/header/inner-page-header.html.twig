@@ -8,40 +8,32 @@
 <div id="page-global-messages">
     <div data-alerts="alerts">
         {% if app.session.flashBag.has('success') %}
-            <div class="alert alert-success">
-                <ul>
-                    {% for msg in app.session.flashBag.get('success') %}
-                        <li>{{ msg|raw }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% for msg in app.session.flashBag.get('success') %}
+                <div class="alert alert-success">
+                    {{ msg|raw }}
+                </div>
+            {% endfor %}
         {% endif %}
         {% if app.session.flashBag.has('info') %}
-            <div class="alert alert-info">
-                <ul>
-                    {% for msg in app.session.flashBag.get('info') %}
-                        <li>{{ msg|raw }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% for msg in app.session.flashBag.get('info') %}
+                <div class="alert alert-info">
+                    {{ msg|raw }}
+                </div>
+            {% endfor %}
         {% endif %}
         {% if app.session.flashBag.has('warning') %}
-            <div class="alert alert-warning">
-                <ul>
-                    {% for msg in app.session.flashBag.get('warning') %}
-                        <li>{{ msg|raw }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% for msg in app.session.flashBag.get('warning') %}
+                <div class="alert alert-warning">
+                    {{ msg|raw }}
+                </div>
+            {% endfor %}
         {% endif %}
         {% if app.session.flashBag.has('danger') %}
-            <div class="alert alert-danger">
-                <ul>
-                    {% for msg in app.session.flashBag.get('danger') %}
-                        <li>{{ msg|raw }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% for msg in app.session.flashBag.get('danger') %}
+                <div class="alert alert-danger">
+                    {{ msg|raw }}
+                </div>
+            {% endfor %}
         {% endif %}
     </div>
 </div>
