@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Datenschutzerklärung{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Datenschutzerklärung', 'subtitle': 'Juvem'} %}
+        {% block breadcrumbfull %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                <li class="active"><a href="{{ path('legal') }}">Datenschutzerklärung</a></li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'legal/privacy-content.html.twig' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+{% endblock %}

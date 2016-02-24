@@ -18,3 +18,49 @@
 textarea {
   min-height: 100px;
 }
+
+.scrollspy-panel {
+  .navbar {
+    min-height: 10px;
+    margin-bottom: 0;
+  }
+  @media (min-width: 768px) {
+    .container-fluid {
+      padding: 0;
+    }
+    .navbar {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+    .panel {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    .navbar-nav > li > a {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+  }
+
+  .panel-body {
+  }
+
+  .navbar-header {
+
+  }
+  .panel-body > div {
+    position: relative;
+    height: 300px;
+    margin-top: 10px;
+    overflow: auto;
+  }
+  .panel-footer {
+    .checkbox, .radio {
+      margin:0;
+    }
+  }
+}

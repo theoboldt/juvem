@@ -37,13 +37,13 @@ class ParticipationType extends AbstractType
         $builder
             ->add(
                 'salution', ChoiceType::class, array(
-                'label'             => 'Anrede',
-                'choices'           => array('Frau' => 'Frau',
-                                             'Herr' => 'Herr'
-                ),
-                'choices_as_values' => false,
-                'expanded'          => false
-            )
+                              'label'             => 'Anrede',
+                              'choices'           => array('Frau' => 'Frau',
+                                                           'Herr' => 'Herr'
+                              ),
+                              'choices_as_values' => false,
+                              'expanded'          => false
+                          )
             )
             ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
             ->add('nameLast', TextType::class, array('label' => 'Nachname'))
@@ -53,23 +53,39 @@ class ParticipationType extends AbstractType
             ->add('email', TextType::class, array('label' => 'E-Mail'))
             ->add(
                 'phoneNumbers', CollectionType::class, array(
-                'label'        => 'Telefonnummern',
-                'entry_type'   => PhoneNumberType::class,
-                'allow_add'    => true,
-                'allow_delete' => true,
-                'attr'         => array('aria-describedby' => 'help-info-phone-numbers')
-            )
+                                  'label'        => 'Telefonnummern',
+                                  'entry_type'   => PhoneNumberType::class,
+                                  'allow_add'    => true,
+                                  'allow_delete' => true,
+                                  'attr'         => array('aria-describedby' => 'help-info-phone-numbers')
+                              )
             )
             ->add(
                 'participants', CollectionType::class, array(
-                'label'        => 'Teilnehmer',
-                'entry_type'   => ParticipantType::class,
-                'allow_add'    => true,
-                'allow_delete' => true
+                                  'label'        => 'Teilnehmer',
+                                  'entry_type'   => ParticipantType::class,
+                                  'allow_add'    => true,
+                                  'allow_delete' => true
+                              )
             )
+            ->add(
+                'acceptPrivacy',
+                CheckboxType::class,
+                array(
+                    'label'    => 'Ich habe die Datenschutzerklärung gelesen und erkläre mich mit den Angaben einverstanden. Ich kann diese Erklärung jederzeit Wiederrufen.',
+                    'required' => true,
+                    'mapped'   => false
+                )
+            )
+            ->add(
+                'acceptLegal',
+                CheckboxType::class,
+                array(
+                    'label'    => 'Ich akzeptiere die Allgemeinen Geschäftsbedingungen',
+                    'required' => true,
+                    'mapped'   => false
+                )
             );
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

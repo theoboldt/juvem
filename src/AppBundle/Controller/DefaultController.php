@@ -30,4 +30,17 @@ class DefaultController extends Controller
         )
         );
     }
+
+    /**
+     * @Route("/legal", name="legal")
+     * @Route("/datenschutzerklaerung")
+     * @Route("/datenschutz")
+     */
+    public function legalAction(Request $request)
+    {
+
+        return $this->render(
+            'legal/privacy-page.html.twig'
+        );
+    }
 }
