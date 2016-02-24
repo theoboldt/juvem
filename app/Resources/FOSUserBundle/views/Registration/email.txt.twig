@@ -6,15 +6,29 @@
 {% endblock %}
 {% block body_text %}
 {% autoescape false %}
-Guten Tag {{ user.nameLast }}!
+Hallo {{ user.nameFirst }} {{ user.nameLast }}!
+Sie haben sich beim Veranstaltungsmanager des evangelischen Jugendwerks Stuttgart Vaihingen registriert. Das freut uns!
+
+Sie können jetzt die Anmeldedaten zu Aktionen bei denen Ihre Kinder teilnehmen überprüfen, per Mausklick Stornierungsanfragen absenden oder neue Anmeldungen durch Übernahme der Daten, die bei Vorausgehenden Anmeldungen verwendet wurden, viel schneller ausfüllen.
+
+Die Registrierung ist noch nicht vollständig abgeschlossen. Sie müssen noch mit einem Klick auf den unten angegebenen Link ihre E-Mail Adresse bestätigen.
+
 
 Besuchen Sie bitte folgende Seite, um Ihr Benutzerkonto zu bestätigen:
 {{ confirmationUrl }}
 
 Mit besten Grüßen,
-Evangelisches Jugendwerk Stuttgart-Vaihingen
+Jugendwerk Stuttgart Vaihingen
 {% endautoescape %}
 {% endblock %}
+
 {% block body_html %}
-{% include 'mail/user/password_resetting.html.twig' %}
+{% embed 'mail/template.html.twig' %}
+    {% block title %}Hallo  {{ user.nameFirst }} {{ user.nameLast }}!{% endblock %}
+    {% block lead %}Sie haben sich beim Veranstaltungsmanager des evangelischen Jugendwerks Stuttgart Vaihingen registriert. Das freut uns!{% endblock %}
+    {% block content %}<p>Sie können jetzt die Anmeldedaten zu Aktionen bei denen Ihre Kinder teilnehmen überprüfen, per Mausklick Stornierungsanfragen absenden oder neue Anmeldungen durch Übernahme der Daten, die bei Vorausgehenden Anmeldungen verwendet wurden, viel schneller ausfüllen.</p><p>Die Registrierung ist noch nicht vollständig abgeschlossen. Sie müssen noch mit einem Klick auf den unten angegebenen Link ihre E-Mail Adresse bestätigen.</p>{% endblock %}
+    {% block calltoactioncontent %}<p>Besuchen Sie bitte folgende Seite, um Ihr Benutzerkonto zu bestätigen:</p>
+<p><a href="{{ confirmationUrl }}">E-Mail Adresse bestätigen »</a></p>
+{% endblock %}
+{% endembed %}
 {% endblock %}

@@ -1,0 +1,39 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Passwort zurücksetzten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Passwort zurücksetzten'} %}
+        {% block breadcrumb %}
+            <li class="active">Passwort zurücksetzten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+            <div class="row">
+                <div class="col-xs-12">
+                    {% if invalid_username is defined %}
+                        <div class="alert alert-info" role="alert">
+                            <p>{{ 'resetting.request.invalid_username'|trans({'%username%': invalid_username}) }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                    <div class="form-group">
+                        <label for="username">E-Mail</label>
+                        <input type="text" id="username" name="username" required="required" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                    <input type="submit" id="_submit" name="_submit" value="{{ 'resetting.request.submit'|trans }}" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock body %}

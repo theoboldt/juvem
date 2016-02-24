@@ -25,5 +25,14 @@
 
             <p><a href="{{ path('homepage') }}">Veranstaltungsübersicht</a></p>
         </div>
+        <div class="col-xs-6 col-sm-4 col-md-3">
+            <h3>Benutzerprofil</h3>
+            <ul>
+                <li><a href="{{ path('fos_user_security_login') }}">Anmelden</a></li>
+                <li><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>
+                <li><a href="{{ path('fos_user_resetting_request') }}">Passwort zurücksetzen</a></li>
+            </ul>
+
+        </div>
     </div>
 </div>

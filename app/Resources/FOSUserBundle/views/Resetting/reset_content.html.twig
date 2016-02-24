@@ -1,0 +1,33 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Passwort zurücksetzten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Passwort zurücksetzten', 'subtitle': 'Abschließen'} %}
+        {% block breadcrumb %}
+            <li class="active">Passwort zurücksetzten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+            {{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'fos_user_resetting_reset' } }) }}
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ form_errors(form) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                    {{ form_widget(form) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                    <input type="submit" value="{{ 'resetting.reset.submit'|trans }}" class="btn btn-primary" />
+                </div>
+            </div>
+{{ form_end(form) }}
+    </div>
+{% endblock body %}
