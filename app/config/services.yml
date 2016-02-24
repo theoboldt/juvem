@@ -24,9 +24,12 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_mail_generator:
+        class: AppBundle\Twig\MailGenerator
+        arguments: ['@twig']
     app.participation_manager:
         class: AppBundle\Manager\ParticipationManager
-        arguments: ['@mailer', '@templating']
+        arguments: ['@mailer', '@app.twig_mail_generator']
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
         arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%']
