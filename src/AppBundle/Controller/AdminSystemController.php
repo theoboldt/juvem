@@ -18,22 +18,42 @@ class AdminSystemController extends Controller
      */
     public function cacheCleanAction()
     {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
+        $controller = $this;
 
-        $input = new ArrayInput(array(
-           'command' => 'cache:clear'
-        ));
-        $output = new BufferedOutput();
-        $application->run($input, $output);
+        $removeDirectory = function ($dir) use ($controller)
+        {
+            try {
+                $files = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST
+                );
 
-        $content = $output->fetch();
+                foreach ($files as $fileinfo) {
+                    $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+                    $todo($fileinfo->getRealPath());
+                }
 
-        $this->addFlash(
-            'notice',
-            $content
+                rmdir($dir);
+            } catch (\Exception $e) {
+                    $controller->addFlash(
+                    'error',
+                    $e->getMessage()
+                );
+            }
+        };
+
+        $removeDirectory('../app/cache/dev');
+        $controller->addFlash(
+            'info',
+            'DEV cache cleaned'
         );
+
+        $removeDirectory('../app/cache/prod');
+        $controller->addFlash(
+            'info',
+            'PROD cache cleaned'
+        );
+
         return $this->redirect('/');
     }
 
@@ -44,13 +64,15 @@ class AdminSystemController extends Controller
      */
     public function cacheWarmupAction()
     {
-        $kernel = $this->get('kernel');
+        $kernel      = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
-        $input = new ArrayInput(array(
-           'command' => 'cache:warmup'
-        ));
+        $input  = new ArrayInput(
+            array(
+                'command' => 'cache:warmup'
+            )
+        );
         $output = new BufferedOutput();
         $application->run($input, $output);
 
