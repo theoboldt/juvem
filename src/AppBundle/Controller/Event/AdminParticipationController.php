@@ -17,6 +17,7 @@ use AppBundle\Entity\Participant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AdminParticipationController extends Controller
@@ -79,7 +80,9 @@ class AdminParticipationController extends Controller
         $participantEntityList = $query->getResult();
 
         $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED);
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
 
         $participantList = array();
         /** @var Participant $participant */
@@ -128,7 +131,7 @@ class AdminParticipationController extends Controller
      *
      * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"}, name="event_participation_detail")
      */
-    public function ParticipationDetailAction(Request $request)
+    public function participationDetailAction(Request $request)
     {
         $participationRepository = $this->getDoctrine()
                                         ->getRepository('AppBundle:Participation');
@@ -140,7 +143,9 @@ class AdminParticipationController extends Controller
         $event = $participation->getEvent();
 
         $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED);
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
 
         $buttonConfirmation = array(
             'entityName'   => 'Participation',
@@ -149,7 +154,7 @@ class AdminParticipationController extends Controller
             'isEnabled'    => $participation->isConfirmed(),
             'buttons'      => array(
                 'buttonEnable'  => array(
-                    'label' => 'Bestätigen',
+                    'label' => 'Bestätigen und benachrichtigen',
                     'glyph' => 'ok'
                 ),
                 'buttonDisable' => array(
@@ -195,5 +200,37 @@ class AdminParticipationController extends Controller
         );
     }
 
+    /**
+     * Detail page for one single event
+     *
+     * @Route("/admin/event/participation/confirm", name="event_participation_confirm_mail")
+     */
+    public function participationConfirmAction(Request $request)
+    {
+        $token = $request->get('_token');
+        $pid   = $request->get('pid');
 
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken($pid)) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
+
+        $participationRepository = $this->getDoctrine()
+                                        ->getRepository('AppBundle:Participation');
+
+        $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
+        if (!$participation) {
+            throw new BadRequestHttpException('Requested participation event not found');
+        }
+
+        $participationManager = $this->get('app.participation_manager');
+        $participationManager->mailParticipationConfirmed($participation, $participation->getEvent());
+
+        return new JsonResponse(
+            array(
+                'success' => true
+            )
+        );
+    }
 }

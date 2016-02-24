@@ -1,0 +1,23 @@
+{% block subject %}Anmeldung für {{ event.title }} bestätigt{% endblock %}
+
+{% block body_text %}
+{% autoescape false %}
+{% if participation.salution == 'Herr' %}
+Hallo Herr {{ participation.nameLast }}!
+{% else %}
+Hallo Frau  {{ participation.nameLast }}!
+{% endif %}
+
+Die Teilnahme bei der Veranstaltung "{{ event.title }}" wurde soeben bestätigt.
+
+Mit besten Grüßen,
+Jugendwerk Stuttgart Vaihingen
+{% endautoescape %}
+{% endblock %}
+
+{% block body_html %}
+{% embed 'mail/template.html.twig' %}
+    {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
+    {% block content %}<p>Die Teilnahme bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt.</p>{% endblock %}
+{% endembed %}
+{% endblock %}
