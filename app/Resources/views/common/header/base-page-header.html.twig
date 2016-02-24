@@ -15,7 +15,7 @@
                 </h1>
             </div>
             <div id="page-global-messages">
-                <div data-alerts="alerts" data-fade="5000">
+                <div data-alerts="alerts">
                     {% if app.session.flashBag.has('success') %}
                         <div class="alert alert-success">
                             {% for msg in app.session.flashBag.get('success') %}
