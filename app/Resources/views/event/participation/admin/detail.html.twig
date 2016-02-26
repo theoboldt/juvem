@@ -147,8 +147,8 @@
                                         <dt>Ernährung</dt>
                                         <dd>
                                             {% set participantFood = participant.getFood(true) %}
-                                            {% if participantFood|length %}
-                                                {{ participant.getFood(true)|join(', ') }}
+                                            {% if participantFood.getValue() %}
+                                                {{ ' '|bitmask(participantFood) }}
                                             {% else %}
                                                 <i>(keine Besonderheiten)</i>
                                             {% endif %}

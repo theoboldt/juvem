@@ -76,7 +76,6 @@ class LabelFormatter
             if ($value) {
                 $labelList[] = $value;
             }
-
         }
 
         if ($glue === null) {

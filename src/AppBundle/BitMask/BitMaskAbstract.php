@@ -37,25 +37,6 @@ abstract class BitMaskAbstract
     }
 
     /**
-     * Get all options this bitmask provides
-     *
-     * @param bool $withLabel Set to true to include label texts
-     * @return array
-     */
-    public function options($withLabel = false)
-    {
-        $result = array();
-        foreach ($this->options as $option) {
-            $result[] = $option;
-            if ($withLabel) {
-                $result[$option] = $this->labels[$option];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Check if the bitmasks value has the transmitted option set
      *
      * @param integer $option
@@ -63,6 +44,7 @@ abstract class BitMaskAbstract
      */
     public function has($option)
     {
+        $this->ensureConstantsParsed();
         if (!in_array($option, $this->options)) {
             throw new \InvalidArgumentException('Unknown option identifier transmitted');
         }
@@ -77,7 +59,8 @@ abstract class BitMaskAbstract
      */
     public function label($option)
     {
-        if (!isset($this->labels[$option]) && !array_key_exists($option, $this->labels)) {
+        $this->ensureConstantsParsed();
+        if (!isset($this->labels[$option])) {
             throw new \InvalidArgumentException('Unknown option identifier transmitted');
         }
         return $this->labels[$option];
@@ -157,4 +140,63 @@ abstract class BitMaskAbstract
         return (string)$this->value;
     }
 
+    /**
+     * Get all options this bitmask provides
+     *
+     * @see parseConstants()
+     * @return array
+     */
+    public function options()
+    {
+        $this->ensureConstantsParsed();
+        return $this->options;
+    }
+
+    /**
+     * Get labels of all options this bitmask provides
+     *
+     * @see parseConstants()
+     * @return array
+     */
+    public function labels()
+    {
+        $this->ensureConstantsParsed();
+        return $this->labels;
+    }
+
+    /**
+     * Ensure that the constants are parsed and parse dem if not
+     */
+    protected function ensureConstantsParsed()
+    {
+        if ($this->labels !== null) {
+            return;
+        }
+        $this->options = array();
+        $this->labels  = array();
+
+        $mask      = new \ReflectionClass(get_called_class());
+        $constants = $mask->getConstants();
+
+        $typeList  = array();
+        $labelList = array();
+
+        $regex = '/(TYPE|LABEL)_(.*)/';
+
+        foreach ($constants as $constantName => $constantValue) {
+            if (preg_match($regex, $constantName, $constantDetails)) {
+                if ($constantDetails[1] == 'TYPE') {
+                    $typeList[$constantDetails[2]] = $constantValue;
+                } else {
+                    $labelList[$constantDetails[2]] = $constantValue;
+                }
+            }
+        }
+        foreach ($typeList as $type => $value) {
+            $this->options[] = $value;
+            if (isset($labelList[$type])) {
+                $this->labels[$value] = $labelList[$type];
+            }
+        }
+    }
 }

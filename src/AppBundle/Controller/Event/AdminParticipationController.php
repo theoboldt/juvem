@@ -146,6 +146,7 @@ class AdminParticipationController extends Controller
         $statusFormatter->addAbsenceLabel(
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
         );
+        $foodFormatter  = new LabelFormatter();
 
         $buttonConfirmation = array(
             'entityName'   => 'Participation',
@@ -192,6 +193,7 @@ class AdminParticipationController extends Controller
             'event/participation/admin/detail.html.twig',
             array('event'              => $event,
                   'participation'      => $participation,
+                  'foodFormatter'      => $foodFormatter,
                   'statusFormatter'    => $statusFormatter,
                   'phoneNumberList'    => $phoneNumberList,
                   'buttonConfirmation' => $buttonConfirmation,

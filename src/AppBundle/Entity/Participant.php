@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,25 +23,6 @@ class Participant
 
     const LABEL_GENDER_FEMALE = 'männlich';
     const LABEL_GENDER_MALE   = 'weiblich';
-
-    const TYPE_FOOD_VEGAN        = 1;
-    const TYPE_FOOD_VEGETARIAN   = 2;
-    const TYPE_FOOD_NO_PORK      = 4;
-    const TYPE_FOOD_LACTOSE_FREE = 8;
-
-    const LABEL_FOOD_VEGAN        = 'vegan';
-    const LABEL_FOOD_VEGETARIAN   = 'vegetarisch';
-    const LABEL_FOOD_NO_PORK      = 'ohne Schweinefleisch';
-    const LABEL_FOOD_LACTOSE_FREE = 'laktosefrei';
-
-    const TYPE_STATUS_UNCONFIRMED = 1;
-    const TYPE_STATUS_PAID        = 2;
-    const TYPE_STATUS_WITHDRAWN   = 4;
-
-    const LABEL_STATUS_UNCONFIRMED = 'unbestätigt';
-    const LABEL_STATUS_CONFIRMED   = 'bestätigt';
-    const LABEL_STATUS_PAID        = 'bezahlt';
-    const LABEL_STATUS_WITHDRAWN   = 'zurückgezogen';
 
     /**
      * @ORM\Column(type="integer", name="aid")
@@ -64,7 +46,7 @@ class Participant
     /**
      * @ORM\Column(type="smallint", options={"unsigned"=true})
      */
-    protected $food;
+    protected $food = 0;
 
     /**
      * @ORM\Column(type="date")
@@ -84,7 +66,7 @@ class Participant
     protected $infoGeneral = '';
 
     /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true}, name="status")
+     * @ORM\Column(type="smallint", options={"unsigned"=true})
      */
     protected $status = 0;
 
@@ -159,14 +141,14 @@ class Participant
     /**
      * Set food
      *
-     * @param integer|array $food
+     * @param integer|ParticipantFood $food
      *
      * @return Participant
      */
     public function setFood($food)
     {
-        if (is_array($food)) {
-            $food = array_sum($food);
+        if ($food instanceof ParticipantFood) {
+            $food = $food->getValue();
         }
 
         $this->food = $food;
@@ -177,26 +159,13 @@ class Participant
     /**
      * Get food
      *
-     * @param   bool    $asArray   Set to true to return food as array
-     * @return integer|array
+     * @param bool      $asMask             Set to true to get value as mask
+     * @return integer|ParticipantFood
      */
-    public function getFood($asArray = true)
+    public function getFood($asMask = false)
     {
-        if ($asArray) {
-            $result = array();
-
-            $check = function ($type, $label) use ($result) {
-                if ($this->food & $type) {
-                    $result[] = $label;
-                }
-            };
-            $check(self::TYPE_FOOD_NO_PORK, self::LABEL_FOOD_NO_PORK);
-            $check(self::TYPE_FOOD_VEGETARIAN, self::LABEL_FOOD_VEGETARIAN);
-            $check(self::TYPE_FOOD_VEGAN, self::LABEL_FOOD_VEGAN);
-            $check(self::TYPE_FOOD_LACTOSE_FREE, self::LABEL_FOOD_LACTOSE_FREE);
-
-            sort($result);
-            return $result;
+        if ($asMask) {
+            return new ParticipantFood($this->food);
         }
 
         return $this->food;
