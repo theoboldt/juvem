@@ -963,16 +963,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "7.2.5",
+            "version": "7.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "f002be142b81e862f583a0f90cb6e6319bb9fee6"
+                "reference": "8b3d1ee4ca4badef2b4d0286b4518ad11456ab71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/f002be142b81e862f583a0f90cb6e6319bb9fee6",
-                "reference": "f002be142b81e862f583a0f90cb6e6319bb9fee6",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/8b3d1ee4ca4badef2b4d0286b4518ad11456ab71",
+                "reference": "8b3d1ee4ca4badef2b4d0286b4518ad11456ab71",
                 "shasum": ""
             },
             "require": {
@@ -1022,7 +1022,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2016-02-11 10:16:02"
+            "time": "2016-02-25 16:42:28"
         },
         {
             "name": "imagine/imagine",
@@ -2592,12 +2592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "20d4c5842a92f0221e5f1ad6e486b39a82101195"
+                "reference": "cc9f6b0a9567f567d846038bfc63bf0784a41c80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/20d4c5842a92f0221e5f1ad6e486b39a82101195",
-                "reference": "20d4c5842a92f0221e5f1ad6e486b39a82101195",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/cc9f6b0a9567f567d846038bfc63bf0784a41c80",
+                "reference": "cc9f6b0a9567f567d846038bfc63bf0784a41c80",
                 "shasum": ""
             },
             "require": {
@@ -2718,7 +2718,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-02-24 18:55:13"
+            "time": "2016-02-26 06:30:51"
         },
         {
             "name": "twig/twig",
@@ -2787,12 +2787,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "de4006e73e3bd14ac3d784f72971ddf5cf112b97"
+                "reference": "9da07b5e5141a98954880e849a135d2d45c2c88e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/de4006e73e3bd14ac3d784f72971ddf5cf112b97",
-                "reference": "de4006e73e3bd14ac3d784f72971ddf5cf112b97",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/9da07b5e5141a98954880e849a135d2d45c2c88e",
+                "reference": "9da07b5e5141a98954880e849a135d2d45c2c88e",
                 "shasum": ""
             },
             "require": {
@@ -2850,7 +2850,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2016-02-16 08:43:21"
+            "time": "2016-02-26 10:22:22"
         },
         {
             "name": "zendframework/zend-code",
@@ -2962,16 +2962,16 @@
     "packages-dev": [
         {
             "name": "sensio/generator-bundle",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioGeneratorBundle.git",
-                "reference": "5274eafa251359087230bade2ff35dd6cec2e530"
+                "reference": "ac91535054d025937d897d78ebb5fc2da5e955a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/5274eafa251359087230bade2ff35dd6cec2e530",
-                "reference": "5274eafa251359087230bade2ff35dd6cec2e530",
+                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/ac91535054d025937d897d78ebb5fc2da5e955a4",
+                "reference": "ac91535054d025937d897d78ebb5fc2da5e955a4",
                 "shasum": ""
             },
             "require": {
@@ -3010,7 +3010,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2016-01-05 16:30:36"
+            "time": "2016-02-26 04:36:01"
         },
         {
             "name": "symfony/phpunit-bridge",
