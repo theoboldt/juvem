@@ -49,9 +49,11 @@ jQuery(document).ready(function () {
                     placement: 'top',
                     html: true,
                     trigger: 'focus'
+/*
                 }).click(function (e) {
                     e.preventDefault();
                     $(this).popover('toggle');
+*/
                 });
             };
 
