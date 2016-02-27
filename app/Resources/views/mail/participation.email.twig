@@ -8,7 +8,7 @@ Hallo Herr {{ participation.nameLast }}!
 Hallo Frau  {{ participation.nameLast }}!
 {% endif %}
 
-Ihre Anmeldung für die Veranstaltung für die Veranstaltung "{{ event.title }}" ist eingegangen. Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.
+Ihre Anmeldung für die Veranstaltung "{{ event.title }}" ist eingegangen. Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.
 
 Mit besten Grüßen,
 Jugendwerk Stuttgart Vaihingen
@@ -18,7 +18,7 @@ Jugendwerk Stuttgart Vaihingen
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
     {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
-    {% block lead %}Ihre Anmeldung für die Veranstaltung für die Veranstaltung <i>{{ event.title }}</i> ist eingegangen.{% endblock %}
+    {% block lead %}Ihre Anmeldung für die Veranstaltung <i>{{ event.title }}</i> ist eingegangen.{% endblock %}
     {% block content %}<p>Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.</p>{% endblock %}
 {% endembed %}
 {% endblock %}
