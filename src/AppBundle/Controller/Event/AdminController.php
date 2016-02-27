@@ -126,9 +126,9 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/edit.html.twig', array(
-                                      'event' => $event,
-                                      'form'  => $form->createView(),
-                                  )
+                                            'event' => $event,
+                                            'form'  => $form->createView(),
+                                        )
         );
     }
 
@@ -146,9 +146,9 @@ class AdminController extends Controller
         if (!$event) {
             return $this->redirect('event_miss');
         }
-        $repository      = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-        $ageDistribution = $repository->participantsAgeDistribution($event);
+        $repository        = $this->getDoctrine()
+                                  ->getRepository('AppBundle:Event');
+        $ageDistribution   = $repository->participantsAgeDistribution($event);
         $participantsCount = $repository->participantsCount($event);
 
 
@@ -200,13 +200,13 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/detail.html.twig', array(
-                                        'event'            => $event,
-                                        'eventDeleteModal' => $eventDeleteModal,
-                                        'buttonState'      => $buttonState,
-                                        'buttonVisibility' => $buttonVisibility,
-                                        'ageDistribution'  => $ageDistribution,
-                                        'participantsCount' => $participantsCount
-                                    )
+                                              'event'             => $event,
+                                              'eventDeleteModal'  => $eventDeleteModal,
+                                              'buttonState'       => $buttonState,
+                                              'buttonVisibility'  => $buttonVisibility,
+                                              'ageDistribution'   => $ageDistribution,
+                                              'participantsCount' => $participantsCount
+                                          )
         );
     }
 
@@ -237,8 +237,8 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/new.html.twig', array(
-                                     'form' => $form->createView(),
-                                 )
+                                           'form' => $form->createView(),
+                                       )
         );
     }
 
