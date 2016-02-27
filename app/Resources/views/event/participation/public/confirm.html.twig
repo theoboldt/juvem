@@ -12,7 +12,8 @@
                     <ol class="breadcrumb">
                         <li><a href="{{ path('homepage') }}">Juvem</a></li>
                         <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung ausfüllen</a></li>
+                        <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung
+                                ausfüllen</a></li>
                         <li class="active">Anmeldedaten überprüfen</li>
                     </ol>
                     {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldedaten überprüfen', 'subtitle': event.title} %}
@@ -90,8 +91,8 @@
                                             <dt>Ernährung</dt>
                                             <dd>
                                                 {% set participantFood = participant.getFood(true) %}
-                                                {% if participantFood|length %}
-                                                    {{ participant.getFood(true)|join(', ') }}
+                                                {% if participantFood.getValue() %}
+                                                    {{ ' '|bitmask(participantFood) }}
                                                 {% else %}
                                                     <i>(keine Besonderheiten)</i>
                                                 {% endif %}

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -16,6 +17,8 @@ class ParticipantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $foodMask = new ParticipantFood();
+
         $builder
             ->add(
                 'nameFirst',
@@ -76,12 +79,7 @@ class ParticipantType extends AbstractType
                 ChoiceType::class,
                 array(
                     'label'      => 'Ernährung',
-                    'choices'    => array(
-                        Participant::TYPE_FOOD_LACTOSE_FREE => Participant::LABEL_FOOD_LACTOSE_FREE,
-                        Participant::TYPE_FOOD_VEGAN        => Participant::LABEL_FOOD_VEGAN,
-                        Participant::TYPE_FOOD_VEGETARIAN   => Participant::LABEL_FOOD_VEGETARIAN,
-                        Participant::TYPE_FOOD_NO_PORK      => Participant::LABEL_FOOD_NO_PORK
-                    ),
+                    'choices'    => $foodMask->labels(),
                     'expanded'   => true,
                     'multiple'   => true,
                     'required'   => false,
@@ -93,11 +91,12 @@ class ParticipantType extends AbstractType
         $builder->get('food')
                 ->addModelTransformer(
                     new CallbackTransformer(
-                        function ($originalFood) {
-                            return $originalFood;
+                        function ($originalFoodSum) {
+                            $mask = new ParticipantFood($originalFoodSum);
+                            return $mask->getActiveList();
                         },
                         function ($submittedFood) {
-                            return array_sum($submittedFood);
+                            return new ParticipantFood(array_sum($submittedFood));
                         }
                     )
                 );

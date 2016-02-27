@@ -111,6 +111,21 @@ abstract class BitMaskAbstract
     }
 
     /**
+     * Get a list of values the mask is assigned
+     *
+     * @return array
+     */
+    public function getActiveList() {
+        $result = array();
+        foreach ($this->options() as $option) {
+            if ($this->has($option)) {
+                $result[]   = $option;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Directly get bitmask sum as number
      *
      * @return int
@@ -169,7 +184,7 @@ abstract class BitMaskAbstract
      */
     protected function ensureConstantsParsed()
     {
-        if ($this->labels !== null) {
+        if ($this->options !== null) {
             return;
         }
         $this->options = array();
