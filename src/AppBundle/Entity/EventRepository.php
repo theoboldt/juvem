@@ -82,10 +82,7 @@ class EventRepository extends EntityRepository
 
         $ageList = array();
         foreach ($birthdayList as $participant) {
-            $birthday  = new \DateTime($participant['birthday']);
-            $ageInDays = $start->diff($birthday)
-                               ->format('%a');
-            $ageList[] = $ageInDays / self::DAYS_OF_YEAR;
+            $ageList[] = self::age(new \DateTime($participant['birthday']), $start);
         }
 
         return $ageList;
@@ -94,7 +91,7 @@ class EventRepository extends EntityRepository
     /**
      * Get the age distribution of an event
      *
-     * @param Event     $event
+     * @param Event $event
      * @return array
      */
     public function participantsAgeDistribution(Event $event)
@@ -113,5 +110,25 @@ class EventRepository extends EntityRepository
 
         ksort($ageDistribution);
         return $ageDistribution;
+    }
+
+    /**
+     * Calculate an age
+     *
+     * @param \DateTime  $birthday  The birthday of the person which age should be calculated
+     * @param \DateTime  $deadline  The date where the calculation is desired
+     * @param  bool|null $precision If you want the result to be rounded with round(), specify precision here
+     * @return float                Age in years
+     */
+    public static function age(\DateTime $birthday, \DateTime $deadline, $precision = null)
+    {
+        $ageInDays  = $deadline->diff($birthday)
+                               ->format('%a');
+        $ageInYears = $ageInDays / self::DAYS_OF_YEAR;
+
+        if ($precision) {
+            return round($ageInYears, $precision);
+        }
+        return $ageInYears;
     }
 }

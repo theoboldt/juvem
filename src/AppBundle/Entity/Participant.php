@@ -159,7 +159,7 @@ class Participant
     /**
      * Get food
      *
-     * @param bool      $asMask             Set to true to get value as mask
+     * @param bool $asMask Set to true to get value as mask
      * @return integer|ParticipantFood
      */
     public function getFood($asMask = false)
@@ -193,6 +193,13 @@ class Participant
     public function getBirthday()
     {
         return $this->birthday;
+    }
+
+    public function getAgeAtEvent($precision = null)
+    {
+        $event = $this->getParticipation()
+                      ->getEvent();
+        return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
     }
 
     /**
@@ -370,7 +377,7 @@ class Participant
     /**
      * Get status
      *
-     * @param bool      $asMask             Set to true to get value as mask
+     * @param bool $asMask Set to true to get value as mask
      * @return integer|ParticipantStatus
      */
     public function getStatus($asMask = false)

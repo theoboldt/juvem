@@ -79,6 +79,7 @@ class AdminParticipationController extends Controller
                                     ->setParameter('eid', $eid);
         $participantEntityList = $query->getResult();
 
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = new LabelFormatter();
         $statusFormatter->addAbsenceLabel(
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
@@ -87,13 +88,8 @@ class AdminParticipationController extends Controller
         $participantList = array();
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
-            $participation = $participant->getParticipation();
-
-            $participantAge   = $event->getStartDate()
-                                      ->diff($participant->getBirthday());
+            $participation    = $participant->getParticipation();
             $participantPhone = '';
-
-            $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
             /** @var PhoneNumber $phoneNumberEntity */
             foreach ($participation->getPhoneNumbers()
@@ -115,7 +111,7 @@ class AdminParticipationController extends Controller
                                            ->getPid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
-                'age'       => $participantAge->format('%y'),
+                'age'       => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
                 'phone'     => $participantPhone,
                 'status'    => $statusFormatter->formatMask($participant->getStatus(true)),
                 'action'    => $participantAction
@@ -129,7 +125,8 @@ class AdminParticipationController extends Controller
     /**
      * Page for list of participants of an event
      *
-     * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"}, name="event_participation_detail")
+     * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
+     *                                                  name="event_participation_detail")
      */
     public function participationDetailAction(Request $request)
     {
@@ -146,7 +143,7 @@ class AdminParticipationController extends Controller
         $statusFormatter->addAbsenceLabel(
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
         );
-        $foodFormatter  = new LabelFormatter();
+        $foodFormatter = new LabelFormatter();
 
         $buttonConfirmation = array(
             'entityName'   => 'Participation',

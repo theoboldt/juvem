@@ -143,7 +143,9 @@
                                         <dt>Geschlecht</dt>
                                         <dd>{{ participant.getGender(true) }}</dd>
                                         <dt>Geburtsdatum</dt>
-                                        <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
+                                        <dd>{{ participant.getBirthday|date("d.m.Y") }} </dd>
+                                        <dt>Alter</dt>
+                                        <dd>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der Veranstaltung</dd>
                                         <dt>Ernährung</dt>
                                         <dd>
                                             {% set participantFood = participant.getFood(true) %}

@@ -41,6 +41,14 @@ twig:
         # resources: ['bootstrap_3_horizontal_layout.html.twig']
     form_themes:
         - 'form/vich-fields.html.twig'
+    date:
+        format: d.m.Y, H:i:s
+        interval_format: '%%d Tage'
+        timezone: Europe/Berlin
+    number_format:
+        decimals: 2
+        decimal_point: ','
+        thousands_separator: '.'
 
 # Doctrine Configuration
 doctrine:

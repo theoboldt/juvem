@@ -116,12 +116,7 @@
                                         <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }}
                                             Jahren</span>
                                         <span title="Anzahl">
-                                            {{ count }}
-                                            {% if (count/participantsCount) > 0.39 %}
-                                                Teilnehmer
-                                            {% elseif (count/participantsCount) > 0.14 %}
-                                                <abbr title="Teilnehmer">T.</abbr>
-                                            {% endif %}
+                                            <abbr title="Teilnehmer">{{ count }}</abbr>
                                         </span>
                                     </div>
                                 </div>
