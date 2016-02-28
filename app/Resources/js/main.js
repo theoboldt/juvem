@@ -75,7 +75,12 @@ jQuery(document).ready(function () {
         }
     });
 
-    $('*#mail-form input, *#mail-form textarea').change(function () {
+    /**
+     * Events participants email preview
+     */
+    var updateMailPreview = function () {
+        var updateButton = $('*#mail-form .btn-update-preview');
+        updateButton.prop('disabled', true);
         var content = {
                 subject: $("input[name='app_bundle_event_mail[subject]']").val(),
                 title: $("input[name='app_bundle_event_mail[title]']").val(),
@@ -85,7 +90,7 @@ jQuery(document).ready(function () {
             preview = $('*#mail-template iframe').contents(),
             exampleSalution = 'Frau',
             exampleLastName = 'Müller',
-            exampleEventTitle = $("input[name='app_bundle_event_mail[eventTitle]']").val();
+            exampleEventTitle = $('#mail-form').data('event-title');
 
         var replacePlaceholders = function (value) {
             if (!value) {
@@ -103,7 +108,7 @@ jQuery(document).ready(function () {
 
             switch (key) {
                 case 'content':
-                    value = '<p>' + value.replace(/\n\n/g, '</p><p>') + '</p>';
+                    value = value.replace(/\n\n/g, '</p><p>');
                     break;
                 case 'subject':
                     if (value == '') {
@@ -118,8 +123,8 @@ jQuery(document).ready(function () {
                 preview.find('#mail-part-' + key).html(value);
             }
         });
-
-    });
-
-
+        updateButton.prop('disabled', false);
+    };
+    $('*#mail-form .btn-update-preview').click(updateMailPreview);
+    $('*#mail-form input, *#mail-form textarea').change(updateMailPreview);
 });

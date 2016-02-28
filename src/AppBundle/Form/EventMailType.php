@@ -5,6 +5,7 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,7 +26,7 @@ class EventMailType extends AbstractType
         $builder
             ->add('subject', TextType::class, array('label' => 'Betreff'))
             ->add('title', TextType::class, array('label' => 'Titel'))
-            ->add('lead', TextType::class, array('label' => 'Untertitel'))
+            ->add('lead', TextType::class, array('label' => 'Untertitel', 'required' => false))
             ->add('content', TextareaType::class, array('label' => 'Hauptinhalt'));
     }
 

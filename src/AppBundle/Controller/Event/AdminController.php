@@ -218,10 +218,12 @@ class AdminController extends Controller
      */
     public function sendParticipantsEmailAction(Request $request)
     {
+        $eid = $request->get('eid');
+
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
 
-        $event = $repository->findOneBy(array('eid' => $request->get('eid')));
+        $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
             return $this->redirect('event_miss');
         }
@@ -231,9 +233,16 @@ class AdminController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $data = $form->getData();
 
+            $participationManager = $this->get('app.participation_manager');
+            $participationManager->mailEventParticipants($data, $event);
+            $this->addFlash(
+                'info',
+                'Die Benachrichtigungs-Emails wurden versandt'
+            );
 
-            return $this->redirect('/admin/event/list');
+            return $this->redirectToRoute('event', array('eid' => $eid));
         }
 
         return $this->render(
@@ -276,7 +285,7 @@ class AdminController extends Controller
             $em->persist($event);
             $em->flush();
 
-            return $this->redirect('/admin/event/list');
+            return $this->redirectToRoute('event_list');
         }
 
         return $this->render(

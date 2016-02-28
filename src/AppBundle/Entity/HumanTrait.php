@@ -63,4 +63,23 @@ trait HumanTrait
     {
         return $this->nameLast;
     }
+
+    /**
+     * Generate a full name from name pars
+     *
+     * @param string $nameLast  Persons last name
+     * @param string $nameFirst Persons first name
+     * @return string           Full name
+     */
+    public static function fullname($nameLast, $nameFirst = '')
+    {
+        if ($nameFirst && $nameLast) {
+            return $nameFirst . ' ' . $nameLast;
+        } elseif ($nameLast) {
+            return $nameLast;
+        } elseif ($nameFirst) {
+            return $nameFirst;
+        }
+        throw new \InvalidArgumentException('Invalid name combination transmitted');
+    }
 }

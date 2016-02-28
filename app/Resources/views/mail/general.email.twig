@@ -1,0 +1,23 @@
+{% block subject %}{{ text.subject }}{% endblock %}
+
+{% block body_text %}
+    {% autoescape false %}
+        {{ text.title }}
+        {% if text.lead is defined %}
+            {{ text.lead }}
+        {% endif %}
+        {{ text.content }}
+    {% endautoescape %}
+{% endblock %}
+
+{% block body_html %}
+    {% embed 'mail/template.html.twig' %}
+        {% block title %}{{ html.title }}{% endblock %}
+        {% if html.lead is defined %}
+            {% if html.lead is defined %}
+                {% block lead %}{{ html.lead }}{% endblock %}
+            {% endif %}
+        {% endif %}
+        {% block content %}{{ html.content }}{% endblock %}
+    {% endembed %}
+{% endblock %}

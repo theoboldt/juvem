@@ -5,6 +5,7 @@ namespace AppBundle\Manager;
 use AppBundle\Entity\Event;
 use \AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Twig\MailGenerator;
 use Swift_Mailer;
 use Symfony\Component\Templating\EngineInterface;
@@ -74,6 +75,50 @@ class ParticipationManager
                      )
         );
         $message->setTo($participation->getEmail());
+
+        $this->mailer->send($message);
+    }
+
+    /**
+     * Send a participation email, containing participation and event information
+     *
+     * @param array $data  The custom text for email
+     * @param Event $event The event
+     */
+    public function mailEventParticipants(array $data, Event $event)
+    {
+        $dataText = array();
+        $dataHtml = array();
+
+        $content = null;
+        foreach ($data as $area => $content) {
+            $dataText[$area] = strip_tags($content);
+
+            $contentHtml = htmlentities($content);
+
+            if ($area == 'content') {
+                $contentHtml = str_replace("\n\n", '</p><p>', $contentHtml);
+            }
+
+            $dataHtml[$area] = $contentHtml;
+        }
+        unset($content);
+
+        $message = $this->mailGenerator->getMessage(
+            'general', array('text' => $dataText,
+                             'html' => $dataHtml
+                     )
+        );
+
+        /** @var Participation $participation */
+        foreach ($event->getParticipations() as $participation) {
+            if ($participation->isConfirmed()) {
+                $message->setTo(
+                    $participation->getEmail(),
+                    Participant::fullname($participation->getNameLast(), $participation->getNameFirst())
+                );
+            }
+        }
 
         $this->mailer->send($message);
     }
