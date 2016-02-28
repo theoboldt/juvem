@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Impressum{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Impressum', 'subtitle': 'Juvem'} %}
+        {% block breadcrumbfull %}
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                <li class="active">Impressum</li>
+            </ol>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+{% endblock %}

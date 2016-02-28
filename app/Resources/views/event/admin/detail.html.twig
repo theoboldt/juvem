@@ -25,7 +25,7 @@
                             <li><a href="#">Anmeldungen verwalten</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="#">Anmeldungen komplett exportieren</a></li>
-                            <li><a href="#">E-Mail versenden</a></li>
+                            <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">E-Mail versenden</a></li>
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
