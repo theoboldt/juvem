@@ -232,4 +232,22 @@ class AdminParticipationController extends Controller
             )
         );
     }
+
+        /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
+     */
+    public function exportParticipantsAction($eid)
+    {
+        $eventRepository = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->redirect('event_miss');
+        }
+
+        return $this->render('event/participation/admin/export.html.twig', array('event' => $event));
+    }
 }
