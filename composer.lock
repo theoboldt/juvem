@@ -2592,12 +2592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "cc9f6b0a9567f567d846038bfc63bf0784a41c80"
+                "reference": "aadaeecb47bc4a0766acc3d6cf50834e41ca9076"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/cc9f6b0a9567f567d846038bfc63bf0784a41c80",
-                "reference": "cc9f6b0a9567f567d846038bfc63bf0784a41c80",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/aadaeecb47bc4a0766acc3d6cf50834e41ca9076",
+                "reference": "aadaeecb47bc4a0766acc3d6cf50834e41ca9076",
                 "shasum": ""
             },
             "require": {
@@ -2673,7 +2673,7 @@
                 "doctrine/orm": "~2.4,>=2.4.5",
                 "egulias/email-validator": "~1.2",
                 "monolog/monolog": "~1.11",
-                "ocramius/proxy-manager": "~0.4|~1.0",
+                "ocramius/proxy-manager": "~0.4|~1.0|~2.0",
                 "phpdocumentor/reflection": "^1.0.7"
             },
             "type": "library",
@@ -2718,7 +2718,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-02-26 06:30:51"
+            "time": "2016-02-28 21:27:55"
         },
         {
             "name": "twig/twig",
@@ -3014,16 +3014,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v2.8.2",
+            "version": "v2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "855dc0e829fad123966347612b4183e307338c11"
+                "reference": "ee8ead4f78e21ed6c873d1cc19e141949d9ed493"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/855dc0e829fad123966347612b4183e307338c11",
-                "reference": "855dc0e829fad123966347612b4183e307338c11",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/ee8ead4f78e21ed6c873d1cc19e141949d9ed493",
+                "reference": "ee8ead4f78e21ed6c873d1cc19e141949d9ed493",
                 "shasum": ""
             },
             "require": {
@@ -3065,7 +3065,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2016-01-06 09:59:23"
+            "time": "2016-01-21 09:24:53"
         }
     ],
     "aliases": [],
