@@ -69,6 +69,19 @@ class UserController extends Controller
     }
 
     /**
+     * @Route("/admin/user/{uid}", requirements={"uid": "\d+"}, name="user_detail")
+     */
+    public function userDetailAction($uid)
+    {
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:User');
+
+        $user = $repository->findOneBy(array('id' => $uid));
+
+        return $this->render('user/detail.html.twig', array('user' => $user));
+    }
+
+    /**
      * Create a new user
      *
      * @Route("/admin/user/new", name="user_new")
