@@ -92,6 +92,8 @@ class ParticipationManager
 
         $content = null;
         foreach ($data as $area => $content) {
+            $content = str_replace('{EVENT_TITLE}', $event->getTitle(), $content);
+
             $dataText[$area] = strip_tags($content);
 
             $contentHtml = htmlentities($content);
@@ -104,23 +106,37 @@ class ParticipationManager
         }
         unset($content);
 
-        $message = $this->mailGenerator->getMessage(
-            'general', array('text' => $dataText,
-                             'html' => $dataHtml
-                     )
-        );
-
         /** @var Participation $participation */
         foreach ($event->getParticipations() as $participation) {
             if ($participation->isConfirmed()) {
+                $dataBoth = array('text' => $dataText,
+                                  'html' => $dataHtml
+                );
+
+                $contentList = null;
+                foreach ($dataBoth as $type => &$contentList) {
+                    $content = null;
+                    foreach ($contentList as $area => &$content) {
+                        $content = str_replace('{PARTICIPATION_SALUTION}', $participation->getSalution(), $content);
+                        $content = str_replace('{PARTICIPATION_NAME_LAST}', $participation->getNameLast(), $content);
+                    }
+                    unset($content);
+                }
+                unset($contentList);
+
+                $message = $this->mailGenerator->getMessage(
+                    'general', $dataBoth
+                );
                 $message->setTo(
                     $participation->getEmail(),
                     Participant::fullname($participation->getNameLast(), $participation->getNameFirst())
                 );
+
+                $this->mailer->send($message);
+
             }
         }
 
-        $this->mailer->send($message);
     }
 
     /**
