@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anmeldungen verwalten ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'E-Mail', 'subtitle': 'versenden'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li class="active">E-Mail versenden</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-lg-4" id="mail-form">
+                {{ form_start(form) }}
+                {{ form_row(form.subject) }}
+                {{ form_row(form.title) }}
+                {{ form_row(form.lead) }}
+                {{ form_row(form.content) }}
+                <input type="hidden" name="app_bundle_event_mail[eventTitle]" value="{{ event.title }}" />
+                <label class="control-label required" for="form-placeholders-panel">Platzhalter</label>
+                <div class="panel panel-default" id="form-placeholders-panel">
+                    <div class="panel-body">
+                        <dl>
+                            <dt>{PARTICIPATION_SALUTION}</dt>
+                            <dd>Anrede der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>, <code>Herr</code>)
+                            </dd>
+                            <dt>{PARTICIPATION_NAME_LAST}</dt>
+                            <dd>Nachname der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
+                            <dt>{EVENT_TITLE}</dt>
+                            <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
+                            </dd>
+                        </dl>
+                        <p>Für die E-Mail können Platzhalter verwendet werden. Die Platzhalter können
+                            grundsätzlich überall und mehrfach eingesetzt werden.</p>
+
+                        <p>Mit einer Leerzeile im Hauptinhaltbereich können Absätze voneinander getrennt werden.</p>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+            <div class="col-sm-6 col-lg-8" id="mail-template">
+                <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
+
+                <div class="panel panel-default" id="mail-template-iframe-panel">
+                    <div class="panel-heading">Betreff der E-Mail</div>
+                    <div class="panel-body">
+                        <iframe src="{{ path('mail_template') }}"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

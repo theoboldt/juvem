@@ -2,6 +2,7 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
@@ -208,6 +209,49 @@ class AdminController extends Controller
                                               'participantsCount' => $participantsCount
                                           )
         );
+    }
+
+    /**
+     * Detail page for one single event
+     *
+     * @Route("/admin/event/{eid}/mail", requirements={"eid": "\d+"}, name="event_mail")
+     */
+    public function sendParticipantsEmailAction(Request $request)
+    {
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:Event');
+
+        $event = $repository->findOneBy(array('eid' => $request->get('eid')));
+        if (!$event) {
+            return $this->redirect('event_miss');
+        }
+
+        $form = $this->createForm(EventMailType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+
+            return $this->redirect('/admin/event/list');
+        }
+
+        return $this->render(
+            'event/admin/mail.html.twig', array(
+                                            'event' => $event,
+                                            'form'  => $form->createView(),
+                                        )
+        );
+    }
+
+    /**
+     * Detail page for one single event
+     *
+     * @Route("/admin/mail/template", name="mail_template")
+     */
+    public function emailTemplateAction()
+    {
+        return $this->render('mail/notify-participants.html.twig');
     }
 
     /**

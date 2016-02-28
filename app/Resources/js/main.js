@@ -1,5 +1,9 @@
 jQuery(document).ready(function () {
 
+    var eHtml = function (value) {
+        return $('<i></i>').text(value).html();
+    };
+
     /*
      $('#nav').affix({
      offset: {
@@ -24,7 +28,7 @@ jQuery(document).ready(function () {
     });
 
     /**
-     * Admin event particioation list table
+     * Admin event participants list table
      */
     $('#participantsListTable').on('click-row.bs.table', function (e, row, $element) {
         location.href = 'participation/' + row.pid;
@@ -49,11 +53,11 @@ jQuery(document).ready(function () {
                     placement: 'top',
                     html: true,
                     trigger: 'focus'
-/*
-                }).click(function (e) {
-                    e.preventDefault();
-                    $(this).popover('toggle');
-*/
+                    /*
+                     }).click(function (e) {
+                     e.preventDefault();
+                     $(this).popover('toggle');
+                     */
                 });
             };
 
@@ -70,5 +74,52 @@ jQuery(document).ready(function () {
             addElementHandlers();
         }
     });
+
+    $('*#mail-form input, *#mail-form textarea').change(function () {
+        var content = {
+                subject: $("input[name='app_bundle_event_mail[subject]']").val(),
+                title: $("input[name='app_bundle_event_mail[title]']").val(),
+                lead: $("input[name='app_bundle_event_mail[lead]']").val(),
+                content: $("textarea[name='app_bundle_event_mail[content]']").val()
+            },
+            preview = $('*#mail-template iframe').contents(),
+            exampleSalution = 'Frau',
+            exampleLastName = 'Müller',
+            exampleEventTitle = $("input[name='app_bundle_event_mail[eventTitle]']").val();
+
+        var replacePlaceholders = function (value) {
+            if (!value) {
+                return '';
+            }
+            value = value.replace(/\{PARTICIPATION_SALUTION\}/g, exampleSalution);
+            value = value.replace(/\{PARTICIPATION_NAME_LAST\}/g, exampleLastName);
+            value = value.replace(/\{EVENT_TITLE\}/g, exampleEventTitle);
+
+            return eHtml(value);
+        };
+
+        $.each(content, function (key, value) {
+            value = replacePlaceholders(value);
+
+            switch (key) {
+                case 'content':
+                    value = '<p>' + value.replace(/\n\n/g, '</p><p>') + '</p>';
+                    break;
+                case 'subject':
+                    if (value == '') {
+                        value = '<em>Kein Betreff</em>';
+                    }
+                    break;
+            }
+
+            if (key == 'subject') {
+                $('*#mail-template-iframe-panel .panel-heading').html(value);
+            } else {
+                preview.find('#mail-part-' + key).html(value);
+            }
+        });
+
+    });
+
 
 });
