@@ -29,7 +29,7 @@ class MailGenerator
         $bodyText = $template->renderBlock('body_text', $parameters);
 
         return Swift_Message::newInstance()
-                            ->setFrom('jungschar.vaihingen@gmail.com')
+                            ->setFrom('jungschar.vaihingen@gmail.com', 'Juvem - Jugendwerk S-Vaihingen')
                             ->setSubject($subject)
                             ->setBody($bodyText, 'text/plain')
                             ->addPart($bodyHtml, 'text/html');
