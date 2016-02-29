@@ -76,6 +76,7 @@ class ParticipationType extends AbstractType
                     'required' => true,
                     'mapped'   => false
                 )
+            /*
             )
             ->add(
                 'acceptLegal',
@@ -85,6 +86,7 @@ class ParticipationType extends AbstractType
                     'required' => true,
                     'mapped'   => false
                 )
+            */
             );
     }
 
