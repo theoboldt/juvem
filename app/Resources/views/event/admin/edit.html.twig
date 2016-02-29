@@ -5,11 +5,9 @@
 {% block body %}
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'bearbeiten'} %}
         {% block breadcrumb %}
-            <ol class="breadcrumb">
-                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li class="active">Veranstaltung bearbeiten</li>
-            </ol>
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li class="active">Veranstaltung bearbeiten</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
