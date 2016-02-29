@@ -13,7 +13,53 @@
     {% endembed %}
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6">
+                <h3>Verantwortlichkeiten</h3>
+                <p>Die Homepage wird von den evang. Jugendwerken Vaihngen, Rohr/Dürrlewang und der Jugendarbeit
+                    in der evang. Kirchengemeinde Büsnau betrieben.</p>
+
+                <div itemscope itemtype="http://schema.org/Organization">
+                    <address>
+                        <strong itemprop="name">Evangelisches Jugendwerk Vaihingen</strong><br>
+
+                        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                            <span itemprop="streetAddress">Ackermannstr. 39</span><br>
+                            <span itemprop="postalCode">70563</span> <span
+                                    itemprop="addressLocality">Stuttgart</span><br>
+
+                        </div>
+                        {{ 'phone-alt'|glyph }} <span itemprop="telephone">(0711) 735 13 94</span><br>
+                        {{ 'print'|glyph }} <span itemprop="faxNumber">(0711) 133 57 16</span><br>
+                        {{ 'envelope'|glyph }} <span itemprop="email">mail@jugendwerk-vaihingen.de</span>
+                    </address>
+                </div>
+
+                <div itemscope itemtype="http://schema.org/Organization">
+                    <address>
+                        <strong itemprop="name">Evangelisches Jugendwerk Rohr/Dürrlewang</strong><br>
+
+                        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                            <span itemprop="streetAddress">Laurentiuskirche</span><br>
+                            <span itemprop="streetAddress">Reinbeckstraße 8</span><br>
+                            <span itemprop="postalCode">70565</span> <span
+                                    itemprop="addressLocality">Stuttgart</span><br>
+
+                        </div>
+                        {{ 'phone-alt'|glyph }} <span itemprop="telephone">(0711) 315 67 110</span><br>
+                    </address>
+                </div>
+
+                <div><strong>Ansprechpartner:</strong></div>
+                <p>
+                    Alexander Hoen<br>
+                    Jugendreferent
+                </p>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <h3>Datenschutzerklärung</h3>
+                <p>Die Datenschutzerklärung finden Sie auf einer separaten Seite:<br>
+                <a href="{{ path('legal') }}">Datenschutzerklärung</a></p>
+
 
             </div>
         </div>
