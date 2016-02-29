@@ -7,6 +7,7 @@ use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use AppBundle\Entity\Event;
@@ -138,8 +139,9 @@ class AdminController extends Controller
      *
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
      */
-    public function detailEventAction($eid)
+    public function detailEventAction(Request $request)
     {
+        $eid        = $request->get('eid');
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
 
@@ -152,19 +154,25 @@ class AdminController extends Controller
         $ageDistribution   = $repository->participantsAgeDistribution($event);
         $participantsCount = $repository->participantsCount($event);
 
+        $form = $this->createFormBuilder()
+                     ->add('action', HiddenType::class)
+                     ->getForm();
 
-        $eventDeleteModal = array(
-            'id'      => 'evenDeleteModal',
-            'title'   => 'Ereignis löschen',
-            'message' => 'Soll dieses Ereignis wirklich gelöscht werden?',
-            'action'  => 'Löschen',
-            'form'    => $this->createForm(
-                ModalActionType::class, array('id'   => $eid,
-                                              'area' => 'event'
-                                      )
-            )
-                              ->createView()
-        );
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $action = $form->get('action')
+                           ->getData();
+            switch ($action) {
+                case 'delete':
+                    $event->setDeletedAt(new \DateTime());
+                    break;
+                case 'restore':
+                    $event->setDeletedAt(null);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown action transmitted');
+            }
+        }
 
         $buttonState      = array(
             'entityName'   => 'Event',
@@ -202,11 +210,11 @@ class AdminController extends Controller
         return $this->render(
             'event/admin/detail.html.twig', array(
                                               'event'             => $event,
-                                              'eventDeleteModal'  => $eventDeleteModal,
                                               'buttonState'       => $buttonState,
                                               'buttonVisibility'  => $buttonVisibility,
                                               'ageDistribution'   => $ageDistribution,
-                                              'participantsCount' => $participantsCount
+                                              'participantsCount' => $participantsCount,
+                                              'form'              => $form->createView()
                                           )
         );
     }
