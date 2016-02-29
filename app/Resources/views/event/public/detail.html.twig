@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <h3>{{ event.getTitle }}</h3>
+                <h3>{{ event.getTitle }} <a href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary" role="button">Anmelden</a></h3>
             </div>
         </div>
         <div class="row">
