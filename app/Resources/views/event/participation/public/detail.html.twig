@@ -55,11 +55,11 @@
                     </div>
                 </div>
             </div>
-                {% for participant in participation.participants %}
-            <div class="col-xs-12 col-md-6">
-            {% if loop.index0 == 0 %}
-                <h3 id="data-participants">Daten der Teilnehmer</h3>
-                {% endif %}
+            {% for participant in participation.participants %}
+                <div class="col-xs-12 col-md-6">
+                    {% if loop.index0 == 0 %}
+                        <h3 id="data-participants">Daten der Teilnehmer</h3>
+                    {% endif %}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
@@ -76,11 +76,10 @@
                                         <dd>{{ participant.getGender(true) }}</dd>
                                         <dt>Geburtsdatum</dt>
                                         <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
-                                        <dt>Ernährung</dt>
                                         <dd>
                                             {% set participantFood = participant.getFood(true) %}
-                                            {% if participantFood|length %}
-                                                {{ participant.getFood(true)|join(', ') }}
+                                            {% if participantFood.getValue() %}
+                                                {{ ' '|bitmask(participantFood) }}
                                             {% else %}
                                                 <i>(keine Besonderheiten)</i>
                                             {% endif %}
@@ -106,11 +105,14 @@
                                     </dl>
                                 </div>
                             </div>
+                             <div class="col-xs-12 status-label-list">
+                                {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+                            </div>
                         </div>
                     </div>
-                    </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
+    </div>
 
 {% endblock %}
