@@ -176,7 +176,7 @@ class Participation
     }
 
     /**
-     * Set deletedAt
+     * Set deletedAt, cascading to participants
      *
      * @param \DateTime $deletedAt
      *
@@ -185,6 +185,11 @@ class Participation
     public function setDeletedAt($deletedAt)
     {
         $this->deletedAt = $deletedAt;
+
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $participant->setDeletedAt($deletedAt);
+        }
 
         return $this;
     }
@@ -212,7 +217,7 @@ class Participation
     /**
      * Set salution
      *
-     * @param string salution
+     * @param string $parentSalution Salution
      *
      * @return Participation
      */
@@ -482,7 +487,6 @@ class Participation
         return $this;
     }
 
-
     /**
      * Check if all related participants are paid
      *
@@ -515,6 +519,44 @@ class Participation
                 $status->enable(ParticipantStatus::TYPE_STATUS_PAID);
             } else {
                 $status->disable(ParticipantStatus::TYPE_STATUS_PAID);
+            }
+            $participant->setStatus($status->__toString());
+        }
+        return $this;
+    }
+
+    /**
+     * Check if all related participants are withdrawn
+     *
+     * @return bool
+     */
+    public function isWithdrawn()
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if (!$status->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Set conformation value for all related participants
+     *
+     * @param   bool $withdrawn New value
+     * @return bool
+     */
+    public function setIsWithdrawn($withdrawn = true)
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if ($withdrawn) {
+                $status->enable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+            } else {
+                $status->disable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
             }
             $participant->setStatus($status->__toString());
         }

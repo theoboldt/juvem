@@ -5,11 +5,13 @@ namespace AppBundle\Controller\Event;
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\EventParticipationType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use AppBundle\Entity\Event;
@@ -139,6 +141,32 @@ class AdminParticipationController extends Controller
         }
         $event = $participation->getEvent();
 
+        $form = $this->createFormBuilder()
+                     ->add('action', HiddenType::class)
+                     ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $action = $form->get('action')
+                           ->getData();
+            switch ($action) {
+                case 'delete':
+                    $participation->setDeletedAt(new \DateTime());
+                    break;
+                case 'restore':
+                    $participation->setDeletedAt(null);
+                    break;
+                case 'withdraw':
+                    $participation->setIsWithdrawn(true);
+                    break;
+                case 'reactivate':
+                    $participation->setIsWithdrawn(false);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown action transmitted');
+            }
+        }
+
         $statusFormatter = new LabelFormatter();
         $statusFormatter->addAbsenceLabel(
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
@@ -194,7 +222,8 @@ class AdminParticipationController extends Controller
                   'statusFormatter'    => $statusFormatter,
                   'phoneNumberList'    => $phoneNumberList,
                   'buttonConfirmation' => $buttonConfirmation,
-                  'buttonPayment'      => $buttonPayment
+                  'buttonPayment'      => $buttonPayment,
+                  'form'               => $form->createView()
             )
         );
     }
@@ -233,7 +262,7 @@ class AdminParticipationController extends Controller
         );
     }
 
-        /**
+    /**
      * Page for list of participants of an event
      *
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")

@@ -75,6 +75,82 @@
                             {% endblock %}
                         {% endembed %}
                     </div>
+                    <div class="btn-group" role="group">
+                        {% if participation.withdrawn %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="reactivate">
+                                {{ 'retweet'|glyph }}<span class="hidden-xs"> Anmeldung reaktivieren</span>
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="withdraw">
+                                {{ 'share-alt'|glyph }}<span class="hidden-xs"> Anmeldung zurückziehen</span>
+                            </button>
+                        {% endif %}
+                        {% if participation.deletedAt %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="restore">
+                                {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen</span>
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="delete">
+                                {{ 'trash'|glyph }}<span class="hidden-xs"> in Papierkorb verschieben</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog"
+                         aria-labelledby="dialogModalLabel">
+                        <div class="modal-dialog" role="document">
+                            {{ form_start(form) }}
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                                aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="dialogModalLabel"></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                                    <input type="submit" class="btn btn-primary" value="Bestätigen" />
+                                </div>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                    <script type='text/javascript'>
+                        $('#dialogModal').on('show.bs.modal', function (event) {
+                            var button = $(event.relatedTarget),
+                                action = button.data('action'),
+                                modal = $(this),
+                                title,
+                                question;
+
+                            switch (action) {
+                                case 'delete':
+                                        title = 'Anmeldung in Papierkorb verschieben';
+                                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                                    break;
+                                case 'restore':
+                                        title = 'Anmeldung aus Papierkorb nehmen';
+                                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                                    break;
+                                case 'withdraw':
+                                        title = 'Anmeldung zurückziehen';
+                                        question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
+                                    break;
+                                case 'reactivate':
+                                        title = 'Anmeldung reaktivieren';
+                                        question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
+                                    break;
+                            }
+                            modal.find('.modal-title').text(title);
+                            modal.find('.modal-body > p').text(question);
+                            modal.find('input[name="form[action]"]').val(action);
+                        })
+                    </script>
                 </div>
             </div>
         </div>
