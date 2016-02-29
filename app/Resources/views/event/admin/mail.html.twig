@@ -10,55 +10,58 @@
             <li class="active">E-Mail versenden</li>
         {% endblock %}
     {% endembed %}
-    <div id="mail-form" data-event-title="{{ event.title }}">
-        {{ form_start(form) }}
-        <div class="row">
-            <div class="col-xs-12">
-                <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
-                <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-6 col-lg-4">
-                {{ form_row(form.subject) }}
-                {{ form_row(form.title) }}
-                {{ form_row(form.lead) }}
-                {{ form_row(form.content) }}
-                <label class="control-label required" for="form-placeholders-panel">Platzhalter</label>
-
-                <div class="panel panel-default" id="form-placeholders-panel">
-                    <div class="panel-body">
-                        <dl>
-                            <dt>{PARTICIPATION_SALUTION}</dt>
-                            <dd>Anrede der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>, <code>Herr</code>)
-                            </dd>
-                            <dt>{PARTICIPATION_NAME_LAST}</dt>
-                            <dd>Nachname der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
-                            <dt>{EVENT_TITLE}</dt>
-                            <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
-                            </dd>
-                        </dl>
-                        <p>Für die E-Mail können Platzhalter verwendet werden. Die Platzhalter können
-                            grundsätzlich überall und mehrfach eingesetzt werden.</p>
-
-                        <p>Mit einer Leerzeile im Hauptinhaltbereich können Absätze voneinander getrennt werden.</p>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
-                <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
-            </div>
-            <div class="col-sm-6 col-lg-8" id="mail-template">
-                <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
-
-                <div class="panel panel-default" id="mail-template-iframe-panel">
-                    <div class="panel-heading">Betreff der E-Mail</div>
-                    <div class="panel-body">
-                        <iframe src="{{ path('mail_template') }}"></iframe>
-                    </div>
+    <div class="container">
+        <div id="mail-form" data-event-title="{{ event.title }}">
+            {{ form_start(form) }}
+            <div class="row">
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
+                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.lead) }}
+                    {{ form_row(form.content) }}
+                    <label class="control-label required" for="form-placeholders-panel">Platzhalter</label>
+
+                    <div class="panel panel-default" id="form-placeholders-panel">
+                        <div class="panel-body">
+                            <dl>
+                                <dt>{PARTICIPATION_SALUTION}</dt>
+                                <dd>Anrede der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>,
+                                    <code>Herr</code>)
+                                </dd>
+                                <dt>{PARTICIPATION_NAME_LAST}</dt>
+                                <dd>Nachname der Person, der die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
+                                <dt>{EVENT_TITLE}</dt>
+                                <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
+                                </dd>
+                            </dl>
+                            <p>Für die E-Mail können Platzhalter verwendet werden. Die Platzhalter können
+                                grundsätzlich überall und mehrfach eingesetzt werden.</p>
+
+                            <p>Mit einer Leerzeile im Hauptinhaltbereich können Absätze voneinander getrennt werden.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
+                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
+                </div>
+                <div class="col-sm-6 col-lg-8" id="mail-template">
+                    <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
+
+                    <div class="panel panel-default" id="mail-template-iframe-panel">
+                        <div class="panel-heading">Betreff der E-Mail</div>
+                        <div class="panel-body">
+                            <iframe src="{{ path('mail_template') }}"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
     </div>
 {% endblock %}
