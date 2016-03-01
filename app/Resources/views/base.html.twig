@@ -6,25 +6,9 @@
 
     {% if app.environment == 'dev' %}
         <link rel="stylesheet" href="{{ asset('css/all.css') }}">
-        <script src="{{ asset('js/all.js') }}"></script>
-        <script src="//localhost:35729/livereload.js"></script>
     {% else %}
-    <link rel="stylesheet" href="{{ asset('css/all.min.css') }}?v4">
-        <script src="{{ asset('js/all.min.js') }}?v4"></script>
+        <link rel="stylesheet" href="{{ asset('css/all.min.css') }}?v4">
     {% endif %}
-    <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
-    <script type="text/javascript">
-        window.cookieconsent_options = {
-            "message": "Auf dieser Website werden Cookies eingesetzt, um den Besuchern das beste Webseiten-Erlebnis zu ermöglichen. Weiterführende Informationen erhalten Sie in unserer Datenschutzerklärung.",
-            "dismiss": "Einverstanden",
-            "learnMore": "Zur Datenschutzerklärung",
-            "link": "{{ path('legal') }}",
-            "theme": "dark-bottom"
-        };
-    </script>
-    <script type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
-    <!-- End Cookie Consent plugin -->
 
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=3">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=3">
@@ -69,5 +53,25 @@
     </div>
 </div>
 {% block javascripts %}{% endblock %}
+<div id="cookiechoice">
+    <div class="container">
+        <div class="col-xs-12">
+            <div>
+                <div class="button-container">
+                    <button class="btn btn-primary" id="cookieChoiceDismiss">Ich habe verstanden</button>
+                </div>
+                Auf dieser Website werden Cookies eingesetzt, um den Besuchern das beste
+                Webseiten-Erlebnis zu ermöglichen. Weiterführende Informationen erhalten Sie in unserer
+                <a href="{{ path('legal') }}">Datenschutzerklärung</a>.
+            </div>
+        </div>
+    </div>
+</div>
+{% if app.environment == 'dev' %}
+    <script src="{{ asset('js/all.js') }}"></script>
+    <script src="//localhost:35729/livereload.js"></script>
+{% else %}
+    <script src="{{ asset('js/all.min.js') }}?v4"></script>
+{% endif %}
 </body>
 </html>

@@ -35,6 +35,7 @@ module.exports = function (grunt) {
             distJs: {
                 src: [
                     '<%= resourcesPath %>/js/jquery-1.12.1.js',
+                    '<%= resourcesPath %>/js/cookiechoices.js',
                     'node_modules/bootstrap-table/src/bootstrap-table.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
