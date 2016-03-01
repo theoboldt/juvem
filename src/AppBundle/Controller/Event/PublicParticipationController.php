@@ -148,7 +148,7 @@ class PublicParticipationController extends Controller
 
             $message = sprintf(
                 '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>
-<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
+<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen zur Teilnahme vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
                 $this->container->get('router')
                                 ->generate(
                                     'fos_user_registration_register'

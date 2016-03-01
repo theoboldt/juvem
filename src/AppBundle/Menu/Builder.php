@@ -22,7 +22,7 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         if ($this->isUserLoggedIn()) {
-            $menu->addChild('Anmeldungen', array('route' => 'public_participations'));
+            $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
             if ($this->isUserAdmin()) {
                 $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
                 $menu->addChild('Benutzer', array('route' => 'user_list'));
