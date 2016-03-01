@@ -3,11 +3,11 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen</a></li>
+            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
             <li class="active">Familie {{ participation.nameLast }}</li>
         {% endblock %}
     {% endembed %}
@@ -79,12 +79,12 @@
                         {% if participation.withdrawn %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="reactivate">
-                                {{ 'retweet'|glyph }}<span class="hidden-xs"> Anmeldung reaktivieren</span>
+                                {{ 'retweet'|glyph }}<span class="hidden-xs"> Teilnahme reaktivieren</span>
                             </button>
                         {% else %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="withdraw">
-                                {{ 'share-alt'|glyph }}<span class="hidden-xs"> Anmeldung zurückziehen</span>
+                                {{ 'share-alt'|glyph }}<span class="hidden-xs"> Teilnahme zurückziehen</span>
                             </button>
                         {% endif %}
                         {% if participation.deletedAt %}
@@ -130,19 +130,19 @@
 
                             switch (action) {
                                 case 'delete':
-                                        title = 'Anmeldung in Papierkorb verschieben';
+                                        title = 'Anmeldung zur Teilnahme in Papierkorb verschieben';
                                         question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
                                     break;
                                 case 'restore':
-                                        title = 'Anmeldung aus Papierkorb nehmen';
+                                        title = 'Anmeldung zur Teilnahme aus Papierkorb nehmen';
                                         question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
                                     break;
                                 case 'withdraw':
-                                        title = 'Anmeldung zurückziehen';
+                                        title = 'Anmeldung zur Teilnahme zurückziehen';
                                         question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
                                     break;
                                 case 'reactivate':
-                                        title = 'Anmeldung reaktivieren';
+                                        title = 'Anmeldung zur Teilnahme reaktivieren';
                                         question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
                                     break;
                             }

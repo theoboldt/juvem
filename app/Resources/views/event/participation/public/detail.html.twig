@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Anmeldung ({{ event.title }}){% endblock %}
+{% block title %}Teilnahme ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
-            <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
-            <li class="active">Anmeldung Detailansicht ({{ event.title }})</li>
+            <li><a href="{{ path('public_participations') }}">Teilnahme</a></li>
+            <li class="active">Teilnahme Detailansicht ({{ event.title }})</li>
         {% endblock %}
     {% endembed %}
     <div class="container">

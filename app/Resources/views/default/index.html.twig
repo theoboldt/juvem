@@ -44,7 +44,7 @@
                         </p>
                         <p>{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
                         <p>
-                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary" role="button">Anmelden</a>
+                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary" role="button">Teilnehmen</a>
                             <a href="{{ path('event_public_detail', {'eid': event.eid }) }}" class="btn btn-default" role="button">Details</a>
                         </p>
                     </div>

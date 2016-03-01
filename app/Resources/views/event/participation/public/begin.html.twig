@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% import _self as m %}
 
-{% block title %}Anmelden ausfüllen - {{ event.title }}{% endblock %}
+{% block title %}Anmeldung für Teilnahme ausfüllen - {{ event.title }}{% endblock %}
 
 {% block body %}
     <div class="container">
@@ -12,9 +12,9 @@
                     <ol class="breadcrumb">
                         <li><a href="{{ path('homepage') }}">Juvem</a></li>
                         <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li class="active">Anmeldung ausfüllen</li>
+                        <li class="active">Anmeldung für Teilnahme ausfüllen</li>
                     </ol>
-                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung ausfüllen', 'subtitle': event.title} %}
+                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung für Teilnahme ausfüllen', 'subtitle': event.title} %}
                 </div>
             </div>
             {{ form_start(form) }}
@@ -22,7 +22,7 @@
                 <div class="col-xs-12">
                     <div class="alert alert-info" role="alert">
                         Sie können die Daten die Sie hier eingeben im nächsten Schritt noch mal überprüfen,
-                        bevor Sie die Anmeldung engültig abgeben.
+                        bevor Sie die Anmeldung zur Teilnahme engültig abgeben.
                     </div>
                     {{ form_errors(form) }}
                 </div>
@@ -282,7 +282,7 @@
                                                     Dritter</abbr></a></li>
                                         <li><a href="#cookies">Cookies</a></li>
                                         <li><a href="#registrierfunktion">Registrierfunktion</a></li>
-                                        <li><a href="#anmeldungsfunktion">Anmeldungsfunktion</a></li>
+                                        <li><a href="#anmeldungsfunktion">Teilnahmefunktion</a></li>
                                         <li><a href="#widerruf"><abbr
                                                         title="Widerruf, Änderungen, Berichtigungen und Aktualisierungen">Widerruf,
                                                     Änderungen</abbr></a></li>

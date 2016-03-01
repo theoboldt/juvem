@@ -15,17 +15,17 @@
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
                     <div class="btn-group" role="group">
                         <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
-                           class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Anmeldungen</span></a>
+                           class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">Teilnehmer</span></a>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Menü erweitern</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Anmeldungen
+                            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer
                                     verwalten</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Anmeldungen
+                            <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer
                                     exportieren</a></li>
                             <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">E-Mail versenden</a></li>
                         </ul>
@@ -79,11 +79,11 @@
                             switch (action) {
                                 case 'delete':
                                         title = 'Veranstaltung in Papierkorb verschieben';
-                                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                                        question = 'Soll diese Anmeldung zur Teilnahme wirklich in den Papierkorb verschoben werden?';
                                     break;
                                 case 'restore':
                                         title = 'Veranstaltung aus Papierkorb nehmen';
-                                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                                        question = 'Soll diese Anmeldung zur Teilnahme wirklich aus dem Papierkorb herausgeholt werden?';
                                     break;
                             }
                             modal.find('.modal-title').text(title);
