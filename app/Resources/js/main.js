@@ -78,7 +78,7 @@ jQuery(document).ready(function () {
     });
 
     /**
-     * Events participants email preview
+     * EVENT: Events participants email preview
      */
     var updateMailPreview = function () {
         var updateButton = $('*#mail-form .btn-update-preview');
