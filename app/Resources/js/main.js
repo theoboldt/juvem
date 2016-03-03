@@ -1,5 +1,8 @@
 jQuery(document).ready(function () {
 
+    /**
+     * GLOBAL Escape html
+     */
     var eHtml = function (value) {
         return $('<i></i>').text(value).html();
     };
@@ -13,29 +16,108 @@ jQuery(document).ready(function () {
      */
 
     /**
-     * Enable tooltips and popvers
+     * GLOBAL: Enable tooltips and popovers
      */
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
     });
-    //$('[data-toggle="popover"]').popover();
 
     /**
-     * Admin event list table
+     * GLOBAL: Active button
+     */
+    $('[data-element="activebutton"]').each(function () {
+        var button = $(this);
+
+        button.prop('disabled', true);
+        var token = button.data('token'),
+            entityName = button.data('entity'),
+            entityId = button.data('entity-id'),
+            propertyName = button.data('property'),
+            enableLabel = button.data('button-enable-label'),
+            enableGlyph = button.data('button-enable-glyph'),
+            disableLabel = button.data('button-disable-label'),
+            disableGlyph = button.data('button-disable-glyph'),
+            formData = {
+                _token: token,
+                entityName: entityName,
+                entityId: entityId,
+                propertyName: propertyName,
+                buttons: {
+                    buttonEnable: {
+                        label: enableLabel,
+                        glyph: enableGlyph
+                    },
+                    buttonDisable: {
+                        label: disableLabel,
+                        glyph: disableGlyph
+                    }
+                }
+            };
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/active/button',
+            data: formData,
+            datatype: 'json',
+            success: function (response) {
+                button.empty();
+                if (response && response.html) {
+                    button.html(response.html);
+                }
+            },
+            error: function (response) {
+                $(document).trigger('add-alerts', {
+                    message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                    priority: 'error'
+                });
+            },
+            complete: function (response) {
+                button.prop('disabled', false);
+            }
+        });
+
+        button.click(function () {
+            button.prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '/admin/active/button',
+                data: $.extend(formData, {toggle: 1}),
+                datatype: 'json',
+                success: function (response) {
+                    button.empty();
+                    if (response && response.html) {
+                        button.html(response.html);
+                    }
+                },
+                error: function (response) {
+                    $(document).trigger('add-alerts', {
+                        message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                        priority: 'error'
+                    });
+                },
+                complete: function (response) {
+                    button.prop('disabled', false);
+                }
+            });
+        });
+    });
+
+    /**
+     * EVENT: Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
         location.href = row.eid;
     });
 
     /**
-     * Admin event participants list table
+     * EVENT: Admin event participants list table
      */
     $('#participantsListTable').on('click-row.bs.table', function (e, row, $element) {
         location.href = 'participation/' + row.pid;
     });
 
     /**
-     * Handle via prototype injected forms
+     * EVENT: Handle via prototype injected forms
      */
     $('.prototype-container').each(function (index) {
         var element = $(this),
@@ -76,7 +158,7 @@ jQuery(document).ready(function () {
     });
 
     /**
-     * Events participants email preview
+     * EVENT: Events participants email preview
      */
     var updateMailPreview = function () {
         var updateButton = $('*#mail-form .btn-update-preview');
