@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "be23f29dbadb335432967679ee8cdd37",
-    "content-hash": "74659e4ffd303aab12638b46b7a5b689",
+    "hash": "e29a193ef47154ed0b83f8f8332b07c0",
+    "content-hash": "ce88f4809c62cf9ae3fa33d234bd05cb",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2593,12 +2593,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "ef08c07329bf84d3961e804ebe36f7170e3aead2"
+                "reference": "0f3e1a3c3401cbeab0bbe3ed56caf0eac3febd48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/ef08c07329bf84d3961e804ebe36f7170e3aead2",
-                "reference": "ef08c07329bf84d3961e804ebe36f7170e3aead2",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/0f3e1a3c3401cbeab0bbe3ed56caf0eac3febd48",
+                "reference": "0f3e1a3c3401cbeab0bbe3ed56caf0eac3febd48",
                 "shasum": ""
             },
             "require": {
@@ -2719,7 +2719,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-03-02 15:25:29"
+            "time": "2016-03-04 07:54:35"
         },
         {
             "name": "twig/twig",
@@ -3082,7 +3082,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3.9"
+        "php": ">=5.5"
     },
     "platform-dev": []
 }
