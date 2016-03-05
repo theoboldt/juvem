@@ -87,16 +87,16 @@
             <div class="col-xs-12 col-sm-8">
                 <h3>{{ event.getTitle }}</h3>
 
-                <p>
+                <p class="status-label-list">
                     {% if event.isActive() %}
-                        <span class="label label-primary">Aktiv</span>
+                        <span class="label label-primary option-isActive">Aktiv</span>
                     {% else %}
-                        <span class="label label-default">Inaktiv</span>
+                        <span class="label label-default option-isActive">Inaktiv</span>
                     {% endif %}
                     {% if event.isVisible() %}
-                        <span class="label label-primary">Sichtbar</span>
+                        <span class="label label-primary option-isVisible">Sichtbar</span>
                     {% else %}
-                        <span class="label label-default">Versteckt</span>
+                        <span class="label label-default option-isVisible">Versteckt</span>
                     {% endif %}
                 </p>
 
@@ -172,7 +172,7 @@
     </div>
 {% endblock %}
 {% block javascripts %}
-<script type='text/javascript'>
+    <script type='text/javascript'>
         jQuery(document).ready(function () {
             $('#dialogModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget),
@@ -195,12 +195,40 @@
                 modal.find('.modal-body > p').text(question);
                 modal.find('input[name="form[action]"]').val(action);
             });
-            $('[data-entity="Event"]').on('juvem.activeButton.complete', function (event, button, response) {
+            $('[data-entity="Event"]').on('juvem.activeButton.success', function (event, button, response) {
+                if (response.value !== null) {
+                    var option = button.data('property');
 
-                debugger
+                    $('.status-label-list .option-' + option).each(function (i, el) {
+                        el = $(el);
 
+                        var textEnabled,
+                                textDisabled;
+
+                        switch (option) {
+                            case 'isActive':
+                                textEnabled = 'Aktiv';
+                                textDisabled = 'Inaktiv';
+                                break;
+                            case 'isVisible':
+                                textEnabled = 'Sichtbar';
+                                textDisabled = 'Versteckt';
+                                break;
+                        }
+
+                        if (response.value) {
+                            el.text(textEnabled);
+                            el.addClass('label-primary');
+                            el.removeClass('label-default');
+                        } else {
+                            el.text(textDisabled);
+                            el.addClass('label-default');
+                            el.removeClass('label-primary');
+                        }
+                    });
+                }
             });
 
         });
-</script>
+    </script>
 {% endblock %}
