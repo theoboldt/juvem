@@ -34,8 +34,8 @@ module.exports = function (grunt) {
             },
             distJs: {
                 src: [
-                    '<%= resourcesPath %>/js/jquery-1.12.1.js',
                     '<%= resourcesPath %>/js/cookiechoices.js',
+                    '<%= resourcesPath %>/js/jquery-1.12.1.js',
                     'node_modules/bootstrap-table/src/bootstrap-table.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
@@ -52,7 +52,8 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
 */
                     '<%= resourcesPath %>/js/jquery.bsAlerts.min.js',
-                    '<%= resourcesPath %>/js/main.js'
+                    '<%= resourcesPath %>/js/main.js',
+                    '<%= resourcesPath %>/js/admin-event.js'
                 ],
                 dest: 'web/js/all.js'
             },

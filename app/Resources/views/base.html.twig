@@ -6,8 +6,9 @@
 
     {% if app.environment == 'dev' %}
         <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+        <script src="//localhost:35729/livereload.js"></script>
     {% else %}
-        <link rel="stylesheet" href="{{ asset('css/all.min.css') }}?v4">
+    <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
     {% endif %}
 
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=3">
@@ -52,7 +53,6 @@
         {% endif %}
     </div>
 </div>
-{% block javascripts %}{% endblock %}
 <div id="cookiechoice" style="visibility: hidden;">
     <div class="container">
         <div class="col-xs-12">
@@ -69,9 +69,9 @@
 </div>
 {% if app.environment == 'dev' %}
     <script src="{{ asset('js/all.js') }}"></script>
-    <script src="//localhost:35729/livereload.js"></script>
 {% else %}
-    <script src="{{ asset('js/all.min.js') }}?v4"></script>
+    <script src="{{ asset('js/all.min.js') }}"></script>
 {% endif %}
+{% block javascripts %}{% endblock %}
 </body>
 </html>
