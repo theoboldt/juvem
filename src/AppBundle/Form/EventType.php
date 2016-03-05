@@ -30,7 +30,7 @@ class EventType extends AbstractType
         $hasDateCheckbox = array(
             'required'   => false,
             'attr'       => array('class' => 'checkbox-smart'),
-            'label_attr' => array('class' => 'control-label')
+            'label_attr' => array('class' => 'control-label checkbox-smart-label')
         );
 
         $builder

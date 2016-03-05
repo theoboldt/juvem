@@ -11,7 +11,7 @@
     {% endembed %}
     <div class="container">
         {{ form_start(form) }}
-        {% include '/event/admin/form.html.twig' with {'form': form} %}
+        {% include '/event/admin/form-html.html.twig' with {'form': form} %}
         <div class="row">
             <div class="col-xs-12">
             {{ form_row(form.save, { 'attr': {'class': 'btn-primary'}, 'label' : 'Veranstaltung erstellen' }) }}
@@ -19,4 +19,7 @@
         {{ form_end(form) }}
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    {% include '/event/admin/form-script.html.twig' %}
 {% endblock %}
