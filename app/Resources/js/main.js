@@ -88,15 +88,18 @@ jQuery(document).ready(function () {
                     if (response && response.html) {
                         button.html(response.html);
                     }
+                    button.trigger('juvem.activeButton.success', [button, response]);
                 },
                 error: function (response) {
                     $(document).trigger('add-alerts', {
                         message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
                         priority: 'error'
                     });
+                    button.trigger('juvem.activeButton.error', [button, response]);
                 },
                 complete: function (response) {
                     button.prop('disabled', false);
+                    button.trigger('juvem.activeButton.complete', [button, response]);
                 }
             });
         });
