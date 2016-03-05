@@ -1,16 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teilnehmer verwalten{% endblock %}
+{% block title %}Teilnahmen verwalten{% endblock %}
 
 {% block body %}
-    {%  embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'verwalten'} %}
+    {%  embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahmen', 'subtitle': 'verwalten'} %}
         {% block breadcrumb %}
-            <li class="active">Teilnehmer verwalten</li>
+            <li class="active">Teilnahmen verwalten</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+                <p>Auf dieser Seite sind alle Anmeldungen aufgelistet, die mit ihrem Benutzerkonto angemeldet wurden.</p>
                 <table id="participantsListTable" class="table table-striped" data-id-field="pid"
                        data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
