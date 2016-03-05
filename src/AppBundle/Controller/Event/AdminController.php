@@ -174,44 +174,9 @@ class AdminController extends Controller
             }
         }
 
-        $buttonState      = array(
-            'entityName'   => 'Event',
-            'propertyName' => 'isActive',
-            'entityId'     => $eid,
-            'isEnabled'    => $event->isActive(),
-            'buttons'      => array(
-                'buttonEnable'  => array(
-                    'label' => 'Aktivieren',
-                    'glyph' => 'folder-open'
-                ),
-                'buttonDisable' => array(
-                    'label' => 'Deaktivieren',
-                    'glyph' => 'folder-close'
-                )
-            )
-        );
-        $buttonVisibility = array(
-            'entityName'   => 'Event',
-            'propertyName' => 'isVisible',
-            'entityId'     => $eid,
-            'isEnabled'    => $event->isVisible(),
-            'buttons'      => array(
-                'buttonEnable'  => array(
-                    'label' => 'Sichtbar schalten',
-                    'glyph' => 'eye-open'
-                ),
-                'buttonDisable' => array(
-                    'label' => 'Verstecken',
-                    'glyph' => 'eye-close'
-                )
-            )
-        );
-
         return $this->render(
             'event/admin/detail.html.twig', array(
                                               'event'             => $event,
-                                              'buttonState'       => $buttonState,
-                                              'buttonVisibility'  => $buttonVisibility,
                                               'ageDistribution'   => $ageDistribution,
                                               'participantsCount' => $participantsCount,
                                               'form'              => $form->createView()

@@ -19,7 +19,7 @@ class ActiveButtonController extends Controller
      *
      * @Route("/admin/active/button", name="active_button")
      */
-    public function activeButtonHandler(Request $request)
+    public function activeButtonChangeStateHandler(Request $request)
     {
         $token       = $request->get('_token');
         $entityName  = $request->get('entityName');
@@ -30,28 +30,33 @@ class ActiveButtonController extends Controller
         $buttons     = $request->get('buttons');
 
         switch ($valueNew) {
+            case null:
+            default:
+                $valueNew = null;
+                break;
             case 0:
                 $valueNew = false;
                 break;
             case 1:
                 $valueNew = true;
                 break;
-            default:
-                $valueNew = null;
-                break;
         }
         switch ($toggleValue) {
+            case null:
+            default:
+                $toggleValue = null;
+                break;
             case 1:
                 $toggleValue = true;
                 break;
-            default:
+            case 0:
                 $toggleValue = false;
                 break;
         }
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken($entityName . $property)) {
+        if ($token != $csrf->getToken($entityName . $property . $entityId)) {
             throw new AccessDeniedHttpException('Invalid token');
         }
 
@@ -79,10 +84,10 @@ class ActiveButtonController extends Controller
         if (!method_exists($entity, $property)) {
             throw new AccessDeniedHttpException('Unavailable property');
         }
+        $valueOriginal = $entity->$property();
 
-        if ($toggleValue) {
-            $valueOriginal = $entity->$property();
-            $valueNew      = !$valueOriginal;
+        if ($toggleValue !== null) {
+            $valueNew = !$valueOriginal;
         }
 
         if ($valueNew !== null) {
@@ -97,20 +102,21 @@ class ActiveButtonController extends Controller
         $valuePerformed = $entity->$property();
 
 
-        $html = $this->container->get('templating')->render(
-            'common/active-button-content.html.twig', array(
-            'buttonIsEnabled' => $valuePerformed,
-            'buttons'         => $buttons
-        )
-        );
+        $html = $this->container->get('templating')
+                                ->render(
+                                    'common/active-button-content.html.twig', array(
+                                                                                'buttonIsEnabled' => $valuePerformed,
+                                                                                'buttons'         => $buttons
+                                                                            )
+                                );
 
         return new JsonResponse(
             array(
                 'entityName' => $entityName,
-                'entityId' => $entityId,
-                'propery' => $property,
-                'value' => $valuePerformed,
-                'html'  => $html
+                'entityId'   => $entityId,
+                'propery'    => $property,
+                'value'      => $valuePerformed,
+                'html'       => $html
             )
 
         );

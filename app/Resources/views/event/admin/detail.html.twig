@@ -33,8 +33,18 @@
                     <div class="btn-group" role="group">
                         <a href="{{ path('event_edit', {'eid': event.eid }) }}"
                            class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
-                        {% include 'common/active-button.html.twig' with {'button': buttonState} %}
-                        {% include 'common/active-button.html.twig' with {'button': buttonVisibility} %}
+                        <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                data-property="isVisible" data-entity-id="{{ event.eid }}"
+                                data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
+                                data-button-enable-label="Sichtbar schalten" data-button-enable-glyph="eye-open"
+                                data-button-disable-label="Verstecken"
+                                data-button-disable-glyph="eye-close">{{ 'option-horizontal'|glyph }}</button>
+                        <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                data-property="isActive" data-entity-id="{{ event.eid }}"
+                                data-token="{{ csrf_token('Event' ~ 'isActive' ~ event.eid ) }}"
+                                data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
+                                data-button-disable-label="Deaktivieren"
+                                data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                     {% if event.deletedAt %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
@@ -53,7 +63,8 @@
                             {{ form_start(form) }}
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Abbrechen"><span
                                                 aria-hidden="true">&times;</span></button>
                                     <h4 class="modal-title" id="dialogModalLabel"></h4>
                                 </div>
@@ -61,36 +72,14 @@
                                     <p></p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                                    <input type="submit" class="btn btn-primary" value="Bestätigen" />
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                                    </button>
+                                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
                                 </div>
                             </div>
                             {{ form_end(form) }}
                         </div>
                     </div>
-                    <script type='text/javascript'>
-                        $('#dialogModal').on('show.bs.modal', function (event) {
-                            var button = $(event.relatedTarget),
-                                action = button.data('action'),
-                                modal = $(this),
-                                title,
-                                question;
-
-                            switch (action) {
-                                case 'delete':
-                                        title = 'Veranstaltung in Papierkorb verschieben';
-                                        question = 'Soll diese Anmeldung zur Teilnahme wirklich in den Papierkorb verschoben werden?';
-                                    break;
-                                case 'restore':
-                                        title = 'Veranstaltung aus Papierkorb nehmen';
-                                        question = 'Soll diese Anmeldung zur Teilnahme wirklich aus dem Papierkorb herausgeholt werden?';
-                                    break;
-                            }
-                            modal.find('.modal-title').text(title);
-                            modal.find('.modal-body > p').text(question);
-                            modal.find('input[name="form[action]"]').val(action);
-                        })
-                    </script>
                 </div>
             </div>
         </div>
@@ -181,4 +170,37 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+<script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                        action = button.data('action'),
+                        modal = $(this),
+                        title,
+                        question;
+
+                switch (action) {
+                    case 'delete':
+                        title = 'Veranstaltung in Papierkorb verschieben';
+                        question = 'Soll diese Anmeldung zur Teilnahme wirklich in den Papierkorb verschoben werden?';
+                        break;
+                    case 'restore':
+                        title = 'Veranstaltung aus Papierkorb nehmen';
+                        question = 'Soll diese Anmeldung zur Teilnahme wirklich aus dem Papierkorb herausgeholt werden?';
+                        break;
+                }
+                modal.find('.modal-title').text(title);
+                modal.find('.modal-body > p').text(question);
+                modal.find('input[name="form[action]"]').val(action);
+            });
+            $('[data-entity="Event"]').on('juvem.activeButton.complete', function (event, button, response) {
+
+                debugger
+
+            });
+
+        });
+</script>
 {% endblock %}

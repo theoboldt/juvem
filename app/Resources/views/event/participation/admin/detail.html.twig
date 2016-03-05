@@ -16,64 +16,20 @@
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Anmeldungsdetails bearbeiten">
                     <div class="btn-group" role="group">
-                        {% embed 'common/active-button.html.twig' with {'button': buttonConfirmation} %}
-                            {% block success %}
-                                if (response.value !== null) {
-                                    $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_CONFIRMED') }}').each(function(i, el) {
-                                        el = $(el);
-                                        if (response.value) {
-                                            el.text('bestätigt');
-                                            el.addClass( 'label-primary' );
-                                            el.removeClass( 'label-default' );
-                                        } else {
-                                            el.text('unbestätigt');
-                                            el.addClass( 'label-default' );
-                                            el.removeClass( 'label-primary' );
-                                        }
-                                    });
-                                        if (response.value) {
-                                            $(button).html('{{ 'ok'|glyph }} Bestätigung <i>(E-Mail wird versandt...)</i>');
-                                            $(button).addClass( 'disabled' );
-                                            $.ajax({
-                                                type: 'POST',
-                                                url: '{{ path('event_participation_confirm_mail') }}',
-                                                data: {
-                                                    _token: '{{ csrf_token(participation.pid) }}',
-                                                    pid: '{{ participation.pid }}'
-                                                },
-                                                datatype: 'json',
-                                                success: function (response) {
-                                                    $(document).trigger('add-alerts', {
-                                                        message: 'Die Eltern wurden per E-Mail über die Bestätigung benachrichtigt.',
-                                                        priority: 'success'
-                                                    });
-                                                },
-                                                error: function (response) {
-                                                    $(document).trigger('add-alerts', {
-                                                        message: 'Beim Versenden der E-Mail Benachrichtigung ist ein Fehler aufgetreten!',
-                                                        priority: 'error'
-                                                    });
-                                                },
-                                                complete: function (response) {
-                                                    $(button).html('{{ 'remove'|glyph }} Bestätigung zurücknehmen');
-                                                    $(button).removeClass( 'disabled' );
-                                                }
-                                            });
-                                        }
-                                }
-                            {% endblock %}
-                        {% endembed %}
-                        {% embed 'common/active-button.html.twig' with {'button': buttonPayment} %}
-                            {% block success %}
-                                if (response.value !== null) {
-                                        if (response.value) {
-                                            $('.status-label-list').append('<span class="label label-primary option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}">{{ constant('AppBundle\\BitMask\\ParticipantStatus::LABEL_STATUS_PAID') }}</span>');
-                                        } else {
-                                            $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}').remove();
-                                        }
-                                }
-                            {% endblock %}
-                        {% endembed %}
+                        <button type="button" class="btn btn-default" data-element="activebutton"
+                                data-entity="Participation"
+                                data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
+                                data-token="{{ csrf_token('Participation' ~ 'isConfirmed' ~ participation.pid ) }}"
+                                data-button-enable-label="Bestätigen und benachrichtigen" data-button-enable-glyph="ok"
+                                data-button-disable-label="Bestätigung zurücknehmen"
+                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
+                        <button type="button" class="btn btn-default" data-element="activebutton"
+                                data-entity="Participation"
+                                data-property="isPaid" data-entity-id="{{ participation.pid }}"
+                                data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
+                                data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="ok"
+                                data-button-disable-label="Zahlung zurücknehmen"
+                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                     <div class="btn-group" role="group">
                         {% if participation.withdrawn %}
@@ -105,7 +61,8 @@
                             {{ form_start(form) }}
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Abbrechen"><span
                                                 aria-hidden="true">&times;</span></button>
                                     <h4 class="modal-title" id="dialogModalLabel"></h4>
                                 </div>
@@ -113,8 +70,9 @@
                                     <p></p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                                    <input type="submit" class="btn btn-primary" value="Bestätigen" />
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                                    </button>
+                                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
                                 </div>
                             </div>
                             {{ form_end(form) }}
@@ -123,27 +81,27 @@
                     <script type='text/javascript'>
                         $('#dialogModal').on('show.bs.modal', function (event) {
                             var button = $(event.relatedTarget),
-                                action = button.data('action'),
-                                modal = $(this),
-                                title,
-                                question;
+                                    action = button.data('action'),
+                                    modal = $(this),
+                                    title,
+                                    question;
 
                             switch (action) {
                                 case 'delete':
-                                        title = 'Anmeldung zur Teilnahme in Papierkorb verschieben';
-                                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                                    title = 'Anmeldung zur Teilnahme in Papierkorb verschieben';
+                                    question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
                                     break;
                                 case 'restore':
-                                        title = 'Anmeldung zur Teilnahme aus Papierkorb nehmen';
-                                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                                    title = 'Anmeldung zur Teilnahme aus Papierkorb nehmen';
+                                    question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
                                     break;
                                 case 'withdraw':
-                                        title = 'Anmeldung zur Teilnahme zurückziehen';
-                                        question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
+                                    title = 'Anmeldung zur Teilnahme zurückziehen';
+                                    question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
                                     break;
                                 case 'reactivate':
-                                        title = 'Anmeldung zur Teilnahme reaktivieren';
-                                        question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
+                                    title = 'Anmeldung zur Teilnahme reaktivieren';
+                                    question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
                                     break;
                             }
                             modal.find('.modal-title').text(title);
@@ -221,7 +179,9 @@
                                         <dt>Geburtsdatum</dt>
                                         <dd>{{ participant.getBirthday|date("d.m.Y") }} </dd>
                                         <dt>Alter</dt>
-                                        <dd>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der Veranstaltung</dd>
+                                        <dd>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der
+                                            Veranstaltung
+                                        </dd>
                                         <dt>Ernährung</dt>
                                         <dd>
                                             {% set participantFood = participant.getFood(true) %}
@@ -261,4 +221,65 @@
             {% endfor %}
         </div>
     </div>
+
+{% endblock %}
+{% block javascripts %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('[data-property="isConfirmed"]').on('juvem.activeButton.success', function (event, button, response) {
+                if (response.value !== null) {
+                    $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_CONFIRMED') }}').each(function (i, el) {
+                        el = $(el);
+                        if (response.value) {
+                            el.text('bestätigt');
+                            el.addClass('label-primary');
+                            el.removeClass('label-default');
+                        } else {
+                            el.text('unbestätigt');
+                            el.addClass('label-default');
+                            el.removeClass('label-primary');
+                        }
+                    });
+                    if (response.value) {
+                        $(button).html('{{ 'ok'|glyph }} Bestätigung <i>(E-Mail wird versandt...)</i>');
+                        $(button).addClass('disabled');
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('event_participation_confirm_mail') }}',
+                            data: {
+                                _token: '{{ csrf_token(participation.pid) }}',
+                                pid: '{{ participation.pid }}'
+                            },
+                            datatype: 'json',
+                            success: function (response) {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Eltern wurden per E-Mail über die Bestätigung benachrichtigt.',
+                                    priority: 'success'
+                                });
+                            },
+                            error: function (response) {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Beim Versenden der E-Mail Benachrichtigung ist ein Fehler aufgetreten!',
+                                    priority: 'error'
+                                });
+                            },
+                            complete: function (response) {
+                                $(button).html('{{ 'remove'|glyph }} Bestätigung zurücknehmen');
+                                $(button).removeClass('disabled');
+                            }
+                        });
+                    }
+                }
+            });
+            $('[data-property="isPaid"]').on('juvem.activeButton.success', function (event, button, response) {
+                if (response.value !== null) {
+                    if (response.value) {
+                        $('.status-label-list').append('<span class="label label-primary option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}">{{ constant('AppBundle\\BitMask\\ParticipantStatus::LABEL_STATUS_PAID') }}</span>');
+                    } else {
+                        $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}').remove();
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

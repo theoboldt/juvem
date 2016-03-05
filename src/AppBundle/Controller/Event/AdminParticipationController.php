@@ -173,39 +173,7 @@ class AdminParticipationController extends Controller
         );
         $foodFormatter = new LabelFormatter();
 
-        $buttonConfirmation = array(
-            'entityName'   => 'Participation',
-            'propertyName' => 'isConfirmed',
-            'entityId'     => $participation->getPid(),
-            'isEnabled'    => $participation->isConfirmed(),
-            'buttons'      => array(
-                'buttonEnable'  => array(
-                    'label' => 'Bestätigen und benachrichtigen',
-                    'glyph' => 'ok'
-                ),
-                'buttonDisable' => array(
-                    'label' => 'Bestätigung zurücknehmen',
-                    'glyph' => 'remove'
-                )
-            )
-        );
-        $buttonPayment      = array(
-            'entityName'   => 'Participation',
-            'propertyName' => 'isPaid',
-            'entityId'     => $participation->getPid(),
-            'isEnabled'    => $participation->isPaid(),
-            'buttons'      => array(
-                'buttonEnable'  => array(
-                    'label' => 'Zahlungseingang vermerken',
-                    'glyph' => 'ok'
-                ),
-                'buttonDisable' => array(
-                    'label' => 'Zahlung zurücknehmen',
-                    'glyph' => 'remove'
-                )
-            )
-        );
-        $phoneNumberList    = array();
+        $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */
         foreach ($participation->getPhoneNumbers()
                                ->getIterator() as $phoneNumberEntity) {
@@ -216,14 +184,12 @@ class AdminParticipationController extends Controller
 
         return $this->render(
             'event/participation/admin/detail.html.twig',
-            array('event'              => $event,
-                  'participation'      => $participation,
-                  'foodFormatter'      => $foodFormatter,
-                  'statusFormatter'    => $statusFormatter,
-                  'phoneNumberList'    => $phoneNumberList,
-                  'buttonConfirmation' => $buttonConfirmation,
-                  'buttonPayment'      => $buttonPayment,
-                  'form'               => $form->createView()
+            array('event'           => $event,
+                  'participation'   => $participation,
+                  'foodFormatter'   => $foodFormatter,
+                  'statusFormatter' => $statusFormatter,
+                  'phoneNumberList' => $phoneNumberList,
+                  'form'            => $form->createView()
             )
         );
     }
