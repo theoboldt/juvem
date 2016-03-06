@@ -30,7 +30,8 @@ class UserRegistrationListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            FOSUserEvents::REGISTRATION_COMPLETED => 'onUserRegisterConfirm',
+            FOSUserEvents::REGISTRATION_COMPLETED => 'onUserRegisterComplete',
+            FOSUserEvents::REGISTRATION_CONFIRMED => 'onUserRegisterConfirmed'
         );
     }
 
@@ -39,22 +40,21 @@ class UserRegistrationListener implements EventSubscriberInterface
      *
      * @param FilterUserResponseEvent $event
      */
-    public function onUserRegisterConfirm(FilterUserResponseEvent $event)
+    public function onUserRegisterComplete(FilterUserResponseEvent $event)
     {
         /** @var User $user */
         $user = $event->getUser();
-        $user->setRoles(array('ROLE_USER'));
 
         if ($event->getRequest()
                   ->getSession()
                   ->has('participationList')
         ) {
+            $em                      = $this->doctrine->getManager();
             $participationList       = $event->getRequest()
                                              ->getSession()
                                              ->get('participationList');
             $participationRepository = $this->doctrine->getRepository('AppBundle:Participation');
 
-            $em = $this->doctrine->getManager();
             foreach ($participationList as $pid) {
                 $participation = $participationRepository->findOneBy(array('pid' => $pid));
                 if ($participation) {
@@ -64,5 +64,21 @@ class UserRegistrationListener implements EventSubscriberInterface
             }
             $em->flush();
         }
+    }
+
+    /**
+     * When user registration is confirmed
+     *
+     * @param FilterUserResponseEvent $event
+     */
+    public function onUserRegisterConfirmed(FilterUserResponseEvent $event)
+    {
+        $em = $this->doctrine->getManager();
+
+        /** @var User $user */
+        $user = $event->getUser();
+        $user->addRole('ROLE_USER');
+        $em->persist($user);
+        $em->flush();
     }
 }
