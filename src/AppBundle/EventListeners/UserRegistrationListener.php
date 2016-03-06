@@ -47,6 +47,8 @@ class UserRegistrationListener implements EventSubscriberInterface
                   ->getSession()
                   ->has('participationList')
         ) {
+            $user->setRoles(array('ROLE_USER'));
+
             $participationList       = $event->getRequest()
                                              ->getSession()
                                              ->get('participationList');
