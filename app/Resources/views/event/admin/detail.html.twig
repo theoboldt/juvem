@@ -145,6 +145,7 @@
                 </div>
                 <div class="flat-progress-bar">
                     <h4>Altersverteilung</h4>
+                    {% if ageDistribution|length %}
                     {% for age, count in ageDistribution %}
                         <div class="row">
                             <div class="col-xs-2 col-sm-3 text-right">
@@ -166,6 +167,12 @@
                             </div>
                         </div>
                     {% endfor %}
+                    {% else %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                Im Moment sind keine Teilnehmer angemeldet.
+                            </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
