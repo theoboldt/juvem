@@ -43,12 +43,12 @@ class UserRegistrationListener implements EventSubscriberInterface
     {
         /** @var User $user */
         $user = $event->getUser();
+        $user->setRoles(array('ROLE_USER'));
+
         if ($event->getRequest()
                   ->getSession()
                   ->has('participationList')
         ) {
-            $user->setRoles(array('ROLE_USER'));
-
             $participationList       = $event->getRequest()
                                              ->getSession()
                                              ->get('participationList');
