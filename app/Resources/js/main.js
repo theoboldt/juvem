@@ -120,6 +120,13 @@ jQuery(document).ready(function () {
     });
 
     /**
+     * USER: A users participants list table
+     */
+    $('#userParticipantsListTable').on('click-row.bs.table', function (e, row, $element) {
+        location.href = '../event/'+ row.eid +'/participation/' + row.pid;
+    });
+
+    /**
      * EVENT: Handle via prototype injected forms
      */
     $('.prototype-container').each(function (index) {

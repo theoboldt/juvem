@@ -2,6 +2,8 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\BitMask\LabelFormatter;
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
@@ -190,6 +192,11 @@ class PublicParticipationController extends Controller
      */
     public function listParticipantsDataAction(Request $request)
     {
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
+
         $dateFormatDay     = 'd.m.y';
         $dateFormatDayHour = 'd.m.y H:i';
 
@@ -228,7 +235,7 @@ class PublicParticipationController extends Controller
 
             $participantsString = '';
             foreach ($participation->getParticipants() as $participant) {
-                $participantsString .= ' ' . $participant->getNameFirst() . ' ' . $participant->getStatus(true);
+                $participantsString .= sprintf(' %s %s', $participant->getNameFirst(), $statusFormatter->formatMask($participant->getStatus(true)));
             }
 
             $participationListResult[] = array(

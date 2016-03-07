@@ -2,10 +2,14 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\BitMask\LabelFormatter;
+use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -79,6 +83,49 @@ class UserController extends Controller
         $user = $repository->findOneBy(array('id' => $uid));
 
         return $this->render('user/detail.html.twig', array('user' => $user));
+    }
+
+
+    /**
+     * Data provider for events participants list grid
+     *
+     * @Route("/admin/user/{uid}/participations.json", requirements={"uid": "\d+"},
+     *                                                 name="admin_user_participations_list_data")
+     */
+    public function listParticipantsDataAction(Request $request)
+    {
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
+
+        $userRepository = $this->getDoctrine()
+                               ->getRepository('AppBundle:User');
+        $user           = $userRepository->findOneBy(array('id' => $request->get('uid')));
+
+        $participationRepository = $this->getDoctrine()
+                                        ->getRepository('AppBundle:Participation');
+        $participationList       = $participationRepository->findBy(array('assignedUser' => $user->getUid()));
+
+        $participationListResult = array();
+        /** @var Participant $participant */
+        foreach ($participationList as $participation) {
+            $event = $participation->getEvent();
+
+            $participants = array();
+            foreach ($participation->getParticipants() as $participant) {
+                $participants[] = $participant->getNameFirst();
+            }
+
+            $participationListResult[] = array(
+                'eid'          => $event->getEid(),
+                'pid'          => $participation->getPid(),
+                'eventTitle'   => $event->getTitle(),
+                'participants' => implode(', ', $participants)
+            );
+        }
+
+        return new JsonResponse($participationListResult);
     }
 
     /**

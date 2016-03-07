@@ -9,11 +9,56 @@
             <li class="active">{{ user.fullname(user.nameLast, user.nameFirst) }}</li>
         {% endblock %}
     {% endembed %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-horizontal">
+                <h3>Daten</h3>
+                <hr/>
 
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Vorname</label>
+
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{ user.nameFirst }}</p>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Nachname</label>
+
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{ user.nameLast }}</p>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">E-Mail-Adresse</label>
+
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{ user.email }}</p>
+
+                    </div>
+                </div>
             </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-6 user-participations-list">
+            <h3>Teilnahmen</h3>
+            <hr/>
+            <table id="userParticipantsListTable" class="table table-striped" data-id-field="pid"
+                   data-toggle="table" data-cache="false" data-pagination="true"
+                   data-side-pagination="client" data-toolbar="#user-list-toolbar" data-striped="true"
+                   data-url="{{ path('admin_user_participations_list_data', {uid: user.uid}) }}">
+                <thead>
+                <tr>
+                    <th data-field="eid" data-sortable="true" data-visible="false">#e</th>
+                    <th data-field="pid" data-sortable="true" data-visible="false">#p</th>
+                    <th data-field="eventTitle" data-sortable="true">Veranstaltung</th>
+                    <th data-field="participants" data-sortable="false">Teilnehmer</th>
+                </tr>
+                </thead>
+            </table>
         </div>
     </div>
-{% endblock %}
+    {% endblock %}
