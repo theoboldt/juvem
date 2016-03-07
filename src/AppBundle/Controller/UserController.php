@@ -29,7 +29,7 @@ class UserController extends Controller
      * Data provider for event list grid
      *
      * @Route("/admin/user/list.json", name="user_list_data")
-     * @Security("has_role('ROLE_EVENTMANAGER')")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function listDataAction(Request $request)
     {
