@@ -68,6 +68,9 @@ class ActiveButtonController extends Controller
         }
 
         switch ($entityName) {
+            case 'User':
+                $idColumn = 'id';
+                break;
             case 'Event':
                 $idColumn = 'eid';
                 break;

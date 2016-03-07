@@ -7,6 +7,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 
+use AppBundle\Form\UserRoleAssignmentType;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -78,14 +79,37 @@ class UserController extends Controller
      * @Route("/admin/user/{uid}", requirements={"uid": "\d+"}, name="user_detail")
      * @Security("has_role('ROLE_ADMIN')")
      */
-    public function userDetailAction($uid)
+    public function userDetailAction(Request $request)
     {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:User');
 
-        $user = $repository->findOneBy(array('id' => $uid));
+        $user = $repository->findOneBy(array('id' => $request->get('uid')));
 
-        return $this->render('user/detail.html.twig', array('user' => $user));
+        $form = $this->createForm(
+            UserRoleAssignmentType::class,
+            array('uid'   => $user->getUid(),
+                  'role' => $user->getRoles()
+            )
+        );
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()
+                       ->getManager();
+
+            $roleList = $form->get('role')->getData();
+            $user->setRoles($roleList);
+            $em->persist($user);
+            $em->flush();
+        }
+
+        return $this->render(
+            'user/detail.html.twig', array('user' => $user,
+                                           'userIsSelf' => ($user->getUid() == $this->getUser()->getUid()),
+                                           'form' => $form->createView()
+                                   )
+        );
     }
 
 

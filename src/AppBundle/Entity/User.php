@@ -16,6 +16,16 @@ class User extends BaseUser
 {
     use HumanTrait;
 
+    const ROLE_ADMIN       = 'ROLE_ADMIN';
+    const ROLE_ADMIN_LABEL = 'Administration';
+
+    const ROLE_ADMIN_EVENT       = 'ROLE_ADMIN_EVENT';
+    const ROLE_ADMIN_EVENT_LABEL = 'Veranstaltungsverwaltung';
+
+    const ROLE_ADMIN_USER       = 'ROLE_ADMIN_USER';
+    const ROLE_ADMIN_USER_LABEL = 'Benutzerverwaltung';
+
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer", name="uid")
@@ -77,6 +87,34 @@ class User extends BaseUser
         $email = is_null($email) ? '' : $email;
         parent::setEmail($email);
         $this->setUsername($email);
+
+        return $this;
+    }
+
+    /**
+     * Set user locked
+     *
+     * @see setLocked()
+     * @param bool $boolean Locked state
+     * @return $this
+     */
+    public function setIsLocked($boolean)
+    {
+        $this->setLocked($boolean);
+
+        return $this;
+    }
+
+    /**
+     * Define user enable/disabled state
+     *
+     * @see setLocked()
+     * @param bool $boolean Enable/disabled  state
+     * @return $this
+     */
+    public function setIsEnabled($boolean)
+    {
+        $this->setLocked($boolean);
 
         return $this;
     }

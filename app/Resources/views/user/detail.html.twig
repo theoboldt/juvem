@@ -12,9 +12,57 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-12 col-sm-6">
+            <h3>Daten</h3>
+            <hr/>
+            <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#roleAssignmentModal" data-action="restore">
+                        {{ 'cd'|glyph }}<span class="hidden-xs"> Rollenzuweisung anpassen</span>
+                    </button>
+                    {% if not userIsSelf %}
+                    <button type="button" class="btn btn-default" data-element="activebutton"
+                            data-entity="User"
+                            data-property="isLocked" data-entity-id="{{ user.uid }}"
+                            data-token="{{ csrf_token('User' ~ 'isLocked' ~ user.uid ) }}"
+                            data-button-enable-label="Sperren" data-button-enable-glyph="lock"
+                            data-button-disable-label="Entsperren"
+                            data-button-disable-glyph="repeat">{{ 'option-horizontal'|glyph }}</button>
+                    <button type="button" class="btn btn-default" data-element="activebutton"
+                            data-entity="User"
+                            data-property="isEnabled" data-entity-id="{{ user.uid }}"
+                            data-token="{{ csrf_token('User' ~ 'isEnabled' ~ user.uid ) }}"
+                            data-button-enable-label="Aktivieren" data-button-enable-glyph="arrow-up"
+                            data-button-disable-label="Deaktivieren"
+                            data-button-disable-glyph="arrow-down">{{ 'option-horizontal'|glyph }}</button>
+                    {% endif %}
+                </div>
+                <div class="modal fade" id="roleAssignmentModal" tabindex="-1" role="dialog"
+                     aria-labelledby="dialogModalLabel">
+                    <div class="modal-dialog" role="document">
+                        {{ form_start(form) }}
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Abbrechen"><span
+                                            aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Rollenzuweisung anpassen</h4>
+                            </div>
+                            <div class="modal-body">
+                                {{ form_widget(form.uid) }}
+                                {{ form_widget(form.role) }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                                </button>
+                                <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
             <div class="form-horizontal">
-                <h3>Daten</h3>
-                <hr/>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">Vorname</label>
@@ -61,4 +109,11 @@
             </table>
         </div>
     </div>
+</div>
+{% endblock %}
+    {% block javascripts %}
+        <script type='text/javascript'>
+            jQuery(document).ready(function () {
+            });
+        </script>
     {% endblock %}
