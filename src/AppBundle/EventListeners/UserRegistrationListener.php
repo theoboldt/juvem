@@ -30,8 +30,7 @@ class UserRegistrationListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            FOSUserEvents::REGISTRATION_COMPLETED => 'onUserRegisterComplete',
-            FOSUserEvents::REGISTRATION_CONFIRMED => 'onUserRegisterConfirmed'
+            FOSUserEvents::REGISTRATION_COMPLETED => 'onUserRegisterComplete'
         );
     }
 
@@ -64,21 +63,5 @@ class UserRegistrationListener implements EventSubscriberInterface
             }
             $em->flush();
         }
-    }
-
-    /**
-     * When user registration is confirmed
-     *
-     * @param FilterUserResponseEvent $event
-     */
-    public function onUserRegisterConfirmed(FilterUserResponseEvent $event)
-    {
-        $em = $this->doctrine->getManager();
-
-        /** @var User $user */
-        $user = $event->getUser();
-        $user->addRole('ROLE_USER');
-        $em->persist($user);
-        $em->flush();
     }
 }
