@@ -120,10 +120,17 @@ jQuery(document).ready(function () {
     });
 
     /**
+     * USER: User list
+     */
+    $('#userListTable').on('click-row.bs.table', function (e, row, $element) {
+        location.href = row.uid;
+    });
+
+    /**
      * USER: A users participants list table
      */
     $('#userParticipantsListTable').on('click-row.bs.table', function (e, row, $element) {
-        location.href = '../event/'+ row.eid +'/participation/' + row.pid;
+        location.href = '../event/' + row.eid + '/participation/' + row.pid;
     });
 
     /**
