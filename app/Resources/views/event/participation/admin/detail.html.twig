@@ -78,37 +78,6 @@
                             {{ form_end(form) }}
                         </div>
                     </div>
-                    <script type='text/javascript'>
-                        $('#dialogModal').on('show.bs.modal', function (event) {
-                            var button = $(event.relatedTarget),
-                                    action = button.data('action'),
-                                    modal = $(this),
-                                    title,
-                                    question;
-
-                            switch (action) {
-                                case 'delete':
-                                    title = 'Anmeldung zur Teilnahme in Papierkorb verschieben';
-                                    question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
-                                    break;
-                                case 'restore':
-                                    title = 'Anmeldung zur Teilnahme aus Papierkorb nehmen';
-                                    question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
-                                    break;
-                                case 'withdraw':
-                                    title = 'Anmeldung zur Teilnahme zurückziehen';
-                                    question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
-                                    break;
-                                case 'reactivate':
-                                    title = 'Anmeldung zur Teilnahme reaktivieren';
-                                    question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
-                                    break;
-                            }
-                            modal.find('.modal-title').text(title);
-                            modal.find('.modal-body > p').text(question);
-                            modal.find('input[name="form[action]"]').val(action);
-                        })
-                    </script>
                 </div>
             </div>
         </div>
@@ -226,6 +195,35 @@
 {% block javascripts %}
     <script type='text/javascript'>
         jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                        action = button.data('action'),
+                        modal = $(this),
+                        title,
+                        question;
+
+                switch (action) {
+                    case 'delete':
+                        title = 'Anmeldung zur Teilnahme in Papierkorb verschieben';
+                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                        break;
+                    case 'restore':
+                        title = 'Anmeldung zur Teilnahme aus Papierkorb nehmen';
+                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                        break;
+                    case 'withdraw':
+                        title = 'Anmeldung zur Teilnahme zurückziehen';
+                        question = 'Soll diese Anmeldung wirklich zurückgezogen werden?';
+                        break;
+                    case 'reactivate':
+                        title = 'Anmeldung zur Teilnahme reaktivieren';
+                        question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
+                        break;
+                }
+                modal.find('.modal-title').text(title);
+                modal.find('.modal-body > p').text(question);
+                modal.find('input[name="form[action]"]').val(action);
+            });
             $('[data-property="isConfirmed"]').on('juvem.activeButton.success', function (event, button, response) {
                 if (response.value !== null) {
                     $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_CONFIRMED') }}').each(function (i, el) {
