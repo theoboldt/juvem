@@ -48,7 +48,7 @@ abstract class BitMaskAbstract
         if (!in_array($option, $this->options)) {
             throw new \InvalidArgumentException('Unknown option identifier transmitted');
         }
-        return ($this->value & $option);
+        return (bool)($this->value & $option);
     }
 
     /**
