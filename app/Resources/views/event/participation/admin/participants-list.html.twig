@@ -13,23 +13,56 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div id="event-list-toolbar">
-                    <!--
-                    <div class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-primary">
-                            <input type="checkbox" autocomplete="off"> inkl. gelöscht
-                        </label>
-                        <label class="btn btn-primary">
-                            <input type="checkbox" autocomplete="off"> inkl. zurückgezogen
-                        </label>
+                <div id="event-list-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <div class="dropup" data-property="is_confirmed">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterConfirmed"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">mit und ohne bestätigte</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterConfirmed">
+                                <li><a href="#" data-filter="1">nur bestätigte</a></li>
+                                <li><a href="#" data-filter="0">ohne bestätigte</a></li>
+                                <li><a href="#" data-filter="[1, 0]">mit und ohne bestätigte</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    -->
+                    <div class="form-group">
+                        <div class="dropup" data-property="is_withdrawn">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterWithdrawn"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">ohne zurückgezogene</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterWithdrawn">
+                                <li><a href="#" data-filter="1">nur zurückgezogene</a></li>
+                                <li><a href="#" data-filter="0">ohne zurückgezogene</a></li>
+                                <li><a href="#" data-filter="[1, 0]">mit und ohne zurückgezogene</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="dropup" data-property="is_paid">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterPaid"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">bereits bezahlt oder nicht</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterPaid">
+                                <li><a href="#" data-filter="1">bereits bezahlt</a></li>
+                                <li><a href="#" data-filter="0">nicht bezahlt</a></li>
+                                <li><a href="#" data-filter="[1, 0]">bereits bezahlt oder nicht</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <table id="participantsListTable" class="table table-striped" data-id-field="did"
                        data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#event-list-toolbar" data-striped="true"
-                       data-show-filter="true" data-search="true" data-url="participants.json">
+                       data-show-filter="true" data-search="true"
+                       data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}">
                     <thead>
                     <tr>
                         <th data-field="aid" data-sortable="true" data-visible="false">#</th>
@@ -47,4 +80,36 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            var table = $('#participantsListTable'),
+                    filterList = {};
+
+            $('#event-list-toolbar li a').on('click', function (e) {
+                var dropup = $(this).parent().parent().parent(),
+                        property = dropup.data('property'),
+                        filter = $(this).data('filter'),
+                        text = $(this).text();
+                e.preventDefault();
+
+                switch (property) {
+                    case 'is_confirmed':
+                        filterList.is_confirmed = filter;
+                        break;
+                    case 'is_withdrawn':
+                        filterList.is_withdrawn = filter;
+                        break;
+                    case 'is_paid':
+                        filterList.is_paid = filter;
+                        break;
+                }
+                dropup.find('button .description').text(text);
+
+                table.bootstrapTable('filterBy', filterList);
+            });
+            console.log(filterList);
+        });
+    </script>
 {% endblock %}

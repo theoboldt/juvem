@@ -106,17 +106,21 @@ class AdminParticipationController extends Controller
 
             $participantAction = '';
 
+            $participantStatus = $participant->getStatus(true);
 
             $participantList[] = array(
-                'aid'       => $participant->getAid(),
-                'pid'       => $participant->getParticipation()
-                                           ->getPid(),
-                'nameFirst' => $participant->getNameFirst(),
-                'nameLast'  => $participant->getNameLast(),
-                'age'       => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
-                'phone'     => $participantPhone,
-                'status'    => $statusFormatter->formatMask($participant->getStatus(true)),
-                'action'    => $participantAction
+                'aid'          => $participant->getAid(),
+                'pid'          => $participant->getParticipation()
+                                              ->getPid(),
+                'is_paid'      => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
+                'is_withdrawn' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
+                'is_confirmed' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
+                'nameFirst'    => $participant->getNameFirst(),
+                'nameLast'     => $participant->getNameLast(),
+                'age'          => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
+                'phone'        => $participantPhone,
+                'status'       => $statusFormatter->formatMask($participantStatus),
+                'action'       => $participantAction
             );
         }
 
