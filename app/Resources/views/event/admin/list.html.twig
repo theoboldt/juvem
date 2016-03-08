@@ -11,27 +11,87 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div id="event-list-toolbar">
-                    <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} Neu</a>
+                <div id="event-list-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} Neu</a>
+                    </div>
+                    <div class="form-group">
+                        <div class="dropup" data-property="is_active">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterActive"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">mit und ohne aktive</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterActive">
+                                <li><a href="#" data-filter="1">nur aktive</a></li>
+                                <li><a href="#" data-filter="0">ohne aktive</a></li>
+                                <li><a href="#" data-filter="[1, 0]">mit und ohne aktive</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="dropup" data-property="is_visible">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterVisible"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">ohne sichtbare</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterVisible">
+                                <li><a href="#" data-filter="1">nur sichtbare</a></li>
+                                <li><a href="#" data-filter="0">ohne sichtbare</a></li>
+                                <li><a href="#" data-filter="[1, 0]">mit und ohne sichtbare</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <table id="eventListTable" class="table table-striped" data-id-field="did"
                        data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#event-list-toolbar" data-striped="true"
-                       data-show-filter="true"  data-search="true" data-url="list.json">
+                       data-show-filter="true" data-search="true"
+                       data-url="{{ path('event_list_data') }}">
                     <thead>
-                        <tr>
-                            <th data-field="eid" data-sortable="true" data-visible="false">#</th>
-                            <th data-field="title" data-sortable="true"  data-order="asc">Titel</th>
-                            <th data-field="description" data-sortable="true">Beschreibung</th>
-                            <th data-field="start_date" data-sortable="true">Beginn</th>
-                            <th data-field="end_date" data-sortable="true">Ende</th>
-                            <th data-field="status" data-sortable="false" data-width="50">Status</th>
-                        </tr>
+                    <tr>
+                        <th data-field="eid" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="title" data-sortable="true" data-order="asc">Titel</th>
+                        <th data-field="description" data-sortable="true">Beschreibung</th>
+                        <th data-field="start_date" data-sortable="true">Beginn</th>
+                        <th data-field="end_date" data-sortable="true">Ende</th>
+                        <th data-field="status" data-sortable="false" data-width="50">Status</th>
+                    </tr>
                     </thead>
                 </table>
 
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            var table = $('#eventListTable'),
+                filterList = {};
+
+            $('#event-list-toolbar li a').on('click', function (e) {
+                var dropup = $(this).parent().parent().parent(),
+                        property = dropup.data('property'),
+                        filter = $(this).data('filter'),
+                        text = $(this).text();
+                e.preventDefault();
+
+                switch (property) {
+                    case 'is_visible':
+                        filterList.is_visible = filter;
+                        break;
+                    case 'is_active':
+                        filterList.is_active = filter;
+                        break;
+                }
+                dropup.find('button .description').text(text);
+
+                table.bootstrapTable('filterBy', filterList);
+            });
+            console.log(filterList);
+        });
+    </script>
 {% endblock %}

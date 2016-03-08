@@ -35,15 +35,8 @@ class AdminController extends Controller
      */
     public function listDataAction(Request $request)
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-        /*
-                $criteria   = array();
-                $eventEntityList    = $repository->findBy(
-                    $criteria, array('title' => $request->get('order')), $request->get('limit'), $request->get('offset')
-                );
-        // using client side paginations and filtering
-        */
+        $repository      = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
         $eventEntityList = $repository->findAll();
 
         $dateFormatDay     = 'd.m.y';
@@ -81,6 +74,8 @@ class AdminController extends Controller
 
             $eventList[] = array(
                 'eid'         => $event->getEid(),
+                'is_visible'  => (int)$event->isVisible(),
+                'is_active'   => (int)$event->isActive(),
                 'title'       => $event->getTitle(),
                 'description' => $event->getTitle(),
                 'start_date'  => $event->getStartDate()
