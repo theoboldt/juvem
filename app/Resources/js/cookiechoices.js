@@ -34,19 +34,10 @@
         var expiryDate = new Date();
         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
-        if (window.localStorage !== null && typeof(window.localStorage) !== 'undefined') {
-            window.localStorage.setItem(cookieName, 'y');
-        } else {
-            document.cookie = cookieName + '=y; expires=' + expiryDate.toGMTString() + '; path=/';
-        }
+        document.cookie = cookieName + '=y; expires=' + expiryDate.toGMTString() + '; path=/';
     }
 
     function _shouldDisplayConsent() {
-        if (window.localStorage !== null && typeof(window.localStorage) !== 'undefined') {
-            if (window.localStorage.getItem(cookieName) == 'y') {
-                return false;
-            }
-        }
         return !document.cookie.match(new RegExp(cookieName + '=([^;]+)'));
     }
 
