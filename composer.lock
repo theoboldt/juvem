@@ -819,12 +819,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "88f84f631ee7859c069cf98b475c679e90b16b22"
+                "reference": "16b04c49af05dd3fb381e4abe04f0e5e231ac76d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/88f84f631ee7859c069cf98b475c679e90b16b22",
-                "reference": "88f84f631ee7859c069cf98b475c679e90b16b22",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/16b04c49af05dd3fb381e4abe04f0e5e231ac76d",
+                "reference": "16b04c49af05dd3fb381e4abe04f0e5e231ac76d",
                 "shasum": ""
             },
             "require": {
@@ -880,7 +880,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-03-04 13:20:42"
+            "time": "2016-03-08 11:05:28"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -2593,12 +2593,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "5500fe710430a34a59dd3d8239a8a2fa8ef569db"
+                "reference": "e65eac60c44a21978522728e4dc03ed67c12ae68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/5500fe710430a34a59dd3d8239a8a2fa8ef569db",
-                "reference": "5500fe710430a34a59dd3d8239a8a2fa8ef569db",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/e65eac60c44a21978522728e4dc03ed67c12ae68",
+                "reference": "e65eac60c44a21978522728e4dc03ed67c12ae68",
                 "shasum": ""
             },
             "require": {
@@ -2719,7 +2719,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-03-07 14:04:32"
+            "time": "2016-03-08 21:54:25"
         },
         {
             "name": "twig/twig",
