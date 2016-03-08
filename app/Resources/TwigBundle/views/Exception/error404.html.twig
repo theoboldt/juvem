@@ -3,16 +3,58 @@
 {% block title %}Inhalt nicht gefunden{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Inhalt nicht gefunden', 'subtitle': 'Juvem'} %}
-        {% block breadcrumb %}
-            <li class="active">Inhalt nicht gefunden</li>
-        {% endblock %}
-    {% endembed %}
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            Die gewünschte Seite konnte nicht gefunden werden!
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Inhalt nicht gefunden', 'subtitle': 'Juvem'} %}
+            </div>
+            <div class="col-xs-12 col-md-8">
+                <p>
+                    Die gewünschte Seite wurde leider nicht gefunden. Das hätte nicht passieren dürfen!
+                </p>
+
+                <p>
+                    Vielleicht finden Sie über die <a href="{{ path('homepage') }}">Startseite</a>, was Sie suchen.
+                    Falls Sie durch unsere Website navigieren, und immer wieder zu dieser Seite gelangen, liegt
+                    vielleicht ein Fehler vor. Wenn Sie die Information, die Sie suchen dringend benötigen, können Sie
+                    sich auch unter den auf dieser Seite angegebenen Kontaktdaten an das Jugendwerk wenden. Auch auf der
+                    Website des <a href="http://www.ejdv.de/">evangelischen Jugendwerks Stuttgart-Vaihingen</a> sind in
+                    der Regel Informationen zu den Veranstaltungen zu finden.
+                </p>
+
+                <h2>Mögliche Ursachen</h2>
+
+                <p>Als Ursache für dieses Problem sind viele unterschiedliche Gründe denkbar.</p>
+
+                <h3>Tippfehler</h3>
+
+                <p>
+                    Wenn Sie die URL von Hand eingegeben haben, prüfen Sie ob alle Zeichen richtig übertragen sind.
+                    Alternativ dazu finden Sie die gewünschte Seite vielleicht auch mithilfe der Navigation auf dieser
+                    Seite.
+                </p>
+
+                <h3>Veraltete Verknüpfung</h3>
+
+                <p>
+                    Wenn Sie einer Verknüpfung von einer anderen Seite aus gefolgt sind, kann es sein dass der Link in
+                    der Zwischenzeit ungültig geworden ist.
+                </p>
+
+                <h3>Inhalt exklusiv für registrierte Benutzer</h3>
+
+                <p>
+                    Vielleicht steht die angeforderte Seite nur bestimmten Benutzergruppen zur Verfügung.
+                    Wenn Sie nicht angemeldet sind sollten Sie sich <a href="{{ path('fos_user_security_login') }}">anmelden</a>.
+                    Möglicherweise ist die gewünschte Seite dann auffindbar.
+                </p>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <h3>Aktive Veranstaltungen</h3>
+
+                {{ render(controller('AppBundle:Event/Public:listActiveEvents')) }}
+
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

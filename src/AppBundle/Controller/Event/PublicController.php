@@ -66,4 +66,29 @@ class PublicController extends Controller
                                            )
         );
     }
+
+    /**
+     * Active and visible events as list group
+     *
+     * @return Response
+     */
+    public function listActiveEventsAction() {
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:Event');
+        $eventList  = $repository->findBy(
+            array('isVisible' => true,
+                  'isActive'  => true
+            ),
+            array('startDate' => 'ASC',
+                  'startTime' => 'ASC'
+            )
+        );
+
+        return $this->render(
+            'event/public/embed-list-group.html.twig', array(
+                                         'events' => $eventList
+                                     )
+        );
+
+    }
 }
