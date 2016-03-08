@@ -5,10 +5,10 @@
     {% block stylesheets %}{% endblock %}
 
     {% if app.environment == 'dev' %}
-        <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/all.css', 'css') }}">
         <script src="//localhost:35729/livereload.js"></script>
     {% else %}
-    <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/all.min.css', 'css') }}">
     {% endif %}
 
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=3">
@@ -68,9 +68,9 @@
     </div>
 </div>
 {% if app.environment == 'dev' %}
-    <script src="{{ asset('js/all.js') }}"></script>
+    <script src="{{ asset('js/all.js', 'js') }}"></script>
 {% else %}
-    <script src="{{ asset('js/all.min.js') }}"></script>
+    <script src="{{ asset('js/all.min.js', 'js') }}" integrity="sha256-{{ assetJsIntegrity }}"></script>
 {% endif %}
 {% block javascripts %}{% endblock %}
 </body>

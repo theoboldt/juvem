@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: version.php }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -10,6 +11,16 @@ parameters:
     app.upload_image_manager.path: %kernel.root_dir%/cache/%kernel.environment%/upload_image
 
 framework:
+    assets:
+        version: "%app.version%"
+        version_format: %%s?%%s
+        packages:
+            js:
+                version: "%app.version.hash.js%"
+                version_format: %%s?h%%s
+            css:
+                version: "%app.version.hash.css%"
+                version_format: %%s?h%%s
     #esi:             ~
     translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
@@ -49,6 +60,9 @@ twig:
         decimals: 2
         decimal_point: ','
         thousands_separator: '.'
+    globals:
+        version: "%app.version%"
+        assetJsIntegrity: "%app.version.integrity.js%"
 
 # Doctrine Configuration
 doctrine:
