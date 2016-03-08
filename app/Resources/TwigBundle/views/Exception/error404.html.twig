@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inhalt nicht gefunden{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Inhalt nicht gefunden', 'subtitle': 'Juvem'} %}
+        {% block breadcrumb %}
+            <li class="active">Inhalt nicht gefunden</li>
+        {% endblock %}
+    {% endembed %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            Die gewünschte Seite konnte nicht gefunden werden!
+        </div>
+    </div>
+</div>
+{% endblock %}
