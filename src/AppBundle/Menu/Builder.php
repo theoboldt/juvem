@@ -76,6 +76,10 @@ class Builder implements ContainerAwareInterface
     {
         $token = $this->container->get('security.token_storage')
                                  ->getToken();
+        if (!$token) {
+            return false;
+        }
+
         $user  = $token->getUser();
 
         return ($user instanceof User);
@@ -90,6 +94,10 @@ class Builder implements ContainerAwareInterface
     {
         $token = $this->container->get('security.token_storage')
                                  ->getToken();
+        if (!$token) {
+            return false;
+        }
+
         /** @var User $user */
         $user  = $token->getUser();
 
