@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use PDO;
 
 /**
  * EventRepository
@@ -27,6 +28,32 @@ class EventRepository extends EntityRepository
                         'SELECT e FROM AppBundle:EVENT e ORDER BY e.title ASC'
                     )
                     ->getResult();
+    }
+
+    /**
+     * Fetch all events ordered by title
+     *
+     * @return array
+     */
+    public function findEidListFutureEvents()
+    {
+        return $this->getEntityManager()
+                    ->getConnection()
+                    ->executeQuery('SELECT eid FROM event WHERE start_date >= NOW()')
+                    ->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Fetch all events ordered by title
+     *
+     * @return array
+     */
+    public function findEidListPastEvents()
+    {
+        return $this->getEntityManager()
+                    ->getConnection()
+                    ->executeQuery('SELECT eid FROM event WHERE start_date < NOW()')
+                    ->fetchAll(PDO::FETCH_COLUMN);
     }
 
     /**

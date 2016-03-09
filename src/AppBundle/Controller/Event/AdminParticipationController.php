@@ -90,18 +90,15 @@ class AdminParticipationController extends Controller
         $participantList = array();
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
-            $participation    = $participant->getParticipation();
-            $participantPhone = '';
+            $participation        = $participant->getParticipation();
+            $participantPhoneList = array();
 
             /** @var PhoneNumber $phoneNumberEntity */
             foreach ($participation->getPhoneNumbers()
                                    ->getIterator() as $phoneNumberEntity) {
                 /** @var \libphonenumber\PhoneNumber $phoneNumber */
-                $phoneNumber = $phoneNumberEntity->getNumber();
-                $participantPhone .= sprintf(
-                    '<span class="label label-primary">%s</span> ',
-                    $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE')
-                );
+                $phoneNumber            = $phoneNumberEntity->getNumber();
+                $participantPhoneList[] = $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE');
             }
 
             $participantAction = '';
@@ -118,7 +115,7 @@ class AdminParticipationController extends Controller
                 'nameFirst'    => $participant->getNameFirst(),
                 'nameLast'     => $participant->getNameLast(),
                 'age'          => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
-                'phone'        => $participantPhone,
+                'phone'        => implode(', ', $participantPhoneList),
                 'status'       => $statusFormatter->formatMask($participantStatus),
                 'action'       => $participantAction
             );
@@ -150,7 +147,7 @@ class AdminParticipationController extends Controller
                      ->getForm();
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $action = $form->get('action')
                            ->getData();
             switch ($action) {
@@ -169,6 +166,11 @@ class AdminParticipationController extends Controller
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
             }
+            $em = $this->getDoctrine()
+                       ->getManager();
+
+            $em->persist($participation);
+            $em->flush();
         }
 
         $statusFormatter = new LabelFormatter();

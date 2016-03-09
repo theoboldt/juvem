@@ -110,7 +110,18 @@ jQuery(document).ready(function () {
      */
     var table = $('.table-remote-content'),
         tableFilterList = {};
-    $('#event-list-toolbar li a').on('click', function (e) {
+
+    //load initial filters
+    $('#bootstrap-table-toolbar .dropup[data-filter]').each(function (index) {
+        var property = $(this).data('property'),
+            filter = $(this).data('filter');
+        
+        tableFilterList[property] = filter;
+    });
+    table.bootstrapTable('filterBy', tableFilterList);
+
+    //add filter handler
+    $('#bootstrap-table-toolbar li a').on('click', function (e) {
         var dropup = $(this).parent().parent().parent(),
             property = dropup.data('property'),
             filter = $(this).data('filter'),

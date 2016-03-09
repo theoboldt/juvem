@@ -13,7 +13,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div id="event-list-toolbar" class="form-inline">
+                <div id="bootstrap-table-toolbar" class="form-inline">
                     <div class="form-group">
                         <div class="dropup" data-property="is_confirmed">
                             <button class="btn btn-default dropdown-toggle" type="button" id="filterConfirmed"
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="dropup" data-property="is_withdrawn">
+                        <div class="dropup" data-property="is_withdrawn" data-filter="0"]>
                             <button class="btn btn-default dropdown-toggle" type="button" id="filterWithdrawn"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">ohne zurückgezogene</span>
@@ -38,7 +38,7 @@
                             <ul class="dropdown-menu" aria-labelledby="filterWithdrawn">
                                 <li><a href="#" data-filter="1">nur zurückgezogene</a></li>
                                 <li><a href="#" data-filter="0">ohne zurückgezogene</a></li>
-                                <li><a href="#" data-filter="[1, 0]">mit und ohne zurückgezogene</a></li>
+                                <li><a href="#" data-filter="[1, 0]">ohne zurückgezogene</a></li>
                             </ul>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                 <table id="participantsListTable" class="table table-striped table-remote-content"
                        data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-                       data-search-align="right" data-toolbar="#event-list-toolbar" data-striped="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true"
                        data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}">
                     <thead>

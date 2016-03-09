@@ -25,7 +25,19 @@ class AdminController extends Controller
      */
     public function listAction()
     {
-        return $this->render('event/admin/list.html.twig');
+        $repository      = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+        $eventListFuture = $repository->findEidListFutureEvents();
+        $eventListPast   = $repository->findEidListPastEvents();
+
+        return $this->render(
+            'event/admin/list.html.twig',
+            array(
+                'eventListFuture' => $eventListFuture,
+                'eventListPast'   => $eventListPast,
+                'eventList'       => array_merge($eventListFuture, $eventListPast)
+            )
+        );
     }
 
     /**

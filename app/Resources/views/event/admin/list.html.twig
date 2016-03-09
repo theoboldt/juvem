@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div id="event-list-toolbar" class="form-inline">
+                <div id="bootstrap-table-toolbar" class="form-inline">
                     <div class="form-group">
                         <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} Neu</a>
                     </div>
@@ -19,13 +19,13 @@
                         <div class="dropup" data-property="is_active">
                             <button class="btn btn-default dropdown-toggle" type="button" id="filterActive"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">mit und ohne aktive</span>
+                                <span class="description">aktive und inaktive</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="filterActive">
                                 <li><a href="#" data-filter="1">nur aktive</a></li>
-                                <li><a href="#" data-filter="0">ohne aktive</a></li>
-                                <li><a href="#" data-filter="[1, 0]">mit und ohne aktive</a></li>
+                                <li><a href="#" data-filter="0">nur inaktive</a></li>
+                                <li><a href="#" data-filter="[1, 0]">aktive und inaktive</a></li>
                             </ul>
                         </div>
                     </div>
@@ -33,13 +33,27 @@
                         <div class="dropup" data-property="is_visible">
                             <button class="btn btn-default dropdown-toggle" type="button" id="filterVisible"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">ohne sichtbare</span>
+                                <span class="description">sichtbare und versteckte</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="filterVisible">
                                 <li><a href="#" data-filter="1">nur sichtbare</a></li>
-                                <li><a href="#" data-filter="0">ohne sichtbare</a></li>
-                                <li><a href="#" data-filter="[1, 0]">mit und ohne sichtbare</a></li>
+                                <li><a href="#" data-filter="0">nur versteckte</a></li>
+                                <li><a href="#" data-filter="[1, 0]">sichtbare und versteckte</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="dropup" data-property="eid" data-filter="[{{ eventListFuture|join(', ') }}]">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="filterTime"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="description">nur zukünftige</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterTime">
+                                <li><a href="#" data-filter="[{{ eventListFuture|join(', ') }}]">nur zukünftige</a></li>
+                                <li><a href="#" data-filter="[{{ eventListPast|join(', ') }}]">nur vergangene</a></li>
+                                <li><a href="#" data-filter="[{{ eventList|join(', ') }}]">zuküntige und vergangene</a></li>
                             </ul>
                         </div>
                     </div>
@@ -47,7 +61,7 @@
                 <table id="eventListTable" class="table table-striped table-remote-content" data-id-field="did"
                        data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-                       data-search-align="right" data-toolbar="#event-list-toolbar" data-striped="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true"
                        data-url="{{ path('event_list_data') }}">
                     <thead>
