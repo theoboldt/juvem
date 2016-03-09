@@ -1,0 +1,12 @@
+{% if events|length == 0 %}
+    <p><i>Im Moment sind keine Veranstaltungen aktiv.</i></p>
+{% else %}
+    <ul>
+        {% for event in events %}
+            <li><a href="{{ path('event_public_detail', {eid: event.eid}) }}"
+                   title="{{ event.description|length > 110 ? event.description|slice(0, 100) ~ '...' : event.description }}">{{ event.title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

@@ -22,8 +22,7 @@
         </div>
         <div class="col-xs-6 col-md-4">
             <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
-
-            <p><a href="{{ path('homepage') }}">Veranstaltungsübersicht</a></p>
+            {{ render(controller('AppBundle:Event/Public:listActiveEventLinks')) }}
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3>Benutzerprofil</h3>

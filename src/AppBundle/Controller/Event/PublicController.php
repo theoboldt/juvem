@@ -26,7 +26,8 @@ class PublicController extends Controller
     /**
      * Detail page for one single event
      *
-     * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"}, name="event_image")
+     * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"},
+     *                                               name="event_image")
      */
     public function eventImageAction($eid, $width, $height)
     {
@@ -72,7 +73,8 @@ class PublicController extends Controller
      *
      * @return Response
      */
-    public function listActiveEventsAction() {
+    public function listActiveEventsAction()
+    {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
         $eventList  = $repository->findBy(
@@ -86,8 +88,34 @@ class PublicController extends Controller
 
         return $this->render(
             'event/public/embed-list-group.html.twig', array(
-                                         'events' => $eventList
-                                     )
+                                                         'events' => $eventList
+                                                     )
+        );
+
+    }
+
+    /**
+     * Active and visible events as list group
+     *
+     * @return Response
+     */
+    public function listActiveEventLinksAction()
+    {
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:Event');
+        $eventList  = $repository->findBy(
+            array('isVisible' => true,
+                  'isActive'  => true
+            ),
+            array('startDate' => 'ASC',
+                  'startTime' => 'ASC'
+            )
+        );
+
+        return $this->render(
+            'event/public/embed-link-list.html.twig', array(
+                                                        'events' => $eventList
+                                                    )
         );
 
     }
