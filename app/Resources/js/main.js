@@ -106,6 +106,24 @@ jQuery(document).ready(function () {
     });
 
     /**
+     * GLOBAL: Bootstrap table on page which provides filters
+     */
+    var table = $('.table-remote-content'),
+        tableFilterList = {};
+    $('#event-list-toolbar li a').on('click', function (e) {
+        var dropup = $(this).parent().parent().parent(),
+            property = dropup.data('property'),
+            filter = $(this).data('filter'),
+            text = $(this).text();
+        e.preventDefault();
+
+        tableFilterList[property] = filter;
+        dropup.find('button .description').text(text);
+
+        table.bootstrapTable('filterBy', tableFilterList);
+    });
+
+    /**
      * EVENT: Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
