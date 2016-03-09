@@ -109,6 +109,7 @@ class AdminParticipationController extends Controller
                 'aid'          => $participant->getAid(),
                 'pid'          => $participant->getParticipation()
                                               ->getPid(),
+                'is_deleted'   => (int)($participant->getDeletedAt() instanceof \DateTime),
                 'is_paid'      => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
                 'is_withdrawn' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
                 'is_confirmed' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
