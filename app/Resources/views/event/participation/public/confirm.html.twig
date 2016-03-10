@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% import _self as m %}
 
-{% block title %}Anmeldedaten für Teilnahme überprüfen - {{ event.title }}{% endblock %}
+{% block title %}Anmeldedaten überprüfen - {{ event.title }}{% endblock %}
 
 {% block body %}
     <div class="container page-participate">
@@ -12,11 +12,10 @@
                     <ol class="breadcrumb">
                         <li><a href="{{ path('homepage') }}">Juvem</a></li>
                         <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung
-                                für Teilnahme ausfüllen</a></li>
-                        <li class="active">Anmeldedaten für Teilnahme überprüfen</li>
+                        <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung zu Veranstaltung ausfüllen</a></li>
+                        <li class="active">Anmeldedaten überprüfen</li>
                     </ol>
-                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldedaten für Teilnahme überprüfen', 'subtitle': event.title} %}
+                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldedaten überprüfen', 'subtitle': event.title} %}
                 </div>
             </div>
             <div class="row">
