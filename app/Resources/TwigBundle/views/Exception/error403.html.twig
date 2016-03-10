@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Zugriff verweigert{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Zugriff verweigert', 'subtitle': 'Juvem'} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <p class="lead">
+                    Der Zugriff auf die angeforderte Seite konnte nicht gewährt werden.
+                </p>
+
+                <h2>Mögliche Ursachen</h2>
+
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <h3>Inhalt exklusiv für bestimmte Benutzer</h3>
+                    <p>Die gewünschte Seite scheint bestimmten Benutzergruppen vorbehalten zu sein. Möglicherweise
+                        wurden Ihnen nicht alle nötigen Berechtigungen zugewiesen.</p>
+                {% else %}
+                    <h3>Inhalt exklusiv für registrierte Benutzer</h3>
+                    <p>Sie sind im Moment nicht angemeldet. Vielleicht steht die angeforderte Seite nur bestimmten
+                        Benutzergruppen zur Verfügung. Wenn Sie bereits über ein Benutzerprofil verfügen, nutzen Sie die
+                        <a href="{{ path('fos_user_security_login') }}">Anmeldung</a> und versuchen Sie erneut auf die
+                        gewünschte Seite zuzugreifen. Falls Sie hier noch kein Benutzerprofil besitzen, können Sie
+                        mithilfe der <a href="{{ path('fos_user_registration_register') }}">Registrierung</a> eines
+                        anlegen.
+                    </p>
+                {% endif %}
+
+                <h3>Tippfehler</h3>
+
+                <p>
+                    Wenn Sie die URL von Hand eingegeben haben, prüfen Sie ob alle Zeichen richtig übertragen sind.
+                    Alternativ dazu finden Sie die gewünschte Seite vielleicht auch mithilfe der Navigation auf dieser
+                    Seite.
+                </p>
+
+                <h3>Veraltete Verknüpfung</h3>
+
+                <p>
+                    Wenn Sie einer Verknüpfung von einer anderen Seite aus gefolgt sind, kann es sein dass der Link in
+                    der Zwischenzeit ungültig geworden ist.
+                </p>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <h3>Aktive Veranstaltungen</h3>
+
+                {{ render(controller('AppBundle:Event/Public:listActiveEvents')) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascriptMain %}{% endblock %}

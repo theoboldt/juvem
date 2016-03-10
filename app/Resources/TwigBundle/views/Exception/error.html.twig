@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Interner Fehler aufgetreten{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Interner Fehler aufgetreten', 'subtitle': 'Juvem'} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <p class="lead">
+                    Bei der Erstellung der gewünschte Seite ist ein interner Fehler aufgetreten.
+                    Das hätte nicht passieren dürfen!
+                </p>
+
+                <p>
+                    Wenn Sie die Information, die Sie suchen dringend benötigen, können Sie
+                    sich auch unter den auf dieser Seite angegebenen Kontaktdaten an das Jugendwerk wenden. Auch auf der
+                    Website des <a href="http://www.ejdv.de/">evangelischen Jugendwerks Stuttgart-Vaihingen</a> sind in
+                    der Regel Informationen zu den Veranstaltungen zu finden.
+                </p>
+
+                <p>
+                    Wir haben den Fehler bemerkt und werden das Problem so bald wie möglich beheben. Bitte entschuldigen
+                    Sie die entstandenen Unanehmlichkeiten.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascriptMain %}{% endblock %}

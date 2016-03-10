@@ -11,7 +11,7 @@
         </div>
         <div class="row">
             <div class="col-xs-12 col-md-8">
-                <p>
+                <p class="lead">
                     Die gewünschte Seite wurde leider nicht gefunden. Das hätte nicht passieren dürfen!
                 </p>
 
@@ -43,12 +43,22 @@
                     der Zwischenzeit ungültig geworden ist.
                 </p>
 
-                <h3>Inhalt exklusiv für registrierte Benutzer</h3>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <h3>Inhalt exklusiv für bestimmte Benutzer</h3>
+                {% else %}
+                    <h3>Inhalt exklusiv für registrierte Benutzer</h3>
+                {% endif %}
 
                 <p>
                     Vielleicht steht die angeforderte Seite nur bestimmten Benutzergruppen zur Verfügung.
-                    Wenn Sie nicht angemeldet sind sollten Sie sich <a href="{{ path('fos_user_security_login') }}">anmelden</a>.
-                    Möglicherweise ist die gewünschte Seite dann auffindbar.
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        Möglicherweise wurden Ihnen nicht alle nötigen Berechtigungen zugewiesen.
+                    {% else %}
+                        Sie sind im Moment nicht angemeldet. Nutzen Sie die <a
+                            href="{{ path('fos_user_security_login') }}">Anmeldung</a>,
+                        möglicherweise ist die gewünschte Seite dann auffindbar.
+                    {% endif %}
+
                 </p>
             </div>
             <div class="col-xs-12 col-md-4">
@@ -60,3 +70,4 @@
         </div>
     </div>
 {% endblock %}
+{% block javascriptMain %}{% endblock %}

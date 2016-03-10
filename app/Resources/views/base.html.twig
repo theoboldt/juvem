@@ -67,11 +67,13 @@
         </div>
     </div>
 </div>
-{% if app.environment == 'dev' %}
-    <script src="{{ asset('js/all.js', 'js') }}"></script>
-{% else %}
-    <script src="{{ asset('js/all.min.js', 'js') }}" integrity="sha256-{{ assetJsIntegrity }}"></script>
-{% endif %}
+{% block javascriptMain %}
+    {% if app.environment == 'dev' %}
+        <script src="{{ asset('js/all.js', 'js') }}"></script>
+    {% else %}
+        <script src="{{ asset('js/all.min.js', 'js') }}" integrity="sha256-{{ assetJsIntegrity }}"></script>
+    {% endif %}
+{% endblock %}
 {% block javascripts %}{% endblock %}
 </body>
 </html>
