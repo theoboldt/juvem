@@ -42,7 +42,11 @@ class PublicParticipationController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+
         }
         if (!$event->isActive()) {
             $this->addFlash(
@@ -63,7 +67,11 @@ class PublicParticipationController extends Controller
             if ($sessionEvent->getEid() == $eid) {
                 $event = $sessionEvent;
             } else {
-                return $this->redirectToRoute('event_miss', array('eid' => $eid));
+                return $this->render(
+                    'event/public/miss.html.twig', array('eid' => $eid),
+                    new Response(null, Response::HTTP_NOT_FOUND)
+                );
+
             }
         } else {
             $participation = new Participation();
@@ -235,7 +243,9 @@ class PublicParticipationController extends Controller
 
             $participantsString = '';
             foreach ($participation->getParticipants() as $participant) {
-                $participantsString .= sprintf(' %s %s', $participant->getNameFirst(), $statusFormatter->formatMask($participant->getStatus(true)));
+                $participantsString .= sprintf(
+                    ' %s %s', $participant->getNameFirst(), $statusFormatter->formatMask($participant->getStatus(true))
+                );
             }
 
             $participationListResult[] = array(
@@ -270,9 +280,9 @@ class PublicParticipationController extends Controller
         }
         return $this->render(
             'event/participation/public/detail.html.twig', array(
-                                                              'participation' => $participation,
-                                                              'event'         => $participation->getEvent()
-                                                          )
+                                                             'participation' => $participation,
+                                                             'event'         => $participation->getEvent()
+                                                         )
         );
 
     }

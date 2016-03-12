@@ -36,7 +36,10 @@ class AdminParticipationController extends Controller
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
 
@@ -66,7 +69,10 @@ class AdminParticipationController extends Controller
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
         $em                    = $this->getDoctrine()
@@ -247,7 +253,10 @@ class AdminParticipationController extends Controller
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
         return $this->render('event/participation/admin/export.html.twig', array('event' => $event));

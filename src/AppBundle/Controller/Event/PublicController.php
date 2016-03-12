@@ -36,7 +36,10 @@ class PublicController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
         $uploadManager = $this->get('app.upload_image_manager');
@@ -58,7 +61,11 @@ class PublicController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+
         }
 
         return $this->render(

@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class AdminController extends Controller
@@ -116,7 +117,10 @@ class AdminController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirectToRoute('event_miss', array('eid' => $eid));
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
         $form = $this->createForm(EventType::class, $event);
@@ -154,7 +158,10 @@ class AdminController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
         $repository        = $this->getDoctrine()
                                   ->getRepository('AppBundle:Event');
@@ -205,7 +212,10 @@ class AdminController extends Controller
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
-            return $this->redirect('event_miss');
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
         }
 
         $form = $this->createForm(EventMailType::class);
