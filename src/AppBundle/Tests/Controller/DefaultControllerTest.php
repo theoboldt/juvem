@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
-    public function testHomepage()
+    public function testAvailabilityHomepage()
     {
         $client = static::createClient();
 
@@ -26,12 +26,12 @@ class DefaultControllerTest extends WebTestCase
         );
     }
 
-    public function testLegalPage()
+    public function testAvailabilityLegalPage()
     {
         $client = static::createClient();
 
         $crawler = $client->request('GET', '/legal');
-        
+
         $this->assertEquals(
             200, $client->getResponse()
                         ->getStatusCode()
@@ -42,7 +42,7 @@ class DefaultControllerTest extends WebTestCase
         );
     }
 
-    public function testImpressumPage()
+    public function testAvailabilityImpressumPage()
     {
         $client = static::createClient();
 
