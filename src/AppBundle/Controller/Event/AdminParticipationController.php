@@ -259,6 +259,6 @@ class AdminParticipationController extends Controller
             );
         }
 
-        return $this->render('event/participation/admin/export.html.twig', array('event' => $event));
+        return new JsonResponse(array('url' => 'null'));
     }
 }

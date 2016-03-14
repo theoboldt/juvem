@@ -115,7 +115,7 @@ jQuery(document).ready(function () {
     $('#bootstrap-table-toolbar .dropup[data-filter]').each(function (index) {
         var property = $(this).data('property'),
             filter = $(this).data('filter');
-        
+
         tableFilterList[property] = filter;
     });
     table.bootstrapTable('filterBy', tableFilterList);
@@ -255,4 +255,36 @@ jQuery(document).ready(function () {
     };
     $('*#mail-form .btn-update-preview').click(updateMailPreview);
     $('*#mail-form input, *#mail-form textarea').change(updateMailPreview);
+
+    /**
+     * EVENT: Events participants email preview
+     */
+    $('#exportParticipants').on('click', function (e) {
+        e.preventDefault();
+
+        var button = $(this),
+            eid = button.data('eid'),
+            url = '/admin/event/' + parseInt(eid, 10) + '/participants/export';
+        button.prop('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {},
+            datatype: 'json',
+            success: function (response) {
+                console.log('exorted');
+                window.open(response.url);
+            },
+            error: function (response) {
+                $(document).trigger('add-alerts', {
+                    message: 'Der Export konnte nicht erstellt werden',
+                    priority: 'error'
+                });
+            },
+            complete: function (response) {
+                button.prop('disabled', false);
+            }
+        });
+    });
 });
