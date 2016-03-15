@@ -5,6 +5,7 @@ namespace AppBundle\Controller\Event;
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Export\ParticipantsExport;
 use AppBundle\Form\EventParticipationType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
@@ -258,7 +259,22 @@ class AdminParticipationController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
+        $export = new ParticipantsExport($event, $this->getUser());
+        $export->setMetadata();
+        $export->process();
+        $export->write(
+            $this->get('kernel')
+                 ->getRootDir() . '/cache/' . sha1(
+                $export->getTimestamp()
+                       ->format('c')
+            ) . '.xlsx'
+        );
 
-        return new JsonResponse(array('url' => 'null'));
+        return new JsonResponse(
+            array(
+                'success' => true,
+                'url'     => 'null'
+            )
+        );
     }
 }

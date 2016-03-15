@@ -5,7 +5,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 
-class Participants extends AbstractSheet
+class ParticipantsSheet extends AbstractSheet
 {
 
     /**
@@ -20,6 +20,10 @@ class Participants extends AbstractSheet
         $this->event = $event;
 
         parent::__construct($sheet);
+
+        $this->addColumn(new SheetColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new SheetColumn('nameLast', 'Nachname'));
+        $this->addColumn(new SheetColumn('birthday', 'Geburtstag'));
     }
 
     public function setHeader($title = null, $subtitle = null)

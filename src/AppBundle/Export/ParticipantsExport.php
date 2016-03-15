@@ -4,7 +4,7 @@ namespace AppBundle\Export;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
-use AppBundle\Export\Sheet\Participants;
+use AppBundle\Export\Sheet\ParticipantsSheet;
 
 class ParticipantsExport extends Export
 {
@@ -40,7 +40,7 @@ class ParticipantsExport extends Export
 
         $sheet = $this->addSheet();
 
-        $participantsSheet  = new Participants($sheet, $this->event);
+        $participantsSheet  = new ParticipantsSheet($sheet, $this->event);
         $participantsSheet->process();
 
         $sheet->setTitle('Teilnehmer');

@@ -17,6 +17,13 @@ abstract class AbstractSheet
     protected $sheet;
 
     /**
+     * Contains the indexed data column list
+     *
+     * @var array
+     */
+    protected $columnList = array();
+
+    /**
      * Current column index
      *
      * @var integer
@@ -55,6 +62,23 @@ abstract class AbstractSheet
     public function __construct(\PHPExcel_Worksheet $sheet)
     {
         $this->sheet = $sheet;
+    }
+
+    /**
+     * Add a data column definition to this sheet
+     *
+     * @param SheetColumn $column
+     * @return $this
+     */
+    public function addColumn(SheetColumn $column)
+    {
+        if (array_key_exists($column->getDataIndex(), $this->columnList)) {
+            throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
+        }
+
+        $this->columnList[$column->getDataIndex()] = $column;
+
+        return $this;
     }
 
     /**
@@ -176,7 +200,32 @@ abstract class AbstractSheet
 
         $row = $this->row();
         $sheet->getRowDimension($row)
-              ->setRowHeight(34);
+              ->setRowHeight(22);
+
+        $row = $this->row();
+        $sheet->getRowDimension($row)
+              ->setRowHeight(22);
+
+        $this->column(0);
+        $columnStart = 1;
+
+        /** @var SheetColumn $dataColumn */
+        foreach ($this->columnList as $dataColumn) {
+            $column = $dataColumn->getColumnIndex();
+            if ($column === null) {
+                $dataColumn->setColumnIndex($this->column());
+                $column = $dataColumn->getColumnIndex();
+            }
+
+            $sheet->setCellValueByColumnAndRow($column, $row, $dataColumn->getTitle());
+            $sheet->getColumnDimensionByColumn($column)
+                  ->setAutoSize(true);
+        }
+        $sheet->getStyleByColumnAndRow($columnStart, $row, $column, $row)
+              ->getFont()
+              ->setBold(true)
+              ->setName('Arial')
+              ->setSize(10);
 
         return $this;
     }
