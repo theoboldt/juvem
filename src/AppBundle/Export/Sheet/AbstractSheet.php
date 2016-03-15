@@ -227,6 +227,8 @@ abstract class AbstractSheet
               ->setName('Arial')
               ->setSize(10);
 
+        $sheet->setAutoFilterByColumnAndRow($columnStart, $row, $column, $row);
+
         return $this;
     }
 
