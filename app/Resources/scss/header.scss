@@ -1,0 +1,12 @@
+.navbar-brand {
+  padding: 2px 15px;
+}
+
+.navbar-header > .container-fluid {
+  padding-right: 0;
+}
+
+.navbar-inverse .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus,
+.navbar > .container .navbar-header a:hover {
+  background-color: $navbar-inverse-link-hover-bg;
+}
