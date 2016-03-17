@@ -19,6 +19,125 @@ Jugendwerk Stuttgart Vaihingen
 {% embed 'mail/template.html.twig' %}
     {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
     {% block lead %}Ihre Anmeldung für die Veranstaltung <i>{{ event.title }}</i> ist eingegangen.{% endblock %}
-    {% block content %}<p>Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.</p>{% endblock %}
+    {% block content %}<p>Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.</p>
+
+        <p>Wir haben die von Ihnen angegebenen Anmeldedaten im Anschluss noch einmal aufgeführt. Sollte Ihnen noch ein Fehler auffallen, oder muss eine Korrektur vorgenommen werden, unterrichten Sie uns einfach darüber. Wir können die Daten dann anpassen.</p>
+        <table class="classic" width="98%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0;border-bottom: 1px solid #222222;">
+            <thead>
+            <tr>
+                <td class="thead" colspan="2" style="padding-bottom: 2px;border-bottom: 1px solid #222222;border-bottom: 1px solid #222222;">
+                    Daten der Eltern
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="thead" style="padding-top: 4px;">Anrede</td>
+                <td style="padding-top: 4px;">{{ participation.salution }}</td>
+            </tr>
+            <tr>
+                <td class="thead">Vorname</td>
+                <td>{{ participation.nameFirst }}</td>
+            </tr>
+            <tr>
+                <td class="thead">Nachname</td>
+                <td>{{ participation.nameLast }}</td>
+            </tr>
+            <tr>
+                <td class="thead">Telefonnummern</td>
+                <td>
+                    {% for phoneNumber in participation.phoneNumbers %}
+                        <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                        {% if phoneNumber.description %}
+                            {{ phoneNumber.description }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td class="thead">Anschrift</td>
+                <td>
+                        <strong>{{ participation.getName() }}</strong><br>
+                        {{ participation.addressStreet }}<br>
+                        {{ participation.addressZip }} {{ participation.addressCity }}
+                </td>
+            </tr>
+            <tr>
+                <td class="thead" style="padding-bottom: 2px;">E-Mail Adresse</td>
+                <td style="padding-bottom: 2px;">
+                    {{ participation.email }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        {% for participant in participation.getParticipants() %}
+            <table class="classic" width="98%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0; border-bottom: 1px solid #222222;">
+                <thead>
+                <tr>
+                    <td class="thead" colspan="2" style="padding-bottom: 2px;border-bottom: 1px solid #222222;">
+                        Teilnehmer ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="thead" style="padding-top: 4px;">Vorname</td>
+                    <td style="padding-top: 4px;">{{ participant.nameFirst }}</td>
+                </tr>
+                <tr>
+                    <td class="thead">Nachname</td>
+                    <td>{{ participant.nameLast }}</td>
+                </tr>
+                <tr>
+                    <td class="thead">Geschlecht</td>
+                    <td>{{ participant.getGender(true) }}</td>
+                </tr>
+                <tr>
+                    <td class="thead">Geburtsdatum</td>
+                    <td>{{ participant.getBirthday|date("d.m.Y") }} </td>
+                </tr>
+                <tr>
+                    <td class="thead">Alter</td>
+                    <td>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der
+                        Veranstaltung
+                    </td>
+                </tr>
+                <tr>
+                    <td class="thead">Ernährung</td>
+                    <td>
+                        {% set participantFood = participant.getFood(true) %}
+                        {% if participantFood.getValue() %}
+                            {{ ' '|bitmask(participantFood) }}
+                        {% else %}
+                            <i>(keine Besonderheiten)</i>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="thead"><abbr title="Medizinische">Med.</abbr> Hinweise</td>
+                    <td>
+                        {% if participant.infoMedical %}
+                            {{ participant.infoMedical }}
+                        {% else %}
+                            <i>(keine Besonderheiten)</i>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="thead" style="padding-bottom: 2px;"><abbr title="Allgemeine">Allg.</abbr> Hinweise</td>
+                    <td style="padding-bottom: 2px;">
+                        {% if participant.infoGeneral %}
+                            {{ participant.infoGeneral }}
+                        {% else %}
+                            <i>(keine Besonderheiten)</i>
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+    {% endblock %}
 {% endembed %}
 {% endblock %}
