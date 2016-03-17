@@ -113,13 +113,19 @@ abstract class BitMaskAbstract
     /**
      * Get a list of values the mask is assigned
      *
-     * @return array
+     * @param   bool $asLabels Set to true to return labels not codes
+     * @return  array
      */
-    public function getActiveList() {
+    public function getActiveList($asLabels = false)
+    {
         $result = array();
         foreach ($this->options() as $option) {
             if ($this->has($option)) {
-                $result[]   = $option;
+                if ($asLabels) {
+                    $result[] = $this->label($option);
+                } else {
+                    $result[] = $option;
+                }
             }
         }
         return $result;

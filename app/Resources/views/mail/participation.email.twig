@@ -10,6 +10,41 @@ Hallo Frau  {{ participation.nameLast }}!
 
 Ihre Anmeldung für die Veranstaltung "{{ event.title }}" ist eingegangen. Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn ihre Anmeldung und die Teilnahme bestätigt wurde.
 
+Wir haben die von Ihnen angegebenen Anmeldedaten im Anschluss noch einmal aufgeführt. Sollte Ihnen noch ein Fehler auffallen, oder muss eine Korrektur vorgenommen werden, unterrichten Sie uns einfach darüber. Wir können die Daten dann anpassen.
+
+DATEN DER ELTERN:
+  Anrede: {{ participation.salution }}
+  Vorname: {{ participation.nameFirst }}
+  Nachname: {{ participation.nameLast }}
+  Telefonnummern: {% for phoneNumber in participation.phoneNumbers %}
+
+    {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }} - {% if phoneNumber.description %}{{ phoneNumber.description }}{% endif %}
+{% endfor %}
+
+  Anschrift:
+    {{ participation.getName() }}
+    {{ participation.addressStreet }}
+    {{ participation.addressZip }} {{ participation.addressCity }}
+  E-Mail Adresse: {{ participation.email }}
+
+DATEN DER TEILNEHMER:
+{% for participant in participation.getParticipants() %}
+  Teilnehmer ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
+    Vorname: {{ participant.nameFirst }}
+    Nachname: {{ participant.nameLast }}
+    Geschlecht: {{ participant.getGender(true) }}
+    Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }} (Alter: {{ participant.getAgeAtEvent|number_format(0) }} Jahre bei der Veranstaltung)
+    Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
+
+    Medizinische Hinweise: {% if not participant.infoMedical %}(keine Besonderheiten){% else %}
+       {{ participant.infoMedical }}{% endif %}
+
+    Allgemeine Hinweise:  {% if not participant.infoGeneral %}(keine Besonderheiten){% else %}
+       {{ participant.infoGeneral }}{% endif %}
+
+
+{% endfor %}
+
 Mit besten Grüßen,
 Jugendwerk Stuttgart Vaihingen
 {% endautoescape %}
