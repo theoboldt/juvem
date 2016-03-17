@@ -33,7 +33,7 @@ DATEN DER TEILNEHMER:
     Vorname: {{ participant.nameFirst }}
     Nachname: {{ participant.nameLast }}
     Geschlecht: {{ participant.getGender(true) }}
-    Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }} (Alter: {{ participant.getAgeAtEvent|number_format(0) }} Jahre bei der Veranstaltung)
+    Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
     Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
 
     Medizinische Hinweise: {% if not participant.infoMedical %}(keine Besonderheiten){% else %}
@@ -131,10 +131,7 @@ Jugendwerk Stuttgart Vaihingen
                 </tr>
                 <tr>
                     <td class="thead">Geburtsdatum</td>
-                    <td>
-                        {{ participant.getBirthday|date("d.m.Y") }} <br>
-                        (Alter: {{ participant.getAgeAtEvent|number_format(0) }} Jahre bei der Veranstaltung)
-                    </td>
+                    <td>{{ participant.getBirthday|date("d.m.Y") }}</td>
                 </tr>
                 <tr>
                     <td class="thead">Ernährung</td>
