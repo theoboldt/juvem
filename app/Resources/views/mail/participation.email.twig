@@ -138,7 +138,7 @@ Jugendwerk Stuttgart Vaihingen
                     <td>
                         {% set participantFood = participant.getFood(true) %}
                         {% if participantFood.getValue() %}
-                            {{ ' '|bitmask(participantFood) }}
+                            {{ participantFood.getActiveList(true)|join(', ') }}
                         {% else %}
                             <i>(keine Besonderheiten)</i>
                         {% endif %}
