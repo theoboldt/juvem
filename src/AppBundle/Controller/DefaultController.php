@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
@@ -52,5 +53,16 @@ class DefaultController extends Controller
         return $this->render(
             'legal/impressum-page.html.twig'
         );
+    }
+
+    /**
+     * @Route("/css/all.css.map")
+     * @Route("/js/all.js.map")
+     * @Route("/css/all.min.css.map")
+     * @Route("/js/all.min.js.map")
+     */
+    public function ressourceUnavailableAction(Request $request)
+    {
+        return new Response(null, Response::HTTP_GONE);
     }
 }
