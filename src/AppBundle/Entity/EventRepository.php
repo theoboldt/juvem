@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\BitMask\ParticipantStatus;
 use Doctrine\ORM\EntityRepository;
 use PDO;
 
@@ -98,6 +99,8 @@ class EventRepository extends EntityRepository
             = 'SELECT a.birthday
                  FROM participant a, participation p
                 WHERE a.pid = p.pid
+                  AND a.deleted_at IS NULL
+                  AND (a.status & '.ParticipantStatus::TYPE_STATUS_WITHDRAWN.') != '.ParticipantStatus::TYPE_STATUS_WITHDRAWN.'
                   AND p.eid = ?';
 
         $stmt = $this->getEntityManager()
