@@ -96,12 +96,9 @@ Jugendwerk Stuttgart Vaihingen
                 </tr>
                 <tr>
                     <td class="thead">Geburtsdatum</td>
-                    <td>{{ participant.getBirthday|date("d.m.Y") }} </td>
-                </tr>
-                <tr>
-                    <td class="thead">Alter</td>
-                    <td>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der
-                        Veranstaltung
+                    <td>
+                        {{ participant.getBirthday|date("d.m.Y") }} <br>
+                        (Alter: {{ participant.getAgeAtEvent|number_format(0) }} Jahre bei der Veranstaltung)
                     </td>
                 </tr>
                 <tr>
