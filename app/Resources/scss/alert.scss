@@ -1,0 +1,36 @@
+
+.alert-info {
+  a {
+    color: darken($brand-info, 10%);
+  }
+  a:hover {
+    color: lighten($brand-info, 5%);
+  }
+}
+
+.alert-success {
+  a {
+    color: darken($brand-success, 10%);
+  }
+  a:hover {
+    color: lighten($brand-success, 5%);
+  }
+}
+
+.alert-warning {
+  a {
+    color: darken($brand-warning, 10%);
+  }
+  a:hover {
+    color: lighten($brand-warning, 5%);
+  }
+}
+
+.alert-danger {
+  a {
+    color: darken($brand-danger, 10%);
+  }
+  a:hover {
+    color: lighten($brand-danger, 5%);
+  }
+}
