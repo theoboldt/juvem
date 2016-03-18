@@ -6,7 +6,6 @@ use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\ParticipantsExport;
-use AppBundle\Form\EventParticipationType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
 
@@ -20,8 +19,10 @@ use AppBundle\Entity\Participant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class AdminParticipationController extends Controller
 {
@@ -79,9 +80,10 @@ class AdminParticipationController extends Controller
         $em                    = $this->getDoctrine()
                                       ->getManager();
         $query                 = $em->createQuery(
-            'SELECT a
-               FROM AppBundle:Participant a,
-                    AppBundle:Participation p
+            'SELECT a, p, pn
+               FROM AppBundle:Participant a
+               JOIN a.participation p
+          LEFT JOIN p.phoneNumbers pn
               WHERE a.participation = p.pid
                 AND p.event = :eid'
         )
@@ -259,22 +261,41 @@ class AdminParticipationController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-        $export = new ParticipantsExport($event, $this->getUser());
+
+        $em    = $this->getDoctrine()
+                      ->getManager();
+        $query = $em->createQuery(
+            'SELECT a
+               FROM AppBundle:Participant a,
+                    AppBundle:Participation p
+              WHERE a.participation = p.pid
+                AND p.event = :eid'
+        )
+                    ->setParameter('eid', $eid);
+
+        $participantList = $query->getResult();
+
+
+        $export = new ParticipantsExport($event, $participantList, $this->getUser());
         $export->setMetadata();
         $export->process();
         $export->write(
             $this->get('kernel')
-                 ->getRootDir() . '/cache/' . sha1(
-                $export->getTimestamp()
-                       ->format('c')
-            ) . '.xlsx'
+                ->getRootDir() . '/cache/participants.xlsx'
         );
 
-        return new JsonResponse(
-            array(
-                'success' => true,
-                'url'     => 'null'
-            )
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
         );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'Event.xlsx'
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        return $response;
     }
 }
