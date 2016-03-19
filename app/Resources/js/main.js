@@ -135,6 +135,29 @@ jQuery(document).ready(function () {
     });
 
     /**
+     * GLOBAL: Download-button
+     */
+    $('.btn-download').on('click', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        button.prop('disabled', true);
+
+        var eid = button.data('eid'),
+            url = this.getAttribute('href'),
+            iframe = $("<iframe/>").attr({
+                src: url,
+                style: "display:none",
+                load: function () {
+                    button.prop('disabled', false);
+                    setTimeout(function () {
+                        iframe.remove();
+                    }, 1000)
+                }
+            }).appendTo(button);
+    });
+
+    /**
      * EVENT: Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
@@ -256,35 +279,4 @@ jQuery(document).ready(function () {
     $('*#mail-form .btn-update-preview').click(updateMailPreview);
     $('*#mail-form input, *#mail-form textarea').change(updateMailPreview);
 
-    /**
-     * EVENT: Events participants email preview
-     */
-    $('#exportParticipants').on('click', function (e) {
-        e.preventDefault();
-
-        var button = $(this),
-            eid = button.data('eid'),
-            url = '/admin/event/' + parseInt(eid, 10) + '/participants/export';
-        button.prop('disabled', true);
-
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: {},
-            datatype: 'json',
-            success: function (response) {
-                console.log('exorted');
-                window.open(response.url);
-            },
-            error: function (response) {
-                $(document).trigger('add-alerts', {
-                    message: 'Der Export konnte nicht erstellt werden',
-                    priority: 'error'
-                });
-            },
-            complete: function (response) {
-                button.prop('disabled', false);
-            }
-        });
-    });
 });

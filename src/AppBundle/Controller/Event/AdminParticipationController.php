@@ -292,7 +292,7 @@ class AdminParticipationController extends Controller
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'Event.xlsx'
+            $event->getTitle().' - Teilnehmer.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
 

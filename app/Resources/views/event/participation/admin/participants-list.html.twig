@@ -72,9 +72,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-default btn-xs" type="button" id="exportParticipants" data-eid="{{ event.eid }}">
+                        <a href="{{ path('event_participants_export', {eid: event.eid}) }}"
+                           class="btn btn-default btn-xs btn-download">
                             {{ 'export'|glyph }}
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <table id="participantsListTable" class="table table-striped table-remote-content"
