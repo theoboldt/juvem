@@ -14,9 +14,8 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline">
-                    <div class="form-group">{{ 'filter'|glyph }}</div>
-                    <div class="form-group">
-                        <div class="dropup" data-property="is_confirmed">
+                    <div class="btn-group" role="group">
+                        <div class="btn-group dropup" data-property="is_confirmed">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterConfirmed"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">mit und ohne bestätigte</span>
@@ -28,9 +27,7 @@
                                 <li><a href="#" data-filter="[1, 0]">mit und ohne bestätigte</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="dropup" data-property="is_withdrawn" data-filter="0">
+                        <div class="btn-group dropup" data-property="is_withdrawn" data-filter="0">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterWithdrawn"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">ohne zurückgezogene</span>
@@ -42,9 +39,7 @@
                                 <li><a href="#" data-filter="[1, 0]">inkl. zurückgezogen</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="dropup" data-property="is_paid">
+                        <div class="btn-group dropup" data-property="is_paid">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterPaid"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">bereits bezahlt oder nicht</span>
@@ -56,9 +51,7 @@
                                 <li><a href="#" data-filter="[1, 0]">bezahlt und nicht bezahlt</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="dropup" data-property="is_deleted" data-filter="0">
+                        <div class="btn-group dropup" data-property="is_deleted" data-filter="0">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterDeleted"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">ohne gelöschte</span>
@@ -70,8 +63,6 @@
                                 <li><a href="#" data-filter="[1, 0]">mit und ohne gelöschte</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="form-group">
                         <a href="{{ path('event_participants_export', {eid: event.eid}) }}"
                            class="btn btn-default btn-xs btn-download">
                             {{ 'export'|glyph }}
