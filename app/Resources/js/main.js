@@ -147,14 +147,16 @@ jQuery(document).ready(function () {
             url = this.getAttribute('href'),
             iframe = $("<iframe/>").attr({
                 src: url,
-                style: "display:none",
-                load: function () {
-                    button.prop('disabled', false);
-                    setTimeout(function () {
-                        iframe.remove();
-                    }, 1000)
-                }
+                style: "display:none"
+
             }).appendTo(button);
+
+        iframe.on('load', function () {
+            button.prop('disabled', false);
+            setTimeout(function () {
+                iframe.remove();
+            }, 1000)
+        });
     });
 
     /**
