@@ -163,8 +163,7 @@ class AdminController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-        $repository        = $this->getDoctrine()
-                                  ->getRepository('AppBundle:Event');
+
         $ageDistribution   = $repository->participantsAgeDistribution($event);
         $participantsCount = $repository->participantsCount($event);
 

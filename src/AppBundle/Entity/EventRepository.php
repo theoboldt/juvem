@@ -58,6 +58,42 @@ class EventRepository extends EntityRepository
     }
 
     /**
+     * Get a list of participants of an event
+     *
+     * @param   Event      $event  The event
+     * @param   null|array $filter Transmit a list of aids to filter out participants not included in list
+     * @return  array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function participantsList(Event $event, array $filter = null)
+    {
+        $eid = $event->getEid();
+
+        if ($filter === array()) {
+            return array(); //empty result
+        }
+
+        $qb = $this->createQueryBuilder('AppBundle:Participant')
+                   ->select('a, p, pn')
+                   ->from('AppBundle:Participant', 'a')
+                   ->innerJoin('a.participation', 'p')
+                   ->leftJoin('p.phoneNumbers', 'pn')
+                   ->where('a.participation = p.pid')
+                   ->andWhere('p.event = :eid')
+                   ->orderBy('a.nameFirst, a.nameLast', 'ASC');
+
+        if ($filter !== null) {
+            $qb->andWhere("a.aid IN(:participantList)")
+               ->setParameter('participantList', $filter);
+        }
+        $qb->setParameter('eid', $eid);
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    /**
      * Get the total amount of an events participants
      *
      * @param Event $event
@@ -100,7 +136,8 @@ class EventRepository extends EntityRepository
                  FROM participant a, participation p
                 WHERE a.pid = p.pid
                   AND a.deleted_at IS NULL
-                  AND (a.status & '.ParticipantStatus::TYPE_STATUS_WITHDRAWN.') != '.ParticipantStatus::TYPE_STATUS_WITHDRAWN.'
+                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
+              ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
                   AND p.eid = ?';
 
         $stmt = $this->getEntityManager()
