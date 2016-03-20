@@ -16,9 +16,17 @@ class ParticipantsExport extends Export
      */
     protected $event;
 
-    public function __construct(Event $event, User $modifier)
+    /**
+     * Stores a list of Participant entities
+     *
+     * @var array
+     */
+    protected $participants;
+
+    public function __construct(Event $event, array $participants, User $modifier)
     {
-        $this->event = $event;
+        $this->event        = $event;
+        $this->participants = $participants;
 
         parent::__construct($modifier);
     }
@@ -40,7 +48,7 @@ class ParticipantsExport extends Export
 
         $sheet = $this->addSheet();
 
-        $participantsSheet  = new ParticipantsSheet($sheet, $this->event);
+        $participantsSheet = new ParticipantsSheet($sheet, $this->event, $this->participants);
         $participantsSheet->process();
 
         $sheet->setTitle('Teilnehmer');

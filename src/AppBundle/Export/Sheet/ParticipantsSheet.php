@@ -3,6 +3,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 
 class ParticipantsSheet extends AbstractSheet
@@ -15,9 +16,18 @@ class ParticipantsSheet extends AbstractSheet
      */
     protected $event;
 
-    public function __construct(\PHPExcel_Worksheet $sheet, Event $event)
+    /**
+     * Stores a list of Participant entities
+     *
+     * @var array
+     */
+    protected $participants;
+
+
+    public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participants)
     {
-        $this->event = $event;
+        $this->event        = $event;
+        $this->participants = $participants;
 
         parent::__construct($sheet);
 
@@ -33,6 +43,18 @@ class ParticipantsSheet extends AbstractSheet
 
     public function setBody()
     {
+
+        /** @var Participant $participant */
+        foreach ($this->participants as $participant) {
+            $row = $this->row();
+
+            /** @var SheetColumn $column */
+            foreach ($this->columnList as $column) {
+                $dataIndex = 'get'.ucfirst($column->getDataIndex());
+                $value     = $participant->$dataIndex();
+                $this->sheet->setCellValueByColumnAndRow($column->getColumnIndex(), $row, $value);
+            }
+        }
 
     }
 
