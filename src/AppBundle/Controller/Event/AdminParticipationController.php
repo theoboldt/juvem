@@ -77,18 +77,7 @@ class AdminParticipationController extends Controller
             );
         }
 
-        $em                    = $this->getDoctrine()
-                                      ->getManager();
-        $query                 = $em->createQuery(
-            'SELECT a, p, pn
-               FROM AppBundle:Participant a
-               JOIN a.participation p
-          LEFT JOIN p.phoneNumbers pn
-              WHERE a.participation = p.pid
-                AND p.event = :eid'
-        )
-                                    ->setParameter('eid', $eid);
-        $participantEntityList = $query->getResult();
+        $participantEntityList = $eventRepository->participantsList($event);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = new LabelFormatter();
@@ -262,27 +251,13 @@ class AdminParticipationController extends Controller
             );
         }
 
-        $em    = $this->getDoctrine()
-                      ->getManager();
-        $query = $em->createQuery(
-            'SELECT a
-               FROM AppBundle:Participant a,
-                    AppBundle:Participation p
-              WHERE a.participation = p.pid
-                AND p.event = :eid'
-        )
-                    ->setParameter('eid', $eid);
-
-        $participantList = $query->getResult();
-
+        $eventRepository = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+        $participantList = $eventRepository->participantsList($event);
 
         $export = new ParticipantsExport($event, $participantList, $this->getUser());
         $export->setMetadata();
         $export->process();
-        $export->write(
-            $this->get('kernel')
-                ->getRootDir() . '/cache/participants.xlsx'
-        );
 
         $response = new StreamedResponse(
             function () use ($export) {
@@ -292,7 +267,7 @@ class AdminParticipationController extends Controller
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle().' - Teilnehmer.xlsx'
+            $event->getTitle() . ' - Teilnehmer.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
 
