@@ -31,9 +31,9 @@ class ParticipantsSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new SheetColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new SheetColumn('nameLast', 'Nachname'));
-        $this->addColumn(new SheetColumn('birthday', 'Geburtstag'));
+        $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntitySheetColumn('birthday', 'Geburtstag'));
     }
 
     public function setHeader($title = null, $subtitle = null)
@@ -48,11 +48,9 @@ class ParticipantsSheet extends AbstractSheet
         foreach ($this->participants as $participant) {
             $row = $this->row();
 
-            /** @var SheetColumn $column */
+            /** @var EntitySheetColumn $column */
             foreach ($this->columnList as $column) {
-                $dataIndex = 'get'.ucfirst($column->getDataIndex());
-                $value     = $participant->$dataIndex();
-                $this->sheet->setCellValueByColumnAndRow($column->getColumnIndex(), $row, $value);
+                $column->process($this->sheet, $row, $participant);
             }
         }
 
