@@ -64,22 +64,22 @@ abstract class AbstractSheet
         $this->sheet = $sheet;
     }
 
-    /**
-     * Add a data column definition to this sheet
-     *
-     * @param SheetColumn $column
-     * @return $this
-     */
-    public function addColumn(SheetColumn $column)
-    {
-        if (array_key_exists($column->getDataIndex(), $this->columnList)) {
-            throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
-        }
+	/**
+	 * Add a data column definition to this sheet
+	 *
+	 * @param AbstractSheetColumn $column
+	 * @return $this
+	 */
+	public function addColumn(AbstractSheetColumn $column)
+	{
+		if (array_key_exists($column->getIdentifier(), $this->columnList)) {
+			throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
+		}
 
-        $this->columnList[$column->getDataIndex()] = $column;
+		$this->columnList[$column->getIdentifier()] = $column;
 
-        return $this;
-    }
+		return $this;
+	}
 
     /**
      * Get the current column index
@@ -209,7 +209,7 @@ abstract class AbstractSheet
         $this->column(0);
         $columnStart = 1;
 
-        /** @var SheetColumn $dataColumn */
+        /** @var AbstractSheetColumn $dataColumn */
         foreach ($this->columnList as $dataColumn) {
             $column = $dataColumn->getColumnIndex();
             if ($column === null) {
