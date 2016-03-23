@@ -74,7 +74,7 @@ class ParticipationManager
                          'participants'  => $participation->getParticipants()
                      )
         );
-        $message->setTo($participation->getEmail());
+        $message->setTo($participation->getEmail(), Participation::fullname($participation->getNameLast(), $participation->getNameFirst()));
 
         $this->mailer->send($message);
     }
