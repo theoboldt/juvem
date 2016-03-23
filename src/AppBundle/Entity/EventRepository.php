@@ -94,7 +94,7 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get the total amount of an events participants
+     * Get the total amount of an events participants who are not deleted or whose participation is withdrawn
      *
      * @param Event $event
      * @return bool|string
@@ -108,6 +108,9 @@ class EventRepository extends EntityRepository
             = 'SELECT COUNT(*)
                  FROM participant a, participation p
                 WHERE a.pid = p.pid
+                  AND a.deleted_at IS NULL
+                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
+              ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
                   AND p.eid = ?';
 
         $stmt = $this->getEntityManager()
@@ -119,7 +122,7 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get a list of ages of the participants
+     * Get a list of ages of the participants who are not deleted or whose participation is withdrawn
      *
      * @param Event $event
      * @return array
@@ -156,7 +159,7 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get the age distribution of an event
+     * Get the age distribution of an event of participants who are not deleted or whose participation is withdrawn
      *
      * @param Event $event
      * @return array
@@ -177,6 +180,56 @@ class EventRepository extends EntityRepository
 
         ksort($ageDistribution);
         return $ageDistribution;
+    }
+
+    /**
+     * Fetch gender distribution of an event of participants who are not deleted or whose participation is withdrawn
+     *
+     * @param Event $event
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function participantsGenderDistribution(Event $event)
+    {
+        $eid = $event->getEid();
+        $query
+             = 'SELECT gender, COUNT(*) AS count
+                 FROM participant a, participation p
+                WHERE a.pid = p.pid
+                  AND a.deleted_at IS NULL
+                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
+               ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
+                  AND p.eid = ?
+             GROUP BY a.gender';
+
+        $stmt = $this->getEntityManager()
+                     ->getConnection()
+                     ->prepare($query);
+        $stmt->execute(array($eid));
+
+        $genderDistribution = array();
+        foreach($stmt->fetchAll() as $distribution) {
+            switch($distribution['gender']) {
+                case Participant::TYPE_GENDER_FEMALE:
+                    $genderDistribution[Participant::TYPE_GENDER_FEMALE] = array(
+                        'type' => Participant::TYPE_GENDER_FEMALE,
+                        'label' => Participant::LABEL_GENDER_FEMALE,
+                        'count' => $distribution['count']
+                    );
+                    break;
+                case Participant::TYPE_GENDER_MALE:
+                    $genderDistribution[Participant::TYPE_GENDER_MALE] = array(
+                        'type' => Participant::TYPE_GENDER_MALE,
+                        'label' => Participant::LABEL_GENDER_MALE,
+                        'count' => $distribution['count']
+                    );
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown gender type found');
+            }
+        }
+
+            return $genderDistribution;
     }
 
     /**

@@ -144,8 +144,25 @@
                     {% endif %}
                 </div>
                 <div class="flat-progress-bar">
-                    <h4>Altersverteilung</h4>
+                    <h4>Verteilung</h4>
                     {% if ageDistribution|length %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="progress">
+                                    {% for code, genderData in genderDistribution %}
+                                        <div class="progress-bar progress-bar-gender-{{ genderData.type }}"
+                                             data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}"
+                                             role="progressbar" aria-valuenow="{{ genderData.count }}"
+                                             aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
+                                             style="width: {{ ((genderData.count/participantsCount)*100) }}%;">
+                                            <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}</span>
+                                            <span>{{ genderData.count }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
                     {% for age, count in ageDistribution %}
                         <div class="row">
                             <div class="col-xs-2 col-sm-3 text-right">
@@ -154,8 +171,8 @@
                             <div class="col-xs-10 col-sm-9">
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
-                                         aria-valuemin="0"
-                                         aria-valuemax="{{ participantsCount }}"
+                                         aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
+                                         data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }}"
                                          style="width: {{ ((count/participantsCount)*100) }}%;">
                                         <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von {{ age }}
                                             Jahren</span>

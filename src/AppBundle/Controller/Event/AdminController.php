@@ -164,8 +164,9 @@ class AdminController extends Controller
             );
         }
 
-        $ageDistribution   = $repository->participantsAgeDistribution($event);
-        $participantsCount = $repository->participantsCount($event);
+        $ageDistribution    = $repository->participantsAgeDistribution($event);
+        $genderDistribution = $repository->participantsGenderDistribution($event);
+        $participantsCount  = $repository->participantsCount($event);
 
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
@@ -189,10 +190,11 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/detail.html.twig', array(
-                                              'event'             => $event,
-                                              'ageDistribution'   => $ageDistribution,
-                                              'participantsCount' => $participantsCount,
-                                              'form'              => $form->createView()
+                                              'event'              => $event,
+                                              'ageDistribution'    => $ageDistribution,
+                                              'genderDistribution' => $genderDistribution,
+                                              'participantsCount'  => $participantsCount,
+                                              'form'               => $form->createView()
                                           )
         );
     }
