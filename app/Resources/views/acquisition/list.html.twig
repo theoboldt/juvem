@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Felder verwalten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Felder', 'subtitle': 'verwalten'} %}
+        {% block breadcrumb %}
+            <li class="active">Felder</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div id="bootstrap-table-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <a class="btn btn-primary" href="{{ path('acquisition_new') }}">{{ 'plus'|glyph }} Neu</a>
+                    </div>
+                </div>
+                <table id="acquisitionListTable" class="table table-striped table-remote-content" data-id-field="bid"
+                       data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+                       data-show-filter="true" data-search="true"
+                       data-url="{{ path('acquisition_list_data') }}">
+                    <thead>
+                    <tr>
+                        <th data-field="bid" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="management_title" data-sortable="true" data-order="asc">Titel</th>
+                        <th data-field="management_description" data-sortable="true">Beschreibung</th>
+                        <th data-field="form_title" data-sortable="true">Titel (Formular)</th>
+                        <th data-field="form_description" data-sortable="true">Beschreibung (Formular)</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -160,6 +160,13 @@ jQuery(document).ready(function () {
     });
 
     /**
+     * ACQUISITION: Admin acquisition list table
+     */
+    $('#acquisitionListTable').on('click-row.bs.table', function (e, row, $element) {
+        location.href = row.bid;
+    });
+
+    /**
      * EVENT: Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {

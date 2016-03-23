@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feld bearbeiten ({{ acquisition.managementTitle }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feld', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+            <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
+            <li class="active">Feld bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    {% form_theme form 'form/bootstrap_3_horizontal_4-8_layout.html.twig' %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                {{ form_start(form) }}
+                {{ form_row(form.managementTitle, {'label_attr': {'class': 'col-sm-3'}, 'attr': {'class': 'col-sm-9'}}) }}
+                {{ form_row(form.managementDescription) }}
+                {{ form_row(form.formTitle) }}
+                {{ form_row(form.formDescription) }}
+                <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -107,6 +107,18 @@ class Event
     private $imageFilename;
 
     /**
+     * Contains the acquisition attributes assigned to this event
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute")
+     * @ORM\JoinTable(name="event_acquisition_attribute",
+     *      joinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="bid", referencedColumnName="bid", unique=true,
+     *      onDelete="CASCADE")}
+     * )
+     */
+    protected $acquisitionAttributes;
+
+    /**
      * Contains the participations assigned to this event
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="event", cascade={"remove"})
@@ -573,5 +585,39 @@ class Event
     public function getAssignedUser()
     {
         return $this->assignedUser;
+    }
+
+    /**
+     * Add acquisitionAttribute
+     *
+     * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
+     *
+     * @return Event
+     */
+    public function addAcquisitionAttribute(\AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute)
+    {
+        $this->acquisitionAttributes[] = $acquisitionAttribute;
+
+        return $this;
+    }
+
+    /**
+     * Remove acquisitionAttribute
+     *
+     * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
+     */
+    public function removeAcquisitionAttribute(\AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute)
+    {
+        $this->acquisitionAttributes->removeElement($acquisitionAttribute);
+    }
+
+    /**
+     * Get acquisitionAttributes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAcquisitionAttributes()
+    {
+        return $this->acquisitionAttributes;
     }
 }

@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feld ({{ acquisition.managementTitle }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feld', 'subtitle': 'Detailansicht'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+            <li class="active">{{ acquisition.managementTitle }}</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <h3>Daten</h3>
+                <hr/>
+                <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <a href="{{ path('acquisition_edit', {'bid': acquisition.bid }) }}"
+                           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+                    </div>
+                </div>
+                <div class="form-horizontal">
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Titel</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{{ acquisition.managementTitle }}</p>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Beschreibung</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{{ acquisition.managementDescription }}</p>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Titel (Formular)</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{{ acquisition.formTitle }}</p>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Beschreibung (Formular)</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{{ acquisition.formDescription }}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <h3>Verwendung</h3>
+                <hr/>
+
+                <div class="list-group">
+                    {% if events|length == 0 %}
+                        <div class="list-group-item list-group-item-info">Im Moment wird dieses Feld bei keiner
+                            Veranstaltung verwendet.
+                        </div>
+                    {% endif %}
+                    {% for event in events %}
+                        <a href="{{ path('event_public_detail', {eid: event.eid}) }}" class="list-group-item">
+                            <h4 class="list-group-item-heading">{{ event.title }}</h4>
+
+                            <p class="list-group-item-text">{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

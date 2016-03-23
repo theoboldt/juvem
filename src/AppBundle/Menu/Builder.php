@@ -25,6 +25,7 @@ class Builder implements ContainerAwareInterface
             $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
             if ($this->isUserAdmin()) {
                 $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
+                $menu->addChild('Felder', array('route' => 'acquisition_list'));
                 $menu->addChild('Benutzer', array('route' => 'user_list'));
             }
         } else {

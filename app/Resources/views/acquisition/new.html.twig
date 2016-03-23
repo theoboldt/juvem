@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feld anlegen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feld', 'subtitle': 'erstellen'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+            <li class="active">Feld erstellen</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        {% include '/acquisition/form-html.html.twig' with {'form': form} %}
+        <div class="row">
+            <div class="col-xs-12">
+                <input type="submit" value="Feld erstellen" class="btn btn-primary"/>
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+{% block javascriptCustom %}
+
+{% endblock %}
