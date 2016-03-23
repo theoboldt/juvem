@@ -10,6 +10,8 @@ Hallo Frau  {{ participation.nameLast }}!
 
 Die Teilnahme bei der Veranstaltung "{{ event.title }}" wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!
 
+Weitere Informationen zur benötigten Ausrüstung, Terminen und Treffpunkten sowie zur Bezahlung folgen später.
+
 Mit besten Grüßen,
 Jugendwerk Stuttgart Vaihingen
 {% endautoescape %}
@@ -18,6 +20,6 @@ Jugendwerk Stuttgart Vaihingen
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
     {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
-    {% block content %}<p>Die Teilnahme bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!</p>{% endblock %}
+    {% block content %}<p>Die Teilnahme bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!</p><p>Weitere Informationen zur benötigten Ausrüstung, Terminen und Treffpunkten sowie zur Bezahlung folgen später.</p>{% endblock %}
 {% endembed %}
 {% endblock %}
