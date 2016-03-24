@@ -112,7 +112,7 @@ class AcquisitionController extends Controller
             $em->persist($attribute);
             $em->flush();
 
-            return $this->redirect('/attribute/' . $attribute->getBid());
+            return $this->redirectToRoute('acquisition_detail', array('bid' => $attribute->getBid()));
         }
 
         return $this->render(

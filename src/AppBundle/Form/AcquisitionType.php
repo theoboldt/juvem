@@ -4,6 +4,7 @@ namespace AppBundle\Form;
 
 use libphonenumber\PhoneNumberFormat;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,7 +19,7 @@ class AcquisitionType extends AbstractType
             'managementTitle',
             TextType::class,
             array(
-                'label'    => 'Titel (Intern)',
+                'label' => 'Titel (Intern)',
                 'required' => false
             )
         )
@@ -26,7 +27,7 @@ class AcquisitionType extends AbstractType
                     'managementDescription',
                     TextType::class,
                     array(
-                        'label'    => 'Beschreibung (Intern)',
+                        'label' => 'Beschreibung (Intern)',
                         'required' => false
                     )
                 )
@@ -34,7 +35,7 @@ class AcquisitionType extends AbstractType
                     'formTitle',
                     TextType::class,
                     array(
-                        'label'    => 'Titel (im Formular)',
+                        'label' => 'Titel (im Formular)',
                         'required' => false
                     )
                 )
@@ -42,7 +43,23 @@ class AcquisitionType extends AbstractType
                     'formDescription',
                     TextType::class,
                     array(
-                        'label'    => 'Beschreibung (im Formular)',
+                        'label' => 'Beschreibung (im Formular)',
+                        'required' => false
+                    )
+                )
+                ->add(
+                    'useAtParticipation',
+                    CheckboxType::class,
+                    array(
+                        'label' => 'Je Anmeldung erfassen',
+                        'required' => false
+                    )
+                )
+                ->add(
+                    'useAtParticipant',
+                    CheckboxType::class,
+                    array(
+                        'label' => 'Je Teilnehmer erfassen',
                         'required' => false
                     )
                 );
