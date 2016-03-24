@@ -2,6 +2,7 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\ModalActionType;
@@ -172,6 +173,8 @@ class AdminController extends Controller
                      ->add('action', HiddenType::class)
                      ->getForm();
 
+        $acquisitionAssignmentForm = $this->createForm(EventAcquisitionType::class, $event);
+
         $form->handleRequest($request);
         if ($form->isValid()) {
             $action = $form->get('action')
@@ -194,7 +197,8 @@ class AdminController extends Controller
                                               'ageDistribution'    => $ageDistribution,
                                               'genderDistribution' => $genderDistribution,
                                               'participantsCount'  => $participantsCount,
-                                              'form'               => $form->createView()
+                                              'form'               => $form->createView(),
+                                              'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
                                           )
         );
     }

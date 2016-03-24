@@ -45,6 +45,33 @@
                                 data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
                                 data-button-disable-label="Deaktivieren"
                                 data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton">
+                            {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder verwalten</span>
+                        </button>
+                        <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog"
+                             aria-labelledby="acquisitionAssignmentButton">
+                            <div class="modal-dialog" role="document">
+                                {{ form_start(acquisitionAssignmentForm) }}
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Abbrechen"><span
+                                                    aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="dialogModalLabel"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>{{ form_row(acquisitionAssignmentForm.acquisitionAttributes) }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                                        </button>
+                                        <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                                    </div>
+                                </div>
+                                {{ form_end(acquisitionAssignmentForm) }}
+                            </div>
+                        </div>
                     </div>
                     {% if event.deletedAt %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
