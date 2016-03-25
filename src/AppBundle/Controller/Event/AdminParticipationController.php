@@ -89,6 +89,7 @@ class AdminParticipationController extends Controller
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
             $participation        = $participant->getParticipation();
+            $participationDate    = $participation->getCreatedAt();
             $participantPhoneList = array();
 
             /** @var PhoneNumber $phoneNumberEntity */
@@ -104,19 +105,24 @@ class AdminParticipationController extends Controller
             $participantStatus = $participant->getStatus(true);
 
             $participantList[] = array(
-                'aid'          => $participant->getAid(),
-                'pid'          => $participant->getParticipation()
-                                              ->getPid(),
-                'is_deleted'   => (int)($participant->getDeletedAt() instanceof \DateTime),
-                'is_paid'      => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
-                'is_withdrawn' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
-                'is_confirmed' => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
-                'nameFirst'    => $participant->getNameFirst(),
-                'nameLast'     => $participant->getNameLast(),
-                'age'          => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
-                'phone'        => implode(', ', $participantPhoneList),
-                'status'       => $statusFormatter->formatMask($participantStatus),
-                'action'       => $participantAction
+                'aid'              => $participant->getAid(),
+                'pid'              => $participant->getParticipation()
+                                                  ->getPid(),
+                'is_deleted'       => (int)($participant->getDeletedAt() instanceof \DateTime),
+                'is_paid'          => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
+                'is_withdrawn'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
+                'is_confirmed'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
+                'nameFirst'        => $participant->getNameFirst(),
+                'nameLast'         => $participant->getNameLast(),
+                'age'              => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
+                'phone'            => implode(', ', $participantPhoneList),
+                'status'           => $statusFormatter->formatMask($participantStatus),
+                'gender'           => $participant->getGender(true),
+                'registrationDate' => sprintf(
+                    '<span style="display:none;">%s</span> %s', $participationDate->format('U'),
+                    $participationDate->format(Event::DATE_FORMAT_DATE_TIME)
+                ),
+                'action'           => $participantAction
             );
         }
 
