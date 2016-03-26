@@ -1850,16 +1850,16 @@
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.15",
+            "version": "v3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "40431d338da7ab4ef5f9edc1ba4551ea1d4d0782"
+                "reference": "507a15f56fa7699f6cc8c2c7de4080b19ce22546"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/40431d338da7ab4ef5f9edc1ba4551ea1d4d0782",
-                "reference": "40431d338da7ab4ef5f9edc1ba4551ea1d4d0782",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/507a15f56fa7699f6cc8c2c7de4080b19ce22546",
+                "reference": "507a15f56fa7699f6cc8c2c7de4080b19ce22546",
                 "shasum": ""
             },
             "require": {
@@ -1908,7 +1908,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2016-03-22 12:39:08"
+            "time": "2016-03-25 17:08:27"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -2642,12 +2642,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "d2b0ebc9415f7d3960f5a273ff3f7474a6148d30"
+                "reference": "a8843132b87e9fa5d2dca33e34f65338bb0d5d0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/d2b0ebc9415f7d3960f5a273ff3f7474a6148d30",
-                "reference": "d2b0ebc9415f7d3960f5a273ff3f7474a6148d30",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/a8843132b87e9fa5d2dca33e34f65338bb0d5d0f",
+                "reference": "a8843132b87e9fa5d2dca33e34f65338bb0d5d0f",
                 "shasum": ""
             },
             "require": {
@@ -2764,7 +2764,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-03-23 19:59:19"
+            "time": "2016-03-25 01:40:30"
         },
         {
             "name": "twig/twig",
