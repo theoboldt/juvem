@@ -29,7 +29,8 @@ class EventAcquisitionType extends AbstractType
                                        'class'        => 'AppBundle\Entity\AcquisitionAttribute',
                                        'choice_label' => 'managementTitle',
                                        'multiple'     => true,
-                                       'expanded'     => true
+                                       'expanded'     => true,
+                                       'label'        => 'Bei Anmeldungen zu erfassende Felder'
                                    )
         );
     }
