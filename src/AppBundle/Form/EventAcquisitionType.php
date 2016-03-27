@@ -24,10 +24,14 @@ class EventAcquisitionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('acquisitionAttributes', EntityType::class, array(
-            'class' => 'AppBundle\Entity\AcquisitionAttribute',
-            'choice_label' => 'managementTitle'
-        ));
+        $builder->add(
+            'acquisitionAttributes', EntityType::class, array(
+                                       'class'        => 'AppBundle\Entity\AcquisitionAttribute',
+                                       'choice_label' => 'managementTitle',
+                                       'multiple'     => true,
+                                       'expanded'     => true
+                                   )
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)

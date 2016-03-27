@@ -149,6 +149,45 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
+     * @Route("/admin/event/{eid}/acquisition", requirements={"eid": "\d+"}, name="event_acquisition_assignment")
+     */
+    public function editEventAcquisitionAssignmentAction(Request $request)
+    {
+        $eid        = $request->get('eid');
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:Event');
+
+        $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $form = $this->createForm(
+            EventAcquisitionType::class, $event, array(
+                                           'action' => $this->generateUrl(
+                                               'event_acquisition_assignment', array('eid' => $eid)
+                                           ),
+                                       )
+        );
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()
+                       ->getManager();
+
+            $em->persist($event);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('event', array('eid' => $event->getEid()));
+    }
+
+    /**
+     * Detail page for one single event
+     *
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
      */
     public function detailEventAction(Request $request)
@@ -173,7 +212,13 @@ class AdminController extends Controller
                      ->add('action', HiddenType::class)
                      ->getForm();
 
-        $acquisitionAssignmentForm = $this->createForm(EventAcquisitionType::class, $event);
+        $acquisitionAssignmentForm = $this->createForm(
+            EventAcquisitionType::class, $event, array(
+                                           'action' => $this->generateUrl(
+                                               'event_acquisition_assignment', array('eid' => $eid)
+                                           ),
+                                       )
+        );
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -193,11 +238,11 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/detail.html.twig', array(
-                                              'event'              => $event,
-                                              'ageDistribution'    => $ageDistribution,
-                                              'genderDistribution' => $genderDistribution,
-                                              'participantsCount'  => $participantsCount,
-                                              'form'               => $form->createView(),
+                                              'event'                     => $event,
+                                              'ageDistribution'           => $ageDistribution,
+                                              'genderDistribution'        => $genderDistribution,
+                                              'participantsCount'         => $participantsCount,
+                                              'form'                      => $form->createView(),
                                               'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
                                           )
         );
