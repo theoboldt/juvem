@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -86,6 +87,7 @@ class AcquisitionAttribute
      */
     public function __construct()
     {
+        $this->events = new ArrayCollection();
     }
 
     /**
@@ -263,6 +265,41 @@ class AcquisitionAttribute
     {
         return $this->useAtParticipant;
     }
+
+    /**
+     * Add event
+     *
+     * @param \AppBundle\Entity\Event $event
+     *
+     * @return AcquisitionAttribute
+     */
+    public function addEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events[] = $event;
+
+        return $this;
+    }
+
+    /**
+     * Remove event
+     *
+     * @param \AppBundle\Entity\Event $event
+     */
+    public function removeEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events->removeElement($event);
+    }
+
+    /**
+     * Get events
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
     /**
      * Get createdAt
      *
