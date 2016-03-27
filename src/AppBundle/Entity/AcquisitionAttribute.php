@@ -60,6 +60,13 @@ class AcquisitionAttribute
     protected $useAtParticipant = false;
 
     /**
+     * Contains the events which use this attribute
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="acquisitionAttributes")
+     */
+    protected $events;
+
+    /**
      * @ORM\Column(type="datetime", name="created_at")
      */
     protected $createdAt;
