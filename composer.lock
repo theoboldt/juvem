@@ -2642,12 +2642,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "a8843132b87e9fa5d2dca33e34f65338bb0d5d0f"
+                "reference": "df01f06a8539272266f0d6437e49c1272dfd81b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/a8843132b87e9fa5d2dca33e34f65338bb0d5d0f",
-                "reference": "a8843132b87e9fa5d2dca33e34f65338bb0d5d0f",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/df01f06a8539272266f0d6437e49c1272dfd81b2",
+                "reference": "df01f06a8539272266f0d6437e49c1272dfd81b2",
                 "shasum": ""
             },
             "require": {
@@ -2764,7 +2764,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-03-25 01:40:30"
+            "time": "2016-03-27 14:32:56"
         },
         {
             "name": "twig/twig",
@@ -3061,16 +3061,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v2.8.3",
+            "version": "v2.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "ee8ead4f78e21ed6c873d1cc19e141949d9ed493"
+                "reference": "a967db6a4cd5d276cf849d01b29dba559e149978"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/ee8ead4f78e21ed6c873d1cc19e141949d9ed493",
-                "reference": "ee8ead4f78e21ed6c873d1cc19e141949d9ed493",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/a967db6a4cd5d276cf849d01b29dba559e149978",
+                "reference": "a967db6a4cd5d276cf849d01b29dba559e149978",
                 "shasum": ""
             },
             "require": {
@@ -3112,7 +3112,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2016-01-21 09:24:53"
+            "time": "2016-03-23 13:45:24"
         }
     ],
     "aliases": [],
