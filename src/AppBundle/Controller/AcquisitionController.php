@@ -70,15 +70,15 @@ class AcquisitionController extends Controller
                            ->getRepository('AppBundle:AcquisitionAttribute');
 
         $attribute = $repository->findOneBy(array('bid' => $bid));
+
         if (!$attribute) {
             throw new NotFoundHttpException('Could not find requested acquisition attribute');
         }
 
-
         return $this->render(
             'acquisition/detail.html.twig', array(
                                               'acquisition' => $attribute,
-                                              'events'      => array()
+                                              'events'      => $attribute->getEvents()
                                           )
         );
     }
