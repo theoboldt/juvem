@@ -1,0 +1,12 @@
+<div class="dropup" data-property="{{ property }}" data-filter="{{ defaultDataFilter }}">
+    <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="{{ buttonId }}"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="description">ohne zurückgezogene</span>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="filterWithdrawn">
+        <li><a href="#" data-filter="1">nur zurückgezogene</a></li>
+        <li><a href="#" data-filter="0">ohne zurückgezogene</a></li>
+        <li><a href="#" data-filter="[1, 0]">inkl. zurückgezogen</a></li>
+    </ul>
+</div>
