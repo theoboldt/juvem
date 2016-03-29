@@ -74,6 +74,7 @@ $legend-color: darken($ejdvLightOrange, 25%);
 
 $icon-font-path: '../font/';
 @import 'bootstrap';
+@import 'bootstrap-corrections';
 @import 'bootstrap-table';
 @import 'alert';
 @import 'header';
@@ -88,6 +89,7 @@ $icon-font-path: '../font/';
 html, body {
   background-color: $ejdvLightOrange;
 }
+
 
 #page {
   background-color: white;
