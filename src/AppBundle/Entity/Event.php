@@ -112,7 +112,7 @@ class Event
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute", inversedBy="events")
      * @ORM\JoinTable(name="event_acquisition_attribute",
      *      joinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="bid", referencedColumnName="bid", unique=true,
+     *      inverseJoinColumns={@ORM\JoinColumn(name="bid", referencedColumnName="bid",
      *      onDelete="CASCADE")}
      * )
      */
