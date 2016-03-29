@@ -136,7 +136,7 @@ class Event
      */
     public function __construct()
     {
-        $this->participations = new ArrayCollection();
+        $this->participations        = new ArrayCollection();
         $this->acquisitionAttributes = new ArrayCollection();
     }
 
