@@ -47,6 +47,16 @@ class AcquisitionAttribute
     protected $formDescription;
 
     /**
+     * @ORM\Column(type="string", length=255, name="field_type")
+     */
+    protected $fieldType = 'TextType';
+
+    /**
+     * @ORM\Column(type="json_array", length=255, name="field_options")
+     */
+    protected $fieldOptions = array();
+
+    /**
      * @ORM\Column(name="use_at_participation", type="boolean", options={"unsigned":true,"default":0})
      *
      * @var boolean
@@ -216,6 +226,54 @@ class AcquisitionAttribute
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    /**
+     * Set fieldType
+     *
+     * @param string $fieldType
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setFieldType($fieldType)
+    {
+        $this->fieldType = $fieldType;
+
+        return $this;
+    }
+
+    /**
+     * Get fieldType
+     *
+     * @return string
+     */
+    public function getFieldType()
+    {
+        return $this->fieldType;
+    }
+
+    /**
+     * Set fieldOptions
+     *
+     * @param array $fieldOptions
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setFieldOptions($fieldOptions)
+    {
+        $this->fieldOptions = $fieldOptions;
+
+        return $this;
+    }
+
+    /**
+     * Get fieldOptions
+     *
+     * @return array
+     */
+    public function getFieldOptions()
+    {
+        return $this->fieldOptions;
     }
 
     /**
