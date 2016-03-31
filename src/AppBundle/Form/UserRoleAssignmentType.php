@@ -37,9 +37,4 @@ class UserRoleAssignmentType extends AbstractType
         return 'app_bundle_user_role_assignment';
     }
 
-    public function getName()
-    {
-        return $this->getBlockPrefix();
-    }
-
 }

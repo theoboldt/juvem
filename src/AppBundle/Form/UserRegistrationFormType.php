@@ -32,9 +32,4 @@ class UserRegistrationFormType extends AbstractType
         return 'app_bundle_user_registration';
     }
 
-
-    public function getName()
-    {
-        return $this->getBlockPrefix();
-    }
 }

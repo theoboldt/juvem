@@ -42,9 +42,4 @@ class PhoneNumberType extends AbstractType
             )
         );
     }
-
-    public function getName()
-    {
-        return 'app_bundle_phone_number';
-    }
 }

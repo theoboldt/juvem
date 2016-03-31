@@ -2,10 +2,8 @@
 
 namespace AppBundle\Form;
 
-use libphonenumber\PhoneNumberFormat;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -72,10 +70,5 @@ class AcquisitionType extends AbstractType
                 'data_class' => 'AppBundle\Entity\AcquisitionAttribute',
             )
         );
-    }
-
-    public function getName()
-    {
-        return 'app_bundle_acquisition_attribute';
     }
 }

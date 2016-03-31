@@ -50,8 +50,8 @@ class ParticipantType extends AbstractType
                 DateType::class,
                 array('label'  => 'Geburtsdatum',
                       'years'  => range(Date('Y') - 30, Date('Y') - 3),
-//                      'widget' => 'single_text',
-//                      'format' => 'yyyy-MM-dd',
+                      //                      'widget' => 'single_text',
+                      //                      'format' => 'yyyy-MM-dd',
                       'format' => 'dd.MM.yyyy',
                 )
             )
@@ -79,13 +79,14 @@ class ParticipantType extends AbstractType
                 'food',
                 ChoiceType::class,
                 array(
-                    'label'      => 'Ernährung',
-                    'choices'    => $foodMask->labels(),
-                    'expanded'   => true,
-                    'multiple'   => true,
-                    'required'   => false,
-                    'empty_data' => 0,
-                    'attr'       => array('aria-describedby' => 'help-food')
+                    'label'             => 'Ernährung',
+                    'choices'           => array_flip($foodMask->labels()),
+                    'choices_as_values' => true,
+                    'expanded'          => true,
+                    'multiple'          => true,
+                    'required'          => false,
+                    'empty_data'        => 0,
+                    'attr'              => array('aria-describedby' => 'help-food')
                 )
             );
 
@@ -111,10 +112,5 @@ class ParticipantType extends AbstractType
                 'data_class' => 'AppBundle\Entity\Participant',
             )
         );
-    }
-
-    public function getName()
-    {
-        return 'app_bundle_participant';
     }
 }
