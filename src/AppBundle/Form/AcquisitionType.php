@@ -2,8 +2,10 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\AcquisitionAttribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,6 +45,21 @@ class AcquisitionType extends AbstractType
                     array(
                         'label' => 'Beschreibung (im Formular)',
                         'required' => false
+                    )
+                )
+                ->add(
+                    'fieldType',
+                    ChoiceType::class,
+                    array(
+                        'label'             => 'Typ',
+                        'choices'           => array(
+                            AcquisitionAttribute::LABEL_FIELD_TEXT     => AcquisitionAttribute::TYPE_FIELD_TEXT,
+                            AcquisitionAttribute::LABEL_FIELD_TEXTAREA => AcquisitionAttribute::TYPE_FIELD_TEXTAREA,
+                            AcquisitionAttribute::LABEL_FIELD_CHOICE   => AcquisitionAttribute::TYPE_FIELD_CHOICE,
+                        ),
+                        'choices_as_values' => true,
+                        'required'          => true
+
                     )
                 )
                 ->add(

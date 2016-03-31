@@ -2,8 +2,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -14,6 +14,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AcquisitionAttribute
 {
+
+    const TYPE_FIELD_TEXT     = 'TextType';
+    const TYPE_FIELD_TEXTAREA = 'TextareaType';
+    const TYPE_FIELD_CHOICE   = 'ChoiceType';
+
+    const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
+    const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
+    const LABEL_FIELD_CHOICE   = 'Auswahl';
 
     /**
      * @ORM\Column(type="integer", name="bid")
@@ -247,8 +255,19 @@ class AcquisitionAttribute
      *
      * @return string
      */
-    public function getFieldType()
+    public function getFieldType($asLabel = false)
     {
+        if ($asLabel) {
+            switch ($this->fieldType) {
+                case self::TYPE_FIELD_TEXT:
+                    return self::LABEL_FIELD_TEXT;
+                case self::TYPE_FIELD_TEXTAREA:
+                    return self::LABEL_FIELD_TEXTAREA;
+                case self::TYPE_FIELD_CHOICE:
+                    return self::LABEL_FIELD_CHOICE;
+            }
+        }
+
         return $this->fieldType;
     }
 

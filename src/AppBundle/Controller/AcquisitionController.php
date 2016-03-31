@@ -2,20 +2,13 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\BitMask\LabelFormatter;
-use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute;
-use AppBundle\Entity\Participant;
-use AppBundle\Entity\User;
-
 use AppBundle\Form\AcquisitionType;
-use AppBundle\Form\UserRoleAssignmentType;
-use AppBundle\Twig\Extension\BootstrapGlyph;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AcquisitionController extends Controller
@@ -49,6 +42,7 @@ class AcquisitionController extends Controller
                 'bid'                    => $attribute->getBid(),
                 'management_title'       => $attribute->getManagementTitle(),
                 'management_description' => $attribute->getManagementDescription(),
+                'type'                   => $attribute->getFieldType(true),
                 'form_title'             => $attribute->getFormTitle(),
                 'form_description'       => $attribute->getFormDescription()
             );
