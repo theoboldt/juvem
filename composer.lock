@@ -1401,16 +1401,16 @@
         },
         {
             "name": "misd/phone-number-bundle",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/misd-service-development/phone-number-bundle.git",
-                "reference": "b425c93739517c4e17ae60ff9cfb05def55f2168"
+                "reference": "0430caf2f7b0d2c0b0d4eac0918a0d3550fda451"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/misd-service-development/phone-number-bundle/zipball/b425c93739517c4e17ae60ff9cfb05def55f2168",
-                "reference": "b425c93739517c4e17ae60ff9cfb05def55f2168",
+                "url": "https://api.github.com/repos/misd-service-development/phone-number-bundle/zipball/0430caf2f7b0d2c0b0d4eac0918a0d3550fda451",
+                "reference": "0430caf2f7b0d2c0b0d4eac0918a0d3550fda451",
                 "shasum": ""
             },
             "require": {
@@ -1462,7 +1462,7 @@
                 "phonenumber",
                 "telephone number"
             ],
-            "time": "2016-03-12 18:35:43"
+            "time": "2016-03-31 08:42:16"
         },
         {
             "name": "monolog/monolog",
@@ -2642,12 +2642,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "8ca43b076046d14aa2dd9dc2d9ec08fd277a7a51"
+                "reference": "e4816def299e140dba3c4cbee16c41f63dc75b78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/8ca43b076046d14aa2dd9dc2d9ec08fd277a7a51",
-                "reference": "8ca43b076046d14aa2dd9dc2d9ec08fd277a7a51",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/e4816def299e140dba3c4cbee16c41f63dc75b78",
+                "reference": "e4816def299e140dba3c4cbee16c41f63dc75b78",
                 "shasum": ""
             },
             "require": {
@@ -2764,7 +2764,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-03-30 10:37:34"
+            "time": "2016-03-31 09:51:31"
         },
         {
             "name": "twig/twig",
