@@ -40,9 +40,7 @@ class ParticipantType extends AbstractType
                         Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
                     ),
                     'choices_as_values' => true,
-                    'required'          => false,
-                    'attr'              => array('aria-describedby' => 'help-food')
-
+                    'required'          => false
                 )
             )
             ->add(
