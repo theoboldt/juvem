@@ -246,6 +246,10 @@ class AcquisitionAttribute
     {
         $this->fieldType = $fieldType;
 
+        if ($fieldType == ChoiceType::class) {
+            $this->setFieldOptions(array());
+        }
+
         return $this;
     }
 
@@ -295,6 +299,79 @@ class AcquisitionAttribute
     public function getFieldOptions()
     {
         return $this->fieldOptions;
+    }
+
+    /**
+     * Set field choices if this is a choice attribute
+     *
+     * @param boolean $multiple
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setFieldTypeChoiceType($multiple)
+    {
+        if ($this->getFieldType() == ChoiceType::class) {
+            $options = $this->getFieldOptions();
+            $options['multiple'] = $multiple;
+            $this->setFieldOptions($options);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get field choices if this is a choice attribute
+     *
+     * @return array
+     */
+    public function getFieldTypeChoiceType()
+    {
+        $options = $this->getFieldOptions();
+
+        if ($this->getFieldType() == ChoiceType::class && isset($options['choices'])) {
+            return $options['multiple'];
+        }
+
+        return array();
+    }
+
+
+    /**
+     * Set field choices if this is a choice attribute
+     *
+     * @param array $choices
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setFieldTypeChoiceOptions($choices)
+    {
+        if ($choices === null) {
+            $choices = array();
+        }
+
+        if ($this->getFieldType() == ChoiceType::class) {
+            $options = $this->getFieldOptions();
+            $options['choices'] = $choices;
+            $this->setFieldOptions($options);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get field choices if this is a choice attribute
+     *
+     * @return array
+     */
+    public function getFieldTypeChoiceOptions()
+    {
+        $options = $this->getFieldOptions();
+
+        if ($this->getFieldType() == ChoiceType::class && isset($options['choices'])) {
+            return $options['choices'];
+        }
+
+        return array();
     }
 
     /**

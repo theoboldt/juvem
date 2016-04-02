@@ -298,7 +298,11 @@ jQuery(document).ready(function () {
             $('.form-group-choice').css('display', 'none');
         }
     });
-    $('*#acquisition_fieldTypeChoiceOptions').change(function () {
+
+    /**
+     * ACQUISITION: When selection options change
+     */
+    var updateChoiceOptions = function () {
         var choices = $(this).val().split(';'),
             list = $('*#form-choice-option-list'),
             choicesHtml = '';
@@ -309,5 +313,6 @@ jQuery(document).ready(function () {
 
         list.empty();
         list.html(choicesHtml);
-    });
+    };
+    $('*#acquisition_fieldTypeChoiceOptions').change(updateChoiceOptions);
 });

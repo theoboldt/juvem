@@ -79,6 +79,21 @@ class ParticipationType extends AbstractType
                 )
             */
             );
+
+        /** @var Participation $participation */
+        $participation = $options['data'];
+        $event         = $participation->getEvent();
+        $attributes    = $event->getAcquisitionAttributes();
+
+        /** @var AcquisitionAttribute $attribute */
+        foreach ($attributes as $attribute) {
+            $builder->add(
+                'a_'.$attribute->getBid(),
+                $attribute->getFieldType(),
+                $attribute->getFieldOptions()
+            );
+        }
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
