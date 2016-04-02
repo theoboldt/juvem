@@ -6,7 +6,8 @@
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feld', 'subtitle': 'bearbeiten'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
-            <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
+            <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
+            </li>
             <li class="active">Feld bearbeiten</li>
         {% endblock %}
     {% endembed %}
@@ -31,6 +32,20 @@
                 {{ form_row(form.fieldType) }}
                 {{ form_row(form.useAtParticipation) }}
                 {{ form_row(form.useAtParticipant) }}
+                <div class="form-group-choice" style="{% if not (showChoiceOptions) %}display:none;{% endif %}">
+                    {{ form_row(form.fieldTypeChoiceType) }}
+                    <div class="form-group">
+                        {{ form_label(form.fieldTypeChoiceOptions) }}
+
+                        <div class="col-sm-8">
+                            {{ form_widget(form.fieldTypeChoiceOptions) }}
+                            <p class="help-block" id="help-options">Einzelne Optionen durch Semikolon <code>;</code>
+                                trennen
+                                <br><span id="form-choice-option-list"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
                 {{ form_end(form) }}
             </div>

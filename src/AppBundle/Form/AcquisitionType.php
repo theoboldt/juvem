@@ -6,6 +6,8 @@ use AppBundle\Entity\AcquisitionAttribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,7 +21,7 @@ class AcquisitionType extends AbstractType
             'managementTitle',
             TextType::class,
             array(
-                'label' => 'Titel (Intern)',
+                'label'    => 'Titel (Intern)',
                 'required' => false
             )
         )
@@ -27,7 +29,7 @@ class AcquisitionType extends AbstractType
                     'managementDescription',
                     TextType::class,
                     array(
-                        'label' => 'Beschreibung (Intern)',
+                        'label'    => 'Beschreibung (Intern)',
                         'required' => false
                     )
                 )
@@ -35,7 +37,7 @@ class AcquisitionType extends AbstractType
                     'formTitle',
                     TextType::class,
                     array(
-                        'label' => 'Titel (im Formular)',
+                        'label'    => 'Titel (im Formular)',
                         'required' => false
                     )
                 )
@@ -43,7 +45,7 @@ class AcquisitionType extends AbstractType
                     'formDescription',
                     TextType::class,
                     array(
-                        'label' => 'Beschreibung (im Formular)',
+                        'label'    => 'Beschreibung (im Formular)',
                         'required' => false
                     )
                 )
@@ -53,9 +55,9 @@ class AcquisitionType extends AbstractType
                     array(
                         'label'             => 'Typ',
                         'choices'           => array(
-                            AcquisitionAttribute::LABEL_FIELD_TEXT     => AcquisitionAttribute::TYPE_FIELD_TEXT,
-                            AcquisitionAttribute::LABEL_FIELD_TEXTAREA => AcquisitionAttribute::TYPE_FIELD_TEXTAREA,
-                            AcquisitionAttribute::LABEL_FIELD_CHOICE   => AcquisitionAttribute::TYPE_FIELD_CHOICE,
+                            AcquisitionAttribute::LABEL_FIELD_TEXT     => TextType::class,
+                            AcquisitionAttribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
+                            AcquisitionAttribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
                         ),
                         'choices_as_values' => true,
                         'required'          => true
@@ -66,7 +68,7 @@ class AcquisitionType extends AbstractType
                     'useAtParticipation',
                     CheckboxType::class,
                     array(
-                        'label' => 'Je Anmeldung erfassen',
+                        'label'    => 'Je Anmeldung erfassen',
                         'required' => false
                     )
                 )
@@ -74,10 +76,44 @@ class AcquisitionType extends AbstractType
                     'useAtParticipant',
                     CheckboxType::class,
                     array(
-                        'label' => 'Je Teilnehmer erfassen',
+                        'label'    => 'Je Teilnehmer erfassen',
                         'required' => false
                     )
+                )
+                ->add(
+                    'fieldTypeChoiceType',
+                    ChoiceType::class,
+                    array(
+                        'label'             => 'Typ der Auswahl',
+                        'label_attr'        => array('class' => 'col-sm-4 control-label required'),
+                        //label_attr has to be defined here due to an error
+                        'choices'           => array(
+                            'Mehrere Optionen auswählbar' => 1,
+                            'Nur eine Option  auswählbar' => 0
+                        ),
+                        'choices_as_values' => true,
+                        'mapped'            => false,
+                        'required'          => false
+                    )
+                )
+                ->add(
+                    'fieldTypeChoiceOptions',
+                    TextType::class,
+                    array(
+                        'label'      => 'Optionen der Auswahl',
+                        'label_attr' => array('class' => 'col-sm-4 control-label required'),
+                        'attr'       => array('aria-describedby' => 'help-options'),
+                        'mapped'     => false,
+                        'required'   => false
+
+                    )
+                )
+                ->add(
+                    'fieldOptions',
+                    HiddenType::class
                 );
+
+
     }
 
     public function configureOptions(OptionsResolver $resolver)

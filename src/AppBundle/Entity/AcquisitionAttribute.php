@@ -2,8 +2,11 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -14,10 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AcquisitionAttribute
 {
-
-    const TYPE_FIELD_TEXT     = 'TextType';
-    const TYPE_FIELD_TEXTAREA = 'TextareaType';
-    const TYPE_FIELD_CHOICE   = 'ChoiceType';
 
     const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
@@ -57,7 +56,7 @@ class AcquisitionAttribute
     /**
      * @ORM\Column(type="string", length=255, name="field_type")
      */
-    protected $fieldType = 'TextType';
+    protected $fieldType = TextType::class;
 
     /**
      * @ORM\Column(type="json_array", length=255, name="field_options")
@@ -259,11 +258,11 @@ class AcquisitionAttribute
     {
         if ($asLabel) {
             switch ($this->fieldType) {
-                case self::TYPE_FIELD_TEXT:
+                case TextType::class:
                     return self::LABEL_FIELD_TEXT;
-                case self::TYPE_FIELD_TEXTAREA:
+                case TextareaType::class;
                     return self::LABEL_FIELD_TEXTAREA;
-                case self::TYPE_FIELD_CHOICE:
+                case ChoiceType::class;
                     return self::LABEL_FIELD_CHOICE;
             }
         }
@@ -280,6 +279,9 @@ class AcquisitionAttribute
      */
     public function setFieldOptions($fieldOptions)
     {
+        if ($fieldOptions === null) {
+            $fieldOptions = array();
+        }
         $this->fieldOptions = $fieldOptions;
 
         return $this;

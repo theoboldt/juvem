@@ -7,6 +7,7 @@ use AppBundle\Form\AcquisitionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -111,8 +112,9 @@ class AcquisitionController extends Controller
 
         return $this->render(
             'acquisition/edit.html.twig', array(
-                                            'acquisition' => $attribute,
-                                            'form'        => $form->createView(),
+                                            'acquisition'       => $attribute,
+                                            'showChoiceOptions' => ($attribute->getFieldType() == ChoiceType::class),
+                                            'form'              => $form->createView(),
                                         )
         );
     }
