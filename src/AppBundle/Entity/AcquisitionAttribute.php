@@ -256,6 +256,8 @@ class AcquisitionAttribute
     /**
      * Get fieldType
      *
+     * @param bool $asLabel Set to true to return as label
+     *
      * @return string
      */
     public function getFieldType($asLabel = false)
@@ -298,7 +300,7 @@ class AcquisitionAttribute
      */
     public function getFieldOptions()
     {
-        return $this->fieldOptions;
+        return array_merge(array('mapped' => false), $this->fieldOptions);
     }
 
     /**
@@ -311,7 +313,7 @@ class AcquisitionAttribute
     public function setFieldTypeChoiceType($multiple)
     {
         if ($this->getFieldType() == ChoiceType::class) {
-            $options = $this->getFieldOptions();
+            $options             = $this->getFieldOptions();
             $options['multiple'] = $multiple;
             $this->setFieldOptions($options);
         }
@@ -347,10 +349,17 @@ class AcquisitionAttribute
     {
         if ($choices === null) {
             $choices = array();
+        } elseif (!is_array($choices)) {
+            $choicesString = $choices;
+            $choices       = array();
+
+            foreach(explode(';', $choicesString) as $choice) {
+                $choices[$choice] = sha1($choice);
+            }
         }
 
         if ($this->getFieldType() == ChoiceType::class) {
-            $options = $this->getFieldOptions();
+            $options            = $this->getFieldOptions();
             $options['choices'] = $choices;
             $this->setFieldOptions($options);
         }
@@ -361,14 +370,20 @@ class AcquisitionAttribute
     /**
      * Get field choices if this is a choice attribute
      *
+     * @param bool $asArray Set to true to return as array
+     *
      * @return array
      */
-    public function getFieldTypeChoiceOptions()
+    public function getFieldTypeChoiceOptions($asArray = false)
     {
         $options = $this->getFieldOptions();
 
         if ($this->getFieldType() == ChoiceType::class && isset($options['choices'])) {
-            return $options['choices'];
+            if ($asArray) {
+                return $options['choices'];
+            } else {
+                return implode(';', array_keys($options['choices']));
+            }
         }
 
         return array();
