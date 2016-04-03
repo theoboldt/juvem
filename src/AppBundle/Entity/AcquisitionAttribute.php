@@ -2,11 +2,11 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -56,7 +56,7 @@ class AcquisitionAttribute
     /**
      * @ORM\Column(type="string", length=255, name="field_type")
      */
-    protected $fieldType = TextType::class;
+    protected $fieldType = FormTextType::class;
 
     /**
      * @ORM\Column(type="json_array", length=255, name="field_options")
@@ -246,7 +246,11 @@ class AcquisitionAttribute
     {
         $this->fieldType = $fieldType;
 
-        if ($fieldType == ChoiceType::class) {
+        if ($fieldType == FormChoiceType::class) {
+            $options                      = $this->getFieldOptions();
+            $options['choices_as_values'] = true;
+            $this->setFieldOptions($options);
+        } else {
             $this->setFieldOptions(array());
         }
 
@@ -264,11 +268,11 @@ class AcquisitionAttribute
     {
         if ($asLabel) {
             switch ($this->fieldType) {
-                case TextType::class:
+                case FormTextType::class:
                     return self::LABEL_FIELD_TEXT;
-                case TextareaType::class;
+                case FormTextareaType::class;
                     return self::LABEL_FIELD_TEXTAREA;
-                case ChoiceType::class;
+                case FormChoiceType::class;
                     return self::LABEL_FIELD_CHOICE;
             }
         }
@@ -312,7 +316,7 @@ class AcquisitionAttribute
      */
     public function setFieldTypeChoiceType($multiple)
     {
-        if ($this->getFieldType() == ChoiceType::class) {
+        if ($this->getFieldType() == FormChoiceType::class) {
             $options             = $this->getFieldOptions();
             $options['multiple'] = $multiple;
             $this->setFieldOptions($options);
@@ -330,7 +334,7 @@ class AcquisitionAttribute
     {
         $options = $this->getFieldOptions();
 
-        if ($this->getFieldType() == ChoiceType::class && isset($options['choices'])) {
+        if ($this->getFieldType() == FormChoiceType::class && isset($options['choices'])) {
             return $options['multiple'];
         }
 
@@ -353,12 +357,12 @@ class AcquisitionAttribute
             $choicesString = $choices;
             $choices       = array();
 
-            foreach(explode(';', $choicesString) as $choice) {
+            foreach (explode(';', $choicesString) as $choice) {
                 $choices[$choice] = sha1($choice);
             }
         }
 
-        if ($this->getFieldType() == ChoiceType::class) {
+        if ($this->getFieldType() == FormChoiceType::class) {
             $options            = $this->getFieldOptions();
             $options['choices'] = $choices;
             $this->setFieldOptions($options);
@@ -378,7 +382,7 @@ class AcquisitionAttribute
     {
         $options = $this->getFieldOptions();
 
-        if ($this->getFieldType() == ChoiceType::class && isset($options['choices'])) {
+        if ($this->getFieldType() == FormChoiceType::class && isset($options['choices'])) {
             if ($asArray) {
                 return $options['choices'];
             } else {
