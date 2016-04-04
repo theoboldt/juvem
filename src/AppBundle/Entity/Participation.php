@@ -105,6 +105,8 @@ class Participation
         $this->participants = new ArrayCollection();
         $this->addParticipant(new Participant());
 
+        $this->acquisitionAttributeFillouts = new ArrayCollection();
+
         $this->modifiedAt = new \DateTime();
         $this->createdAt  = new \DateTime();
     }
@@ -577,7 +579,8 @@ class Participation
      *
      * @return Participation
      */
-    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+    )
     {
         $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
 
@@ -589,7 +592,8 @@ class Participation
      *
      * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
      */
-    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+    )
     {
         $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
     }
@@ -602,5 +606,23 @@ class Participation
     public function getAcquisitionAttributeFillouts()
     {
         return $this->acquisitionAttributeFillouts;
+    }
+
+    /**
+     * Get acquisition attribute fillout with given bid
+     *
+     * @param int $bid The id of the field
+     * @return AcquisitionAttributeFillout      The field
+     * @throws  \OutOfBoundsException           If Requested field was not found
+     */
+    public function getAcquisitionAttributeFillout($bid)
+    {
+        /** @var AcquisitionAttributeFillout $acquisitionAttribute */
+        foreach ($this->getAcquisitionAttributeFillouts() as $fillout) {
+            if ($fillout->getBid() == $bid) {
+                return $fillout;
+            }
+        }
+        throw new \OutOfBoundsException('Requested fillout was not found');
     }
 }

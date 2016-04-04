@@ -87,7 +87,8 @@ class AcquisitionAttribute
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttributeFillout", cascade={"all"}, mappedBy="attribute")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttributeFillout", cascade={"all"},
+     *                                                                             mappedBy="attribute")
      */
     protected $fillouts;
 
@@ -111,7 +112,8 @@ class AcquisitionAttribute
      */
     public function __construct()
     {
-        $this->events = new ArrayCollection();
+        $this->events   = new ArrayCollection();
+        $this->fillouts = new ArrayCollection();
     }
 
     /**

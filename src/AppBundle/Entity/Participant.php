@@ -3,6 +3,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -99,6 +100,8 @@ class Participant
     {
         $this->modifiedAt = new \DateTime();
         $this->createdAt  = new \DateTime();
+
+        $this->acquisitionAttributeFillouts = new ArrayCollection();
     }
 
     /**
@@ -402,7 +405,8 @@ class Participant
      *
      * @return Participant
      */
-    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+    )
     {
         $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
 
@@ -414,7 +418,8 @@ class Participant
      *
      * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
      */
-    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+    )
     {
         $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
     }
