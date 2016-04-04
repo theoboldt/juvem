@@ -249,6 +249,7 @@ class AcquisitionAttribute
         if ($fieldType == FormChoiceType::class) {
             $options                      = $this->getFieldOptions();
             $options['choices_as_values'] = true;
+            $options['expanded']          = true;
             $this->setFieldOptions($options);
         } else {
             $this->setFieldOptions(array());
@@ -338,7 +339,7 @@ class AcquisitionAttribute
             return $options['multiple'];
         }
 
-        return array();
+        return 0;
     }
 
 
@@ -390,7 +391,11 @@ class AcquisitionAttribute
             }
         }
 
-        return array();
+        if ($asArray) {
+            return array();
+        }
+
+        return '';
     }
 
     /**

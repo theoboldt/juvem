@@ -2,10 +2,10 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -589,7 +589,7 @@ class Event
     }
 
     /**
-     * Add acquisitionAttribute
+     * Add an acquisition attribute assignment to this event
      *
      * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
      *
@@ -603,7 +603,7 @@ class Event
     }
 
     /**
-     * Remove acquisitionAttribute
+     * Remove an acquisition attribute assignment from this event
      *
      * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
      */
@@ -613,12 +613,28 @@ class Event
     }
 
     /**
-     * Get acquisitionAttributes
+     * Get acquisition attributes assigned to this event
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @param bool $includeParticipationFields
+     * @param bool $includeParticipantFields
+     * @return ArrayCollection
      */
-    public function getAcquisitionAttributes()
+    public function getAcquisitionAttributes($includeParticipationFields = true, $includeParticipantFields = true)
     {
-        return $this->acquisitionAttributes;
+        if ($includeParticipationFields && $includeParticipantFields) {
+            return $this->acquisitionAttributes;
+        }
+        $acquisitionAttributes = array();
+
+        /** @var AcquisitionAttribute $acquisitionAttribute */
+        foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
+            if (($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
+                ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant())
+            ) {
+                $acquisitionAttributes[] = $acquisitionAttribute;
+            }
+        }
+
+        return $acquisitionAttributes;
     }
 }
