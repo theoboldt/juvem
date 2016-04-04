@@ -637,4 +637,22 @@ class Event
 
         return $acquisitionAttributes;
     }
+
+    /**
+     * Get acquisition attribute with given bid assigned to this event
+     *
+     * @param int $bid The id of the field
+     * @return AcquisitionAttribute             The field
+     * @throws  \OutOfBoundsException           If Requested field was not found
+     */
+    public function getAcquisitionAttribute($bid)
+    {
+        /** @var AcquisitionAttribute $acquisitionAttribute */
+        foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
+            if ($acquisitionAttribute->getBid() == $bid) {
+                return $acquisitionAttribute;
+            }
+        }
+        throw new \OutOfBoundsException('Requested field was not found');
+    }
 }
