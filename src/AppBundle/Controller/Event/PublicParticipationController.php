@@ -4,25 +4,18 @@ namespace AppBundle\Controller\Event;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
-use AppBundle\Form\EventType;
-use AppBundle\Form\ModalActionType;
-
 use AppBundle\Form\ParticipationType;
-use AppBundle\ImageResponse;
-use AppBundle\Manager\ParticipationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
-use AppBundle\Entity\Event;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class PublicParticipationController extends Controller
@@ -51,7 +44,7 @@ class PublicParticipationController extends Controller
         if (!$event->isActive()) {
             $this->addFlash(
                 'danger',
-                'Die gewählte Veranstaltung ist nicht aktiv'
+                'Bei der gewählte Veranstaltung werden im moment keine Anmeldungen erfasst'
             );
 
             return $this->redirectToRoute('homepage', array('eid' => $eid));
