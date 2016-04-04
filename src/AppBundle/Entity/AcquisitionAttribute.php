@@ -85,6 +85,13 @@ class AcquisitionAttribute
     protected $events;
 
     /**
+     * Contains the participants assigned to this participation
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttributeFillout", cascade={"all"}, mappedBy="attribute")
+     */
+    protected $fillouts;
+
+    /**
      * @ORM\Column(type="datetime", name="created_at")
      */
     protected $createdAt;
@@ -547,4 +554,52 @@ class AcquisitionAttribute
         return $this->deletedAt;
     }
 
+
+    /**
+     * Set fillouts
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillouts
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setFillouts(\AppBundle\Entity\AcquisitionAttributeFillout $fillouts = null)
+    {
+        $this->fillouts = $fillouts;
+
+        return $this;
+    }
+
+    /**
+     * Get fillouts
+     *
+     * @return \AppBundle\Entity\AcquisitionAttributeFillout
+     */
+    public function getFillouts()
+    {
+        return $this->fillouts;
+    }
+
+    /**
+     * Add fillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     *
+     * @return AcquisitionAttribute
+     */
+    public function addFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    {
+        $this->fillouts[] = $fillout;
+
+        return $this;
+    }
+
+    /**
+     * Remove fillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     */
+    public function removeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    {
+        $this->fillouts->removeElement($fillout);
+    }
 }

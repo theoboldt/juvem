@@ -3,10 +3,9 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -69,6 +68,13 @@ class Participant
      * @ORM\Column(type="smallint", options={"unsigned"=true})
      */
     protected $status = 0;
+
+    /**
+     * Contains the participants assigned to this participation
+     *
+     * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participation")
+     */
+    protected $acquisitionAttributeFillouts;
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
@@ -387,5 +393,39 @@ class Participant
         }
 
         return $this->status;
+    }
+
+    /**
+     * Add acquisitionAttributeFillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+     *
+     * @return Participant
+     */
+    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    {
+        $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
+
+        return $this;
+    }
+
+    /**
+     * Remove acquisitionAttributeFillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+     */
+    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    {
+        $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
+    }
+
+    /**
+     * Get acquisitionAttributeFillouts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAcquisitionAttributeFillouts()
+    {
+        return $this->acquisitionAttributeFillouts;
     }
 }

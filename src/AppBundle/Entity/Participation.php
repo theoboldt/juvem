@@ -2,10 +2,10 @@
 namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -83,6 +83,13 @@ class Participation
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"all"}, mappedBy="participation")
      */
     protected $participants;
+
+    /**
+     * Contains the participants assigned to this participation
+     *
+     * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participation")
+     */
+    protected $acquisitionAttributeFillouts;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedParticipations")
@@ -561,5 +568,39 @@ class Participation
             $participant->setStatus($status->__toString());
         }
         return $this;
+    }
+
+    /**
+     * Add acquisitionAttributeFillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+     *
+     * @return Participation
+     */
+    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    {
+        $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
+
+        return $this;
+    }
+
+    /**
+     * Remove acquisitionAttributeFillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
+     */
+    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout)
+    {
+        $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
+    }
+
+    /**
+     * Get acquisitionAttributeFillouts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAcquisitionAttributeFillouts()
+    {
+        return $this->acquisitionAttributeFillouts;
     }
 }
