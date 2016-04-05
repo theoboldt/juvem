@@ -127,6 +127,15 @@ class AcquisitionAttribute
     }
 
     /**
+     * Get the name for the field, used in forms
+     *
+     * @return string
+     */
+    public function getName() {
+        return 'acq_field_' . $this->bid;
+    }
+
+    /**
      * Set managementTitle
      *
      * @param string $managementTitle

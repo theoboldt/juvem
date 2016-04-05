@@ -4,7 +4,6 @@ namespace AppBundle\Controller\Event;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -89,26 +88,11 @@ class PublicParticipationController extends Controller
             return $this->redirectToRoute('event_public_participate_confirm', array('eid' => $eid));
         }
 
-        $acquisitionFieldsParticipation = array();
-        $acquisitionFieldsParticipant   = array();
-
-        /** @var AcquisitionAttribute $field */
-        foreach ($event->getAcquisitionAttributes(true, true) as $field) {
-            $fieldName = 'acq_field_' . $field->getBid();
-            if ($field->getUseAtParticipation()) {
-                $acquisitionFieldsParticipation[$fieldName] = $field;
-            }
-            if ($field->getUseAtParticipant()) {
-                $acquisitionFieldsParticipant[$fieldName] = $field;
-            }
-
-        }
-
         return $this->render(
             'event/participation/public/begin.html.twig', array(
                                                             'event'                          => $event,
-                                                            'acquisitionFieldsParticipation' => $acquisitionFieldsParticipation,
-                                                            'acquisitionFieldsParticipant'   => $acquisitionFieldsParticipant,
+                                                            'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false),
+                                                            'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true),
                                                             'form'                           => $form->createView()
                                                         )
         );

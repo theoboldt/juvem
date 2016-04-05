@@ -631,7 +631,7 @@ class Event
             if (($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
                 ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant())
             ) {
-                $acquisitionAttributes[] = $acquisitionAttribute;
+                $acquisitionAttributes[$acquisitionAttribute->getName()] = $acquisitionAttribute;
             }
         }
 
