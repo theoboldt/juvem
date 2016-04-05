@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Participation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -24,6 +25,8 @@ class ParticipationType extends AbstractType
             'attr'       => array('class' => 'checkbox-smart'),
             'label_attr' => array('class' => 'control-label')
         );
+        /** @var Participation $participation */
+        $participation = $options['data'];
 
         $builder
             ->add(
@@ -53,10 +56,13 @@ class ParticipationType extends AbstractType
             )
             ->add(
                 'participants', CollectionType::class, array(
-                                  'label'        => 'Teilnehmer',
-                                  'entry_type'   => ParticipantType::class,
-                                  'allow_add'    => true,
-                                  'allow_delete' => true
+                                  'label'         => 'Teilnehmer',
+                                  'entry_type'    => ParticipantType::class,
+                                  'allow_add'     => true,
+                                  'allow_delete'  => true,
+                                  'entry_options' => array(
+                                      'participation' => $participation
+                                  )
                               )
             )
             ->add(
@@ -80,17 +86,24 @@ class ParticipationType extends AbstractType
             */
             );
 
-        /** @var Participation $participation */
-        $participation = $options['data'];
-        $event         = $participation->getEvent();
-        $attributes    = $event->getAcquisitionAttributes();
+        $event      = $participation->getEvent();
+        $attributes = $event->getAcquisitionAttributes(true, false);
 
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
+            $bid     = $attribute->getBid();
+            $options = array(
+                'label' => $attribute->getFormTitle()
+            );
+            try {
+                $options['data'] = $participation->getAcquisitionAttributeFillout($bid);
+            } catch (\OutOfBoundsException $e) {
+                //intentionally left empty
+            }
             $builder->add(
-                'a_'.$attribute->getBid(),
+                'acq_field_' . $bid,
                 $attribute->getFieldType(),
-                $attribute->getFieldOptions()
+                array_merge($options, $attribute->getFieldOptions())
             );
         }
 

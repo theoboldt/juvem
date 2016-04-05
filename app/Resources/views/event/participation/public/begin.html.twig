@@ -65,6 +65,24 @@
                     {{ form_row(form.email) }}
                 </div>
             </div>
+            {% for fieldName,formField in form %}
+                {% if fieldName starts with 'acq_field_' %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                {{ form_label(formField) }}
+                                {% if acquisitionFieldsParticipation[fieldName].formDescription %}
+                                    <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
+                                            data-content="{{ acquisitionFieldsParticipation[fieldName].formDescription }}">
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </button>
+                                {% endif %}
+                                {{ form_widget(formField) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
             <div class="row">
                 {% macro prototypePhone(formElement) %}
                     <div class="panel panel-default prototype-element">
@@ -134,7 +152,8 @@
                         </div>
                     </div>
                     <button href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere Telefonnummer
-                        hinzufügen</button>
+                        hinzufügen
+                    </button>
                 </div>
             </div>
 
@@ -163,7 +182,7 @@
                 </div>
             </div>
             <div class="row">
-                {% macro prototypeParticipant(formElement) %}
+                {% macro prototypeParticipant(formElement, acquisitionFieldsParticipant) %}
                     <div class="panel panel-default prototype-element">
                         <div class="panel-heading">
                             <div class="row">
@@ -234,22 +253,40 @@
                                         {{ form_widget(formElement.infoGeneral) }}
                                     </div>
                                 </div>
+                                {% for fieldName,formField in formElement %}
+                                    {% if fieldName starts with 'acq_field_' %}
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                {{ form_label(formField) }}
+                                                {% if acquisitionFieldsParticipant[fieldName].formDescription %}
+                                                    <button type="button" class="btn btn-default btn-xs btn-round"
+                                                            data-toggle="popover"
+                                                            data-content="{{ acquisitionFieldsParticipant[fieldName].formDescription }}">
+                                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                                    </button>
+                                                {% endif %}
+                                                {{ form_widget(formField) }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 {% endmacro %}
                 <div class="col-xs-12 participants-list prototype-container"
-                     data-prototype="{{ m.prototypeParticipant(form.participants.vars.prototype, false)|e('html_attr') }}">
+                     data-prototype="{{ m.prototypeParticipant(form.participants.vars.prototype, acquisitionFieldsParticipant)|e('html_attr') }}">
                     <div class="prototype-elements">
                         <div class="form-group">
                             {{ form_errors(form.participants) }}
                             {% for participant in form.participants %}
-                                {{ m.prototypeParticipant(participant) }}
+                                {{ m.prototypeParticipant(participant, acquisitionFieldsParticipant) }}
                             {% endfor %}
                         </div>
                     </div>
                     <button href="#" class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weiteren Teilnehmer
-                        hinzufügen</button>
+                        hinzufügen
+                    </button>
                 </div>
             </div>
 

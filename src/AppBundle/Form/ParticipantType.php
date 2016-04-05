@@ -3,7 +3,9 @@
 namespace AppBundle\Form;
 
 use AppBundle\BitMask\ParticipantFood;
+use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -88,6 +90,29 @@ class ParticipantType extends AbstractType
                 )
             );
 
+        /** @var Participation $participation */
+        $participation = $options['participation'];
+        $event         = $participation->getEvent();
+        $attributes    = $event->getAcquisitionAttributes(false, true);
+
+        /** @var AcquisitionAttribute $attribute */
+        foreach ($attributes as $attribute) {
+            $bid     = $attribute->getBid();
+            $options = array(
+                'label' => $attribute->getFormTitle()
+            );
+            try {
+                $options['data'] = $participation->getAcquisitionAttributeFillout($bid);
+            } catch (\OutOfBoundsException $e) {
+                //intentionally left empty
+            }
+            $builder->add(
+                'acq_field_' . $bid,
+                $attribute->getFieldType(),
+                array_merge($options, $attribute->getFieldOptions())
+            );
+        }
+
         $builder->get('food')
                 ->addModelTransformer(
                     new CallbackTransformer(
@@ -107,7 +132,8 @@ class ParticipantType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'AppBundle\Entity\Participant',
+                'participation' => null,
+                'data_class'    => 'AppBundle\Entity\Participant',
             )
         );
     }
