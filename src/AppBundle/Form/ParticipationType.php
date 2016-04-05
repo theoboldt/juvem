@@ -101,7 +101,7 @@ class ParticipationType extends AbstractType
                 //intentionally left empty
             }
             $builder->add(
-                'acq_field_' . $bid,
+                $attribute->getName(),
                 $attribute->getFieldType(),
                 array_merge($options, $attribute->getFieldOptions())
             );
