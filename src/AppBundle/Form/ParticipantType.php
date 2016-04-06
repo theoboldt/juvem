@@ -130,10 +130,12 @@ class ParticipantType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
+        $resolver->setRequired('participation');
+        $resolver->setAllowedTypes('participation', Participation::class);
+
         $resolver->setDefaults(
             array(
-                'participation' => null,
-                'data_class'    => 'AppBundle\Entity\Participant',
+                'data_class' => Participant::class,
             )
         );
     }
