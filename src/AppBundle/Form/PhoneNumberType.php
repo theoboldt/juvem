@@ -3,6 +3,7 @@
 namespace AppBundle\Form;
 
 use libphonenumber\PhoneNumberFormat;
+use Misd\PhoneNumberBundle\Form\Type\PhoneNumberType as PhoneNumberTypeField;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -15,7 +16,7 @@ class PhoneNumberType extends AbstractType
 
         $builder->add(
             'number',
-            'tel',
+            PhoneNumberTypeField::class,
             array(
                 'default_region' => 'DE',
                 'format'         => PhoneNumberFormat::NATIONAL,
