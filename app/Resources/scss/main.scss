@@ -72,6 +72,9 @@ $state-info-text: darken($state-info-bg, 70%);
 $legend-color: darken($ejdvLightOrange, 25%);
 */
 
+$link-color: lighten(#333, 20%);
+$link-hover-color: lighten($link-color, 20%);
+
 $icon-font-path: '../font/';
 @import 'bootstrap';
 @import 'bootstrap-corrections';
