@@ -113,21 +113,7 @@
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-8">
-                <h3>{{ event.getTitle }}</h3>
-
-                <p class="status-label-list">
-                    {% if event.isActive() %}
-                        <span class="label label-primary option-isActive">Aktiv</span>
-                    {% else %}
-                        <span class="label label-default option-isActive">Inaktiv</span>
-                    {% endif %}
-                    {% if event.isVisible() %}
-                        <span class="label label-primary option-isVisible">Sichtbar</span>
-                    {% else %}
-                        <span class="label label-default option-isVisible">Versteckt</span>
-                    {% endif %}
-                </p>
-
+                <h2>{{ event.getTitle }}</h2>
                 <p>
                     {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
                     {% if event.hasStartTime %}
@@ -142,13 +128,21 @@
                             {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
                         {% endif %}
                     {% endif %}
-                </p>
 
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        {{ event.getDescription|e }}
-                    </div>
-                </div>
+                    <span class="status-label-list">
+                    {% if event.isVisible() %}
+                        <span class="label label-primary option-isVisible">Sichtbar</span>
+                    {% else %}
+                        <span class="label label-default option-isVisible">Versteckt</span>
+                    {% endif %}
+                    {% if event.isActive() %}
+                        <span class="label label-primary option-isActive">Aktiv</span>
+                    {% else %}
+                        <span class="label label-default option-isActive">Inaktiv</span>
+                    {% endif %}
+                    </span>
+                </p>
+                {{ event.getDescription|markdown }}
             </div>
             <div class="col-xs-12 col-sm-4">
                 <div>
