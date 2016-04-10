@@ -2,9 +2,6 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\User;
-
 class EntitySheetColumn extends AbstractSheetColumn
 {
 
@@ -15,11 +12,23 @@ class EntitySheetColumn extends AbstractSheetColumn
 	 */
 	protected $dataAttribute;
 
-	public function __construct($dataAttribute, $title)
+    /**
+     * Create a new column
+     *
+     * @param string      $identifier       Identifier for document
+     * @param string      $title            Title text for column
+     * @param string|null $dataAttribute    Name of attribute from witch the data has to be fetched if
+     *                                      differing from $identifier
+     */
+	public function __construct($identifier, $title, $dataAttribute = null)
 	{
+        if ($dataAttribute) {
 		$this->dataAttribute = $dataAttribute;
+        } else {
+            $this->dataAttribute = $identifier;
+        }
 
-		parent::__construct($dataAttribute, $title);
+		parent::__construct($identifier, $title);
 	}
 
 	/**
@@ -60,8 +69,17 @@ class EntitySheetColumn extends AbstractSheetColumn
 	{
 		$value = $this->getData($entity);
 
-		$sheet->setCellValueByColumnAndRow($this->columnIndex, $row, $value);
+        if ($this->converter !== null && is_callable($this->converter)) {
+            $converter = $this->converter;
+            $value     = $converter($value, $entity);
+        }
 
-	}
+		$sheet->setCellValueByColumnAndRow($this->columnIndex, $row, $value);
+		if ($this->numberFormat !== null) {
+            $sheet->getStyleByColumnAndRow($this->columnIndex, $row)->getNumberFormat()->setFormatCode(
+                $this->numberFormat
+            );
+        }
+    }
 
 }

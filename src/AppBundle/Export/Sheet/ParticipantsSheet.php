@@ -4,7 +4,6 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\User;
 
 class ParticipantsSheet extends AbstractSheet
 {
@@ -33,7 +32,18 @@ class ParticipantsSheet extends AbstractSheet
 
         $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
         $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
-        $this->addColumn(new EntitySheetColumn('birthday', 'Geburtstag'));
+
+        $column = new EntitySheetColumn('birthday', 'Geburtstag');
+        $column->setNumberFormat('dd.mm.yyyy');
+        $column->setConverter(function($value, $entity){
+            /** \DateTime $value */
+            return $value->format('d.m.Y');
+        });
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('ageAtEvent', 'Alter');
+        $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+        $this->addColumn($column);
     }
 
     public function setHeader($title = null, $subtitle = null)

@@ -2,9 +2,6 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\User;
-
 abstract class AbstractSheetColumn
 {
 	/**
@@ -22,6 +19,13 @@ abstract class AbstractSheetColumn
 	protected $title;
 
 	/**
+	 * Contains the number formatter which will be applied to each value column
+	 *
+	 * @var	null|string
+	 */
+	protected $numberFormat = null;
+
+	/**
 	 * May contain a converter for given value
 	 *
 	 * @var null|callable
@@ -29,7 +33,7 @@ abstract class AbstractSheetColumn
 	protected $converter = null;
 
 	/**
-	 * Identifier of this column for use in colum list
+	 * Create a new column
 	 *
 	 * @var string
 	 */
@@ -61,10 +65,12 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param int $columnIndex
+	 * @return AbstractSheetColumn
 	 */
 	public function setColumnIndex($columnIndex)
 	{
 		$this->columnIndex = $columnIndex;
+		return $this;
 	}
 
 	/**
@@ -77,10 +83,12 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param string $title
+	 * @return AbstractSheetColumn
 	 */
 	public function setTitle($title)
 	{
 		$this->title = $title;
+		return $this;
 	}
 
 	/**
@@ -93,10 +101,22 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param callable|null $converter
+	 * @return AbstractSheetColumn
 	 */
 	public function setConverter($converter)
 	{
 		$this->converter = $converter;
 	}
+
+	/**
+	 * @param string $numberFormat
+	 * @return AbstractSheetColumn
+	 */
+	public function setNumberFormat($numberFormat)
+	{
+		$this->numberFormat = $numberFormat;
+		return $this;
+	}
+
 
 }
