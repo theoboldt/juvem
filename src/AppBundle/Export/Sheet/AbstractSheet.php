@@ -237,12 +237,16 @@ abstract class AbstractSheet
                       ->setWidth($columnWidth);
             }
             $columnStyles = $dataColumn->getHeaderStyleCallbacks();
+
+            $cellStyle = $sheet->getStyleByColumnAndRow($column, $row);
+            $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_DOUBLE);
+
             if (count($columnStyles)) {
                 foreach ($columnStyles as $columnStyle) {
                     if (!is_callable($columnStyle)) {
                         throw new \InvalidArgumentException('Defined column style callback is not callable');
                     }
-                    $columnStyle($sheet->getStyleByColumnAndRow($column, $row));
+                    $columnStyle($cellStyle);
                 }
             }
         }

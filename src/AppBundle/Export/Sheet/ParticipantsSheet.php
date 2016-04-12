@@ -136,13 +136,18 @@ class ParticipantsSheet extends AbstractSheet
             /** @var EntitySheetColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
+                $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);
+
                 $column->process($this->sheet, $row, $participant);
 
                 $columnDataConditional = $column->getDataCellConditionals();
                 if (count($columnDataConditional)) {
-                    $this->sheet->getStyleByColumnAndRow($columnIndex, $row)
-                                ->setConditionalStyles($columnDataConditional);
+                    $cellStyle->setConditionalStyles($columnDataConditional);
                 }
+                $cellStyle->getAlignment()->setVertical(
+                    \PHPExcel_Style_Alignment::VERTICAL_TOP
+                );
+                $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
 
                 $columnStyles = $column->getDataStyleCallbacks();
                 if (count($columnStyles)) {
@@ -150,7 +155,7 @@ class ParticipantsSheet extends AbstractSheet
                         if (!is_callable($columnStyle)) {
                             throw new \InvalidArgumentException('Defined column style callback is not callable');
                         }
-                        $columnStyle($this->sheet->getStyleByColumnAndRow($columnIndex, $row));
+                        $columnStyle($cellStyle);
                     }
                 }
             }
