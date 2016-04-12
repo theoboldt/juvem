@@ -196,7 +196,7 @@ abstract class AbstractSheetColumn
 	}
 
 	/**
-	 * @param \callable[] $dataStyleCallbacks
+	 * @param \callable $dataStyleCallbacks
 	 * @return AbstractSheetColumn
 	 */
 	public function addDataStyleCalback($dataStyleCallbacks)
