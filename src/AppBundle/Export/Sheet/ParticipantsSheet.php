@@ -2,6 +2,7 @@
 namespace AppBundle\Export\Sheet;
 
 
+use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 
@@ -51,6 +52,42 @@ class ParticipantsSheet extends AbstractSheet
         });
         $this->addColumn($column);
 
+        $column = new EntitySheetColumn('food_vegan', 'Vegan', 'food');
+        $column->setConverter(function($value, $entity){
+            /** @var ParticipantFood $mask */
+            $mask = $entity->getFood(true);
+            return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'j' : 'n';
+        });
+        $column->setWidth(4);
+
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('food_vegetarian', 'Vegetarisch', 'food');
+        $column->setConverter(function($value, $entity){
+            /** @var ParticipantFood $mask */
+            $mask = $entity->getFood(true);
+            return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'j' : 'n';
+        });
+        $column->setWidth(4);
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('food_lactose_free', 'Laktosefrei', 'food');
+        $column->setConverter(function($value, $entity){
+            /** @var ParticipantFood $mask */
+            $mask = $entity->getFood(true);
+            return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'j' : 'n';
+        });
+        $column->setWidth(4);
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
+        $column->setConverter(function($value, $entity){
+            /** @var ParticipantFood $mask */
+            $mask = $entity->getFood(true);
+            return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'j' : 'n';
+        });
+        $column->setWidth(4);
+        $this->addColumn($column);
     }
 
     public function setHeader($title = null, $subtitle = null)

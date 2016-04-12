@@ -2,9 +2,6 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\User;
-
 abstract class AbstractSheet
 {
 
@@ -64,22 +61,22 @@ abstract class AbstractSheet
         $this->sheet = $sheet;
     }
 
-	/**
-	 * Add a data column definition to this sheet
-	 *
-	 * @param AbstractSheetColumn $column
-	 * @return $this
-	 */
-	public function addColumn(AbstractSheetColumn $column)
-	{
-		if (array_key_exists($column->getIdentifier(), $this->columnList)) {
-			throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
-		}
+    /**
+     * Add a data column definition to this sheet
+     *
+     * @param AbstractSheetColumn $column
+     * @return $this
+     */
+    public function addColumn(AbstractSheetColumn $column)
+    {
+        if (array_key_exists($column->getIdentifier(), $this->columnList)) {
+            throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
+        }
 
-		$this->columnList[$column->getIdentifier()] = $column;
+        $this->columnList[$column->getIdentifier()] = $column;
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Get the current column index
@@ -218,8 +215,19 @@ abstract class AbstractSheet
             }
 
             $sheet->setCellValueByColumnAndRow($column, $row, $dataColumn->getTitle());
-            $sheet->getColumnDimensionByColumn($column)
-                  ->setAutoSize(true);
+
+            $columnWidth = $dataColumn->getWidth();
+            if ($columnWidth === null) {
+                $sheet->getColumnDimensionByColumn($column)
+                      ->setAutoSize(true);
+            } else {
+                $sheet->getColumnDimensionByColumn($column)
+                      ->setWidth($columnWidth);
+            }
+            $columnStyle = $dataColumn->getHeaderStyleCallback();
+            if (is_callable($columnStyle)) {
+                $columnStyle($sheet->getStyleByColumnAndRow($column, $row));
+            }
         }
         $sheet->getStyleByColumnAndRow($columnStart, $row, $column, $row)
               ->getFont()

@@ -33,6 +33,20 @@ abstract class AbstractSheetColumn
 	protected $converter = null;
 
 	/**
+	 * Define column width
+	 *
+	 * @var float|null
+	 */
+	protected $width = null;
+
+	/**
+	 * Add a callable to be able to apply styles to the header cell
+	 *
+	 * @var null|callable
+	 */
+	protected $headerStyleCallback = null;
+
+	/**
 	 * Create a new column
 	 *
 	 * @var string
@@ -106,6 +120,7 @@ abstract class AbstractSheetColumn
 	public function setConverter($converter)
 	{
 		$this->converter = $converter;
+		return $this;
 	}
 
 	/**
@@ -115,6 +130,46 @@ abstract class AbstractSheetColumn
 	public function setNumberFormat($numberFormat)
 	{
 		$this->numberFormat = $numberFormat;
+		return $this;
+	}
+
+	/**
+	 * Get column width
+	 *
+	 * @return float|null
+	 */
+	public function getWidth()
+	{
+		return $this->width;
+	}
+
+	/**
+	 * Set column width
+	 *
+	 * @param float|null $width
+	 * @return AbstractSheetColumn
+	 */
+	public function setWidth($width)
+	{
+		$this->width = $width;
+		return $this;
+	}
+
+	/**
+	 * @return null|callable
+	 */
+	public function getHeaderStyleCallback()
+	{
+		return $this->headerStyleCallback;
+	}
+
+	/**
+	 * @param null|callable
+	 * @return AbstractSheetColumn
+	 */
+	public function setHeaderStyleCallback($headerStyle)
+	{
+		$this->headerStyleCallback = $headerStyle;
 		return $this;
 	}
 
