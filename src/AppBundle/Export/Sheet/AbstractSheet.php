@@ -236,9 +236,14 @@ abstract class AbstractSheet
                 $sheet->getColumnDimensionByColumn($column)
                       ->setWidth($columnWidth);
             }
-            $columnStyle = $dataColumn->getHeaderStyleCallback();
-            if (is_callable($columnStyle)) {
-                $columnStyle($sheet->getStyleByColumnAndRow($column, $row));
+            $columnStyles = $dataColumn->getHeaderStyleCallbacks();
+            if (count($columnStyles)) {
+                foreach ($columnStyles as $columnStyle) {
+                    if (!is_callable($columnStyle)) {
+                        throw new \InvalidArgumentException('Defined column style callback is not callable');
+                    }
+                    $columnStyle($sheet->getStyleByColumnAndRow($column, $row));
+                }
             }
         }
         $sheet->getStyleByColumnAndRow($columnStart, $row, $column, $row)

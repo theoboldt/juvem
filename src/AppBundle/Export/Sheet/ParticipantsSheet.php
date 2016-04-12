@@ -36,10 +36,12 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = new EntitySheetColumn('birthday', 'Geburtstag');
         $column->setNumberFormat('dd.mm.yyyy');
-        $column->setConverter(function($value, $entity){
-            /** \DateTime $value */
-            return $value->format('d.m.Y');
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                /** \DateTime $value */
+                return $value->format('d.m.Y');
+            }
+        );
         $this->addColumn($column);
 
         $column = new EntitySheetColumn('ageAtEvent', 'Alter');
@@ -47,51 +49,81 @@ class ParticipantsSheet extends AbstractSheet
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createSmallColumn('gender', 'Geschlecht');
-        $column->setConverter(function($value, $entity){
-            return substr($entity->getGender(true), 0, 1);
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                return substr($entity->getGender(true), 0, 1);
+            }
+        );
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createYesNoColumn('food_vegan', 'Vegan', 'food');
-        $column->setConverter(function($value, $entity){
-            /** @var ParticipantFood $mask */
-            $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'ja' : 'nein';
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                /** @var ParticipantFood $mask */
+                $mask = $entity->getFood(true);
+                return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'ja' : 'nein';
+            }
+        );
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
-        $column->setConverter(function($value, $entity){
-            /** @var ParticipantFood $mask */
-            $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'ja' : 'nein';
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                /** @var ParticipantFood $mask */
+                $mask = $entity->getFood(true);
+                return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'ja' : 'nein';
+            }
+        );
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
-        $column->setConverter(function($value, $entity){
-            /** @var ParticipantFood $mask */
-            $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'ja' : 'nein';
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                /** @var ParticipantFood $mask */
+                $mask = $entity->getFood(true);
+                return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'ja' : 'nein';
+            }
+        );
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
-        $column->setConverter(function($value, $entity){
-            /** @var ParticipantFood $mask */
-            $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'ja' : 'nein';
-        });
+        $column->setConverter(
+            function ($value, $entity) {
+                /** @var ParticipantFood $mask */
+                $mask = $entity->getFood(true);
+                return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'ja' : 'nein';
+            }
+        );
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('infoMedical', 'Medizinische Hinweise');
+        $column->addDataStyleCalback(
+            function ($style) {
+                /** @var \PHPExcel_Style $style */
+                $style->getAlignment()->setWrapText(true);
+            }
+        );
+        $column->setWidth(35);
+        $this->addColumn($column);
+
+        $column = new EntitySheetColumn('infoGeneral', 'Allgemeine Hinweise');
+        $column->addDataStyleCalback(
+            function ($style) {
+                /** @var \PHPExcel_Style $style */
+                $style->getAlignment()->setWrapText(true);
+            }
+        );
+        $column->setWidth(35);
         $this->addColumn($column);
     }
 
     public function setHeader($title = null, $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Teilnehmer');
-        $this->row = $this->row-1; //reset row index by 1
+        $this->row = $this->row - 1; //reset row index by 1
         parent::setColumnHeaders();
 
-        $this->sheet->getRowDimension($this->row(null, false)-1)->setRowHeight(-1);
+        $this->sheet->getRowDimension($this->row(null, false) - 1)->setRowHeight(-1);
     }
 
     public function setBody()
@@ -103,17 +135,26 @@ class ParticipantsSheet extends AbstractSheet
 
             /** @var EntitySheetColumn $column */
             foreach ($this->columnList as $column) {
+                $columnIndex = $column->getColumnIndex();
                 $column->process($this->sheet, $row, $participant);
 
                 $columnDataConditional = $column->getDataCellConditionals();
                 if (count($columnDataConditional)) {
-                    $this->sheet->getStyleByColumnAndRow($column->getColumnIndex(), $row)
+                    $this->sheet->getStyleByColumnAndRow($columnIndex, $row)
                                 ->setConditionalStyles($columnDataConditional);
+                }
+
+                $columnStyles = $column->getDataStyleCallbacks();
+                if (count($columnStyles)) {
+                    foreach ($columnStyles as $columnStyle) {
+                        if (!is_callable($columnStyle)) {
+                            throw new \InvalidArgumentException('Defined column style callback is not callable');
+                        }
+                        $columnStyle($this->sheet->getStyleByColumnAndRow($columnIndex, $row));
+                    }
                 }
             }
         }
-
     }
-
 
 }

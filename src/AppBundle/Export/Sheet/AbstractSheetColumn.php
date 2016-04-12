@@ -21,9 +21,9 @@ abstract class AbstractSheetColumn
 	/**
 	 * Contains the number formatter which will be applied to each value column
 	 *
-	 * @var	null|string
+	 * @var	string|\PHPExcel_Style_NumberFormat::FORMAT_TEXT
 	 */
-	protected $numberFormat = null;
+	protected $numberFormat = \PHPExcel_Style_NumberFormat::FORMAT_TEXT;
 
 	/**
 	 * May contain a converter for given value
@@ -40,13 +40,22 @@ abstract class AbstractSheetColumn
 	protected $width = null;
 
 	/**
-	 * Add a callable to be able to apply styles to the header cell
+	 * Callables to be able to apply styles to the header cell
 	 *
-	 * @var null|callable
+	 * @var callable[]
 	 */
-	protected $headerStyleCallback = null;
+	protected $headerStyleCallbacks = array();
 
 	/**
+	 * Callables to be able to apply styles to all data cell
+	 *
+	 * @var callable[]
+	 */
+	protected $dataStyleCallbacks = array();
+
+	/**
+	 * Array containing conditional style definitions for data cells
+	 *
 	 * @var \PHPExcel_Style_Conditional[]
 	 */
 	protected $dataCellConditionals = array();
@@ -161,20 +170,38 @@ abstract class AbstractSheetColumn
 	}
 
 	/**
-	 * @return null|callable
+	 * @return callable[]
 	 */
-	public function getHeaderStyleCallback()
+	public function getHeaderStyleCallbacks()
 	{
-		return $this->headerStyleCallback;
+		return $this->headerStyleCallbacks;
 	}
 
 	/**
-	 * @param null|callable
+	 * @param callable[]
 	 * @return AbstractSheetColumn
 	 */
-	public function setHeaderStyleCallback($headerStyle)
+	public function addHeaderStyleCallback($headerStyle)
 	{
-		$this->headerStyleCallback = $headerStyle;
+		$this->headerStyleCallbacks[] = $headerStyle;
+		return $this;
+	}
+
+	/**
+	 * @return \callable[]
+	 */
+	public function getDataStyleCallbacks()
+	{
+		return $this->dataStyleCallbacks;
+	}
+
+	/**
+	 * @param \callable[] $dataStyleCallbacks
+	 * @return AbstractSheetColumn
+	 */
+	public function addDataStyleCalback($dataStyleCallbacks)
+	{
+		$this->dataStyleCallbacks[] = $dataStyleCallbacks;
 		return $this;
 	}
 

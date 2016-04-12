@@ -49,7 +49,7 @@ class EntitySheetColumn extends AbstractSheetColumn
     {
         $column = new self($identifier, $title, $dataAttribute);
         $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-        $column->setHeaderStyleCallback(function($style){
+        $column->addHeaderStyleCallback(function($style){
             /** @var \PHPExcel_Style $style */
             $style->getAlignment()->setTextRotation(45);
         });
