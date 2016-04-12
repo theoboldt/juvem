@@ -13,6 +13,52 @@ class EntitySheetColumn extends AbstractSheetColumn
 	protected $dataAttribute;
 
     /**
+     * Create a new small column and apply some styles
+     *
+     * @param string      $identifier       Identifier for document
+     * @param string      $title            Title text for column
+     * @param string|null $dataAttribute    Name of attribute from witch the data has to be fetched if
+     *                                      differing from $identifier
+     * @see createSmallColumn()
+     * @return self
+     */
+	public static function createYesNoColumn($identifier, $title, $dataAttribute = null)
+    {
+        $column = self::createSmallColumn($identifier, $title, $dataAttribute);
+
+        $conditional = new \PHPExcel_Style_Conditional();
+        $conditional->setConditionType(\PHPExcel_Style_Conditional::CONDITION_CONTAINSTEXT);
+        $conditional->setOperatorType(\PHPExcel_Style_Conditional::OPERATOR_CONTAINSTEXT)->setText('nein');
+        $conditional->getStyle()->getFont()->getColor()->setRGB('F2F2F2');
+
+        $column->addDataCellConditional($conditional);
+
+        return $column;
+    }
+
+    /**
+     * Create a new small column and apply some styles
+     *
+     * @param string      $identifier       Identifier for document
+     * @param string      $title            Title text for column
+     * @param string|null $dataAttribute    Name of attribute from witch the data has to be fetched if
+     *                                      differing from $identifier
+     * @return self
+     */
+	public static function createSmallColumn($identifier, $title, $dataAttribute = null)
+    {
+        $column = new self($identifier, $title, $dataAttribute);
+        $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        $column->setHeaderStyleCallback(function($style){
+            /** @var \PHPExcel_Style $style */
+            $style->getAlignment()->setTextRotation(45);
+        });
+        $column->setWidth(4);
+
+        return $column;
+    }
+
+    /**
      * Create a new column
      *
      * @param string      $identifier       Identifier for document

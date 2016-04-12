@@ -199,6 +199,18 @@ abstract class AbstractSheet
         $sheet->getRowDimension($row)
               ->setRowHeight(22);
 
+        return $this;
+    }
+
+    /**
+     * Set the header of this sheet
+     *
+     * @return $this
+     */
+    public function setColumnHeaders()
+    {
+        $sheet = $this->sheet;
+
         $row = $this->row();
         $sheet->getRowDimension($row)
               ->setRowHeight(22);

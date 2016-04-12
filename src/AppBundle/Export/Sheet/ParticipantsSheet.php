@@ -46,53 +46,52 @@ class ParticipantsSheet extends AbstractSheet
         $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('gender', 'Geschlecht');
+        $column = EntitySheetColumn::createSmallColumn('gender', 'Geschlecht');
         $column->setConverter(function($value, $entity){
             return substr($entity->getGender(true), 0, 1);
         });
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('food_vegan', 'Vegan', 'food');
+        $column = EntitySheetColumn::createYesNoColumn('food_vegan', 'Vegan', 'food');
         $column->setConverter(function($value, $entity){
             /** @var ParticipantFood $mask */
             $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'j' : 'n';
+            return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'ja' : 'nein';
         });
-        $column->setWidth(4);
-
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('food_vegetarian', 'Vegetarisch', 'food');
+        $column = EntitySheetColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
         $column->setConverter(function($value, $entity){
             /** @var ParticipantFood $mask */
             $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'j' : 'n';
+            return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'ja' : 'nein';
         });
-        $column->setWidth(4);
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('food_lactose_free', 'Laktosefrei', 'food');
+        $column = EntitySheetColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
         $column->setConverter(function($value, $entity){
             /** @var ParticipantFood $mask */
             $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'j' : 'n';
+            return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'ja' : 'nein';
         });
-        $column->setWidth(4);
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
+        $column = EntitySheetColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
         $column->setConverter(function($value, $entity){
             /** @var ParticipantFood $mask */
             $mask = $entity->getFood(true);
-            return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'j' : 'n';
+            return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'ja' : 'nein';
         });
-        $column->setWidth(4);
         $this->addColumn($column);
     }
 
     public function setHeader($title = null, $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Teilnehmer');
+        $this->row = $this->row-1; //reset row index by 1
+        parent::setColumnHeaders();
+
+        $this->sheet->getRowDimension($this->row(null, false)-1)->setRowHeight(-1);
     }
 
     public function setBody()
@@ -105,6 +104,12 @@ class ParticipantsSheet extends AbstractSheet
             /** @var EntitySheetColumn $column */
             foreach ($this->columnList as $column) {
                 $column->process($this->sheet, $row, $participant);
+
+                $columnDataConditional = $column->getDataCellConditionals();
+                if (count($columnDataConditional)) {
+                    $this->sheet->getStyleByColumnAndRow($column->getColumnIndex(), $row)
+                                ->setConditionalStyles($columnDataConditional);
+                }
             }
         }
 

@@ -47,6 +47,11 @@ abstract class AbstractSheetColumn
 	protected $headerStyleCallback = null;
 
 	/**
+	 * @var \PHPExcel_Style_Conditional[]
+	 */
+	protected $dataCellConditionals = array();
+
+	/**
 	 * Create a new column
 	 *
 	 * @var string
@@ -173,5 +178,22 @@ abstract class AbstractSheetColumn
 		return $this;
 	}
 
+	/**
+	 * @return \PHPExcel_Style_Conditional[]
+	 */
+	public function getDataCellConditionals()
+	{
+		return $this->dataCellConditionals;
+	}
+
+	/**
+	 * @param \PHPExcel_Style_Conditional $dataCellConditional
+	 * @return AbstractSheetColumn
+	 */
+	public function addDataCellConditional($dataCellConditional)
+	{
+		$this->dataCellConditionals[] = $dataCellConditional;
+		return $this;
+	}
 
 }
