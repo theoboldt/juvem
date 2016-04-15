@@ -115,6 +115,17 @@ class ParticipantsSheet extends AbstractSheet
         );
         $column->setWidth(35);
         $this->addColumn($column);
+
+        $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
+        $column->setNumberFormat('dd.mm.yyyy h:mm');
+        $column->setConverter(
+            function ($value, $entity) {
+                /** \DateTime $value */
+                return $value->format('d.m.Y h:i');
+            }
+        );
+        $column->setWidth(13.5);
+        $this->addColumn($column);
     }
 
     public function setHeader($title = null, $subtitle = null)
