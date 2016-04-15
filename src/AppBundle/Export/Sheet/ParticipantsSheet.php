@@ -121,7 +121,7 @@ class ParticipantsSheet extends AbstractSheet
         $column->setConverter(
             function ($value, $entity) {
                 /** \DateTime $value */
-                return $value->format('d.m.Y h:i');
+                return $value->format('d.m.Y H:i');
             }
         );
         $column->setWidth(13.5);
