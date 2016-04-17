@@ -122,6 +122,8 @@
                                     {{ participation.email }}
                                 </address>
                             </dd>
+                            <dt><abbr title="Eingang der Anmeldung">Eingang</abbr></dt>
+                            <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
                         </dl>
                     </div>
                 </div>
