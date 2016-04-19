@@ -58,7 +58,7 @@ class ParticipationsSheet extends AbstractSheet
                         $numberText .= ')';
                     }
 
-                    if ($i++ > $numberCount) {
+                    if ($i++ < $numberCount) {
                         $numberText .= ', ';
                     }
                 }
