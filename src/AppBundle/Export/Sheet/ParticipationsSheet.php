@@ -31,7 +31,6 @@ class ParticipationsSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntitySheetColumn('pid', 'PID'));
         $this->addColumn(new EntitySheetColumn('salution', 'Anrede'));
         $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
         $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
@@ -88,6 +87,8 @@ class ParticipationsSheet extends AbstractSheet
             }
         );
         $this->addColumn($column);
+
+        $this->addColumn(new EntitySheetColumn('pid', 'PID'));
 
     }
 
