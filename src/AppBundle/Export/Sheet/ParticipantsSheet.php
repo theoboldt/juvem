@@ -5,6 +5,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 
 class ParticipantsSheet extends AbstractSheet
 {
@@ -126,6 +127,16 @@ class ParticipantsSheet extends AbstractSheet
         );
         $column->setWidth(13.5);
         $this->addColumn($column);
+
+        $this->addColumn(new EntitySheetColumn('aid', 'AID'));
+        $column = new EntitySheetColumn('participation', 'PID');
+        $column->setConverter(
+            function (Participation $value) {
+                return $value->getPid();
+            }
+        );
+        $this->addColumn($column);
+
     }
 
     public function setHeader($title = null, $subtitle = null)
