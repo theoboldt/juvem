@@ -31,6 +31,7 @@ class ParticipationsSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
+        $this->addColumn(new EntitySheetColumn('pid', 'PID'));
         $this->addColumn(new EntitySheetColumn('salution', 'Anrede'));
         $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
         $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
@@ -93,10 +94,7 @@ class ParticipationsSheet extends AbstractSheet
     public function setHeader($title = null, $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Anmeldungen');
-        $this->row = $this->row - 1; //reset row index by 1
         parent::setColumnHeaders();
-
-        $this->sheet->getRowDimension($this->row(null, false) - 1)->setRowHeight(-1);
     }
 
     public function setBody()
