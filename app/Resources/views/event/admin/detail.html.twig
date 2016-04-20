@@ -27,6 +27,8 @@
                             <li role="separator" class="divider"></li>
                             <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer
                                     exportieren</a></li>
+                            <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen
+                                    exportieren</a></li>
                             <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">E-Mail versenden</a></li>
                         </ul>
                     </div>

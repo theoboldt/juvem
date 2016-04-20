@@ -4,25 +4,22 @@ namespace AppBundle\Controller\Event;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\PhoneNumber;
-use AppBundle\Export\ParticipantsExport;
-use AppBundle\Form\EventType;
-use AppBundle\Form\ModalActionType;
-
-use libphonenumber\PhoneNumberUtil;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\PhoneNumber;
+use AppBundle\Export\ParticipantsExport;
+use AppBundle\Export\ParticipationsExport;
+use libphonenumber\PhoneNumberUtil;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class AdminParticipationController extends Controller
 {
@@ -274,6 +271,46 @@ class AdminParticipationController extends Controller
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $event->getTitle() . ' - Teilnehmer.xlsx'
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        return $response;
+    }
+
+
+    /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"}, name="event_participations_export")
+     */
+    public function exportParticipationsAction($eid)
+    {
+        $eventRepository = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $participationsList = $event->getParticipations()->getValues();
+
+        $export = new ParticipationsExport($event, $participationsList, $this->getUser());
+        $export->setMetadata();
+        $export->process();
+
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $event->getTitle() . ' - Anmeldungen.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
 

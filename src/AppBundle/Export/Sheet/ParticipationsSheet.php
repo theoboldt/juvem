@@ -4,7 +4,6 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\BitMask\ParticipationFood;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participation;
 
 class ParticipationsSheet extends AbstractSheet
 {
@@ -35,6 +34,13 @@ class ParticipationsSheet extends AbstractSheet
         $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
         $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
 
+        $column = new EntitySheetColumn('participants', 'Teilnehmer');
+        $column->setConverter(
+            function ($value, $entity) {
+                return count($value);
+            }
+        );
+
         $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
@@ -59,7 +65,7 @@ class ParticipationsSheet extends AbstractSheet
     public function setBody()
     {
 
-        /** @var Participation $participation */
+        /** @var Participant $participation */
         foreach ($this->participations as $participation) {
             $row = $this->row();
 
