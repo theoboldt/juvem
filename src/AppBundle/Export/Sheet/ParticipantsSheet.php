@@ -61,7 +61,7 @@ class ParticipantsSheet extends AbstractSheet
             function ($value, $entity) {
                 /** @var ParticipantFood $mask */
                 $mask = $entity->getFood(true);
-                return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'ja' : 'nein';
+                return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'vn' : 'nein';
             }
         );
         $this->addColumn($column);
@@ -71,7 +71,7 @@ class ParticipantsSheet extends AbstractSheet
             function ($value, $entity) {
                 /** @var ParticipantFood $mask */
                 $mask = $entity->getFood(true);
-                return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'ja' : 'nein';
+                return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'vs' : 'nein';
             }
         );
         $this->addColumn($column);
@@ -81,7 +81,7 @@ class ParticipantsSheet extends AbstractSheet
             function ($value, $entity) {
                 /** @var ParticipantFood $mask */
                 $mask = $entity->getFood(true);
-                return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'ja' : 'nein';
+                return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'lf' : 'nein';
             }
         );
         $this->addColumn($column);
@@ -91,7 +91,7 @@ class ParticipantsSheet extends AbstractSheet
             function ($value, $entity) {
                 /** @var ParticipantFood $mask */
                 $mask = $entity->getFood(true);
-                return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'ja' : 'nein';
+                return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'os' : 'nein';
             }
         );
         $this->addColumn($column);
