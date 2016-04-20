@@ -2,8 +2,9 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\BitMask\ParticipationFood;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\PhoneNumber;
+use libphonenumber\PhoneNumberUtil;
 
 class ParticipationsSheet extends AbstractSheet
 {
@@ -25,7 +26,7 @@ class ParticipationsSheet extends AbstractSheet
 
     public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participations)
     {
-        $this->event        = $event;
+        $this->event          = $event;
         $this->participations = $participations;
 
         parent::__construct($sheet);
@@ -34,14 +35,41 @@ class ParticipationsSheet extends AbstractSheet
         $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
         $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
 
-        $column = new EntitySheetColumn('participants', 'Teilnehmer');
+        $this->addColumn(new EntitySheetColumn('addressStreet', 'Straße (Anschrift)'));
+        $this->addColumn(new EntitySheetColumn('addressCity', 'Stadt (Anschrift)'));
+        $this->addColumn(new EntitySheetColumn('addressZip', 'PLZ (Anschrift)'));
+
+        $this->addColumn(new EntitySheetColumn('email', 'E-Mail'));
+
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+        $column          = new EntitySheetColumn('phoneNumbers', 'Telefonnummern');
         $column->setConverter(
-            function ($value, $entity) {
-                return count($value);
+            function ($value, $entity) use ($phoneNumberUtil) {
+                $numberText  = '';
+                $numberCount = count($value);
+                $i           = 1;
+
+                /** @var PhoneNumber $number */
+                foreach ($value as $number) {
+                    $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
+                    if ($number->getDescription()) {
+                        $numberText .= ' (';
+                        $numberText .= $number->getDescription();
+                        $numberText .= ')';
+                    }
+
+                    if ($i++ > $numberCount) {
+                        $numberText .= ', ';
+                    }
+                }
+
+                return $numberText;
             }
         );
+        $column->setWidth(13.5);
+        $this->addColumn($column);
 
-        $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
+        $column = new EntitySheetColumn('createdAt', 'Eingang');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
             function ($value, $entity) {
@@ -51,6 +79,15 @@ class ParticipationsSheet extends AbstractSheet
         );
         $column->setWidth(13.5);
         $this->addColumn($column);
+
+        $column = new EntitySheetColumn('participants', 'Teilnehmer');
+        $column->setConverter(
+            function ($value, $entity) {
+                return count($value);
+            }
+        );
+        $this->addColumn($column);
+
     }
 
     public function setHeader($title = null, $subtitle = null)
