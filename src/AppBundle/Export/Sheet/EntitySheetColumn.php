@@ -109,7 +109,7 @@ class EntitySheetColumn extends AbstractSheetColumn
 	 *
 	 * @param \PHPExcel_Worksheet $sheet Excel sheet to write
 	 * @param integer $row Current row
-	 * @param Object $entity Entity to process
+	 * @param mixed $entity Entity to process
 	 */
 	public function process($sheet, $row, $entity)
 	{
