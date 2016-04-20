@@ -281,7 +281,8 @@ class AdminParticipationController extends Controller
     /**
      * Page for list of participants of an event
      *
-     * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"}, name="event_participations_export")
+     * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
+     *                                                    name="event_participations_export")
      */
     public function exportParticipationsAction($eid)
     {
@@ -296,7 +297,9 @@ class AdminParticipationController extends Controller
             );
         }
 
-        $participationsList = $event->getParticipations()->getValues();
+        $eventRepository    = $this->getDoctrine()
+                                   ->getRepository('AppBundle:Event');
+        $participationsList = $eventRepository->participationsList($event);
 
         $export = new ParticipationsExport($event, $participationsList, $this->getUser());
         $export->setMetadata();

@@ -58,14 +58,44 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get a list of participants of an event
+     * Get a list of participations of an event
      *
-     * @param   Event      $event  The event
-     * @param   null|array $filter Transmit a list of aids to filter out participants not included in list
+     * @param   Event $event          The event
+     * @param   bool  $includeDeleted Set to true to include deleted participants
      * @return  array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function participantsList(Event $event, array $filter = null)
+    public function participationsList(Event $event, $includeDeleted = false)
+    {
+        $eid = $event->getEid();
+
+        $qb = $this->createQueryBuilder('AppBundle:Participation')
+                   ->select('p')
+                   ->from('AppBundle:Participation', 'p')
+                   ->andWhere('p.event = :eid')
+                   ->orderBy('p.nameFirst, p.nameLast', 'ASC');
+
+        if (!$includeDeleted) {
+            $qb->andWhere('p.deletedAt IS NULL');
+        }
+
+        $qb->setParameter('eid', $eid);
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    /**
+     * Get a list of participants of an event
+     *
+     * @param   Event      $event          The event
+     * @param   null|array $filter         Transmit a list of aids to filter out participants not included in list
+     * @param   bool       $includeDeleted Set to true to include deleted participants
+     * @return  array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function participantsList(Event $event, array $filter = null, $includeDeleted = false)
     {
         $eid = $event->getEid();
 
@@ -81,6 +111,10 @@ class EventRepository extends EntityRepository
                    ->where('a.participation = p.pid')
                    ->andWhere('p.event = :eid')
                    ->orderBy('a.nameFirst, a.nameLast', 'ASC');
+
+        if (!$includeDeleted) {
+            $qb->andWhere('a.deletedAt IS NULL');
+        }
 
         if ($filter !== null) {
             $qb->andWhere("a.aid IN(:participantList)")
@@ -208,18 +242,18 @@ class EventRepository extends EntityRepository
         $stmt->execute(array($eid));
 
         $genderDistribution = array();
-        foreach($stmt->fetchAll() as $distribution) {
-            switch($distribution['gender']) {
+        foreach ($stmt->fetchAll() as $distribution) {
+            switch ($distribution['gender']) {
                 case Participant::TYPE_GENDER_FEMALE:
                     $genderDistribution[Participant::TYPE_GENDER_FEMALE] = array(
-                        'type' => Participant::TYPE_GENDER_FEMALE,
+                        'type'  => Participant::TYPE_GENDER_FEMALE,
                         'label' => Participant::LABEL_GENDER_FEMALE,
                         'count' => $distribution['count']
                     );
                     break;
                 case Participant::TYPE_GENDER_MALE:
                     $genderDistribution[Participant::TYPE_GENDER_MALE] = array(
-                        'type' => Participant::TYPE_GENDER_MALE,
+                        'type'  => Participant::TYPE_GENDER_MALE,
                         'label' => Participant::LABEL_GENDER_MALE,
                         'count' => $distribution['count']
                     );
@@ -229,7 +263,7 @@ class EventRepository extends EntityRepository
             }
         }
 
-            return $genderDistribution;
+        return $genderDistribution;
     }
 
     /**
