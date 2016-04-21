@@ -3,7 +3,6 @@ namespace AppBundle\Export;
 
 
 use AppBundle\Entity\User;
-use Doctrine\ORM\Id\UuidGenerator;
 use PHPExcel;
 use PHPExcel_Writer_Excel2007;
 
@@ -75,6 +74,7 @@ abstract class Export
         if ($this->sheetIndex === null) {
             $this->sheetIndex = 0;
         } else {
+            $this->document->createSheet();
             ++$this->sheetIndex;
         }
 
