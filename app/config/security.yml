@@ -23,10 +23,15 @@ security:
                 csrf_token_generator: security.csrf.token_manager
                 # if you are using Symfony < 2.8, use the following config instead:
                 # csrf_provider: form.csrf_provider
+                require_previous_session: false
 
             logout:       true
             anonymous:    true
         # disables authentication for assets and the profiler, adapt it according to your needs
+            remember_me:
+                key:      "%secret%"
+                lifetime: 2419200 # 4 weeks in seconds
+                path:     /
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
