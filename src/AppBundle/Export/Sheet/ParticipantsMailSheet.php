@@ -4,7 +4,6 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
 
 class ParticipantsMailSheet extends ParticipantsSheet
@@ -40,7 +39,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
                 $numberCount = count($value);
                 $i           = 1;
 
-                /** @var PhoneNumber $number */
+                /** @var PhoneNumbUsinger $number */
                 foreach ($value as $number) {
                     $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
                     if ($number->getDescription()) {
@@ -50,7 +49,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
                     }
 
                     if ($i++ < $numberCount) {
-                        $numberText .= ', ';
+                        $numberText .= "\n";
                     }
                 }
 
