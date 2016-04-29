@@ -555,7 +555,7 @@ class Participation
      * Set conformation value for all related participants
      *
      * @param   bool $withdrawn New value
-     * @return bool
+     * @return self
      */
     public function setIsWithdrawn($withdrawn = true)
     {

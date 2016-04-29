@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
@@ -76,6 +75,9 @@ class ActiveButtonController extends Controller
                 break;
             case 'Participation':
                 $idColumn = 'pid';
+                break;
+            case 'Participant':
+                $idColumn = 'aid';
                 break;
             default:
                 throw new AccessDeniedHttpException('Unmanaged entity');

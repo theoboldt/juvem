@@ -399,6 +399,34 @@ class Participant
     }
 
     /**
+     * Check if this participant is withdrawn
+     *
+     * @return bool
+     */
+    public function isWithdrawn()
+    {
+        $status = $this->getStatus(true);
+        return $status->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+    }
+
+    /**
+     * Set this participant as withdrawn
+     *
+     * @param   bool $withdrawn New value
+     * @return self
+     */
+    public function setIsWithdrawn($withdrawn = true)
+    {
+        $status = $this->getStatus(true);
+        if ($withdrawn) {
+            $status->enable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+        } else {
+            $status->disable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+        }
+        return $this->setStatus($status);
+    }
+
+    /**
      * Add acquisitionAttributeFillout
      *
      * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout

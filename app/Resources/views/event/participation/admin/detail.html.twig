@@ -187,6 +187,15 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
+                        <div class="panel-footer">
+                            <button type="button" class="btn btn-default" data-element="activebutton"
+                                    data-entity="Participant"
+                                    data-property="isWithdrawn" data-entity-id="{{ participant.aid }}"
+                                    data-token="{{ csrf_token('Participant' ~ 'isWithdrawn' ~ participant.aid ) }}"
+                                    data-button-enable-label="Teilnehmer zurückziehen" data-button-enable-glyph="share-alt"
+                                    data-button-disable-label="Teilnehmer reaktivieren"
+                                    data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
