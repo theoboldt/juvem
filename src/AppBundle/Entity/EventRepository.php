@@ -62,11 +62,12 @@ class EventRepository extends EntityRepository
      *
      * @param   Event $event            The event
      * @param   bool  $includeDeleted   Set to true to include deleted participations
-     * @param   bool  $includeWithdrawn Set to true to include withdrawn participants
+     * @param   bool  $includeWithdrawn Set to true to include participations who have only withdrawn participants
+     *                                  assigned
      * @return  array
      * @throws  \Doctrine\DBAL\DBALException
      */
-    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawn = true)
+    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawn = false)
     {
         $eid = $event->getEid();
 
@@ -81,17 +82,16 @@ class EventRepository extends EntityRepository
         }
 
         if (!$includeWithdrawn) {
-            throw new \InvalidArgumentException('Not yet implemented');
-            /*
-            $qb->andWhere('EXISTS SELECT Participant FROM Participant WHERE pid = pid AND NOT ');
-Adde
-             *                           AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
-                          ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
-                              AND p.eid = ?';
-            $qb->andWhere('p.deletedAt IS NULL');
-             */
+            $qb->andWhere(
+                sprintf(
+                    'EXISTS (SELECT a
+                                   FROM AppBundle:Participant a
+                                  WHERE p.pid = a.participation
+                                    AND BIT_AND(a.status, %1$d) != %1$d)',
+                    ParticipantStatus::TYPE_STATUS_WITHDRAWN
+                )
+            );
         }
-
 
         $qb->setParameter('eid', $eid);
 
@@ -160,11 +160,11 @@ Adde
         /** @var \DateTime $start */
         $query = sprintf(
             'SELECT COUNT(*)
-                 FROM participant a, participation p
-                WHERE a.pid = p.pid
-                  AND a.deleted_at IS NULL
-                  AND (a.status & %1$d) != %1$d
-                  AND p.eid = ?',
+               FROM participant a, participation p
+              WHERE a.pid = p.pid
+                AND a.deleted_at IS NULL
+                AND (a.status & %1$d) != %1$d
+                AND p.eid = ?',
             ParticipantStatus::TYPE_STATUS_WITHDRAWN
         );
 
@@ -189,14 +189,15 @@ Adde
         /** @var \DateTime $start */
         $start = $event->getStartDate();
 
-        $query
-            = 'SELECT a.birthday
-                 FROM participant a, participation p
-                WHERE a.pid = p.pid
-                  AND a.deleted_at IS NULL
-                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
-              ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
-                  AND p.eid = ?';
+        $query = sprintf(
+            'SELECT a.birthday
+               FROM participant a, participation p
+              WHERE a.pid = p.pid
+                AND a.deleted_at IS NULL
+                AND (a.status & %1$d) != %1$d
+                AND p.eid = ?',
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+        );
 
         $stmt = $this->getEntityManager()
                      ->getConnection()
