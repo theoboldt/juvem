@@ -60,12 +60,13 @@ class EventRepository extends EntityRepository
     /**
      * Get a list of participations of an event
      *
-     * @param   Event $event          The event
-     * @param   bool  $includeDeleted Set to true to include deleted participants
+     * @param   Event $event            The event
+     * @param   bool  $includeDeleted   Set to true to include deleted participations
+     * @param   bool  $includeWithdrawn Set to true to include withdrawn participants
      * @return  array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws  \Doctrine\DBAL\DBALException
      */
-    public function participationsList(Event $event, $includeDeleted = false)
+    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawn = true)
     {
         $eid = $event->getEid();
 
@@ -79,6 +80,19 @@ class EventRepository extends EntityRepository
             $qb->andWhere('p.deletedAt IS NULL');
         }
 
+        if (!$includeWithdrawn) {
+            throw new \InvalidArgumentException('Not yet implemented');
+            /*
+            $qb->andWhere('EXISTS SELECT Participant FROM Participant WHERE pid = pid AND NOT ');
+Adde
+             *                           AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
+                          ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
+                              AND p.eid = ?';
+            $qb->andWhere('p.deletedAt IS NULL');
+             */
+        }
+
+
         $qb->setParameter('eid', $eid);
 
         $query = $qb->getQuery();
@@ -89,13 +103,15 @@ class EventRepository extends EntityRepository
     /**
      * Get a list of participants of an event
      *
-     * @param   Event      $event          The event
-     * @param   null|array $filter         Transmit a list of aids to filter out participants not included in list
-     * @param   bool       $includeDeleted Set to true to include deleted participants
+     * @param   Event      $event            The event
+     * @param   null|array $filter           Transmit a list of aids to filter out participants not included in list
+     * @param   bool       $includeDeleted   Set to true to include deleted participants
+     * @param   bool       $includeWithdrawn Set to true to include withdrawn participants
      * @return  array
-     * @throws \Doctrine\DBAL\DBALException
      */
-    public function participantsList(Event $event, array $filter = null, $includeDeleted = false)
+    public function participantsList(Event $event, array $filter = null, $includeDeleted = false,
+                                     $includeWithdrawn = false
+    )
     {
         $eid = $event->getEid();
 
@@ -114,6 +130,10 @@ class EventRepository extends EntityRepository
 
         if (!$includeDeleted) {
             $qb->andWhere('a.deletedAt IS NULL');
+        }
+
+        if (!$includeWithdrawn) {
+            $qb->andWhere(sprintf('BIT_AND(a.status, %1$d) != %1$d', ParticipantStatus::TYPE_STATUS_WITHDRAWN));
         }
 
         if ($filter !== null) {
@@ -138,14 +158,15 @@ class EventRepository extends EntityRepository
     {
         $eid = $event->getEid();
         /** @var \DateTime $start */
-        $query
-            = 'SELECT COUNT(*)
+        $query = sprintf(
+            'SELECT COUNT(*)
                  FROM participant a, participation p
                 WHERE a.pid = p.pid
                   AND a.deleted_at IS NULL
-                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
-              ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
-                  AND p.eid = ?';
+                  AND (a.status & %1$d) != %1$d
+                  AND p.eid = ?',
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+        );
 
         $stmt = $this->getEntityManager()
                      ->getConnection()
