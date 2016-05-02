@@ -75,7 +75,7 @@ class AdminParticipationController extends Controller
             );
         }
 
-        $participantEntityList = $eventRepository->participantsList($event);
+        $participantEntityList = $eventRepository->participantsList($event, null, true, true);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = new LabelFormatter();
