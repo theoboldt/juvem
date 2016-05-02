@@ -38,9 +38,10 @@ class ParticipantsSheet extends AbstractSheet
         $column = new EntitySheetColumn('birthday', 'Geburtstag');
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
-            function ($value, $entity) {
-                /** \DateTime $value */
-                return $value->format('d.m.Y');
+            function (\DateTime $value, $entity) {
+                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                    $value->format('Y'), $value->format('m'), $value->format('d')
+                );
             }
         );
         $this->addColumn($column);
@@ -51,7 +52,7 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = EntitySheetColumn::createSmallColumn('gender', 'Geschlecht');
         $column->setConverter(
-            function ($value, $entity) {
+            function ($value, Participant $entity) {
                 return substr($entity->getGender(true), 0, 1);
             }
         );
@@ -59,8 +60,7 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = EntitySheetColumn::createYesNoColumn('food_vegan', 'Vegan', 'food');
         $column->setConverter(
-            function ($value, $entity) {
-                /** @var ParticipantFood $mask */
+            function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
                 return $mask->has(ParticipantFood::TYPE_FOOD_VEGAN) ? 'vn' : 'nein';
             }
@@ -69,8 +69,7 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = EntitySheetColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
         $column->setConverter(
-            function ($value, $entity) {
-                /** @var ParticipantFood $mask */
+            function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
                 return $mask->has(ParticipantFood::TYPE_FOOD_VEGETARIAN) ? 'vs' : 'nein';
             }
@@ -79,8 +78,7 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = EntitySheetColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
         $column->setConverter(
-            function ($value, $entity) {
-                /** @var ParticipantFood $mask */
+            function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
                 return $mask->has(ParticipantFood::TYPE_FOOD_LACTOSE_FREE) ? 'lf' : 'nein';
             }
@@ -89,8 +87,7 @@ class ParticipantsSheet extends AbstractSheet
 
         $column = EntitySheetColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
         $column->setConverter(
-            function ($value, $entity) {
-                /** @var ParticipantFood $mask */
+            function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
                 return $mask->has(ParticipantFood::TYPE_FOOD_NO_PORK) ? 'os' : 'nein';
             }
@@ -120,12 +117,14 @@ class ParticipantsSheet extends AbstractSheet
         $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
-            function ($value, $entity) {
-                /** \DateTime $value */
-                return $value->format('d.m.Y H:i');
+            function (\DateTime $value, $entity) {
+                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                    $value->format('Y'), $value->format('m'), $value->format('d'),
+                    $value->format('H'), $value->format('i')
+                );
             }
         );
-        $column->setWidth(13.5);
+        $column->setWidth(14);
         $this->addColumn($column);
 
         $this->addColumn(new EntitySheetColumn('aid', 'AID'));

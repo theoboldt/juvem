@@ -3,6 +3,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
 
@@ -44,7 +45,7 @@ class ParticipationsSheet extends AbstractSheet
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $column          = new EntitySheetColumn('phoneNumbers', 'Telefonnummern');
         $column->setConverter(
-            function ($value, $entity) use ($phoneNumberUtil) {
+            function ($value, Participation $entity) use ($phoneNumberUtil) {
                 $numberText  = '';
                 $numberCount = count($value);
                 $i           = 1;
@@ -72,12 +73,14 @@ class ParticipationsSheet extends AbstractSheet
         $column = new EntitySheetColumn('createdAt', 'Eingang');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
-            function ($value, $entity) {
-                /** \DateTime $value */
-                return $value->format('d.m.Y H:i');
+            function (\DateTime $value, $entity) {
+                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                    $value->format('Y'), $value->format('m'), $value->format('d'),
+                    $value->format('H'), $value->format('i')
+                );
             }
         );
-        $column->setWidth(13.5);
+        $column->setWidth(14);
         $this->addColumn($column);
 
         $column = new EntitySheetColumn('participants', 'Teilnehmer');
@@ -101,7 +104,7 @@ class ParticipationsSheet extends AbstractSheet
     public function setBody()
     {
 
-        /** @var Participant $participation */
+        /** @var Participation $participation */
         foreach ($this->participations as $participation) {
             $row = $this->row();
 
