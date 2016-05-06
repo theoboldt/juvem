@@ -5,7 +5,6 @@
         "This file is @generated automatically"
     ],
     "hash": "6e4a4743137b8075dabc305cf54c97a3",
-    "content-hash": "6e72ac38626590b2c9fcc7f357869406",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -819,12 +818,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "16b04c49af05dd3fb381e4abe04f0e5e231ac76d"
+                "reference": "def27463609e24af410b2606f0062de46fab5662"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/16b04c49af05dd3fb381e4abe04f0e5e231ac76d",
-                "reference": "16b04c49af05dd3fb381e4abe04f0e5e231ac76d",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/def27463609e24af410b2606f0062de46fab5662",
+                "reference": "def27463609e24af410b2606f0062de46fab5662",
                 "shasum": ""
             },
             "require": {
@@ -880,7 +879,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-03-08 11:05:28"
+            "time": "2016-04-28 10:51:07"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -963,16 +962,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "7.3.0",
+            "version": "7.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "9732331f19e638099e2342a2fbd1bf750dfcd6b2"
+                "reference": "0681962d2feba35935d1bd06d3088b548801b76a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/9732331f19e638099e2342a2fbd1bf750dfcd6b2",
-                "reference": "9732331f19e638099e2342a2fbd1bf750dfcd6b2",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/0681962d2feba35935d1bd06d3088b548801b76a",
+                "reference": "0681962d2feba35935d1bd06d3088b548801b76a",
                 "shasum": ""
             },
             "require": {
@@ -1022,7 +1021,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2016-04-08 11:10:48"
+            "time": "2016-05-04 08:29:21"
         },
         {
             "name": "imagine/imagine",
@@ -1278,21 +1277,22 @@
         },
         {
             "name": "knplabs/knp-markdown-bundle",
-            "version": "1.4.2",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpMarkdownBundle.git",
-                "reference": "27d6c8c866a5fef70df3f219e6c2afab25e145ce"
+                "reference": "3581dabfc5e6627261abb0b6513b73b8e95f2c92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpMarkdownBundle/zipball/27d6c8c866a5fef70df3f219e6c2afab25e145ce",
-                "reference": "27d6c8c866a5fef70df3f219e6c2afab25e145ce",
+                "url": "https://api.github.com/repos/KnpLabs/KnpMarkdownBundle/zipball/3581dabfc5e6627261abb0b6513b73b8e95f2c92",
+                "reference": "3581dabfc5e6627261abb0b6513b73b8e95f2c92",
                 "shasum": ""
             },
             "require": {
                 "michelf/php-markdown": "~1.4",
                 "php": ">=5.3.9",
+                "symfony/dependency-injection": "~2.3|~3.0",
                 "symfony/framework-bundle": "~2.3|~3.0"
             },
             "require-dev": {
@@ -1335,7 +1335,7 @@
                 "knplabs",
                 "markdown"
             ],
-            "time": "2015-12-15 20:41:45"
+            "time": "2016-05-04 16:08:55"
         },
         {
             "name": "knplabs/knp-menu",
@@ -1655,87 +1655,39 @@
             "time": "2016-04-12 18:29:35"
         },
         {
-            "name": "ocramius/package-versions",
-            "version": "1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Ocramius/PackageVersions.git",
-                "reference": "a108adf44c4663bfb72858ea2fcd174acddd317e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/PackageVersions/zipball/a108adf44c4663bfb72858ea2fcd174acddd317e",
-                "reference": "a108adf44c4663bfb72858ea2fcd174acddd317e",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.0",
-                "php": "~7.0"
-            },
-            "require-dev": {
-                "composer/composer": "^1.0.0-ALPHA11@ALPHA",
-                "phpunit/phpunit": "^5.2.8"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "PackageVersions\\Installer",
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PackageVersions\\": "src/PackageVersions"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com"
-                }
-            ],
-            "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
-            "time": "2016-02-26 14:00:23"
-        },
-        {
             "name": "ocramius/proxy-manager",
-            "version": "2.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "6c89b7bd6039d8047b1473e2074cb56baa4bc15d"
+                "reference": "57e9272ec0e8deccf09421596e0e2252df440e11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/6c89b7bd6039d8047b1473e2074cb56baa4bc15d",
-                "reference": "6c89b7bd6039d8047b1473e2074cb56baa4bc15d",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/57e9272ec0e8deccf09421596e0e2252df440e11",
+                "reference": "57e9272ec0e8deccf09421596e0e2252df440e11",
                 "shasum": ""
             },
             "require": {
-                "ocramius/package-versions": "^1.0",
-                "php": "~7.0",
-                "zendframework/zend-code": "~3.0"
+                "php": ">=5.3.3",
+                "zendframework/zend-code": ">2.2.5,<3.0"
             },
             "require-dev": {
-                "couscous/couscous": "^1.4.0",
                 "ext-phar": "*",
-                "phpunit/phpunit": "^5.1.3",
-                "squizlabs/php_codesniffer": "^2.5.1"
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "1.5.*"
             },
             "suggest": {
                 "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
                 "zendframework/zend-json": "To have the JsonRpc adapter (Remote Object feature)",
                 "zendframework/zend-soap": "To have the Soap adapter (Remote Object feature)",
+                "zendframework/zend-stdlib": "To use the hydrator proxy",
                 "zendframework/zend-xmlrpc": "To have the XmlRpc adapter (Remote Object feature)"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -1751,7 +1703,7 @@
                 {
                     "name": "Marco Pivetta",
                     "email": "ocramius@gmail.com",
-                    "homepage": "http://ocramius.github.io/"
+                    "homepage": "http://ocramius.github.com/"
                 }
             ],
             "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
@@ -1763,7 +1715,7 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2016-02-08 13:50:05"
+            "time": "2015-08-09 04:28:19"
         },
         {
             "name": "paragonie/random_compat",
@@ -1914,12 +1866,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "3a160355bb1364da55ed9e415c1aa1fa8d457b6f"
+                "reference": "ffe306d09c1f2bad721237f63b2169d1b78253d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/3a160355bb1364da55ed9e415c1aa1fa8d457b6f",
-                "reference": "3a160355bb1364da55ed9e415c1aa1fa8d457b6f",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/ffe306d09c1f2bad721237f63b2169d1b78253d0",
+                "reference": "ffe306d09c1f2bad721237f63b2169d1b78253d0",
                 "shasum": ""
             },
             "require": {
@@ -1958,7 +1910,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2016-03-15 16:21:41"
+            "time": "2016-04-25 20:50:31"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2068,16 +2020,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.4.1",
+            "version": "v5.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421"
+                "reference": "d8db871a54619458a805229a057ea2af33c753e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/0697e6aa65c83edf97bb0f23d8763f94e3f11421",
-                "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/d8db871a54619458a805229a057ea2af33c753e8",
+                "reference": "d8db871a54619458a805229a057ea2af33c753e8",
                 "shasum": ""
             },
             "require": {
@@ -2117,7 +2069,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2015-06-06 14:19:39"
+            "time": "2016-05-01 08:45:47"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -2632,27 +2584,27 @@
         },
         {
             "name": "symfony/security-acl",
-            "version": "v2.8.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security-acl.git",
-                "reference": "4a3f7327ad215242c78f6564ad4ea6d2db1b8347"
+                "reference": "053b49bf4aa333a392c83296855989bcf88ddad1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security-acl/zipball/4a3f7327ad215242c78f6564ad4ea6d2db1b8347",
-                "reference": "4a3f7327ad215242c78f6564ad4ea6d2db1b8347",
+                "url": "https://api.github.com/repos/symfony/security-acl/zipball/053b49bf4aa333a392c83296855989bcf88ddad1",
+                "reference": "053b49bf4aa333a392c83296855989bcf88ddad1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9",
-                "symfony/security-core": "~2.4|~3.0.0"
+                "php": ">=5.5.9",
+                "symfony/security-core": "~2.8|~3.0"
             },
             "require-dev": {
                 "doctrine/common": "~2.2",
                 "doctrine/dbal": "~2.2",
                 "psr/log": "~1.0",
-                "symfony/phpunit-bridge": "~2.7|~3.0.0"
+                "symfony/phpunit-bridge": "~2.8|~3.0"
             },
             "suggest": {
                 "doctrine/dbal": "For using the built-in ACL implementation",
@@ -2662,7 +2614,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -2689,7 +2641,7 @@
             ],
             "description": "Symfony Security Component - ACL (Access Control List)",
             "homepage": "https://symfony.com",
-            "time": "2015-12-28 09:39:09"
+            "time": "2015-12-28 09:39:46"
         },
         {
             "name": "symfony/swiftmailer-bundle",
@@ -2754,12 +2706,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "68415abf71ad6727c8a269581a113fd29ccdfd66"
+                "reference": "27c122e0ca98b7d44629ba71d3b45bfc6aaff476"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/68415abf71ad6727c8a269581a113fd29ccdfd66",
-                "reference": "68415abf71ad6727c8a269581a113fd29ccdfd66",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/27c122e0ca98b7d44629ba71d3b45bfc6aaff476",
+                "reference": "27c122e0ca98b7d44629ba71d3b45bfc6aaff476",
                 "shasum": ""
             },
             "require": {
@@ -2774,7 +2726,7 @@
                 "symfony/polyfill-php56": "~1.0",
                 "symfony/polyfill-php70": "~1.0",
                 "symfony/polyfill-util": "~1.0",
-                "symfony/security-acl": "~2.7",
+                "symfony/security-acl": "~2.7|~3.0.0",
                 "twig/twig": "~1.23|~2.0"
             },
             "conflict": {
@@ -2880,7 +2832,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-04-20 18:52:26"
+            "time": "2016-05-03 18:59:18"
         },
         {
             "name": "twig/twig",
@@ -3016,28 +2968,27 @@
         },
         {
             "name": "zendframework/zend-code",
-            "version": "3.0.1",
+            "version": "2.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-code.git",
-                "reference": "09405eb04b7199733219cbf1f0803883a7bab842"
+                "reference": "95033f061b083e16cdee60530ec260d7d628b887"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-code/zipball/09405eb04b7199733219cbf1f0803883a7bab842",
-                "reference": "09405eb04b7199733219cbf1f0803883a7bab842",
+                "url": "https://api.github.com/repos/zendframework/zend-code/zipball/95033f061b083e16cdee60530ec260d7d628b887",
+                "reference": "95033f061b083e16cdee60530ec260d7d628b887",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5 || ^7.0",
+                "php": "^5.5 || 7.0.0 - 7.0.4 || ^7.0.6",
                 "zendframework/zend-eventmanager": "^2.6 || ^3.0"
             },
             "require-dev": {
                 "doctrine/annotations": "~1.0",
-                "ext-phar": "*",
+                "fabpot/php-cs-fixer": "1.7.*",
                 "phpunit/phpunit": "^4.8.21",
-                "squizlabs/php_codesniffer": "^2.5",
-                "zendframework/zend-stdlib": "~2.7"
+                "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
             "suggest": {
                 "doctrine/annotations": "Doctrine\\Common\\Annotations >=1.0 for annotation features",
@@ -3046,8 +2997,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev",
-                    "dev-develop": "3.1-dev"
+                    "dev-master": "2.6-dev",
+                    "dev-develop": "2.7-dev"
                 }
             },
             "autoload": {
@@ -3065,7 +3016,7 @@
                 "code",
                 "zf2"
             ],
-            "time": "2016-01-26 17:57:25"
+            "time": "2016-04-20 17:26:42"
         },
         {
             "name": "zendframework/zend-eventmanager",
@@ -3177,16 +3128,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v2.8.4",
+            "version": "v2.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "a967db6a4cd5d276cf849d01b29dba559e149978"
+                "reference": "9d30940765450ccc58bc39f4bda30cc412101b4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/a967db6a4cd5d276cf849d01b29dba559e149978",
-                "reference": "a967db6a4cd5d276cf849d01b29dba559e149978",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/9d30940765450ccc58bc39f4bda30cc412101b4b",
+                "reference": "9d30940765450ccc58bc39f4bda30cc412101b4b",
                 "shasum": ""
             },
             "require": {
@@ -3228,7 +3179,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2016-03-23 13:45:24"
+            "time": "2016-04-05 16:36:54"
         }
     ],
     "aliases": [],
