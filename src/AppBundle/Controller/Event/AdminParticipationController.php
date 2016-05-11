@@ -10,6 +10,7 @@ use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
+use AppBundle\Twig\Extension\BootstrapGlyph;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -102,6 +103,12 @@ class AdminParticipationController extends Controller
 
             $participantStatus = $participant->getStatus(true);
 
+            $age = number_format($participant->getAgeAtEvent(), 1, ',', '.');
+            if ($participant->hasBirthdayAtEvent()) {
+                $glyph = new BootstrapGlyph();
+                $age .= ' ' . $glyph->bootstrapGlyph('gift');
+            }
+
             $participantList[] = array(
                 'aid'              => $participant->getAid(),
                 'pid'              => $participant->getParticipation()
@@ -112,7 +119,7 @@ class AdminParticipationController extends Controller
                 'is_confirmed'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
                 'nameFirst'        => $participant->getNameFirst(),
                 'nameLast'         => $participant->getNameLast(),
-                'age'              => number_format($participant->getAgeAtEvent(), 1, ',', '.'),
+                'age'              => $age,
                 'phone'            => implode(', ', $participantPhoneList),
                 'status'           => $statusFormatter->formatMask($participantStatus),
                 'gender'           => $participant->getGender(true),

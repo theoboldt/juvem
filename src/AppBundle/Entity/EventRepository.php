@@ -307,4 +307,26 @@ class EventRepository extends EntityRepository
         }
         return $ageInYears;
     }
+
+    /**
+     * Check if a birthday is celebrated in a given time span
+     *
+     * @param \DateTime      $birthday The birthday of the person which age should be calculated
+     * @param \DateTime      $start    Begin of timespan in which the birthday may happen
+     * @param \DateTime|null $start    End of timespan in which the birthday may happen. May be null if start and end
+     *                                 is same
+     * @return bool True if so
+     */
+    public static function hasBirthdayInTimespan(\DateTime $birthday, \DateTime $start, \DateTime $end = null)
+    {
+        if (!$end) {
+            $end = $start;
+        }
+        $birthdayInStartYear = new \DateTime();
+        $birthdayInStartYear->setDate(
+            (int)$start->format('Y'), (int)$birthday->format('m'), (int)$birthday->format('d')
+        );
+
+        return ($birthdayInStartYear >= $start && $birthdayInStartYear <= $end);
+    }
 }

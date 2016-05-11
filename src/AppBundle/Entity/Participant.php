@@ -204,11 +204,29 @@ class Participant
         return $this->birthday;
     }
 
+    /**
+     * Get age of participant at the related event
+     *
+     * @param int|null $precision If you want the result to be rounded with round(), specify precision here
+     * @return float              Age in years
+     */
     public function getAgeAtEvent($precision = null)
     {
         $event = $this->getParticipation()
                       ->getEvent();
         return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
+    }
+
+    /**
+     * Check if participant has birthday at related event
+     *
+     * @return bool True if so
+     */
+    public function hasBirthdayAtEvent()
+    {
+        $event = $this->getParticipation()
+                      ->getEvent();
+        return EventRepository::hasBirthdayInTimespan($this->getBirthday(), $event->getStartDate(), $event->getEndDate());
     }
 
     /**
