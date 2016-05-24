@@ -252,10 +252,10 @@ jQuery(document).ready(function () {
         var updateButton = $('*#mail-form .btn-update-preview');
         updateButton.prop('disabled', true);
         var content = {
-                subject: $("input[name='app_bundle_event_mail[subject]']").val(),
-                title: $("input[name='app_bundle_event_mail[title]']").val(),
-                lead: $("input[name='app_bundle_event_mail[lead]']").val(),
-                content: $("textarea[name='app_bundle_event_mail[content]']").val()
+                subject: $("#event_mail_subject").val(),
+                title: $("#event_mail_title").val(),
+                lead: $("#event_mail_lead").val(),
+                content: $("#event_mail_content").val()
             },
             preview = $('*#mail-template iframe').contents(),
             exampleSalution = 'Frau',
