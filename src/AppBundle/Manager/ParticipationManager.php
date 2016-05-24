@@ -3,13 +3,12 @@
 namespace AppBundle\Manager;
 
 use AppBundle\Entity\Event;
-use \AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\Participation;
 use AppBundle\Twig\MailGenerator;
 use Swift_Mailer;
 use Symfony\Component\Templating\EngineInterface;
-use Twig_Environment;
 
 class ParticipationManager
 {
@@ -99,7 +98,7 @@ class ParticipationManager
             $contentHtml = htmlentities($content);
 
             if ($area == 'content') {
-                $contentHtml = str_replace("\n\n", '</p><p>', $contentHtml);
+                $contentHtml = str_replace(array("\n\n", "\r\r", "\r\n\r\n"), '</p><p>', $contentHtml);
             }
 
             $dataHtml[$area] = $contentHtml;
@@ -125,7 +124,7 @@ class ParticipationManager
                 unset($contentList);
 
                 $message = $this->mailGenerator->getMessage(
-                    'general', $dataBoth
+                    'general-raw', $dataBoth
                 );
                 $message->setTo(
                     $participation->getEmail(),

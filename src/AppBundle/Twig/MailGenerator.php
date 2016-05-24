@@ -3,14 +3,26 @@ namespace AppBundle\Twig;
 
 use Swift_Message;
 use Twig_Environment;
+use Twig_Template;
 
 class MailGenerator
 {
+    /**
+     * Twig environment used for rendering
+     *
+     * @var Twig_Environment
+     */
     protected $twig;
 
+    /**
+     * Create new mail generator
+     *
+     * @param Twig_Environment $twig
+     */
     public function __construct(Twig_Environment $twig)
     {
         $this->twig = $twig;
+
     }
 
     /**
@@ -22,6 +34,7 @@ class MailGenerator
      */
     public function getMessageByPath($path, $parameters = array())
     {
+        /** @var Twig_Template $template */
         $template = $this->twig->loadTemplate($path); // Define your own schema
 
         $subject  = $template->renderBlock('subject', $parameters);
