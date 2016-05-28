@@ -7,6 +7,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
@@ -322,6 +323,48 @@ class AdminParticipationController extends Controller
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $event->getTitle() . ' - Anmeldungen.xlsx'
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        return $response;
+    }
+
+    /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
+     *                                                    name="event_participants_birthday_address_export")
+     */
+    public function exportParticipantsBirthdayAddressAction($eid)
+    {
+        $eventRepository = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $eventRepository    = $this->getDoctrine()
+                                   ->getRepository('AppBundle:Event');
+        $participantList    = $eventRepository->participantsList($event);
+
+        $export = new ParticipantsBirthdayAddressExport($event, $participantList, $this->getUser());
+        $export->setMetadata();
+        $export->process();
+
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $event->getTitle() . ' - Teilnehmer.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
 

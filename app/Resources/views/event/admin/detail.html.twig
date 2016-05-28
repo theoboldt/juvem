@@ -29,8 +29,11 @@
                                     exportieren</a></li>
                             <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen
                                     exportieren</a></li>
-                            <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Daten für Serienbrief
+                            <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Für Serienbrief
                                     exportieren</a></li>
+                            <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussanträge
+                                    exportieren</a></li>
+                            <li role="separator" class="divider"></li>
                             <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">E-Mail versenden</a></li>
                         </ul>
                     </div>
