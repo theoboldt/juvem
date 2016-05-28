@@ -1,4 +1,4 @@
-{% block subject %}Eingang der Anmeldung für "{{ event.title }}" bestätigt{% endblock %}
+{% block subject %}{% autoescape false %}Eingang der Anmeldung für "{{ event.title }}" bestätigt{% endautoescape %}{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}

@@ -1,4 +1,4 @@
-{% block subject %}{{ text.subject }}{% endblock %}
+{% block subject %}{% autoescape false %}{{ text.subject }}{% endautoescape %}{% endblock %}
 
 {% block body_text %}
     {% autoescape false %}
