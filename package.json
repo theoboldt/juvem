@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "bootstrap-sass": "^3.3.6",
-    "bootstrap-table": "^1.9.1",
+    "bootstrap-table": "^1.10.1",
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-concat": "^0.5.1",
