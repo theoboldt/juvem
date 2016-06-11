@@ -1,12 +1,30 @@
 <?php
 
+$checkIfDisabled = function () {
+    if (file_exists(__DIR__ . '/app-disabled')) {
+        for ($i = 0; $i <= 20; $i++) {
+            if (file_exists(__DIR__ . '/app-disabled')) {
+                sleep(1);
+            }
+        }
+        if (file_exists(__DIR__ . '/app-disabled')) {
+            header('HTTP/1.1 503 Service Temporarily Unavailable');
+            header('Status: 503 Service Temporarily Unavailable');
+            header('Retry-After: ' . (60 * 2));
+            readfile(__DIR__ . '/disabled.html');
+            exit;
+        }
+    }
+};
+$checkIfDisabled();
+
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @var Composer\Autoload\ClassLoader
  */
-$loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../app/bootstrap.php.cache';
+$loader = require __DIR__ . '/../app/autoload.php';
+include_once __DIR__ . '/../app/bootstrap.php.cache';
 
 // Enable APC for autoloading to improve performance.
 // You should change the ApcClassLoader first argument to a unique prefix
@@ -26,7 +44,7 @@ $kernel->loadClassCache();
 
 // When using the HttpCache, you need to call the method in your front controller instead of relying on the configuration parameter
 //Request::enableHttpMethodParameterOverride();
-$request = Request::createFromGlobals();
+$request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
