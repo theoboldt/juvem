@@ -3,8 +3,9 @@
 $checkIfDisabled = function () {
     if (file_exists(__DIR__ . '/app-disabled')) {
         for ($i = 0; $i <= 20; $i++) {
-            if (file_exists(__DIR__ . '/app-disabled')) {
-                sleep(1);
+            sleep(1);
+            if (!file_exists(__DIR__ . '/app-disabled')) {
+                break;
             }
         }
         if (file_exists(__DIR__ . '/app-disabled')) {
