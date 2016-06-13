@@ -36,6 +36,7 @@ module.exports = function (grunt) {
                 src: [
                     '<%= resourcesPath %>/js/cookiechoices.js',
                     '<%= resourcesPath %>/js/jquery-1.12.4.js',
+                    'node_modules/jquery-storage-api/jquery.storageapi.js',
                     'node_modules/bootstrap-table/src/bootstrap-table.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
