@@ -35,7 +35,7 @@ module.exports = function (grunt) {
             distJs: {
                 src: [
                     '<%= resourcesPath %>/js/cookiechoices.js',
-                    '<%= resourcesPath %>/js/jquery-1.12.4.js',
+                    'node_modules/jquery/dist/jquery.js',
                     'node_modules/jquery-storage-api/jquery.storageapi.js',
                     'node_modules/bootstrap-table/src/bootstrap-table.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
@@ -51,8 +51,7 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
                     '<%= resourcesPath %>/js/jquery.bsAlerts.min.js',
-                    '<%= resourcesPath %>/js/main.js',
-                    '<%= resourcesPath %>/js/admin-event.js'
+                    '<%= resourcesPath %>/js/main.js'
                 ],
                 dest: 'web/js/all.js'
             },
