@@ -353,7 +353,7 @@ class AcquisitionAttribute
     {
         $options = $this->getFieldOptions();
 
-        if ($this->getFieldType() == FormChoiceType::class && isset($options['choices'])) {
+        if ($this->getFieldType() == FormChoiceType::class && isset($options['multiple'])) {
             return $options['multiple'];
         }
 
