@@ -126,9 +126,9 @@ class AcquisitionController extends Controller
      */
     public function newAction(Request $request)
     {
-        $event = new AcquisitionAttribute();
+        $attribute = new AcquisitionAttribute();
 
-        $form = $this->createForm(AcquisitionType::class, $event);
+        $form = $this->createForm(AcquisitionType::class, $attribute);
 
         $form->handleRequest($request);
 
@@ -136,7 +136,7 @@ class AcquisitionController extends Controller
             $em = $this->getDoctrine()
                        ->getManager();
 
-            $em->persist($event);
+            $em->persist($attribute);
             $em->flush();
 
             return $this->redirectToRoute('acquisition_list');
