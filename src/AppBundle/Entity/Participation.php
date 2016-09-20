@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participation
 {
-    use HumanTrait;
+    use HumanTrait, AcquisitionAttributeFilloutTrait;
 
     /**
      * @ORM\Column(type="integer", name="pid")
@@ -97,13 +97,20 @@ class Participation
      */
     protected $assignedUser;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->phoneNumbers = new ArrayCollection();
-        $this->addPhoneNumber(new PhoneNumber());
+        $phoneNumber    = new PhoneNumber();
+        $phoneNumber->setParticipation($this);
+        $this->addPhoneNumber($phoneNumber);
 
         $this->participants = new ArrayCollection();
-        $this->addParticipant(new Participant());
+        $participant    = new Participant();
+        $participant->setParticipation($this);
+        $this->addParticipant($participant);
 
         $this->acquisitionAttributeFillouts = new ArrayCollection();
 
@@ -572,57 +579,4 @@ class Participation
         return $this;
     }
 
-    /**
-     * Add acquisitionAttributeFillout
-     *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-     *
-     * @return Participation
-     */
-    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-    )
-    {
-        $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
-
-        return $this;
-    }
-
-    /**
-     * Remove acquisitionAttributeFillout
-     *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-     */
-    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-    )
-    {
-        $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
-    }
-
-    /**
-     * Get acquisitionAttributeFillouts
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAcquisitionAttributeFillouts()
-    {
-        return $this->acquisitionAttributeFillouts;
-    }
-
-    /**
-     * Get acquisition attribute fillout with given bid
-     *
-     * @param int $bid The id of the field
-     * @return AcquisitionAttributeFillout      The field
-     * @throws  \OutOfBoundsException           If Requested field was not found
-     */
-    public function getAcquisitionAttributeFillout($bid)
-    {
-        /** @var AcquisitionAttributeFillout $acquisitionAttribute */
-        foreach ($this->getAcquisitionAttributeFillouts() as $fillout) {
-            if ($fillout->getBid() == $bid) {
-                return $fillout;
-            }
-        }
-        throw new \OutOfBoundsException('Requested fillout was not found');
-    }
 }

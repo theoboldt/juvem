@@ -102,7 +102,8 @@ class ParticipantType extends AbstractType
                 'label' => $attribute->getFormTitle()
             );
             try {
-                $options['data'] = $participation->getAcquisitionAttributeFillout($bid);
+                $fillout         = $participation->getAcquisitionAttributeFillout($bid);
+                $options['data'] = $fillout->getValue();
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
             }

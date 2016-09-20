@@ -77,13 +77,22 @@ class AcquisitionAttributeFillout
     }
 
     /**
+     * Get bid of attribute
+     *
+     * @return int
+     */
+    public function getBid() {
+        return $this->getAttribute()->getBid();
+    }
+
+    /**
      * Set participation
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute $participation
+     * @param \AppBundle\Entity\Participation $participation
      *
      * @return AcquisitionAttributeFillout
      */
-    public function setParticipation(\AppBundle\Entity\AcquisitionAttribute $participation = null)
+    public function setParticipation(\AppBundle\Entity\Participation $participation = null)
     {
         $this->participation = $participation;
 
@@ -146,5 +155,9 @@ class AcquisitionAttributeFillout
     public function getValue()
     {
         return $this->value;
+    }
+
+    public function __toString() {
+        return (string)$this->value;
     }
 }

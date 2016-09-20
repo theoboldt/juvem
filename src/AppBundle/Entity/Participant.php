@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participant
 {
-    use HumanTrait;
+    use HumanTrait, AcquisitionAttributeFilloutTrait;
 
     const TYPE_GENDER_FEMALE = 1;
     const TYPE_GENDER_MALE   = 2;
@@ -212,8 +212,7 @@ class Participant
      */
     public function getAgeAtEvent($precision = null)
     {
-        $event = $this->getParticipation()
-                      ->getEvent();
+        $event = $this->getEvent();
         return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
     }
 
@@ -224,8 +223,7 @@ class Participant
      */
     public function hasBirthdayAtEvent()
     {
-        $event = $this->getParticipation()
-                      ->getEvent();
+        $event = $this->getEvent();
         return EventRepository::hasBirthdayInTimespan($this->getBirthday(), $event->getStartDate(), $event->getEndDate());
     }
 
@@ -383,6 +381,22 @@ class Participant
         return $this->participation;
     }
 
+
+    /**
+     * Get event from participation
+     *
+     * @return \AppBundle\Entity\Event|null
+     */
+    public function getEvent()
+    {
+        $participation  = $this->getParticipation();
+        if (!$participation) {
+            return null;
+        }
+
+        return $participation->getEvent();
+    }
+
     /**
      * Set status
      *
@@ -444,39 +458,4 @@ class Participant
         return $this->setStatus($status);
     }
 
-    /**
-     * Add acquisitionAttributeFillout
-     *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-     *
-     * @return Participant
-     */
-    public function addAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-    )
-    {
-        $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
-
-        return $this;
-    }
-
-    /**
-     * Remove acquisitionAttributeFillout
-     *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-     */
-    public function removeAcquisitionAttributeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $acquisitionAttributeFillout
-    )
-    {
-        $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
-    }
-
-    /**
-     * Get acquisitionAttributeFillouts
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAcquisitionAttributeFillouts()
-    {
-        return $this->acquisitionAttributeFillouts;
-    }
 }
