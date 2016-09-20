@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Event;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
@@ -110,7 +111,7 @@ class AdminParticipationController extends Controller
                 $age .= ' ' . $glyph->bootstrapGlyph('gift');
             }
 
-            $participantList[] = array(
+            $participantEntry = array(
                 'aid'              => $participant->getAid(),
                 'pid'              => $participant->getParticipation()
                                                   ->getPid(),
@@ -130,6 +131,17 @@ class AdminParticipationController extends Controller
                 ),
                 'action'           => $participantAction
             );
+            /** @var AcquisitionAttributeFillout $fillout */
+            foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
+                $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
+                    = $fillout->__toString();
+            }
+            foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
+                $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()] = $fillout->__toString(
+                );
+            }
+
+            $participantList[] = $participantEntry;
         }
 
         return new JsonResponse($participantList);
