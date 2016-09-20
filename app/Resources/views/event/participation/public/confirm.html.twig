@@ -61,11 +61,15 @@
                                     </address>
                                 </dd>
                                 <dt>E-Mail Adresse</dt>
-                                <dd>
+                                <dd class="address-container">
                                     <address>
                                         {{ participation.email }}
                                     </address>
                                 </dd>
+                                {% for fillout in participation.acquisitionAttributeFillouts %}
+                                    <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                    <dd>{{ fillout }}</dd>
+                                {% endfor %}
                             </dl>
                         </div>
                     </div>
@@ -114,6 +118,10 @@
                                                 {% endif %}
                                             </dd>
                                             <dd>
+                                            {% for fillout in participant.acquisitionAttributeFillouts %}
+                                                <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                                <dd>{{ fillout }}</dd>
+                                            {% endfor %}
                                         </dl>
                                     </div>
                                 </div>

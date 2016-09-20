@@ -3,6 +3,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -157,7 +158,20 @@ class AcquisitionAttributeFillout
         return $this->value;
     }
 
+    /**
+     * Transform fillout to string; Useful for textual display in ui
+     *
+     * @return string
+     */
     public function __toString() {
+        if ($this->value === null) {
+            return '';
+        }
+        $attribute  = $this->getAttribute();
+        if ($attribute->getFieldType() == FormChoiceType::class) {
+            $options = array_flip($attribute->getFieldTypeChoiceOptions(true));
+            return $options[$this->value];
+        }
         return (string)$this->value;
     }
 }
