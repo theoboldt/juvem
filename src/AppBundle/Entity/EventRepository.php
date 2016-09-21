@@ -120,9 +120,13 @@ class EventRepository extends EntityRepository
         }
 
         $qb = $this->createQueryBuilder('AppBundle:Participant')
-                   ->select('a, p, pn')
+                   ->select('a, p, pn, aaf, aaafa, paf, paafa')
                    ->from('AppBundle:Participant', 'a')
                    ->innerJoin('a.participation', 'p')
+                   ->leftJoin('a.acquisitionAttributeFillouts', 'aaf')
+                   ->leftJoin('aaf.attribute', 'aaafa')
+                   ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
+                   ->leftJoin('paf.attribute', 'paafa')
                    ->leftJoin('p.phoneNumbers', 'pn')
                    ->where('a.participation = p.pid')
                    ->andWhere('p.event = :eid')
