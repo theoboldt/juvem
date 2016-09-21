@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -16,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participant
 {
-    use HumanTrait, AcquisitionAttributeFilloutTrait;
+    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, SoftDeleteTrait;
 
     const TYPE_GENDER_FEMALE = 1;
     const TYPE_GENDER_MALE   = 2;
@@ -76,22 +78,6 @@ class Participant
      * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participant")
      */
     protected $acquisitionAttributeFillouts;
-
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="modified_at")
-     */
-    protected $modifiedAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
-     */
-    protected $deletedAt = null;
-
 
     /**
      * Constructor
@@ -283,78 +269,6 @@ class Participant
     public function getInfoGeneral()
     {
         return $this->infoGeneral;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Participant
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set modifiedAt
-     *
-     * @param \DateTime $modifiedAt
-     *
-     * @return Participant
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedAt
-     *
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     *
-     * @return Participant
-     */
-    public function setDeletedAt($deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
     }
 
     /**

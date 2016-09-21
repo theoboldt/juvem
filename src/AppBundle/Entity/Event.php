@@ -7,6 +7,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @Vich\Uploadable
@@ -18,6 +20,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Event
 {
+    use CreatedModifiedTrait, SoftDeleteTrait;
+
     const DATE_FORMAT_DATE      = 'd.m.y';
     const DATE_FORMAT_TIME      = 'H:i';
     const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
@@ -76,21 +80,6 @@ class Event
      * @ORM\Column(type="boolean", name="is_visible")
      */
     protected $isVisible;
-
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="modified_at")
-     */
-    protected $modifiedAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
-     */
-    protected $deletedAt = null;
 
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageFilename")
@@ -439,95 +428,6 @@ class Event
     public function getImageFilename()
     {
         return $this->imageFilename;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedAtNow()
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Event
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function setModifiedAtNow()
-    {
-        $this->modifiedAt = new \DateTime();
-    }
-
-    /**
-     * Set modifiedAt
-     *
-     * @param \DateTime $modifiedAt
-     *
-     * @return Event
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedAt
-     *
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     *
-     * @return Event
-     */
-    public function setDeletedAt($deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
     }
 
     /**

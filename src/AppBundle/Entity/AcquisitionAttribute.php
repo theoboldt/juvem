@@ -8,6 +8,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -17,6 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AcquisitionAttribute
 {
+    use CreatedModifiedTrait, SoftDeleteTrait;
 
     const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
@@ -91,21 +94,6 @@ class AcquisitionAttribute
      *                                                                             mappedBy="attribute")
      */
     protected $fillouts;
-
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="modified_at")
-     */
-    protected $modifiedAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
-     */
-    protected $deletedAt = null;
 
     /**
      * Constructor
@@ -498,71 +486,6 @@ class AcquisitionAttribute
         return $this->events;
     }
 
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function setModifiedAtNow()
-    {
-        $this->modifiedAt = new \DateTime();
-    }
-
-    /**
-     * Set modifiedAt
-     *
-     * @param \DateTime $modifiedAt
-     *
-     * @return Event
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedAt
-     *
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     *
-     * @return Event
-     */
-    public function setDeletedAt($deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
-    }
 
 }

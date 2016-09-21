@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -15,7 +17,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participation
 {
-    use HumanTrait, AcquisitionAttributeFilloutTrait;
+    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait;
+    use SoftDeleteTrait {
+        setDeletedAt as traitSetDeletedAt;
+    }
 
     /**
      * @ORM\Column(type="integer", name="pid")
@@ -54,21 +59,6 @@ class Participation
      * @ORM\Column(type="string", length=128, name="email")
      */
     protected $email;
-
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="modified_at")
-     */
-    protected $modifiedAt;
-
-    /**
-     * @ORM\Column(type="datetime", name="deleted_at", nullable=true)
-     */
-    protected $deletedAt = null;
 
     /**
      * Contains the phone numbers assigned to this participation
@@ -135,63 +125,6 @@ class Participation
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Event
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function setModifiedAtNow()
-    {
-        $this->modifiedAt = new \DateTime();
-    }
-
-    /**
-     * Set modifiedAt
-     *
-     * @param \DateTime $modifiedAt
-     *
-     * @return Event
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedAt
-     *
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
      * Set deletedAt, cascading to participants
      *
      * @param \DateTime $deletedAt
@@ -200,7 +133,7 @@ class Participation
      */
     public function setDeletedAt($deletedAt)
     {
-        $this->deletedAt = $deletedAt;
+        $this->traitSetDeletedAt($deletedAt);
 
         /** @var Participant $participant */
         foreach ($this->getParticipants() as $participant) {
@@ -208,16 +141,6 @@ class Participation
         }
 
         return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
     }
 
     /**
