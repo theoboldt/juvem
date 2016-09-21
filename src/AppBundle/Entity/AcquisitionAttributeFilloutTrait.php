@@ -8,7 +8,7 @@ trait AcquisitionAttributeFilloutTrait
     /**
      * Contains the participants assigned to this participation
      *
-     * @var array|AcquisitionAttributeFillout[]
+     * @var AcquisitionAttributeFillout[]|array
      */
     protected $acquisitionAttributeFillouts;
 

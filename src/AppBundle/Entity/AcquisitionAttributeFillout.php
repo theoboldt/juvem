@@ -54,13 +54,13 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Set attribute
+     * Set attribute this fillout is related to
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute $attribute
+     * @param AcquisitionAttribute $attribute
      *
      * @return AcquisitionAttributeFillout
      */
-    public function setAttribute(\AppBundle\Entity\AcquisitionAttribute $attribute = null)
+    public function setAttribute(AcquisitionAttribute $attribute = null)
     {
         $this->attribute = $attribute;
 
@@ -68,9 +68,9 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Get attribute
+     * Get attribute this fillout is related to
      *
-     * @return \AppBundle\Entity\AcquisitionAttribute
+     * @return AcquisitionAttribute
      */
     public function getAttribute()
     {
@@ -78,7 +78,7 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Get bid of attribute
+     * Get bid of the related attribute
      *
      * @return int
      */
@@ -87,13 +87,16 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Set participation
+     * Set participation this fillout is related to
      *
-     * @param \AppBundle\Entity\Participation $participation
+     * Set participation this fillout is related to. Normally a fillout is only related to either a
+     * participation or an participant, not both
+     *
+     * @param Participation $participation
      *
      * @return AcquisitionAttributeFillout
      */
-    public function setParticipation(\AppBundle\Entity\Participation $participation = null)
+    public function setParticipation(Participation $participation = null)
     {
         $this->participation = $participation;
 
@@ -101,9 +104,9 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Get participation
+     * Get participation this fillout is related to
      *
-     * @return \AppBundle\Entity\AcquisitionAttribute
+     * @return AcquisitionAttribute
      */
     public function getParticipation()
     {
@@ -111,13 +114,17 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Set participant
+     * Set participant this fillout is related to
      *
-     * @param \AppBundle\Entity\Participant $participant
+     * Set participant this fillout is related to. Normally a fillout is only related to either a
+     * participation or an participant, not both
+     *
+     *
+     * @param Participant $participant
      *
      * @return AcquisitionAttributeFillout
      */
-    public function setParticipant(\AppBundle\Entity\Participant $participant = null)
+    public function setParticipant(Participant $participant = null)
     {
         $this->participant = $participant;
 
@@ -125,9 +132,9 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Get participant
+     * Get participant this fillout is related to
      *
-     * @return \AppBundle\Entity\Participant
+     * @return Participant
      */
     public function getParticipant()
     {
@@ -135,7 +142,7 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Set value
+     * Set value of this fillout
      *
      * @param string $value
      *
@@ -149,7 +156,7 @@ class AcquisitionAttributeFillout
     }
 
     /**
-     * Get value
+     * Get value of this fillout
      *
      * @return string
      */
@@ -160,6 +167,9 @@ class AcquisitionAttributeFillout
 
     /**
      * Transform fillout to string; Useful for textual display in ui
+     *
+     * Transform fillout to string; Useful for textual display in ui. Will return label of selected item if
+     * this fillout belongs to a choice field
      *
      * @return string
      */

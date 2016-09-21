@@ -467,11 +467,11 @@ class AcquisitionAttribute
     /**
      * Add event
      *
-     * @param \AppBundle\Entity\Event $event
+     * @param Event $event
      *
      * @return AcquisitionAttribute
      */
-    public function addEvent(\AppBundle\Entity\Event $event)
+    public function addEvent(Event $event)
     {
         $this->events[] = $event;
 
@@ -481,9 +481,9 @@ class AcquisitionAttribute
     /**
      * Remove event
      *
-     * @param \AppBundle\Entity\Event $event
+     * @param Event $event
      */
-    public function removeEvent(\AppBundle\Entity\Event $event)
+    public function removeEvent(Event $event)
     {
         $this->events->removeElement($event);
     }
