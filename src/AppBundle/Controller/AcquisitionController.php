@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -70,8 +71,29 @@ class AcquisitionController extends Controller
             throw new NotFoundHttpException('Could not find requested acquisition attribute');
         }
 
+        $form = $this->createFormBuilder()
+                     ->add('action', HiddenType::class)
+                     ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $action = $form->get('action')
+                           ->getData();
+            switch ($action) {
+                case 'delete':
+                    $attribute->setDeletedAt(new \DateTime());
+                    break;
+                case 'restore':
+                    $attribute->setDeletedAt(null);
+                    break;
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($attribute);
+        }
+
         return $this->render(
             'acquisition/detail.html.twig', array(
+                                              'form'        => $form->createView(),
                                               'acquisition' => $attribute,
                                               'events'      => $attribute->getEvents()
                                           )

@@ -2,17 +2,14 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Entity\Event;
 use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
-use AppBundle\Form\ModalActionType;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-use AppBundle\Entity\Event;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -234,6 +231,8 @@ class AdminController extends Controller
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
             }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($event);
         }
 
         return $this->render(

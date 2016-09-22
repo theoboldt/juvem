@@ -10,6 +10,42 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
+        <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
+            <div class="modal-dialog" role="document">
+                {{ form_start(form) }}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="dialogModalLabel">
+                            {% if acquisition.deletedAt %}
+                                Feld aus Papierkorb nehmen
+                            {% else %}
+                                Feld in Papierkorb verschieben
+                            {% endif %}
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        {% if acquisition.deletedAt %}
+                            <p>Soll dieses Feld wirklich aus dem Papierkorb herausgeholt werden?</p>
+                        {% else %}
+                            <p>Soll dieses Feld wirklich in den Papierkorb verschoben werden?</p>
+                            <p>Daten bei bereits erfassten Anmeldungen bleiben erhalten, werden aber nicht mehr
+                                angezeigt werden. Das Feld erscheint auch nicht mehr im Anmeldeformular von
+                                Veranstaltungen, denen es bereits zugewiesen ist und kann auch keiner Veranstaltung mehr
+                                zugewiesen werden.</p>
+                        {% endif %}
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                        <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
         <div class="row">
             <div class="col-xs-12 col-sm-6">
                 <h3>Daten</h3>
@@ -19,6 +55,17 @@
                         <a href="{{ path('acquisition_edit', {'bid': acquisition.bid }) }}"
                            class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
                     </div>
+                    {% if acquisition.deletedAt %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="restore">
+                            {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen</span>
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="delete">
+                            {{ 'trash'|glyph }}<span class="hidden-xs"> in Papierkorb verschieben</span>
+                        </button>
+                    {% endif %}
                 </div>
                 <div class="form-horizontal">
 
@@ -113,4 +160,18 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascriptCustom %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                        action = button.data('action'),
+                        modal = $(this);
+
+                modal.find('input[name="form[action]"]').val(action);
+            });
+        });
+    </script>
 {% endblock %}
