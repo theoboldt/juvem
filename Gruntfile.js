@@ -37,7 +37,8 @@ module.exports = function (grunt) {
                     '<%= resourcesPath %>/js/cookiechoices.js',
                     'node_modules/jquery/dist/jquery.js',
                     'node_modules/jquery-storage-api/jquery.storageapi.js',
-                    'node_modules/bootstrap-table/src/bootstrap-table.js',
+                    '<%= resourcesPath %>/js/bootstrap-table.js',
+//                    'node_modules/bootstrap-table/src/bootstrap-table.js',    //currently not useable because 1.11.1 is required but currently not available via npm
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/alert.js',
