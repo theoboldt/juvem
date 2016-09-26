@@ -3,9 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -46,6 +45,16 @@ class User extends BaseUser
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="assignedUser", cascade={"persist"})
      */
     protected $assignedParticipations;
+
+    /**
+     * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
+     */
+    protected $settingsHash;
+
+    /**
+     * @ORM\Column(type="text", name="settings")
+     */
+    protected $settings = '{}';
 
     /**
      * CONSTRUCTOR
@@ -186,4 +195,63 @@ class User extends BaseUser
     {
         return $this->assignedParticipations;
     }
+
+    /**
+     * Set settingsHash
+     *
+     * @param string $settingsHash
+     *
+     * @return User
+     */
+    public function setSettingsHash($settingsHash)
+    {
+        $this->settingsHash = $settingsHash;
+
+        return $this;
+    }
+
+    /**
+     * Get settingsHash
+     *
+     * @return string
+     */
+    public function getSettingsHash()
+    {
+        return $this->settingsHash;
+    }
+
+    /**
+     * Set settings
+     *
+     * @see setSettingsHash()
+     * @param array|string $settings
+     *
+     * @return User
+     */
+    public function setSettings($settings)
+    {
+        if (is_array($settings)) {
+            $settings = json_encode($settings);
+        }
+        $this->setSettingsHash(sha1($settings));
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * Get settings
+     *
+     * @param bool $decoded Set to true to get the result as array instead of json string
+     * @return string|array
+     */
+    public function getSettings($decoded = false)
+    {
+        if ($decoded) {
+            return json_decode($this->settings, true);
+        }
+
+        return $this->settings;
+    }
+
 }

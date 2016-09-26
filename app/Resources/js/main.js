@@ -16,6 +16,68 @@ jQuery(document).ready(function () {
      */
 
     /**
+     * GLOBAL load user settings
+     */
+    var userSettings = {
+        storage: $.localStorage,
+        init: function () {
+            var userSettingsHash = $('body').data('user-settings-hash'),
+                storage = this.storage;
+            $.alwaysUseJsonInStorage(true);
+            if (userSettingsHash && userSettingsHash != storage.get('user-settings-hash')) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/user/settings/load',
+                    datatype: 'json',
+                    success: function (response) {
+                        if (response.hash && response.settings) {
+                            storage.set('user-settings-hash', response.hash);
+                            storage.set('user-settings', response.settings);
+                        }
+                    }
+                });
+            } else if (storage.get('user-settings-hash')) {
+                storage.set('user-settings-hash', '');
+                storage.set('user-settings', {});
+            }
+            window.setInterval(function () {
+                if (storage.get('user-settings-dirty')) {
+                    storage.set('user-settings-dirty', false);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/user/settings/store',
+                        data: {
+                            _token: $('body').data('user-settings-token'),
+                            settings: storage.get('user-settings')
+                        },
+                        datatype: 'json'
+                    });
+                }
+            }, 2000);
+        },
+        has: function(key) {
+            return this.storage.isSet('user-settings.'+key);
+        },
+        get: function(key, valueDefault) {
+            if (this.storage.isSet('user-settings.'+key)) {
+                return this.storage.get('user-settings.'+key);
+            } else if (valueDefault) {
+                return valueDefault;
+            }
+        },
+        set: function(key, valueNew) {
+            var storageOld = this.storage.get('user-settings'),
+                result = this.storage.set('user-settings.'+key, valueNew),
+                storageNew = this.storage.get('user-settings');
+            if (JSON.stringify(storageOld) !== JSON.stringify(storageNew)) {
+                this.storage.set('user-settings-dirty', true);
+            }
+            return result;
+        }
+    };
+    userSettings.init();
+
+    /**
      * GLOBAL: Enable tooltips
      */
     $('[data-toggle="tooltip"]').tooltip({
@@ -118,31 +180,60 @@ jQuery(document).ready(function () {
     /**
      * GLOBAL: Bootstrap table on page which provides filters
      */
-    var table = $('.table-remote-content'),
-        tableFilterList = {};
+    var tableRemoteContent = function() {
+        $('.table-remote-content').each(function () {
+            var table = $(this),
+                tableFilterList = {},
+                id = table.attr('id');
+            /*
+            if (id && userSettings.has('tableFilter.' + id)) {
+                //if settings for table stored in user settings, apply
+                tableFilterList = userSettings.get('tableFilter.' + id);
+                //set status of those fields to current selection
+                $.each(tableFilterList, function (property, value) {
+                    var dropup = $('#bootstrap-table-toolbar .dropup[data-property=' + property + ']'),
+                        text = '(unbekannte Auswahl)';
+                    dropup.find('ul li a').each(function () {
+                        var optionElement = $(this),
+                            optionSetting = dropup.data('filter');
+                        if (optionSetting == value) {
+                            text = optionElement.text();
+                            return false;
+                        }
+                    });
+                    dropup.find('button .description').text(text);
+                });
+            } else {*/
+                //check filter fields for initial settings; works currently only for one single table per page
+                $('#bootstrap-table-toolbar .dropup[data-filter]').each(function () {
+                    var filterElement = $(this),
+                        property = filterElement.data('property'),
+                        filter = filterElement.data('filter');
+                    tableFilterList[property] = filter;
+                });
+            //}
+            //apply filters
+            table.bootstrapTable('filterBy', tableFilterList);
 
-    //load initial filters
-    $('#bootstrap-table-toolbar .dropup[data-filter]').each(function (index) {
-        var property = $(this).data('property'),
-            filter = $(this).data('filter');
+            //add filter handler
+            $('#bootstrap-table-toolbar li a').on('click', function (e) {
+                var dropup = $(this).parent().parent().parent(),
+                    property = dropup.data('property'),
+                    filter = $(this).data('filter'),
+                    text = $(this).text();
+                e.preventDefault();
 
-        tableFilterList[property] = filter;
-    });
-    table.bootstrapTable('filterBy', tableFilterList);
+                tableFilterList[property] = filter;
+                dropup.find('button .description').text(text);
 
-    //add filter handler
-    $('#bootstrap-table-toolbar li a').on('click', function (e) {
-        var dropup = $(this).parent().parent().parent(),
-            property = dropup.data('property'),
-            filter = $(this).data('filter'),
-            text = $(this).text();
-        e.preventDefault();
+                table.bootstrapTable('filterBy', tableFilterList);
+                if (id) {
+                    userSettings.set('tableFilter.'+id, tableFilterList);
+                }
+            });
+        });
 
-        tableFilterList[property] = filter;
-        dropup.find('button .description').text(text);
-
-        table.bootstrapTable('filterBy', tableFilterList);
-    });
+    }();
 
     /**
      * GLOBAL: Download-button
