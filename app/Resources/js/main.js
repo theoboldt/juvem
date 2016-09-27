@@ -185,7 +185,6 @@ jQuery(document).ready(function () {
             var table = $(this),
                 tableFilterList = {},
                 id = table.attr('id');
-            /*
             if (id && userSettings.has('tableFilter.' + id)) {
                 //if settings for table stored in user settings, apply
                 tableFilterList = userSettings.get('tableFilter.' + id);
@@ -193,17 +192,22 @@ jQuery(document).ready(function () {
                 $.each(tableFilterList, function (property, value) {
                     var dropup = $('#bootstrap-table-toolbar .dropup[data-property=' + property + ']'),
                         text = '(unbekannte Auswahl)';
+
                     dropup.find('ul li a').each(function () {
                         var optionElement = $(this),
-                            optionSetting = dropup.data('filter');
-                        if (optionSetting == value) {
+                            optionSetting = optionElement.data('filter');
+
+                        if (($.isArray(optionSetting) && $.isArray(value)
+                            && $(value).not(optionSetting).length === 0 && $(optionSetting).not(value).length === 0)
+                            || (optionSetting == value)
+                        ) {
                             text = optionElement.text();
                             return false;
                         }
                     });
                     dropup.find('button .description').text(text);
                 });
-            } else {*/
+            } else {
                 //check filter fields for initial settings; works currently only for one single table per page
                 $('#bootstrap-table-toolbar .dropup[data-filter]').each(function () {
                     var filterElement = $(this),
@@ -211,7 +215,7 @@ jQuery(document).ready(function () {
                         filter = filterElement.data('filter');
                     tableFilterList[property] = filter;
                 });
-            //}
+            }
             //apply filters
             table.bootstrapTable('filterBy', tableFilterList);
 
