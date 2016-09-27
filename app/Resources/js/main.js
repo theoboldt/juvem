@@ -22,52 +22,65 @@ jQuery(document).ready(function () {
         storage: $.localStorage,
         init: function () {
             var userSettingsHash = $('body').data('user-settings-hash'),
+                settingStorage = this,
                 storage = this.storage;
             $.alwaysUseJsonInStorage(true);
             if (userSettingsHash && userSettingsHash != storage.get('user-settings-hash')) {
-                $.ajax({
-                    type: 'GET',
-                    url: '/user/settings/load',
-                    datatype: 'json',
-                    success: function (response) {
-                        if (response.hash && response.settings) {
-                            storage.set('user-settings-hash', response.hash);
-                            storage.set('user-settings', response.settings);
-                        }
-                    }
-                });
+                this.load();
             } else if (storage.get('user-settings-hash')) {
                 storage.set('user-settings-hash', '');
                 storage.set('user-settings', {});
             }
+
             window.setInterval(function () {
-                if (storage.get('user-settings-dirty')) {
-                    storage.set('user-settings-dirty', false);
-                    $.ajax({
-                        type: 'POST',
-                        url: '/user/settings/store',
-                        data: {
-                            _token: $('body').data('user-settings-token'),
-                            settings: storage.get('user-settings')
-                        },
-                        datatype: 'json'
-                    });
-                }
+                settingStorage.store();
+
             }, 2000);
         },
-        has: function(key) {
-            return this.storage.isSet('user-settings.'+key);
+        load: function () {
+            var storage = this.storage;
+            $.ajax({
+                type: 'GET',
+                url: '/user/settings/load',
+                datatype: 'json',
+                success: function (response) {
+                    if (response.hash && response.settings) {
+                        storage.set('user-settings-hash', response.hash);
+                        storage.set('user-settings', response.settings);
+                    }
+                }
+            });
         },
-        get: function(key, valueDefault) {
-            if (this.storage.isSet('user-settings.'+key)) {
-                return this.storage.get('user-settings.'+key);
+        store: function (synchronous) {
+            var storage = this.storage,
+                async = !synchronous;
+            if (storage.get('user-settings-dirty')) {
+                storage.set('user-settings-dirty', false);
+                $.ajax({
+                    type: 'POST',
+                    url: '/user/settings/store',
+                    data: {
+                        _token: $('body').data('user-settings-token'),
+                        settings: storage.get('user-settings')
+                    },
+                    datatype: 'json',
+                    async: async
+                });
+            }
+        },
+        has: function (key) {
+            return this.storage.isSet('user-settings.' + key);
+        },
+        get: function (key, valueDefault) {
+            if (this.storage.isSet('user-settings.' + key)) {
+                return this.storage.get('user-settings.' + key);
             } else if (valueDefault) {
                 return valueDefault;
             }
         },
-        set: function(key, valueNew) {
+        set: function (key, valueNew) {
             var storageOld = this.storage.get('user-settings'),
-                result = this.storage.set('user-settings.'+key, valueNew),
+                result = this.storage.set('user-settings.' + key, valueNew),
                 storageNew = this.storage.get('user-settings');
             if (JSON.stringify(storageOld) !== JSON.stringify(storageNew)) {
                 this.storage.set('user-settings-dirty', true);
@@ -76,6 +89,9 @@ jQuery(document).ready(function () {
         }
     };
     userSettings.init();
+    window.onbeforeunload = function () {
+        userSettings.store(true);
+    };
 
     /**
      * GLOBAL: Enable tooltips
