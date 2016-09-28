@@ -44,7 +44,7 @@ jQuery(document).ready(function () {
                 url: '/user/settings/load',
                 datatype: 'json',
                 success: function (response) {
-                    if (response.hash && response.settings) {
+                    if (response && response.hash && response.settings) {
                         storage.set('user-settings-hash', response.hash);
                         storage.set('user-settings', response.settings);
                     }
@@ -64,7 +64,12 @@ jQuery(document).ready(function () {
                         settings: storage.get('user-settings')
                     },
                     datatype: 'json',
-                    async: async
+                    async: async,
+                    success: function (response) {
+                        if (response && response.hash) {
+                            storage.set('user-settings-hash', response.hash);
+                        }
+                    }
                 });
             }
         },
