@@ -42,7 +42,7 @@ jQuery(document).ready(function () {
             $.ajax({
                 type: 'GET',
                 url: '/user/settings/load',
-                datatype: 'json',
+                dataType: 'json',
                 success: function (response) {
                     if (response && response.hash && response.settings) {
                         storage.set('user-settings-hash', response.hash);
@@ -63,7 +63,7 @@ jQuery(document).ready(function () {
                         _token: $('body').data('user-settings-token'),
                         settings: storage.get('user-settings')
                     },
-                    datatype: 'json',
+                    dataType: 'json',
                     async: async,
                     success: function (response) {
                         if (response && response.hash) {
@@ -151,7 +151,7 @@ jQuery(document).ready(function () {
             type: 'POST',
             url: '/admin/active/button',
             data: formData,
-            datatype: 'json',
+            dataType: 'json',
             success: function (response) {
                 button.empty();
                 if (response && response.html) {
@@ -175,7 +175,7 @@ jQuery(document).ready(function () {
                 type: 'POST',
                 url: '/admin/active/button',
                 data: $.extend(formData, {toggle: 1}),
-                datatype: 'json',
+                dataType: 'json',
                 success: function (response) {
                     button.empty();
                     if (response && response.html) {
