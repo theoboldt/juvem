@@ -27,14 +27,9 @@ jQuery(document).ready(function () {
             $.alwaysUseJsonInStorage(true);
             if (userSettingsHash && userSettingsHash != storage.get('user-settings-hash')) {
                 this.load();
-            } else if (storage.get('user-settings-hash')) {
-                storage.set('user-settings-hash', '');
-                storage.set('user-settings', {});
             }
-
             window.setInterval(function () {
                 settingStorage.store();
-
             }, 2000);
         },
         load: function () {
