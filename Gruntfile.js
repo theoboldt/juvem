@@ -37,7 +37,7 @@ module.exports = function (grunt) {
                     '<%= resourcesPath %>/js/cookiechoices.js',
                     'node_modules/jquery/dist/jquery.js',
                     'node_modules/jquery-storage-api/jquery.storageapi.js',
-                    '<%= resourcesPath %>/js/bootstrap-table.js',
+                    '<%= resourcesPath %>/js/lib/bootstrap-table.js',
 //                    'node_modules/bootstrap-table/src/bootstrap-table.js',    //currently not useable because 1.11.1 is required but currently not available via npm
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
@@ -51,7 +51,14 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
-                    '<%= resourcesPath %>/js/jquery.bsAlerts.min.js',
+                    '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
+                    '<%= resourcesPath %>/js/tools.js',
+                    '<%= resourcesPath %>/js/user-settings.js',
+                    '<%= resourcesPath %>/js/bootstrap-overrides.js',
+                    '<%= resourcesPath %>/js/bootstrap-table.js',
+                    '<%= resourcesPath %>/js/active-button.js',
+                    '<%= resourcesPath %>/js/area/acquisition.js',
+                    '<%= resourcesPath %>/js/area/event.js',
                     '<%= resourcesPath %>/js/main.js'
                 ],
                 dest: 'web/js/all.js'
