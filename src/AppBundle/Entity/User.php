@@ -49,12 +49,12 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
      */
-    protected $settingsHash;
+    protected $settingsHash = '97d170e1550eee4afc0af065b78cda302a97674c';
 
     /**
      * @ORM\Column(type="text", name="settings")
      */
-    protected $settings = '{}';
+    protected $settings = '[]';
 
     /**
      * CONSTRUCTOR
