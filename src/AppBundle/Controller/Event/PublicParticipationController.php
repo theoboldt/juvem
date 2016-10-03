@@ -263,6 +263,11 @@ class PublicParticipationController extends Controller
      */
     public function participationDetailedAction($pid)
     {
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
+
         $user          = $this->getUser();
         $repository    = $this->getDoctrine()
                               ->getRepository('AppBundle:Participation');
@@ -275,8 +280,9 @@ class PublicParticipationController extends Controller
         }
         return $this->render(
             'event/participation/public/detail.html.twig', array(
-                                                             'participation' => $participation,
-                                                             'event'         => $participation->getEvent()
+                                                             'participation'   => $participation,
+                                                             'event'           => $participation->getEvent(),
+                                                             'statusFormatter' => $statusFormatter
                                                          )
         );
 
