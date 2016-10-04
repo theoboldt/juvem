@@ -11,6 +11,26 @@
     {% endembed %}
     <div class="container">
         <div class="row">
+            <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
+                <div class="modal-dialog" role="document">
+                    {{ form_start(form) }}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="dialogModalLabel"></h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                            <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
             <div class="col-xs-12 col-md-6">
                 <h3 id="data-participation">Daten der Eltern</h3>
 
@@ -107,9 +127,25 @@
                                     </dl>
                                 </div>
                             </div>
-                             <div class="col-xs-12 status-label-list">
+                            <div class="col-xs-12 status-label-list">
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
+                        </div>
+                        <div class="panel-footer">
+                            {% if participant.withdrawn %}
+                                Teilnehmer zurückgezogen
+                            {% else %}
+                            <button type="button" class="btn btn-default" data-action="withdraw"
+                                    data-confirmed="{{ participant.confirmed }}"
+                                    data-toggle="modal" data-target="#dialogModal" data-aid="{{ participant.aid }}"
+                                    data-value="{{ participant.withdrawRequested }}">
+                                {% if participant.withdrawRequested %}
+                                    {{ 'retweet'|glyph }} Anfrage für Zurücknahme entfernen
+                                {% else %}
+                                    {{ 'share-alt'|glyph }} Anmeldung zurückziehen
+                                {% endif %}
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -117,4 +153,52 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block javascriptCustom %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                        action = button.data('action'),
+                        aid = button.data('aid'),
+                        confirmed = button.data('confirmed'),
+                        value = button.data('value'),
+                        modal = $(this),
+                        title,
+                        question,
+                        buttonText = 'Bestätigen';
+
+                switch (action) {
+                    case 'withdraw':
+                        if (value) {
+                            title = 'Anmeldung des Teilnehmers nicht mehr zurückziehen';
+                            buttonText = 'Anmeldung nicht mehr zurückziehen';
+                            question = '<p>Sie haben die Rücknahme dieser Anmeldung angefragt.</p><p>Falls dies versehentlich geschehen ist, oder die Gründe für die Rücknahme nicht mehr vorliegen, können sie diesen Vorgang abbrechen. Sofern die Anmeldung in der Zwischenzeit nicht von uns zurückgenommen wurde, ist sie wieder gültig. Bei Problemen kontaktieren nehmen Sie bitte Kontakt zum Jugendwerk auf.</p>';
+                        } else {
+                            title = 'Anmeldung des Teilnehmers zurückziehen';
+                            buttonText = 'Anmeldung zurückziehen';
+                            question = '<p>Sie können hier die Rücknahme der Anmeldung anfragen. Tun Sie das, wenn ihr Kind doch nicht mehr bei der Veranstaltung teilnehmen kann oder nicht mehr teilnehmen möchte.</p>';
+                            if (confirmed) {
+                                question += '<p>In den meisten Fällen ist das kein Problem. Manchmal ist dies allerdings nicht ohne weiteres möglich, da beispielsweise bereits Zahlungen getätigt wurden. Dann melden wir uns bei Ihnen.</p>';
+                            } else {
+                                question += '<p>Da diese Anmeldung noch nicht von uns bestätigt wurde, sollte das kein Problem darstellen und sie kann sofort zurückgenommen werden.</p>';
+                            }
+                        }
+                        break;
+                }
+                modal.find('.modal-title').text(title);
+                modal.find('.modal-body').html(question);
+                modal.find('input[name="form[action]"]').val(action);
+                if (aid) {
+                    modal.find('input[name="form[aid]"]').val(aid);
+                }
+                if (value) {
+                    modal.find('input[name="form[value]"]').val(value);
+                }
+                modal.find('input[type="submit"]').val(buttonText);
+
+            });
+        });
+    </script>
 {% endblock %}
