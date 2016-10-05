@@ -3,12 +3,12 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use AppBundle\Entity\Audit\CreatedModifiedTrait;
-use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -210,7 +210,9 @@ class Participant
     public function hasBirthdayAtEvent()
     {
         $event = $this->getEvent();
-        return EventRepository::hasBirthdayInTimespan($this->getBirthday(), $event->getStartDate(), $event->getEndDate());
+        return EventRepository::hasBirthdayInTimespan(
+            $this->getBirthday(), $event->getStartDate(), $event->getEndDate()
+        );
     }
 
     /**
@@ -303,7 +305,7 @@ class Participant
      */
     public function getEvent()
     {
-        $participation  = $this->getParticipation();
+        $participation = $this->getParticipation();
         if (!$participation) {
             return null;
         }
@@ -345,6 +347,17 @@ class Participant
     }
 
     /**
+     * Check if this participant is confirmed
+     *
+     * @return bool
+     */
+    public function isConfirmed()
+    {
+        $status = $this->getStatus(true);
+        return $status->has(ParticipantStatus::TYPE_STATUS_CONFIRMED);
+    }
+
+    /**
      * Check if this participant is withdrawn
      *
      * @return bool
@@ -353,6 +366,17 @@ class Participant
     {
         $status = $this->getStatus(true);
         return $status->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+    }
+
+    /**
+     * Check if there is withdraw requested for this participant
+     *
+     * @return bool
+     */
+    public function isWithdrawRequested()
+    {
+        $status = $this->getStatus(true);
+        return $status->has(ParticipantStatus::TYPE_STATUS_WITHDRAW_REQUESTED);
     }
 
     /**
@@ -368,6 +392,23 @@ class Participant
             $status->enable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
         } else {
             $status->disable(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+        }
+        return $this->setStatus($status);
+    }
+
+    /**
+     * Mark withdraw requested for this participant
+     *
+     * @param   bool $withdrawn New value
+     * @return self
+     */
+    public function setIsWithdrawRequested($withdrawn = true)
+    {
+        $status = $this->getStatus(true);
+        if ($withdrawn) {
+            $status->enable(ParticipantStatus::TYPE_STATUS_WITHDRAW_REQUESTED);
+        } else {
+            $status->disable(ParticipantStatus::TYPE_STATUS_WITHDRAW_REQUESTED);
         }
         return $this->setStatus($status);
     }

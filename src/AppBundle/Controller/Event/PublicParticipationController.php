@@ -11,6 +11,7 @@ use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,8 +92,12 @@ class PublicParticipationController extends Controller
         return $this->render(
             'event/participation/public/begin.html.twig', array(
                                                             'event'                          => $event,
-                                                            'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false),
-                                                            'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true),
+                                                            'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(
+                                                                true, false
+                                                            ),
+                                                            'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(
+                                                                false, true
+                                                            ),
                                                             'form'                           => $form->createView()
                                                         )
         );
@@ -261,22 +266,92 @@ class PublicParticipationController extends Controller
      * @Route("/participation/{pid}", requirements={"pid": "\d+"}, name="public_participation_detail")
      * @Security("has_role('ROLE_USER')")
      */
-    public function participationDetailedAction($pid)
+    public function participationDetailedAction(Request $request)
     {
+
+        $statusFormatter = new LabelFormatter();
+        $statusFormatter->addAbsenceLabel(
+            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
+        );
+
         $user          = $this->getUser();
         $repository    = $this->getDoctrine()
                               ->getRepository('AppBundle:Participation');
-        $participation = $repository->findOneBy(array('pid' => $pid));
+        $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
 
         if ($participation->getAssignedUser()
                           ->getUid() != $user->getUid()
         ) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
+
+        $form = $this->createFormBuilder()
+                     ->add('aid', HiddenType::class)
+                     ->add('action', HiddenType::class)
+                     ->add('value', HiddenType::class)
+                     ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $action   = $form->get('action')->getData();
+            $aid      = $form->get('aid')->getData();
+            $newValue = !$form->get('value')->getData();
+
+            /** @var Participant $participationParticipant */
+            foreach ($participation->getParticipants() as $participationParticipant) {
+                if ($participationParticipant->getAid() == $aid) {
+                    $participant = $participationParticipant;
+                }
+            }
+            if (isset($participant)) {
+                switch ($action) {
+                    case 'withdraw':
+                        if ($participant->isWithdrawn()) {
+                            if ($newValue) {
+                                $this->addFlash(
+                                    'success',
+                                    'Die Anmeldung wurde von uns bereits als zurückgezogen markiert. Es ist keine weitere Aktion nötig.'
+                                );
+                            } else {
+                                $this->addFlash(
+                                    'danger',
+                                    'Die Anmeldung wurde von uns bereits als zurückgezogen markiert. Wenn Sie die Anmeldung diesen Teilnehmers reaktivieren möchten, wenden Sie sich in diesem Fall bitte direkt an das Jugendwerk.'
+                                );
+                            }
+                        } else {
+                            $participant->setIsWithdrawRequested($newValue);
+                            $em                   = $this->getDoctrine()->getManager();
+                            $managedParticipation = $em->merge($participation);
+
+                            $em->persist($managedParticipation);
+                            $em->flush();
+                            if ($newValue) {
+                                $this->addFlash(
+                                    'success',
+                                    'Ihre Anfrage zur Zurücknahme dieser Anmeldung wurde registiert und wird demnächst von uns bearbeitet. Wenn sich der Status der Anmeldung des betroffenen Teilnehmers nicht innerhalb einiger Tage ändert, wenden Sie sich bitte direkt an das Jugendwerk.'
+                                );
+                            } else {
+                                $this->addFlash(
+                                    'success',
+                                    'Sie haben ihre Anfrage auf Zurücknahme dieser Anmeldung entfernt. Die Anmeldung ist damit wieder gültig.'
+                                );
+                            }
+                        }
+                        break;
+
+                }
+
+                return $this->redirectToRoute('public_participation_detail', array('pid' => $participation->getPid()));
+            }
+
+        }
+
         return $this->render(
             'event/participation/public/detail.html.twig', array(
-                                                             'participation' => $participation,
-                                                             'event'         => $participation->getEvent()
+                                                             'form'            => $form->createView(),
+                                                             'participation'   => $participation,
+                                                             'event'           => $participation->getEvent(),
+                                                             'statusFormatter' => $statusFormatter
                                                          )
         );
 

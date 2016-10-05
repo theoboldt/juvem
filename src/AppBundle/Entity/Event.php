@@ -1,14 +1,14 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use AppBundle\Entity\Audit\CreatedModifiedTrait;
-use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @Vich\Uploadable
@@ -273,10 +273,9 @@ class Event
     /**
      * Returns true if a end date is set
      *
-     * @param  boolean $value Unprocessed value
      * @return bool
      */
-    public function hasEndDate($value = null)
+    public function hasEndDate()
     {
         return (bool)$this->endDate;
     }
@@ -309,10 +308,9 @@ class Event
     /**
      * Returns true if a end time is set
      *
-     * @param  boolean $value Unprocessed value
      * @return bool
      */
-    public function hasEndTime($value = null)
+    public function hasEndTime()
     {
         return (bool)$this->endTime;
     }
