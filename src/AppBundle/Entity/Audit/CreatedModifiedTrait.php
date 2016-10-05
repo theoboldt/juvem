@@ -13,7 +13,7 @@ trait CreatedModifiedTrait
     /**
      * @ORM\Column(type="datetime", name="modified_at", nullable=true)
      */
-    protected $modifiedAt;
+    protected $modifiedAt = null;
 
     /**
      * Set createdAt
