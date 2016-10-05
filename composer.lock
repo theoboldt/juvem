@@ -821,12 +821,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "7abb0ff366c404f2c2b34fd264693071148351a2"
+                "reference": "9f86fe2d69df11159fca9ec44b529cb1df5e14aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/7abb0ff366c404f2c2b34fd264693071148351a2",
-                "reference": "7abb0ff366c404f2c2b34fd264693071148351a2",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/9f86fe2d69df11159fca9ec44b529cb1df5e14aa",
+                "reference": "9f86fe2d69df11159fca9ec44b529cb1df5e14aa",
                 "shasum": ""
             },
             "require": {
@@ -888,7 +888,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-09-26 07:23:44"
+            "time": "2016-09-28 09:10:06"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1500,7 +1500,7 @@
                     "email": "stof@notk.org"
                 },
                 {
-                    "name": "KnpLabs",
+                    "name": "Knplabs",
                     "homepage": "http://knplabs.com"
                 },
                 {
