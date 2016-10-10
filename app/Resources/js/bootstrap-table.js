@@ -20,56 +20,67 @@ $(function () {
         $('.table-remote-content').each(function () {
             var table = $(this),
                 tableFilterList = {},
-                id = table.attr('id');
-            if (id && userSettings.has('tableFilter.' + id)) {
-                //if settings for table stored in user settings, apply
-                tableFilterList = userSettings.get('tableFilter.' + id);
-                //set status of those fields to current selection
-                $.each(tableFilterList, function (property, value) {
-                    var dropup = $('#bootstrap-table-toolbar .dropup[data-property=' + property + ']'),
-                        text = '(unbekannte Auswahl)';
+                id = table.attr('id'),
+                subId = table.data('sub-id'),
+                tableSettingsIdentifier;
 
-                    dropup.find('ul li a').each(function () {
-                        var optionElement = $(this),
-                            optionSetting = optionElement.data('filter');
-
-                        if (($.isArray(optionSetting) && $.isArray(value)
-                            && $(value).not(optionSetting).length === 0 && $(optionSetting).not(value).length === 0)
-                            || (optionSetting == value)
-                        ) {
-                            text = optionElement.text();
-                            return false;
-                        }
-                    });
-                    dropup.find('button .description').text(text);
-                });
+            if (subId) {
+                tableSettingsIdentifier = 'tableFilter.' + id + '.' + subId + '.';
             } else {
-                //check filter fields for initial settings; works currently only for one single table per page
-                $('#bootstrap-table-toolbar .dropup[data-filter]').each(function () {
-                    var filterElement = $(this),
-                        property = filterElement.data('property'),
-                        filter = filterElement.data('filter');
-                    tableFilterList[property] = filter;
-                });
+                tableSettingsIdentifier = 'tableFilter.' + id + '.';
             }
+
+            $('#bootstrap-table-toolbar .dropup[data-property]').each(function () {
+                var dropup = $(this),
+                    options = dropup.find('ul li a'),
+                    property = dropup.data('property'),
+                    indexDefault = dropup.data('default'),
+                    settingIdentifier = tableSettingsIdentifier + property,
+                    indexTarget = userSettings.get(settingIdentifier, indexDefault);
+
+                if (!$.isNumeric(indexTarget) || options.length <= indexTarget) {
+                    indexTarget = 0;
+                }
+
+                options.each(function (indexCurrent, option) {
+                    if (indexCurrent == indexTarget) {
+                        var text = $(option).text(),
+                            filter = $(option).data('filter');
+
+                        dropup.find('button .description').text(text);
+                        tableFilterList[property] = filter;
+                    }
+                });
+
+            });
+
             //apply filters
             table.bootstrapTable('filterBy', tableFilterList);
 
             //add filter handler
             $('#bootstrap-table-toolbar li a').on('click', function (e) {
-                var dropup = $(this).parent().parent().parent(),
+                e.preventDefault();
+                var option = $(this).get(0),
+                    dropup = $(this).parent().parent().parent(),
                     property = dropup.data('property'),
                     filter = $(this).data('filter'),
-                    text = $(this).text();
-                e.preventDefault();
+                    text = $(this).text(),
+                    index;
+
+                $(this).parent().parent().find('li a').each(function (indexCurrent, optionCurrent) {
+                    if (option === optionCurrent) {
+                        index = indexCurrent;
+                        return false;
+                    }
+                });
+                if (index === undefined) {
+                    return true;
+                }
 
                 tableFilterList[property] = filter;
                 dropup.find('button .description').text(text);
-
                 table.bootstrapTable('filterBy', tableFilterList);
-                if (id) {
-                    userSettings.set('tableFilter.' + id, tableFilterList);
-                }
+                userSettings.set(tableSettingsIdentifier + property, index);
             });
         });
     }();

@@ -15,10 +15,10 @@
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline">
                     <div class="btn-group" role="group">
-                        <div class="btn-group dropup" data-property="is_confirmed">
+                        <div class="btn-group dropup" data-property="is_confirmed" data-default="2">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterConfirmed"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">mit und ohne bestätigte</span>
+                                {{ 'filter'|glyph }} <span class="description">mit und ohne bestätigte</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="filterConfirmed">
@@ -27,7 +27,7 @@
                                 <li><a href="#" data-filter="[1, 0]">mit und ohne bestätigte</a></li>
                             </ul>
                         </div>
-                        <div class="btn-group dropup" data-property="is_withdrawn" data-filter="0">
+                        <div class="btn-group dropup" data-property="is_withdrawn" data-default="1">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterWithdrawn"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">ohne zurückgezogene</span>
@@ -39,7 +39,7 @@
                                 <li><a href="#" data-filter="[1, 0]">inkl. zurückgezogen</a></li>
                             </ul>
                         </div>
-                        <div class="btn-group dropup" data-property="is_paid">
+                        <div class="btn-group dropup" data-property="is_paid" data-default="2">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterPaid"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">bereits bezahlt oder nicht</span>
@@ -51,7 +51,7 @@
                                 <li><a href="#" data-filter="[1, 0]">bezahlt und nicht bezahlt</a></li>
                             </ul>
                         </div>
-                        <div class="btn-group dropup" data-property="is_deleted" data-filter="0">
+                        <div class="btn-group dropup" data-property="is_deleted" data-default="1">
                             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterDeleted"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="description">ohne gelöschte</span>
@@ -73,7 +73,7 @@
                        data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
-                       data-show-filter="true" data-search="true" data-page-size="25"
+                       data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
                        data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}">
                     <thead>
                     <tr>
