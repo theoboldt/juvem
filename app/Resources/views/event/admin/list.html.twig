@@ -16,42 +16,9 @@
                         <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} Neu</a>
                     </div>
                     <div class="btn-group" role="group">
-                        <div class="btn-group dropup" role="group" data-property="is_active" data-default="2">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterActive"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ 'filter'|glyph }}<span class="description"></span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterActive">
-                                <li><a href="#" data-filter="1">nur aktive</a></li>
-                                <li><a href="#" data-filter="0">nur inaktive</a></li>
-                                <li><a href="#" data-filter="[1, 0]">aktive und inaktive</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group dropup" role="group" data-property="is_visible" data-default="2">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterVisible"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description"></span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterVisible">
-                                <li><a href="#" data-filter="1">nur sichtbare</a></li>
-                                <li><a href="#" data-filter="0">nur versteckte</a></li>
-                                <li><a href="#" data-filter="[1, 0]">sichtbare und versteckte</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group dropup" role="group" data-property="eid" data-default="0">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterTime"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description"></span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterTime">
-                                <li><a href="#" data-filter="[{{ eventListFuture|join(', ') }}]">nur zukünftige</a></li>
-                                <li><a href="#" data-filter="[{{ eventListPast|join(', ') }}]">nur vergangene</a></li>
-                                <li><a href="#" data-filter="[{{ eventList|join(', ') }}]">zuküntige und vergangene</a>
-                            </ul>
-                        </div>
+                        {{ 'is_active'|tableFilterButtonTri(2, 'nur aktive', 'nur inaktive', 'aktive und inaktive', true) }}
+                        {{ 'is_visible'|tableFilterButtonTri(2, 'nur sichtbare', 'nur versteckte', 'sichtbare und versteckte') }}
+                        {{ 'eid'|tableFilterButton(0, [{'title': 'nur zukünftige', 'value': eventListFuture}, {'title': 'nur vergangene', 'value': eventListPast}, {'title': 'zuküntige und vergangene', 'value': eventList}]) }}
                     </div>
                 </div>
                 <table id="eventListTable" class="table table-striped table-remote-content"

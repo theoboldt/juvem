@@ -15,54 +15,10 @@
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline">
                     <div class="btn-group" role="group">
-                        <div class="btn-group dropup" data-property="is_confirmed" data-default="2">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterConfirmed"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ 'filter'|glyph }} <span class="description">mit und ohne bestätigte</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterConfirmed">
-                                <li><a href="#" data-filter="1">nur bestätigte</a></li>
-                                <li><a href="#" data-filter="0">ohne bestätigte</a></li>
-                                <li><a href="#" data-filter="[1, 0]">mit und ohne bestätigte</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group dropup" data-property="is_withdrawn" data-default="1">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterWithdrawn"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">ohne zurückgezogene</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterWithdrawn">
-                                <li><a href="#" data-filter="1">nur zurückgezogene</a></li>
-                                <li><a href="#" data-filter="0">ohne zurückgezogene</a></li>
-                                <li><a href="#" data-filter="[1, 0]">inkl. zurückgezogen</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group dropup" data-property="is_paid" data-default="2">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterPaid"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">bereits bezahlt oder nicht</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterPaid">
-                                <li><a href="#" data-filter="1">nur bezahlt</a></li>
-                                <li><a href="#" data-filter="0">ohne bezahlte</a></li>
-                                <li><a href="#" data-filter="[1, 0]">bezahlt und nicht bezahlt</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group dropup" data-property="is_deleted" data-default="1">
-                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filterDeleted"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="description">ohne gelöschte</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterDeleted">
-                                <li><a href="#" data-filter="1">nur gelöschte</a></li>
-                                <li><a href="#" data-filter="0">ohne gelöschte</a></li>
-                                <li><a href="#" data-filter="[1, 0]">mit und ohne gelöschte</a></li>
-                            </ul>
-                        </div>
+                        {{ 'is_confirmed'|tableFilterButtonTri(2, 'nur bestätigte', 'ohne bestätigte', 'mit und ohne bestätigte', true) }}
+                        {{ 'is_withdrawn'|tableFilterButtonTri(1, 'nur zurückgezogene', 'ohne zurückgezogene', 'inkl. zurückgezogen') }}
+                        {{ 'is_paid'|tableFilterButtonTri(2, 'nur bezahlte', 'ohne bezahlte', 'bezahlt und nicht bezahlt') }}
+                        {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'mit und ohne gelöschte') }}
                         <a href="{{ path('event_participants_export', {eid: event.eid}) }}"
                            class="btn btn-default btn-xs btn-download">
                             {{ 'export'|glyph }}
