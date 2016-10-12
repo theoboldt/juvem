@@ -47,6 +47,13 @@ class User extends BaseUser
     protected $assignedParticipations;
 
     /**
+     * Contains the newsletter setting container of this user
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterRecipient", mappedBy="assignedUser", cascade={"persist"})
+     */
+    protected $assignedNewsletter;
+
+    /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
      */
     protected $settingsHash = '97d170e1550eee4afc0af065b78cda302a97674c';
@@ -254,4 +261,28 @@ class User extends BaseUser
         return $this->settings;
     }
 
+
+    /**
+     * Set assignedNewsletter
+     *
+     * @param \AppBundle\Entity\NewsletterRecipient $assignedNewsletter
+     *
+     * @return User
+     */
+    public function setAssignedNewsletter(\AppBundle\Entity\NewsletterRecipient $assignedNewsletter = null)
+    {
+        $this->assignedNewsletter = $assignedNewsletter;
+
+        return $this;
+    }
+
+    /**
+     * Get assignedNewsletter
+     *
+     * @return \AppBundle\Entity\NewsletterRecipient
+     */
+    public function getAssignedNewsletter()
+    {
+        return $this->assignedNewsletter;
+    }
 }

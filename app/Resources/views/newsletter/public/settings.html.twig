@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rundbrief Verwaltung{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Rundbrief', 'subtitle': 'Verwaltung'} %}
+        {% block breadcrumb %}
+            <li class="active">Rundbrief Verwaltung</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-7 col-sx-12 checkbox-with-help-block">
+                <p>Auf dieser Seite können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über die
+                    bevorstehenden Aktionen informiert zu sein.</p>
+<!--
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-sm btn-primary active">
+                        <input type="radio" name="options" id="option1" autocomplete="off" checked> Keine Rundbriefe
+                        erhalten
+                    </label>
+                    <label class="btn btn-sm btn-primary">
+                        <input type="radio" name="options" id="option2" autocomplete="off"> Zugeschnittene Rundbriefe
+                        erhalten
+                    </label>
+                    <label class="btn btn-sm btn-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> Alle Rundbriefe erhalten
+                    </label>
+                </div>
+-->
+                {{ form_start(form) }}
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+                <p class="help-block" id="help-email">Die E-Mails des Newsletter werden an diese E-Mail Adresse
+                    verschickt. Diese E-Mail Adresse kann von der im
+                    {% if app.user is null %}
+                        Benutzerprofil
+                    {% else %}
+                        <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a>
+                    {% endif %}
+                    konfigurierten Adresse abweichen.</p>
+
+                <label class="control-label">Themen</label>
+                {{ form_label(form.hasAgeRelevant) }}
+                {{ form_widget(form.hasAgeRelevant) }}
+                <p class="help-block" id="help-topic-age">E-Mails zu Veranstaltungen, die dem Alter der
+                    Kinder die Sie bisher angemeldet haben entsprechen. Wenn die Kinder älter werden, passen sich
+                    die E-Mails die Sie erhalten automatisch an.</p>
+
+                {{ form_label(form.topicChild) }}
+                {{ form_widget(form.topicChild) }}
+                <p class="help-block" id="help-topic-child">E-Mails zu Veranstaltungen, die eher für
+                    Kinder von ca. 6 bis 13 Jahren geeignet sind.</p>
+
+                {{ form_label(form.topicTeen) }}
+                {{ form_widget(form.topicTeen) }}
+                <p class="help-block" id="help-topic-teen">E-Mails zu Veranstaltungen, die eher für
+                    Kinder und Jugendliche zwischen ca. 12 bis 16 Jahren geeignet sind.</p>
+
+                {{ form_label(form.subscribedEvents) }}
+                {{ form_widget(form.subscribedEvents) }}
+                <p class="help-block" id="help-topic-subscribed">E-Mails zu Veranstaltungen, die den oben ausgewählten
+                    Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir einige
+                    verangene Veranstaltungen aus, die zum Thema des Rundbriefs passen oder die eine
+                    Nachfolgeveranstaltung darstellen.</p>
+
+                <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
+                {{ form_end(form) }}
+            </div>
+            <div class="col-sm-5 col-sx-12">
+                <p>Es ist uns sehr wichtig, dass Sie die volle Kontrolle darüber haben, welche Nachrichten Sie von uns
+                    erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder die Rundbriefe auch jederzeit
+                    ganz abbestellen. Sie sollen keine E-Mails zu Veranstaltungen erhalten, die für Sie nicht von
+                    Interesse sind.</p>
+
+                <p>Selbstverständlich sind wir von unseren Veranstaltungen überzeugt, und halten Sie gerne auf dem
+                    Laufenden - wenn Sie das möchten!</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

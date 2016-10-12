@@ -121,12 +121,21 @@ class Event
     protected $assignedUser;
 
     /**
+     * Contains newsletter recipients which want to be informed about similar events like this
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\NewsletterRecipient", mappedBy="subscribedEvents",
+     *                                                                     cascade={"remove"})
+     */
+    protected $subscribedByNewsletterRecipient;
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
     {
-        $this->participations        = new ArrayCollection();
-        $this->acquisitionAttributes = new ArrayCollection();
+        $this->participations                  = new ArrayCollection();
+        $this->acquisitionAttributes           = new ArrayCollection();
+        $this->subscribedByNewsletterRecipient = new ArrayCollection();
     }
 
     /**
@@ -552,5 +561,41 @@ class Event
             }
         }
         throw new \OutOfBoundsException('Requested field was not found');
+    }
+
+    /**
+     * Add subscribedByNewsletterRecipient
+     *
+     * @param \AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+     *
+     * @return Event
+     */
+    public function addSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+    )
+    {
+        $this->subscribedByNewsletterRecipient[] = $subscribedByNewsletterRecipient;
+
+        return $this;
+    }
+
+    /**
+     * Remove subscribedByNewsletterRecipient
+     *
+     * @param \AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+     */
+    public function removeSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+    )
+    {
+        $this->subscribedByNewsletterRecipient->removeElement($subscribedByNewsletterRecipient);
+    }
+
+    /**
+     * Get subscribedByNewsletterRecipient
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSubscribedByNewsletterRecipient()
+    {
+        return $this->subscribedByNewsletterRecipient;
     }
 }
