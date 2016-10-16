@@ -49,9 +49,9 @@ class User extends BaseUser
     /**
      * Contains the newsletter setting container of this user
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterRecipient", mappedBy="assignedUser", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterSubscription", mappedBy="assignedUser", cascade={"persist"})
      */
-    protected $assignedNewsletter;
+    protected $assignedNewsletterSubscription;
 
     /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
@@ -263,26 +263,26 @@ class User extends BaseUser
 
 
     /**
-     * Set assignedNewsletter
+     * Set assignedNewsletterSubscription
      *
-     * @param \AppBundle\Entity\NewsletterRecipient $assignedNewsletter
+     * @param \AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription
      *
      * @return User
      */
-    public function setAssignedNewsletter(\AppBundle\Entity\NewsletterRecipient $assignedNewsletter = null)
+    public function setAssignedNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription = null)
     {
-        $this->assignedNewsletter = $assignedNewsletter;
+        $this->assignedNewsletterSubscription = $assignedNewsletterSubscription;
 
         return $this;
     }
 
     /**
-     * Get assignedNewsletter
+     * Get assignedNewsletterSubscription
      *
-     * @return \AppBundle\Entity\NewsletterRecipient
+     * @return \AppBundle\Entity\NewsletterSubscription
      */
-    public function getAssignedNewsletter()
+    public function getAssignedNewsletterSubscription()
     {
-        return $this->assignedNewsletter;
+        return $this->assignedNewsletterSubscription;
     }
 }

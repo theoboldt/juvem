@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="newsletter_recipient")
+ * @ORM\Table(name="newsletter_subscription")
  */
-class NewsletterRecipient
+class NewsletterSubscription
 {
 
     /**
@@ -35,7 +35,7 @@ class NewsletterRecipient
     protected $email;
 
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="assignedNewsletter")
+     * @ORM\OneToOne(targetEntity="User", inversedBy="assignedNewsletterSubscription")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL", nullable=true)
      */
     protected $assignedUser;
@@ -69,7 +69,7 @@ class NewsletterRecipient
     protected $ageRangeEnd;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="subscribedByNewsletterRecipients")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="newsletterSubscriptions")
      */
     private $subscribedEvents;
 
@@ -96,7 +96,7 @@ class NewsletterRecipient
      *
      * @param string $email
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setEmail($email)
     {
@@ -120,7 +120,7 @@ class NewsletterRecipient
      *
      * @param string $disableToken
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setDisableToken($disableToken)
     {
@@ -144,7 +144,7 @@ class NewsletterRecipient
      *
      * @param \AppBundle\Entity\User $assignedUser
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setAssignedUser(\AppBundle\Entity\User $assignedUser = null)
     {
@@ -168,7 +168,7 @@ class NewsletterRecipient
      *
      * @param \AppBundle\Entity\Event $subscribedEvent
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function addSubscribedEvent(\AppBundle\Entity\Event $subscribedEvent)
     {
@@ -202,7 +202,7 @@ class NewsletterRecipient
      *
      * @param integer $ageRangeBegin
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setAgeRangeBegin($ageRangeBegin)
     {
@@ -226,7 +226,7 @@ class NewsletterRecipient
      *
      * @param integer $ageRangeEnd
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setAgeRangeEnd($ageRangeEnd)
     {
@@ -250,7 +250,7 @@ class NewsletterRecipient
      *
      * @param \DateTime $baseAge
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setBaseAge($baseAge)
     {
@@ -274,7 +274,7 @@ class NewsletterRecipient
      *
      * @param boolean $isEnabled
      *
-     * @return NewsletterRecipient
+     * @return NewsletterSubscription
      */
     public function setIsEnabled($isEnabled)
     {

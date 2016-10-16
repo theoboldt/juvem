@@ -123,13 +123,13 @@ class Event
     /**
      * Contains newsletter recipients which want to be informed about similar events like this
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NewsletterRecipient", inversedBy="subscribedEvents")
-     * @ORM\JoinTable(name="event_newsletter_recipient",
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NewsletterSubscription", inversedBy="subscribedEvents")
+     * @ORM\JoinTable(name="event_newsletter_subscription",
      *      joinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="rid", referencedColumnName="rid",
      *      onDelete="CASCADE")})
      */
-    protected $subscribedByNewsletterRecipients;
+    protected $newsletterSubscriptions;
 
     /**
      * CONSTRUCTOR
@@ -138,7 +138,7 @@ class Event
     {
         $this->participations                   = new ArrayCollection();
         $this->acquisitionAttributes            = new ArrayCollection();
-        $this->subscribedByNewsletterRecipients = new ArrayCollection();
+        $this->newsletterSubscriptions = new ArrayCollection();
     }
 
     /**
@@ -569,14 +569,14 @@ class Event
     /**
      * Add subscribedByNewsletterRecipient
      *
-     * @param \AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+     * @param \AppBundle\Entity\NewsletterSubscription $subscribedByNewsletterRecipient
      *
      * @return Event
      */
-    public function addSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+    public function addSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterSubscription $subscribedByNewsletterRecipient
     )
     {
-        $this->subscribedByNewsletterRecipients[] = $subscribedByNewsletterRecipient;
+        $this->newsletterSubscriptions[] = $subscribedByNewsletterRecipient;
 
         return $this;
     }
@@ -584,12 +584,12 @@ class Event
     /**
      * Remove subscribedByNewsletterRecipient
      *
-     * @param \AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+     * @param \AppBundle\Entity\NewsletterSubscription $subscribedByNewsletterRecipient
      */
-    public function removeSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
+    public function removeSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterSubscription $subscribedByNewsletterRecipient
     )
     {
-        $this->subscribedByNewsletterRecipients->removeElement($subscribedByNewsletterRecipient);
+        $this->newsletterSubscriptions->removeElement($subscribedByNewsletterRecipient);
     }
 
     /**
@@ -597,8 +597,32 @@ class Event
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSubscribedByNewsletterRecipients()
+    public function getNewsletterSubscriptions()
     {
-        return $this->subscribedByNewsletterRecipients;
+        return $this->newsletterSubscriptions;
+    }
+
+    /**
+     * Add newsletterSubscription
+     *
+     * @param \AppBundle\Entity\NewsletterSubscription $newsletterSubscription
+     *
+     * @return Event
+     */
+    public function addNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $newsletterSubscription)
+    {
+        $this->newsletterSubscriptions[] = $newsletterSubscription;
+
+        return $this;
+    }
+
+    /**
+     * Remove newsletterSubscription
+     *
+     * @param \AppBundle\Entity\NewsletterSubscription $newsletterSubscription
+     */
+    public function removeNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $newsletterSubscription)
+    {
+        $this->newsletterSubscriptions->removeElement($newsletterSubscription);
     }
 }

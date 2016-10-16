@@ -3,7 +3,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\EventRepository;
-use AppBundle\Entity\NewsletterRecipient;
+use AppBundle\Entity\NewsletterSubscription;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -12,7 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class NewsletterRecipientType extends AbstractType
+class NewsletterSubscriptionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -56,7 +56,7 @@ class NewsletterRecipientType extends AbstractType
                     'attr'     => array('aria-describedby' => 'help-topic-range'),
                     'required' => false,
                     'mapped'   => true,
-                    'data'     => NewsletterRecipient::AGE_RANGE_DEFAULT_MIN
+                    'data'     => NewsletterSubscription::AGE_RANGE_DEFAULT_MIN
                 )
             )
             ->add(
@@ -67,7 +67,7 @@ class NewsletterRecipientType extends AbstractType
                     'attr'     => array('aria-describedby' => 'help-topic-range'),
                     'required' => false,
                     'mapped'   => true,
-                    'data'     => NewsletterRecipient::AGE_RANGE_DEFAULT_MAX
+                    'data'     => NewsletterSubscription::AGE_RANGE_DEFAULT_MAX
                 )
             )
             ->add(
@@ -94,7 +94,7 @@ class NewsletterRecipientType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'AppBundle\Entity\NewsletterRecipient',
+                'data_class' => NewsletterSubscription::class,
             )
         );
     }
