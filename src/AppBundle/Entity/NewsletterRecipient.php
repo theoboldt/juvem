@@ -11,6 +11,17 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class NewsletterRecipient
 {
+
+    /**
+     * Contains the lower limit of default value for age range
+     */
+    const AGE_RANGE_DEFAULT_MIN = 6;
+
+    /**
+     * Contains the upper limit of default value for age range
+     */
+    const AGE_RANGE_DEFAULT_MAX = 16;
+
     /**
      * @ORM\Column(type="integer", name="rid")
      * @ORM\Id
@@ -30,33 +41,37 @@ class NewsletterRecipient
     protected $assignedUser;
 
     /**
-     * @ORM\Column(type="string", name="disable_token")
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @Assert\NotBlank()
-     */
-    protected $disableToken;
-
-    /**
-     * @ORM\Column(type="boolean", name="has_age_relevant")
-     */
-    protected $hasAgeRelevant;
-
-    /**
-     * @ORM\Column(type="boolean", name="has_topic_child")
-     */
-    protected $hasTopicChild;
-
-    /**
-     * @ORM\Column(type="boolean", name="has_topic_teen")
-     */
-    protected $hasTopicTeen;
-
-    /**
-     * Contains a list of events the recipient of this emails wants to have
+     * @ORM\Column(name="is_enabled", type="boolean", options={"unsigned":true,"default":1})
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Event", mappedBy="subscribedByNewsletterRecipient", cascade={"persist"})
+     * @var boolean
      */
-    protected $subscribedEvents;
+    protected $isEnabled = true;
+
+    /**
+     * @ORM\Column(type="string", name="disable_token", length=36)
+     * @  xOR xM\GeneratedValue(strategy="UUID")
+     */
+    protected $disableToken = '';
+
+    /**
+     * @ORM\Column(type="date", name="base_age", nullable=true)
+     */
+    protected $baseAge;
+
+    /**
+     * @ORM\Column(type="smallint", name="age_range_begin", options={"unsigned"=true})
+     */
+    protected $ageRangeBegin;
+
+    /**
+     * @ORM\Column(type="smallint", name="age_range_end", options={"unsigned"=true})
+     */
+    protected $ageRangeEnd;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="subscribedByNewsletterRecipients")
+     */
+    private $subscribedEvents;
 
     /**
      * Constructor
@@ -125,78 +140,6 @@ class NewsletterRecipient
     }
 
     /**
-     * Set hasAgeRelevant
-     *
-     * @param boolean $hasAgeRelevant
-     *
-     * @return NewsletterRecipient
-     */
-    public function setHasAgeRelevant($hasAgeRelevant)
-    {
-        $this->hasAgeRelevant = $hasAgeRelevant;
-
-        return $this;
-    }
-
-    /**
-     * Get hasAgeRelevant
-     *
-     * @return boolean
-     */
-    public function getHasAgeRelevant()
-    {
-        return $this->hasAgeRelevant;
-    }
-
-    /**
-     * Set hasTopicChild
-     *
-     * @param boolean $hasTopicChild
-     *
-     * @return NewsletterRecipient
-     */
-    public function setHasTopicChild($hasTopicChild)
-    {
-        $this->hasTopicChild = $hasTopicChild;
-
-        return $this;
-    }
-
-    /**
-     * Get hasTopicChild
-     *
-     * @return boolean
-     */
-    public function hasTopicChild()
-    {
-        return $this->hasTopicChild;
-    }
-
-    /**
-     * Set hasTopicTeen
-     *
-     * @param boolean $hasTopicTeen
-     *
-     * @return NewsletterRecipient
-     */
-    public function setHasTopicTeen($hasTopicTeen)
-    {
-        $this->hasTopicTeen = $hasTopicTeen;
-
-        return $this;
-    }
-
-    /**
-     * Get hasTopicTeen
-     *
-     * @return boolean
-     */
-    public function hasTopicTeen()
-    {
-        return $this->hasTopicTeen;
-    }
-
-    /**
      * Set assignedUser
      *
      * @param \AppBundle\Entity\User $assignedUser
@@ -252,5 +195,101 @@ class NewsletterRecipient
     public function getSubscribedEvents()
     {
         return $this->subscribedEvents;
+    }
+
+    /**
+     * Set ageRangeBegin
+     *
+     * @param integer $ageRangeBegin
+     *
+     * @return NewsletterRecipient
+     */
+    public function setAgeRangeBegin($ageRangeBegin)
+    {
+        $this->ageRangeBegin = $ageRangeBegin;
+
+        return $this;
+    }
+
+    /**
+     * Get ageRangeBegin
+     *
+     * @return integer
+     */
+    public function getAgeRangeBegin()
+    {
+        return $this->ageRangeBegin;
+    }
+
+    /**
+     * Set ageRangeEnd
+     *
+     * @param integer $ageRangeEnd
+     *
+     * @return NewsletterRecipient
+     */
+    public function setAgeRangeEnd($ageRangeEnd)
+    {
+        $this->ageRangeEnd = $ageRangeEnd;
+
+        return $this;
+    }
+
+    /**
+     * Get ageRangeEnd
+     *
+     * @return integer
+     */
+    public function getAgeRangeEnd()
+    {
+        return $this->ageRangeEnd;
+    }
+
+    /**
+     * Set baseAge
+     *
+     * @param \DateTime $baseAge
+     *
+     * @return NewsletterRecipient
+     */
+    public function setBaseAge($baseAge)
+    {
+        $this->baseAge = $baseAge;
+
+        return $this;
+    }
+
+    /**
+     * Get baseAge
+     *
+     * @return \DateTime
+     */
+    public function getBaseAge()
+    {
+        return $this->baseAge;
+    }
+
+    /**
+     * Set isEnabled
+     *
+     * @param boolean $isEnabled
+     *
+     * @return NewsletterRecipient
+     */
+    public function setIsEnabled($isEnabled)
+    {
+        $this->isEnabled = $isEnabled;
+
+        return $this;
+    }
+
+    /**
+     * Get isEnabled
+     *
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
     }
 }

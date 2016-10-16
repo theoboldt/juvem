@@ -3,9 +3,11 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\NewsletterRecipient;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,40 +19,55 @@ class NewsletterRecipientType extends AbstractType
 
         $builder
             ->add(
-                'email', TextType::class,
+                'email',
+                TextType::class,
                 array(
                     'label' => 'E-Mail',
                     'attr'  => array('aria-describedby' => 'help-email'),
                 )
             )
             ->add(
-                'hasAgeRelevant',
+                'isEnabled',
                 CheckboxType::class,
                 array(
-                    'label'    => 'Altersgerechte Aktionen',
-                    'attr'     => array('aria-describedby' => 'help-topic-age'),
+                    'label'    => 'Rundbriefe erhalten',
+                    'attr'     => array('aria-describedby' => 'help-newsletter-enable', 'class' => 'checkbox-smart'),
+                    'label_attr' => array('class' => 'control-label checkbox-smart-label'),
                     'required' => false,
                     'mapped'   => true
                 )
             )
             ->add(
-                'topicChild',
+                'useAging',
                 CheckboxType::class,
                 array(
-                    'label'    => 'Aktionen für Kinder',
-                    'attr'     => array('aria-describedby' => 'help-topic-child'),
+                    'label'    => 'Abbonierte Altersspanne wächst mit',
+                    'attr'     => array('aria-describedby' => 'help-topic-ageing'),
                     'required' => false,
-                    'mapped'   => true
+                    'mapped'   => false,
+                    'data'     => true
                 )
             )
             ->add(
-                'topicTeen',
-                CheckboxType::class,
+                'ageRangeBegin',
+                NumberType::class,
                 array(
-                    'label'    => 'Aktionen für Jugendliche',
-                    'attr'     => array('aria-describedby' => 'help-topic-teen'),
+                    'label'    => 'Altersspanne (minimales Alter)',
+                    'attr'     => array('aria-describedby' => 'help-topic-range'),
                     'required' => false,
-                    'mapped'   => true
+                    'mapped'   => true,
+                    'data'     => NewsletterRecipient::AGE_RANGE_DEFAULT_MIN
+                )
+            )
+            ->add(
+                'ageRangeEnd',
+                NumberType::class,
+                array(
+                    'label'    => 'Altersspanne (maximales Alter)',
+                    'attr'     => array('aria-describedby' => 'help-topic-range'),
+                    'required' => false,
+                    'mapped'   => true,
+                    'data'     => NewsletterRecipient::AGE_RANGE_DEFAULT_MAX
                 )
             )
             ->add(
@@ -67,6 +84,7 @@ class NewsletterRecipientType extends AbstractType
                     },
                     'choice_label'  => 'title',
                     'multiple'      => true,
+                    'required'  => false
                     // 'expanded' => true,
                 )
             );

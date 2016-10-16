@@ -123,19 +123,22 @@ class Event
     /**
      * Contains newsletter recipients which want to be informed about similar events like this
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\NewsletterRecipient", mappedBy="subscribedEvents",
-     *                                                                     cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NewsletterRecipient", inversedBy="subscribedEvents")
+     * @ORM\JoinTable(name="event_newsletter_recipient",
+     *      joinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="rid", referencedColumnName="rid",
+     *      onDelete="CASCADE")})
      */
-    protected $subscribedByNewsletterRecipient;
+    protected $subscribedByNewsletterRecipients;
 
     /**
      * CONSTRUCTOR
      */
     public function __construct()
     {
-        $this->participations                  = new ArrayCollection();
-        $this->acquisitionAttributes           = new ArrayCollection();
-        $this->subscribedByNewsletterRecipient = new ArrayCollection();
+        $this->participations                   = new ArrayCollection();
+        $this->acquisitionAttributes            = new ArrayCollection();
+        $this->subscribedByNewsletterRecipients = new ArrayCollection();
     }
 
     /**
@@ -573,7 +576,7 @@ class Event
     public function addSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
     )
     {
-        $this->subscribedByNewsletterRecipient[] = $subscribedByNewsletterRecipient;
+        $this->subscribedByNewsletterRecipients[] = $subscribedByNewsletterRecipient;
 
         return $this;
     }
@@ -586,7 +589,7 @@ class Event
     public function removeSubscribedByNewsletterRecipient(\AppBundle\Entity\NewsletterRecipient $subscribedByNewsletterRecipient
     )
     {
-        $this->subscribedByNewsletterRecipient->removeElement($subscribedByNewsletterRecipient);
+        $this->subscribedByNewsletterRecipients->removeElement($subscribedByNewsletterRecipient);
     }
 
     /**
@@ -594,8 +597,8 @@ class Event
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSubscribedByNewsletterRecipient()
+    public function getSubscribedByNewsletterRecipients()
     {
-        return $this->subscribedByNewsletterRecipient;
+        return $this->subscribedByNewsletterRecipients;
     }
 }

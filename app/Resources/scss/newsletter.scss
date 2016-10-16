@@ -1,0 +1,22 @@
+#help-topic-age-range {
+  margin-bottom: 0;
+}
+
+.contains-slider {
+
+  height: 58px;
+  line-height: 58px;
+
+  > div {
+    display: inline-block;
+  }
+}
+
+.theme-green .back-bar div.selected-bar {
+    background-color: $ejdvLightOrange;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(lighten($ejdvLightOrange, 10%)), to($ejdvLightOrange));
+    background-image: -webkit-linear-gradient(top, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
+    background-image: -o-linear-gradient(top, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
+    background-image: linear-gradient(to bottom, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
+
+}
