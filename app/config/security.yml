@@ -29,7 +29,7 @@ security:
             anonymous:    true
         # disables authentication for assets and the profiler, adapt it according to your needs
             remember_me:
-                key:      "%secret%"
+                secret:   "%secret%"
                 lifetime: 2419200 # 4 weeks in seconds
                 path:     /
         dev:

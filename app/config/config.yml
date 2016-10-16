@@ -47,11 +47,10 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-    form:
-        resources: ['bootstrap_3_layout.html.twig']
         # resources: ['bootstrap_3_horizontal_layout.html.twig']
     form_themes:
-        - 'form/vich-fields.html.twig'
+        - bootstrap_3_layout.html.twig
+        - form/vich-fields.html.twig
     date:
         format: d.m.Y, H:i:s
         interval_format: '%%d Tage'
