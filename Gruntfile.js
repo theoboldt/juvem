@@ -51,6 +51,7 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
+                    'node_modules/jquery-range/jquery.range.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
                     '<%= resourcesPath %>/js/user-settings.js',
@@ -66,6 +67,7 @@ module.exports = function (grunt) {
             distCss: {
                 src: [
                     'app/cache/dep/all-sass.css',
+                    'node_modules/jquery-range/jquery.range.css',
                     'node_modules/bootstrap-table/src/bootstrap-table.css'
                 ],
                 dest: 'web/css/all.css'
