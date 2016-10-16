@@ -22,7 +22,7 @@ class PublicController extends Controller
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $newsletterSubscription = $user->getAssignedNewsletter();
+            $newsletterSubscription = $user->getAssignedNewsletterSubscription();
             if (!$newsletterSubscription) {
                 $newsletterSubscription = new NewsletterSubscription();
                 $newsletterSubscription->setEmail($user->getEmail());

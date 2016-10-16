@@ -102,8 +102,8 @@
             elAgeRangeEnd.on('change', updateRange);
 
             slider.jRange({
-                from: 0,
-                to: 18,
+                from: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }},
+                to: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }},
                 step: 1,
                 scale: [0, 6, 12, 18],
                 width: 200,
@@ -130,8 +130,8 @@
                 $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
             });
             $('#preselectAll').on('click', function () {
-                elAgeRangeBegin.val(0);
-                elAgeRangeEnd.val('18');
+                elAgeRangeBegin.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
+                elAgeRangeEnd.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
                 slider.jRange('setValue', '0,18');
 
 

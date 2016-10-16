@@ -13,6 +13,16 @@ class NewsletterSubscription
 {
 
     /**
+     * Contains the lower limit of possible values for age range
+     */
+    const AGE_RANGE_MIN = 0;
+
+    /**
+     * Contains the upper limit of possible values for age range
+     */
+    const AGE_RANGE_MAX = 18;
+
+    /**
      * Contains the lower limit of default value for age range
      */
     const AGE_RANGE_DEFAULT_MIN = 6;
@@ -61,12 +71,12 @@ class NewsletterSubscription
     /**
      * @ORM\Column(type="smallint", name="age_range_begin", options={"unsigned"=true})
      */
-    protected $ageRangeBegin;
+    protected $ageRangeBegin = self::AGE_RANGE_DEFAULT_MIN;
 
     /**
      * @ORM\Column(type="smallint", name="age_range_end", options={"unsigned"=true})
      */
-    protected $ageRangeEnd;
+    protected $ageRangeEnd = self::AGE_RANGE_DEFAULT_MAX;
 
     /**
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="newsletterSubscriptions")
@@ -218,7 +228,7 @@ class NewsletterSubscription
      */
     public function getAgeRangeBegin()
     {
-        return $this->ageRangeBegin;
+        return $this->applyAging($this->ageRangeBegin);
     }
 
     /**
@@ -242,7 +252,7 @@ class NewsletterSubscription
      */
     public function getAgeRangeEnd()
     {
-        return $this->ageRangeEnd;
+        return $this->applyAging($this->ageRangeEnd);
     }
 
     /**
@@ -267,6 +277,57 @@ class NewsletterSubscription
     public function getBaseAge()
     {
         return $this->baseAge;
+    }
+
+    /**
+     * Find out wether aging is used or not
+     *
+     * @return bool
+     */
+    public function useAging()
+    {
+        return (bool)$this->getBaseAge();
+    }
+
+    /**
+     * Define if aging should be used or not
+     *
+     * @param $value
+     * @return NewsletterSubscription
+     */
+    public function setUseAging($value)
+    {
+        if ($value) {
+            $this->setBaseAge(new \DateTime());
+        } else {
+            $this->setBaseAge(null);
+        }
+        return $this;
+    }
+
+    /**
+     * Apply aging to transmitted age
+     *
+     * @param   integer $age
+     * @return  number
+     */
+    public function applyAging($age)
+    {
+        $baseAge = $this->getBaseAge();
+        if ($baseAge) {
+            $today    = new \DateTime();
+            $interval = $today->diff($baseAge);
+            $age += abs($interval->format('%y'));
+        }
+
+        if ($age < self::AGE_RANGE_MIN) {
+            return self::AGE_RANGE_MIN;
+        }
+        if ($age > self::AGE_RANGE_MAX) {
+            return self::AGE_RANGE_MAX;
+        }
+
+        return $age;
     }
 
     /**

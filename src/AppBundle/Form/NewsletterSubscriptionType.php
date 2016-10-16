@@ -30,11 +30,11 @@ class NewsletterSubscriptionType extends AbstractType
                 'isEnabled',
                 CheckboxType::class,
                 array(
-                    'label'    => 'Rundbriefe erhalten',
-                    'attr'     => array('aria-describedby' => 'help-newsletter-enable', 'class' => 'checkbox-smart'),
+                    'label'      => 'Rundbriefe erhalten',
+                    'attr'       => array('aria-describedby' => 'help-newsletter-enable', 'class' => 'checkbox-smart'),
                     'label_attr' => array('class' => 'control-label checkbox-smart-label'),
-                    'required' => false,
-                    'mapped'   => true
+                    'required'   => false,
+                    'mapped'     => true
                 )
             )
             ->add(
@@ -44,8 +44,7 @@ class NewsletterSubscriptionType extends AbstractType
                     'label'    => 'Abbonierte Altersspanne wächst mit',
                     'attr'     => array('aria-describedby' => 'help-topic-ageing'),
                     'required' => false,
-                    'mapped'   => false,
-                    'data'     => true
+                    'mapped'   => true
                 )
             )
             ->add(
@@ -55,8 +54,7 @@ class NewsletterSubscriptionType extends AbstractType
                     'label'    => 'Altersspanne (minimales Alter)',
                     'attr'     => array('aria-describedby' => 'help-topic-range'),
                     'required' => false,
-                    'mapped'   => true,
-                    'data'     => NewsletterSubscription::AGE_RANGE_DEFAULT_MIN
+                    'mapped'   => true
                 )
             )
             ->add(
@@ -66,8 +64,7 @@ class NewsletterSubscriptionType extends AbstractType
                     'label'    => 'Altersspanne (maximales Alter)',
                     'attr'     => array('aria-describedby' => 'help-topic-range'),
                     'required' => false,
-                    'mapped'   => true,
-                    'data'     => NewsletterSubscription::AGE_RANGE_DEFAULT_MAX
+                    'mapped'   => true
                 )
             )
             ->add(
@@ -84,7 +81,7 @@ class NewsletterSubscriptionType extends AbstractType
                     },
                     'choice_label'  => 'title',
                     'multiple'      => true,
-                    'required'  => false
+                    'required'      => false
                     // 'expanded' => true,
                 )
             );
