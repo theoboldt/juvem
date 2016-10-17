@@ -130,8 +130,8 @@
                 $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
             });
             $('#preselectAll').on('click', function () {
-                elAgeRangeBegin.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
-                elAgeRangeEnd.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
+                elAgeRangeBegin.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
+                elAgeRangeEnd.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
                 slider.jRange('setValue', '0,18');
 
 
