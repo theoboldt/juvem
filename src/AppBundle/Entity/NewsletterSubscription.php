@@ -58,8 +58,14 @@ class NewsletterSubscription
     protected $isEnabled = true;
 
     /**
-     * @ORM\Column(type="string", name="disable_token", length=36)
-     * @  xOR xM\GeneratedValue(strategy="UUID")
+     * @ORM\Column(name="is_confirmed", type="boolean", options={"unsigned":true, "default":0})
+     *
+     * @var boolean
+     */
+    protected $isConfirmed = false;
+
+    /**
+     * @ORM\Column(type="string", name="disable_token", length=43)
      */
     protected $disableToken = '';
 
@@ -352,5 +358,29 @@ class NewsletterSubscription
     public function getIsEnabled()
     {
         return $this->isEnabled;
+    }
+
+    /**
+     * Set isConfirmed
+     *
+     * @param boolean $isConfirmed
+     *
+     * @return NewsletterSubscription
+     */
+    public function setIsConfirmed($isConfirmed)
+    {
+        $this->isConfirmed = $isConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get isConfirmed
+     *
+     * @return boolean
+     */
+    public function getIsConfirmed()
+    {
+        return $this->isConfirmed;
     }
 }
