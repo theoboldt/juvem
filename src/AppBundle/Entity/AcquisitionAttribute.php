@@ -1,6 +1,8 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -8,8 +10,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
-use AppBundle\Entity\Audit\CreatedModifiedTrait;
-use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -62,7 +62,7 @@ class AcquisitionAttribute
     protected $fieldType = FormTextType::class;
 
     /**
-     * @ORM\Column(type="json_array", length=255, name="field_options")
+     * @ORM\Column(type="json_array", length=65535, name="field_options")
      */
     protected $fieldOptions = array();
 
@@ -311,6 +311,9 @@ class AcquisitionAttribute
      */
     public function getFieldOptions()
     {
+        if (!$this->fieldOptions) {
+            return array();
+        }
         return array_merge($this->fieldOptions, array('mapped' => true));
     }
 
@@ -488,4 +491,38 @@ class AcquisitionAttribute
 
 
 
+
+    /**
+     * Add fillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     *
+     * @return AcquisitionAttribute
+     */
+    public function addFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    {
+        $this->fillouts[] = $fillout;
+
+        return $this;
+    }
+
+    /**
+     * Remove fillout
+     *
+     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     */
+    public function removeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    {
+        $this->fillouts->removeElement($fillout);
+    }
+
+    /**
+     * Get fillouts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFillouts()
+    {
+        return $this->fillouts;
+    }
 }
