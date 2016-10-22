@@ -65,7 +65,7 @@ class PublicController extends Controller
         }
 
         return $this->render(
-            'newsletter/public/settings.html.twig', array(
+            'newsletter/public/subscription.html.twig', array(
                                                       'form' => $form->createView()
                                                   )
         );
