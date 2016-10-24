@@ -63,6 +63,7 @@ class PublicController extends Controller
                     'success',
                     'Wir haben die Registrierung Ihres Rundbrief-Abonnements entgegengenommen. Sie erhalten demnächst eine E-Mail, in der Sie das Abonnement noch bestätigen müssen.'
                 );
+                return $this->redirectToRoute('homepage');
             }
         }
 
@@ -128,7 +129,16 @@ class PublicController extends Controller
             $em = $this->getDoctrine()
                        ->getManager();
             $em->persist($subscription);
+            $em->merge($subscription);
+
+            $subscriptionListOther = $repository->findBy(array('email' => $subscription->getEmail()));
+            foreach ($subscriptionListOther as $subscriptionToDelete) {
+                if ($subscription->getRid() != $subscriptionToDelete->getRid()) {
+                    $em->remove($subscriptionToDelete);
+                }
+            }
             $em->flush();
+
             $this->addFlash(
                 'success',
                 'Das Rundbrief-Abonnement wurde erfolgreich bestätigt. Auf dieser Seite können Sie auch in Zukunft ihr Abonnement konfigurieren.'
