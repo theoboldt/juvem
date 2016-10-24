@@ -76,8 +76,8 @@ class NewsletterSubscriptionType extends AbstractType
                     'class'         => 'AppBundle:Event',
                     'query_builder' => function (EventRepository $er) {
                         return $er->createQueryBuilder('e')
+                                  ->where('e.deletedAt IS NULL')
                                   ->orderBy('e.title', 'ASC');
-                        //->where('e.deleted_at IS NULL');
                     },
                     'choice_label'  => 'title',
                     'multiple'      => true,
