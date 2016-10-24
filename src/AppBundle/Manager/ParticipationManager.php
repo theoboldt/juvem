@@ -4,36 +4,11 @@ namespace AppBundle\Manager;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\Participation;
-use AppBundle\Twig\MailGenerator;
-use Swift_Mailer;
-use Symfony\Component\Templating\EngineInterface;
+use AppBundle\Entity\Participation as ParticipationEntity;
 
-class ParticipationManager
+class ParticipationManager extends AbstractMailerAwareManager
 {
-
-    /**
-     * @var Swift_Mailer
-     */
-    protected $mailer;
-
-    /**
-     * @var MailGenerator
-     */
-    protected $mailGenerator;
-
-    /**
-     * Initiate a participation manager service
-     *
-     * @param Swift_Mailer  $mailer
-     * @param MailGenerator $mailGenerator
-     */
-    public function __construct(Swift_Mailer $mailer, MailGenerator $mailGenerator)
-    {
-        $this->mailer        = $mailer;
-        $this->mailGenerator = $mailGenerator;
-    }
 
     /**
      * Send a participation request email
@@ -136,21 +111,5 @@ class ParticipationManager
             }
         }
 
-    }
-
-    /**
-     * @param Swift_Mailer $mailer
-     */
-    public function setMailer(Swift_Mailer $mailer)
-    {
-        $this->mailer = $mailer;
-    }
-
-    /**
-     * @param EngineInterface $templating
-     */
-    public function setTemplating(EngineInterface $templating)
-    {
-        $this->templating = $templating;
     }
 }
