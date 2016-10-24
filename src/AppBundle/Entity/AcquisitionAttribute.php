@@ -62,7 +62,7 @@ class AcquisitionAttribute
     protected $fieldType = FormTextType::class;
 
     /**
-     * @ORM\Column(type="json_array", length=65535, name="field_options")
+     * @ORM\Column(type="json_array", length=16777215, name="field_options", nullable=true)
      */
     protected $fieldOptions = array();
 
