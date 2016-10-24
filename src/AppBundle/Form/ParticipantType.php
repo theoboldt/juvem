@@ -85,7 +85,6 @@ class ParticipantType extends AbstractType
                     'expanded'          => true,
                     'multiple'          => true,
                     'required'          => false,
-                    'empty_data'        => 0,
                     'attr'              => array('aria-describedby' => 'help-food')
                 )
             );
