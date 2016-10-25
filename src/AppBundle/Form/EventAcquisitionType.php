@@ -2,23 +2,11 @@
 
 namespace AppBundle\Form;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventAcquisitionType extends AbstractType
 {
@@ -27,6 +15,11 @@ class EventAcquisitionType extends AbstractType
         $builder->add(
             'acquisitionAttributes', EntityType::class, array(
                                        'class'        => 'AppBundle\Entity\AcquisitionAttribute',
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('a')
+                                  ->where('a.deletedAt IS NULL')
+                                  ->orderBy('a.managementTitle', 'ASC');
+                    },
                                        'choice_label' => 'managementTitle',
                                        'multiple'     => true,
                                        'expanded'     => true,

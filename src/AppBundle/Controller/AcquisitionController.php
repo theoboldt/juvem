@@ -34,7 +34,7 @@ class AcquisitionController extends Controller
     {
         $repository          = $this->getDoctrine()
                                     ->getRepository('AppBundle:AcquisitionAttribute');
-        $attributeEntityList = $repository->findAll();
+        $attributeEntityList = $repository->findBy(array('deletedAt' => null));
 
         $attributeList = array();
         /** @var AcquisitionAttribute $attribute */
@@ -76,7 +76,7 @@ class AcquisitionController extends Controller
                      ->getForm();
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isValid() && $form->isSubmitted()) {
             $action = $form->get('action')
                            ->getData();
             switch ($action) {
@@ -89,6 +89,7 @@ class AcquisitionController extends Controller
             }
             $em = $this->getDoctrine()->getManager();
             $em->persist($attribute);
+            $em->flush();
         }
 
         return $this->render(

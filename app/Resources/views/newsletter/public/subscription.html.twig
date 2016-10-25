@@ -11,8 +11,16 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-7 col-sx-12 checkbox-with-help-block">
-                <p>Auf dieser Seite können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über die
-                    bevorstehenden Aktionen informiert zu sein.</p>
+                {% if app.user is null %}
+                    <p>Wir informieren Sie gerne über bevorstehende Aktionen. Auf dieser Seite können Sie die Rundbriefe
+                        (Newsletter) abonnieren und Ihren Wünschen entsprechend zuscheinden. Natürlich können Sie die
+                        Rundbriefe jederzeit abbestellen.</p>
+                    <p>Nutzen Sie dazu einfach den entsprechenden Link in einem unserer Rundbriefe die sie erhalten
+                        haben, oder <a href="mailto:mail@jugendwerk-vaihingen.de">wenden Sie sich direkt an uns</a>.</p>
+                {% else %}
+                    <p>Auf dieser Seite können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über
+                        die bevorstehenden Aktionen informiert zu sein.</p>
+                {% endif %}
 
                 <label class="control-label" id="help-templates">Schnellwahl</label><br>
                 <div class="btn-group" role="group" aria-label="help-templates" style="margin-bottom: 10px;">
@@ -130,8 +138,8 @@
                 $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
             });
             $('#preselectAll').on('click', function () {
-                elAgeRangeBegin.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
-                elAgeRangeEnd.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
+                elAgeRangeBegin.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
+                elAgeRangeEnd.val( {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
                 slider.jRange('setValue', '0,18');
 
 
