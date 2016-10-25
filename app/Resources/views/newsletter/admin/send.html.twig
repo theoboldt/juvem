@@ -10,10 +10,58 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-
+        <div id="mail-form-newsletter">
+            {{ form_start(form) }}
+            <div class="row">
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
+                </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.lead) }}
+                    {{ form_row(form.content) }}
+                    <label class="control-label">Altersspanne</label>
+
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-sm-2 col-xs-6">
+                            <label class="control-label">von</label>
+                            {{ form_widget(form.ageRangeBegin) }}
+                        </div>
+                        <div class="col-sm-8  col-xs-12 contains-slider">
+                            <input type="hidden" class="slider-input"
+                                   value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
+                        </div>
+                        <div class="col-sm-2 col-xs-6">
+                            <label class="control-label">bis</label>
+                            {{ form_widget(form.ageRangeEnd) }}
+                        </div>
+                    </div>
+                    {{ form_row(form.subscribedEvents) }}
+
+                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
+                </div>
+                <div class="col-sm-6 col-lg-8" id="mail-template">
+                    <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
+
+                    <div class="panel panel-default" id="mail-template-iframe-panel">
+                        <div class="panel-heading">Betreff der E-Mail</div>
+                        <div class="panel-body">
+                            <iframe src="{{ path('mail_template') }}"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
         </div>
     </div>
+{% endblock %}
+{% block javascriptCustom %}
+    {% include '/newsletter/public/form-script.html.twig' with { formMain: 'newsletter_mail'} %}
 {% endblock %}

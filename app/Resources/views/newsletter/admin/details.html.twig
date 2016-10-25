@@ -19,5 +19,5 @@
     </div>
 {% endblock %}
 {% block javascriptCustom %}
-    {% include '/newsletter/public/form-script.html.twig' %}
+    {% include '/newsletter/public/form-script.html.twig' with { formMain: 'newsletter_subscription'} %}
 {% endblock %}

@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Newsletter;
 
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
+use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -124,8 +125,23 @@ class AdminController extends Controller
      */
     public function sendNewsletter(Request $request)
     {
+        $form = $this->createForm(NewsletterMailType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $data = $form->getData();
+
+            $this->addFlash(
+                'info',
+                'Die Benachrichtigungs-Emails wurden versandt'
+            );
+
+            return $this->redirectToRoute('newsletter_admin_overview');
+        }
+
         return $this->render(
-            'newsletter/admin/send.html.twig'
+            'newsletter/admin/send.html.twig', array('form' => $form->createView())
         );
     }
 

@@ -1,0 +1,48 @@
+$(function () {
+    /**
+     * NEWSLETTER: Email preview
+     */
+    var updateMailPreview = function () {
+        var updateButton = $('*#mail-form-newsletter .btn-update-preview');
+        updateButton.prop('disabled', true);
+        var content = {
+                subject: $("#newsletter_mail_subject").val(),
+                title: $("#newsletter_mail_title").val(),
+                lead: $("#newsletter_mail_lead").val(),
+                content: $("#newsletter_mail_content").val()
+            },
+            preview = $('*#mail-template iframe').contents();
+
+        var replacePlaceholders = function (value) {
+            if (!value) {
+                return '';
+            }
+            return eHtml(value);
+        };
+
+        $.each(content, function (key, value) {
+            value = replacePlaceholders(value);
+            switch (key) {
+                case 'content':
+                    value = value.replace(/\n\n/g, '</p><p>');
+                    break;
+                case 'subject':
+                    if (value == '') {
+                        value = '<em>Kein Betreff</em>';
+                    }
+                    break;
+            }
+
+            if (key == 'subject') {
+                $('*#mail-template-iframe-panel .panel-heading').html(value);
+            } else {
+                preview.find('#mail-part-' + key).html(value);
+            }
+        });
+        updateButton.prop('disabled', false);
+    };
+    $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
+    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreview);
+
+
+});

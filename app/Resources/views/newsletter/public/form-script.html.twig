@@ -1,8 +1,8 @@
 <script type='text/javascript'>
     jQuery(document).ready(function () {
         var updateRange,
-                elAgeRangeBegin = $('#newsletter_subscription_ageRangeBegin'),
-                elAgeRangeEnd = $('#newsletter_subscription_ageRangeEnd'),
+                elAgeRangeBegin = $('#{{ formMain }}_ageRangeBegin'),
+                elAgeRangeEnd = $('#{{ formMain }}_ageRangeEnd'),
                 slider = $('.slider-input');
 
         updateRange = function () {
@@ -45,8 +45,8 @@
         });
 
         $('#preselectNone').on('click', function () {
-            $('#newsletter_subscription_isEnabled').prop("checked", false);
-            $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
+            $('#{{ formMain }}_isEnabled').prop("checked", false);
+            $("#{{ formMain }}_subscribedEvents option:selected").prop("selected", false);
         });
         $('#preselectAll').on('click', function () {
             elAgeRangeBegin.val({{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
@@ -54,12 +54,10 @@
             slider.jRange('setValue', '0,18');
 
 
-            $('#newsletter_subscription_isEnabled').prop("checked", true);
-            $('#newsletter_subscription_useAging').prop("checked", false);
+            $('#{{ formMain }}_isEnabled').prop("checked", true);
+            $('#{{ formMain }}_useAging').prop("checked", false);
 
-            $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
+            $("#{{ formMain }}_subscribedEvents option:selected").prop("selected", false);
         });
-
-
     });
 </script>
