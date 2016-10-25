@@ -1,21 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Rundbrief Abonnement{% endblock %}
+{% block title %}Newsletter Abonnement{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Rundbrief', 'subtitle': 'Abonnement'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Abonnement'} %}
         {% block breadcrumb %}
-            <li class="active">Rundbrief Abonnement</li>
+            <li class="active">Newsletter Abonnement</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-sm-7 col-sx-12 checkbox-with-help-block">
                 {% if app.user is null %}
-                    <p>Wir informieren Sie gerne über bevorstehende Aktionen. Auf dieser Seite können Sie die Rundbriefe
-                        (Newsletter) abonnieren und Ihren Wünschen entsprechend zuscheinden. Natürlich können Sie die
-                        Rundbriefe jederzeit abbestellen.</p>
-                    <p>Nutzen Sie dazu einfach den entsprechenden Link in einem unserer Rundbriefe die sie erhalten
+                    <p>Wir informieren Sie gerne über bevorstehende Aktionen. Auf dieser Seite können Sie den Newsletter
+                        abonnieren und Ihren Wünschen entsprechend zuscheinden. Natürlich können Sie den Newsletter
+                        jederzeit abbestellen.</p>
+                    <p>Nutzen Sie dazu einfach den entsprechenden Link in einem unserer Newsletter den Sie erhalten
                         haben, oder <a href="mailto:mail@jugendwerk-vaihingen.de">wenden Sie sich direkt an uns</a>.</p>
                 {% else %}
                     <p>Auf dieser Seite können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über
@@ -25,7 +25,7 @@
                 <label class="control-label" id="help-templates">Schnellwahl</label><br>
                 <div class="btn-group" role="group" aria-label="help-templates" style="margin-bottom: 10px;">
                   <button type="button" class="btn btn-default btn-sm" id="preselectNone" >keine Newsletter erhalten</button>
-                  <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abonnieren</button>
+                  <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abbonieren</button>
                 </div>
 
                 {{ form_start(form) }}
@@ -65,18 +65,18 @@
                 </div>
                 {{ form_label(form.useAging) }}
                 {{ form_widget(form.useAging) }}
-                <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abonnierte Altersspanne automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }} bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
+                <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }} bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
 
                 {{ form_label(form.subscribedEvents) }}
                 {{ form_widget(form.subscribedEvents) }}
-                <p class="help-block" id="help-topic-subscribed"> Ist diese Option aktiviert, erhalten Sie E-Mails zu Veranstaltungen, die den oben ausgewählten Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir einige verangene Veranstaltungen aus, die zum Thema des Rundbriefs passen oder die eine Nachfolgeveranstaltung darstellen.</p>
+                <p class="help-block" id="help-topic-subscribed"> Ist diese Option aktiviert, erhalten Sie E-Mails zu Veranstaltungen, die den oben ausgewählten Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir einige verangene Veranstaltungen aus, die zum Thema des Newsletter passen oder die eine Nachfolgeveranstaltung darstellen.</p>
 
                 <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
                 {{ form_end(form) }}
             </div>
             <div class="col-sm-5 col-sx-12">
                 <p>Es ist uns sehr wichtig, dass Sie die volle Kontrolle darüber haben, welche Nachrichten Sie von uns
-                    erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder die Rundbriefe auch jederzeit
+                    erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder den Newsletter auch jederzeit
                     ganz abbestellen. Sie sollen keine E-Mails zu Veranstaltungen erhalten, die für Sie nicht von
                     Interesse sind.</p>
 

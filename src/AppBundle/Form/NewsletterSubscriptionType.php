@@ -30,7 +30,7 @@ class NewsletterSubscriptionType extends AbstractType
                 'isEnabled',
                 CheckboxType::class,
                 array(
-                    'label'      => 'Rundbriefe erhalten',
+                    'label'      => 'Newsletter erhalten',
                     'attr'       => array('aria-describedby' => 'help-newsletter-enable', 'class' => 'checkbox-smart'),
                     'label_attr' => array('class' => 'control-label checkbox-smart-label'),
                     'required'   => false,

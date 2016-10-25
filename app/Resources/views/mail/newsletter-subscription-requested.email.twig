@@ -1,10 +1,10 @@
-{% block subject %}Rundbrief-Abonnement{% endblock %}
+{% block subject %}Newsletter-Abonnement{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
 Guten Tag!
 
-Wir haben Ihre Registrierung für die Jugendwerks-Rundbriefe erhalten. Sie müssen das Abonnement nur noch bestätigen, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Rufen Sie zum bestätigen die folgende Internetadresse auf:
+Wir haben Ihre Registrierung für den Jugendwerks-Newsletter erhalten. Sie müssen das Abonnement nur noch bestätigen, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Rufen Sie zum bestätigen die folgende Internetadresse auf:
 {{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}
 
 Wenn Sie die folgende Internetadresse aufrufen, können Sie Ihr Abonnement ändern oder auch ganz beenden:
@@ -18,10 +18,10 @@ Jugendwerk Stuttgart Vaihingen
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
     {% block title %}Guten Tag!{% endblock %}
-    {% block lead %}Wir haben Ihre Registrierung für die Jugendwerks-Rundbriefe erhalten.{% endblock %}
-    {% block content %}<p>Sie müssen das Abonnement nur noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Folgen Sie zum bestätigen den Link im Kasten am Ende der E-Mail.</p><p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, verwenden Sie die folgende Internetadresse: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Rundbrief-Abonnement verwalten</a></p>{% endblock %}
-    {% block calltoactioncontent %}<p>Besuchen Sie bitte folgende Seite, um Ihr Rundbrief-Abonnement zu bestätigen:</p>
-<p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Rundbrief-Abonnement bestätigen »</a></p>
+    {% block lead %}Wir haben Ihre Registrierung für die Jugendwerks-Newslettere erhalten.{% endblock %}
+    {% block content %}<p>Sie müssen das Abonnement nur noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Folgen Sie zum bestätigen den Link im Kasten am Ende der E-Mail.</p><p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, verwenden Sie die folgende Internetadresse: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter-Abonnement verwalten</a></p>{% endblock %}
+    {% block calltoactioncontent %}<p>Besuchen Sie bitte folgende Seite, um Ihr Newsletter-Abonnement zu bestätigen:</p>
+<p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Newsletter-Abonnement bestätigen »</a></p>
 {% endblock %}
 {% endembed %}
 {% endblock %}

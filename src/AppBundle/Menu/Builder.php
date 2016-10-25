@@ -23,7 +23,7 @@ class Builder implements ContainerAwareInterface
 
         if ($this->isUserLoggedIn()) {
             $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
-            $menu->addChild('Rundbriefe', array('route' => 'newsletter_subscription'));
+            $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
             if ($this->isUserAdmin()) {
                 $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
                 $menu->addChild('Felder', array('route' => 'acquisition_list'));
@@ -31,7 +31,7 @@ class Builder implements ContainerAwareInterface
             }
         } else {
             $menu->addChild('Veranstaltungen', array('route' => 'homepage'));
-            $menu->addChild('Rundbriefe', array('route' => 'newsletter_subscription'));
+            $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
         }
 
         /*

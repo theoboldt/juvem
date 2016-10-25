@@ -53,7 +53,7 @@ class PublicController extends Controller
             if ($subscriptionAvailable) {
                 $this->addFlash(
                     'success',
-                    'Die Änderungen des Rundbrief-Abonnements wurden gespeichert'
+                    'Die Änderungen des Newsletter-Abonnements wurden gespeichert'
                 );
             } else {
                 $participationManager = $this->get('app.newsletter_manager');
@@ -61,7 +61,7 @@ class PublicController extends Controller
 
                 $this->addFlash(
                     'success',
-                    'Wir haben die Registrierung Ihres Rundbrief-Abonnements entgegengenommen. Sie erhalten demnächst eine E-Mail, in der Sie das Abonnement noch bestätigen müssen.'
+                    'Wir haben die Registrierung Ihres Newsletter-Abonnements entgegengenommen. Sie erhalten demnächst eine E-Mail, in der Sie das Abonnement noch bestätigen müssen.'
                 );
                 return $this->redirectToRoute('homepage');
             }
@@ -101,7 +101,7 @@ class PublicController extends Controller
 
             $this->addFlash(
                 'success',
-                'Die Änderungen des Rundbrief-Abonnements wurden gespeichert'
+                'Die Änderungen des Newsletter-Abonnements wurden gespeichert'
             );
         }
 
@@ -141,7 +141,7 @@ class PublicController extends Controller
 
             $this->addFlash(
                 'success',
-                'Das Rundbrief-Abonnement wurde erfolgreich bestätigt. Auf dieser Seite können Sie auch in Zukunft ihr Abonnement konfigurieren.'
+                'Das Newsletter-Abonnement wurde erfolgreich bestätigt. Auf dieser Seite können Sie auch in Zukunft ihr Abonnement konfigurieren.'
             );
             return $this->redirectToRoute(
                 'newsletter_subscription_token', array('token' => $subscription->getDisableToken())
