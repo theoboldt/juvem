@@ -25,7 +25,7 @@
                 <label class="control-label" id="help-templates">Schnellwahl</label><br>
                 <div class="btn-group" role="group" aria-label="help-templates" style="margin-bottom: 10px;">
                   <button type="button" class="btn btn-default btn-sm" id="preselectNone" >keine Newsletter erhalten</button>
-                  <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abbonieren</button>
+                  <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abonnieren</button>
                 </div>
 
                 {{ form_start(form) }}
@@ -65,7 +65,7 @@
                 </div>
                 {{ form_label(form.useAging) }}
                 {{ form_widget(form.useAging) }}
-                <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }} bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
+                <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abonnierte Altersspanne automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }} bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
 
                 {{ form_label(form.subscribedEvents) }}
                 {{ form_widget(form.subscribedEvents) }}
