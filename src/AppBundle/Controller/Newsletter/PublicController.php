@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
 class PublicController extends Controller
 {
     /**
-     * Page for details of an event
+     * Page for creating a subscription or managing subscription as registered user
      *
      * @Route("/newsletter", name="newsletter_subscription")
      */
-    public function newsletterSettings(Request $request)
+    public function newsletterSubscribe(Request $request)
     {
         $subscriptionAvailable = false;
 
@@ -73,12 +73,12 @@ class PublicController extends Controller
     }
 
     /**
-     * Page for details of an event
+     * Manage a subscription via token
      *
      * @Route("/newsletter/{token}", requirements={"token": "[-\._[:alnum:]]{43}"},
      *                               name="newsletter_subscription_token")
      */
-    public function newsletterSettingsToken(Request $request)
+    public function newsletterSubscriptionViaToken(Request $request)
     {
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
@@ -112,7 +112,7 @@ class PublicController extends Controller
 
 
     /**
-     * Page for details of an event
+     * Confirm a subscription
      *
      * @Route("/newsletter/{token}/confirm", requirements={"token": "[-\._[:alnum:]]{43}"},
      *                                       name="newsletter_subscription_confirm")

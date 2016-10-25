@@ -23,11 +23,13 @@ class Builder implements ContainerAwareInterface
 
         if ($this->isUserLoggedIn()) {
             $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
-            $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
             if ($this->isUserAdmin()) {
+                $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'));
                 $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
                 $menu->addChild('Felder', array('route' => 'acquisition_list'));
                 $menu->addChild('Benutzer', array('route' => 'user_list'));
+            } else {
+                $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
             }
         } else {
             $menu->addChild('Veranstaltungen', array('route' => 'homepage'));

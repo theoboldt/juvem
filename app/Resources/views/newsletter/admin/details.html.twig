@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletter Abonnement Details{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Abonnement ' ~ subscription.email} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></li>
+            <li><a href="{{ path('newsletter_admin_list') }}">Abonnements</a></li>
+            <li class="active">Abonnement {{ subscription.email }}</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-sx-12 checkbox-with-help-block">
+                {% include '/newsletter/public/form-html.html.twig' with {'form': form} %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascriptCustom %}
+    {% include '/newsletter/public/form-script.html.twig' %}
+{% endblock %}

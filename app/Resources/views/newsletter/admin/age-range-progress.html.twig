@@ -1,0 +1,9 @@
+<div class="progress" style="margin: 0;">
+    <div class="progress-bar progress-bar-empty" style="width: {{ (ageRangeBegin/ageRangeMax)*100 }}%"></div>
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{ ageRangeBegin }} - {{ ageRangeEnd }}"
+         aria-valuemin="{{ ageRangeMin }}" aria-valuemax="{{ ageRangeMax }}"
+         style="width: {{ ((ageRangeEnd - ageRangeBegin) / ageRangeMax) * 100 }}%">
+        {{ ageRangeBegin }} - {{ ageRangeEnd }}</div>
+    <div class="progress-bar progress-bar-empty"
+         style="width: {{ ((ageRangeMax - ageRangeEnd) / ageRangeMax) * 100 }}%"></div>
+</div>

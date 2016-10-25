@@ -1,0 +1,65 @@
+<script type='text/javascript'>
+    jQuery(document).ready(function () {
+        var updateRange,
+                elAgeRangeBegin = $('#newsletter_subscription_ageRangeBegin'),
+                elAgeRangeEnd = $('#newsletter_subscription_ageRangeEnd'),
+                slider = $('.slider-input');
+
+        updateRange = function () {
+            var min = parseInt(elAgeRangeBegin.val()),
+                    max = parseInt(elAgeRangeEnd.val()),
+                    switcher;
+            if (min > max) {
+                switcher = min;
+                min = max;
+                max = switcher;
+            }
+            slider.jRange('setValue', min + ',' + max);
+        };
+
+        elAgeRangeBegin.on('change', updateRange);
+        elAgeRangeEnd.on('change', updateRange);
+
+        slider.jRange({
+            from: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }},
+            to: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }},
+            step: 1,
+            scale: [0, 6, 12, 18],
+            width: 200,
+            format: function (value) {
+                if (value == 1) {
+                    return '1 Jahr';
+                } else {
+                    return value + ' Jahre';
+                }
+            },
+            onstatechange: function (value) {
+                value = value.split(',');
+                elAgeRangeBegin.val(value[0]);
+                elAgeRangeEnd.val(value[1]);
+            },
+            snap: true,
+            showLabels: true,
+            showScale: true,
+            isRange: true
+        });
+
+        $('#preselectNone').on('click', function () {
+            $('#newsletter_subscription_isEnabled').prop("checked", false);
+            $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
+        });
+        $('#preselectAll').on('click', function () {
+            elAgeRangeBegin.val({{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
+            elAgeRangeEnd.val({{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }});
+            slider.jRange('setValue', '0,18');
+
+
+            $('#newsletter_subscription_isEnabled').prop("checked", true);
+            $('#newsletter_subscription_useAging').prop("checked", false);
+
+            $("#newsletter_subscription_subscribedEvents option:selected").prop("selected", false);
+        });
+
+
+    });
+</script>

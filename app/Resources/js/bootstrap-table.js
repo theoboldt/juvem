@@ -121,4 +121,11 @@ $(function () {
         openInNewTabOnMetaKey('../event/' + row.eid + '/participation/' + row.pid);
     });
 
+    /**
+     * NEWSLETTER: A newsletter subscription
+     */
+    $('#newsletterSubscriptionTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('subscription/' + row.rid );
+    });
+
 });

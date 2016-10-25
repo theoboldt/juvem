@@ -20,3 +20,6 @@
     background-image: linear-gradient(to bottom, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
 
 }
+.progress-bar-empty {
+  @include progress-bar-variant(#d6d6d9);
+}

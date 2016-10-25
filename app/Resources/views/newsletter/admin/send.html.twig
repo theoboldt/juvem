@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletter versenden{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'versenden'} %}
+        {% block breadcrumb %}
+            <li class="active"><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></li>
+            <li class="active">Newsletter versenden</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
