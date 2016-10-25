@@ -138,7 +138,7 @@ Ackermannstr. 39<br>
 <tr>
 <td align="center">
 <center>
-<p style="text-align:center;"><a href="{{ url('impressum') }}">Impressum</a> | <a href="{{ url('legal') }}">Datenschutzerklärung</a>{% if subscription %} | <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter ändern/abbestellen</a>{% endif %}</p>
+<p style="text-align:center;"><a href="{{ url('impressum') }}">Impressum</a> | <a href="{{ url('legal') }}">Datenschutzerklärung</a>{% if subscription is defined %} | <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter ändern/abbestellen</a>{% endif %}</p>
 </center>
 </td>
 <td class="expander"></td>
