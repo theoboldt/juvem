@@ -32,7 +32,7 @@ class AdminController extends Controller
      *
      * @Route("/admin/newsletter/list", name="newsletter_admin_list")
      */
-    public function listSubscriptions(Request $request)
+    public function listSubscriptions()
     {
         return $this->render(
             'newsletter/admin/list.html.twig'
@@ -116,6 +116,31 @@ class AdminController extends Controller
             );
         }
         return new JsonResponse($subscriptionList);
+    }
+
+    /**
+     * Page for details of an event
+     *
+     * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
+     */
+    public function affectedNewsletterRecipientAmount(Request $request)
+    {
+        $ageRangeBegin      = $request->get('ageRangeBegin');
+        $ageRangeEnd        = $request->get('ageRangeEnd');
+        $similarEventIdList = $request->get('subscribedEvents');
+
+        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $count      = $repository->qualifiedNewsletterSubscriptionCount(
+            $ageRangeBegin, $ageRangeEnd, $similarEventIdList
+        );
+
+        /** @var NewsletterSubscription $subscription */
+        return new JsonResponse(
+            array(
+                'count' => $count
+            )
+        );
+
     }
 
     /**

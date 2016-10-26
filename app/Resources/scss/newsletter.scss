@@ -23,3 +23,35 @@
 .progress-bar-empty {
   @include progress-bar-variant(#d6d6d9);
 }
+
+
+#affectedSubscription,
+.loading-text,
+#affectedSubscription.loading-text {
+  -webkit-transition: color 0.2s;
+  -moz-transition: color 0.2s;
+  -ms-transition: color 0.2s;
+  -o-transition: color 0.2s;
+  transition: color 0.2s;
+}
+
+#affectedSubscription {
+  color: black;
+}
+
+#affectedSubscription.loading-text {
+  color: #454546;
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    color: lighten(#646465, 25%);
+  }
+  50% {
+    color: #454546;
+  }
+  100% {
+    color: lighten(#646465, 25%);
+  }
+}

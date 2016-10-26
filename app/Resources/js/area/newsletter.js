@@ -43,6 +43,32 @@ $(function () {
     };
     $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
     $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreview);
+    $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_subscribedEvents').change(function () {
+        var textField = $('#affectedSubscription');
+        textField.attr('class', 'loading-text');
+        $.ajax({
+            type: 'POST',
+            url: '/admin/newsletter/affected-recipient-count',
+            data: {
+                ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
+                ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
+                subscribedEvents: $('*#newsletter_mail_subscribedEvents').val() || []
+            },
+            dataType: 'json',
+            success: function (response) {
+                var text;
+                if (response.count == 1) {
+                    text = '1 Person wird diesen Newsletter erhalten.';
+                } else {
+                    text = response.count + ' Personen werden diesen Newsletter erhalten.';
+                }
+                textField.text(text);
+            },
+            complete: function() {
+                textField.attr('class', '');
+            }
+        });
+    });
 
 
 });

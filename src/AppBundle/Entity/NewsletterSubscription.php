@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  * @ORM\Table(name="newsletter_subscription")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\NewsletterSubscriptionRepository")
  */
 class NewsletterSubscription
 {
