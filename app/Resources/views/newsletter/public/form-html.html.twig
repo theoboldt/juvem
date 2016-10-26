@@ -15,6 +15,14 @@
 <p class="help-block" id="help-newsletter-enable">Diese Option muss aktiviert sein, wenn Sie Newsletter erhalten
     möchten. Wenn Sie diese Option deaktivieren, werden an die oben genannte E-Mail Adresse keine E-Mails versandt.</p>
 
+{{ form_label(form.nameLast) }}
+{{ form_widget(form.nameLast) }}
+<p class="help-block" id="help-last-name">Wenn Sie möchten, können Sie hier Ihren Familiennamen hinterlegen.
+    {% if app.user is not null %}
+        Der Name kann von dem, der für das <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a> konfiguriert ist abweichen.
+    {% endif %}
+    </p>
+
 <label class="control-label">Altersspanne</label>
 <p class="help-block" id="help-topic-age-range">Mithilfe des folgenden Bedienelementes können Sie die
     Altersspanne konfigurieren, die für Sie von Interesse ist. Wenn Sie hier den linken Regler
@@ -22,7 +30,7 @@
     die für Kinder im Alter von 6 bis 16 Jahren interessant sind.</p>
 <div class="row" style="margin-bottom: 10px;">
     <div class="col-sm-2 col-xs-6">
-        <label class="control-label">von</label>
+        <label class="control-label">von <span class="visible-xs-inline">x Jahren</span></label>
         {{ form_widget(form.ageRangeBegin) }}
     </div>
     <div class="col-sm-8  col-xs-12 contains-slider">
@@ -30,7 +38,7 @@
                value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
     </div>
     <div class="col-sm-2 col-xs-6">
-        <label class="control-label">bis</label>
+        <label class="control-label">bis <span class="visible-xs-inline">x Jahre</span></label>
         {{ form_widget(form.ageRangeEnd) }}
     </div>
 </div>

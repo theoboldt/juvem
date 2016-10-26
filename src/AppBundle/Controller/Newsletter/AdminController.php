@@ -101,6 +101,7 @@ class AdminController extends Controller
             $subscriptionList[] = array(
                 'rid'           => $subscription->getRid(),
                 'email'         => $subscription->getEmail(),
+                'nameLast'      => $subscription->getNameLast(),
                 'user'          => $userContent,
                 'ageRangeBegin' => $ageRangeBegin,
                 'ageRangeEnd'   => $ageRangeEnd,

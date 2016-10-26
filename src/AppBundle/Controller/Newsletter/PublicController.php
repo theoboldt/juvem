@@ -35,6 +35,7 @@ class PublicController extends Controller
                 } else {
                     $subscription = new NewsletterSubscription();
                     $subscription->setEmail($user->getEmail());
+                    $subscription->setNameLast($user->getNameLast());
                     $subscription->setAssignedUser($user);
                     $subscription->setIsConfirmed(true);  //no confirmation required for registered users
                 }

@@ -38,6 +38,15 @@ class NewsletterSubscriptionType extends AbstractType
                 )
             )
             ->add(
+                'nameLast',
+                TextType::class,
+                array(
+                    'label'    => 'Familienname',
+                    'required' => false,
+                    'attr'     => array('aria-describedby' => 'help-last-name')
+                )
+            )
+            ->add(
                 'useAging',
                 CheckboxType::class,
                 array(

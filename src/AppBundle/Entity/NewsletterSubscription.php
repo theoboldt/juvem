@@ -46,6 +46,11 @@ class NewsletterSubscription
     protected $email;
 
     /**
+     * @ORM\Column(type="string", length=128, name="name_last", nullable=true)
+     */
+    protected $nameLast = null;
+
+    /**
      * @ORM\OneToOne(targetEntity="User", inversedBy="assignedNewsletterSubscription")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL", nullable=true)
      */
@@ -130,6 +135,30 @@ class NewsletterSubscription
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Set nameLast
+     *
+     * @param string $nameLast
+     *
+     * @return NewsletterSubscription
+     */
+    public function setNameLast($nameLast)
+    {
+        $this->nameLast = $nameLast;
+
+        return $this;
+    }
+
+    /**
+     * Get nameLast
+     *
+     * @return string
+     */
+    public function getNameLast()
+    {
+        return $this->nameLast;
     }
 
     /**
@@ -384,4 +413,5 @@ class NewsletterSubscription
     {
         return $this->isConfirmed;
     }
+
 }
