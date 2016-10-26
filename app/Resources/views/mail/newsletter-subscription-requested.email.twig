@@ -26,7 +26,7 @@ Hallo Familie {{ subscription.nameLast  }}!
 {% else %}
 Guten Tag!
 {% endif %}{% endblock %}
-    {% block lead %}Wir haben Ihre Registrierung für die Jugendwerks-Newslettere erhalten.{% endblock %}
+    {% block lead %}Wir haben Ihre Registrierung für den Jugendwerks-Newsletter erhalten.{% endblock %}
     {% block content %}<p>Sie müssen das Abonnement nur noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Folgen Sie zum bestätigen den Link im Kasten am Ende der E-Mail.</p><p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, verwenden Sie die folgende Internetadresse: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter-Abonnement verwalten</a></p>{% endblock %}
     {% block calltoactioncontent %}<p>Besuchen Sie bitte folgende Seite, um Ihr Newsletter-Abonnement zu bestätigen:</p>
 <p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Newsletter-Abonnement bestätigen »</a></p>
