@@ -28,10 +28,17 @@ class PublicController extends Controller
             if ($subscription) {
                 $subscriptionAvailable = true;
             } else {
-                $subscription = new NewsletterSubscription();
-                $subscription->setEmail($user->getEmail());
-                $subscription->setAssignedUser($user);
-                $subscription->setIsConfirmed(true);  //no confirmation required for registered users
+                $repository   = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+                $subscription = $repository->findOneByEmail($user->getEmail());
+                if ($subscription) {
+                    $subscription->setAssignedUser($user);
+                } else {
+                    $subscription = new NewsletterSubscription();
+                    $subscription->setEmail($user->getEmail());
+                    $subscription->setAssignedUser($user);
+                    $subscription->setIsConfirmed(true);  //no confirmation required for registered users
+                }
+
             }
         } else {
             $subscription = new NewsletterSubscription();
@@ -84,7 +91,7 @@ class PublicController extends Controller
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
 
         /** @var NewsletterSubscription $subscription */
-        $subscription = $repository->findOneBy(array('disableToken' => $token));
+        $subscription = $repository->findOneByToken($token);
 
         if (!$subscription) {
             return $this->redirectToRoute('newsletter_subscription');
@@ -122,7 +129,7 @@ class PublicController extends Controller
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         /** @var NewsletterSubscription $subscription */
-        $subscription = $repository->findOneBy(array('disableToken' => $token));
+        $subscription = $repository->findOneByToken($token);
 
         if ($subscription) {
             $subscription->setIsConfirmed(true);
