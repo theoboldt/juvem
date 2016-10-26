@@ -15,11 +15,12 @@ class NewsletterManager extends AbstractMailerAwareManager
      */
     public function mailNewsletterSubscriptionRequested(NewsletterSubscription $subscription)
     {
-        $message = $this->mailGenerator->getMessage(
+        $message  = $this->mailGenerator->getMessage(
             'newsletter-subscription-requested',
             array('subscription' => $subscription)
         );
-        $message->setTo($subscription->getEmail());
+        $nameLast = $subscription->getNameLast();
+        $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
 
         $this->mailer->send($message);
     }
@@ -54,22 +55,32 @@ class NewsletterManager extends AbstractMailerAwareManager
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
             if ($subscription->getIsEnabled()) {
-                $dataBoth = array('text' => $dataText,
-                                  'html' => $dataHtml
+                $dataBoth     = array('text' => $dataText,
+                                      'html' => $dataHtml
                 );
+                $email        = $subscription->getEmail();
+                $lastName     = $subscription->getNameLast();
                 $assignedUser = $subscription->getAssignedUser();
                 if ($assignedUser) {
-                    $firstName  = $assignedUser->getNameFirst();
-                    $lastName   = $assignedUser->getNameLast();
+                    $lastName  = $assignedUser->getNameLast();
+                    $firstName = $assignedUser->getNameFirst();
                 }
+
 
                 $message = $this->mailGenerator->getMessage(
                     'general-raw', $dataBoth
                 );
-                $message->setTo(
-                    $subscription->getEmail(),
-                    $assignedUser ? (User::fullname($lastName, $firstName)) : null
-                );
+
+                if ($assignedUser) {
+                    $message->setTo(
+                        $email,
+                        (User::fullname($lastName, $firstName))
+                    );
+                } elseif ($lastName) {
+                    $message->setTo($email, $lastName);
+                } else {
+                    $message->setTo($email);
+                }
 
                 $this->mailer->send($message);
 
