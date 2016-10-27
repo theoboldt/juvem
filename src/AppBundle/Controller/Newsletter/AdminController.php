@@ -7,6 +7,7 @@ use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,8 +20,9 @@ class AdminController extends Controller
      * Page for details of an event
      *
      * @Route("/admin/newsletter", name="newsletter_admin_overview")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function overview(Request $request)
+    public function overviewAction(Request $request)
     {
         return $this->render(
             'newsletter/admin/overview.html.twig'
@@ -31,8 +33,9 @@ class AdminController extends Controller
      * Page for details of an event
      *
      * @Route("/admin/newsletter/list", name="newsletter_admin_list")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function listSubscriptions()
+    public function listSubscriptionsAction()
     {
         return $this->render(
             'newsletter/admin/list.html.twig'
@@ -44,8 +47,9 @@ class AdminController extends Controller
      *
      * @Route("/admin/newsletter/subscription/{rid}", requirements={"id": "\d"},
      *                                       name="newsletter_subscription_detail")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function subscriptionDetail(Request $request)
+    public function subscriptionDetailAction(Request $request)
     {
         $rid        = $request->get('rid');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
@@ -77,8 +81,9 @@ class AdminController extends Controller
      * Page for details of an event
      *
      * @Route("/admin/newsletter/list.json", name="newsletter_admin_list_data")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function listSubscriptionsData(Request $request)
+    public function listSubscriptionsDataAction(Request $request)
     {
         $repository             = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         $subscriptionEntityList = $repository->findAll();
@@ -123,8 +128,9 @@ class AdminController extends Controller
      * Page for details of an event
      *
      * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function affectedNewsletterRecipientAmount(Request $request)
+    public function affectedNewsletterRecipientAmountAction(Request $request)
     {
         $ageRangeBegin      = $request->get('ageRangeBegin');
         $ageRangeEnd        = $request->get('ageRangeEnd');
@@ -148,8 +154,9 @@ class AdminController extends Controller
      * Page for details of an event
      *
      * @Route("/admin/newsletter/send", name="newsletter_admin_send")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function sendNewsletter(Request $request)
+    public function sendNewsletterAction(Request $request)
     {
         $form = $this->createForm(NewsletterMailType::class);
 

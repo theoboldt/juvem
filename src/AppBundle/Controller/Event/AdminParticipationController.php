@@ -15,6 +15,7 @@ use AppBundle\Export\ParticipationsExport;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +32,7 @@ class AdminParticipationController extends Controller
      * Page for list of participants of an event
      *
      * @Route("/admin/event/{eid}/participants", requirements={"eid": "\d+"}, name="event_participants_list")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listParticipantsAction($eid)
     {
@@ -63,6 +65,7 @@ class AdminParticipationController extends Controller
      * Data provider for events participants list grid
      *
      * @Route("/admin/event/{eid}/participants.json", requirements={"eid": "\d+"}, name="event_participants_list_data")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listParticipantsDataAction(Request $request)
     {
@@ -153,6 +156,7 @@ class AdminParticipationController extends Controller
      *
      * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                  name="event_participation_detail")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function participationDetailAction(Request $request)
     {
@@ -227,6 +231,7 @@ class AdminParticipationController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/event/participation/confirm", name="event_participation_confirm_mail")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function participationConfirmAction(Request $request)
     {
@@ -261,6 +266,7 @@ class AdminParticipationController extends Controller
      * Page for list of participants of an event
      *
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function exportParticipantsAction($eid)
     {
@@ -304,6 +310,7 @@ class AdminParticipationController extends Controller
      *
      * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
      *                                                    name="event_participations_export")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function exportParticipationsAction($eid)
     {
@@ -346,6 +353,7 @@ class AdminParticipationController extends Controller
      *
      * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
      *                                                    name="event_participants_birthday_address_export")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function exportParticipantsBirthdayAddressAction($eid)
     {
@@ -389,6 +397,7 @@ class AdminParticipationController extends Controller
      *
      * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
      *                                                    name="event_participants_mail_export")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function exportParticipantsMailAction($eid)
     {

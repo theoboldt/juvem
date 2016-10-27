@@ -7,6 +7,7 @@ use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +22,7 @@ class AdminController extends Controller
      * Page for list of events
      *
      * @Route("/admin/event/list", name="event_list")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listAction()
     {
@@ -43,6 +45,7 @@ class AdminController extends Controller
      * Data provider for event list grid
      *
      * @Route("/admin/event/list.json", name="event_list_data")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listDataAction(Request $request)
     {
@@ -105,6 +108,7 @@ class AdminController extends Controller
      * Edit page for one single event
      *
      * @Route("/admin/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function editAction(Request $request)
     {
@@ -147,6 +151,7 @@ class AdminController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/event/{eid}/acquisition", requirements={"eid": "\d+"}, name="event_acquisition_assignment")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function editEventAcquisitionAssignmentAction(Request $request)
     {
@@ -186,6 +191,7 @@ class AdminController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function detailEventAction(Request $request)
     {
@@ -251,6 +257,7 @@ class AdminController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/event/{eid}/mail", requirements={"eid": "\d+"}, name="event_mail")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function sendParticipantsEmailAction(Request $request)
     {
@@ -296,6 +303,7 @@ class AdminController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/mail/template", name="mail_template")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function emailTemplateAction()
     {
@@ -306,6 +314,7 @@ class AdminController extends Controller
      * Create a new event
      *
      * @Route("/admin/event/new", name="event_new")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function newAction(Request $request)
     {
@@ -338,6 +347,7 @@ class AdminController extends Controller
      * Page for list of events
      *
      * @Route("/event/miss/{eid}", requirements={"eid": "\d+"}, name="event_miss")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function eventNotFoundAction($eid)
     {

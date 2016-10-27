@@ -24,6 +24,9 @@ class User extends BaseUser
     const ROLE_ADMIN_USER       = 'ROLE_ADMIN_USER';
     const ROLE_ADMIN_USER_LABEL = 'Benutzerverwaltung';
 
+    const ROLE_ADMIN_NEWSLETTER       = 'ROLE_ADMIN_NEWSLETTER';
+    const ROLE_ADMIN_NEWSLETTER_LABEL = 'Newsletterverwaltung';
+
 
     /**
      * @ORM\Id
@@ -49,7 +52,8 @@ class User extends BaseUser
     /**
      * Contains the newsletter setting container of this user
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterSubscription", mappedBy="assignedUser", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterSubscription", mappedBy="assignedUser",
+     *                                                                       cascade={"persist"})
      */
     protected $assignedNewsletterSubscription;
 
@@ -269,7 +273,8 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function setAssignedNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription = null)
+    public function setAssignedNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription = null
+    )
     {
         $this->assignedNewsletterSubscription = $assignedNewsletterSubscription;
 

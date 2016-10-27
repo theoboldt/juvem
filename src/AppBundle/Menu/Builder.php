@@ -11,6 +11,20 @@ class Builder implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
+     * Caches the user
+     *
+     * @var null|User
+     */
+    protected $user = null;
+
+    /**
+     * Defines whether the user was already fetched or not
+     *
+     * @var bool
+     */
+    protected $isUserFetched = false;
+
+    /**
      * Generator for the main menu
      *
      * @param FactoryInterface $factory A menu factory interface
@@ -24,24 +38,29 @@ class Builder implements ContainerAwareInterface
         if ($this->isUserLoggedIn()) {
             $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
             if ($this->isUserAdmin()) {
-                $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'))
-                     ->setAttribute('dropdown', true);
-                $menu['Newsletter']->addChild('Eigenes Abonnement', array('route' => 'newsletter_subscription'));
-                $menu['Newsletter']->addChild('Abonnements verwalten', array('route' => 'newsletter_admin_list'));
-                $menu['Newsletter']->addChild('Newsletter versenden', array('route' => 'newsletter_admin_send'));
+                if ($this->userHasRole(User::ROLE_ADMIN_NEWSLETTER)) {
+                    $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'))
+                         ->setAttribute('dropdown', true);
+                    $menu['Newsletter']->addChild('Eigenes Abonnement', array('route' => 'newsletter_subscription'));
+                    $menu['Newsletter']->addChild('Abonnements verwalten', array('route' => 'newsletter_admin_list'));
+                    $menu['Newsletter']->addChild('Newsletter versenden', array('route' => 'newsletter_admin_send'));
+                }
 
-                $menu->addChild('Veranstaltungen', array('route' => 'event_list'))
-                     ->setAttribute('dropdown', true);
-                $menu['Veranstaltungen']->addChild('Veranstaltungen verwalten', array('route' => 'event_list'));
-                $menu['Veranstaltungen']->addChild('Veranstaltung erstellen', array('route' => 'event_new'));
+                if ($this->userHasRole(User::ROLE_ADMIN_EVENT)) {
+                    $menu->addChild('Veranstaltungen', array('route' => 'event_list'))
+                         ->setAttribute('dropdown', true);
+                    $menu['Veranstaltungen']->addChild('Veranstaltungen verwalten', array('route' => 'event_list'));
+                    $menu['Veranstaltungen']->addChild('Veranstaltung erstellen', array('route' => 'event_new'));
 
+                    $menu->addChild('Felder', array('route' => 'acquisition_list'))
+                         ->setAttribute('dropdown', true);
+                    $menu['Felder']->addChild('Felder verwalten', array('route' => 'acquisition_list'));
+                    $menu['Felder']->addChild('Feld erstellen', array('route' => 'acquisition_new'));
+                }
 
-                $menu->addChild('Felder', array('route' => 'acquisition_list'))
-                     ->setAttribute('dropdown', true);
-                $menu['Felder']->addChild('Felder verwalten', array('route' => 'acquisition_list'));
-                $menu['Felder']->addChild('Feld erstellen', array('route' => 'acquisition_new'));
-
-                $menu->addChild('Benutzer', array('route' => 'user_list'));
+                if ($this->userHasRole(User::ROLE_ADMIN_USER)) {
+                    $menu->addChild('Benutzer', array('route' => 'user_list'));
+                }
             } else {
                 $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
             }
@@ -89,21 +108,42 @@ class Builder implements ContainerAwareInterface
     }
 
     /**
+     * Fetch the user, using object cache
+     *
+     * @return User|null
+     */
+    protected function getUser()
+    {
+        if (!$this->isUserFetched) {
+            $token = $this->container->get('security.token_storage')
+                                     ->getToken();
+            if ($token) {
+                $this->user = $token->getUser();
+            }
+            $this->isUserFetched = true;
+        }
+        return $this->user;
+    }
+
+    /**
+     * Check if a user is logged in
+     *
+     * @return bool
+     */
+    protected function userHasRole($role)
+    {
+        $user = $this->getUser();
+        return ($user instanceof User && $user->hasRole($role));
+    }
+
+    /**
      * Check if a user is logged in
      *
      * @return bool
      */
     protected function isUserLoggedIn()
     {
-        $token = $this->container->get('security.token_storage')
-                                 ->getToken();
-        if (!$token) {
-            return false;
-        }
-
-        $user = $token->getUser();
-
-        return ($user instanceof User);
+        return ($this->getUser() instanceof User);
     }
 
     /**
@@ -113,15 +153,6 @@ class Builder implements ContainerAwareInterface
      */
     protected function isUserAdmin()
     {
-        $token = $this->container->get('security.token_storage')
-                                 ->getToken();
-        if (!$token) {
-            return false;
-        }
-
-        /** @var User $user */
-        $user = $token->getUser();
-
-        return ($user && $user->hasRole('ROLE_ADMIN'));
+        return $this->userHasRole('ROLE_ADMIN');
     }
 }

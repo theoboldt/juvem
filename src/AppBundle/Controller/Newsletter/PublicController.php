@@ -17,7 +17,7 @@ class PublicController extends Controller
      *
      * @Route("/newsletter", name="newsletter_subscription")
      */
-    public function newsletterSubscribe(Request $request)
+    public function newsletterSubscribeAction(Request $request)
     {
         $subscriptionAvailable = false;
 
@@ -86,7 +86,7 @@ class PublicController extends Controller
      * @Route("/newsletter/{token}", requirements={"token": "[-\._[:alnum:]]{43}"},
      *                               name="newsletter_subscription_token")
      */
-    public function newsletterSubscriptionViaToken(Request $request)
+    public function newsletterSubscriptionViaTokenAction(Request $request)
     {
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
@@ -125,7 +125,7 @@ class PublicController extends Controller
      * @Route("/newsletter/{token}/confirm", requirements={"token": "[-\._[:alnum:]]{43}"},
      *                                       name="newsletter_subscription_confirm")
      */
-    public function newsletterConfirm(Request $request)
+    public function newsletterConfirmAction(Request $request)
     {
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');

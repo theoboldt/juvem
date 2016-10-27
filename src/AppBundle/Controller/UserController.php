@@ -18,7 +18,7 @@ class UserController extends Controller
 {
     /**
      * @Route("/admin/user/list", name="user_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN_USER')")
      */
     public function listAction(Request $request)
     {
@@ -29,7 +29,7 @@ class UserController extends Controller
      * Data provider for event list grid
      *
      * @Route("/admin/user/list.json", name="user_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN_USER')")
      */
     public function listDataAction(Request $request)
     {
@@ -74,7 +74,7 @@ class UserController extends Controller
 
     /**
      * @Route("/admin/user/{uid}", requirements={"uid": "\d+"}, name="user_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN_USER')")
      */
     public function userDetailAction(Request $request)
     {
@@ -115,7 +115,7 @@ class UserController extends Controller
      *
      * @Route("/admin/user/{uid}/participations.json", requirements={"uid": "\d+"},
      *                                                 name="admin_user_participations_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN_USER')")
      */
     public function listParticipantsDataAction(Request $request)
     {

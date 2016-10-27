@@ -17,7 +17,7 @@ class AcquisitionController extends Controller
 {
     /**
      * @Route("/admin/acquisition/list", name="acquisition_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listAction(Request $request)
     {
@@ -29,6 +29,7 @@ class AcquisitionController extends Controller
      * Data provider for event list grid
      *
      * @Route("/admin/acquisition/list.json", name="acquisition_list_data")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function listDataAction(Request $request)
     {
@@ -58,6 +59,7 @@ class AcquisitionController extends Controller
      * Detail page for one single event
      *
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function detailEventAction(Request $request)
     {
@@ -106,6 +108,7 @@ class AcquisitionController extends Controller
      * Edit page for one single attribute
      *
      * @Route("/admin/acquisition/{bid}/edit", requirements={"bid": "\d+"}, name="acquisition_edit")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function editAction(Request $request)
     {
@@ -146,6 +149,7 @@ class AcquisitionController extends Controller
      * Create a new event
      *
      * @Route("/admin/acquisition/new", name="acquisition_new")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function newAction(Request $request)
     {

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\User;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -69,15 +70,27 @@ class ActiveButtonController extends Controller
         switch ($entityName) {
             case 'User':
                 $idColumn = 'id';
+                if (!$this->getUser()->hasRole(User::ROLE_ADMIN_USER)) {
+                    throw new AccessDeniedHttpException('Required group not assigned');
+                }
                 break;
             case 'Event':
                 $idColumn = 'eid';
+                if (!$this->getUser()->hasRole(User::ROLE_ADMIN_EVENT)) {
+                    throw new AccessDeniedHttpException('Required group not assigned');
+                }
                 break;
             case 'Participation':
                 $idColumn = 'pid';
+                if (!$this->getUser()->hasRole(User::ROLE_ADMIN_EVENT)) {
+                    throw new AccessDeniedHttpException('Required group not assigned');
+                }
                 break;
             case 'Participant':
                 $idColumn = 'aid';
+                if (!$this->getUser()->hasRole(User::ROLE_ADMIN_EVENT)) {
+                    throw new AccessDeniedHttpException('Required group not assigned');
+                }
                 break;
             default:
                 throw new AccessDeniedHttpException('Unmanaged entity');

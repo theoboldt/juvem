@@ -24,36 +24,47 @@
             <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
             <ul>
                 {{ render(controller('AppBundle:Event/Public:listActiveEventLinks')) }}
-                <li><a href="{{ path('event_list') }}">Veranstaltungen verwalten</a></li>
-                <li><a href="{{ path('event_new') }}">Veranstaltung erstellen</a></li>
+                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                    <li><a href="{{ path('event_list') }}">Veranstaltungen verwalten</a></li>
+                    <li><a href="{{ path('event_new') }}">Veranstaltung erstellen</a></li>
+                {% endif %}
             </ul>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
+            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                <h3><a href="{{ path('acquisition_list') }}">Felder</a></h3>
+                <ul>
+                    <li><a href="{{ path('acquisition_list') }}">Felder verwalten</a></li>
+                    <li><a href="{{ path('acquisition_new') }}">Feld erstellen</a></li>
+                </ul>
+            {% endif %}
+
             <h3>Newsletter</h3>
             <ul>
-                <li><a href="{{ path('newsletter_admin_list') }}">Abonnements verwalten</a></li>
+                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
+                    <li><a href="{{ path('newsletter_admin_list') }}">Abonnements verwalten</a></li>
+                {% endif %}
                 <li><a href="{{ path('newsletter_subscription') }}">Abonnement verwalten</a></li>
-                <li><a href="{{ path('newsletter_admin_send') }}">Newsletter versenden</a></li>
-            </ul>
-
-            <h3><a href="{{ path('acquisition_list') }}">Felder</a></h3>
-            <ul>
-                <li><a href="{{ path('acquisition_list') }}">Felder verwalten</a></li>
-                <li><a href="{{ path('acquisition_new') }}">Felde erstellen</a></li>
+                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
+                    <li><a href="{{ path('newsletter_admin_send') }}">Newsletter versenden</a></li>
+                {% endif %}
             </ul>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3><a href="{{ path('fos_user_profile_show') }}">Konto</a></h3>
             <ul>
+                <li><a href="{{ path('fos_user_security_logout') }}">Abmelden</a></li>
                 <li><a href="{{ path('fos_user_profile_edit') }}">Profil bearbeiten</a></li>
                 <li><a href="{{ path('fos_user_change_password') }}">Passwort ändern</a></li>
                 <li><a href="{{ path('public_participations') }}">Teilnahmen verwalten</a></li>
             </ul>
 
-            <h3><a href="{{ path('user_list') }}">Benutzer</a></h3>
-            <ul>
-                <li><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
-            </ul>
+            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
+                <h3><a href="{{ path('user_list') }}">Benutzer</a></h3>
+                <ul>
+                    <li><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
+                </ul>
+            {% endif %}
         </div>
     </div>
 </div>
