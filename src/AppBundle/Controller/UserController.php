@@ -50,13 +50,13 @@ class UserController extends Controller
                 $roles .= sprintf($roleTemplate, 'Benutzer', $glyph->bootstrapGlyph('pawn'));
             }
             if (in_array(User::ROLE_ADMIN, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, 'Administrator', $glyph->bootstrapGlyph('king'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_LABEL, $glyph->bootstrapGlyph('king'));
             }
             if (in_array(User::ROLE_ADMIN_USER, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, 'Benutzerverwaltung', $glyph->bootstrapGlyph('queen'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_USER_LABEL, $glyph->bootstrapGlyph('queen'));
             }
             if (in_array(User::ROLE_ADMIN_EVENT, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, 'Veranstaltungen', $glyph->bootstrapGlyph('bishop'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_EVENT_LABEL, $glyph->bootstrapGlyph('bishop'));
             }
 
 
