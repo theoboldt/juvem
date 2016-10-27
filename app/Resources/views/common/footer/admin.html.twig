@@ -29,15 +29,17 @@
             </ul>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
-            <h3><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></h3>
+            <h3>Newsletter</h3>
             <ul>
                 <li><a href="{{ path('newsletter_admin_list') }}">Abonnements verwalten</a></li>
                 <li><a href="{{ path('newsletter_subscription') }}">Abonnement verwalten</a></li>
                 <li><a href="{{ path('newsletter_admin_send') }}">Newsletter versenden</a></li>
             </ul>
-            <h3><a href="{{ path('user_list') }}">Benutzer</a></h3>
+
+            <h3><a href="{{ path('acquisition_list') }}">Felder</a></h3>
             <ul>
-                <li><a href="{{ path('user_list') }}">Benutzerliste</a></li>
+                <li><a href="{{ path('acquisition_list') }}">Felder verwalten</a></li>
+                <li><a href="{{ path('acquisition_new') }}">Felde erstellen</a></li>
             </ul>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
@@ -48,6 +50,10 @@
                 <li><a href="{{ path('public_participations') }}">Teilnahmen verwalten</a></li>
             </ul>
 
+            <h3><a href="{{ path('user_list') }}">Benutzer</a></h3>
+            <ul>
+                <li><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
+            </ul>
         </div>
     </div>
 </div>
