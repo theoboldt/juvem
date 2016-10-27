@@ -91,7 +91,13 @@ class NewsletterSubscription
     protected $ageRangeEnd = self::AGE_RANGE_DEFAULT_MAX;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="newsletterSubscriptions")
+     * Contains newsletter recipients which want to be informed about similar events like this
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event")
+     * @ORM\JoinTable(name="event_newsletter_subscription",
+     *      joinColumns={@ORM\JoinColumn(name="rid", referencedColumnName="rid", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid",
+     *      onDelete="CASCADE")})
      */
     private $subscribedEvents;
 
