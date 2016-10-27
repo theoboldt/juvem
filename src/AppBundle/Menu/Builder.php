@@ -24,9 +24,23 @@ class Builder implements ContainerAwareInterface
         if ($this->isUserLoggedIn()) {
             $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
             if ($this->isUserAdmin()) {
-                $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'));
-                $menu->addChild('Veranstaltungen', array('route' => 'event_list'));
-                $menu->addChild('Felder', array('route' => 'acquisition_list'));
+                $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'))
+                     ->setAttribute('dropdown', true);
+                $menu['Newsletter']->addChild('Eigenes Abonnement', array('route' => 'newsletter_subscription'));
+                $menu['Newsletter']->addChild('Abonnements verwalten', array('route' => 'newsletter_admin_list'));
+                $menu['Newsletter']->addChild('Newsletter versenden', array('route' => 'newsletter_admin_send'));
+
+                $menu->addChild('Veranstaltungen', array('route' => 'event_list'))
+                     ->setAttribute('dropdown', true);
+                $menu['Veranstaltungen']->addChild('Veranstaltungen verwalten', array('route' => 'event_list'));
+                $menu['Veranstaltungen']->addChild('Veranstaltung erstellen', array('route' => 'event_new'));
+
+
+                $menu->addChild('Felder', array('route' => 'acquisition_list'))
+                     ->setAttribute('dropdown', true);
+                $menu['Felder']->addChild('Felder verwalten', array('route' => 'acquisition_list'));
+                $menu['Felder']->addChild('Feld erstellen', array('route' => 'acquisition_new'));
+
                 $menu->addChild('Benutzer', array('route' => 'user_list'));
             } else {
                 $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
@@ -41,6 +55,8 @@ class Builder implements ContainerAwareInterface
         $em = $this->container->get('doctrine')->getManager();
         // findMostRecent and Blog are just imaginary examples
         $blog = $em->getRepository('AppBundle:Blog')->findMostRecent();
+
+                //->setAttribute('divider_append', true);
 
         $menu->addChild('Latest Blog Post', array(
         'route' => 'blog_show',
@@ -85,7 +101,7 @@ class Builder implements ContainerAwareInterface
             return false;
         }
 
-        $user  = $token->getUser();
+        $user = $token->getUser();
 
         return ($user instanceof User);
     }
@@ -104,7 +120,7 @@ class Builder implements ContainerAwareInterface
         }
 
         /** @var User $user */
-        $user  = $token->getUser();
+        $user = $token->getUser();
 
         return ($user && $user->hasRole('ROLE_ADMIN'));
     }
