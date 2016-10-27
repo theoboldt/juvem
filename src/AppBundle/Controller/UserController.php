@@ -6,14 +6,13 @@ use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
-
 use AppBundle\Form\UserRoleAssignmentType;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends Controller
 {
@@ -36,9 +35,9 @@ class UserController extends Controller
     {
         $glyph = new BootstrapGlyph();
 
-
-        $userManager = $this->container->get('fos_user.user_manager');
-        $entityList  = $userManager->findUsers();
+        $userManager  = $this->container->get('fos_user.user_manager');
+        $entityList   = $userManager->findUsers();
+        $roleTemplate = ' <span title="%s">%s</span>';
 
         $userList = array();
 
@@ -48,18 +47,16 @@ class UserController extends Controller
 
             $roles = '';
             if (in_array('ROLE_USER', $entityRoles)) {
-                $roles .= sprintf(
-                    '<span title="%s">%s</span>',
-                    'Benutzer',
-                    $glyph->bootstrapGlyph('pawn')
-                );
+                $roles .= sprintf($roleTemplate, 'Benutzer', $glyph->bootstrapGlyph('pawn'));
             }
-            if (in_array('ROLE_SUPER_ADMIN', $entityRoles)) {
-                $roles .= sprintf(
-                    '<span title="%s">%s</span>',
-                    'Administrator',
-                    $glyph->bootstrapGlyph('king')
-                );
+            if (in_array(User::ROLE_ADMIN, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, 'Administrator', $glyph->bootstrapGlyph('king'));
+            }
+            if (in_array(User::ROLE_ADMIN_USER, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, 'Benutzerverwaltung', $glyph->bootstrapGlyph('queen'));
+            }
+            if (in_array(User::ROLE_ADMIN_EVENT, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, 'Veranstaltungen', $glyph->bootstrapGlyph('bishop'));
             }
 
 
@@ -88,7 +85,7 @@ class UserController extends Controller
 
         $form = $this->createForm(
             UserRoleAssignmentType::class,
-            array('uid'   => $user->getUid(),
+            array('uid'  => $user->getUid(),
                   'role' => $user->getRoles()
             )
         );
@@ -105,9 +102,9 @@ class UserController extends Controller
         }
 
         return $this->render(
-            'user/detail.html.twig', array('user' => $user,
+            'user/detail.html.twig', array('user'       => $user,
                                            'userIsSelf' => ($user->getUid() == $this->getUser()->getUid()),
-                                           'form' => $form->createView()
+                                           'form'       => $form->createView()
                                    )
         );
     }
