@@ -58,6 +58,9 @@ class UserController extends Controller
             if (in_array(User::ROLE_ADMIN_EVENT, $entityRoles)) {
                 $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_EVENT_LABEL, $glyph->bootstrapGlyph('bishop'));
             }
+            if (in_array(User::ROLE_ADMIN_NEWSLETTER, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_NEWSLETTER_LABEL, $glyph->bootstrapGlyph('knight'));
+            }
 
 
             $userList[] = array(
