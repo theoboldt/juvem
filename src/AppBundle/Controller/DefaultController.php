@@ -17,8 +17,7 @@ class DefaultController extends Controller
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
         $eventList  = $repository->findBy(
-            array('isVisible' => true,
-                  'isActive'  => true
+            array('isVisible' => true
             ),
             array('startDate' => 'ASC',
                   'startTime' => 'ASC'
