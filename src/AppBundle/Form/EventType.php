@@ -4,18 +4,16 @@ namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
@@ -29,6 +27,7 @@ class EventType extends AbstractType
         );
         $hasDateCheckbox = array(
             'required'   => false,
+            'mapped'     => false,
             'attr'       => array('class' => 'checkbox-smart'),
             'label_attr' => array('class' => 'control-label checkbox-smart-label')
         );
@@ -54,7 +53,8 @@ class EventType extends AbstractType
                 array_merge($dateTypeOptions, array('label' => 'Enddatum'))
             )
             ->add(
-                'hasEndTime', CheckboxType::class, array_merge($hasDateCheckbox, array('label' => 'Endzeit'))
+                'hasEndTime', CheckboxType::class,
+                array_merge($hasDateCheckbox, array('label' => 'Endzeit'))
             )
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add(
