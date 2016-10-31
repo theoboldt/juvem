@@ -54,7 +54,7 @@
                                    class="btn btn-default">Verwalten</a>
                             {% endif %}
                             <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"
-                               class="btn btn-default{% if not event.isActive %}btn-primary{% endif %}">Details</a>
+                               class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
                         </p>
                     </div>
                 </div>
