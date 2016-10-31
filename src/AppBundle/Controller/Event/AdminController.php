@@ -136,7 +136,7 @@ class AdminController extends Controller
             $em->persist($event);
             $em->flush();
 
-            return $this->redirect('/event/' . $event->getEid());
+            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
         }
 
         return $this->render(
