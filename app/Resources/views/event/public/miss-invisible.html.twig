@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltung nicht öffentlich{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Veranstaltung nicht öffentlich', 'subtitle': 'Juvem'} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Die Verknüpfung, der Sie gefolgt sind, hätte zu einer Veranstaltung führen sollen. Die
+                            gewünschte Veranstaltung ist im Moment nicht öffentlich zugänglich.
+                        </p>
+
+                        <h2>Mögliche Ursachen</h2>
+
+                        <h3>Veranstaltung noch nicht öffentlich</h3>
+                        <p>
+                            Die Veranstaltung ist möglicherweise noch nicht veröffentlicht worden. In diesem Fall empfiehlt es sich, die Seite später noch mal aufzurufen. Sobald sie freigeschalten wird, können Sie sie über diese URL erreichen. Wenn sich das entgegen ihrer Erwartung nicht ändert, können Sie <a href="{{ path('impressum') }}">mit uns Kontakt aufnehmen</a>.
+                        </p>
+                        <h3>Veranstaltung nicht mehr öffentlich</h3>
+                        <p>
+                            Die Veranstaltung wurde möglicherweise bereits durchgeführt und ist darum nicht mehr aktiv. Wenn Sie noch eine Frage zu der Veranstaltung haben, können Sie gerne <a href="{{ path('impressum') }}">mit uns Kontakt aufnehmen</a>.
+                        </p>
+
+                        <h3>Tippfehler</h3>
+
+                        <p>Wenn Sie die URL von Hand eingegeben haben, prüfen Sie ob alle Zeichen richtig übertragen
+                            sind. Möglicherweise finden Sie auch die gewünschte Aktion in der <a href="#page-area-active-events">Liste der aktiven Veranstaltungen</a> die auf der rechten Seite angezeigt werden.</p>
+
+                        <h3>Veranstaltung nur für registrierte Benutzer</h3>
+
+                        <p>
+                            Vielleicht steht diese Veranstaltung nur bestimmten Benutzergruppen zur Verfügung.
+                            Wenn Sie nicht angemeldet sind sollten Sie sich anmelden. Möglicherweise haben Sie
+                            anschließend Zugriff auf die Veranstaltung.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <h3 id="page-area-active-events">Aktive Veranstaltungen</h3>
+
+                {{ render(controller('AppBundle:Event/Public:listActiveEvents')) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

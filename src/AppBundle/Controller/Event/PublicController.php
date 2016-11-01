@@ -2,23 +2,11 @@
 namespace AppBundle\Controller\Event;
 
 
-use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
-use AppBundle\Form\EventType;
-use AppBundle\Form\ModalActionType;
-
-use AppBundle\Form\ParticipationType;
-use AppBundle\ImageResponse;
-use AppBundle\Manager\ParticipationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 use AppBundle\Entity\Event;
+use AppBundle\ImageResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class PublicController extends Controller
@@ -54,7 +42,7 @@ class PublicController extends Controller
      *
      * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
      */
-    public function listAction($eid)
+    public function showAction($eid)
     {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
@@ -73,6 +61,30 @@ class PublicController extends Controller
                                                'event' => $event
                                            )
         );
+    }
+
+    /**
+     * Short url redirecting to details of an event
+     *
+     * @Route("/e/{eid}", requirements={"eid": "\d+"}, name="event_public_short")
+     */
+    public function shortLinkAction($eid)
+    {
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event = $repository->findOneBy(array('eid' => $eid));
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', array('eid' => $eid),
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+        if ($event->isVisible()) {
+            return $this->redirectToRoute('event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY);
+        } else {
+            return $this->render(
+                'event/public/miss-invisible.html.twig', array('eid' => $eid)
+            );
+        }
     }
 
     /**
