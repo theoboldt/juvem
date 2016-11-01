@@ -20,7 +20,7 @@
             </div>
         {% endif %}
         {% for event in events %}
-            <div class="cCool-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
+            <div class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
                 <div class="thumbnail">
                     {% if event.imageFilename %}
                         <img src="{{ path('event_image',  {'eid': event.eid, 'width': 545, 'height': 800 }) }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
