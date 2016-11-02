@@ -27,7 +27,7 @@ class EventType extends AbstractType
         );
         $hasDateCheckbox = array(
             'required'   => false,
-            'mapped'     => false,
+            'mapped'     => true,
             'attr'       => array('class' => 'checkbox-smart'),
             'label_attr' => array('class' => 'control-label checkbox-smart-label')
         );
@@ -63,7 +63,6 @@ class EventType extends AbstractType
                 'choices'           => array('Für Anmeldungen offen'     => true,
                                              'Keine Anmeldungen möglich' => false
                 ),
-                'choices_as_values' => true,
                 'expanded'          => true
             )
             )
@@ -73,7 +72,6 @@ class EventType extends AbstractType
                 'choices'           => array('Aktiv'     => true,
                                              'Versteckt' => false
                 ),
-                'choices_as_values' => true,
                 'expanded'          => true
             )
             )

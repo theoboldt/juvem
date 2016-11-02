@@ -14,13 +14,8 @@
                     break;
                 case 'event[hasEndDate]':
                     fieldList   = [
-                        'event[endDate][year]',
-                        'event[endDate][month]',
-                        'event[endDate][day]'
+                        'event[endDate]'
                     ];
-                    if (!checked){
-                        $('[name="event[hasEndTime]"]').prop('checked', checked);
-                    }
                     break;
                 case 'event[hasEndTime]':
                     fieldList   = [

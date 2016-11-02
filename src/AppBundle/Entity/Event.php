@@ -126,8 +126,8 @@ class Event
      */
     public function __construct()
     {
-        $this->participations                   = new ArrayCollection();
-        $this->acquisitionAttributes            = new ArrayCollection();
+        $this->participations        = new ArrayCollection();
+        $this->acquisitionAttributes = new ArrayCollection();
     }
 
     /**
@@ -239,7 +239,7 @@ class Event
     /**
      * Returns true if a start time is set
      *
-     * @param  boolean $value Unprocessed value
+     * @param  bool|null $value Value which not actually processed
      * @return bool
      */
     public function hasStartTime($value = null)
@@ -274,9 +274,10 @@ class Event
     /**
      * Returns true if a end date is set
      *
+     * @param  bool|null $value Value which not actually processed
      * @return bool
      */
-    public function hasEndDate()
+    public function hasEndDate($value = null)
     {
         return (bool)$this->endDate;
     }
@@ -309,9 +310,10 @@ class Event
     /**
      * Returns true if a end time is set
      *
+     * @param  bool|null $value Value which not actually processed
      * @return bool
      */
-    public function hasEndTime()
+    public function hasEndTime($value = null)
     {
         return (bool)$this->endTime;
     }
