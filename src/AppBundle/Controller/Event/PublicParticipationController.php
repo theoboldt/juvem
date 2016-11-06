@@ -156,14 +156,21 @@ class PublicParticipationController extends Controller
             $request->getSession()
                     ->set('participationList', $participationList);
 
-            $message = sprintf(
-                '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>
-<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen zur Teilnahme vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
-                $this->container->get('router')
-                                ->generate(
-                                    'fos_user_registration_register'
-                                )
-            );
+            $message = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
+
+            if (!$this->getUser()) {
+                $message .= sprintf(
+                    '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen zur Teilnahme vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
+                    $this->container->get('router')->generate('fos_user_registration_register')
+                );
+            }
+            $repositoryNewsletter = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+            if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
+                $message .= sprintf(
+                    '<p>Sie können jetzt den <a href="%s">Newsletter abonnieren</a>, um auch in Zukunft von unseren Aktionen erfahren.</p>',
+                    $this->container->get('router')->generate('newsletter_subscription')
+                );
+            }
 
             $this->addFlash(
                 'success',
