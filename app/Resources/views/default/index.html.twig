@@ -23,7 +23,7 @@
             <div class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
                 <div class="thumbnail">
                     {% if event.imageFilename %}
-                        <img src="{{ path('event_image',  {'eid': event.eid, 'width': 545, 'height': 800 }) }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
+                        <img src="{{ path('event_image',  {'eid': event.eid, 'width': 545, 'height': 545 }) }}" alt="Poster-Abbildung wurde nicht geladen" title="Poster">
                     {% endif %}
                     <div class="caption">
                         <h3>{{ event.title }}</h3>
