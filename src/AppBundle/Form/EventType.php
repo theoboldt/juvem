@@ -25,7 +25,7 @@ class EventType extends AbstractType
             'widget' => 'single_text',
             'format' => 'yyyy-MM-dd',
         );
-        $hasDateCheckbox = array(
+        $smartCheckbox = array(
             'required'   => false,
             'mapped'     => true,
             'attr'       => array('class' => 'checkbox-smart'),
@@ -34,19 +34,22 @@ class EventType extends AbstractType
 
         $builder
             ->add('title', TextType::class, array('label' => 'Titel'))
-            ->add('description', TextareaType::class, array('label' => 'Beschreibung'))
+            ->add(
+                'description', TextareaType::class,
+                array('label' => 'Beschreibung', 'attr' => array('aria-describedby' => 'help-description'))
+            )
             ->add(
                 'startDate', DateType::class,
                 array_merge($dateTypeOptions, array('label' => 'Startdatum'))
             )
             ->add(
                 'hasStartTime', CheckboxType::class,
-                array_merge($hasDateCheckbox, array('label' => 'Startzeit'))
+                array_merge($smartCheckbox, array('label' => 'Startzeit'))
             )
             ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
             ->add(
                 'hasEndDate', CheckboxType::class,
-                array_merge($hasDateCheckbox, array('label' => 'Enddatum'))
+                array_merge($smartCheckbox, array('label' => 'Enddatum'))
             )
             ->add(
                 'endDate', DateType::class,
@@ -54,7 +57,7 @@ class EventType extends AbstractType
             )
             ->add(
                 'hasEndTime', CheckboxType::class,
-                array_merge($hasDateCheckbox, array('label' => 'Endzeit'))
+                array_merge($smartCheckbox, array('label' => 'Endzeit'))
             )
             ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add(
@@ -84,6 +87,17 @@ class EventType extends AbstractType
                 'download_link' => false,
                 // not mandatory, default is true
             )
+            )
+            ->add(
+                'hasConfirmationMessage', CheckboxType::class,
+                array_merge($smartCheckbox, array('label' => 'Bestätigungs-Text'))
+            )
+            ->add(
+                'confirmationMessage', TextareaType::class,
+                array(
+                    'label' => 'Bestätigungs-Text',
+                    'attr'  => array('aria-describedby' => 'help-confirmation-message')
+                )
             )
             ->add('save', SubmitType::class);
 

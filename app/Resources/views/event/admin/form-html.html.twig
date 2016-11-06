@@ -10,7 +10,9 @@
                 {{ form_row(form.title) }}
             </div>
             <div class="col-xs-12">
-                {{ form_row(form.description) }}
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                <p class="help-block" id="help-description">Dieser Text wird in der detaillierten Ansicht angezeigt. Es können Formatierungsanweisungen von <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown</a> verwendet werden. Der Text-Ausschnitt auf der Startseite wird im Klartext dargestellt.</p>
             </div>
         </div>
     </div>
@@ -54,5 +56,15 @@
     </div>
     <div class="col-xs-12 col-sm-6">
         {{ form_row(form.isActive) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-8">
+        <div class="form-group">
+            {{ form_widget(form.hasConfirmationMessage) }}
+            {{ form_errors(form.confirmationMessage) }}
+            {{ form_widget(form.confirmationMessage) }}
+            <p class="help-block" id="help-confirmation-message">Dieser Text wird in der Bestätgungs-E-Mail mit angezeigt. Der Text wird in der E-Mail als Absatz dargestellt, es kann demnach nur Fließtext ohne Formatierung verwendet werden.</p>
+        </div>
     </div>
 </div>

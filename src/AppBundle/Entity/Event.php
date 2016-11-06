@@ -45,6 +45,11 @@ class Event
     protected $description;
 
     /**
+     * @ORM\Column(type="text", name="confirmation_message", nullable=true)
+     */
+    protected $confirmationMessage = null;
+
+    /**
      * @ORM\Column(type="date", name="start_date")
      * @Assert\NotBlank()
      * @Assert\Type("\DateTime")
@@ -555,6 +560,41 @@ class Event
             }
         }
         throw new \OutOfBoundsException('Requested field was not found');
+    }
+
+
+    /**
+     * Set confirmationMessage
+     *
+     * @param string $confirmationMessage
+     *
+     * @return Event
+     */
+    public function setConfirmationMessage($confirmationMessage)
+    {
+        $this->confirmationMessage = $confirmationMessage;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmationMessage
+     *
+     * @return string
+     */
+    public function hasConfirmationMessage($value = null)
+    {
+        return (bool)$this->confirmationMessage;
+    }
+
+    /**
+     * Get confirmationMessage
+     *
+     * @return string
+     */
+    public function getConfirmationMessage()
+    {
+        return $this->confirmationMessage;
     }
 
 }
