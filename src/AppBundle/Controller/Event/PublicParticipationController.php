@@ -132,7 +132,9 @@ class PublicParticipationController extends Controller
         if ($request->query->has('confirm')) {
             $em = $this->getDoctrine()
                        ->getManager();
-
+            if ($event->getIsAutoConfirm()) {
+                $participation->setIsConfirmed(true);
+            }
             $managedParticipation = $em->merge($participation);
 
             $em->persist($managedParticipation);

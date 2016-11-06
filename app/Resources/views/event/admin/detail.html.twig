@@ -148,6 +148,9 @@
                         <span class="label label-default option-isActive">Inaktiv</span>
                     {% endif %}
                     </span>
+                    {% if event.isAutoConfirm() %}
+                        <span class="label label-primary">Automatische Bestätigungen</span>
+                    {% endif %}
                 </p>
                 {{ event.getDescription|markdown }}
             </div>

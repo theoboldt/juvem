@@ -4,8 +4,8 @@ namespace AppBundle\Manager;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
 use AppBundle\Entity\Participation as ParticipationEntity;
+use AppBundle\Entity\Participation;
 
 class ParticipationManager extends AbstractMailerAwareManager
 {
@@ -18,7 +18,12 @@ class ParticipationManager extends AbstractMailerAwareManager
      */
     public function mailParticipationRequested(ParticipationEntity $participation, Event $event)
     {
-        $this->mailEventParticipation('participation', $participation, $event);
+        if ($event->getIsAutoConfirm()) {
+            $template = 'participation-confirm-auto';
+        } else {
+            $template = 'participation';
+        }
+        $this->mailEventParticipation($template, $participation, $event);
     }
 
     /**

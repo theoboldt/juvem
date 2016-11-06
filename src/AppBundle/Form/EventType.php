@@ -79,6 +79,17 @@ class EventType extends AbstractType
             )
             )
             ->add(
+                'isAutoConfirm', ChoiceType::class, array(
+                                   'label'    => 'Anmeldungs-Bestätigung',
+                                   'choices'  => array(
+                                       'Eingegangene Anmeldungen einzeln bestätigen' => false,
+                                       'Alle Anmeldungen automatisch bestätigen'     => true
+
+                                   ),
+                                   'expanded' => true
+                               )
+            )
+            ->add(
                 'imageFile', VichImageType::class, array(
                 'label'         => 'Poster',
                 'required'      => false,

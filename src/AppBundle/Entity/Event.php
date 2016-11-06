@@ -87,6 +87,11 @@ class Event
     protected $isVisible;
 
     /**
+     * @ORM\Column(type="boolean", name="is_auto_confirm")
+     */
+    protected $isAutoConfirm;
+
+    /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageFilename")
      *
      * @var File
@@ -597,4 +602,28 @@ class Event
         return $this->confirmationMessage;
     }
 
+
+    /**
+     * Set isAutoConfirm
+     *
+     * @param boolean $isAutoConfirm
+     *
+     * @return Event
+     */
+    public function setIsAutoConfirm($isAutoConfirm)
+    {
+        $this->isAutoConfirm = $isAutoConfirm;
+
+        return $this;
+    }
+
+    /**
+     * Get isAutoConfirm
+     *
+     * @return boolean
+     */
+    public function getIsAutoConfirm()
+    {
+        return $this->isAutoConfirm;
+    }
 }
