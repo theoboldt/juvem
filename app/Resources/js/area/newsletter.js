@@ -43,11 +43,14 @@ $(function () {
     };
     $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
     $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreview);
+
     if ($("#newsletter_mail_subject").val() != '' && $("#newsletter_mail_title").val() != ''
         && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
     ) {
         //if there is something inserted in the fields
-        updateMailPreview();
+        $('iframe').on('load', function(){
+            updateMailPreview();
+        });
     }
 
     $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_events').change(function () {
@@ -71,7 +74,7 @@ $(function () {
                 }
                 textField.text(text);
             },
-            complete: function() {
+            complete: function () {
                 textField.attr('class', '');
             }
         });

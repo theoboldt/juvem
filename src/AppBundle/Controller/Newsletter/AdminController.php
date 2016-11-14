@@ -120,7 +120,9 @@ class AdminController extends Controller
             $newsletterList[] = array(
                 'lid'           => $newsletter->getLid(),
                 'subject'       => $newsletter->getSubject(),
-                'sentAt'        => $newsletterSentAt ? $newsletterSentAt->format('d.m.y H:i') : '<i>noch nicht versandt</i>',
+                'sentAt'        => $newsletterSentAt ? $newsletterSentAt->format(
+                    'd.m.y H:i'
+                ) : '<i>Entwurf</i>',
                 'ageRangeBegin' => $ageRangeBegin,
                 'ageRangeEnd'   => $ageRangeEnd,
                 'ageRange'      => $this->renderView(
@@ -140,7 +142,8 @@ class AdminController extends Controller
     /**
      * Details of a single subscription
      *
-     * @Route("/admin/newsletter/subscription/{rid}", requirements={"rid": "\d+"}, name="newsletter_admin_subscription_detail")
+     * @Route("/admin/newsletter/subscription/{rid}", requirements={"rid": "\d+"},
+     *                                                name="newsletter_admin_subscription_detail")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
     public function subscriptionDetailAction(Request $request)
@@ -206,7 +209,7 @@ class AdminController extends Controller
     public function createNewsletterAction(Request $request)
     {
         $newsletter = new Newsletter();
-        $form = $this->createForm(NewsletterMailType::class, $newsletter);
+        $form       = $this->createForm(NewsletterMailType::class, $newsletter);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
@@ -222,7 +225,8 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'newsletter/admin/newsletter/new.html.twig', array('form' => $form->createView())
+            'newsletter/admin/newsletter/new.html.twig',
+            array('form' => $form->createView(), 'newsletter' => $newsletter)
         );
     }
 
@@ -251,14 +255,15 @@ class AdminController extends Controller
 
             $this->addFlash(
                 'success',
-                'Die Änderungen am Entwurf wurden gesichert'
+                'Die Änderungen am Newsletter wurden gesichert'
             );
 
-            return $this->redirectToRoute('newsletter_admin_create');
+            return $this->redirectToRoute('newsletter_edit', array('lid' => $newsletter->getLid()));
         }
 
         return $this->render(
-            'newsletter/admin/newsletter/edit.html.twig', array('form' => $form->createView())
+            'newsletter/admin/newsletter/edit.html.twig',
+            array('form' => $form->createView(), 'newsletter' => $newsletter)
         );
     }
 }

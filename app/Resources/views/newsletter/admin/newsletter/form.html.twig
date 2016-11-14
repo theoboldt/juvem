@@ -30,6 +30,7 @@
         </div>
         {{ form_row(form.events) }}
         <p id="affectedSubscription"><i>(Anzahl potentieller Empfänger)</i></p>
+        <p>Dieser Newsletter wurde bereits an {{ newsletter.recipients.count }} Empfänger versandt.</p>
         <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>

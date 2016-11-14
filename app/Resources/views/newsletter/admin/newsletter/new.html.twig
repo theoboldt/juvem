@@ -11,7 +11,7 @@
     {% endembed %}
     <div class="container">
         <div id="mail-form-newsletter">
-            {% include '/newsletter/admin/newsletter/form.html.twig' with { form: form} %}
+            {% include '/newsletter/admin/newsletter/form.html.twig' with { form: form, newsletter: newsletter} %}
         </div>
     </div>
 {% endblock %}
