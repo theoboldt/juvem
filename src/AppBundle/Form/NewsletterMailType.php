@@ -3,12 +3,14 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\Newsletter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class NewsletterMailType extends AbstractType
 {
@@ -38,7 +40,7 @@ class NewsletterMailType extends AbstractType
                 )
             )
             ->add(
-                'subscribedEvents',
+                'events',
                 EntityType::class,
                 array(
                     'label'         => 'Ähnliche Veranstaltungen',
@@ -55,4 +57,12 @@ class NewsletterMailType extends AbstractType
             );
     }
 
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(
+            array(
+                'data_class' => Newsletter::class,
+            )
+        );
+    }
 }

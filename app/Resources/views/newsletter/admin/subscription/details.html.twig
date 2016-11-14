@@ -6,7 +6,7 @@
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Abonnement ' ~ subscription.email} %}
         {% block breadcrumb %}
             <li><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></li>
-            <li><a href="{{ path('newsletter_admin_list') }}">Abonnements</a></li>
+            <li><a href="{{ path('newsletter_admin_subscription_list') }}">Abonnements</a></li>
             <li class="active">Abonnement {{ subscription.email }}</li>
         {% endblock %}
     {% endembed %}

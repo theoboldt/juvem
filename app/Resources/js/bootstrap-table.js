@@ -122,10 +122,17 @@ $(function () {
     });
 
     /**
-     * NEWSLETTER: A newsletter subscription
+     * NEWSLETTER: subscriptions
      */
     $('#newsletterSubscriptionTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey('subscription/' + row.rid );
+        openInNewTabOnMetaKey('../subscription/' + row.rid );
+    });
+
+    /**
+     * NEWSLETTER: newsletters
+     */
+    $('#newsletterNewsletterTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('edit/' + row.lid );
     });
 
 });

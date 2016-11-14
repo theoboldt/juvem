@@ -46,7 +46,7 @@
 
         $('#preselectNone').on('click', function () {
             $('#{{ formMain }}_isEnabled').prop("checked", false);
-            $("#{{ formMain }}_subscribedEvents option:selected").prop("selected", false);
+            $("#{{ formMain }}_events option:selected").prop("selected", false);
         });
         $('#preselectAll').on('click', function () {
             elAgeRangeBegin.val({{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }});
@@ -57,7 +57,7 @@
             $('#{{ formMain }}_isEnabled').prop("checked", true);
             $('#{{ formMain }}_useAging').prop("checked", false);
 
-            $("#{{ formMain }}_subscribedEvents option:selected").prop("selected", false);
+            $("#{{ formMain }}_events option:selected").prop("selected", false);
         });
     });
 </script>

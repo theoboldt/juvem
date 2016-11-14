@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletter erstellen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <li class="active"><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></li>
+            <li class="active">Newsletter bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div id="mail-form-newsletter">
+            {% include '/newsletter/admin/newsletter/form.html.twig' with { form: form} %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascriptCustom %}
+    {% include '/newsletter/public/form-script.html.twig' with { formMain: 'newsletter_mail'} %}
+{% endblock %}

@@ -1,29 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Newsletter Abonnements verwalten{% endblock %}
+{% block title %}Newsletter verwalten{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Abonnements verwalten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Nachrichten verwalten'} %}
         {% block breadcrumb %}
             <li class="active"><a href="{{ path('newsletter_admin_overview') }}">Newsletter</a></li>
-            <li class="active">Abonnements verwalten</li>
+            <li class="active">Nachrichten verwalten</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-                <table id="newsletterSubscriptionTable" class="table table-striped table-remote-content"
+                <table id="newsletterNewsletterTable" class="table table-striped table-remote-content"
                        data-id-field="rid" data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true" data-page-size="25"
-                       data-url="{{ path('newsletter_admin_list_data') }}">
+                       data-url="{{ path('newsletter_admin_newsletter_list_data') }}">
                     <thead>
                     <tr>
-                        <th data-field="rid" data-sortable="true" data-visible="false">#</th>
-                        <th data-field="email" data-sortable="true" data-order="asc">E-Mail</th>
-                        <th data-field="nameLast" data-sortable="true">Familienname</th>
-                        <th data-field="user" data-sortable="true">Benutzer</th>
+                        <th data-field="lid" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="sentAt" data-sortable="true">Status</th>
+                        <th data-field="subject" data-sortable="true" data-order="asc">Betreff</th>
+                        <th data-field="nameLast" data-sortable="true">Titel</th>
                         <th data-field="ageRangeBegin" data-sortable="true" data-visible="false">Von Alter</th>
                         <th data-field="ageRangeEnd" data-sortable="true" data-visible="false">Bis Alter</th>
                         <th data-field="ageRange" data-sortable="false">Altersspanne</th>

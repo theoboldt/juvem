@@ -43,7 +43,14 @@ $(function () {
     };
     $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
     $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreview);
-    $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_subscribedEvents').change(function () {
+    if ($("#newsletter_mail_subject").val() != '' && $("#newsletter_mail_title").val() != ''
+        && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
+    ) {
+        //if there is something inserted in the fields
+        updateMailPreview();
+    }
+
+    $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_events').change(function () {
         var textField = $('#affectedSubscription');
         textField.attr('class', 'loading-text');
         $.ajax({
@@ -52,7 +59,7 @@ $(function () {
             data: {
                 ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
                 ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
-                subscribedEvents: $('*#newsletter_mail_subscribedEvents').val() || []
+                events: $('*#newsletter_mail_events').val() || []
             },
             dataType: 'json',
             success: function (response) {

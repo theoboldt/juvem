@@ -42,11 +42,11 @@
             <h3>Newsletter</h3>
             <ul>
                 {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
-                    <li><a href="{{ path('newsletter_admin_list') }}">Abonnements verwalten</a></li>
+                    <li><a href="{{ path('newsletter_admin_subscription_list') }}">Abonnements verwalten</a></li>
                 {% endif %}
                 <li><a href="{{ path('newsletter_subscription') }}">Abonnement verwalten</a></li>
                 {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
-                    <li><a href="{{ path('newsletter_admin_send') }}">Newsletter versenden</a></li>
+                    <li><a href="{{ path('newsletter_admin_create') }}">Newsletter erstellen</a></li>
                 {% endif %}
             </ul>
         </div>

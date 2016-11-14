@@ -42,8 +42,9 @@ class Builder implements ContainerAwareInterface
                     $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'))
                          ->setAttribute('dropdown', true);
                     $menu['Newsletter']->addChild('Eigenes Abonnement', array('route' => 'newsletter_subscription'));
-                    $menu['Newsletter']->addChild('Abonnements verwalten', array('route' => 'newsletter_admin_list'));
-                    $menu['Newsletter']->addChild('Newsletter versenden', array('route' => 'newsletter_admin_send'));
+                    $menu['Newsletter']->addChild('Abonnements verwalten', array('route' => 'newsletter_admin_subscription_list'));
+                    $menu['Newsletter']->addChild('Nachrichten verwalten', array('route' => 'newsletter_admin_newsletter_list'));
+                    $menu['Newsletter']->addChild('Newsletter erstellen', array('route' => 'newsletter_admin_create'));
                 }
 
                 if ($this->userHasRole(User::ROLE_ADMIN_EVENT)) {

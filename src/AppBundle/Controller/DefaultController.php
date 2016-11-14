@@ -24,6 +24,13 @@ class DefaultController extends Controller
             )
         );
 
+        if (new  \DateTime() < new \DateTime('2016-11-14 08:23:26.000000')) {
+            $this->addFlash(
+                'info',
+                'Bis zum 10.11.2016 kam es vereinzelt zu Schwierigkeiten beim Anmeldevorgang. Diese Probleme sind jetzt behoben. Sollten dennoch etwas nicht funktioneren, könenn Sie sich auch gerne an <a href="mailto:jungschar.vaihingen@gmail.com">jungschar.vaihingen@gmail.com</a> wenden.'
+            );
+        }
+
         return $this->render(
             'default/index.html.twig', array(
                                          'events' => $eventList

@@ -77,7 +77,7 @@ class NewsletterSubscriptionType extends AbstractType
                 )
             )
             ->add(
-                'subscribedEvents',
+                'events',
                 EntityType::class,
                 array(
                     'label'         => 'Ähnliche Veranstaltungen',
