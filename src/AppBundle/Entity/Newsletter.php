@@ -59,7 +59,7 @@ class Newsletter extends NewsletterAbstract
     protected $events;
 
     /**
-     * Contains a list of events which related to the topic of this newsletter
+     * Contains a list of subscriptions which received this newsletter
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NewsletterSubscription")
      * @ORM\JoinTable(name="event_newsletter_recipients",
@@ -73,6 +73,7 @@ class Newsletter extends NewsletterAbstract
      */
     public function __construct()
     {
+        $this->events     = new ArrayCollection();
         $this->recipients = new ArrayCollection();
         parent::__construct();
     }
