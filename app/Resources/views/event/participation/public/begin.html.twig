@@ -12,9 +12,9 @@
                     <ol class="breadcrumb">
                         <li><a href="{{ path('homepage') }}">Juvem</a></li>
                         <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li class="active">Anmeldung zu Veranstaltung ausfüllen</li>
+                        <li class="active">Anmeldung ausfüllen</li>
                     </ol>
-                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung zu Veranstaltung ausfüllen', 'subtitle': event.title} %}
+                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung ausfüllen', 'subtitle': event.title} %}
                 </div>
             </div>
             {{ form_start(form) }}
