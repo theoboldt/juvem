@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
 
     /**
      * GLOBAL Escape html
@@ -31,5 +31,41 @@ $(function(){
             }, 1000)
         });
     });
+
+    /**
+     * GLOBAL: Provides a heartbeat to keep the csrf token always up to date
+     */
+    var heartbeat = function () {
+        var errorHandled = false;
+        setInterval(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/heartbeat',
+                success: function () {
+                    errorHandled = false;
+                },
+                error: function (response) {
+                    if (errorHandled) {
+                        return true;
+                    }
+                    switch (response.status) {
+                        case 503:
+                            $(document).trigger('add-alerts', {
+                                message: 'Die Website scheint vorrübergehend nicht erreichbar zu sein.',
+                                priority: 'warning'
+                            });
+                            break;
+                        default:
+                            $(document).trigger('add-alerts', {
+                                message: 'Es scheint ein Problem mit der Internetverbindung vorzuliegen.',
+                                priority: 'error'
+                            });
+                            break;
+                    }
+                    errorHandled = true;
+                }
+            });
+        }, 600000);
+    }();
 
 });

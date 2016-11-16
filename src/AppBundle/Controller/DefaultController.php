@@ -4,8 +4,8 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -59,6 +59,14 @@ class DefaultController extends Controller
         return $this->render(
             'legal/impressum-page.html.twig'
         );
+    }
+
+    /**
+     * @Route("/heartbeat", name="heartbeat")
+     */
+    public function heartbeatAction()
+    {
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
