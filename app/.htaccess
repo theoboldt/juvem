@@ -75,4 +75,6 @@ DirectoryIndex app.php
     Deny from all
 </IfModule>
 
-AddHandler php56-cgi .php
+AddHandler php70-cgi .php
+
+Header append x-frame-options "SAMEORIGIN"
