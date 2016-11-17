@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
@@ -12,7 +11,7 @@ class DefaultController extends Controller
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         $repository = $this->getDoctrine()
                            ->getRepository('AppBundle:Event');
@@ -23,13 +22,6 @@ class DefaultController extends Controller
                   'startTime' => 'ASC'
             )
         );
-
-        if (new  \DateTime() < new \DateTime('2016-11-14 08:23:26.000000')) {
-            $this->addFlash(
-                'info',
-                'Bis zum 10.11.2016 kam es vereinzelt zu Schwierigkeiten beim Anmeldevorgang. Diese Probleme sind jetzt behoben. Sollten dennoch etwas nicht funktioneren, könenn Sie sich auch gerne an <a href="mailto:jungschar.vaihingen@gmail.com">jungschar.vaihingen@gmail.com</a> wenden.'
-            );
-        }
 
         return $this->render(
             'default/index.html.twig', array(
@@ -43,7 +35,7 @@ class DefaultController extends Controller
      * @Route("/datenschutzerklaerung")
      * @Route("/datenschutz")
      */
-    public function legalAction(Request $request)
+    public function legalAction()
     {
         return $this->render(
             'legal/privacy-page.html.twig'
@@ -54,7 +46,7 @@ class DefaultController extends Controller
     /**
      * @Route("/impressum", name="impressum")
      */
-    public function impressumAction(Request $request)
+    public function impressumAction()
     {
         return $this->render(
             'legal/impressum-page.html.twig'
@@ -75,7 +67,7 @@ class DefaultController extends Controller
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
      */
-    public function ressourceUnavailableAction(Request $request)
+    public function ressourceUnavailableAction()
     {
         return new Response(null, Response::HTTP_GONE);
     }
