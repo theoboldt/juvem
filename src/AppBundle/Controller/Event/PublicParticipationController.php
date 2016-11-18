@@ -45,7 +45,7 @@ class PublicParticipationController extends Controller
         if (!$event->isActive()) {
             $this->addFlash(
                 'danger',
-                'Bei der gewählte Veranstaltung werden im moment keine Anmeldungen erfasst'
+                'Bei der gewählte Veranstaltung werden im Moment keine Anmeldungen erfasst'
             );
 
             return $this->redirectToRoute('homepage', array('eid' => $eid));
@@ -89,20 +89,70 @@ class PublicParticipationController extends Controller
             return $this->redirectToRoute('event_public_participate_confirm', array('eid' => $eid));
         }
 
+        $user           = $this->getUser();
+        $participations = array();
+        if ($user) {
+            $participations = $user->getAssignedParticipations();
+        }
+
         return $this->render(
-            'event/participation/public/begin.html.twig', array(
-                                                            'event'                          => $event,
-                                                            'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(
-                                                                true, false
-                                                            ),
-                                                            'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(
-                                                                false, true
-                                                            ),
-                                                            'form'                           => $form->createView()
-                                                        )
+            'event/participation/public/begin.html.twig',
+            array(
+                'event'                          => $event,
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false),
+                'participations'                 => $participations,
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true),
+                'form'                           => $form->createView()
+            )
         );
     }
 
+    /**
+     * Page for list of events
+     *
+     * @Route("/event/{eid}/participate/prefill/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
+     *                                                  name="event_public_participate_prefill")
+     */
+    public function participatePrefillAction($eid, $pid, Request $request)
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash(
+                'warning',
+                sprintf(
+                    'Um Daten einer früherer Anmeldung verwenden zu können, müssen Sie angemeldet sein. Sie können sich jetzt <a href="%s">anmelden</a>, oder die Daten hier direkt eingeben.',
+                    $this->generateUrl('fos_user_security_login')
+                )
+            );
+            return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+        }
+
+        $em                      = $this->getDoctrine()->getManager();
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationPrevious   = $participationRepository->findOneBy(
+            array('pid' => $pid, 'assignedUser' => $user->getUid())
+        );
+        if (!$participationPrevious) {
+            $this->addFlash(
+                'danger',
+                'Es konnte keine passende Anmeldung von Ihnen gefunden werden, mit der das Anmeldeformular hätte vorausgefüllt werden können.'
+            );
+            return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+        }
+
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event           = $eventRepository->findOneBy(array('eid' => $eid));
+
+        $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
+        $participation->setAssignedUser($user);
+
+        $request->getSession()->set('participation-' . $eid, $participation);
+        $this->addFlash(
+            'success',
+            'Die Anmeldung wurde mit Daten einer früheren Teilnahme vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
+        );
+        return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+    }
 
     /**
      * Page for list of events
@@ -158,7 +208,8 @@ class PublicParticipationController extends Controller
             $request->getSession()
                     ->set('participationList', $participationList);
 
-            $message = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
+            $message
+                = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
 
             if (!$this->getUser()) {
                 $message .= sprintf(

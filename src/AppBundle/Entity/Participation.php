@@ -2,12 +2,12 @@
 namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use AppBundle\Entity\Audit\CreatedModifiedTrait;
-use AppBundle\Entity\Audit\SoftDeleteTrait;
 
 /**
  * @ORM\Entity
@@ -89,18 +89,25 @@ class Participation
 
     /**
      * Constructor
+     *
+     * @param bool $omitPhoneNumberInit If set to false, a single empty phone number is added
+     * @param bool $omitParticipantInit If set to false, a single empty participant is added
      */
-    public function __construct()
+    public function __construct($omitPhoneNumberInit = false, $omitParticipantInit = false)
     {
         $this->phoneNumbers = new ArrayCollection();
-        $phoneNumber    = new PhoneNumber();
-        $phoneNumber->setParticipation($this);
-        $this->addPhoneNumber($phoneNumber);
+        if (!$omitPhoneNumberInit) {
+            $phoneNumber = new PhoneNumber();
+            $phoneNumber->setParticipation($this);
+            $this->addPhoneNumber($phoneNumber);
+        }
 
         $this->participants = new ArrayCollection();
-        $participant    = new Participant();
-        $participant->setParticipation($this);
-        $this->addParticipant($participant);
+        if (!$omitParticipantInit) {
+            $participant = new Participant();
+            $participant->setParticipation($this);
+            $this->addParticipant($participant);
+        }
 
         $this->acquisitionAttributeFillouts = new ArrayCollection();
 
@@ -502,4 +509,78 @@ class Participation
         return $this;
     }
 
+    /**
+     * Create a new participation for transmitted event based on data of given participation
+     *
+     * @param Participation $participationPrevious Data template
+     * @param Event         $event                 Event this new participation should belong to
+     * @return Participation
+     */
+    public static function createFromTemplateForEvent(Participation $participationPrevious, Event $event)
+    {
+        $participation = new self(true, true);
+        $participation->setEvent($event);
+        $participation->setNameLast($participationPrevious->getNameLast());
+        $participation->setNameFirst($participationPrevious->getNameFirst());
+        $participation->setAddressCity($participationPrevious->getAddressCity());
+        $participation->setAddressStreet($participationPrevious->getAddressStreet());
+        $participation->setAddressZip($participationPrevious->getAddressZip());
+        $participation->setEmail($participationPrevious->getEmail());
+        $participation->setSalution($participationPrevious->getSalution());
+
+        /** @var PhoneNumber $numberPrevious */
+        foreach ($participationPrevious->getPhoneNumbers() as $numberPrevious) {
+            $number = new PhoneNumber();
+            $number->setParticipation($participation);
+            $number->setDescription($numberPrevious->getDescription());
+            $number->setNumber($numberPrevious->getNumber());
+            $participation->addPhoneNumber($number);
+        }
+
+        /** @var AcquisitionAttribute $attribute */
+        foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
+            try {
+                $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
+            } catch (\OutOfBoundsException $e) {
+                continue;
+            }
+            $fillout = new AcquisitionAttributeFillout();
+            $fillout->setParticipation($participation);
+            $fillout->setAttribute($attribute);
+            $fillout->setValue($filloutPrevious->getValue());
+            $participation->addAcquisitionAttributeFillout($fillout);
+        }
+
+        /** @var Participant $participantPrevious */
+        foreach ($participationPrevious->getParticipants() as $participantPrevious) {
+            $participant = new Participant();
+            $participant->setParticipation($participation);
+            $participant->setNameLast($participantPrevious->getNameLast());
+            $participant->setNameFirst($participantPrevious->getNameFirst());
+            $participant->setBirthday($participantPrevious->getBirthday());
+            $participant->setFood($participantPrevious->getFood());
+            $participant->setGender($participantPrevious->getGender());
+            $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
+            $participant->setInfoMedical($participantPrevious->getInfoMedical());
+
+            /** @var AcquisitionAttribute $attribute */
+            foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
+                try {
+                    $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
+                        $attribute->getBid(), false
+                    );
+                } catch (\OutOfBoundsException $e) {
+                    continue;
+                }
+                $fillout = new AcquisitionAttributeFillout();
+                $fillout->setParticipant($participant);
+                $fillout->setAttribute($attribute);
+                $fillout->setValue($filloutPrevious->getValue());
+                $participant->addAcquisitionAttributeFillout($fillout);
+            }
+            $participation->addParticipant($participant);
+        }
+
+        return $participation;
+    }
 }
