@@ -49,7 +49,7 @@
 
                             <p>
                                 {% if event.isActive %}
-                                {% if app.user is null %}
+                                {% if app.user is not null %}
                                 {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
 
                             <div class="btn-group">
