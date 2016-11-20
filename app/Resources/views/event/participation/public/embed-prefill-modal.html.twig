@@ -1,0 +1,51 @@
+{% block prefillModal %}
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalPrefillParticipation"
+         aria-labelledby="modalPrefillParticipationHeader">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalPrefillParticipationHeader">Daten aus früherer Anmeldung
+                        übernehmen</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Sie können das Anmeldeformular mit den Daten einer Ihrer früheren Anmeldungen füllen lassen.
+                        Dabei werden Daten die Sie in der Zwischenzeit für die Anmeldung für die Veranstaltung
+                        eingegeben haben überschrieben.</p>
+
+                    <div class="list-group event-embed-list">
+                        {% for participation in participations %}
+                            <a href="{{ path('event_public_participate_prefill', {'eid': event.eid, 'pid': participation.pid }) }}"
+                               class="list-group-item">
+                                <h4 class="list-group-item-heading">{{ participation.event.title }}</h4>
+
+                                <div class="list-group-item-text">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-5">
+                                            <p>{{ participation.fullname(participation.nameLast, participation.nameFirst) }}</p>
+
+                                            <p>{{ participation.addressStreet }}, {{ participation.addressZip }} {{ participation.addressCity }}</p>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-7">
+                                            <ul>
+                                                {% for participant in participation.participants %}
+                                                    <li>{{ participant.nameFirst }} {{ participant.nameLast }}
+                                                        <i>({{ participant.getBirthday|date("d.m.Y") }})</i></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
