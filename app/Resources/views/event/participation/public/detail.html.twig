@@ -135,16 +135,16 @@
                             {% if participant.withdrawn %}
                                 Teilnehmer zurückgezogen
                             {% else %}
-                            <button type="button" class="btn btn-default" data-action="withdraw"
-                                    data-confirmed="{{ participant.confirmed }}"
-                                    data-toggle="modal" data-target="#dialogModal" data-aid="{{ participant.aid }}"
-                                    data-value="{{ participant.withdrawRequested }}">
-                                {% if participant.withdrawRequested %}
-                                    {{ 'retweet'|glyph }} Anfrage für Zurücknahme entfernen
-                                {% else %}
-                                    {{ 'share-alt'|glyph }} Anmeldung zurückziehen
-                                {% endif %}
-                            </button>
+                                <button type="button" class="btn btn-default" data-action="withdraw"
+                                        data-confirmed="{{ participant.confirmed }}"
+                                        data-toggle="modal" data-target="#dialogModal" data-aid="{{ participant.aid }}"
+                                        data-value="{{ participant.withdrawRequested }}">
+                                    {% if participant.withdrawRequested %}
+                                        {{ 'retweet'|glyph }} Anfrage für Zurücknahme entfernen
+                                    {% else %}
+                                        {{ 'share-alt'|glyph }} Anmeldung zurückziehen
+                                    {% endif %}
+                                </button>
                             {% endif %}
                         </div>
                     </div>

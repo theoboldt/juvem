@@ -5,144 +5,145 @@
 
 {% block body %}
     <div class="container page-participate">
-    <div class="row">
-        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-lg-offset-2 col-lg-8">
-            <div class="row">
-                <div class="col-xs-12">
-                    <ol class="breadcrumb">
-                        <li><a href="{{ path('homepage') }}">Juvem</a></li>
-                        <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                        <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung zu Veranstaltung ausfüllen</a></li>
-                        <li class="active">Anmeldedaten überprüfen</li>
-                    </ol>
-                    {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldedaten überprüfen', 'subtitle': event.title} %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    Überprüfen Sie jetzt bitte die Angaben auf Richtigkeit.
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <h3 id="data-participation">Daten der Eltern</h3>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
-                        </div>
-                        <div class="panel-body">
-                            <dl class="dl-horizontal">
-                                <dt>Anrede</dt>
-                                <dd>{{ participation.salution }}</dd>
-                                <dt>Vorname</dt>
-                                <dd>{{ participation.nameFirst }}</dd>
-                                <dt>Nachname</dt>
-                                <dd>{{ participation.nameLast }}</dd>
-                                <dt>Telefonnummern</dt>
-                                <dd class="address-container">
-                                    {% for phoneNumber in participation.phoneNumbers %}
-                                        <address>
-                                            <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
-                                            {% if phoneNumber.description %}
-                                                <br>{{ phoneNumber.description }}
-                                            {% endif %}
-                                        </address>
-                                    {% endfor %}
-                                </dd>
-                                <dt>Anschrift</dt>
-                                <dd class="address-container">
-                                    <address>
-                                        <strong>{{ participation.getName() }}</strong><br>
-                                        {{ participation.addressStreet }}<br>
-                                        {{ participation.addressZip }} {{ participation.addressCity }}
-                                    </address>
-                                </dd>
-                                <dt>E-Mail Adresse</dt>
-                                <dd class="address-container">
-                                    <address>
-                                        {{ participation.email }}
-                                    </address>
-                                </dd>
-                                {% for fillout in participation.acquisitionAttributeFillouts %}
-                                    <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                    <dd>{{ fillout }}</dd>
-                                {% endfor %}
-                            </dl>
-                        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-lg-offset-2 col-lg-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                            <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a>
+                            </li>
+                            <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Anmeldung zu
+                                    Veranstaltung ausfüllen</a></li>
+                            <li class="active">Anmeldedaten überprüfen</li>
+                        </ol>
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldedaten überprüfen', 'subtitle': event.title} %}
                     </div>
-                    <h3 id="data-participants">Daten der Teilnehmer</h3>
-                    {% for participant in participation.participants %}
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        Überprüfen Sie jetzt bitte die Angaben auf Richtigkeit.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="data-participation">Daten der Eltern</h3>
+
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
+                                <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
                             </div>
                             <div class="panel-body">
-                                <div class="row" id="participant-{{ loop.index }}">
-                                    <div class="col-xs-12">
-                                        <dl class="dl-horizontal">
-                                            <dt>Vorname</dt>
-                                            <dd>{{ participant.nameFirst }}</dd>
-                                            <dt>Nachname</dt>
-                                            <dd>{{ participant.nameLast }}</dd>
-                                            <dt>Geschlecht</dt>
-                                            <dd>{{ participant.getGender(true) }}</dd>
-                                            <dt>Geburtsdatum</dt>
-                                            <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
-                                            <dt>Ernährung</dt>
-                                            <dd>
-                                                {% set participantFood = participant.getFood(true) %}
-                                                {% if participantFood.getValue() %}
-                                                    {{ ' '|bitmask(participantFood) }}
-                                                {% else %}
-                                                    <i>(keine Besonderheiten)</i>
+                                <dl class="dl-horizontal">
+                                    <dt>Anrede</dt>
+                                    <dd>{{ participation.salution }}</dd>
+                                    <dt>Vorname</dt>
+                                    <dd>{{ participation.nameFirst }}</dd>
+                                    <dt>Nachname</dt>
+                                    <dd>{{ participation.nameLast }}</dd>
+                                    <dt>Telefonnummern</dt>
+                                    <dd class="address-container">
+                                        {% for phoneNumber in participation.phoneNumbers %}
+                                            <address>
+                                                <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                                                {% if phoneNumber.description %}
+                                                    <br>{{ phoneNumber.description }}
                                                 {% endif %}
-                                            </dd>
-                                            <dt>Medizinische Hinweise</dt>
-                                            <dd>
-                                                {% if participant.infoMedical %}
-                                                    {{ participant.infoMedical }}
-                                                {% else %}
-                                                    <i>(keine Besonderheiten)</i>
-                                                {% endif %}
-                                            </dd>
-                                            <dd>
-                                            <dt>Allgemeine Hinweise</dt>
-                                            <dd>
-                                                {% if participant.infoGeneral %}
-                                                    {{ participant.infoGeneral }}
-                                                {% else %}
-                                                    <i>(keine Besonderheiten)</i>
-                                                {% endif %}
-                                            </dd>
-                                            {% for fillout in participant.acquisitionAttributeFillouts %}
-                                                <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                                <dd>{{ fillout }}</dd>
-                                            {% endfor %}
-                                        </dl>
+                                            </address>
+                                        {% endfor %}
+                                    </dd>
+                                    <dt>Anschrift</dt>
+                                    <dd class="address-container">
+                                        <address>
+                                            <strong>{{ participation.getName() }}</strong><br>
+                                            {{ participation.addressStreet }}<br>
+                                            {{ participation.addressZip }} {{ participation.addressCity }}
+                                        </address>
+                                    </dd>
+                                    <dt>E-Mail Adresse</dt>
+                                    <dd class="address-container">
+                                        <address>
+                                            {{ participation.email }}
+                                        </address>
+                                    </dd>
+                                    {% for fillout in participation.acquisitionAttributeFillouts %}
+                                        <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                        <dd>{{ fillout }}</dd>
+                                    {% endfor %}
+                                </dl>
+                            </div>
+                        </div>
+                        <h3 id="data-participants">Daten der Teilnehmer</h3>
+                        {% for participant in participation.participants %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row" id="participant-{{ loop.index }}">
+                                        <div class="col-xs-12">
+                                            <dl class="dl-horizontal">
+                                                <dt>Vorname</dt>
+                                                <dd>{{ participant.nameFirst }}</dd>
+                                                <dt>Nachname</dt>
+                                                <dd>{{ participant.nameLast }}</dd>
+                                                <dt>Geschlecht</dt>
+                                                <dd>{{ participant.getGender(true) }}</dd>
+                                                <dt>Geburtsdatum</dt>
+                                                <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
+                                                <dt>Ernährung</dt>
+                                                <dd>
+                                                    {% set participantFood = participant.getFood(true) %}
+                                                    {% if participantFood.getValue() %}
+                                                        {{ ' '|bitmask(participantFood) }}
+                                                    {% else %}
+                                                        <i>(keine Besonderheiten)</i>
+                                                    {% endif %}
+                                                </dd>
+                                                <dt>Medizinische Hinweise</dt>
+                                                <dd>
+                                                    {% if participant.infoMedical %}
+                                                        {{ participant.infoMedical }}
+                                                    {% else %}
+                                                        <i>(keine Besonderheiten)</i>
+                                                    {% endif %}
+                                                </dd>
+                                                <dd>
+                                                <dt>Allgemeine Hinweise</dt>
+                                                <dd>
+                                                    {% if participant.infoGeneral %}
+                                                        {{ participant.infoGeneral }}
+                                                    {% else %}
+                                                        <i>(keine Besonderheiten)</i>
+                                                    {% endif %}
+                                                </dd>
+                                                {% for fillout in participant.acquisitionAttributeFillouts %}
+                                                    <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                                    <dd>{{ fillout }}</dd>
+                                                {% endfor %}
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <h3>Fortfahren</h3>
-                    <nav class="navbar navbar-default">
-                        <div class="container-fluid">
-                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                               class="btn btn-warning navbar-btn">Anmeldedaten korrigieren</a>
-                            <a href="{{ path('event_public_participate_confirm', {'eid': event.eid }) }}?confirm"
-                               class="btn btn-success navbar-btn">Anmeldedaten bestätigen, Anmeldung abgeben</a>
-                        </div>
-                    </nav>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>Fortfahren</h3>
+                        <nav class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                                   class="btn btn-warning navbar-btn">Anmeldedaten korrigieren</a>
+                                <a href="{{ path('event_public_participate_confirm', {'eid': event.eid }) }}?confirm"
+                                   class="btn btn-success navbar-btn">Anmeldedaten bestätigen, Anmeldung abgeben</a>
+                            </div>
+                        </nav>
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
 {% endblock %}
