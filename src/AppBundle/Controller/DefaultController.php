@@ -23,10 +23,18 @@ class DefaultController extends Controller
             )
         );
 
+        $user           = $this->getUser();
+        $participations = array();
+        if ($user) {
+            $participations = $user->getAssignedParticipations();
+        }
+
         return $this->render(
-            'default/index.html.twig', array(
-                                         'events' => $eventList
-                                     )
+            'default/index.html.twig',
+            array(
+                'events'         => $eventList,
+                'participations' => $participations
+            )
         );
     }
 

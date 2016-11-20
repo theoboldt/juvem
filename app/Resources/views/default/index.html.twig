@@ -46,9 +46,29 @@
 
                         <p>
                             {% if event.isActive %}
-                                <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                                   class="btn btn-primary">Teilnehmen</a>
-                            {% endif %}
+                            {% if participations|length %}
+                            {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
+
+                        <div class="btn-group">
+                            <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                               class="btn btn-primary">Teilnehmen</a>
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Menü erweitern</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere Anmeldung ausfüllen</a></li>
+                                <li><a href="#" type="button" data-toggle="modal"
+                                       data-target="#modalPrefillParticipation{{ event.eid }}">Anmeldung mit früheren Daten vorausfüllen
+                                    </a></li>
+                            </ul>
+                        </div>
+                        {% else %}
+                            <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                               class="btn btn-primary">Teilnehmen</a>
+                        {% endif %}
+                        {% endif %}
                             {% if is_granted('ROLE_ADMIN_EVENT') %}
                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
                                    class="btn btn-default">Verwalten</a>
