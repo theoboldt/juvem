@@ -25,12 +25,13 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="text-right">
-                            {% if participations|length %}
-                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                            {% if app.user is null %}
+                                <button type="button" class="btn btn-primary" data-toggle="modal" {% if not participations|length %}disabled="disabled"{% endif %}
                                         data-target="#modalPrefillParticipation{{ event.eid }}">
                                     Daten aus früherer Anmeldung übernehmen
                                 </button>
                             {% endif %}
+
                         </div>
                     </div>
                     <div class="col-xs-12">

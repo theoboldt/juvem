@@ -49,7 +49,7 @@
 
                             <p>
                                 {% if event.isActive %}
-                                {% if participations|length %}
+                                {% if app.user is null %}
                                 {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
 
                             <div class="btn-group">
@@ -63,9 +63,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere
                                             Anmeldung ausfüllen</a></li>
-                                    <li><a href="#" type="button" data-toggle="modal"
-                                           data-target="#modalPrefillParticipation{{ event.eid }}">Anmeldung mit
-                                            früheren Daten vorausfüllen
+                                    <li{% if not participations|length %} class="disabled"{% endif %}><a href="#"
+                                                                                                         role="button" {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}
+                                                >Anmeldung mit früheren Daten vorausfüllen
                                         </a></li>
                                 </ul>
                             </div>
