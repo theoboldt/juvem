@@ -4,6 +4,37 @@
         <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogSend">Abschicken</button>
+        <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog"
+             aria-labelledby="dialogModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="dialogModalLabel">Newsletter versenden</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <p>Der Newsletter wird an die folgenden Empfänger verschickt:</p>
+                                <ul>
+                                    <li>xx</li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <p>Der Newsletter wurde bereits an die folgenden Empfänger verschickt:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                        </button>
+                        <input type="submit" class="btn btn-primary" value="Newsletter Abschicken"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">
@@ -30,6 +61,7 @@
         </div>
         {{ form_row(form.events) }}
         <p id="affectedSubscription"><i>(Anzahl potentieller Empfänger)</i></p>
+
         <p>Dieser Newsletter wurde bereits an {{ newsletter.recipients.count }} Empfänger versandt.</p>
         <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
         </button>
