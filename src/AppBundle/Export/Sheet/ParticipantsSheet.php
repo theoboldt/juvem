@@ -47,7 +47,7 @@ class ParticipantsSheet extends AbstractSheet
         $this->addColumn($column);
 
         $column = new EntitySheetColumn('ageAtEvent', 'Alter');
-        $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+        $column->setNumberFormat('#,##0.0');
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createSmallColumn('gender', 'Geschlecht');
