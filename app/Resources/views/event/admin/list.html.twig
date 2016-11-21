@@ -21,18 +21,19 @@
                         {{ 'eid'|tableFilterButton(0, [{'title': 'nur zukünftige', 'value': eventListFuture}, {'title': 'nur vergangene', 'value': eventListPast}, {'title': 'zuküntige und vergangene', 'value': eventList}]) }}
                     </div>
                 </div>
-                <table id="eventListTable" class="table table-striped table-remote-content"
-                       data-id-field="eid" data-toggle="table" data-cache="false" data-pagination="true"
-                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
-                       data-show-filter="true" data-search="true" data-url="{{ path('event_list_data') }}">
+                <table id="eventListTable" class="table table-striped table-remote-content" data-id-field="eid"
+                       data-toggle="table" data-cache="false" data-pagination="true" data-side-pagination="client"
+                       data-show-refresh="true" data-show-columns="true" data-search-align="right"
+                       data-toolbar="#bootstrap-table-toolbar" data-striped="true" data-show-filter="true"
+                       data-search="true" data-sort-name="start_date" data-sort-order="desc"
+                       data-url="{{ path('event_list_data') }}">
                     <thead>
                     <tr>
                         <th data-field="eid" data-sortable="true" data-visible="false">#</th>
                         <th data-field="title" data-sortable="true" data-order="asc">Titel</th>
                         <th data-field="description" data-sortable="true">Beschreibung</th>
-                        <th data-field="start_date" data-sortable="true">Beginn</th>
-                        <th data-field="end_date" data-sortable="true">Ende</th>
+                        <th data-field="start_date" data-sortable="true" data-sorter="germanDateTimeSorter">Beginn</th>
+                        <th data-field="end_date" data-sortable="true" data-sorter="germanDateTimeSorter">Ende</th>
                         <th data-field="status" data-sortable="false" data-width="50">Status</th>
                     </tr>
                     </thead>

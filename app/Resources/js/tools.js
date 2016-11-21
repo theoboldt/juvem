@@ -88,3 +88,40 @@ function germanNumberFormatSorter(a, b) {
     if (a < b) return -1;
     return 0;
 }
+
+
+/**
+ * Sort date time values which use german format
+ *
+ * @param a
+ * @param b
+ * @returns {number}
+ */
+function germanDateTimeSorter(a, b) {
+    'use strict';
+    var date = function (v) {
+        var parts;
+        parts = v.match(/^(\d{2})\.(\d{2})\.(\d{2,4})$/);
+        if (parts) {
+            if (parts[3].length == 2) {
+                parts[3] = '20' + parts[3];
+            }
+            return new Date(parts[3], parts[2], parts[1]);
+        } else {
+            parts = v.match(/^(\d{2})\.(\d{2})\.(\d{2,4}) (\d{2}):(\d{2})$/);
+            if (parts) {
+                if (parts[3].length == 2) {
+                    parts[3] = '20' + parts[3];
+                }
+                return new Date(parts[3], parts[2], parts[1], parts[4], parts[5]);
+            }
+            return new Date(1980);
+        }
+    };
+    a = date(a);
+    b = date(b);
+
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+}

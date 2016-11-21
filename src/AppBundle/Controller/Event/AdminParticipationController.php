@@ -128,10 +128,7 @@ class AdminParticipationController extends Controller
                 'phone'            => implode(', ', $participantPhoneList),
                 'status'           => $statusFormatter->formatMask($participantStatus),
                 'gender'           => $participant->getGender(true),
-                'registrationDate' => sprintf(
-                    '<span style="display:none;">%s</span> %s', $participationDate->format('U'),
-                    $participationDate->format(Event::DATE_FORMAT_DATE_TIME)
-                ),
+                'registrationDate' => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'           => $participantAction
             );
             /** @var AcquisitionAttributeFillout $fillout */
@@ -368,9 +365,9 @@ class AdminParticipationController extends Controller
             );
         }
 
-        $eventRepository    = $this->getDoctrine()
-                                   ->getRepository('AppBundle:Event');
-        $participantList    = $eventRepository->participantsList($event);
+        $eventRepository = $this->getDoctrine()
+                                ->getRepository('AppBundle:Event');
+        $participantList = $eventRepository->participantsList($event);
 
         $export = new ParticipantsBirthdayAddressExport($event, $participantList, $this->getUser());
         $export->setMetadata();

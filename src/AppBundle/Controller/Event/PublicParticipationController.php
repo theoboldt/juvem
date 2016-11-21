@@ -280,25 +280,26 @@ class PublicParticipationController extends Controller
         foreach ($participationList as $participation) {
             $event = $participation->getEvent();
 
-            $eventStartFormat = $dateFormatDayHour;
-            if ($event->getStartDate()
-                      ->format('Hi') == '0000'
-            ) {
-                $eventStartFormat = $dateFormatDay;
+
+            $eventStartDate = $event->getStartDate()->format(Event::DATE_FORMAT_DATE);
+            if ($event->hasEndDate()) {
+                $eventEndDate = $event->getEndDate()->format(Event::DATE_FORMAT_DATE);
+            } else {
+                $eventEndDate = $eventStartDate;
             }
-            $eventEndFormat = $dateFormatDayHour;
-            if ($event->getEndDate()
-                      ->format('Hi') == '0000'
-            ) {
-                $eventEndFormat = $dateFormatDay;
+            if ($event->hasStartTime()) {
+                $eventStartDate .= ' ' . $event->getStartTime()->format(Event::DATE_FORMAT_TIME);
+            }
+            if ($event->hasEndTime()) {
+                $eventEndDate .= ' ' . $event->getEndTime()->format(Event::DATE_FORMAT_TIME);
+            } elseif ($event->hasStartTime()) {
+                $eventEndDate .= ' ' . $event->getStartTime()->format(Event::DATE_FORMAT_TIME);
             }
 
             $eventTime = sprintf(
                 '%s - %s',
-                $event->getStartDate()
-                      ->format($eventStartFormat),
-                $event->getEndDate()
-                      ->format($eventEndFormat)
+                $eventStartDate,
+                $eventEndDate
             );
 
             $participantsString = '';

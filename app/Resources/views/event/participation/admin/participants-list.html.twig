@@ -30,37 +30,32 @@
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
-                       data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}">
+                       data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}"
+                       data-sort-name="nameLast" data-sort-order="asc">
                     <thead>
                     <tr>
                         <th data-field="aid" data-sortable="true" data-visible="false">#</th>
-                        <th data-field="pid" data-sortable="true" data-visible="false">Teilnahme
-                            <wbr>
-                            nummer
+                        <th data-field="pid" data-sortable="true" data-visible="false">Teilnahme<wbr>nummer
                         </th>
                         <th data-field="nameFirst" data-sortable="true">Vorname</th>
-                        <th data-field="nameLast" data-sortable="true" data-order="asc">Nachname</th>
-                        <th data-field="age" data-sortable="true" data-sorter="germanNumberFormatSorter"><abbr
-                                    title="Alter der Teilnehmer bei der Veranstaltung">Alter</abbr></th>
-                        <th data-field="phone" data-sortable="false">Telefon
-                            <wbr>
-                            nummern
+                        <th data-field="nameLast" data-sortable="true">Nachname</th>
+                        <th data-field="age" data-sortable="true" data-sorter="germanNumberFormatSorter">
+                            <abbr title="Alter der Teilnehmer bei der Veranstaltung">Alter</abbr>
                         </th>
-                        <th data-field="registrationDate" data-sortable="true" data-visible="false"
-                            title="Zeitpunkt des Eingangs der Anmeldung">Eingang
+                        <th data-field="phone" data-sortable="false">Telefon<wbr>nummern
                         </th>
                         <th data-field="gender" data-sortable="true" data-visible="false">Geschlecht</th>
+                        <th data-field="registrationDate" data-visible="false" data-sortable="true"
+                            data-sorter="germanDateTimeSorter" title="Zeitpunkt des Eingangs der Anmeldung">Eingang</th>
                         <th data-field="status" data-sortable="false">Status</th>
                         {% for attribute in event.getAcquisitionAttributes(true, false) %}
-                            <th data-field="participation_acq_field_{{ attribute.getBid }}" data-sortable="true"
-                                data-visible="false"><abbr
-                                        title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
+                            <th data-field="participation_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
+                                <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                             </th>
                         {% endfor %}
                         {% for attribute in event.getAcquisitionAttributes(false, true) %}
-                            <th data-field="participants_acq_field_{{ attribute.getBid }}" data-sortable="true"
-                                data-visible="false"><abbr
-                                        title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
+                            <th data-field="participants_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
+                                <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                             </th>
                         {% endfor %}
                     </tr>
