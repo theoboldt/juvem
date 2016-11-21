@@ -53,14 +53,15 @@ class AdminController extends Controller
                                 ->getRepository('AppBundle:Event');
         $eventEntityList = $repository->findAll();
 
-        $dateFormatDay     = 'd.m.y';
-        $dateFormatDayHour = 'd.m.y H:i';
-        $glyphicon         = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
+        $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
         $eventList = array();
         /** @var Event $event */
         foreach ($eventEntityList as $event) {
-            $eventStatus = '';
+            $eventStatus    = '';
+            $eventStartDate = '';
+            $eventEndDate   = '';
+
             if ($event->isVisible()) {
                 $eventStatus .= sprintf($glyphicon, 'eye-open');
             } else {
@@ -73,17 +74,19 @@ class AdminController extends Controller
                 $eventStatus .= sprintf($glyphicon, 'folder-close');
             }
 
-            $eventStartFormat = $dateFormatDayHour;
-            if ($event->getStartDate()
-                      ->format('Hi') == '0000'
-            ) {
-                $eventStartFormat = $dateFormatDay;
+            $eventStartDate = $event->getStartDate()->format(Event::DATE_FORMAT_DATE);
+            if ($event->hasEndDate()) {
+                $eventEndDate = $event->getEndDate()->format(Event::DATE_FORMAT_DATE);
+            } else {
+                $eventEndDate = $eventStartDate;
             }
-            $eventEndFormat = $dateFormatDayHour;
-            if ($event->getEndDate()
-                      ->format('Hi') == '0000'
-            ) {
-                $eventEndFormat = $dateFormatDay;
+            if ($event->hasStartTime()) {
+                $eventStartDate .= ' ' . $event->getStartTime()->format(Event::DATE_FORMAT_TIME);
+            }
+            if ($event->hasEndTime()) {
+                $eventEndDate .= ' ' . $event->getEndTime()->format(Event::DATE_FORMAT_TIME);
+            } elseif ($event->hasStartTime()) {
+                $eventEndDate .= ' ' . $event->getStartTime()->format(Event::DATE_FORMAT_TIME);
             }
 
             $eventList[] = array(
@@ -92,10 +95,8 @@ class AdminController extends Controller
                 'is_active'   => (int)$event->isActive(),
                 'title'       => $event->getTitle(),
                 'description' => $event->getTitle(),
-                'start_date'  => $event->getStartDate()
-                                       ->format($eventStartFormat),
-                'end_date'    => $event->getEndDate()
-                                       ->format($eventEndFormat),
+                'start_date'  => $eventStartDate,
+                'end_date'    => $eventEndDate,
                 'status'      => $eventStatus
             );
         }
