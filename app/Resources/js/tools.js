@@ -67,5 +67,24 @@ $(function () {
             });
         }, 600000);
     }();
-
 });
+
+/**
+ * Sort numbers which use german number format
+ *
+ * @param a
+ * @param b
+ * @returns {number}
+ */
+function germanNumberFormatSorter(a, b) {
+    'use strict';
+    var numberize = function (n) {
+        return parseFloat(n.replace(/\./g, '').replace(',', '.'));
+    };
+    a = numberize(a);
+    b = numberize(b);
+
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+}
