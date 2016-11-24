@@ -27,9 +27,9 @@
                                 data-entity="Participation"
                                 data-property="isPaid" data-entity-id="{{ participation.pid }}"
                                 data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
-                                data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="ok"
+                                data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="euro"
                                 data-button-disable-label="Zahlung zurücknehmen"
-                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
+                                data-button-disable-glyph="bank">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                     <div class="btn-group" role="group">
                         {% if participation.withdrawn %}
