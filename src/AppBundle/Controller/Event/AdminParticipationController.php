@@ -149,7 +149,7 @@ class AdminParticipationController extends Controller
 
 
     /**
-     * Page for list of participants of an event
+     * Details of one participation including all participants
      *
      * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                  name="event_participation_detail")
@@ -190,9 +190,7 @@ class AdminParticipationController extends Controller
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
             }
-            $em = $this->getDoctrine()
-                       ->getManager();
-
+            $em = $this->getDoctrine()->getManager();
             $em->persist($participation);
             $em->flush();
         }

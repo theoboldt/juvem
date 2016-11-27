@@ -1,19 +1,24 @@
-.page-participate {
-  dd {
-    margin-bottom: 4px;
+.participation-panels {
+  > .row:first-child,
+  .panel-body .row:first-child {
+    margin-bottom: 20px;
   }
 
-  dd.address-container {
-    margin-bottom: 0;
-  }
-  dd.address-container address {
-    margin-bottom: 4px;
-  }
-
-  dl:last-child {
-    margin-bottom: 0;
+  .panel {
+    .panel-body {
+      padding: 10px;
+    }
+    dl {
+      margin: 0;
+    }
     dd {
+      margin-bottom: 3px;
+    }
+    dd:last-child {
       margin-bottom: 0;
+    }
+    address {
+      margin: 0;
     }
   }
 }
@@ -27,5 +32,11 @@
   }
   #mail-template-iframe-panel .panel-body {
     padding: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .col-label-spacer {
+    padding-top: 24px;
   }
 }
