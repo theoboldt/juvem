@@ -132,8 +132,8 @@
                                 <h3 class="panel-title">Telefonnummern</h3>
                             </div>
                             <div class="col-xs-2 text-right">
-                                <button type="button" class="btn btn-default btn-xs disabled"
-                                        title="Bearbeiten">{{ 'pencil'|glyph }}</button>
+                                <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>

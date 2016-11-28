@@ -98,14 +98,12 @@ class Participation
         $this->phoneNumbers = new ArrayCollection();
         if (!$omitPhoneNumberInit) {
             $phoneNumber = new PhoneNumber();
-            $phoneNumber->setParticipation($this);
             $this->addPhoneNumber($phoneNumber);
         }
 
         $this->participants = new ArrayCollection();
         if (!$omitParticipantInit) {
             $participant = new Participant();
-            $participant->setParticipation($this);
             $this->addParticipant($participant);
         }
 
@@ -298,6 +296,7 @@ class Participation
      */
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
+        $phoneNumber->setParticipation($this);
         $this->phoneNumbers[] = $phoneNumber;
 
         return $this;
@@ -322,6 +321,7 @@ class Participation
      */
     public function addParticipant(Participant $participant)
     {
+        $participant->setParticipation($this);
         $this->participants[] = $participant;
 
         return $this;

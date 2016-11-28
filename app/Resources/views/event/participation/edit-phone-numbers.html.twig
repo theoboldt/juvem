@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+{% import _self as m %}
+
+{% block title %}Teilnahme - Telefonnummern bearbeiten ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Telefonnummern bearbeiten'} %}
+        {% block breadcrumb %}
+            {% if adminView %}
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">Familie {{ participation.nameLast }}</a>
+                </li>
+            {% else %}
+                <li><a href="{{ path('public_participations') }}">Teilnahmen</a></li>
+                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Teilnahme
+                        bei {{ event.title }}</a></li>
+                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Detailansicht</a>
+                </li>
+            {% endif %}
+            <li class="active">Telefonnummern bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        {% macro prototypePhone(formElement) %}
+            <div class="panel panel-default prototype-element">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-10 col-sm-8">
+                            <h4 class="panel-title">Telefonnummer</h4>
+                        </div>
+                        <div class="col-xs-2 col-sm-4 text-right">
+                            <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                               title="Telefonnummer entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Telefonnummer entfernen</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-5">
+                            <div class="form-group">
+                                {{ form_label(formElement.number) }}
+                                <div class="input-group">
+                                    <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
+                                    {{ form_widget(formElement.number) }}
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" data-toggle="popover"
+                                                data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-7">
+                            {{ form_label(formElement.description) }}
+                            <div class="input-group">
+                                {{ form_widget(formElement.description) }}
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" data-toggle="popover"
+                                            data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endmacro %}
+        <div class="phone-numbers prototype-container"
+             data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
+            <div class="row">
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                    <div class="prototype-elements">
+                        <div class="form-group">
+                            {{ form_errors(form.phoneNumbers) }}
+                            {% for phoneNumber in form.phoneNumbers %}
+                                {{ m.prototypePhone(phoneNumber) }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                    <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere Telefonnummer
+                        hinzufügen
+                    </button>
+                    <input type="submit" class="btn btn-primary navbar-btn" value="Änderungen speichern"/>
+                </div>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}

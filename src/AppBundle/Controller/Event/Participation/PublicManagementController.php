@@ -6,7 +6,10 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipationBaseType;
+use AppBundle\Form\ParticipationPhoneNumberList;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -201,8 +204,7 @@ class PublicManagementController extends Controller
     public function editParticipationAction(Request $request)
     {
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()
-                                  ->getRepository('AppBundle:Participation');
+        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
@@ -235,6 +237,68 @@ class PublicManagementController extends Controller
                 'participation'     => $participation,
                 'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
                 'event'             => $event
+            )
+        );
+    }
+
+    /**
+     * Page edit an participation
+     *
+     * @Route("/participation/{pid}/edit/phone", requirements={"pid": "\d+"}, name="public_edit_phonenumbers")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function editPhoneNumbersAction(Request $request)
+    {
+        $user              = $this->getUser();
+        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $event             = $participation->getEvent();
+        $participationUser = $participation->getAssignedUser();
+
+        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        ) {
+            throw new AccessDeniedHttpException('Participation is related to another user');
+        }
+
+        $originalPhoneNumbers = new ArrayCollection();
+        foreach ($participation->getPhoneNumbers() as $number) {
+            $originalPhoneNumbers->add($number);
+        }
+
+        $form = $this->createForm(ParticipationPhoneNumberList::class, $participation);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            foreach ($originalPhoneNumbers as $number) {
+                if (false === $participation->getPhoneNumbers()->contains($number)) {
+                    $participation->getPhoneNumbers()->removeElement($number);
+                    $em->remove($number);
+                }
+            }
+            /** @var PhoneNumber $number */
+            foreach ($participation->getPhoneNumbers() as $number) {
+                $number->setParticipation($participation);
+            }
+
+            $em->persist($participation);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Die Änderungen wurden gespeichert.'
+            );
+            return $this->redirectToRoute(
+                'public_participation_detail', array('pid' => $participation->getPid())
+            );
+        }
+        return $this->render(
+            'event/participation/edit-phone-numbers.html.twig',
+            array(
+                'adminView'         => true,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
             )
         );
     }

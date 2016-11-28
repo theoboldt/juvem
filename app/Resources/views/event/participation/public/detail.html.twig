@@ -9,34 +9,40 @@
             <li class="active">Teilnahme bei {{ event.title }}</li>
         {% endblock %}
     {% endembed %}
-    <div class="container">
-        <div class="row">
-            <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
-                <div class="modal-dialog" role="document">
-                    {{ form_start(form) }}
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <h4 class="modal-title" id="dialogModalLabel"></h4>
-                        </div>
-                        <div class="modal-body"></div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                            <input type="submit" class="btn btn-primary" value="Bestätigen"/>
-                        </div>
-                    </div>
-                    {{ form_end(form) }}
+    <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
+        <div class="modal-dialog" role="document">
+            {{ form_start(form) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="dialogModalLabel"></h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
                 </div>
             </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
 
-            <div class="col-xs-12 col-md-6">
-                <h3 id="data-participation">Daten der Eltern</h3>
-
+    <div class="container participation-panels">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{{ participation.nameLast }}, {{ participation.nameFirst }}</h3>
+                        <div class="row">
+                            <div class="col-xs-10">
+                                <h3 class="panel-title">Anmeldung</h3>
+                            </div>
+                            <div class="col-xs-2 text-right">
+                                <a href="{{ path('public_edit_participation', {'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-body">
                         <dl class="dl-horizontal">
@@ -46,17 +52,6 @@
                             <dd>{{ participation.nameFirst }}</dd>
                             <dt>Nachname</dt>
                             <dd>{{ participation.nameLast }}</dd>
-                            <dt>Telefonnummern</dt>
-                            <dd class="address-container">
-                                {% for phoneNumber in participation.phoneNumbers %}
-                                    <address>
-                                        <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
-                                        {% if phoneNumber.description %}
-                                            <br>{{ phoneNumber.description }}
-                                        {% endif %}
-                                    </address>
-                                {% endfor %}
-                            </dd>
                             <dt>Anschrift</dt>
                             <dd class="address-container">
                                 <address>
@@ -77,14 +72,48 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-10">
+                                <h3 class="panel-title">Telefonnummern</h3>
+                            </div>
+                            <div class="col-xs-2 text-right">
+                                <a href="{{ path('public_edit_phonenumbers', {'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <dl class="dl-horizontal">
+                            {% for phoneNumber in participation.phoneNumbers %}
+                                <dt>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</dt>
+                                <dd>
+                                    {{ phoneNumber.description }}
+                                </dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             {% for participant in participation.participants %}
-                <div class="col-xs-12 col-md-6">
-                    {% if loop.index0 == 0 %}
-                        <h3 id="data-participants">Daten der Teilnehmer</h3>
-                    {% endif %}
+                <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h4 class="panel-title">{{ participant.nameLast }}, {{ participant.nameFirst }}</h4>
+                            <div class="row">
+                                <div class="col-xs-9">
+                                    <h3 class="panel-title">Teilnehmer {{ participant.nameFirst }}</h3>
+                                </div>
+                                <div class="col-xs-3 text-right">
+                                    <button type="button" class="btn btn-default btn-xs disabled"
+                                            title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</button>
+                                    <button type="button" class="btn btn-default btn-xs disabled"
+                                            title="Bearbeiten">{{ 'pencil'|glyph }}</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div class="row" id="participant-{{ loop.index }}">
@@ -142,11 +171,8 @@
                                     {% if participant.withdrawRequested %}
                                         {{ 'retweet'|glyph }} Anfrage für Zurücknahme entfernen
                                     {% else %}
-                                        {{ 'share-alt'|glyph }} Anmeldung zurückziehen
+                                        {{ 'share-alt'|glyph }} Teilnehmer zurückziehen
                                     {% endif %}
-                                </button>
-                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalEditParticipant{{ participant.aid }}">
-                                    Bearbeiten
                                 </button>
                             {% endif %}
                         </div>
