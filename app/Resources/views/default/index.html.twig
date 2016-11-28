@@ -63,9 +63,10 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere
                                             Anmeldung ausfüllen</a></li>
-                                    <li{% if not participations|length %} class="disabled"{% endif %}><a href="#"
-                                                                                                         role="button" {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}
-                                                >Anmeldung mit früheren Daten vorausfüllen
+                                    <li{% if not participations|length %} class="disabled"{% endif %}>
+                                        <a href="#" role="button"
+                                                {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}>Anmeldung
+                                            mit früheren Daten vorausfüllen
                                         </a></li>
                                 </ul>
                             </div>
@@ -76,7 +77,7 @@
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN_EVENT') %}
                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
-                                   class="btn btn-default">Verwalten</a>
+                                   class="btn btn-default">Verwalten <span class="badge">{{ event.participationsCount }}</span></a>
                             {% endif %}
                             <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"
                                class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>

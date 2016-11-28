@@ -125,6 +125,13 @@ class Event
     protected $participations;
 
     /**
+     * Able to store the amount of participations
+     *
+     * @var int|null
+     */
+    protected $participationsCount = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="assignedEvents")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
      */
@@ -474,6 +481,38 @@ class Event
     {
         return $this->participations;
     }
+
+    /**
+     * Get value of amount of participations
+     *
+     * @return int
+     */
+    public function getParticipationsCount()
+    {
+        if ($this->participationsCount === null) {
+            $participations            = $this->getParticipations()->filter(
+                function (Participation $participation) {
+                    return !$participation->isWithdrawn();
+                }
+            );
+            $this->participationsCount = $participations->count();
+        }
+
+        return $this->participationsCount;
+    }
+
+    /**
+     * Set value of amount of participations
+     *
+     * @param int $participationsCount
+     * @return Event
+     */
+    public function setParticipationsCount($participationsCount)
+    {
+        $this->participationsCount = $participationsCount;
+        return $this;
+    }
+
 
     /**
      * Set assignedUser

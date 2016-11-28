@@ -22,6 +22,38 @@ class EventRepository extends EntityRepository
      *
      * @return array
      */
+    public function findForHomepage()
+    {
+        $query = sprintf(
+            'SELECT e, COUNT(a1)
+               FROM AppBundle:EVENT e, AppBundle:participant a1, AppBundle:participation p
+              WHERE e.isVisible = 1
+                AND p.event = e.eid
+                AND a1.participation = p.pid
+                AND e.deletedAt IS NULL
+                AND a1.deletedAt IS NULL
+                AND BIT_AND(a1.status, %1$d) != %1$d
+           GROUP BY e.eid
+           ORDER BY e.startDate ASC, e.startTime ASC, e.title ASC
+           ',
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+        );
+
+        $resultRaw = $this->getEntityManager()->createQuery($query)->getResult();
+        $result    = array();
+        foreach ($resultRaw as $row) {
+            $row[0]->setParticipationsCount($row[1]);
+            $result[] = $row[0];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch all events ordered by title
+     *
+     * @return array
+     */
     public function findAllOrderedByTitle()
     {
         return $this->getEntityManager()

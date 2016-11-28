@@ -13,15 +13,8 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-        $eventList  = $repository->findBy(
-            array('isVisible' => true
-            ),
-            array('startDate' => 'ASC',
-                  'startTime' => 'ASC'
-            )
-        );
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventList  = $repository->findForHomepage();
 
         $user           = $this->getUser();
         $participations = array();
