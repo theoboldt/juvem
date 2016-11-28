@@ -209,6 +209,7 @@ class AdminController extends Controller
         }
 
         $ageDistribution    = $repository->participantsAgeDistribution($event);
+        $ageDistributionMax = max($ageDistribution);
         $genderDistribution = $repository->participantsGenderDistribution($event);
         $participantsCount  = $repository->participantsCount($event);
 
@@ -217,11 +218,13 @@ class AdminController extends Controller
                      ->getForm();
 
         $acquisitionAssignmentForm = $this->createForm(
-            EventAcquisitionType::class, $event, array(
-                                           'action' => $this->generateUrl(
-                                               'event_acquisition_assignment', array('eid' => $eid)
-                                           ),
-                                       )
+            EventAcquisitionType::class,
+            $event,
+            array(
+                'action' => $this->generateUrl(
+                    'event_acquisition_assignment', array('eid' => $eid)
+                ),
+            )
         );
 
         $form->handleRequest($request);
@@ -243,14 +246,16 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/admin/detail.html.twig', array(
-                                              'event'                     => $event,
-                                              'ageDistribution'           => $ageDistribution,
-                                              'genderDistribution'        => $genderDistribution,
-                                              'participantsCount'         => $participantsCount,
-                                              'form'                      => $form->createView(),
-                                              'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
-                                          )
+            'event/admin/detail.html.twig',
+            array(
+                'event'                     => $event,
+                'ageDistribution'           => $ageDistribution,
+                'ageDistributionMax'        => $ageDistributionMax,
+                'genderDistribution'        => $genderDistribution,
+                'participantsCount'         => $participantsCount,
+                'form'                      => $form->createView(),
+                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
+            )
         );
     }
 

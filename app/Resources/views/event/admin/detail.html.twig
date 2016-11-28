@@ -203,9 +203,9 @@
                             <div class="col-xs-10 col-sm-9">
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
-                                         aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
+                                         aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
                                          data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
-                                         style="width: {{ ((count/participantsCount)*100) }}%;">
+                                         style="width: {{ ((count/ageDistributionMax)*100) }}%;">
                                         <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
                                             Jahren</span>
                                         <span title="Anzahl">
