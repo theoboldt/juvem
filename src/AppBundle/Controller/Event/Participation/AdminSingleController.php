@@ -5,6 +5,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\ParticipationBaseType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -125,4 +126,45 @@ class AdminSingleController extends Controller
         );
     }
 
+    /**
+     * Page edit an participation
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}/edit", requirements={"eid": "\d+", "pid": "\d+"},
+     *                                                       name="admin_edit_participation")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function editParticipationAction(Request $request)
+    {
+        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $event         = $participation->getEvent();
+
+        $form = $this->createForm(ParticipationBaseType::class, $participation);
+        $form->remove('phoneNumbers');
+        $form->remove('participants');
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em                   = $this->getDoctrine()->getManager();
+            $managedParticipation = $em->merge($participation);
+            $em->persist($managedParticipation);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Die Änderungen wurden gespeichert.'
+            );
+            return $this->redirectToRoute(
+                'event_participation_detail', array('eid' => $event->getEid(), 'pid' => $participation->getPid())
+            );
+        }
+        return $this->render(
+            'event/participation/edit-participation.html.twig',
+            array(
+                'adminView'         => true,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+            )
+        );
+    }
 }

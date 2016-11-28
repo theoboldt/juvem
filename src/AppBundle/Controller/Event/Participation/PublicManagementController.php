@@ -6,6 +6,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\ParticipationBaseType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -95,7 +96,6 @@ class PublicManagementController extends Controller
         return new JsonResponse($participationListResult);
     }
 
-
     /**
      * Page for list of events
      *
@@ -110,14 +110,13 @@ class PublicManagementController extends Controller
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
         );
 
-        $user          = $this->getUser();
-        $repository    = $this->getDoctrine()
-                              ->getRepository('AppBundle:Participation');
-        $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $user              = $this->getUser();
+        $repository        = $this->getDoctrine()
+                                  ->getRepository('AppBundle:Participation');
+        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $participationUser = $participation->getAssignedUser();
 
-        if ($participation->getAssignedUser()
-                          ->getUid() != $user->getUid()
-        ) {
+        if ($participationUser && $participationUser->getUid() != $user->getUid()) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
 
@@ -183,13 +182,60 @@ class PublicManagementController extends Controller
         }
 
         return $this->render(
-            'event/participation/public/detail.html.twig', array(
-                                                             'form'            => $form->createView(),
-                                                             'participation'   => $participation,
-                                                             'event'           => $participation->getEvent(),
-                                                             'statusFormatter' => $statusFormatter
-                                                         )
+            'event/participation/public/detail.html.twig',
+            array(
+                'form'            => $form->createView(),
+                'participation'   => $participation,
+                'event'           => $participation->getEvent(),
+                'statusFormatter' => $statusFormatter
+            )
         );
+    }
 
+    /**
+     * Page edit an participation
+     *
+     * @Route("/participation/{pid}/edit/participation", requirements={"pid": "\d+"}, name="public_edit_participation")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function editParticipationAction(Request $request)
+    {
+        $user              = $this->getUser();
+        $repository        = $this->getDoctrine()
+                                  ->getRepository('AppBundle:Participation');
+        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $event             = $participation->getEvent();
+        $participationUser = $participation->getAssignedUser();
+
+        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        ) {
+            throw new AccessDeniedHttpException('Participation is related to another user');
+        }
+
+        $form = $this->createForm(ParticipationBaseType::class, $participation);
+        $form->remove('phoneNumbers');
+        $form->remove('participants');
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em                   = $this->getDoctrine()->getManager();
+            $managedParticipation = $em->merge($participation);
+            $em->persist($managedParticipation);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Die Änderungen wurden gespeichert.'
+            );
+            return $this->redirectToRoute('public_participation_detail', array('pid' => $participation->getPid()));
+        }
+        return $this->render(
+            'event/participation/edit-participation.html.twig',
+            array(
+                'adminView'         => false,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+                'event'             => $event
+            )
+        );
     }
 }

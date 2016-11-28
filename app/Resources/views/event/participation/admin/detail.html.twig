@@ -16,8 +16,7 @@
             {{ form_start(form) }}
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Abbrechen"><span
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                                 aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="dialogModalLabel"></h4>
                 </div>
@@ -36,46 +35,46 @@
     <div class="container participation-panels">
         <div class="row">
             <div class="col-sm-12">
-                    <div class="btn-group-vertical" role="group">
-                        <button type="button" class="btn btn-default" data-element="activebutton"
-                                data-entity="Participation"
-                                data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
-                                data-token="{{ csrf_token('Participation' ~ 'isConfirmed' ~ participation.pid ) }}"
-                                data-button-enable-label="Bestätigen und benachrichtigen" data-button-enable-glyph="ok"
-                                data-button-disable-label="Bestätigung zurücknehmen"
-                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
-                        <button type="button" class="btn btn-default" data-element="activebutton"
-                                data-entity="Participation"
-                                data-property="isPaid" data-entity-id="{{ participation.pid }}"
-                                data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
-                                data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="euro"
-                                data-button-disable-label="Zahlung zurücknehmen"
-                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
-                    </div>
-                    <div class="btn-group-vertical" role="group">
-                        {% if participation.withdrawn %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="reactivate">
-                                {{ 'retweet'|glyph }} Teilnahme reaktivieren
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="withdraw">
-                                {{ 'share-alt'|glyph }} Teilnahme zurückziehen
-                            </button>
-                        {% endif %}
-                        {% if participation.deletedAt %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb</span> wiederherstellen
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb verschieben
-                            </button>
-                        {% endif %}
-                    </div>
+                <div class="btn-group-vertical" role="group" style="min-width: 200px;">
+                    <button type="button" class="btn btn-default" data-element="activebutton"
+                            data-entity="Participation"
+                            data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
+                            data-token="{{ csrf_token('Participation' ~ 'isConfirmed' ~ participation.pid ) }}"
+                            data-button-enable-label="Bestätigen und benachrichtigen" data-button-enable-glyph="ok"
+                            data-button-disable-label="Bestätigung zurücknehmen"
+                            data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
+                    <button type="button" class="btn btn-default" data-element="activebutton"
+                            data-entity="Participation"
+                            data-property="isPaid" data-entity-id="{{ participation.pid }}"
+                            data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
+                            data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="euro"
+                            data-button-disable-label="Zahlung zurücknehmen"
+                            data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
+                </div>
+                <div class="btn-group-vertical" role="group">
+                    {% if participation.withdrawn %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="reactivate">
+                            {{ 'retweet'|glyph }} Teilnahme reaktivieren
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="withdraw">
+                            {{ 'share-alt'|glyph }} Teilnahme zurückziehen
+                        </button>
+                    {% endif %}
+                    {% if participation.deletedAt %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="restore">
+                            {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb</span> wiederherstellen
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#dialogModal" data-action="delete">
+                            {{ 'trash'|glyph }} in Papierkorb verschieben
+                        </button>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="row">
@@ -87,7 +86,8 @@
                                 <h3 class="panel-title">Anmeldung</h3>
                             </div>
                             <div class="col-xs-2 text-right">
-                                <button type="button" class="btn btn-default btn-xs disabled" title="Bearbeiten">{{ 'pencil'|glyph }}</button>
+                                <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>
@@ -132,7 +132,8 @@
                                 <h3 class="panel-title">Telefonnummern</h3>
                             </div>
                             <div class="col-xs-2 text-right">
-                                <button type="button" class="btn btn-default btn-xs disabled" title="Bearbeiten">{{ 'pencil'|glyph }}</button>
+                                <button type="button" class="btn btn-default btn-xs disabled"
+                                        title="Bearbeiten">{{ 'pencil'|glyph }}</button>
                             </div>
                         </div>
                     </div>
@@ -159,8 +160,10 @@
                                     <h3 class="panel-title">Teilnehmer {{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-3 text-right">
-                                    <button type="button" class="btn btn-default btn-xs disabled" title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</button>
-                                    <button type="button" class="btn btn-default btn-xs disabled" title="Bearbeiten">{{ 'pencil'|glyph }}</button>
+                                    <button type="button" class="btn btn-default btn-xs disabled"
+                                            title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</button>
+                                    <button type="button" class="btn btn-default btn-xs disabled"
+                                            title="Bearbeiten">{{ 'pencil'|glyph }}</button>
                                 </div>
                             </div>
                         </div>
@@ -221,7 +224,7 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
-                        <div class="panel-footer edit-mode-invisible edit-mode-dependant">
+                        <div class="panel-footer">
                             <button type="button" class="btn btn-default" data-element="activebutton"
                                     data-entity="Participant"
                                     data-property="isWithdrawn" data-entity-id="{{ participant.aid }}"

@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Teilnahme - Anmeldungsdaten bearbeiten ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Anmeldungsdaten bearbeiten'} %}
+        {% block breadcrumb %}
+            {% if adminView %}
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">Familie {{ participation.nameLast }}</a>
+                </li>
+            {% else %}
+                <li><a href="{{ path('public_participations') }}">Teilnahmen</a></li>
+                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Teilnahme
+                        bei {{ event.title }}</a></li>
+                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Detailansicht</a>
+                </li>
+            {% endif %}
+            <li class="active">Anmeldungsdaten bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        {{ form_row(form.salution) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.nameFirst) }}
+                    </div>
+                    <div class="col-xs-12">
+                        {{ form_row(form.nameLast) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.addressStreet) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3">
+                        {{ form_row(form.addressZip) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-9">
+                        {{ form_row(form.addressCity) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for fieldName,formField in form %}
+                {% if fieldName starts with 'acq_field_' %}
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            {{ form_label(formField) }}
+                            {% if acquisitionFields[fieldName].formDescription %}
+                                <button type="button" class="btn btn-default btn-xs btn-round"
+                                        data-toggle="popover"
+                                        data-content="{{ acquisitionFields[fieldName].formDescription }}">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </button>
+                            {% endif %}
+                            {{ form_widget(formField) }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <input type="submit" class="btn btn-primary navbar-btn" value="Änderungen speichern"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}
