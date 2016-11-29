@@ -27,3 +27,4 @@
 !web/js/.gitkeep
 /web/uploads/*
 !web/uploads/.gitkeep
+.DS_Store
