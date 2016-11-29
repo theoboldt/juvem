@@ -125,11 +125,18 @@ class Event
     protected $participations;
 
     /**
-     * Able to store the amount of participations
+     * Able to store the amount of participations which are not withdrawn nor deleted
      *
      * @var int|null
      */
     protected $participationsCount = null;
+
+    /**
+     * Able to store the amount of participations are not withdrawn nor deleted but confirmed
+     *
+     * @var int|null
+     */
+    protected $participationsConfirmedCount = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="assignedEvents")
@@ -483,18 +490,19 @@ class Event
     }
 
     /**
-     * Get value of amount of participations
+     * Get value of amount of participations not withdrawn nor deleted
      *
      * @return int
      */
     public function getParticipationsCount()
     {
         if ($this->participationsCount === null) {
-            $participations            = $this->getParticipations()->filter(
+            $participations = $this->getParticipations()->filter(
                 function (Participation $participation) {
-                    return !$participation->isWithdrawn();
+                    return !$participation->getDeletedAt() === null && !$participation->isWithdrawn();
                 }
             );
+
             $this->participationsCount = $participations->count();
         }
 
@@ -502,14 +510,37 @@ class Event
     }
 
     /**
+     * Get value of amount of participations not withdrawn nor deleted but confirmed
+     *
+     * @return int
+     */
+    public function getParticipationsConfirmedCount()
+    {
+        if ($this->participationsConfirmedCount === null) {
+            $participations = $this->participations->filter(
+                function (Participation $participation) {
+                    return !$participation->getDeletedAt() === null && !$participation->isWithdrawn() &&
+                           $participation->isConfirmed();
+                }
+            );
+
+            $this->participationsConfirmedCount = $participations->count();
+        }
+
+        return $this->participationsConfirmedCount;
+    }
+
+    /**
      * Set value of amount of participations
      *
-     * @param int $participationsCount
+     * @param int $participationsCount          Amount of participations not withdrawn nor deleted
+     * @param int $participationsConfirmedCount Amount of participations not withdrawn nor deleted but confirmed
      * @return Event
      */
-    public function setParticipationsCount($participationsCount)
+    public function setParticipationsCounts($participationsCount, $participationsConfirmedCount)
     {
-        $this->participationsCount = $participationsCount;
+        $this->participationsCount          = $participationsCount;
+        $this->participationsConfirmedCount = $participationsConfirmedCount;
         return $this;
     }
 

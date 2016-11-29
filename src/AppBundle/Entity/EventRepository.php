@@ -25,24 +25,29 @@ class EventRepository extends EntityRepository
     public function findForHomepage()
     {
         $query = sprintf(
-            'SELECT e, COUNT(a1)
-               FROM AppBundle:Event e
+            'SELECT e AS eventEntity,
+                    SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d AND BIT_AND(a1.status, %2$d) = %2$d) THEN 1 ELSE 0 END) AS participants_count_confirmed,
+                    SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d) THEN 1 ELSE 0 END) AS participants_count
+               FROM AppBundle:EVENT e
           LEFT JOIN e.participations p
-          LEFT JOIN p.participants a1 WITH (BIT_AND(a1.status, %1$d) != %1$d)
+          LEFT JOIN p.participants a1
               WHERE e.isVisible = 1
                 AND e.deletedAt IS NULL
                 AND a1.deletedAt IS NULL
            GROUP BY e.eid
            ORDER BY e.startDate ASC, e.startTime ASC, e.title ASC
            ',
-            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+            ParticipantStatus::TYPE_STATUS_CONFIRMED
         );
 
         $resultRaw = $this->getEntityManager()->createQuery($query)->getResult();
         $result    = array();
         foreach ($resultRaw as $row) {
-            $row[0]->setParticipationsCount($row[1]);
-            $result[] = $row[0];
+            $event = $row['eventEntity'];
+            /** @var Event $event */
+            $event->setParticipationsCounts($row['participants_count'], $row['participants_count_confirmed']);
+            $result[] = $event;
         }
 
         return $result;
