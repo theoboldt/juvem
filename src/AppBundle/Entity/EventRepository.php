@@ -26,13 +26,12 @@ class EventRepository extends EntityRepository
     {
         $query = sprintf(
             'SELECT e, COUNT(a1)
-               FROM AppBundle:EVENT e, AppBundle:Participant a1, AppBundle:Participation p
+               FROM AppBundle:Event e
+          LEFT JOIN e.participations p
+          LEFT JOIN p.participants a1 WITH (BIT_AND(a1.status, %1$d) != %1$d)
               WHERE e.isVisible = 1
-                AND p.event = e.eid
-                AND a1.participation = p.pid
                 AND e.deletedAt IS NULL
                 AND a1.deletedAt IS NULL
-                AND BIT_AND(a1.status, %1$d) != %1$d
            GROUP BY e.eid
            ORDER BY e.startDate ASC, e.startTime ASC, e.title ASC
            ',
