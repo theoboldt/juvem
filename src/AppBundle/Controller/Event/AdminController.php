@@ -49,9 +49,8 @@ class AdminController extends Controller
      */
     public function listDataAction(Request $request)
     {
-        $repository      = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-        $eventEntityList = $repository->findAll();
+        $repository      = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventEntityList = $repository->findAllWithCounts(true, true);
 
         $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
@@ -90,14 +89,16 @@ class AdminController extends Controller
             }
 
             $eventList[] = array(
-                'eid'         => $event->getEid(),
-                'is_visible'  => (int)$event->isVisible(),
-                'is_active'   => (int)$event->isActive(),
-                'title'       => $event->getTitle(),
-                'description' => $event->getTitle(),
-                'start_date'  => $eventStartDate,
-                'end_date'    => $eventEndDate,
-                'status'      => $eventStatus
+                'eid'                    => $event->getEid(),
+                'is_visible'             => (int)$event->isVisible(),
+                'is_active'              => (int)$event->isActive(),
+                'title'                  => $event->getTitle(),
+                'description'            => $event->getTitle(),
+                'start_date'             => $eventStartDate,
+                'end_date'               => $eventEndDate,
+                'participants_confirmed' => $event->getParticipationsConfirmedCount(),
+                'participants'           => $event->getParticipationsCount(),
+                'status'                 => $eventStatus
             );
         }
 

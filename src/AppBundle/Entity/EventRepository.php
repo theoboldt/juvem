@@ -26,30 +26,42 @@ class EventRepository extends EntityRepository
      */
     public function findAllWithCounts($includeDeleted = false, $includeInvisible = false)
     {
-        $query = sprintf(
-            'SELECT e AS eventEntity,
-                    SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d AND BIT_AND(a1.status, %2$d) = %2$d) THEN 1 ELSE 0 END) AS participants_count_confirmed,
-                    SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d) THEN 1 ELSE 0 END) AS participants_count
-               FROM %3$s e
-          LEFT JOIN e.participations p
-          LEFT JOIN p.participants a1
-              WHERE e.isVisible = 1
-                AND e.deletedAt IS NULL
-                AND a1.deletedAt IS NULL
-           GROUP BY e.eid
-           ORDER BY e.startDate ASC, e.startTime ASC, e.title ASC
-           ',
-            ParticipantStatus::TYPE_STATUS_WITHDRAWN,
-            ParticipantStatus::TYPE_STATUS_CONFIRMED,
-            Event::class
-        );
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select(
+            'e AS eventEntity',
+            sprintf(
+                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d AND BIT_AND(a1.status, %2$d) = %2$d) THEN 1 ELSE 0 END) AS participants_count_confirmed',
+                ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+                ParticipantStatus::TYPE_STATUS_CONFIRMED
+            ),
+            sprintf(
+                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d) THEN 1 ELSE 0 END) AS participants_count',
+                ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+                ParticipantStatus::TYPE_STATUS_CONFIRMED
+            )
+        )
+           ->from(Event::class, 'e')
+           ->leftJoin('e.participations', 'p')
+           ->leftJoin('p.participants', 'a1')
+           ->groupBy('e.eid');
 
-        $resultRaw = $this->getEntityManager()->createQuery($query)->getResult();
-        $result    = array();
-        foreach ($resultRaw as $row) {
+        if (!$includeDeleted) {
+            $qb->andWhere('e.deletedAt IS NULL');
+        }
+        if (!$includeInvisible) {
+            $qb->andWhere('e.isVisible = 1');
+        }
+
+        $qb->andWhere('a1.deletedAt IS NULL')
+           ->orderBy('e.startDate, e.startTime, e.title', 'ASC');
+
+        $query = $qb->getQuery();
+
+        $result = array();
+        foreach ($query->execute() as $row) {
             $event = $row['eventEntity'];
             /** @var Event $event */
-            $event->setParticipationsCounts($row['participants_count'], $row['participants_count_confirmed']);
+            $event->setParticipationsCounts((int)$row['participants_count'], (int)$row['participants_count_confirmed']);
             $result[] = $event;
         }
 
