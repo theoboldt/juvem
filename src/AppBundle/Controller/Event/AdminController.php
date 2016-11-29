@@ -209,7 +209,7 @@ class AdminController extends Controller
         }
 
         $ageDistribution    = $repository->participantsAgeDistribution($event);
-        $ageDistributionMax = max($ageDistribution);
+        $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
         $genderDistribution = $repository->participantsGenderDistribution($event);
         $participantsCount  = $repository->participantsCount($event);
 
