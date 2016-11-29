@@ -19,8 +19,7 @@ class PublicController extends Controller
      */
     public function eventImageAction($eid, $width, $height)
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -44,8 +43,7 @@ class PublicController extends Controller
      */
     public function showAction($eid)
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -71,7 +69,7 @@ class PublicController extends Controller
     public function shortLinkAction($eid)
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event = $repository->findOneBy(array('eid' => $eid));
+        $event      = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
             return $this->render(
                 'event/public/miss.html.twig', array('eid' => $eid),
@@ -79,7 +77,9 @@ class PublicController extends Controller
             );
         }
         if ($event->isVisible()) {
-            return $this->redirectToRoute('event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToRoute(
+                'event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY
+            );
         } else {
             return $this->render(
                 'event/public/miss-invisible.html.twig', array('eid' => $eid)
@@ -94,21 +94,14 @@ class PublicController extends Controller
      */
     public function listActiveEventsAction()
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-        $eventList  = $repository->findBy(
-            array('isVisible' => true,
-                  'isActive'  => true
-            ),
-            array('startDate' => 'ASC',
-                  'startTime' => 'ASC'
-            )
-        );
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventList  = $repository->findAllVisible();
 
         return $this->render(
-            'event/public/embed-list-group.html.twig', array(
-                                                         'events' => $eventList
-                                                     )
+            'event/public/embed-list-group.html.twig',
+            array(
+                'events' => $eventList
+            )
         );
 
     }
@@ -120,21 +113,14 @@ class PublicController extends Controller
      */
     public function listActiveEventLinksAction()
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-        $eventList  = $repository->findBy(
-            array('isVisible' => true,
-                  'isActive'  => true
-            ),
-            array('startDate' => 'ASC',
-                  'startTime' => 'ASC'
-            )
-        );
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventList  = $repository->findAllVisible();
 
         return $this->render(
-            'event/public/embed-link-list.html.twig', array(
-                                                        'events' => $eventList
-                                                    )
+            'event/public/embed-link-list.html.twig',
+            array(
+                'events' => $eventList
+            )
         );
 
     }

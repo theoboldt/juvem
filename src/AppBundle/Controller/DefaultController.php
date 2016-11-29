@@ -14,7 +14,7 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventList  = $repository->findForHomepage();
+        $eventList  = $repository->findAllVisible();
 
         $user           = $this->getUser();
         $participations = array();

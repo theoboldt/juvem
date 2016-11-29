@@ -22,7 +22,7 @@ class EventRepository extends EntityRepository
      *
      * @return array
      */
-    public function findForHomepage()
+    public function findAllVisible()
     {
         $query = sprintf(
             'SELECT e AS eventEntity,

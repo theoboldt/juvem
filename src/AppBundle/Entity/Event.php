@@ -531,6 +531,15 @@ class Event
     }
 
     /**
+     * Get value of amount of participations not withdrawn nor deleted but unconfirmed
+     *
+     * @return int
+     */
+    public function ParticipationsUnconfirmedCount() {
+        return $this->getParticipationsCount()-$this->getParticipationsConfirmedCount();
+    }
+
+    /**
      * Set value of amount of participations
      *
      * @param int $participationsCount          Amount of participations not withdrawn nor deleted

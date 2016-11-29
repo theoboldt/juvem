@@ -45,6 +45,15 @@
                                 {% endif %}
                             </p>
 
+                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                            <p>{{ 'user'|glyph }}
+                                <b>{{ event.participationsConfirmedCount }}</b>
+                                bestätigte{% if event.participationsConfirmedCount == 1 %}r{% endif %},
+                                <b>{{ event.participationsUnconfirmedCount }}</b>
+                                unbestätigte{% if event.participationsUnconfirmedCount == 1 %}r{% endif %},
+                                insgesamt <b>{{ event.participationsCount }}</b> Teilnehmer</p>
+                            {% endif %}
+
                             <p>{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
 
                             <p>
@@ -77,7 +86,9 @@
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN_EVENT') %}
                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
-                                   class="btn btn-default">Verwalten <span class="badge">{{ event.participationsCount }}</span></a>
+                                   class="btn btn-default">Verwalten{% if event.participationsUnconfirmedCount %}
+                                    <span class="badge">{{ event.participationsUnconfirmedCount }}</span>{% endif %}
+                                </a>
                             {% endif %}
                             <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"
                                class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>

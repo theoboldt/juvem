@@ -46,7 +46,7 @@
     <div id="page-footer">
         {% if app.user is null %}
             {% include 'common/footer/public.html.twig' %}
-        {% elseif is_granted('ROLE_ADMIN') %}
+        {% elseif is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
             {% include 'common/footer/admin.html.twig' %}
         {% else %}
             {% include 'common/footer/registered.html.twig' %}
