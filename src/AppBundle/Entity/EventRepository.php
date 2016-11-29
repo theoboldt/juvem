@@ -26,7 +26,7 @@ class EventRepository extends EntityRepository
     {
         $query = sprintf(
             'SELECT e, COUNT(a1)
-               FROM AppBundle:EVENT e, AppBundle:participant a1, AppBundle:participation p
+               FROM AppBundle:EVENT e, AppBundle:Participant a1, AppBundle:Participation p
               WHERE e.isVisible = 1
                 AND p.event = e.eid
                 AND a1.participation = p.pid
