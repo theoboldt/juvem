@@ -95,7 +95,7 @@ class PublicController extends Controller
     public function listActiveEventsAction()
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventList  = $repository->findAllVisible();
+        $eventList  = $repository->findAllWithCounts();
 
         return $this->render(
             'event/public/embed-list-group.html.twig',
@@ -114,7 +114,7 @@ class PublicController extends Controller
     public function listActiveEventLinksAction()
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventList  = $repository->findAllVisible();
+        $eventList  = $repository->findAllWithCounts();
 
         return $this->render(
             'event/public/embed-link-list.html.twig',

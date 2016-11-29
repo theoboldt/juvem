@@ -18,17 +18,19 @@ class EventRepository extends EntityRepository
     const DAYS_OF_YEAR = 365;
 
     /**
-     * Fetch all events ordered by title
+     * Fetch all events ordered by title, including participants count data
      *
+     * @param bool $includeDeleted   Set to true to include deleted events in result
+     * @param bool $includeInvisible Set to true to include invisible events
      * @return array
      */
-    public function findAllVisible()
+    public function findAllWithCounts($includeDeleted = false, $includeInvisible = false)
     {
         $query = sprintf(
             'SELECT e AS eventEntity,
                     SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d AND BIT_AND(a1.status, %2$d) = %2$d) THEN 1 ELSE 0 END) AS participants_count_confirmed,
                     SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d) THEN 1 ELSE 0 END) AS participants_count
-               FROM AppBundle:EVENT e
+               FROM %3$s e
           LEFT JOIN e.participations p
           LEFT JOIN p.participants a1
               WHERE e.isVisible = 1
@@ -38,7 +40,8 @@ class EventRepository extends EntityRepository
            ORDER BY e.startDate ASC, e.startTime ASC, e.title ASC
            ',
             ParticipantStatus::TYPE_STATUS_WITHDRAWN,
-            ParticipantStatus::TYPE_STATUS_CONFIRMED
+            ParticipantStatus::TYPE_STATUS_CONFIRMED,
+            Event::class
         );
 
         $resultRaw = $this->getEntityManager()->createQuery($query)->getResult();
