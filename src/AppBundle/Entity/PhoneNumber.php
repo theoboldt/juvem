@@ -1,8 +1,8 @@
 <?php
 namespace AppBundle\Entity;
 
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -107,6 +107,9 @@ class PhoneNumber
     public function setParticipation(Participation $participation = null)
     {
         $this->participation = $participation;
+        if (!$participation->getPhoneNumbers()->contains($this)) {
+            $participation->addPhoneNumber($this);
+        }
 
         return $this;
     }

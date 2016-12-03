@@ -296,8 +296,8 @@ class Participation
      */
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
-        $phoneNumber->setParticipation($this);
         $this->phoneNumbers[] = $phoneNumber;
+        $phoneNumber->setParticipation($this);
 
         return $this;
     }
@@ -321,8 +321,8 @@ class Participation
      */
     public function addParticipant(Participant $participant)
     {
-        $participant->setParticipation($this);
         $this->participants[] = $participant;
+        $participant->setParticipation($this);
 
         return $this;
     }
