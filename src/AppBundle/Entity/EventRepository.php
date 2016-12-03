@@ -160,10 +160,10 @@ class EventRepository extends EntityRepository
      * @param   bool       $includeWithdrawn Set to true to include withdrawn participants
      * @return  array
      */
-    public function participantsList(Event $event, array $filter = null, $includeDeleted = false,
-                                     $includeWithdrawn = false
+    public function participantsList(
+        Event $event, array $filter = null, $includeDeleted = false, $includeWithdrawn = false
     )
-    {
+	{
         $eid = $event->getEid();
 
         if ($filter === array()) {
