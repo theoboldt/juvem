@@ -66,6 +66,10 @@
                                     {{ participation.email }}
                                 </address>
                             </dd>
+                            {% for fillout in participation.acquisitionAttributeFillouts %}
+                                <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                <dd>{{ fillout }}</dd>
+                            {% endfor %}
                             <dt><abbr title="Eingang der Anmeldung">Eingang</abbr></dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
                         </dl>
@@ -152,7 +156,10 @@
                                                 <i>(keine Besonderheiten)</i>
                                             {% endif %}
                                         </dd>
-                                        <dd>
+                                        {% for fillout in participant.acquisitionAttributeFillouts %}
+                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                            <dd>{{ fillout }}</dd>
+                                        {% endfor %}
                                     </dl>
                                 </div>
                             </div>
