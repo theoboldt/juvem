@@ -7,6 +7,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -245,7 +246,7 @@ class PublicManagementController extends Controller
      * Page edit an participation
      *
      * @Route("/participation/{pid}/edit/phone", requirements={"pid": "\d+"}, name="public_edit_phonenumbers")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("has_role('ROLE_USER')")
      */
     public function editPhoneNumbersAction(Request $request)
     {
@@ -299,6 +300,59 @@ class PublicManagementController extends Controller
                 'participation'     => $participation,
                 'event'             => $event,
                 'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+            )
+        );
+    }
+
+
+    /**
+     * Page edit an participation
+     *
+     * @Route("/participation/{pid}/edit/participant/{aid}", requirements={"pid": "\d+", "aid": "\d+"},
+     *                                                       name="public_edit_participant")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function editParticipantAction($pid, $aid, Request $request)
+    {
+        $user              = $this->getUser();
+        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $participant       = $repository->findOneBy(array('aid' => $aid));
+        $participation     = $participant->getParticipation();
+        $event             = $participation->getEvent();
+        $participationUser = $participation->getAssignedUser();
+
+        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        ) {
+            throw new AccessDeniedHttpException('Participation is related to another user');
+        }
+
+        $form = $this->createForm(
+            ParticipantType::class, $participant, array('participation' => $participation)
+        );
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($participant);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Die Änderungen wurden gespeichert.'
+            );
+            return $this->redirectToRoute(
+                'public_participation_detail', array('pid' => $participation->getPid())
+            );
+        }
+        return $this->render(
+            'event/participation/edit-participant.html.twig',
+            array(
+                'adminView'         => true,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'participant'       => $participant,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
             )
         );
     }

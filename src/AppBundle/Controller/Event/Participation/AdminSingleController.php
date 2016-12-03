@@ -6,6 +6,7 @@ use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\Form\PhoneNumberListType;
@@ -224,6 +225,50 @@ class AdminSingleController extends Controller
                 'participation'     => $participation,
                 'event'             => $event,
                 'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+            )
+        );
+    }
+
+    /**
+     * Page edit an participant
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}/participant/{aid}", requirements={"eid": "\d+", "pid": "\d+",
+     *                                                                    "aid": "\d+"}, name="admin_edit_participant")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function editParticipantAction($eid, $pid, $aid, Request $request)
+    {
+        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $participant   = $repository->findOneBy(array('aid' => $aid));
+        $participation = $participant->getParticipation();
+        $event         = $participation->getEvent();
+
+        $form = $this->createForm(
+            ParticipantType::class, $participant, array('participation' => $participation)
+        );
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($participant);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Die Änderungen wurden gespeichert.'
+            );
+            return $this->redirectToRoute(
+                'event_participation_detail', array('eid' => $eid, 'pid' => $pid)
+            );
+        }
+        return $this->render(
+            'event/participation/edit-participant.html.twig',
+            array(
+                'adminView'         => true,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'participant'       => $participant,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
             )
         );
     }
