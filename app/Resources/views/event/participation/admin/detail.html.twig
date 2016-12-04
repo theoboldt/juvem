@@ -119,6 +119,19 @@
                             {% endfor %}
                             <dt><abbr title="Eingang der Anmeldung">Eingang</abbr></dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
+                            <dt>
+                                <abbr title="Ist die Anmeldung mit einem Benutzerkonto verknüpft, ist dieses hier angegeben">Benutzerkonto</abbr>
+                            </dt>
+                            <dd>
+                                {% if participation.assignedUser %}<a
+                                    href="{{ path('user_detail', {'uid': participation.assignedUser.uid}) }}">
+                                    {{ participation.assignedUser|fullname }}
+                                    </a>
+                                {% else %}
+                                    <i>(keines)</i>
+                                {% endif %}
+                            </dd>
+
                         </dl>
                     </div>
                 </div>
@@ -160,10 +173,11 @@
                                     <h3 class="panel-title">Teilnehmer {{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-3 text-right">
-                                <a href="{{ path('admin_add_participant', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</a>
-                                <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                                    <a href="{{ path('admin_add_participant', {'eid': event.eid, 'pid': participation.pid}) }}"
+                                       class="btn btn-default btn-xs"
+                                       title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</a>
+                                    <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
+                                       class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
                                 </div>
                             </div>
                         </div>

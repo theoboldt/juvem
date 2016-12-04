@@ -29,6 +29,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_extension_fullname:
+        class: AppBundle\Twig\Extension\Fullname
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
         arguments: ['@twig']
