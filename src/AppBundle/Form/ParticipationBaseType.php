@@ -75,6 +75,10 @@ class ParticipationBaseType extends AbstractType
                 'label'    => $attribute->getFormTitle(),
                 'required' => $attribute->isRequired()
             );
+            if (ChoiceType::class == $attribute->getFieldType()) {
+                $options['placeholder'] = 'keine Option gewählt';
+            }
+
             try {
                 $fillout         = $participation->getAcquisitionAttributeFillout($bid);
                 $options['data'] = $fillout->getValue();
