@@ -1,0 +1,83 @@
+<div class="row">
+    <div class="col-xs-12">
+        {{ form_errors(form) }}
+    </div>
+</div>
+<div class="row">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            {{ form_row(form.nameFirst) }}
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            {{ form_row(form.nameLast) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 ">
+            <div class="form-group">
+                {{ form_label(form.food) }}
+                <button type="button" class="btn btn-default btn-xs btn-round"
+                        data-toggle="popover"
+                        data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte unter <i>Medizinische Hinweise</i> ein.">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+                {{ form_widget(form.food) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ form_row(form.gender) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ form_row(form.birthday) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+                {{ form_label(form.infoMedical) }}
+                <button type="button" class="btn btn-default btn-xs btn-round"
+                        data-toggle="popover"
+                        data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir Teilnehmern keine Medikamente verabreichen dürfen.)">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+                {{ form_widget(form.infoMedical) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+                {{ form_label(form.infoGeneral) }}
+                <button type="button" class="btn btn-default btn-xs btn-round"
+                        data-toggle="popover"
+                        data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+                {{ form_widget(form.infoGeneral) }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for fieldName,formField in form %}
+            {% if fieldName starts with 'acq_field_' %}
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group">
+                        {{ form_label(formField) }}
+                        {% if acquisitionFields[fieldName].formDescription %}
+                            <button type="button" class="btn btn-default btn-xs btn-round"
+                                    data-toggle="popover"
+                                    data-content="{{ acquisitionFields[fieldName].formDescription }}">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </button>
+                        {% endif %}
+                        {{ form_widget(formField) }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

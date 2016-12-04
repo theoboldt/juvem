@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
@@ -252,16 +253,72 @@ class AdminSingleController extends Controller
             $em->persist($participant);
             $em->flush();
 
+            if ($participant->getGender() == Participant::TYPE_GENDER_MALE) {
+                $message = 'dem Teilnehmer ';
+            } else {
+                $message = 'der Teilnehmerin ';
+            }
             $this->addFlash(
                 'success',
-                'Die Änderungen wurden gespeichert.'
+                'Die Änderungen an '.$message.$participant->getNameFirst().' wurden gespeichert.'
             );
+
             return $this->redirectToRoute(
                 'event_participation_detail', array('eid' => $eid, 'pid' => $pid)
             );
         }
         return $this->render(
             'event/participation/edit-participant.html.twig',
+            array(
+                'adminView'         => true,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'participant'       => $participant,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+            )
+        );
+    }
+
+    /**
+     * Page add a participant
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}/participant/add", requirements={"eid": "\d+", "pid": "\d+"},
+     *                                                                  name="admin_add_participant")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function addParticipantAction($eid, $pid, Request $request)
+    {
+        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participation = $repository->findOneBy(array('pid' => $pid));
+        $participant   = new Participant();
+        $participant->setParticipation($participation);
+        $event = $participation->getEvent();
+
+        $form = $this->createForm(
+            ParticipantType::class, $participant, array('participation' => $participation)
+        );
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($participant);
+            $em->flush();
+
+            if ($participant->getGender() == Participant::TYPE_GENDER_MALE) {
+                $message = 'Der Teilnehmer ';
+            } else {
+                $message = 'Die Teilnehmerin ';
+            }
+            $this->addFlash(
+                'success',
+                $message.' '.$participant->getNameFirst().' wurde hinzugefügt.'
+            );
+            return $this->redirectToRoute(
+                'event_participation_detail', array('eid' => $eid, 'pid' => $pid)
+            );
+        }
+        return $this->render(
+            'event/participation/add-participant.html.twig',
             array(
                 'adminView'         => true,
                 'form'              => $form->createView(),

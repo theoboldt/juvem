@@ -117,7 +117,8 @@ class Participant
     /**
      * Get gender
      *
-     * @return integer
+     * @param bool $formatted Set to true to get gender label
+     * @return int
      */
     public function getGender($formatted = false)
     {
