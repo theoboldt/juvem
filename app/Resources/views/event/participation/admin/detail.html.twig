@@ -55,12 +55,12 @@
                     {% if participation.withdrawn %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
                                 data-target="#dialogModal" data-action="reactivate">
-                            {{ 'retweet'|glyph }} Teilnahme reaktivieren
+                            {{ 'retweet'|glyph }} Anmeldung reaktivieren
                         </button>
                     {% else %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
                                 data-target="#dialogModal" data-action="withdraw">
-                            {{ 'share-alt'|glyph }} Teilnahme zurückziehen
+                            {{ 'share-alt'|glyph }} Anmeldung zurückziehen
                         </button>
                     {% endif %}
                     {% if participation.deletedAt %}

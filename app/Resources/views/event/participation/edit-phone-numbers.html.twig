@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 {% import _self as m %}
 
-{% block title %}Teilnahme - Telefonnummern bearbeiten ({{ event.title }}){% endblock %}
+{% block title %}Anmeldung - Telefonnummern bearbeiten ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Telefonnummern bearbeiten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Telefonnummern bearbeiten'} %}
         {% block breadcrumb %}
             {% if adminView %}
                 <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
@@ -13,8 +13,8 @@
                 <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">Familie {{ participation.nameLast }}</a>
                 </li>
             {% else %}
-                <li><a href="{{ path('public_participations') }}">Teilnahmen</a></li>
-                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Teilnahme
+                <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
+                <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Anmeldung
                         bei {{ event.title }}</a></li>
                 <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Detailansicht</a>
                 </li>

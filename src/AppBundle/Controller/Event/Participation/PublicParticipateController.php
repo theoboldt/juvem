@@ -140,7 +140,7 @@ class PublicParticipateController extends Controller
         $request->getSession()->set('participation-' . $eid, $participation);
         $this->addFlash(
             'success',
-            'Die Anmeldung wurde mit Daten einer früheren Teilnahme vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
+            'Die Anmeldung wurde mit Daten einer früheren Anmeldung vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
         );
         return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
     }
@@ -204,7 +204,7 @@ class PublicParticipateController extends Controller
 
             if (!$this->getUser()) {
                 $message .= sprintf(
-                    '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen zur Teilnahme vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
+                    '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
                     $this->container->get('router')->generate('fos_user_registration_register')
                 );
             }

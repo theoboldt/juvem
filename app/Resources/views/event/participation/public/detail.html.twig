@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teilnahme ({{ event.title }}){% endblock %}
+{% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnahme', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
-            <li><a href="{{ path('public_participations') }}">Teilnahmen</a></li>
-            <li class="active">Teilnahme bei {{ event.title }}</li>
+            <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
+            <li class="active">Anmeldung bei {{ event.title }}</li>
         {% endblock %}
     {% endembed %}
     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">

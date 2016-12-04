@@ -36,7 +36,7 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         if ($this->isUserLoggedIn()) {
-            $menu->addChild('Teilnahmen', array('route' => 'public_participations'));
+            $menu->addChild('Anmeldungen', array('route' => 'public_participations'));
             if ($this->isUserAdmin()) {
                 if ($this->userHasRole(User::ROLE_ADMIN_NEWSLETTER)) {
                     $menu->addChild('Newsletter', array('route' => 'newsletter_admin_overview'))
