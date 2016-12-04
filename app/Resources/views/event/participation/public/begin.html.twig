@@ -114,6 +114,7 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-5">
+                                        {{ form_errors(formElement) }}
                                         <div class="form-group">
                                             {{ form_label(formElement.number) }}
                                             <div class="input-group">
@@ -148,7 +149,6 @@
                          data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
                         <div class="prototype-elements">
                             <div class="form-group">
-                                {{ form_label(form.phoneNumbers) }}
                                 <span id='help-phone-numbers' class='help-block'>
                                     In der Regel ist die Angabe einer Festnetznummer sinnvoll, falls Rückfragen im Vorfeld der
                                     Veranstaltung nötig sein sollten. Bitte geben Sie zusätzlich andere Telefonnummern an, unter

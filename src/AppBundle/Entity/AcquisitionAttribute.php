@@ -81,6 +81,13 @@ class AcquisitionAttribute
     protected $useAtParticipant = false;
 
     /**
+     * @ORM\Column(name="is_required", type="boolean", options={"unsigned":true,"default":0})
+     *
+     * @var boolean
+     */
+    protected $isRequired = false;
+
+    /**
      * Contains the events which use this attribute
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event", mappedBy="acquisitionAttributes")
@@ -119,7 +126,8 @@ class AcquisitionAttribute
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return 'acq_field_' . $this->bid;
     }
 
@@ -456,6 +464,30 @@ class AcquisitionAttribute
     }
 
     /**
+     * Set isRequired
+     *
+     * @param boolean $isRequired
+     *
+     * @return AcquisitionAttribute
+     */
+    public function setIsRequired($isRequired = true)
+    {
+        $this->isRequired = $isRequired;
+
+        return $this;
+    }
+
+    /**
+     * Get isRequired
+     *
+     * @return boolean
+     */
+    public function isRequired()
+    {
+        return $this->isRequired;
+    }
+
+    /**
      * Add event
      *
      * @param Event $event
@@ -488,9 +520,6 @@ class AcquisitionAttribute
     {
         return $this->events;
     }
-
-
-
 
     /**
      * Add fillout
@@ -525,4 +554,5 @@ class AcquisitionAttribute
     {
         return $this->fillouts;
     }
+
 }

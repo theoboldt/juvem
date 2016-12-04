@@ -56,6 +56,12 @@
                             {{ form_row(form.useAtParticipant) }}
                         </div>
                     </div>
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">Gewichtung</label>
+                            {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

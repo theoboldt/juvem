@@ -80,6 +80,14 @@ class AcquisitionType extends AbstractType
                     )
                 )
                 ->add(
+                    'isRequired',
+                    CheckboxType::class,
+                    array(
+                        'label'    => 'Pflichtfeld',
+                        'required' => false
+                    )
+                )
+                ->add(
                     'fieldTypeChoiceType',
                     ChoiceType::class,
                     array(

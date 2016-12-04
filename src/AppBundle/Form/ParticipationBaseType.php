@@ -72,7 +72,8 @@ class ParticipationBaseType extends AbstractType
         foreach ($attributes as $attribute) {
             $bid     = $attribute->getBid();
             $options = array(
-                'label' => $attribute->getFormTitle()
+                'label'    => $attribute->getFormTitle(),
+                'required' => $attribute->isRequired()
             );
             try {
                 $fillout         = $participation->getAcquisitionAttributeFillout($bid);
