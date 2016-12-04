@@ -38,8 +38,7 @@ class AcquisitionAttributeFillout
     protected $participant;
 
     /**
-     * @ORM\Column(type="string", length=255, name="value")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=255, name="value", nullable=true)
      */
     protected $value;
 
