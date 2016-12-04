@@ -243,7 +243,7 @@ class PublicManagementController extends Controller
     }
 
     /**
-     * Page edit an participation
+     * Page edit phone numbers
      *
      * @Route("/participation/{pid}/edit/phone", requirements={"pid": "\d+"}, name="public_edit_phonenumbers")
      * @Security("has_role('ROLE_USER')")
@@ -295,7 +295,7 @@ class PublicManagementController extends Controller
         return $this->render(
             'event/participation/edit-phone-numbers.html.twig',
             array(
-                'adminView'         => true,
+                'adminView'         => false,
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'event'             => $event,
@@ -304,9 +304,8 @@ class PublicManagementController extends Controller
         );
     }
 
-
     /**
-     * Page edit an participation
+     * Page edit a participation
      *
      * @Route("/participation/{pid}/edit/participant/{aid}", requirements={"pid": "\d+", "aid": "\d+"},
      *                                                       name="public_edit_participant")
@@ -347,7 +346,64 @@ class PublicManagementController extends Controller
         return $this->render(
             'event/participation/edit-participant.html.twig',
             array(
-                'adminView'         => true,
+                'adminView'         => false,
+                'form'              => $form->createView(),
+                'participation'     => $participation,
+                'participant'       => $participant,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+            )
+        );
+    }
+
+    /**
+     * Page add a participation
+     *
+     * @Route("/participation/{pid}/edit/participant/add", requirements={"pid": "\d+"}, name="public_add_participant")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function addParticipantAction($pid, Request $request)
+    {
+        $user          = $this->getUser();
+        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participation = $repository->findOneBy(array('pid' => $pid));
+        $participant   = new Participant();
+        $participant->setParticipation($participation);
+        $event             = $participation->getEvent();
+        $participationUser = $participation->getAssignedUser();
+
+        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        ) {
+            throw new AccessDeniedHttpException('Participation is related to another user');
+        }
+
+        $form = $this->createForm(
+            ParticipantType::class, $participant, array('participation' => $participation)
+        );
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($participant);
+            $em->flush();
+
+            if ($participant->getGender() == Participant::TYPE_GENDER_MALE) {
+                $message = 'Der Teilnehmer ';
+            } else {
+                $message = 'Die Teilnehmerin ';
+            }
+            $this->addFlash(
+                'success',
+                $message.' '.$participant->getNameFirst().' wurde hinzugefügt.'
+            );
+            return $this->redirectToRoute(
+                'public_participation_detail', array('pid' => $participation->getPid())
+            );
+        }
+
+        return $this->render(
+            'event/participation/add-participant.html.twig',
+            array(
+                'adminView'         => false,
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'participant'       => $participant,

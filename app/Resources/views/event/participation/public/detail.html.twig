@@ -112,8 +112,8 @@
                                     <h3 class="panel-title">Teilnehmer {{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-3 text-right">
-                                    <button type="button" class="btn btn-default btn-xs disabled"
-                                            title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</button>
+                                <a href="{{ path('public_add_participant', {'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</a>
                                 <a href="{{ path('public_edit_participant', {'pid': participation.pid, 'aid': participant.aid}) }}"
                                    class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
                                 </div>
