@@ -24,6 +24,20 @@
                             </div>
                             <div class="col-xs-12 col-sm-6">
                                 <p>Der Newsletter wurde bereits an die folgenden Empfänger verschickt:</p>
+                                {% if newsletter %}
+                                    <ul>
+                                        {% for recipient in newsletter.recipients %}
+                                            <li>
+                                                {% if recipient.assignedUser %}
+                                                    <a href="{{ path('user_detail', {'uid': recipient.assignedUser.uid}) }}"
+                                                       target="_blank">{{ recipient.nameLast }}</a>
+                                                {% else %}
+                                                    {{ recipient.nameLast }}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
