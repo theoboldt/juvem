@@ -131,7 +131,7 @@ class AdminController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
 
@@ -178,7 +178,7 @@ class AdminController extends Controller
         );
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
 
@@ -229,7 +229,7 @@ class AdminController extends Controller
         );
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $action = $form->get('action')
                            ->getData();
             switch ($action) {
@@ -285,7 +285,7 @@ class AdminController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $participationManager = $this->get('app.participation_manager');
@@ -333,7 +333,7 @@ class AdminController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
 
