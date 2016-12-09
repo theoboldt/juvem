@@ -52,14 +52,13 @@ class AcquisitionType extends AbstractType
                     'fieldType',
                     ChoiceType::class,
                     array(
-                        'label'             => 'Typ',
-                        'choices'           => array(
+                        'label'    => 'Typ',
+                        'choices'  => array(
                             AcquisitionAttribute::LABEL_FIELD_TEXT     => TextType::class,
                             AcquisitionAttribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
                             AcquisitionAttribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
                         ),
-                        'choices_as_values' => true,
-                        'required'          => true
+                        'required' => true
 
                     )
                 )
@@ -91,16 +90,15 @@ class AcquisitionType extends AbstractType
                     'fieldTypeChoiceType',
                     ChoiceType::class,
                     array(
-                        'label'             => 'Typ der Auswahl',
-                        'label_attr'        => array('class' => 'col-sm-4 control-label required'),
+                        'label'      => 'Typ der Auswahl',
+                        'label_attr' => array('class' => 'col-sm-4 control-label required'),
                         //label_attr has to be defined here due to an error
-                        'choices'           => array(
+                        'choices'    => array(
                             'Mehrere Optionen auswählbar' => 1,
-                            'Nur eine Option  auswählbar' => 0
+                            'Nur eine Option auswählbar' => 0
                         ),
-                        'choices_as_values' => true,
-                        'mapped'            => true,
-                        'required'          => false
+                        'mapped'     => true,
+                        'required'   => false
                     )
                 )
                 ->add(

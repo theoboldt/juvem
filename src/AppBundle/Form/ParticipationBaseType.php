@@ -30,12 +30,9 @@ class ParticipationBaseType extends AbstractType
         $builder
             ->add(
                 'salution', ChoiceType::class, array(
-                              'label'             => 'Anrede',
-                              'choices'           => array('Frau' => 'Frau',
-                                                           'Herr' => 'Herr'
-                              ),
-                              'choices_as_values' => true,
-                              'expanded'          => false
+                              'label'    => 'Anrede',
+                              'choices'  => array('Frau' => 'Frau', 'Herr' => 'Herr'),
+                              'expanded' => false
                           )
             )
             ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
@@ -70,25 +67,25 @@ class ParticipationBaseType extends AbstractType
 
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
-            $bid     = $attribute->getBid();
-            $options = array(
+            $bid              = $attribute->getBid();
+            $attributeOptions = array(
                 'label'    => $attribute->getFormTitle(),
                 'required' => $attribute->isRequired()
             );
             if (ChoiceType::class == $attribute->getFieldType()) {
-                $options['placeholder'] = 'keine Option gewählt';
+                $attributeOptions['placeholder'] = 'keine Option gewählt';
             }
 
             try {
-                $fillout         = $participation->getAcquisitionAttributeFillout($bid);
-                $options['data'] = $fillout->getValue();
+                $fillout                  = $participation->getAcquisitionAttributeFillout($bid);
+                $attributeOptions['data'] = $fillout->getValue();
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
             }
             $builder->add(
                 $attribute->getName(),
                 $attribute->getFieldType(),
-                array_merge($options, $attribute->getFieldOptions())
+                array_merge($attributeOptions, $attribute->getFieldOptions())
             );
         }
 

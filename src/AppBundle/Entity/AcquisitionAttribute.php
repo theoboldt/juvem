@@ -261,9 +261,8 @@ class AcquisitionAttribute
         $this->fieldType = $fieldType;
 
         if ($fieldType == FormChoiceType::class) {
-            $options                      = $this->getFieldOptions();
-            $options['choices_as_values'] = true;
-            $options['expanded']          = true;
+            $options             = $this->getFieldOptions();
+            $options['expanded'] = true;
             $this->setFieldOptions($options);
         } else {
             $this->setFieldOptions(array());

@@ -36,13 +36,12 @@ class ParticipantType extends AbstractType
                 'gender',
                 ChoiceType::class,
                 array(
-                    'label'             => 'Geschlecht',
-                    'choices'           => array(
+                    'label'    => 'Geschlecht',
+                    'choices'  => array(
                         Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
                         Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
                     ),
-                    'choices_as_values' => true,
-                    'required'          => false
+                    'required' => false
                 )
             )
             ->add(
@@ -79,13 +78,12 @@ class ParticipantType extends AbstractType
                 'food',
                 ChoiceType::class,
                 array(
-                    'label'             => 'Ernährung',
-                    'choices'           => array_flip($foodMask->labels()),
-                    'choices_as_values' => true,
-                    'expanded'          => true,
-                    'multiple'          => true,
-                    'required'          => false,
-                    'attr'              => array('aria-describedby' => 'help-food')
+                    'label'    => 'Ernährung',
+                    'choices'  => array_flip($foodMask->labels()),
+                    'expanded' => true,
+                    'multiple' => true,
+                    'required' => false,
+                    'attr'     => array('aria-describedby' => 'help-food')
                 )
             );
 
@@ -96,25 +94,27 @@ class ParticipantType extends AbstractType
 
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
-            $bid     = $attribute->getBid();
-            $options = array(
+            $bid              = $attribute->getBid();
+            $attributeOptions = array(
                 'label'    => $attribute->getFormTitle(),
                 'required' => $attribute->isRequired()
             );
             if (ChoiceType::class == $attribute->getFieldType()) {
-                $options['placeholder'] = 'keine Option gewählt';
+                $attributeOptions['placeholder'] = 'keine Option gewählt';
             }
 
             try {
-                $fillout         = $participation->getAcquisitionAttributeFillout($bid);
-                $options['data'] = $fillout->getValue();
+                if (isset($options['data']) && $options['data'] instanceof Participant) {
+                    $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
+                    $attributeOptions['data'] = $fillout->getValue();
+                }
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
             }
             $builder->add(
                 $attribute->getName(),
                 $attribute->getFieldType(),
-                array_merge($options, $attribute->getFieldOptions())
+                array_merge($attributeOptions, $attribute->getFieldOptions())
             );
         }
 
