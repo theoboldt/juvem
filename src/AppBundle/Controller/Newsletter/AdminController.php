@@ -191,6 +191,13 @@ class AdminController extends Controller
             $ageRangeBegin, $ageRangeEnd, $similarEventIdList
         );
 
+        $r = $repository->qualifiedNewsletterSubscriptionList(
+            $ageRangeBegin, $ageRangeEnd, $similarEventIdList, true
+        );
+
+        dump($r);
+
+
         /** @var NewsletterSubscription $subscription */
         return new JsonResponse(
             array(
