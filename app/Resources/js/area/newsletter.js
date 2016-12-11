@@ -48,14 +48,18 @@ $(function () {
         && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
     ) {
         //if there is something inserted in the fields
-        $('iframe').on('load', function(){
+        $('iframe').on('load', function () {
             updateMailPreview();
         });
     }
 
-    $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_events').change(function () {
+    /**
+     * NEWSLETTER: Recipient count
+     */
+    var updateRecipientCount = function () {
         var textField = $('#affectedSubscription');
         textField.attr('class', 'loading-text');
+
         $.ajax({
             type: 'POST',
             url: '/admin/newsletter/affected-recipient-count',
@@ -78,7 +82,7 @@ $(function () {
                 textField.attr('class', '');
             }
         });
-    });
-
+    };
+    $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_events').change(updateRecipientCount);
 
 });

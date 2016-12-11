@@ -25,18 +25,26 @@
                             <div class="col-xs-12 col-sm-6">
                                 <p>Der Newsletter wurde bereits an die folgenden Empfänger verschickt:</p>
                                 {% if newsletter %}
-                                    <ul>
-                                        {% for recipient in newsletter.recipients %}
-                                            <li>
-                                                {% if recipient.assignedUser %}
-                                                    <a href="{{ path('user_detail', {'uid': recipient.assignedUser.uid}) }}"
-                                                       target="_blank">{{ recipient.nameLast }}</a>
-                                                {% else %}
-                                                    {{ recipient.nameLast }}
-                                                {% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
+                                    {% if newsletter.recipients|length %}
+                                        <ul>
+                                            {% for recipient in newsletter.recipients %}
+                                                <li>
+                                                    {% if recipient.assignedUser %}
+                                                        <a href="{{ path('user_detail', {'uid': recipient.assignedUser.uid}) }}"
+                                                           target="_blank">{{ recipient.nameLast }}</a>
+                                                    {% else %}
+                                                        {{ recipient.nameLast }}
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div data-alerts="alerts">
+                                            <div class="alert alert-info">
+                                                Diese Nachricht wurde bisher an niemand verschickt.
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -65,7 +73,7 @@
                 {{ form_widget(form.ageRangeBegin) }}
             </div>
             <div class="col-sm-8  col-xs-12 contains-slider">
-                <input type="hidden" class="slider-input"
+                <input type="hidden" class="slider-input" id="newsletter_mail_ageRangeSlider"
                        value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
             </div>
             <div class="col-sm-2 col-xs-6">

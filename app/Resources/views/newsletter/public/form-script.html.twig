@@ -37,6 +37,7 @@
                 value = value.split(',');
                 elAgeRangeBegin.val(value[0]);
                 elAgeRangeEnd.val(value[1]);
+                elAgeRangeBegin.trigger( 'change' );
             },
             snap: true,
             showLabels: true,
