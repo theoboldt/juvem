@@ -10,7 +10,7 @@ use Doctrine\ORM\Query\Lexer;
  * @link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/cookbook/dql-user-defined-functions.html#date-diff
  * @package AppBundle\Query
  */
-class DateDiff extends FunctionNode
+class MysqlDateDiff extends FunctionNode
 {
     // (1)
     public $firstDateExpression  = null;

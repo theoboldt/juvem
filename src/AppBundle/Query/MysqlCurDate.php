@@ -12,7 +12,7 @@ use Doctrine\ORM\Query\Lexer;
  *
  * @package AppBundle\Query
  */
-class CurDate extends FunctionNode
+class MysqlCurDate extends FunctionNode
 {
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {

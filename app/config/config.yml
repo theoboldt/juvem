@@ -90,8 +90,8 @@ doctrine:
             numeric_functions:
                 FLOOR: AppBundle\Query\MysqlFloor
             datetime_functions:
-                CURDATE: AppBundle\Query\CurDate
-                DATEDIFF: AppBundle\Query\DateDiff
+                CURDATE: AppBundle\Query\MysqlCurDate
+                DATEDIFF: AppBundle\Query\MysqlDateDiff
 
 # Swiftmailer Configuration
 swiftmailer:
