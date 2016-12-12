@@ -112,20 +112,6 @@ class User extends BaseUser
     }
 
     /**
-     * Set user locked
-     *
-     * @see setLocked()
-     * @param bool $boolean Locked state
-     * @return $this
-     */
-    public function setIsLocked($boolean)
-    {
-        $this->setLocked($boolean);
-
-        return $this;
-    }
-
-    /**
      * Define user enable/disabled state
      *
      * @see setLocked()
@@ -134,7 +120,7 @@ class User extends BaseUser
      */
     public function setIsEnabled($boolean)
     {
-        $this->setLocked($boolean);
+        $this->setEnabled($boolean);
 
         return $this;
     }

@@ -23,13 +23,6 @@
                     {% if not userIsSelf %}
                     <button type="button" class="btn btn-default" data-element="activebutton"
                             data-entity="User"
-                            data-property="isLocked" data-entity-id="{{ user.uid }}"
-                            data-token="{{ csrf_token('User' ~ 'isLocked' ~ user.uid ) }}"
-                            data-button-enable-label="Sperren" data-button-enable-glyph="lock"
-                            data-button-disable-label="Entsperren"
-                            data-button-disable-glyph="repeat">{{ 'option-horizontal'|glyph }}</button>
-                    <button type="button" class="btn btn-default" data-element="activebutton"
-                            data-entity="User"
                             data-property="isEnabled" data-entity-id="{{ user.uid }}"
                             data-token="{{ csrf_token('User' ~ 'isEnabled' ~ user.uid ) }}"
                             data-button-enable-label="Aktivieren" data-button-enable-glyph="arrow-up"
