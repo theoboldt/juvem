@@ -187,16 +187,9 @@ class AdminController extends Controller
         $similarEventIdList = $request->get('events');
 
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
-        $count      = $repository->qualifiedNewsletterSubscriptionCount(
-            $ageRangeBegin, $ageRangeEnd, $similarEventIdList
+        $count      = count(
+            $repository->qualifiedNewsletterSubscriptionIdList($ageRangeBegin, $ageRangeEnd, $similarEventIdList)
         );
-
-        $r = $repository->qualifiedNewsletterSubscriptionList(
-            $ageRangeBegin, $ageRangeEnd, $similarEventIdList, true
-        );
-
-        dump($r);
-
 
         /** @var NewsletterSubscription $subscription */
         return new JsonResponse(
@@ -238,7 +231,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Page for details of an event
+     * Page for details of a newsletter
      *
      * @Route("/admin/newsletter/edit/{lid}", requirements={"lid": "\d"},
      *                                       name="newsletter_edit")

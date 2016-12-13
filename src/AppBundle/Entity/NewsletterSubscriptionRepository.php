@@ -33,15 +33,16 @@ class NewsletterSubscriptionRepository extends EntityRepository
     }
 
     /**
-     * Get the amount of newsletter subscriptions which qualifies for transmitted parameters
+     * Get the list of newsletter subscription ids which qualifies for transmitted parameters
      *
-     * @return  int $ageRangeBegin      Begin of interesting age range
-     * @return  int $ageRangeEnd        Begin of interesting age range
-     * @param array $similarEventIdList List of subscribed event ids
-     * @return  int
+     * @see qualifiedNewsletterSubscriptionQuery()
+     * @param   int   $ageRangeBegin      Begin of interesting age range
+     * @param   int   $ageRangeEnd        Begin of interesting age range
+     * @param   array $similarEventIdList List of subscribed event ids
+     * @return  int[]|array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function qualifiedNewsletterSubscriptionCount($ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null)
+    public function qualifiedNewsletterSubscriptionIdList($ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null)
     {
         if (!$similarEventIdList || !count($similarEventIdList)) {
             $similarEventIdList = array(0);
@@ -58,82 +59,67 @@ class NewsletterSubscriptionRepository extends EntityRepository
             'FLOOR(DATEDIFF( CURDATE(), base_age) / %d)', EventRepository::DAYS_OF_YEAR
         );
         $query                  = sprintf(
-            'SELECT COUNT(*)
+            'SELECT DISTINCT s.rid
                FROM newsletter_subscription s
           LEFT JOIN event_newsletter_subscription es ON (s.rid = es.rid AND es.eid IN (%2$s))
               WHERE is_enabled = 1
                 AND (
-                      ( :ageRangeBegin <= IF((base_age IS NOT NULL), (age_range_end + %1$s), age_range_end)
-                        AND :ageRangeEnd >= IF((base_age IS NOT NULL), (age_range_begin + %1$s), age_range_begin)
-                      ) OR es.eid IN (%2$s)
+                      ( :ageRangeBegin <= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_end + %1$s) ELSE s.age_range_end END)
+                        AND :ageRangeEnd >= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_begin + %1$s) ELSE s.age_range_begin END)
+                      ) OR es.rid IS NOT NULL
                     )
               ',
             $queryAgeRangeClearance,
             implode($similarEventIdList, ',')
         );
-
-        $stmt = $this->getEntityManager()
-                     ->getConnection()
-                     ->prepare($query);
+        $stmt  = $this->getEntityManager()->getConnection()->prepare($query);
         $stmt->execute(array('ageRangeBegin' => $ageRangeBegin, 'ageRangeEnd' => $ageRangeEnd));
 
-        return $stmt->fetchColumn();
+        $qualifiedIds = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
+            $qualifiedIds[] = $row[0];
+        }
     }
 
     /**
      * Get the list of newsletter subscriptions which qualifies for transmitted parameters
      *
-     *
-     * @param int   $ageRangeBegin             Begin of interesting age range
-     * @param int   $ageRangeEnd               Begin of interesting age range
-     * @param array $similarEventIdList        List of subscribed event ids
-     * @param array $similarEventIdList        List of subscribed event ids
-     * @param bool  $excludeFromSentNewsletter Set to true to exclude subscriptions which have already received this
-     *                                         newsletter
+     * @see qualifiedNewsletterSubscriptionQuery()
+     * @param int      $ageRangeBegin             Begin of interesting age range
+     * @param int      $ageRangeEnd               Begin of interesting age range
+     * @param array    $similarEventIdList        List of subscribed event ids
+     * @param array    $similarEventIdList        List of subscribed event ids
+     * @param int|null $excludeFromNewsletter     Define newsletter id here to exclude subscriptions which have already
+     *                                            received the transmitted newsletter
      * @return array|NewsletterSubscription[]
      */
     public function qualifiedNewsletterSubscriptionList(
-        $ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null, $excludeFromSentNewsletter = false
+        $ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null, $excludeFromNewsletter = null
     )
     {
-        if (!$similarEventIdList || !count($similarEventIdList)) {
-            $similarEventIdList = array(0);
+        if ($excludeFromNewsletter instanceof Newsletter) {
+            $excludeFromNewsletter = $excludeFromNewsletter->getLid();
         }
-        array_walk(
-            $similarEventIdList,
-            function (&$val) {
-                $val = (int)$val;
-            }
-        );
+        $qualifiedIds = $this->qualifiedNewsletterSubscriptionIdList($ageRangeBegin, $ageRangeEnd, $similarEventIdList);
 
-        /** @var \DateTime $start */
-        $queryAgeRangeClearance = sprintf(
-            'FLOOR(DATEDIFF( CURDATE(), s.baseAge) / %d)', EventRepository::DAYS_OF_YEAR
-        );
-        $dql                    = sprintf(
-            'SELECT DISTINCT s
-               FROM %3$s s
-          LEFT JOIN s.events es WITH (es.eid IN (%2$s))
-              WHERE s.isEnabled = 1
-                AND (
-                      ( :ageRangeBegin <= (CASE WHEN (s.baseAge IS NOT NULL) THEN (s.ageRangeEnd + %1$s) ELSE s.ageRangeEnd END)
-                        AND :ageRangeEnd >= (CASE WHEN (s.baseAge IS NOT NULL) THEN (s.ageRangeBegin + %1$s) ELSE s.ageRangeBegin END)
-                      ) OR es.eid IN (%2$s)
-                    )
+        $qb = $this->createQueryBuilder('r');
+        $qb->addSelect('u')
+           ->leftJoin('r.assignedUser', 'u')
+           ->andWhere("r.rid IN(:qualifiedIds)")
+           ->setParameter('qualifiedIds', $qualifiedIds)
+           ->orderBy('r.nameLast', 'ASC');
 
-              ',
-            $queryAgeRangeClearance,
-            implode($similarEventIdList, ','),
-            NewsletterSubscription::class
-        );
+        if ($excludeFromNewsletter) {
+            $qbRecieved = $this->getEntityManager()->createQueryBuilder();
+            $qbRecieved->select('enrr.rid')
+                ->from(Newsletter::class, 'enr')
+                ->innerJoin('enr.recipients', 'enrr')
+                ->andWhere($qbRecieved->expr()->eq('enr.lid', (int)$excludeFromNewsletter));
+            $qb->andWhere($qb->expr()->notIn('r.rid', $qbRecieved->getDQL()));
+        }
 
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameters(
-            array(
-                'ageRangeBegin' => $ageRangeBegin,
-                'ageRangeEnd'   => $ageRangeEnd
-            )
-        );
-        return $query->getResult();
+        $query = $qb->getQuery();
+
+        return $query->execute();
     }
 }
