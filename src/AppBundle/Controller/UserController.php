@@ -81,10 +81,8 @@ class UserController extends Controller
      */
     public function userDetailAction(Request $request)
     {
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:User');
-
-        $user = $repository->findOneBy(array('id' => $request->get('uid')));
+        $repository = $this->getDoctrine()->getRepository('AppBundle:User');
+        $user       = $repository->findOneBy(array('id' => $request->get('uid')));
 
         $form = $this->createForm(
             UserRoleAssignmentType::class,
@@ -105,10 +103,12 @@ class UserController extends Controller
         }
 
         return $this->render(
-            'user/detail.html.twig', array('user'       => $user,
-                                           'userIsSelf' => ($user->getUid() == $this->getUser()->getUid()),
-                                           'form'       => $form->createView()
-                                   )
+            'user/detail.html.twig',
+            array(
+                'user'       => $user,
+                'userIsSelf' => ($user->getUid() == $this->getUser()->getUid()),
+                'form'       => $form->createView()
+            )
         );
     }
 
@@ -127,13 +127,11 @@ class UserController extends Controller
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
         );
 
-        $userRepository = $this->getDoctrine()
-                               ->getRepository('AppBundle:User');
+        $userRepository = $this->getDoctrine()->getRepository('AppBundle:User');
         $user           = $userRepository->findOneBy(array('id' => $request->get('uid')));
 
-        $participationRepository = $this->getDoctrine()
-                                        ->getRepository('AppBundle:Participation');
-        $participationList       = $participationRepository->findBy(array('assignedUser' => $user->getUid()));
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationList       = $participationRepository->findBy(array('assignedUser' => $user->getUid(), 'deletedAt' => null));
 
         $participationListResult = array();
         /** @var Participant $participant */
