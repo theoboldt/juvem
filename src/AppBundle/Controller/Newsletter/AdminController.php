@@ -18,10 +18,12 @@ class AdminController extends Controller
 {
 
     /**
+     * Newsletter/Subscriptions overview page
+     *
      * @Route("/admin/newsletter", name="newsletter_admin_overview")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function overviewAction(Request $request)
+    public function overviewAction()
     {
         return $this->render(
             'newsletter/admin/overview.html.twig'
@@ -42,11 +44,13 @@ class AdminController extends Controller
     }
 
     /**
+     * Data provider for newsletter subscription list
+     *
      * @see self::listSubscriptionsAction()
      * @Route("/admin/newsletter/subscription/list.json", name="newsletter_admin_subscription_list_data")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function listSubscriptionsDataAction(Request $request)
+    public function listSubscriptionsDataAction()
     {
         $repository             = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         $subscriptionEntityList = $repository->findAll();
@@ -101,6 +105,8 @@ class AdminController extends Controller
     }
 
     /**
+     * Data provider for newsletter (message) list
+     *
      * @see self::listNewsletterAction()
      * @Route("/admin/newsletter/list.json", name="newsletter_admin_newsletter_list_data")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
@@ -175,7 +181,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Page for details of an event
+     * Data provider for recipient count
      *
      * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
@@ -201,7 +207,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Page for details of an event
+     * Create new newsletter page
      *
      * @Route("/admin/newsletter/create", name="newsletter_admin_create")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
@@ -233,8 +239,7 @@ class AdminController extends Controller
     /**
      * Page for details of a newsletter
      *
-     * @Route("/admin/newsletter/edit/{lid}", requirements={"lid": "\d"},
-     *                                       name="newsletter_edit")
+     * @Route("/admin/newsletter/edit/{lid}", requirements={"lid": "\d"}, name="newsletter_edit")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
     public function detailedNewsletterAction(Request $request)
