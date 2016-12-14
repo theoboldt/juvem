@@ -179,7 +179,7 @@ class AcquisitionAttributeFillout
         $attribute  = $this->getAttribute();
         if ($attribute->getFieldType() == FormChoiceType::class) {
             $options = array_flip($attribute->getFieldTypeChoiceOptions(true));
-            return $options[$this->value];
+            return (string)$options[$this->value];
         }
         return (string)$this->value;
     }
