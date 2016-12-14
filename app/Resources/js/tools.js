@@ -51,13 +51,13 @@ $(function () {
                     switch (response.status) {
                         case 503:
                             $(document).trigger('add-alerts', {
-                                message: 'Der Juvem-Server ist vorrübergehend nicht erreichbar.',
+                                message: 'Der Anwendungs-Server ist vorrübergehend nicht erreichbar.',
                                 priority: 'warning'
                             });
                             break;
                         default:
                             $(document).trigger('add-alerts', {
-                                message: 'Es scheint ein Problem mit der Internetverbindung vorzuliegen: Es kann keine Verbindung zum Juvem-Server aufgebaut werden.',
+                                message: 'Es scheint ein Problem mit der Internetverbindung vorzuliegen: Es kann keine Verbindung zum Anwendungs-Server aufgebaut werden.',
                                 priority: 'error'
                             });
                             break;
