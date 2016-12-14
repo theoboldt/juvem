@@ -1,21 +1,27 @@
-$(function(){
+$(function () {
+    var elementType = $('*#acquisition_fieldType'),
+        elementChoices = $('*#acquisition_fieldTypeChoiceOptions'),
+        updateType,
+        updateChoiceOptions;
 
     /**
      * ACQUISITION: When selection is changed
      */
-    $('*#acquisition_fieldType').change(function () {
-        if ($(this).val() == "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType") {
+    updateType = function () {
+        if ($(elementType).val() == "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType") {
             $('.form-group-choice').css('display', 'block');
         } else {
             $('.form-group-choice').css('display', 'none');
         }
-    });
+    };
+    updateType();
+    elementType.change(updateType);
 
     /**
      * ACQUISITION: When selection options change
      */
-    var updateChoiceOptions = function () {
-        var choices = $(this).val().split(';'),
+    updateChoiceOptions = function () {
+        var choices = elementChoices.val().split(';'),
             list = $('*#form-choice-option-list'),
             choicesHtml = '';
 
@@ -26,6 +32,7 @@ $(function(){
         list.empty();
         list.html(choicesHtml);
     };
-    $('*#acquisition_fieldTypeChoiceOptions').change(updateChoiceOptions);
+    elementChoices.change(updateChoiceOptions);
+    updateChoiceOptions();
 
 });
