@@ -64,6 +64,7 @@ $(function () {
             type: 'POST',
             url: '/admin/newsletter/affected-recipient-count',
             data: {
+                _token: $('*#dialogSend').data('token'),
                 ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
                 ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
                 events: $('*#newsletter_mail_events').val() || []
@@ -84,5 +85,53 @@ $(function () {
         });
     };
     $('*#newsletter_mail_ageRangeBegin, *#newsletter_mail_ageRangeEnd, *#newsletter_mail_events').change(updateRecipientCount);
+
+    /**
+     * NEWSLETTER: Send modal
+     */
+    $('#dialogSend').on('show.bs.modal', function (e) {
+        var listColEl = $('#new-recipient-list-description'),
+            recpientEl = $('#new-recipient-list'),
+            alertEl = $('.alert-no-recipients'),
+            btnSend = $('#sendMessageButton'),
+            updateAlertElVisibility = function (visible) {
+                if (visible) {
+                    alertEl.css('display', 'block');
+                } else {
+                    alertEl.css('display', 'none');
+                }
+            };
+        updateAlertElVisibility(false);
+        listColEl.attr('class', 'loading-text');
+        btnSend.toggleClass('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/newsletter/affected-recipient-list',
+            data: {
+                _token: $('*#dialogSend').data('token'),
+                lid: 1,
+                ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
+                ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
+                events: $('*#newsletter_mail_events').val() || []
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.length) {
+                    btnSend.toggleClass('disabled', false);
+                    updateAlertElVisibility(false);
+                    recpientEl.html("");
+                    $.each(response, function (key, value) {
+                        recpientEl.append('<li>' + eHtml(value) + '</li>');
+                    });
+                } else {
+                    updateAlertElVisibility(true);
+                }
+            },
+            complete: function () {
+                listColEl.attr('class', '');
+            }
+        });
+    });
 
 });

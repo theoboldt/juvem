@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
 class AdminController extends Controller
@@ -188,9 +189,16 @@ class AdminController extends Controller
      */
     public function affectedNewsletterRecipientAmountAction(Request $request)
     {
-        $ageRangeBegin      = $request->get('ageRangeBegin');
-        $ageRangeEnd        = $request->get('ageRangeEnd');
+        $token              = $request->get('_token');
+        $ageRangeBegin      = (int)$request->get('ageRangeBegin');
+        $ageRangeEnd        = (int)$request->get('ageRangeEnd');
         $similarEventIdList = $request->get('events');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('newsletterSendDialog')) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
 
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         $count      = count(
@@ -203,7 +211,40 @@ class AdminController extends Controller
                 'count' => $count
             )
         );
+    }
 
+    /**
+     * Data provider for recipients
+     *
+     * @Route("/admin/newsletter/affected-recipient-list", name="newsletter_admin_affected_recipient")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     */
+    public function affectedNewsletterRecipientAction(Request $request)
+    {
+        $token              = $request->get('_token');
+        $lid                = (int)$request->get('lid');
+        $ageRangeBegin      = (int)$request->get('ageRangeBegin');
+        $ageRangeEnd        = (int)$request->get('ageRangeEnd');
+        $similarEventIdList = $request->get('events');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('newsletterSendDialog')) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
+
+        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $recipients = $repository->qualifiedNewsletterSubscriptionList(
+            $ageRangeBegin, $ageRangeEnd, $similarEventIdList, $lid
+        );
+
+        $result = [];
+        /** @var NewsletterSubscription $recipient */
+        foreach ($recipients as $recipient) {
+            $result[] = $recipient->getName();
+        }
+
+        return new JsonResponse($result);
     }
 
     /**

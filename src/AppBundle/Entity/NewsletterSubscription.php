@@ -115,6 +115,16 @@ class NewsletterSubscription extends NewsletterAbstract
     }
 
     /**
+     * Get nameLast if set, returns email if not
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->nameLast ? $this->nameLast : $this->email;
+    }
+
+    /**
      * Get nameLast
      *
      * @return string

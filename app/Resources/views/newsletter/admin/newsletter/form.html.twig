@@ -1,12 +1,11 @@
 {{ form_start(form) }}
-<div class="row">
+<div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="col-xs-12">
         <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogSend">Abschicken</button>
-        <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog"
-             aria-labelledby="dialogModalLabel">
+        <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel" data-token="{{ csrf_token('newsletterSendDialog') }}">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -17,10 +16,14 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-xs-12 col-sm-6">
-                                <p>Der Newsletter wird an die folgenden Empfänger verschickt:</p>
-                                <ul>
-                                    <li>xx</li>
+                                <p id="new-recipient-list-description">Der Newsletter wird an die folgenden Empfänger verschickt:</p>
+                                <ul id="new-recipient-list">
                                 </ul>
+                                <div data-alerts="alerts">
+                                    <div class="alert alert-info alert-no-recipients">
+                                        Für diese Nachricht qualifizieren sich keine (neuen) Empfänger.
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-sm-6">
                                 <p>Der Newsletter wurde bereits an die folgenden Empfänger verschickt:</p>
@@ -50,9 +53,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
-                        </button>
-                        <input type="submit" class="btn btn-primary" value="Newsletter Abschicken"/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                        <button type="button" class="btn btn-primary" id="sendMessageButton">Newsletter abschicken</button>
                     </div>
                 </div>
             </div>

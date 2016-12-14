@@ -25,21 +25,15 @@
 }
 
 
-#affectedSubscription,
-.loading-text,
-#affectedSubscription.loading-text {
-  -webkit-transition: color 0.2s;
-  -moz-transition: color 0.2s;
-  -ms-transition: color 0.2s;
-  -o-transition: color 0.2s;
-  transition: color 0.2s;
+.loading-text {
+  @include transition(color 0.2s);
 }
 
 #affectedSubscription {
   color: black;
 }
 
-#affectedSubscription.loading-text {
+.loading-text {
   color: #454546;
   animation: pulse 3s infinite;
 }

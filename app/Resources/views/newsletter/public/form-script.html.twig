@@ -20,6 +20,8 @@
         elAgeRangeBegin.on('change', updateRange);
         elAgeRangeEnd.on('change', updateRange);
 
+        var sliderChangeTimer;
+
         slider.jRange({
             from: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }},
             to: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MAX') }},
@@ -37,7 +39,13 @@
                 value = value.split(',');
                 elAgeRangeBegin.val(value[0]);
                 elAgeRangeEnd.val(value[1]);
-                elAgeRangeBegin.trigger( 'change' );
+
+                if (sliderChangeTimer) {
+                    clearTimeout(sliderChangeTimer);
+                }
+                sliderChangeTimer = setTimeout(function () {
+                    elAgeRangeBegin.trigger( 'change' );
+                }, 600);
             },
             snap: true,
             showLabels: true,

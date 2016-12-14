@@ -79,6 +79,7 @@ class NewsletterSubscriptionRepository extends EntityRepository
         while ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
             $qualifiedIds[] = $row[0];
         }
+        return $qualifiedIds;
     }
 
     /**
@@ -87,7 +88,6 @@ class NewsletterSubscriptionRepository extends EntityRepository
      * @see qualifiedNewsletterSubscriptionQuery()
      * @param int      $ageRangeBegin             Begin of interesting age range
      * @param int      $ageRangeEnd               Begin of interesting age range
-     * @param array    $similarEventIdList        List of subscribed event ids
      * @param array    $similarEventIdList        List of subscribed event ids
      * @param int|null $excludeFromNewsletter     Define newsletter id here to exclude subscriptions which have already
      *                                            received the transmitted newsletter
