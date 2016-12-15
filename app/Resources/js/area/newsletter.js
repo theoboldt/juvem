@@ -51,7 +51,7 @@ $(function () {
         );
     };
     $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreviewAndDisableSend);
-    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreviewAndDisableSend);
+    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea, *#mail-form-newsletter select').change(updateMailPreviewAndDisableSend);
 
     if ($("#newsletter_mail_subject").val() != '' && $("#newsletter_mail_title").val() != ''
         && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
@@ -100,7 +100,8 @@ $(function () {
      */
     var btnSend = $('#sendMessageButton');
     $('#dialogSend').on('show.bs.modal', function (e) {
-        var listColEl = $('#new-recipient-list-description'),
+        var lid = btnSend.data('lid'),
+            listColEl = $('#new-recipient-list-description'),
             recpientEl = $('#new-recipient-list'),
             alertEl = $('.alert-no-recipients'),
             updateAlertElVisibility = function (visible) {
@@ -119,7 +120,7 @@ $(function () {
             url: '/admin/newsletter/affected-recipient-list',
             data: {
                 _token: $('*#dialogSend').data('token'),
-                lid: 1,
+                lid: lid,
                 ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
                 ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
                 events: $('*#newsletter_mail_events').val() || []
@@ -144,7 +145,7 @@ $(function () {
     });
 
     /**
-     * Ensure that modal is not opening if related button is disabled
+     * NEWSLETTER: Ensure that modal is not opening if related button is disabled
      */
     btnOpenSendModal.click(function () {
         if ($(this).hasClass('disabled')) {
@@ -152,7 +153,27 @@ $(function () {
         }
     });
 
+    /**
+     * NEWSLETTER: Send newsletter
+     */
     btnSend.click(function () {
+        var lid = $(this).data('lid');
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/newsletter/send',
+            data: {
+                _token: $('*#dialogSend').data('token'),
+                lid: lid
+            },
+            dataType: 'json',
+            success: function (response) {
+
+            },
+            complete: function () {
+
+            }
+        });
     });
 
 

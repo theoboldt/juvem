@@ -2,6 +2,7 @@
 namespace AppBundle\Controller\Newsletter;
 
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class AdminController extends Controller
@@ -248,6 +250,43 @@ class AdminController extends Controller
     }
 
     /**
+     * Send newsletter
+     *
+     * @Route("/admin/newsletter/send", name="newsletter_send")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     */
+    public function sendNewsletterAction(Request $request)
+    {
+        $token = $request->get('_token');
+        $lid   = (int)$request->get('lid');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('newsletterSendDialog')) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
+
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
+        $newsletter = $repository->findOneBy(['lid' => $lid]);
+
+        if (!$newsletter) {
+            throw new NotFoundHttpException('Requested newsletter not found by lid');
+        }
+        $eventIds = [];
+        /** @var Event $event */
+        foreach ($newsletter->getEvents() as $event) {
+            $eventIds[] = $event->getEid();
+        }
+        $recipients = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription')
+                           ->qualifiedNewsletterSubscriptionList(
+                               $newsletter->getAgeRangeBegin(), $newsletter->getAgeRangeEnd(), $eventIds,
+                               $newsletter->getLid()
+                           );
+
+        return new JsonResponse();
+    }
+
+    /**
      * Create new newsletter page
      *
      * @Route("/admin/newsletter/create", name="newsletter_admin_create")
@@ -280,7 +319,7 @@ class AdminController extends Controller
     /**
      * Page for details of a newsletter
      *
-     * @Route("/admin/newsletter/edit/{lid}", requirements={"lid": "\d"}, name="newsletter_edit")
+     * @Route("/admin/newsletter/{lid}/edit", requirements={"lid": "\d"}, name="newsletter_edit")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
     public function detailedNewsletterAction(Request $request)
