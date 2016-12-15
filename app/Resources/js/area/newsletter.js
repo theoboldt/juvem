@@ -1,4 +1,6 @@
 $(function () {
+    var btnOpenSendModal = $('#openDialogSend');
+
     /**
      * NEWSLETTER: Email preview
      */
@@ -41,8 +43,15 @@ $(function () {
         });
         updateButton.prop('disabled', false);
     };
-    $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
-    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreview);
+    updateMailPreviewAndDisableSend = function () {
+        updateMailPreview();
+        btnOpenSendModal.toggleClass('disabled', true).prop(
+            'title',
+            'Bevor der Newsletter versandt werden kann, müssen alle Änderungen gespeichert werden.'
+        );
+    };
+    $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreviewAndDisableSend);
+    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea').change(updateMailPreviewAndDisableSend);
 
     if ($("#newsletter_mail_subject").val() != '' && $("#newsletter_mail_title").val() != ''
         && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
@@ -89,11 +98,11 @@ $(function () {
     /**
      * NEWSLETTER: Send modal
      */
+    var btnSend = $('#sendMessageButton');
     $('#dialogSend').on('show.bs.modal', function (e) {
         var listColEl = $('#new-recipient-list-description'),
             recpientEl = $('#new-recipient-list'),
             alertEl = $('.alert-no-recipients'),
-            btnSend = $('#sendMessageButton'),
             updateAlertElVisibility = function (visible) {
                 if (visible) {
                     alertEl.css('display', 'block');
@@ -133,5 +142,18 @@ $(function () {
             }
         });
     });
+
+    /**
+     * Ensure that modal is not opening if related button is disabled
+     */
+    btnOpenSendModal.click(function () {
+        if ($(this).hasClass('disabled')) {
+            return false;
+        }
+    });
+
+    btnSend.click(function () {
+    });
+
 
 });

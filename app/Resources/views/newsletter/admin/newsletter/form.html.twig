@@ -1,10 +1,10 @@
 {{ form_start(form) }}
 <div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="col-xs-12">
-        <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
+        <button type="button" class="btn btn-default btn-update-preview">{{ 'sunglasses'|glyph }} Vorschau aktualisieren
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>
-        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogSend">Abschicken</button>
+        <button type="button" id="openDialogSend" class="btn btn-default" data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Abschicken</button>
         <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel" data-token="{{ csrf_token('newsletterSendDialog') }}">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -87,7 +87,7 @@
         <p id="affectedSubscription"><i>(Anzahl potentieller Empfänger)</i></p>
 
         <p>Dieser Newsletter wurde bereits an {{ newsletter.recipients.count }} Empfänger versandt.</p>
-        <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren
+        <button type="button" class="btn btn-default btn-update-preview">{{ 'sunglasses'|glyph }} Vorschau aktualisieren
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>
     </div>
