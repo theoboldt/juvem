@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -283,7 +284,26 @@ class AdminController extends Controller
                                $newsletter->getLid()
                            );
 
-        return new JsonResponse();
+        $mailManager = $this->get('app.newsletter_manager');
+        $sentCount   = $mailManager->mailNewsletter($newsletter, $recipients);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($newsletter);
+        $em->flush();
+
+        if ($sentCount) {
+            $this->addFlash(
+                'success',
+                sprintf('Der Newsletter wurde erfolgreich an %d Empfänger versandt.', $sentCount)
+            );
+        } else {
+            $this->addFlash(
+                'warning',
+                'Der Newsletter wurde an keinen Empfänger versandt.'
+            );
+        }
+
+        return new Response();
     }
 
     /**

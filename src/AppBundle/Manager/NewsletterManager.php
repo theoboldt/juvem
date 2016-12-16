@@ -2,6 +2,7 @@
 
 namespace AppBundle\Manager;
 
+use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
 
@@ -29,12 +30,18 @@ class NewsletterManager extends AbstractMailerAwareManager
     /**
      * Send a newsletter email
      *
-     * @param array                          $data          The custom text for email
+     * @param Newsletter                     $newsletter    Newsletter to send
      * @param array|NewsletterSubscription[] $subscriptions A list of newsletter subscriptions which should receive
      *                                                      this newsletter
+     * @return int                                          Amount of sent messages
      */
-    public function mailNewsletter(array $data, array $subscriptions)
+    public function mailNewsletter(Newsletter $newsletter, array $subscriptions)
     {
+        $data = [
+            'subject' => $newsletter->getSubject(), 'title' => $newsletter->getTitle(),
+            'lead'    => $newsletter->getLead(), 'content' => $newsletter->getContent()
+        ];
+
         $dataText = array();
         $dataHtml = array();
 
@@ -52,13 +59,23 @@ class NewsletterManager extends AbstractMailerAwareManager
         }
         unset($content);
 
+        $this->logger->info(
+            'Going to send newsletter {lid} for {count} recipients',
+            ['lid' => $newsletter->getLid(), 'count' => count($subscriptions)]
+        );
+
+        $sentCount = 0;
+
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
+            $startTime = microtime(true);
             if ($subscription->getIsEnabled()) {
-                $dataBoth     = array('text' => $dataText,
-                                      'html' => $dataHtml
+                $dataBoth     = array(
+                    'text' => $dataText,
+                    'html' => $dataHtml
                 );
                 $email        = $subscription->getEmail();
+                $firstName    = '';
                 $lastName     = $subscription->getNameLast();
                 $assignedUser = $subscription->getAssignedUser();
                 if ($assignedUser) {
@@ -66,10 +83,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $firstName = $assignedUser->getNameFirst();
                 }
 
-
-                $message = $this->mailGenerator->getMessage(
-                    'general-raw', $dataBoth
-                );
+                $message = $this->mailGenerator->getMessage('general-raw', $dataBoth);
 
                 if ($assignedUser) {
                     $message->setTo(
@@ -82,10 +96,25 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $message->setTo($email);
                 }
 
-                $this->mailer->send($message);
+                $resultCount = $this->mailer->send($message);
+                $sentCount += $resultCount;
+                $newsletter->addRecipient($subscription);
 
+                $duration = round(microtime(true) - $startTime);
+                if ($resultCount) {
+                    $this->logger->info(
+                        'Sent newsletter to {rid} in {duration} seconds',
+                        ['rid' => $subscription->getRid(), 'duration' => $duration]
+                    );
+                } else {
+                    $this->logger->error(
+                        'Failed to send newsletter to {rid} in {duration} seconds',
+                        ['rid' => $subscription->getRid(), 'duration' => $duration]
+                    );
+                }
             }
         }
 
+        return $sentCount;
     }
 }

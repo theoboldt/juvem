@@ -39,10 +39,10 @@ services:
         arguments: ['@twig']
     app.participation_manager:
         class: AppBundle\Manager\ParticipationManager
-        arguments: ['@mailer', '@app.twig_mail_generator']
+        arguments: ['@mailer', '@app.twig_mail_generator', '@logger']
     app.newsletter_manager:
         class: AppBundle\Manager\NewsletterManager
-        arguments: ['@mailer', '@app.twig_mail_generator']
+        arguments: ['@mailer', '@app.twig_mail_generator', '@logger']
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
         arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%']

@@ -98,51 +98,52 @@ $(function () {
     /**
      * NEWSLETTER: Send modal
      */
-    var btnSend = $('#sendMessageButton');
-    $('#dialogSend').on('show.bs.modal', function (e) {
-        var lid = btnSend.data('lid'),
-            listColEl = $('#new-recipient-list-description'),
-            recpientEl = $('#new-recipient-list'),
-            alertEl = $('.alert-no-recipients'),
-            updateAlertElVisibility = function (visible) {
-                if (visible) {
-                    alertEl.css('display', 'block');
-                } else {
-                    alertEl.css('display', 'none');
-                }
-            };
-        updateAlertElVisibility(false);
-        listColEl.attr('class', 'loading-text');
-        btnSend.toggleClass('disabled', true);
+    var btnSend = $('#sendMessageButton'),
+        updatePotentialRecipients = function () {
+            var lid = btnSend.data('lid'),
+                listColEl = $('#new-recipient-list-description'),
+                recpientEl = $('#new-recipient-list'),
+                alertEl = $('.alert-no-recipients'),
+                updateAlertElVisibility = function (visible) {
+                    if (visible) {
+                        alertEl.css('display', 'block');
+                    } else {
+                        alertEl.css('display', 'none');
+                    }
+                };
+            updateAlertElVisibility(false);
+            listColEl.attr('class', 'loading-text');
+            btnSend.toggleClass('disabled', true);
 
-        $.ajax({
-            type: 'POST',
-            url: '/admin/newsletter/affected-recipient-list',
-            data: {
-                _token: $('*#dialogSend').data('token'),
-                lid: lid,
-                ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
-                ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
-                events: $('*#newsletter_mail_events').val() || []
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.length) {
-                    btnSend.toggleClass('disabled', false);
-                    updateAlertElVisibility(false);
+            $.ajax({
+                type: 'POST',
+                url: '/admin/newsletter/affected-recipient-list',
+                data: {
+                    _token: $('*#dialogSend').data('token'),
+                    lid: lid,
+                    ageRangeBegin: $('*#newsletter_mail_ageRangeBegin').val(),
+                    ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
+                    events: $('*#newsletter_mail_events').val() || []
+                },
+                dataType: 'json',
+                success: function (response) {
                     recpientEl.html("");
-                    $.each(response, function (key, value) {
-                        recpientEl.append('<li>' + eHtml(value) + '</li>');
-                    });
-                } else {
-                    updateAlertElVisibility(true);
+                    if (response.length) {
+                        btnSend.toggleClass('disabled', false);
+                        updateAlertElVisibility(false);
+                        $.each(response, function (key, value) {
+                            recpientEl.append('<li>' + eHtml(value) + '</li>');
+                        });
+                    } else {
+                        updateAlertElVisibility(true);
+                    }
+                },
+                complete: function () {
+                    listColEl.attr('class', '');
                 }
-            },
-            complete: function () {
-                listColEl.attr('class', '');
-            }
-        });
-    });
+            });
+        };
+    $('#dialogSend').on('show.bs.modal', updatePotentialRecipients);
 
     /**
      * NEWSLETTER: Ensure that modal is not opening if related button is disabled
@@ -168,10 +169,10 @@ $(function () {
             },
             dataType: 'json',
             success: function (response) {
-
+                location.reload();
             },
-            complete: function () {
-
+            fail: function () {
+                updatePotentialRecipients();
             }
         });
     });
