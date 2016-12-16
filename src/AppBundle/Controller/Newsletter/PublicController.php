@@ -64,8 +64,8 @@ class PublicController extends Controller
                     'Die Änderungen des Newsletter-Abonnements wurden gespeichert'
                 );
             } else {
-                $participationManager = $this->get('app.newsletter_manager');
-                $participationManager->mailNewsletterSubscriptionRequested($subscription);
+                $mailManager = $this->get('app.newsletter_manager');
+                $mailManager->mailNewsletterSubscriptionRequested($subscription);
 
                 $this->addFlash(
                     'success',
