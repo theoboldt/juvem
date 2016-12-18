@@ -63,6 +63,7 @@ class NewsletterSubscriptionRepository extends EntityRepository
                FROM newsletter_subscription s
           LEFT JOIN event_newsletter_subscription es ON (s.rid = es.rid AND es.eid IN (%2$s))
               WHERE is_enabled = 1
+                AND is_confirmed = 1
                 AND (
                       ( :ageRangeBegin <= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_end + %1$s) ELSE s.age_range_end END)
                         AND :ageRangeEnd >= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_begin + %1$s) ELSE s.age_range_begin END)

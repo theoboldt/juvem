@@ -69,7 +69,7 @@ class NewsletterManager extends AbstractMailerAwareManager
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
             $startTime = microtime(true);
-            if ($subscription->getIsEnabled()) {
+            if ($subscription->getIsEnabled() && $subscription->getIsConfirmed()) {
                 $dataBoth     = array(
                     'text' => $dataText,
                     'html' => $dataHtml
