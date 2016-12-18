@@ -52,7 +52,7 @@ class Newsletter extends NewsletterAbstract
      * Contains a list of events which related to the topic of this newsletter
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event")
-     * @ORM\JoinTable(name="event_newsletter_related",
+     * @ORM\JoinTable(name="newsletter_event",
      *      joinColumns={@ORM\JoinColumn(name="lid", referencedColumnName="lid", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")})
      */
@@ -62,7 +62,7 @@ class Newsletter extends NewsletterAbstract
      * Contains a list of subscriptions which received this newsletter
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NewsletterSubscription")
-     * @ORM\JoinTable(name="event_newsletter_recipients",
+     * @ORM\JoinTable(name="newsletter_subscription_sent",
      *      joinColumns={@ORM\JoinColumn(name="lid", referencedColumnName="lid", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="rid", referencedColumnName="rid", onDelete="CASCADE")})
      */
