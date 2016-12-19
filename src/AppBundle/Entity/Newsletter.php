@@ -73,8 +73,10 @@ class Newsletter extends NewsletterAbstract
      */
     public function __construct()
     {
-        $this->events     = new ArrayCollection();
-        $this->recipients = new ArrayCollection();
+        $this->events        = new ArrayCollection();
+        $this->recipients    = new ArrayCollection();
+        $this->ageRangeBegin = 6;
+        $this->ageRangeEnd   = 13;
         parent::__construct();
     }
 

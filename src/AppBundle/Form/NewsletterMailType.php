@@ -26,8 +26,7 @@ class NewsletterMailType extends AbstractType
                 NumberType::class,
                 array(
                     'label'    => 'Altersspanne (minimales Alter)',
-                    'required' => false,
-                    'data'     => 6
+                    'required' => false
                 )
             )
             ->add(
@@ -35,8 +34,7 @@ class NewsletterMailType extends AbstractType
                 NumberType::class,
                 array(
                     'label'    => 'Altersspanne (maximales Alter)',
-                    'required' => false,
-                    'data'     => 12
+                    'required' => false
                 )
             )
             ->add(
