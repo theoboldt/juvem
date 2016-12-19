@@ -159,6 +159,7 @@ $(function () {
      */
     btnSend.click(function () {
         var lid = $(this).data('lid');
+        btnSend.prop('disabled', true);
 
         $.ajax({
             type: 'POST',
@@ -168,10 +169,11 @@ $(function () {
                 lid: lid
             },
             dataType: 'json',
-            success: function (response) {
-                location.reload();
+            success: function () {
+                location.reload(true);
             },
             fail: function () {
+                btnSend.prop('disabled', false);
                 updatePotentialRecipients();
             }
         });
