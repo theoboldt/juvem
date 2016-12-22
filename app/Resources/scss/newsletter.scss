@@ -13,11 +13,11 @@
 }
 
 .theme-green .back-bar div.selected-bar {
-    background-color: $ejdvLightOrange;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(lighten($ejdvLightOrange, 10%)), to($ejdvLightOrange));
-    background-image: -webkit-linear-gradient(top, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
-    background-image: -o-linear-gradient(top, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
-    background-image: linear-gradient(to bottom, lighten($ejdvLightOrange, 10%), $ejdvLightOrange);
+    background-color: $brandPrimaryDark;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(lighten($brandPrimaryDark, 10%)), to($brandPrimaryDark));
+    background-image: -webkit-linear-gradient(top, lighten($brandPrimaryDark, 10%), $brandPrimaryDark);
+    background-image: -o-linear-gradient(top, lighten($brandPrimaryDark, 10%), $brandPrimaryDark);
+    background-image: linear-gradient(to bottom, lighten($brandPrimaryDark, 10%), $brandPrimaryDark);
 
 }
 .progress-bar-empty {

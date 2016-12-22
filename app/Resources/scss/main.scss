@@ -4,21 +4,21 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-$ejdvYellow: #fce63b;
-$ejdvLightOrange: #fcc214;
-$ejdvDarkOrange: #fb793d;
+$brandPrimaryLight: #fce63b;
+$brandPrimaryDark: #fcc214;
+$brandSecondary: #fb793d;
 
-$brand-primary: $ejdvLightOrange;
+$brand-primary: $brandPrimaryDark;
 
 /*
 //bootstrap base theme
-$navbar-default-bg: $ejdvDarkOrange;
-$navbar-default-color: darken($ejdvDarkOrange, 5%);
+$navbar-default-bg: $brandSecondary;
+$navbar-default-color: darken($brandSecondary, 5%);
 */
 
 //inverse navbar
-$navbar-inverse-bg: $ejdvLightOrange;
-$navbar-inverse-border: $ejdvLightOrange;
+$navbar-inverse-bg: $brandPrimaryDark;
+$navbar-inverse-border: $brandPrimaryDark;
 
 $navbar-inverse-color: #222;
 $navbar-inverse-color: #222;
@@ -31,7 +31,7 @@ $navbar-inverse-toggle-icon-bar-bg: lighten(#222, 10%);
 $navbar-inverse-link-hover-bg: lighten($navbar-inverse-bg, 10%);
 
 //breadcrumb
-$breadcrumb-bg: lighten($ejdvLightOrange, 42%);
+$breadcrumb-bg: lighten($brandPrimaryDark, 42%);
 $breadcrumb-color: #222;
 $breadcrumb-active-color: lighten($breadcrumb-color, 10%);
 
@@ -44,22 +44,22 @@ $breadcrumb-active-color: lighten($breadcrumb-color, 10%);
   }
 }
 
-$input-border-focus: $ejdvLightOrange;
+$input-border-focus: $brandPrimaryDark;
 /*
-$headings-small-color: $ejdvDarkOrange;
+$headings-small-color: $brandSecondary;
 
 //panel
-$panel-default-heading-bg: lighten($ejdvLightOrange, 45%);
-$panel-default-border: lighten($ejdvLightOrange, 15%);
+$panel-default-heading-bg: lighten($brandPrimaryDark, 45%);
+$panel-default-border: lighten($brandPrimaryDark, 15%);
 
 //input
-$input-border: lighten($ejdvLightOrange, 5%);
+$input-border: lighten($brandPrimaryDark, 5%);
 $input-group-addon-bg: darken($panel-default-heading-bg, 10%);
-//$input-color: darken($ejdvDarkOrange, 30%);
+//$input-color: darken($brandSecondary, 30%);
 
 //button
 $btn-default-bg: darken($panel-default-heading-bg, 2%);
-$btn-default-color: $ejdvDarkOrange;
+$btn-default-color: $brandSecondary;
 $btn-default-border: $input-border;
 
 
@@ -69,7 +69,7 @@ $state-info-text: darken($state-info-bg, 70%);
 
 
 //$input-border-focus: red;
-$legend-color: darken($ejdvLightOrange, 25%);
+$legend-color: darken($brandPrimaryDark, 25%);
 */
 
 $link-color: lighten(#333, 20%);
@@ -91,7 +91,7 @@ $icon-font-path: '../font/';
 @import 'cookiechoice';
 
 html, body {
-  background-color: $ejdvLightOrange;
+  background-color: $brandPrimaryDark;
 }
 
 
