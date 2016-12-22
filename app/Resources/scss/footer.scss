@@ -1,13 +1,13 @@
 #page-footer {
   margin-top: 60px;
-  color: #222222;
+  color: $footerFgColor;
   background-color: $brandPrimaryDark;
 
   a, a:link {
-    color: #222222;
+    color: lighten($footerFgColor, 1%);
   }
   a:hover {
-    color: lighten(#222222, 25%);
+    color: lighten($footerFgColor, 25%);
   }
   h2 {
     display: none;

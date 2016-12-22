@@ -14,34 +14,6 @@ $navbar-default-bg: $brandSecondary;
 $navbar-default-color: darken($brandSecondary, 5%);
 */
 
-//inverse navbar
-$navbar-inverse-bg: $brandPrimaryDark;
-$navbar-inverse-border: $brandPrimaryDark;
-
-$navbar-inverse-color: #222;
-$navbar-inverse-color: #222;
-
-$navbar-inverse-link-color: lighten(#222, 5%);
-$navbar-inverse-link-hover-color: darken(#222, 25%);
-$navbar-inverse-link-active-color: darken($navbar-inverse-link-hover-color, 4%);
-$navbar-inverse-brand-hover-color: darken($navbar-inverse-link-hover-color, 4%);
-$navbar-inverse-toggle-icon-bar-bg: lighten(#222, 10%);
-$navbar-inverse-link-hover-bg: lighten($navbar-inverse-bg, 10%);
-
-//breadcrumb
-$breadcrumb-bg: lighten($brandPrimaryDark, 42%);
-$breadcrumb-color: #222;
-$breadcrumb-active-color: lighten($breadcrumb-color, 10%);
-
-.breadcrumb {
-  a {
-    color: darken($brand-primary, 25%);
-  }
-  a:hover {
-    color: darken($brand-primary, 15%);
-  }
-}
-
 $input-border-focus: $brandPrimaryDark;
 /*
 $headings-small-color: $brandSecondary;
