@@ -27,7 +27,7 @@ Juvem is a symfony 3.2 based application.
 * Checkout project
 * Navigate into project folder
 * Install PHP composer dependencies with `composer install`. If you did not configure configs parameters.yml file before, you may be asked now to do so.
-* Setup database by executing `./app/console doctrine:schema:create
+* Setup database by executing `./app/console doctrine:schema:create`
 * Install npm dependencies with `npm install`
 * In order to have CSS and JS build, you need to execute grunt task `grunt deploy`
 
