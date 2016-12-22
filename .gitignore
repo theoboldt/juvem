@@ -4,6 +4,7 @@
 /web/apple-touch-icon*
 /web/safari-pinned-tab.svg
 /app/config/parameters.yml
+/app/config/branding.scss
 /bin/
 /build/
 /composer.phar

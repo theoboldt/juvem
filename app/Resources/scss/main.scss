@@ -4,9 +4,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-$brandPrimaryLight: #fce63b;
-$brandPrimaryDark: #fcc214;
-$brandSecondary: #fb793d;
+@import '../../config/branding';
 
 $brand-primary: $brandPrimaryDark;
 
