@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Systemmeldung bearbeiten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Systemmeldung', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('flash_list') }}">Systemmeldungen</a></li>
+            <li class="active">Systemmeldung bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        {% include 'flash/form-html.html.twig' with {'form': form} %}
+        <div class="row">
+            <div class="col-xs-12">
+                <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+{% block javascriptCustom %}
+    {% include 'flash/form-script.html.twig' %}
+{% endblock %}

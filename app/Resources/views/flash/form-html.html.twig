@@ -1,0 +1,32 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-4">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-12">
+                        {{ form_row(form.type) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="form-group">
+                    {{ form_widget(form.hasValidFrom) }}
+                    {{ form_errors(form.validFrom) }}
+                    {{ form_widget(form.validFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="form-group">
+                    {{ form_widget(form.hasValidUntil) }}
+                    {{ form_errors(form.validUntil) }}
+                    {{ form_widget(form.validUntil) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_row(form.message) }}
+            </div>
+        </div>
+    </div>
+</div>

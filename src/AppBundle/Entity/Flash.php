@@ -121,6 +121,17 @@ class Flash
     }
 
     /**
+     * Returns true if a valid from is restricted
+     *
+     * @param  bool|null $value Value which not actually processed
+     * @return bool
+     */
+    public function hasValidFrom($value = null)
+    {
+        return (bool)$this->validFrom;
+    }
+
+    /**
      * Get validFrom
      *
      * @return \DateTime
@@ -142,6 +153,17 @@ class Flash
         $this->validUntil = $validUntil;
 
         return $this;
+    }
+
+    /**
+     * Returns true if a valid until is restricted
+     *
+     * @param  bool|null $value Value which not actually processed
+     * @return bool
+     */
+    public function hasValidUntil($value = null)
+    {
+        return (bool)$this->validUntil;
     }
 
     /**

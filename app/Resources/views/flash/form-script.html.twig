@@ -1,0 +1,46 @@
+<script type='text/javascript'>
+    $(function () {
+        var updateBoxState = function (box) {
+            var name = box.attr('name'),
+                    checked = box.prop('checked'),
+                    fieldList = [];
+
+            switch (name) {
+                case 'flash[hasValidFrom]':
+                    fieldList = [
+                        'flash[validFrom][date][year]',
+                        'flash[validFrom][date][month]',
+                        'flash[validFrom][date][day]',
+                        'flash[validFrom][time][hour]',
+                        'flash[validFrom][time][minute]'
+                    ];
+                    break;
+                case 'flash[hasValidUntil]':
+                    fieldList = [
+                        'flash[validUntil][date][year]',
+                        'flash[validUntil][date][month]',
+                        'flash[validUntil][date][day]',
+                        'flash[validUntil][time][hour]',
+                        'flash[validUntil][time][minute]'
+                    ];
+                    break;
+                default:
+                    return true;
+            }
+
+            $.each(fieldList, function (i, v) {
+                $('[name="' + v + '"]').attr('disabled', !checked);
+            });
+
+            return true;
+        };
+
+        $("[type=checkbox]").change(function () {
+            return updateBoxState($(this));
+        });
+
+        $.each($("[type=checkbox]"), function (i, v) {
+            return updateBoxState($(v));
+        });
+    });
+</script>

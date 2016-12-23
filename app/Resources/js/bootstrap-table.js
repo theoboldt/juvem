@@ -139,7 +139,7 @@ $(function () {
      * NEWSLETTER: newsletters
      */
     $('#flashListTable').on('click-row.bs.table', function (e, row, $element) {
-        //openInNewTabOnMetaKey(row.lid + '/edit');
+        openInNewTabOnMetaKey(row.fid);
     });
 
 });

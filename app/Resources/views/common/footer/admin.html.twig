@@ -60,12 +60,13 @@
                 <li><a href="{{ path('public_participations') }}">Anmeldungen verwalten</a></li>
             </ul>
 
-            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
-                <h3><a href="{{ path('user_list') }}">Benutzer</a></h3>
-                <ul>
+            <h3>System</h3>
+            <ul>
+                <li><a href="{{ path('flash_list') }}">Meldungen verwalten</a></li>
+                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
                     <li><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
-                </ul>
-            {% endif %}
+                {% endif %}
+            </ul>
         </div>
     </div>
 </div>
