@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Flash;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,21 +15,31 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventList  = $repository->findAllWithCounts();
+        $repositoryFlash = $this->getDoctrine()->getRepository('AppBundle:Flash');
+        $flashList       = $repositoryFlash->findValid();
+        /** @var Flash $flash */
+        foreach ($flashList as $flash) {
+            $this->addFlash(
+                $flash->getType(),
+                $this->container->get('markdown.parser')->transformMarkdown($flash->getMessage())
+            );
+        }
+
+        $repositoryEvent = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventList       = $repositoryEvent->findAllWithCounts();
 
         $user           = $this->getUser();
-        $participations = array();
+        $participations = [];
         if ($user) {
             $participations = $user->getAssignedParticipations();
         }
 
         return $this->render(
             'default/index.html.twig',
-            array(
+            [
                 'events'         => $eventList,
                 'participations' => $participations
-            )
+            ]
         );
     }
 
