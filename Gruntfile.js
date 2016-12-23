@@ -126,7 +126,7 @@ module.exports = function (grunt) {
                 }
             },
             sass: {
-                files: '<%= resourcesPath %>/scss/**/*.scss',
+                files: ['<%= resourcesPath %>/scss/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
                 tasks: ['sass', 'concat:distCss', 'cssmin'],
                 options: {
                     livereload: true
