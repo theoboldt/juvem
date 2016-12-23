@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Systemmeldungen verwalten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Systemmeldungen', 'subtitle': 'verwalten'} %}
+        {% block breadcrumb %}
+            <li class="active">Systemmeldungen</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="flashListTable" class="table table-striped" data-id-field="uid"
+                       data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-striped="true" data-show-filter="true" data-search="true"
+                       data-url="list.json">
+                    <thead>
+                    <tr>
+                        <th data-field="fid" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="valid_from" data-sortable="true" data-sorter="germanDateTimeSorter">Gültig von</th>
+                        <th data-field="valid_until" data-sortable="true"  data-sorter="germanDateTimeSorter" data-order="desc">Gültig bis</th>
+                        <th data-field="message" data-sortable="true">Nachricht</th>
+                    </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

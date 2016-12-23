@@ -60,7 +60,10 @@ class Builder implements ContainerAwareInterface
                 }
 
                 if ($this->userHasRole(User::ROLE_ADMIN_USER)) {
-                    $menu->addChild('Benutzer', array('route' => 'user_list'));
+                    $menu->addChild('System')
+                         ->setAttribute('dropdown', true);
+                    $menu['System']->addChild('Benutzer verwalten', array('route' => 'user_list'));
+                    $menu['System']->addChild('Systemmeldungen verwalten', array('route' => 'flash_list'));
                 }
             } else {
                 $menu->addChild('Newsletter', array('route' => 'newsletter_subscription'));
