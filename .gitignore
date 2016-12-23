@@ -2,6 +2,8 @@
 /web/favicon*
 /web/android-chrome-*
 /web/apple-touch-icon*
+/web/browserconfig.xml
+/web/manifest.json
 /web/safari-pinned-tab.svg
 /app/config/parameters.yml
 /app/config/branding.scss
