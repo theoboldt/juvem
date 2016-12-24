@@ -31,9 +31,8 @@ class FlashRepository extends EntityRepository
      */
     public function findValid()
     {
-        $qb = $this->createQueryBuilder('AppBundle:Flash');
-        $qb->from(Flash::class, 'f')
-           ->andWhere($qb->expr()->orX('f.validFrom IS NULL', 'f.validFrom >= CURRENT_TIMESTAMP()'))
+        $qb = $this->createQueryBuilder('f');
+        $qb->andWhere($qb->expr()->orX('f.validFrom IS NULL', 'f.validFrom >= CURRENT_TIMESTAMP()'))
            ->andWhere($qb->expr()->orX('f.validUntil IS NULL', 'f.validUntil <= CURRENT_TIMESTAMP()'))
            ->orderBy('f.validUntil', 'ASC');
 
