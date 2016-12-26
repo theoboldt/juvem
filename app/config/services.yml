@@ -37,6 +37,7 @@ services:
     app.twig_global_customization:
         class: AppBundle\Twig\GlobalCustomization
         arguments:
+            - '@twig'
             - '%customization.app_title%'
             - '%customization.organization_name%'
             - '%customization.organization_address_street%'

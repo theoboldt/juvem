@@ -2,6 +2,8 @@
 
 namespace AppBundle\Twig;
 
+use Twig_Environment;
+
 /**
  * Twig global for placing installation based app names and legal notices
  *
@@ -11,6 +13,13 @@ namespace AppBundle\Twig;
  */
 class GlobalCustomization
 {
+    /**
+     * Twig environment used for rendering
+     *
+     * @var Twig_Environment
+     */
+    protected $twig;
+
     /**
      * Name of app
      *
@@ -77,21 +86,23 @@ class GlobalCustomization
     /**
      * Customization constructor
      *
-     * @param string $appTitle          Name of app
-     * @param string $organizationName  Name of organization
-     * @param string $addressStreet     Address of organization, street name
-     * @param string $addressPostalCode Address of organization, postal code
-     * @param string $addressLocality   Address of organization, city
-     * @param string $numberPhone       Phone number of organization
-     * @param string $numberFax         Fax number of organization
-     * @param string $email             E-mail address of organization
-     * @param string $website           Website of organization
+     * @param Twig_Environment $twig              Twig environment used for rendering
+     * @param string           $appTitle          Name of app
+     * @param string           $organizationName  Name of organization
+     * @param string           $addressStreet     Address of organization, street name
+     * @param string           $addressPostalCode Address of organization, postal code
+     * @param string           $addressLocality   Address of organization, city
+     * @param string           $numberPhone       Phone number of organization
+     * @param string           $numberFax         Fax number of organization
+     * @param string           $email             E-mail address of organization
+     * @param string           $website           Website of organization
      */
     public function __construct(
-        $appTitle, $organizationName, $addressStreet, $addressPostalCode, $addressLocality, $numberPhone, $numberFax,
-        $email, $website
+        Twig_Environment $twig, $appTitle, $organizationName, $addressStreet, $addressPostalCode, $addressLocality,
+        $numberPhone, $numberFax, $email, $website
     )
     {
+        $this->twig              = $twig;
         $this->appTitle          = $appTitle;
         $this->organizationName  = $organizationName;
         $this->addressStreet     = $addressStreet;
@@ -133,28 +144,18 @@ class GlobalCustomization
         $formatPhoneNumber = function ($v) {
             return str_replace(['(', ' ', ')', '-', '/'], '', $v);
         };
-
-        return sprintf(
-            '<span itemscope itemtype="http://schema.org/Organization">
-                    <i itemprop="name">%s</i>,
-                    <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                        <span itemprop="streetAddress">%s</span>,
-                        <span itemprop="postalCode">%s</span> <span itemprop="addressLocality">%s</span>
-                    </span>
-                    (Telefon: <span itemprop="telephone">%s</span>,
-                    Telefax: <span itemprop="faxNumber">%s</span>,
-                    E-Mail: <span itemprop="email">%s</span>, 
-                    Website: <a itemprop="url" href="http:/%s/" target="_blank">%s</a>)
-            </span>',
-            $this->organizationName,
-            $this->addressStreet,
-            $this->addressPostalCode,
-            $this->addressLocality,
-            $formatPhoneNumber($this->numberPhone),
-            $formatPhoneNumber($this->numberFax),
-            $this->email,
-            $this->website,
-            $this->website
+        return $this->twig->render(
+            'customization/organization-card-inline.html.twig',
+            [
+                'organizationName'  => $this->organizationName,
+                'addressStreet'     => $this->addressStreet,
+                'addressPostalCode' => $this->addressPostalCode,
+                'addressLocality'   => $this->addressLocality,
+                'numberPhone'       => $formatPhoneNumber($this->numberPhone),
+                'numberFax'         => $formatPhoneNumber($this->numberFax),
+                'email'             => $this->email,
+                'website'           => $this->website
+            ]
         );
     }
 
@@ -165,32 +166,20 @@ class GlobalCustomization
      */
     public function organizationCard()
     {
-        return sprintf('
-            <div itemscope itemtype="http://schema.org/Organization">
-                <address>
-                    <strong itemprop="name">%s</strong><br>
-
-                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                        <span itemprop="streetAddress">%s</span><br>
-                        <span itemprop="postalCode">%s</span> <span itemprop="addressLocality">%s</span><br>
-
-                    </div>
-                    <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> <span itemprop="telephone">%s</span><br>
-                    <span class="glyphicon glyphicon-print" aria-hidden="true"></span> <span itemprop="faxNumber">%s</span><br>
-                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <span itemprop="email">%s</span><br>
-                    <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> <a itemprop="url" href="http:/%s/" target="_blank">%s</a>
-                </address>
-            </div>',
-            $this->organizationName,
-            $this->addressStreet,
-            $this->addressPostalCode,
-            $this->addressLocality,
-            $this->numberPhone,
-            $this->numberFax,
-            $this->email,
-            $this->website,
-            $this->website
+        return $this->twig->render(
+            'customization/organization-card.html.twig',
+            [
+                'organizationName'  => $this->organizationName,
+                'addressStreet'     => $this->addressStreet,
+                'addressPostalCode' => $this->addressPostalCode,
+                'addressLocality'   => $this->addressLocality,
+                'numberPhone'       => $this->numberPhone,
+                'numberFax'         => $this->numberFax,
+                'email'             => $this->email,
+                'website'           => $this->website
+            ]
         );
+
     }
 
     /**

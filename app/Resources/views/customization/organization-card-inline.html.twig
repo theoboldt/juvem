@@ -1,0 +1,11 @@
+<span itemscope itemtype="http://schema.org/Organization">
+    <i itemprop="name">{{ organizationName }}</i>,
+    <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">{{ addressStreet }}</span>,
+        <span itemprop="postalCode">{{ addressPostalCode }}</span> <span itemprop="addressLocality">{{ addressLocality }}</span>
+    </span>
+    (Telefon: <span itemprop="telephone">{{ numberPhone }}</span>,
+    Telefax: <span itemprop="faxNumber">{{ numberFax }}</span>,
+    E-Mail: <span itemprop="email">{{ email }}</span>{% if website %},
+    Website: <a itemprop="url" href="http:/{{ website }}" target="_blank">{{ website }}</a>{% endif %})
+</span>
