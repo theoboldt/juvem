@@ -19,7 +19,7 @@
                 <p>Die Datenschutzerklärung finden Sie auf einer separaten Seite:<br>
                     <a href="{{ path('legal') }}">Datenschutzerklärung</a></p>
             </div>
-            {% if customization.isCustomizationAvailable('conditions-of-travel-content') %}
+            {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-content') %}
                 <div class="col-xs-12 col-sm-6">
                     <h3>Reisebedingungen</h3>
                     <p>Die Reisebedingungen finden Sie auf einer separaten Seite:<br>
