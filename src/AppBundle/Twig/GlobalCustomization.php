@@ -177,7 +177,7 @@ class GlobalCustomization
                     </div>
                     <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> <span itemprop="telephone">%s</span><br>
                     <span class="glyphicon glyphicon-print" aria-hidden="true"></span> <span itemprop="faxNumber">%s</span><br>
-                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <span itemprop="email">%s</span>
+                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <span itemprop="email">%s</span><br>
                     <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> <a itemprop="url" href="http:/%s/" target="_blank">%s</a>
                 </address>
             </div>',
