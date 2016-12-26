@@ -7,6 +7,7 @@
 /web/safari-pinned-tab.svg
 /app/config/parameters.yml
 /app/config/branding.scss
+/app/config/impressum-content.html.twig
 /bin/
 /build/
 /composer.phar

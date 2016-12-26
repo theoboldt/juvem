@@ -21,6 +21,13 @@ class GlobalCustomization
     protected $twig;
 
     /**
+     * Contains applications root dir
+     *
+     * @var string
+     */
+    private $rootDir;
+
+    /**
      * Name of app
      *
      * @var string
@@ -87,6 +94,7 @@ class GlobalCustomization
      * Customization constructor
      *
      * @param Twig_Environment $twig              Twig environment used for rendering
+     * @param string           $rootDir           Applications root dir
      * @param string           $appTitle          Name of app
      * @param string           $organizationName  Name of organization
      * @param string           $addressStreet     Address of organization, street name
@@ -98,11 +106,12 @@ class GlobalCustomization
      * @param string           $website           Website of organization
      */
     public function __construct(
-        Twig_Environment $twig, $appTitle, $organizationName, $addressStreet, $addressPostalCode, $addressLocality,
-        $numberPhone, $numberFax, $email, $website
+        Twig_Environment $twig, $rootDir, $appTitle, $organizationName, $addressStreet, $addressPostalCode,
+        $addressLocality, $numberPhone, $numberFax, $email, $website
     )
     {
         $this->twig              = $twig;
+        $this->rootDir           = $rootDir;
         $this->appTitle          = $appTitle;
         $this->organizationName  = $organizationName;
         $this->addressStreet     = $addressStreet;
@@ -179,18 +188,23 @@ class GlobalCustomization
                 'website'           => $this->website
             ]
         );
-
     }
 
     /**
-     * Access privacy notice
+     * HTML markup for impressum page content
      *
-     * @return  string  Html formatted text
+     * @return string
      */
-    public function legalPrivacyNotice()
+    public function legalImpressumContent()
     {
-        return 'AGB';
+        $customizedImpressumPage = $this->rootDir . '/config/impressum-content.html.twig';
+        if (file_exists($customizedImpressumPage) && is_readable($customizedImpressumPage)) {
+            return $this->twig->render($customizedImpressumPage);
+        } else {
+            return $this->twig->render('legal/impressum-content-default.html.twig');
+        }
     }
+
 
     /**
      * Access privacy notice

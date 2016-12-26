@@ -38,6 +38,7 @@ services:
         class: AppBundle\Twig\GlobalCustomization
         arguments:
             - '@twig'
+            - '%kernel.root_dir%'
             - '%customization.app_title%'
             - '%customization.organization_name%'
             - '%customization.organization_address_street%'
