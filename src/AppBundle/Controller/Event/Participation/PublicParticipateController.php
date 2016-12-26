@@ -1,7 +1,6 @@
 <?php
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -73,7 +72,7 @@ class PublicParticipateController extends Controller
         $form = $this->createForm(ParticipationType::class, $participation);
 
         $form->handleRequest($request);
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $request->getSession()
                     ->set('participation-' . $eid, $participation);
 

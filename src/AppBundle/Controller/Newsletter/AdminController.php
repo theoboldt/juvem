@@ -165,7 +165,7 @@ class AdminController extends Controller
         $form         = $this->createForm(NewsletterSubscriptionType::class, $subscription);
 
         $form->handleRequest($request);
-        if ($form->isValid() && $form->isSubmitted() && $subscription) {
+        if ($form->isSubmitted() && $form->isValid() && $subscription) {
             $em = $this->getDoctrine()->getManager();
 
             $em->persist($subscription);
@@ -317,7 +317,7 @@ class AdminController extends Controller
         $form       = $this->createForm(NewsletterMailType::class, $newsletter);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($newsletter);
             $em->flush();
@@ -352,7 +352,7 @@ class AdminController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($newsletter);
             $em->flush();

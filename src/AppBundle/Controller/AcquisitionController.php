@@ -78,7 +78,7 @@ class AcquisitionController extends Controller
                      ->getForm();
 
         $form->handleRequest($request);
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $action = $form->get('action')
                            ->getData();
             switch ($action) {

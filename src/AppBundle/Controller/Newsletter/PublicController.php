@@ -48,7 +48,7 @@ class PublicController extends Controller
         $form = $this->createForm(NewsletterSubscriptionType::class, $subscription);
 
         $form->handleRequest($request);
-        if ($form->isValid() && $form->isSubmitted() && $subscription) {
+        if ($form->isSubmitted() && $form->isValid() && $subscription) {
             $tokenGenerator = $this->get('fos_user.util.token_generator');
             $subscription->setDisableToken($tokenGenerator->generateToken());
 
@@ -100,7 +100,7 @@ class PublicController extends Controller
         $form = $this->createForm(NewsletterSubscriptionType::class, $subscription);
 
         $form->handleRequest($request);
-        if ($form->isValid() && $form->isSubmitted() && $subscription) {
+        if ($form->isSubmitted() && $form->isValid() && $subscription) {
             $em = $this->getDoctrine()
                        ->getManager();
 
