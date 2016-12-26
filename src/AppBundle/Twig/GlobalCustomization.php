@@ -130,6 +130,10 @@ class GlobalCustomization
      */
     public function organizationCardInline()
     {
+        $formatPhoneNumber = function ($v) {
+            return str_replace(['(', ' ', ')', '-', '/'], '', $v);
+        };
+
         return sprintf(
             '<span itemscope itemtype="http://schema.org/Organization">
                     <i itemprop="name">%s</i>,
@@ -146,8 +150,8 @@ class GlobalCustomization
             $this->addressStreet,
             $this->addressPostalCode,
             $this->addressLocality,
-            str_replace(['(', ' ', ')'], '', $this->numberPhone),
-            str_replace(['(', ' ', ')'], '', $this->numberFax),
+            $formatPhoneNumber($this->numberPhone),
+            $formatPhoneNumber($this->numberFax),
             $this->email,
             $this->website,
             $this->website
