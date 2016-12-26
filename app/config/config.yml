@@ -8,7 +8,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.upload_image_manager.path: %kernel.root_dir%/cache/%kernel.environment%/upload_image
+    app.upload_image_manager.path: "%kernel.root_dir%/cache/%kernel.environment%/upload_image"
 
 framework:
     assets:
@@ -17,10 +17,10 @@ framework:
         packages:
             js:
                 version: "%app.version.hash.js%"
-                version_format: %%s?h%%s
+                version_format: "%%s?h%%s"
             css:
                 version: "%app.version.hash.css%"
-                version_format: %%s?h%%s
+                version_format: "%%s?h%%s"
     #esi:             ~
     translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
@@ -107,7 +107,7 @@ vich_uploader:
     mappings:
         event_image:
             uri_prefix:         /uploads/event
-            upload_destination: %kernel.root_dir%/../web/uploads/event
+            upload_destination: "%kernel.root_dir%/../web/uploads/event"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
