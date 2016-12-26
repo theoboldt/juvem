@@ -197,14 +197,36 @@ class GlobalCustomization
      */
     public function legalImpressumContent()
     {
-        $customizedImpressumPage = $this->rootDir . '/config/impressum-content.html.twig';
-        if (file_exists($customizedImpressumPage) && is_readable($customizedImpressumPage)) {
-            return $this->twig->render($customizedImpressumPage);
-        } else {
-            return $this->twig->render('legal/impressum-content-default.html.twig');
-        }
+        return $this->renderCustomizedIfAvailable('impressum-content');
     }
 
+    /**
+     * HTML markup for impressum page content
+     *
+     * @return string
+     */
+    public function legalConditionsOfTravelContent()
+    {
+        return $this->renderCustomizedIfAvailable('conditions-of-travel-content');
+    }
+
+    /**
+     * Render defined template, use customized override in config folder if defined
+     *
+     * @see isCustomizationAvailable()
+     * @see customizedTemplatePath()
+     * @param   string $template Template base name
+     * @return  string
+     */
+    protected function renderCustomizedIfAvailable($template)
+    {
+        $customizedTemplate = self::customizedTemplatePath($this->rootDir, $template);
+        if (self::isCustomizationAvailable($this->rootDir, $template)) {
+            return $this->twig->render($customizedTemplate);
+        } else {
+            return $this->twig->render('legal/' . $template . '.html.twig');
+        }
+    }
 
     /**
      * Access privacy notice
@@ -215,4 +237,31 @@ class GlobalCustomization
     {
         return 'RGB';
     }
+
+    /**
+     * Generates path to customized template
+     *
+     * @param  string $rootDir  The root dir of application
+     * @param  string $template Template base name
+     * @return string
+     */
+    public static function customizedTemplatePath($rootDir, $template)
+    {
+        return $rootDir . '/config/' . $template . '.html.twig';
+    }
+
+    /**
+     * Find out if there is a customization for defined template available
+     *
+     * @see customizedTemplatePath()
+     * @param  string $rootDir  The root dir of application
+     * @param  string $template Template base name
+     * @return boolean
+     */
+    public static function isCustomizationAvailable($rootDir, $template)
+    {
+        $customizedTemplate = self::customizedTemplatePath($rootDir, $template);
+        return (file_exists($customizedTemplate) && is_readable($customizedTemplate));
+    }
+
 }

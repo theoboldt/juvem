@@ -8,6 +8,8 @@
 /app/config/parameters.yml
 /app/config/branding.scss
 /app/config/impressum-content.html.twig
+/app/config/conditions-of-travel-content.html.twig
+/app/config/conditions-of-travel-scrollspy.html.twig
 /bin/
 /build/
 /composer.phar

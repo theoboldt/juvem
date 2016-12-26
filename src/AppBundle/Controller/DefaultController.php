@@ -44,29 +44,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/legal", name="legal")
-     * @Route("/datenschutzerklaerung")
-     * @Route("/datenschutz")
-     */
-    public function legalAction()
-    {
-        return $this->render(
-            'legal/privacy-page.html.twig'
-        );
-    }
-
-
-    /**
-     * @Route("/impressum", name="impressum")
-     */
-    public function impressumAction()
-    {
-        return $this->render(
-            'legal/impressum-page.html.twig'
-        );
-    }
-
-    /**
      * @Route("/heartbeat", name="heartbeat")
      */
     public function heartbeatAction()
