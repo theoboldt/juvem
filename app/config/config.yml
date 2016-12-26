@@ -62,6 +62,7 @@ twig:
     globals:
         version: "%app.version%"
         assetJsIntegrity: "%app.version.integrity.js%"
+        customization: "@app.twig_global_customization"
 
 # Doctrine Configuration
 doctrine:
@@ -117,8 +118,8 @@ fos_user:
     firewall_name: main
     user_class: AppBundle\Entity\User
     from_email:
-        address:        jungschar.vaihingen@gmail.com
-        sender_name:    Evangelisches Jugendwerk Stuttgart-Vaihingen
+        address:        "%mailer_user%"
+        sender_name:    "%customization.organization_name%"
     registration:
         form:
             type: AppBundle\Form\UserRegistrationFormType

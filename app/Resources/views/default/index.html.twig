@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Jugendwerk-Veranstaltungen{% endblock %}
+{% block title %}{{ customization.title }}{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Evangelisches Jugendwerk Stuttgart Vaihingen'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': customization.organizationName} %}
         {% block breadcrumbfull %}
             <ol class="breadcrumb">
                 <li class="active"><a href="{{ path('homepage') }}">Juvem</a></li>

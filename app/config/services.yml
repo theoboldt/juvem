@@ -34,6 +34,18 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_global_customization:
+        class: AppBundle\Twig\GlobalCustomization
+        arguments:
+            - '%customization.app_title%'
+            - '%customization.organization_name%'
+            - '%customization.organization_address_street%'
+            - '%customization.organization_address_postal_code%'
+            - '%customization.organization_address_postal_locality%'
+            - '%customization.organization_number_phone%'
+            - '%customization.organization_number_fax%'
+            - '%customization.organization_email%'
+            - '%customization.organization_website%'
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
         arguments: ['@twig']
