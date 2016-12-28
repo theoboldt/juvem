@@ -191,23 +191,33 @@ class GlobalCustomization
     }
 
     /**
-     * HTML markup for impressum page content
+     * HTML markup for imprint page content
      *
      * @return string
      */
-    public function legalImpressumContent()
+    public function legalImprintContent()
     {
-        return $this->renderCustomizedIfAvailable('impressum-content');
+        return $this->renderCustomizedIfAvailable('imprint-content');
     }
 
     /**
-     * HTML markup for impressum page content
+     * HTML markup for imprint page content
      *
      * @return string
      */
     public function legalConditionsOfTravelContent()
     {
         return $this->renderCustomizedIfAvailable('conditions-of-travel-content');
+    }
+
+    /**
+     * HTML markup for imprint page content
+     *
+     * @return string
+     */
+    public function legalConditionsOfTravelScrollspy()
+    {
+        return $this->renderCustomizedIfAvailable('conditions-of-travel-scrollspy');
     }
 
     /**
@@ -226,16 +236,6 @@ class GlobalCustomization
         } else {
             return $this->twig->render('legal/' . $template . '.html.twig');
         }
-    }
-
-    /**
-     * Access privacy notice
-     *
-     * @return  string  Html formatted text
-     */
-    public function legalConditionsOfTravel()
-    {
-        return 'RGB';
     }
 
     /**

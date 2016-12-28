@@ -29,15 +29,16 @@ class LegalController extends Controller
         if (GlobalCustomization::isCustomizationAvailable($rootDir, 'conditions-of-travel-content')) {
             return $this->render('legal/conditions-of-travel-page.html.twig');
         } else {
-            return $this->redirectToRoute('impressum');
+            return $this->redirectToRoute('imprint');
         }
     }
 
     /**
-     * @Route("/impressum", name="impressum")
+     * @Route("/imprint", name="imprint")
+     * @Route("/impressum")
      */
-    public function impressumAction()
+    public function imprintAction()
     {
-        return $this->render('legal/impressum-page.html.twig');
+        return $this->render('legal/imprint-page.html.twig');
     }
 }

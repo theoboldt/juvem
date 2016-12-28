@@ -13,16 +13,10 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(
-            200, $client->getResponse()
-                        ->getStatusCode()
+            200, $client->getResponse()->getStatusCode()
         );
         $this->assertContains(
-            'Veranstaltung', $crawler->filter('#page-body h1')
-                                     ->text()
-        );
-        $this->assertContains(
-            'Evangelisches Jugendwerk Stuttgart Vaihingen', $crawler->filter('#page-body h1 small')
-                                                                    ->text()
+            'Veranstaltung', $crawler->filter('#page-body h1')->text()
         );
     }
 
@@ -33,8 +27,7 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/legal');
 
         $this->assertEquals(
-            200, $client->getResponse()
-                        ->getStatusCode()
+            200, $client->getResponse()->getStatusCode()
         );
         $this->assertContains(
             'Datenschutzerklärung', $crawler->filter('#page-body h1')
@@ -42,19 +35,17 @@ class DefaultControllerTest extends WebTestCase
         );
     }
 
-    public function testAvailabilityImpressumPage()
+    public function testAvailabilityimprintPage()
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/impressum');
+        $crawler = $client->request('GET', '/imprint');
 
         $this->assertEquals(
-            200, $client->getResponse()
-                        ->getStatusCode()
+            200, $client->getResponse()->getStatusCode()
         );
         $this->assertContains(
-            'Impressum', $crawler->filter('#page-body h1')
-                                 ->text()
+            'Impressum', $crawler->filter('#page-body h1')->text()
         );
     }
 
