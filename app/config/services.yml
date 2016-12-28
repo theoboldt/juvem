@@ -49,7 +49,7 @@ services:
             - '%customization.organization_email%'
             - '%customization.organization_website%'
             - '%customization.organization_facebook%'
-            - '%%customization.juvem_website%'
+            - '%customization.juvem_website%'
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
         arguments: ['@twig']
