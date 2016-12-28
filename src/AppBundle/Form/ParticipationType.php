@@ -14,22 +14,21 @@ class ParticipationType extends ParticipationBaseType
         $builder->add(
             'acceptPrivacy',
             CheckboxType::class,
-            array(
+            [
                 'label'    => 'Ich habe die Datenschutzerklärung gelesen und erkläre mich mit den Angaben einverstanden. Ich kann diese Erklärung jederzeit Wiederrufen.',
                 'required' => true,
                 'mapped'   => false
-            )
-        /*
-        )
-        ->add(
-            'acceptLegal',
+            ]
+        );
+
+        $builder->add(
+            'acceptConditionsOfTravel',
             CheckboxType::class,
-            array(
-                'label'    => 'Ich akzeptiere die Allgemeinen Geschäftsbedingungen',
+            [
+                'label'    => 'Ich akzeptiere die Reisebedingungen und erkläre mich mit den Angaben einverstanden.',
                 'required' => true,
                 'mapped'   => false
-            )
-        */
+            ]
         );
     }
 }

@@ -39,9 +39,9 @@ class Newsletter extends NewsletterAbstract
     protected $title;
 
     /**
-     * @ORM\Column(type="text", name="lead")
+     * @ORM\Column(type="text", name="lead", nullable=true)
      */
-    protected $lead = '';
+    protected $lead = null;
 
     /**
      * @ORM\Column(type="text", name="content")
