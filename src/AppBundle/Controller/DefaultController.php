@@ -64,10 +64,27 @@ class DefaultController extends Controller
 
     /**
      * @Route("/apple-app-site-association")
+     * @Route("/.well-known/apple-app-site-association")
      */
-    public function appleUniversialLinksAction()
+    public function appleUniversalLinksAction()
     {
         return new JsonResponse(['applinks' => ['apps' => [], 'details' => []]]);
+    }
+
+    /**
+     * @Route("/m")
+     * @Route("/mobile")
+     */
+    public function redirectToHomeAction() {
+            return $this->redirectToRoute('homepage');
+    }
+
+    /**
+     * @Rout("/.well-known/assetlinks.json")
+     */
+    public function unsupportedAction()
+    {
+        return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
 }
