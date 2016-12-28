@@ -1,7 +1,7 @@
 #JUVEM
 Juvem is a symfony based web application to manage events and newsletters. 
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.0-8892BF.svg?style=flat-square)](https://php.net/) [![AUR](https://img.shields.io/aur/license/yaourt.svg?style=flat-square)]()
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.0-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
 
 ## Features
 
