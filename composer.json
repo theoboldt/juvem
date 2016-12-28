@@ -1,8 +1,14 @@
 {
     "name": "theoboldt/juvem",
-    "license": "GPL-2.0",
+    "license": "MIT",
     "type": "project",
     "description": "A web application to manage events, participants and newsletter subscriptions",
+    "authors": [
+        {
+            "name": "Erik Theoboldt",
+            "email": "erik@theoboldt.eu"
+        }
+    ],
     "autoload": {
       "psr-4": {
         "": "src/"
@@ -18,7 +24,7 @@
       }
     },
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.0",
         "symfony/symfony": "3.2.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
@@ -40,6 +46,7 @@
         "knplabs/knp-markdown-bundle": "1.5.*"
     },
     "require-dev": {
+        "phpunit/phpunit": "^5.7",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
@@ -60,7 +67,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.5.9"
+            "php": "7.0"
         },
         "bin-dir": "bin"
     },
