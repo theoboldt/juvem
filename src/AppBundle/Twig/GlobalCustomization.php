@@ -359,7 +359,7 @@ class GlobalCustomization
      */
     public function organizationFacebook()
     {
-        return $this->website;
+        return $this->facebook;
     }
 
     /**
