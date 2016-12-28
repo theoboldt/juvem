@@ -99,7 +99,7 @@
 <a href="https://www.facebook.com/{{ customization.organizationFacebook }}/">Facebook</a>
 </td>
 </tr>
-</table>
+</table>{% if customization.juvemWebsite %}
 <br>
 <table class="tiny-button ejus-online-button">
 <tr>
@@ -107,7 +107,7 @@
 <a href="{{ path('homepage') }}">{{ customization.juvemWebsite }}</a>
 </td>
 </tr>
-</table>
+</table>{% endif %}
 </td>
 <td class="expander"></td>
 </tr>
