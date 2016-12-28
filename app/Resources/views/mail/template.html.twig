@@ -27,7 +27,7 @@
 <!--<img src="favicon-32x32.png">-->
 </td>
 <td class="ten sub-columns last" style="text-align:right; vertical-align:middle;">
-<span class="template-label"><abbr title="Jugendwerks-Veranstaltungsmanager">Juvem</abbr> {{ customization.organizationName }} </span>
+<span class="template-label">Juvem {{ customization.organizationName }} </span>
 </td>
 <td class="expander"></td>
 </tr>
@@ -88,7 +88,7 @@
 <table class="tiny-button ejdv-button">
 <tr>
 <td>
-<a href="http://www.ejdv.de/">www.ejdv.de</a>
+<a href="http://{{ customization.organizationWebsite }}/">{{ customization.organizationWebsite }}</a>
 </td>
 </tr>
 </table>
@@ -96,7 +96,7 @@
 <table class="tiny-button facebook">
 <tr>
 <td>
-<a href="https://www.facebook.com/jugendwerk/">Facebook</a>
+<a href="https://www.facebook.com/{{ customization.organizationFacebook }}/">Facebook</a>
 </td>
 </tr>
 </table>
@@ -104,7 +104,7 @@
 <table class="tiny-button ejus-online-button">
 <tr>
 <td>
-<a href="http://www.ejus-online.de/">www.ejus-online.de</a>
+<a href="{{ path('homepage') }}">{{ customization.juvemWebsite }}</a>
 </td>
 </tr>
 </table>

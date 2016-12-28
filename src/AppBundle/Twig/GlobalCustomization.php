@@ -86,9 +86,23 @@ class GlobalCustomization
     /**
      * Website of organization
      *
-     * @var string
+     * @var string|null
      */
     private $website;
+
+    /**
+     * Facebook link if available
+     *
+     * @var string|null
+     */
+    private $facebook;
+
+    /**
+     * Juvem base url
+     *
+     * @var string|null
+     */
+    private $juvemWebsite;
 
     /**
      * Customization constructor
@@ -103,11 +117,13 @@ class GlobalCustomization
      * @param string           $numberPhone       Phone number of organization
      * @param string           $numberFax         Fax number of organization
      * @param string           $email             E-mail address of organization
-     * @param string           $website           Website of organization
+     * @param string|null      $website           Website of organization
+     * @param string|null      $facebook          Facebook link if available
+     * @param string|null      $juvemWebsite      Juvem app website base url
      */
     public function __construct(
         Twig_Environment $twig, $rootDir, $appTitle, $organizationName, $addressStreet, $addressPostalCode,
-        $addressLocality, $numberPhone, $numberFax, $email, $website
+        $addressLocality, $numberPhone, $numberFax, $email, $website = null, $facebook = null, $juvemWebsite = null
     )
     {
         $this->twig              = $twig;
@@ -121,6 +137,8 @@ class GlobalCustomization
         $this->numberFax         = $numberFax;
         $this->email             = $email;
         $this->website           = $website;
+        $this->facebook          = $facebook;
+        $this->juvemWebsite      = $juvemWebsite;
     }
 
     /**
@@ -128,7 +146,7 @@ class GlobalCustomization
      *
      * @return string
      */
-    public function organizationCardInline()
+    public function organizationCardInline(): string
     {
         $formatPhoneNumber = function ($v) {
             return str_replace(['(', ' ', ')', '-', '/'], '', $v);
@@ -153,7 +171,7 @@ class GlobalCustomization
      *
      * @return string
      */
-    public function organizationCard()
+    public function organizationCard(): string
     {
         return $this->twig->render(
             'customization/organization-card.html.twig',
@@ -175,7 +193,7 @@ class GlobalCustomization
      *
      * @return string
      */
-    public function legalImprintContent()
+    public function legalImprintContent(): string
     {
         return $this->renderCustomizedIfAvailable('imprint-content');
     }
@@ -185,7 +203,7 @@ class GlobalCustomization
      *
      * @return string
      */
-    public function legalConditionsOfTravelContent()
+    public function legalConditionsOfTravelContent(): string
     {
         return $this->renderCustomizedIfAvailable('conditions-of-travel-content');
     }
@@ -195,7 +213,7 @@ class GlobalCustomization
      *
      * @return string
      */
-    public function legalConditionsOfTravelScrollspy()
+    public function legalConditionsOfTravelScrollspy(): string
     {
         return $this->renderCustomizedIfAvailable('conditions-of-travel-scrollspy');
     }
@@ -208,7 +226,7 @@ class GlobalCustomization
      * @param   string $template Template base name
      * @return  string
      */
-    protected function renderCustomizedIfAvailable($template)
+    protected function renderCustomizedIfAvailable($template): string
     {
         $customizedTemplate = self::customizedTemplatePath($this->rootDir, $template);
         if (self::isCustomizationAvailable($this->rootDir, $template)) {
@@ -225,7 +243,7 @@ class GlobalCustomization
      * @param  string $template Template base name
      * @return string
      */
-    public static function customizedTemplatePath($rootDir, $template)
+    public static function customizedTemplatePath($rootDir, $template): string
     {
         return $rootDir . '/config/' . $template . '.html.twig';
     }
@@ -238,7 +256,7 @@ class GlobalCustomization
      * @param  string $template Template base name
      * @return boolean
      */
-    public static function isCustomizationAvailable($rootDir, $template)
+    public static function isCustomizationAvailable($rootDir, $template): bool
     {
         $customizedTemplate = self::customizedTemplatePath($rootDir, $template);
         return (file_exists($customizedTemplate) && is_readable($customizedTemplate));
@@ -249,7 +267,7 @@ class GlobalCustomization
      *
      * @return  string  Html formatted text
      */
-    public function title()
+    public function title(): string
     {
         return $this->appTitle;
     }
@@ -259,18 +277,9 @@ class GlobalCustomization
      *
      * @return  string  Html formatted text
      */
-    public function organizationName()
+    public function organizationName(): string
     {
         return $this->organizationName;
-    }
-
-    /**
-     * Access organization website
-     *
-     * @return  string  Website url
-     */
-    public function organizationWebsite() {
-        return $this->website;
     }
 
     /**
@@ -331,6 +340,36 @@ class GlobalCustomization
     public function organizationEmail(): string
     {
         return $this->email;
+    }
+
+    /**
+     * Access organization website
+     *
+     * @return  string|null  Website url
+     */
+    public function organizationWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * Access organization website
+     *
+     * @return  string|null Facebook url part if any defined
+     */
+    public function organizationFacebook()
+    {
+        return $this->website;
+    }
+
+    /**
+     * Get the juvem app base url
+     *
+     * @return null|string
+     */
+    public function juvemWebsite()
+    {
+        return $this->juvemWebsite;
     }
 
 
