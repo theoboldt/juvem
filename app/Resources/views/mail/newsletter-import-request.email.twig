@@ -9,7 +9,7 @@ Guten Tag!
 {% endif %}
 
 
-Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter vom evangelischen Jugendwerk Stuttgart Vaihingen angemeldet haben.
+Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter von {{ customization.organizationName }} angemeldet haben.
     Wir haben unser Newsletter-System jetzt verbessert.
 
 Sie müssen das Abonnement noch bestätigen, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Rufen Sie zum bestätigen die folgende Internetadresse auf:
@@ -19,7 +19,7 @@ Wenn Sie die folgende Internetadresse aufrufen, können Sie Ihr Abonnement ände
 {{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}
 
 Mit besten Grüßen,
-Jugendwerk Stuttgart Vaihingen
+{{ customization.organizationName }}
 {% endautoescape %}
 {% endblock %}
 
@@ -30,7 +30,7 @@ Hallo Familie {{ subscription.nameLast  }}!
 {% else %}
 Guten Tag!
 {% endif %}{% endblock %}
-    {% block lead %}Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter vom evangelischen Jugendwerk Stuttgart Vaihingen angemeldet haben.{% endblock %}
+    {% block lead %}Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter von {{ customization.organizationName }} angemeldet haben.{% endblock %}
     {% block content %}<p>Sie müssen das Abonnement nur noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden. Folgen Sie zum bestätigen den Link im Kasten am Ende der E-Mail.</p><p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, verwenden Sie die folgende Internetadresse: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter-Abonnement verwalten</a></p>{% endblock %}
     {% block calltoactioncontent %}<p>Besuchen Sie bitte folgende Seite, um Ihr Newsletter-Abonnement zu bestätigen:</p>
 <p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Newsletter-Abonnement bestätigen »</a></p>

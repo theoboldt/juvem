@@ -349,6 +349,29 @@
                         </div>
                     </div>
                 </div>
+                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-content') %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h3>Reisebedingungen</h3>
+
+                            <div class="scrollspy-panel">
+                                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-scrollspy') %}
+                                    {{ customization.legalConditionsOfTravelScrollspy|raw }}
+                                {% endif %}
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div data-spy="scroll" data-target="#navbar-conditions-of-travel" data-offset="0" class="scroll">
+                                            {{ customization.legalConditionsOfTravelContent|raw }}
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer">
+                                        {{ form_widget(form.acceptConditionsOfTravel) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <hr/>
 
                 <div class="row">

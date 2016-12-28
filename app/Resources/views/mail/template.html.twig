@@ -27,7 +27,7 @@
 <!--<img src="favicon-32x32.png">-->
 </td>
 <td class="ten sub-columns last" style="text-align:right; vertical-align:middle;">
-<span class="template-label"><abbr title="Jugendwerks-Veranstaltungsmanager">Juvem</abbr> <abbr title="Evangelisches">Evang.</abbr> Jugendwerk <abbr title="Stuttgart">S</abbr>-Vaihingen </span>
+<span class="template-label"><abbr title="Jugendwerks-Veranstaltungsmanager">Juvem</abbr> {{ customization.organizationName }} </span>
 </td>
 <td class="expander"></td>
 </tr>
@@ -118,12 +118,12 @@
 <tr>
 <td class="last right-text-pad">
 <h5>Kontakt:</h5>
-<p>Evangelisches Jugendwerk Vaihingen<br>
-Ackermannstr. 39<br>
-70563 Stuttgart</p>
-<p>Telefon: (0711) 735 13 94</p>
-<p>Telefax: (0711) 133 57 16</p>
-<p>Email: <a>mail@jugendwerk-vaihingen.de</a></p>
+<p>{{ customization.organizationName }}<br>
+{{ customization.organizationAddressStreet }}<br>
+{{ customization.organizationAddressPostalCode }} {{ customization.organizationAddressLocality }}</p>
+<p>Telefon: {{ customization.organizationNumberPhone }}</p>
+<p>Telefax: {{ customization.organizationNumberFax }}</p>
+<p>Email: <a>{{ customization.organizationEmail }}</a></p>
 </td>
 <td class="expander"></td>
 </tr>

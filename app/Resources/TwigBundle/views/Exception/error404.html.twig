@@ -18,11 +18,17 @@
                 <p>
                     Vielleicht finden Sie über die <a href="{{ path('homepage') }}">Startseite</a>, was Sie suchen.
                     Falls Sie durch unsere Website navigieren, und immer wieder zu dieser Seite gelangen, liegt
-                    vielleicht ein Fehler vor. Wenn Sie die Information, die Sie suchen dringend benötigen, können Sie
-                    sich auch unter den auf dieser Seite angegebenen Kontaktdaten an das Jugendwerk wenden. Auch auf der
-                    Website des <a href="http://www.ejdv.de/">evangelischen Jugendwerks Stuttgart-Vaihingen</a> sind in
-                    der Regel Informationen zu den Veranstaltungen zu finden.
+                    vielleicht ein Fehler vor.
                 </p>
+
+                <p>Wenn Sie die Information, die Sie suchen dringend benötigen, nutzen Sie die Kontaktdaten die im <a
+                            href="{{ path('imprint') }}">Impressum</a> für {{ customization.organizationName }}
+                    hinterlegt sind.
+
+                    Auch auf der Website von <a href="http:/{{ customization.organizationWebsite }}"
+                                                target="_blank">{{ customization.organizationName }}</a> sind in
+                    der Regel Informationen zu den Veranstaltungen zu finden.</p>
+
 
                 <h2>Mögliche Ursachen</h2>
 

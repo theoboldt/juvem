@@ -124,26 +124,6 @@ class GlobalCustomization
     }
 
     /**
-     * Access installation title
-     *
-     * @return  string  Html formatted text
-     */
-    public function title()
-    {
-        return $this->appTitle;
-    }
-
-    /**
-     * Access installation organization name
-     *
-     * @return  string  Html formatted text
-     */
-    public function organizationName()
-    {
-        return $this->organizationName;
-    }
-
-    /**
      * HTML markup for inline organization data
      *
      * @return string
@@ -263,5 +243,96 @@ class GlobalCustomization
         $customizedTemplate = self::customizedTemplatePath($rootDir, $template);
         return (file_exists($customizedTemplate) && is_readable($customizedTemplate));
     }
+
+    /**
+     * Access installation title
+     *
+     * @return  string  Html formatted text
+     */
+    public function title()
+    {
+        return $this->appTitle;
+    }
+
+    /**
+     * Access installation organization name
+     *
+     * @return  string  Html formatted text
+     */
+    public function organizationName()
+    {
+        return $this->organizationName;
+    }
+
+    /**
+     * Access organization website
+     *
+     * @return  string  Website url
+     */
+    public function organizationWebsite() {
+        return $this->website;
+    }
+
+    /**
+     * Access organization address street
+     *
+     * @return string
+     */
+    public function organizationAddressStreet(): string
+    {
+        return $this->addressStreet;
+    }
+
+    /**
+     * Access organization address postal code
+     *
+     * @return string
+     */
+    public function organizationAddressPostalCode(): string
+    {
+        return $this->addressPostalCode;
+    }
+
+    /**
+     * Access organization address locality
+     *
+     * @return string
+     */
+    public function organizationAddressLocality(): string
+    {
+        return $this->addressLocality;
+    }
+
+    /**
+     * Access organization phone number
+     *
+     * @return string
+     */
+    public function organizationNumberPhone(): string
+    {
+        return $this->numberPhone;
+    }
+
+    /**
+     * Access organization fax number
+     *
+     * @return string
+     */
+    public function organizationNumberFax(): string
+    {
+        return $this->numberFax;
+    }
+
+    /**
+     * Access organization e-mail
+     *
+     * @return string
+     */
+    public function organizationEmail(): string
+    {
+        return $this->email;
+    }
+
+
 
 }
