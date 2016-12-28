@@ -80,7 +80,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Rout("/.well-known/assetlinks.json")
+     * @Route("/.well-known/assetlinks.json")
      */
     public function unsupportedAction()
     {
