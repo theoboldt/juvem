@@ -15,13 +15,22 @@ class MailGenerator
     protected $twig;
 
     /**
+     * Customization provider service
+     *
+     * @var GlobalCustomization
+     */
+    protected $customization;
+
+    /**
      * Create new mail generator
      *
-     * @param Twig_Environment $twig Twig environment used for rendering
+     * @param Twig_Environment    $twig          Twig environment used for rendering
+     * @param GlobalCustomization $customization Customization provider service
      */
-    public function __construct(Twig_Environment $twig)
+    public function __construct(Twig_Environment $twig, GlobalCustomization $customization)
     {
-        $this->twig = $twig;
+        $this->twig          = $twig;
+        $this->customization = $customization;
     }
 
     /**
@@ -33,6 +42,10 @@ class MailGenerator
      */
     public function getMessageByPath($path, $parameters = [])
     {
+        if (!isset($parameters['customization'])) {
+            $parameters['customization']    = $this->customization;
+        }
+
         /** @var Twig_Template $template */
         $template = $this->twig->loadTemplate($path); // Define your own schema
 
@@ -41,7 +54,7 @@ class MailGenerator
         $bodyText = $template->renderBlock('body_text', $parameters);
 
         return Swift_Message::newInstance()
-                            ->setFrom('jungschar.vaihingen@gmail.com', 'Juvem - Jugendwerk S-Vaihingen')
+                            ->setFrom('jungschar.vaihingen@gmail.com', 'Juvem - '.$this->customization->organizationName())
                             ->setSubject($subject)
                             ->setBody($bodyText, 'text/plain')
                             ->addPart($bodyHtml, 'text/html');
