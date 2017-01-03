@@ -125,6 +125,13 @@ class Event
     protected $participations;
 
     /**
+     * Contains the list of attendance lists assigned to the event
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceList", mappedBy="event", cascade={"remove"})
+     */
+    protected $attendanceLists;
+
+    /**
      * Able to store the amount of participations which are not withdrawn nor deleted
      *
      * @var int|null
@@ -704,5 +711,39 @@ class Event
     public function getIsAutoConfirm()
     {
         return $this->isAutoConfirm;
+    }
+
+    /**
+     * Add attendanceList
+     *
+     * @param \AppBundle\Entity\EventAttendanceList $attendanceList
+     *
+     * @return Event
+     */
+    public function addAttendanceList(\AppBundle\Entity\EventAttendanceList $attendanceList)
+    {
+        $this->attendanceLists[] = $attendanceList;
+
+        return $this;
+    }
+
+    /**
+     * Remove attendanceList
+     *
+     * @param \AppBundle\Entity\EventAttendanceList $attendanceList
+     */
+    public function removeAttendanceList(\AppBundle\Entity\EventAttendanceList $attendanceList)
+    {
+        $this->attendanceLists->removeElement($attendanceList);
+    }
+
+    /**
+     * Get attendanceLists
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttendanceLists()
+    {
+        return $this->attendanceLists;
     }
 }

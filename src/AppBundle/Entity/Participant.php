@@ -80,6 +80,13 @@ class Participant
     protected $acquisitionAttributeFillouts;
 
     /**
+     * Contains the list of attendance lists fillouts of this participation
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListFillout", mappedBy="participant", cascade={"all"})
+     */
+    protected $attendanceListsFillouts;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -414,4 +421,38 @@ class Participant
         return $this->setStatus($status);
     }
 
+
+    /**
+     * Add attendanceListsFillout
+     *
+     * @param \AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout
+     *
+     * @return Participant
+     */
+    public function addAttendanceListsFillout(\AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout)
+    {
+        $this->attendanceListsFillouts[] = $attendanceListsFillout;
+
+        return $this;
+    }
+
+    /**
+     * Remove attendanceListsFillout
+     *
+     * @param \AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout
+     */
+    public function removeAttendanceListsFillout(\AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout)
+    {
+        $this->attendanceListsFillouts->removeElement($attendanceListsFillout);
+    }
+
+    /**
+     * Get attendanceListsFillouts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttendanceListsFillouts()
+    {
+        return $this->attendanceListsFillouts;
+    }
 }
