@@ -33,8 +33,7 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsAction($eid)
     {
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
 
         $event = $eventRepository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -43,17 +42,6 @@ class AdminMultipleController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-
-
-        $em                    = $this->getDoctrine()
-                                      ->getManager();
-        $query                 = $em->createQuery(
-            'SELECT p
-                   FROM AppBundle:Participation p
-              WHERE p.event = :eid'
-        )
-                                    ->setParameter('eid', $eid);
-        $participantEntityList = $query->getResult();
 
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
@@ -113,8 +101,7 @@ class AdminMultipleController extends Controller
 
             $participantEntry = array(
                 'aid'              => $participant->getAid(),
-                'pid'              => $participant->getParticipation()
-                                                  ->getPid(),
+                'pid'              => $participant->getParticipation()->getPid(),
                 'is_deleted'       => (int)($participant->getDeletedAt() instanceof \DateTime),
                 'is_paid'          => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
                 'is_withdrawn'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
