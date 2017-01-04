@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anwesenheitsliste erstellen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitsliste', 'subtitle': 'erstellen'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">Anwesenheitslisten</a></li>
+            <li class="active">Anwesenheitsliste bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                {{ form_row(form.title) }}
+                {{ form_row(form.isPublicTransport) }}
+                {{ form_row(form.isPaid) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <input type="submit" value="Anwesenheitsliste erstellen" class="btn btn-primary"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

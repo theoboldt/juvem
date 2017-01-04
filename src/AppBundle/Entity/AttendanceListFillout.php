@@ -7,6 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list_fillout")
  */
 class AttendanceListFillout
@@ -132,11 +133,11 @@ class AttendanceListFillout
     /**
      * Set participant
      *
-     * @param \AppBundle\Entity\Participant $participant
+     * @param Participant $participant
      *
      * @return AttendanceListFillout
      */
-    public function setParticipant(\AppBundle\Entity\Participant $participant = null)
+    public function setParticipant(Participant $participant = null)
     {
         $this->participant = $participant;
 
@@ -146,7 +147,7 @@ class AttendanceListFillout
     /**
      * Get participant
      *
-     * @return \AppBundle\Entity\Participant
+     * @return Participant
      */
     public function getParticipant()
     {
@@ -156,11 +157,11 @@ class AttendanceListFillout
     /**
      * Set attendanceList
      *
-     * @param \AppBundle\Entity\AttendanceList $attendanceList
+     * @param AttendanceList $attendanceList
      *
      * @return AttendanceListFillout
      */
-    public function setAttendanceList(\AppBundle\Entity\AttendanceList $attendanceList = null)
+    public function setAttendanceList(AttendanceList $attendanceList = null)
     {
         $this->attendanceList = $attendanceList;
 
@@ -170,7 +171,7 @@ class AttendanceListFillout
     /**
      * Get attendanceList
      *
-     * @return \AppBundle\Entity\AttendanceList
+     * @return AttendanceList
      */
     public function getAttendanceList()
     {

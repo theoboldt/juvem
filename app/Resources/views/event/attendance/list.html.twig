@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anwesenheitslisten verwalten ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitslisten', 'subtitle': 'verwalten'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li class="active">Anwesenheitslisten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="bootstrap-table-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <a class="btn btn-primary"
+                           href="{{ path('event_attendance_list_new', {'eid': event.eid }) }}">{{ 'plus'|glyph }}
+                            Neu</a>
+                    </div>
+                </div>
+                <table id="eventAttendanceListTable" class="table table-striped table-remote-content"
+                       data-id-field="tid" data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+                       data-show-filter="true" data-search="true" data-page-size="25"
+                       data-url="{{ path('event_attendance_lists_data', {eid: event.eid}) }}"
+                       data-sort-name="title" data-sort-order="asc">
+                    <thead>
+                    <tr>
+                        <th data-field="tid" data-sortable="true" data-visible="false">#T</th>
+                        <th data-field="eid" data-sortable="true" data-visible="false">E</th>
+                        <th data-field="title" data-sortable="true">Titel</th>
+                        <th data-field="createdAt" data-visible="true" data-sortable="true"
+                            data-sorter="germanDateTimeSorter">Erstellt
+                        </th>
+                        <th data-field="modifiedAt" data-visible="true" data-sortable="true"
+                            data-sorter="germanDateTimeSorter">Bearbeitet
+                        </th>
+                        <th data-field="isPublicTransport" data-visible="true" data-sortable="true">Fahrkarte</th>
+                        <th data-field="isPaid" data-visible="true" data-sortable="true">Bezahlung</th>
+                    </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

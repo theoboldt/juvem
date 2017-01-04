@@ -542,8 +542,9 @@ class Event
      *
      * @return int
      */
-    public function ParticipationsUnconfirmedCount() {
-        return $this->getParticipationsCount()-$this->getParticipationsConfirmedCount();
+    public function ParticipationsUnconfirmedCount()
+    {
+        return $this->getParticipationsCount() - $this->getParticipationsConfirmedCount();
     }
 
     /**
@@ -621,7 +622,7 @@ class Event
         if ($includeParticipationFields && $includeParticipantFields) {
             return $this->acquisitionAttributes;
         }
-        $acquisitionAttributes = array();
+        $acquisitionAttributes = [];
 
         /** @var AcquisitionAttribute $acquisitionAttribute */
         foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
@@ -716,11 +717,11 @@ class Event
     /**
      * Add attendanceList
      *
-     * @param \AppBundle\Entity\EventAttendanceList $attendanceList
+     * @param AttendanceList $attendanceList
      *
      * @return Event
      */
-    public function addAttendanceList(\AppBundle\Entity\EventAttendanceList $attendanceList)
+    public function addAttendanceList(AttendanceList $attendanceList)
     {
         $this->attendanceLists[] = $attendanceList;
 
@@ -730,9 +731,9 @@ class Event
     /**
      * Remove attendanceList
      *
-     * @param \AppBundle\Entity\EventAttendanceList $attendanceList
+     * @param AttendanceList $attendanceList
      */
-    public function removeAttendanceList(\AppBundle\Entity\EventAttendanceList $attendanceList)
+    public function removeAttendanceList(AttendanceList $attendanceList)
     {
         $this->attendanceLists->removeElement($attendanceList);
     }

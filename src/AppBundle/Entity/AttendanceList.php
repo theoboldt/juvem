@@ -2,11 +2,13 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list")
  */
 class AttendanceList
@@ -51,7 +53,7 @@ class AttendanceList
      */
     public function __construct()
     {
-        $this->fillouts = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fillouts = new ArrayCollection();
     }
 
     /**
@@ -67,11 +69,11 @@ class AttendanceList
     /**
      * Set event
      *
-     * @param \AppBundle\Entity\Event $event
+     * @param Event $event
      *
      * @return AttendanceList
      */
-    public function setEvent(\AppBundle\Entity\Event $event = null)
+    public function setEvent(Event $event = null)
     {
         $this->event = $event;
 
@@ -81,7 +83,7 @@ class AttendanceList
     /**
      * Get event
      *
-     * @return \AppBundle\Entity\Event
+     * @return Event
      */
     public function getEvent()
     {
@@ -163,11 +165,11 @@ class AttendanceList
     /**
      * Add fillout
      *
-     * @param \AppBundle\Entity\AttendanceListFillout $fillout
+     * @param AttendanceListFillout $fillout
      *
      * @return AttendanceList
      */
-    public function addFillout(\AppBundle\Entity\AttendanceListFillout $fillout)
+    public function addFillout(AttendanceListFillout $fillout)
     {
         $this->fillouts[] = $fillout;
 
@@ -177,9 +179,9 @@ class AttendanceList
     /**
      * Remove fillout
      *
-     * @param \AppBundle\Entity\AttendanceListFillout $fillout
+     * @param AttendanceListFillout $fillout
      */
-    public function removeFillout(\AppBundle\Entity\AttendanceListFillout $fillout)
+    public function removeFillout(AttendanceListFillout $fillout)
     {
         $this->fillouts->removeElement($fillout);
     }

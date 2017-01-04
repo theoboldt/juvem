@@ -142,4 +142,11 @@ $(function () {
         openInNewTabOnMetaKey(row.fid);
     });
 
+    /**
+     * USER: A users participants list table
+     */
+    $('#eventAttendanceListTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('attendance/' + row.tid);
+    });
+
 });
