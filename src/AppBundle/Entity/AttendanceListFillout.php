@@ -28,10 +28,16 @@ class AttendanceListFillout
     protected $attendanceList;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts",
+     *                                                             cascade={"all"})
      * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade")
      */
     protected $participant;
+
+    /**
+     * @ORM\Column(type="boolean", name="is_attendant", nullable=true)
+     */
+    protected $isAttendant;
 
     /**
      * @ORM\Column(type="boolean", name="is_public_transport", nullable=true)
@@ -176,5 +182,29 @@ class AttendanceListFillout
     public function getAttendanceList()
     {
         return $this->attendanceList;
+    }
+
+    /**
+     * Set isAttendant
+     *
+     * @param boolean $isAttendant
+     *
+     * @return AttendanceListFillout
+     */
+    public function setIsAttendant($isAttendant)
+    {
+        $this->isAttendant = $isAttendant;
+
+        return $this;
+    }
+
+    /**
+     * Get isAttendant
+     *
+     * @return boolean
+     */
+    public function getIsAttendant()
+    {
+        return $this->isAttendant;
     }
 }

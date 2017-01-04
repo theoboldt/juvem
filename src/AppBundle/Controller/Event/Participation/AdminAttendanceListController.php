@@ -5,6 +5,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AttendanceList;
+use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Form\AttendanceListType;
@@ -186,7 +187,10 @@ class AdminAttendanceListController extends Controller
         }
         $participantEntityList = $eventRepository->participantsList($event, null, false, false);
         $filloutRepository     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
-        $filloutList           = $filloutRepository->findBy(['attendanceList' => $tid]);
+        $filloutList           = [];
+        foreach ($filloutRepository->findBy(['attendanceList' => $tid]) as $fillout) {
+            $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
+        }
 
         $statusFormatter = new LabelFormatter();
         $statusFormatter->addAbsenceLabel(
@@ -198,18 +202,32 @@ class AdminAttendanceListController extends Controller
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
 
+
+            if (isset($filloutList[$participant->getAid()])) {
+                /** @var AttendanceListFillout $fillout */
+                $fillout = $filloutList[$participant->getAid()];
+            } else {
+                $fillout = null;
+            }
+
             if ($participant->hasBirthdayAtEvent()) {
                 $glyph = new BootstrapGlyph();
                 $glyph->bootstrapGlyph('gift');
             }
 
             $participantEntry = [
-                'aid'       => $participant->getAid(),
-                'pid'       => $participant->getParticipation()->getPid(),
-                'nameFirst' => $participant->getNameFirst(),
-                'nameLast'  => $participant->getNameLast(),
-                'status'    => $statusFormatter->formatMask($participant->getStatus(true)),
-                'action'    => ''
+                'tid'               => $tid,
+                'did'               => $fillout ? $fillout->getDid() : false,
+                'aid'               => $participant->getAid(),
+                'pid'               => $participant->getParticipation()->getPid(),
+                'nameFirst'         => $participant->getNameFirst(),
+                'nameLast'          => $participant->getNameLast(),
+                'status'            => $statusFormatter->formatMask($participant->getStatus(true)),
+                'isAttendant'       => $fillout ? $fillout->getIsAttendant() : false,
+                'isPaid'            => $fillout ? $fillout->getIsPaid() : false,
+                'isPublicTransport' => $fillout ? $fillout->getIsPublicTransport() : false,
+                'comment'           => $fillout ? $fillout->getComment() : false,
+                'action'            => ''
             ];
 
             $participantList[] = $participantEntry;
