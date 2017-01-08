@@ -18,9 +18,9 @@
                     <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
                        class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
                     <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
-                        <label class="btn btn-primary active">
-                            <input type="checkbox" autocomplete="off" checked> {{ 'repeat'|glyph }} <span
-                                    class="hidden-xs">Aktualisieren</span>
+                        <label class="btn btn-info">
+                            <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
+                                    class="hidden-xs">aktuell halten</span>
                         </label>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                         reloadBlocked = true;
                     }
                 },
-                autoRefreshInterval = setInterval(autoRefresh, 10000);
+                autoRefreshInterval = false;
 
             $('#autoRefresh').click(function () {
                 var checkbox = $(this).find('input'),
