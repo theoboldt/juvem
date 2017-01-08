@@ -15,9 +15,18 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline">
+                    <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
+                       class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+                    <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
+                        <label class="btn btn-primary active">
+                            <input type="checkbox" autocomplete="off" checked> {{ 'repeat'|glyph }} <span
+                                    class="hidden-xs">Aktualisieren</span>
+                        </label>
+                    </div>
                 </div>
-                <table id="participantsAttendanceListTable" class="table table-striped table-remote-content table-no-hover"
-                       data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
+                <table id="participantsAttendanceListTable"
+                       class="table table-striped table-remote-content table-no-hover" data-unique-id="aid"
+                       data-id-field="aid" data-toggle="table" data-cache="false" data-pagination="true"
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
@@ -40,4 +49,77 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascriptCustom %}
+    <script type='text/javascript'>
+        $(function () {
+            var reloadBlocked = false,
+                table = $('#participantsAttendanceListTable');
+
+            var autoRefresh = function () {
+                    if (!reloadBlocked) {
+                        reloadBlocked = true;
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}',
+                            datatype: 'json',
+                            success: function (dataNew) {
+                                var changed = false,
+                                    rowCurrent;
+                                $.each(dataNew, function (indexRow, rowData) {
+                                    if (changed) {
+                                        return false;
+                                    }
+                                    if (rowData.did) {
+                                        rowCurrent = table.bootstrapTable('getRowByUniqueId', rowData.aid);
+                                        $.each(rowCurrent, function (indexColumn, cellValue) {
+                                            if (cellValue !== rowCurrent[indexColumn]) {
+                                                changed = true;
+                                                return false;
+                                            }
+                                        });
+                                    }
+                                });
+
+                                if (changed) {
+                                    table.bootstrapTable('load', dataNew);
+                                }
+                                reloadBlocked = false;
+                            },
+                            error: function () {
+                                var autoRefreshInput = $('#autoRefresh input');
+                                if (autoRefreshInput.prop('checked')) {
+                                    autoRefreshInput.prop('checked', false);
+                                    $('#autoRefresh label').removeClass('active');
+                                }
+                                clearInterval(autoRefreshInterval);
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Daten der Anwesenheitsliste konnten nicht geladen werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                                    priority: 'error'
+                                });
+                                reloadBlocked = false;
+                            }
+                        });
+
+                    } else {
+                        reloadBlocked = true;
+                    }
+                },
+                autoRefreshInterval = setInterval(autoRefresh, 10000);
+
+            $('#autoRefresh').click(function () {
+                var checkbox = $(this).find('input'),
+                    oldValue = checkbox.prop('checked'),
+                    newValue = !oldValue;
+
+                if (newValue) {
+                    autoRefresh();
+                    autoRefreshInterval = setInterval(autoRefresh, 10000);
+                } else if (autoRefreshInterval !== false) {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+
+        });
+    </script>
 {% endblock %}

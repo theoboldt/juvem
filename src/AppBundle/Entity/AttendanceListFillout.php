@@ -9,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list_fillout")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\AttendanceListFilloutRepository")
  */
 class AttendanceListFillout
 {
@@ -22,13 +23,13 @@ class AttendanceListFillout
     protected $did;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AttendanceList", inversedBy="fillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceList", inversedBy="fillouts", cascade={"all"})
      * @ORM\JoinColumn(name="tid", referencedColumnName="tid", onDelete="cascade")
      */
     protected $attendanceList;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts",
+     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="attendanceListsFillouts",
      *                                                             cascade={"all"})
      * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade")
      */

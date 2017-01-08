@@ -9,13 +9,13 @@ use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Form\AttendanceListType;
-use AppBundle\Twig\Extension\BootstrapGlyph;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AdminAttendanceListController extends Controller
 {
@@ -197,37 +197,31 @@ class AdminAttendanceListController extends Controller
             ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
         );
 
-
         $participantList = [];
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
-
-
             if (isset($filloutList[$participant->getAid()])) {
                 /** @var AttendanceListFillout $fillout */
                 $fillout = $filloutList[$participant->getAid()];
             } else {
                 $fillout = null;
             }
-
-            if ($participant->hasBirthdayAtEvent()) {
-                $glyph = new BootstrapGlyph();
-                $glyph->bootstrapGlyph('gift');
-            }
+            $did = $fillout ? $fillout->getDid() : false;
+            $aid = $participant->getAid();
 
             $participantEntry = [
                 'tid'               => $tid,
-                'did'               => $fillout ? $fillout->getDid() : false,
-                'aid'               => $participant->getAid(),
+                'did'               => $did,
+                'aid'               => $aid,
                 'pid'               => $participant->getParticipation()->getPid(),
                 'nameFirst'         => $participant->getNameFirst(),
                 'nameLast'          => $participant->getNameLast(),
                 'status'            => $statusFormatter->formatMask($participant->getStatus(true)),
-                'isAttendant'       => $fillout ? $fillout->getIsAttendant() : false,
-                'isPaid'            => $fillout ? $fillout->getIsPaid() : false,
-                'isPublicTransport' => $fillout ? $fillout->getIsPublicTransport() : false,
+                'isAttendant'       => (int)($fillout ? $fillout->getIsAttendant() : 0),
+                'isPaid'            => (int)($fillout ? $fillout->getIsPaid() : 0),
+                'isPublicTransport' => (int)($fillout ? $fillout->getIsPublicTransport() : 0),
                 'comment'           => $fillout ? $fillout->getComment() : false,
-                'action'            => ''
+                'action'            => sprintf('<div class="fillout-action" data-id="%d"></div>', $aid)
             ];
 
             $participantList[] = $participantEntry;
@@ -236,4 +230,53 @@ class AdminAttendanceListController extends Controller
         return new JsonResponse($participantList);
     }
 
+    /**
+     * Data provider for events participants list grid
+     *
+     * @Route("/admin/attendance/{tid}/change", requirements={"tid": "\d+"}, name="event_attendance_list_change")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function changeAttendanceListEntryAction($tid, Request $request)
+    {
+        $token    = $request->get('_token');
+        $aid      = $request->get('aid');
+        $property = $request->get('property');
+        $valueNew = $request->get('valueNew');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken($tid)) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
+
+        $repositoryParticipant = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $participant           = $repositoryParticipant->findOneBy(['aid' => $aid]);
+        $repositoryList        = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
+        $list                  = $repositoryList->findOneBy(['tid' => $tid]);
+        $repositoryFillout     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
+
+        if (!$participant || !$list) {
+            throw new \InvalidArgumentException('Unknown participant or list transmitted');
+        }
+
+        $fillout = $repositoryFillout->findFillout($participant, $list, true);
+        switch ($property) {
+            case 'isAttendant':
+                $fillout->setIsAttendant($valueNew);
+                break;
+            case 'isPaid':
+                $fillout->setIsPaid($valueNew);
+                break;
+            case 'isPublicTransport':
+                $fillout->setIsPublicTransport($valueNew);
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown property transmitted');
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($fillout);
+        $em->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
 }

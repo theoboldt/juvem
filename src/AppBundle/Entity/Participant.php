@@ -425,11 +425,11 @@ class Participant
     /**
      * Add attendanceListsFillout
      *
-     * @param \AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout
+     * @param AttendanceListFillout $attendanceListsFillout
      *
      * @return Participant
      */
-    public function addAttendanceListsFillout(\AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout)
+    public function addAttendanceListsFillout(AttendanceListFillout $attendanceListsFillout)
     {
         $this->attendanceListsFillouts[] = $attendanceListsFillout;
 
@@ -439,9 +439,9 @@ class Participant
     /**
      * Remove attendanceListsFillout
      *
-     * @param \AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout
+     * @param AttendanceListFillout $attendanceListsFillout
      */
-    public function removeAttendanceListsFillout(\AppBundle\Entity\EventAttendanceListFillout $attendanceListsFillout)
+    public function removeAttendanceListsFillout(AttendanceListFillout $attendanceListsFillout)
     {
         $this->attendanceListsFillouts->removeElement($attendanceListsFillout);
     }

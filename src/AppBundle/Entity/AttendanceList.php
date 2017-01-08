@@ -23,13 +23,13 @@ class AttendanceList
     protected $tid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="attendanceLists", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="Event", inversedBy="attendanceLists", cascade={"all"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      */
     protected $event;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListFillout", mappedBy="attendanceList", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AttendanceListFillout", mappedBy="attendanceList", cascade={"remove"})
      */
     protected $fillouts;
 

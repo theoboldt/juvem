@@ -127,7 +127,7 @@ class Event
     /**
      * Contains the list of attendance lists assigned to the event
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceList", mappedBy="event", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AttendanceList", mappedBy="event", cascade={"remove"})
      */
     protected $attendanceLists;
 
