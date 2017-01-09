@@ -138,9 +138,3 @@ fos_user:
             validation_groups: [AppBundleProfile]
     service:
         mailer: fos_user.mailer.twig_swift
-
-knp_menu:
-    twig:
-        template: common/knp_menu_template.html.twig
-    templating: false
-    default_renderer: twig

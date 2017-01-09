@@ -1,25 +1,111 @@
 {% block nav %}
-<nav class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Menü anzeigen</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-<div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="{{ path('homepage') }}" title="Jugendwerks-Veranstaltungs-Manager Evangelisches Jugendwerk Stuttgart-Vaihingen">
-        <img alt="Juvem" title="Evangelisches Jugendwerk Stuttgart-Vaihingen" src="{{ asset('favicon-96x96.png') }}" height="45" width="45">
-      </a>
-    </div>
-  </div>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#navbar-collapse-main" aria-expanded="false">
+                    <span class="sr-only">Menü anzeigen</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{{ path('homepage') }}"
+                           title="Veranstaltungs-Manager {{ customization.organizationName }}">
+                            <img alt="Juvem" title="{{ customization.organizationName }}"
+                                 src="{{ asset('favicon-96x96.png') }}" height="45" width="45">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse-main">
+                <ul class="nav navbar-nav">
+                    {% if app.user is null %}
+                        <li class="first"><a href="{{ path('homepage') }}">Veranstaltungen</a></li>
+                        <li class="last"><a href="{{ path('newsletter_subscription') }}">Newsletter</a></li>
+                    {% else %}
+                        <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
+                        {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
+                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newsletter
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="menu_level_1 dropdown-menu">
+                                        <li class="first">
+                                            <a href="{{ path('newsletter_subscription') }}">Eigenes Abonnement</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('newsletter_admin_subscription_list') }}">
+                                                Abonnements verwalten
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('newsletter_admin_newsletter_list') }}">
+                                                Nachrichten verwalten
+                                            </a>
+                                        </li>
+                                        <li class="last">
+                                            <a href="{{ path('newsletter_admin_create') }}">Nachricht erstellen</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                                <li class="dropdown">
+                                    <a href="{{ path('event_list') }}" class="dropdown-toggle" data-toggle="dropdown">
+                                        Veranstaltungen<b class="caret"></b>
+                                    </a>
+                                    <ul class="menu_level_1 dropdown-menu">
+                                        <li class="first">
+                                            <a href="{{ path('event_list') }}">Veranstaltungen verwalten</a>
+                                        </li>
+                                        <li class="last">
+                                            <a href="{{ path('event_new') }}">Veranstaltung erstellen</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="{{ path('acquisition_list') }}" class="dropdown-toggle"
+                                       data-toggle="dropdown">
+                                        Felder <b class="caret"></b>
+                                    </a>
+                                    <ul class="menu_level_1 dropdown-menu">
+                                        <li class="first">
+                                            <a href="{{ path('acquisition_list') }}">Felder verwalten</a>
+                                        </li>
+                                        <li class="last">
+                                            <a href="{{ path('acquisition_new') }}">Feld erstellen</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
+                                <li class="last dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">System
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="menu_level_1 dropdown-menu">
+                                        <li class="first"><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
+                                        <li class="last"><a href="{{ path('flash_list') }}">Meldungen verwalten</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{{ path('newsletter_subscription') }}">Newsletter</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if app.user is not null %}
+                        <li class="first last"><a href="{{ path('fos_user_security_logout') }}">Abmelden</a></li>
+                    {% else %}
+                        <li class="first"><a href="{{ path('fos_user_security_login') }}">Anmelden</a></li>
+                        <li class="last"><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            {{ knp_menu_render('AppBundle:Builder:mainMenu') }}
-            {{ knp_menu_render('AppBundle:Builder:authenticationMenu') }}
-        </div>
-    </div>
-</nav>
+    </nav>
 {% endblock %}

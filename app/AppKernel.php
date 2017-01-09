@@ -17,7 +17,6 @@ class AppKernel extends Kernel
             new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
-            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new FOS\UserBundle\FOSUserBundle(),
         	new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
