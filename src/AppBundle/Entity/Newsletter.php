@@ -30,11 +30,13 @@ class Newsletter extends NewsletterAbstract
 
     /**
      * @ORM\Column(type="string", length=128, name="subject")
+     * @Assert\NotBlank()
      */
     protected $subject;
 
     /**
      * @ORM\Column(type="text", name="title")
+     * @Assert\NotBlank()
      */
     protected $title;
 
@@ -45,6 +47,7 @@ class Newsletter extends NewsletterAbstract
 
     /**
      * @ORM\Column(type="text", name="content")
+     * @Assert\NotBlank()
      */
     protected $content;
 

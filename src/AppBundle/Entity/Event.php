@@ -41,6 +41,7 @@ class Event
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     protected $description;
 

@@ -37,26 +37,31 @@ class Participation
 
     /**
      * @ORM\Column(type="string", length=64, name="salution")
+     * @Assert\NotBlank()
      */
     protected $salution;
 
     /**
      * @ORM\Column(type="string", length=128, name="address_street")
+     * @Assert\NotBlank()
      */
     protected $addressStreet;
 
     /**
      * @ORM\Column(type="string", length=128, name="address_city")
+     * @Assert\NotBlank()
      */
     protected $addressCity;
 
     /**
      * @ORM\Column(type="string", length=16, name="address_zip")
+     * @Assert\NotBlank()
      */
     protected $addressZip;
 
     /**
      * @ORM\Column(type="string", length=128, name="email")
+     * @Assert\NotBlank()
      */
     protected $email;
 

@@ -29,8 +29,7 @@ class AttendanceListFillout
     protected $attendanceList;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="attendanceListsFillouts",
-     *                                                             cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="attendanceListsFillouts", cascade={"all"})
      * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade")
      */
     protected $participant;
