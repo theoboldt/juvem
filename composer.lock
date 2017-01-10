@@ -821,12 +821,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "6b40d12976c5398b9b08dbad71ba9ea819d34c07"
+                "reference": "e889095060584db187784d4b6e2d1efcff2de242"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/6b40d12976c5398b9b08dbad71ba9ea819d34c07",
-                "reference": "6b40d12976c5398b9b08dbad71ba9ea819d34c07",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/e889095060584db187784d4b6e2d1efcff2de242",
+                "reference": "e889095060584db187784d4b6e2d1efcff2de242",
                 "shasum": ""
             },
             "require": {
@@ -889,7 +889,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2017-01-06 15:23:08"
+            "time": "2017-01-10 14:18:45"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1861,16 +1861,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.17",
+            "version": "v5.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "4e98a1a6d3935d05414bd11e421a2047c93619f7"
+                "reference": "17846680901003d26d823c2e3ac9228702837916"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/4e98a1a6d3935d05414bd11e421a2047c93619f7",
-                "reference": "4e98a1a6d3935d05414bd11e421a2047c93619f7",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/17846680901003d26d823c2e3ac9228702837916",
+                "reference": "17846680901003d26d823c2e3ac9228702837916",
                 "shasum": ""
             },
             "require": {
@@ -1909,20 +1909,20 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-01-04 13:35:35"
+            "time": "2017-01-10 14:58:45"
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.18",
+            "version": "v3.0.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "c38bc608e12e81089d5d9dfbf72775ed553c61af"
+                "reference": "d57c2f297d17ee82baf8cae0b16dae34a9378784"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/c38bc608e12e81089d5d9dfbf72775ed553c61af",
-                "reference": "c38bc608e12e81089d5d9dfbf72775ed553c61af",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/d57c2f297d17ee82baf8cae0b16dae34a9378784",
+                "reference": "d57c2f297d17ee82baf8cae0b16dae34a9378784",
                 "shasum": ""
             },
             "require": {
@@ -1977,7 +1977,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2016-12-14 08:30:06"
+            "time": "2017-01-10 19:42:56"
         },
         {
             "name": "sensio/generator-bundle",
@@ -2131,16 +2131,16 @@
         },
         {
             "name": "symfony/monolog-bundle",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/monolog-bundle.git",
-                "reference": "804425dfceec0097bf3e5dea3a73d91e055686be"
+                "reference": "ebce76a39a65495a66c34eb1574cc4b9e35a4e64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/804425dfceec0097bf3e5dea3a73d91e055686be",
-                "reference": "804425dfceec0097bf3e5dea3a73d91e055686be",
+                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/ebce76a39a65495a66c34eb1574cc4b9e35a4e64",
+                "reference": "ebce76a39a65495a66c34eb1574cc4b9e35a4e64",
                 "shasum": ""
             },
             "require": {
@@ -2187,7 +2187,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2017-01-03 12:32:45"
+            "time": "2017-01-10 20:01:51"
         },
         {
             "name": "symfony/polyfill-apcu",
