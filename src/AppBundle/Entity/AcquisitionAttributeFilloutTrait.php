@@ -27,7 +27,7 @@ trait AcquisitionAttributeFilloutTrait
      *
      * @param AcquisitionAttributeFillout $acquisitionAttributeFillout
      *
-     * @return Participation|Participant
+     * @return Participation|Participant|AcquisitionAttributeFilloutTrait
      */
     public function addAcquisitionAttributeFillout(AcquisitionAttributeFillout $acquisitionAttributeFillout
     )
@@ -74,13 +74,18 @@ trait AcquisitionAttributeFilloutTrait
             }
         }
         if ($createIfNotFound) {
+            $event = $this->getEvent();
+            if (!$event) {
+                throw new \InvalidArgumentException('Can not create fillout if no related event is configured');
+            }
+
             $fillout = new AcquisitionAttributeFillout();
             if ($this instanceof Participation) {
                 $fillout->setParticipation($this);
-                $attributes = $this->getEvent()->getAcquisitionAttributes(true, false);
+                $attributes = $event->getAcquisitionAttributes(true, false);
             } elseif($this instanceof Participant) {
                 $fillout->setParticipant($this);
-                $attributes = $this->getEvent()->getAcquisitionAttributes(false, true);
+                $attributes = $event->getAcquisitionAttributes(false, true);
             } else {
                 throw new \InvalidArgumentException('This acquisition attribute fillout trait is used at unknown class');
             }
@@ -116,7 +121,7 @@ trait AcquisitionAttributeFilloutTrait
      *
      * @param   string  $key    Key containing name of fillout attribute
      * @param   mixed   $value  New value for this fillout
-     * @return AcquisitionAttributeFillout
+     * @return AcquisitionAttributeFilloutTrait
      */
     public function __set($key, $value) {
         if (preg_match('/acq_field_(\d+)/', $key, $bidData)) {
