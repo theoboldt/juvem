@@ -821,12 +821,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "e889095060584db187784d4b6e2d1efcff2de242"
+                "reference": "887f76edd209e487818aa52c828dc0b9670d37de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/e889095060584db187784d4b6e2d1efcff2de242",
-                "reference": "e889095060584db187784d4b6e2d1efcff2de242",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/887f76edd209e487818aa52c828dc0b9670d37de",
+                "reference": "887f76edd209e487818aa52c828dc0b9670d37de",
                 "shasum": ""
             },
             "require": {
@@ -889,7 +889,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2017-01-10 14:18:45"
+            "time": "2017-01-11 11:43:14"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -972,16 +972,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.0",
+            "version": "8.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "9aae8b8948f0c2b7e2cfc87327f71c41670cd136"
+                "reference": "2ca74e98ddfb2780057b1a5654616f1179be85e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/9aae8b8948f0c2b7e2cfc87327f71c41670cd136",
-                "reference": "9aae8b8948f0c2b7e2cfc87327f71c41670cd136",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/2ca74e98ddfb2780057b1a5654616f1179be85e0",
+                "reference": "2ca74e98ddfb2780057b1a5654616f1179be85e0",
                 "shasum": ""
             },
             "require": {
@@ -1030,7 +1030,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2016-12-12 09:08:42"
+            "time": "2017-01-11 11:40:50"
         },
         {
             "name": "giggsey/locale",
@@ -2729,16 +2729,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "2a86dde1288d7270169083d0e078dc7ebe0f48b6"
+                "reference": "9062992538bc5855a683c6737257bfa18d25a4b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/2a86dde1288d7270169083d0e078dc7ebe0f48b6",
-                "reference": "2a86dde1288d7270169083d0e078dc7ebe0f48b6",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/9062992538bc5855a683c6737257bfa18d25a4b8",
+                "reference": "9062992538bc5855a683c6737257bfa18d25a4b8",
                 "shasum": ""
             },
             "require": {
@@ -2752,7 +2752,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -2787,7 +2787,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2017-01-05 17:12:02"
+            "time": "2017-01-11 19:39:01"
         },
         {
             "name": "vich/uploader-bundle",
