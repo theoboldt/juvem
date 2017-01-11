@@ -34,6 +34,7 @@ class Participant
     protected $aid;
 
     /**
+     * @ORM\Column(type="string", length=128, name="name_first")
      * @Assert\NotBlank()
      */
     protected $nameFirst;
