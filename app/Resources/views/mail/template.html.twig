@@ -49,9 +49,11 @@
 <tr>
 <td>
 <h1>{% block title %}{% endblock %}</h1>
+{% if block('lead') is defined %}
 {% set _blockLead = block('lead') %}
 {% if _blockLead is not empty %}
 <p class="lead">{{ _blockLead|raw }}</p>
+{% endif %}
 {% endif %}
 {% block content %}{% endblock %}
 </td>
@@ -66,11 +68,13 @@
 <td class="wrapper last">
 <table class="twelve columns">
 <tr>
+{% if block('calltoactioncontent') is defined %}
 {% set _block = block('calltoactioncontent') %}
 {% if _block is not empty %}
 <td class="panel">
 {{ _block|raw }}
 </td>
+{% endif %}
 {% endif %}
 <td class="expander"></td>
 </tr>
