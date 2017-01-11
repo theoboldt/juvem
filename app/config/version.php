@@ -2,7 +2,7 @@
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /** @var ContainerBuilder $container */
-$container->setParameter('app.version', 'v1');
+$container->setParameter('app.version', 'v2');
 
 
 $fileRevision = function($path, $raw = false) use($container) {
