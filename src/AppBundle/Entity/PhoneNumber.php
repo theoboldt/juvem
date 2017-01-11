@@ -3,6 +3,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumber as AssertPhoneNumber;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,6 +21,7 @@ class PhoneNumber
 
     /**
      * @ORM\Column(type="phone_number", name="number")
+     * @AssertPhoneNumber
      * @Assert\NotBlank()
      */
     protected $number;

@@ -5,15 +5,31 @@ $(function(){
      */
     $('.prototype-container').each(function (index) {
         var element = $(this),
-            prototype;
+            prototype,
+            elementMessage;
         if (element.attr('data-prototype')) {
             prototype = element.data('prototype');
+            elementMessage = element.find('.prototype-missing-message');
+
+            element.on('click', function (e) {
+                var elementTarget = $(e.target);
+                if (elementTarget.parent().is('.prototype-remove')) {
+                    elementTarget = elementTarget.parent();
+                }
+                if (elementTarget.is('.prototype-remove')) {
+                    e.preventDefault();
+                    var formElement = elementTarget.parent().parent().parent().parent(),
+                        formGroup = formElement.parent().parent(),
+                        formElementCount = formGroup.find('.prototype-element').length;
+
+                    formElement.remove();
+                    if (formElement && elementMessage && !elementMessage.is(':visible') && formElementCount < 2) {
+                        elementMessage.show(300);
+                    }
+                }
+            });
 
             var addElementHandlers = function () {
-                element.find('.prototype-remove').on('click', function (e) {
-                    e.preventDefault();
-                    $(this).parent().parent().parent().parent().remove();
-                });
                 element.find('[data-toggle="popover"]').popover({
                     container: 'body',
                     placement: 'top',
@@ -34,8 +50,11 @@ $(function(){
                 var newForm = prototype.replace(/__name__/g, index);
                 element.data('index', index + 1);
 
+                if (elementMessage && elementMessage.is(':visible')) {
+                    elementMessage.hide(300);
+                }
+
                 element.find('.prototype-elements').append(newForm);
-                addElementHandlers();
             });
             addElementHandlers();
         }

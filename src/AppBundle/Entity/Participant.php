@@ -34,6 +34,11 @@ class Participant
     protected $aid;
 
     /**
+     * @Assert\NotBlank()
+     */
+    protected $nameFirst;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="participants")
      * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade")
      */

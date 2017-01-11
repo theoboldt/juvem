@@ -23,23 +23,28 @@
 
                 {{ form_start(form) }}
                 <div class="row">
-                    <div class="col-xs-12">
-                        <div class="text-right">
-                            {% if app.user is not null %}
-                                <button type="button" class="btn btn-primary" data-toggle="modal" {% if not participations|length %}disabled="disabled"{% endif %}
-                                        data-target="#modalPrefillParticipation{{ event.eid }}">
-                                    Daten aus früherer Anmeldung übernehmen
-                                </button>
-                            {% endif %}
-
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        {{ form_errors(form) }}
-
+                    {{ form_errors(form) }}
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
                         <h3>Daten der Eltern</h3>
 
                         <p>Bitte geben Sie hier ihre grundlegenden Kontakdaten an.</p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="text-right">
+                            {% if app.user is not null %}
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        {% if not participations|length %}disabled="disabled"{% endif %}
+                                        data-target="#modalPrefillParticipation{{ event.eid }}">
+                                    Daten aus früherer Anmeldung übernehmen
+                                </button>
+                            {% else %}
+                                <a href="{{ path('fos_user_security_login') }}" class="btn btn-default" title="Melden Sie sich an, um Daten einer früheren Anmeldung zu ünbernehmen">
+                                    Daten aus früherer Anmeldung übernehmen
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -115,7 +120,7 @@
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-5">
                                         {{ form_errors(formElement) }}
-                                        <div class="form-group">
+                                        <div class="form-group {% if not formElement.number.vars.valid %}has-error{% endif %}">
                                             {{ form_label(formElement.number) }}
                                             <div class="input-group">
                                                 <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
@@ -127,11 +132,12 @@
                                                     </button>
                                                 </span>
                                             </div>
+                                            {{ form_errors(formElement.number) }}
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-7">
                                         {{ form_label(formElement.description) }}
-                                        <div class="input-group">
+                                        <div class="input-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
                                             {{ form_widget(formElement.description) }}
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-default" data-toggle="popover"
@@ -140,6 +146,7 @@
                                                 </button>
                                             </span>
                                         </div>
+                                        {{ form_errors(formElement.description) }}
                                     </div>
                                 </div>
                             </div>
@@ -158,11 +165,24 @@
                                 {% for phoneNumber in form.phoneNumbers %}
                                     {{ m.prototypePhone(phoneNumber) }}
                                 {% endfor %}
+                                {% if form.phoneNumbers|length == 0 %}
+                                    {{ form_row(form.phoneNumbers) }}
+                                {% endif %}
+                                <div class="prototype-missing-message"{% if form.phoneNumbers|length > 0 %} style="display: none;"{% endif %}>
+                                    <div class="alert alert-error">
+                                        <ul class="list-unstyled">
+                                            <li><span class="glyphicon glyphicon-exclamation-sign"></span> Bei einer
+                                                Anmeldung muss mindestens eine Telefonnummer angegeben werden, unter der
+                                                wir Sie in Notfällen erreichen können. Bitte fügen Sie mindestens noch
+                                                eine Telefonnummer hinzu.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere
-                            Telefonnummer
-                            hinzufügen
+                        <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }}
+                            Weitere Telefonnummer hinzufügen
                         </button>
                     </div>
                 </div>
@@ -172,10 +192,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>Daten der Teilnehmer</h3>
-
-                        <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.
-                        </p>
-
+                        <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.</p>
                         <p>
                             Abhängig von Art und Dauer der Veranstaltung können mehr oder weniger Informationen nötig
                             sein.
@@ -183,7 +200,6 @@
                             Essgewohneiten ihres Kindes machen. Bei Veranstaltungen mit Übernachtung können spezielle
                             Informationen zur Nacht wichtig sein.
                         </p>
-
                         <p>
                             Bitte teilen Sie uns alles mit, was eventuell wichtig sein könnte. Nur dadurch können wir
                             den
@@ -269,13 +285,13 @@
                                                 <div class="form-group">
                                                     {{ form_label(formField) }}
                                                     {% if acquisitionFieldsParticipant[fieldName].formDescription %}
+                                                        {{ form_widget(formField) }}
                                                         <button type="button" class="btn btn-default btn-xs btn-round"
                                                                 data-toggle="popover"
                                                                 data-content="{{ acquisitionFieldsParticipant[fieldName].formDescription }}">
                                                             <span class="glyphicon glyphicon-question-sign"></span>
                                                         </button>
                                                     {% endif %}
-                                                    {{ form_widget(formField) }}
                                                 </div>
                                             </div>
                                         {% endif %}
@@ -292,6 +308,19 @@
                                 {% for participant in form.participants %}
                                     {{ m.prototypeParticipant(participant, acquisitionFieldsParticipant) }}
                                 {% endfor %}
+                                {% if form.participants|length == 0 %}
+                                    {{ form_row(form.participants) }}
+                                {% endif %}
+                                <div class="prototype-missing-message"{% if form.participants|length > 0 %} style="display:none"{% endif %}>
+                                    <div class="alert alert-error">
+                                        <ul class="list-unstyled">
+                                            <li><span class="glyphicon glyphicon-exclamation-sign"></span> Bei einer
+                                                Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen
+                                                Sie noch mindestens einen Teilnehmer hinzu.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weiteren Teilnehmer
@@ -310,7 +339,8 @@
                                     <div class="navbar-header">
                                         <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
                                                 data-target=".legal-privacy-scrollspy"><span class="sr-only">Navigation ein/ausklappen</span>
-                                            <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+                                            <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+                                                    class="icon-bar"></span></button>
                                     </div>
                                     <div class="collapse navbar-collapse legal-privacy-scrollspy">
                                         <ul class="nav navbar-nav">
@@ -343,7 +373,7 @@
                                     </div>
                                 </div>
                                 <div class="panel-footer">
-                                    {{ form_widget(form.acceptPrivacy) }}
+                                    {{ form_row(form.acceptPrivacy) }}
                                 </div>
                             </div>
                         </div>
@@ -360,12 +390,13 @@
                                 {% endif %}
                                 <div class="panel panel-default">
                                     <div class="panel-body">
-                                        <div data-spy="scroll" data-target="#navbar-conditions-of-travel" data-offset="0" class="scroll">
+                                        <div data-spy="scroll" data-target="#navbar-conditions-of-travel"
+                                             data-offset="0" class="scroll">
                                             {{ customization.legalConditionsOfTravelContent|raw }}
                                         </div>
                                     </div>
                                     <div class="panel-footer">
-                                        {{ form_widget(form.acceptConditionsOfTravel) }}
+                                        {{ form_row(form.acceptConditionsOfTravel) }}
                                     </div>
                                 </div>
                             </div>
@@ -377,7 +408,6 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>Fortfahren</h3>
-
                         <p>
                             Sie können die Daten im nächsten Schritt noch mal überprüfen,
                             bevor Sie die Anmeldung engültig abgeben.

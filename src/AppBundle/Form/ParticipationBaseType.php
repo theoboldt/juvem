@@ -15,51 +15,60 @@ class ParticipationBaseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $dateTypeOptions = array(
+        $dateTypeOptions = [
             'years'  => range(Date('Y') - 1, Date('Y') + 1),
             'format' => 'dd.M.yyyy'
-        );
-        $hasDateCheckbox = array(
+        ];
+        $hasDateCheckbox = [
             'required'   => false,
-            'attr'       => array('class' => 'checkbox-smart'),
-            'label_attr' => array('class' => 'control-label')
-        );
+            'attr'       => ['class' => 'checkbox-smart'],
+            'label_attr' => ['class' => 'control-label']
+        ];
         /** @var Participation $participation */
         $participation = $options['data'];
 
         $builder
             ->add(
-                'salution', ChoiceType::class, array(
-                              'label'    => 'Anrede',
-                              'choices'  => array('Frau' => 'Frau', 'Herr' => 'Herr'),
-                              'expanded' => false
-                          )
+                'salution',
+                ChoiceType::class,
+                [
+                    'label'    => 'Anrede',
+                    'choices'  => ['Frau' => 'Frau', 'Herr' => 'Herr'],
+                    'expanded' => false,
+                    'required' => true
+                ]
             )
-            ->add('nameFirst', TextType::class, array('label' => 'Vorname'))
-            ->add('nameLast', TextType::class, array('label' => 'Nachname'))
-            ->add('addressStreet', TextType::class, array('label' => 'Straße u. Hausnummer'))
-            ->add('addressZip', TextType::class, array('label' => 'Postleitzahl'))
-            ->add('addressCity', TextType::class, array('label' => 'Stadt'))
-            ->add('email', TextType::class, array('label' => 'E-Mail'))
+            ->add('nameFirst', TextType::class, ['label' => 'Vorname', 'required' => true])
+            ->add('nameLast', TextType::class, ['label' => 'Nachname', 'required' => true])
+            ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => true])
+            ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => true])
+            ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => true])
+            ->add('email', TextType::class, ['label' => 'E-Mail', 'required' => true])
             ->add(
-                'phoneNumbers', CollectionType::class, array(
-                                  'label'        => 'Telefonnummern',
-                                  'entry_type'   => PhoneNumberType::class,
-                                  'allow_add'    => true,
-                                  'allow_delete' => true,
-                                  'attr'         => array('aria-describedby' => 'help-info-phone-numbers')
-                              )
+                'phoneNumbers',
+                CollectionType::class,
+                [
+                    'label'        => 'Telefonnummern',
+                    'entry_type'   => PhoneNumberType::class,
+                    'allow_add'    => true,
+                    'allow_delete' => true,
+                    'attr'         => ['aria-describedby' => 'help-info-phone-numbers'],
+                    'required'     => true
+                ]
             )
             ->add(
-                'participants', CollectionType::class, array(
-                                  'label'         => 'Teilnehmer',
-                                  'entry_type'    => ParticipantType::class,
-                                  'allow_add'     => true,
-                                  'allow_delete'  => true,
-                                  'entry_options' => array(
-                                      'participation' => $participation
-                                  )
-                              )
+                'participants',
+                CollectionType::class,
+                [
+                    'label'         => 'Teilnehmer',
+                    'entry_type'    => ParticipantType::class,
+                    'allow_add'     => true,
+                    'allow_delete'  => true,
+                    'entry_options' => [
+                        'participation' => $participation
+                    ],
+                    'required'      => true
+                ]
             );
 
         $event      = $participation->getEvent();
@@ -68,10 +77,10 @@ class ParticipationBaseType extends AbstractType
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
             $bid              = $attribute->getBid();
-            $attributeOptions = array(
+            $attributeOptions = [
                 'label'    => $attribute->getFormTitle(),
                 'required' => $attribute->isRequired()
-            );
+            ];
             if (ChoiceType::class == $attribute->getFieldType()) {
                 $attributeOptions['placeholder'] = 'keine Option gewählt';
             }
@@ -82,6 +91,7 @@ class ParticipationBaseType extends AbstractType
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
             }
+            $a = 1;
             $builder->add(
                 $attribute->getName(),
                 $attribute->getFieldType(),
@@ -94,9 +104,10 @@ class ParticipationBaseType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
-                'data_class' => 'AppBundle\Entity\Participation',
-            )
+            [
+                'data_class'         => 'AppBundle\Entity\Participation',
+                'cascade_validation' => true,
+            ]
         );
     }
 }

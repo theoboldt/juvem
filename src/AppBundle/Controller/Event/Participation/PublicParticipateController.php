@@ -73,8 +73,7 @@ class PublicParticipateController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $request->getSession()
-                    ->set('participation-' . $eid, $participation);
+            $request->getSession()->set('participation-' . $eid, $participation);
 
             return $this->redirectToRoute('event_public_participate_confirm', array('eid' => $eid));
         }

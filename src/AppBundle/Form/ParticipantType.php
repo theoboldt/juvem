@@ -25,66 +25,67 @@ class ParticipantType extends AbstractType
             ->add(
                 'nameFirst',
                 TextType::class,
-                array('label' => 'Vorname')
+                ['label' => 'Vorname', 'required' => true]
             )
             ->add(
                 'nameLast',
                 TextType::class,
-                array('label' => 'Nachname')
+                ['label' => 'Nachname', 'required' => true]
             )
             ->add(
                 'gender',
                 ChoiceType::class,
-                array(
+                [
                     'label'    => 'Geschlecht',
-                    'choices'  => array(
+                    'choices'  => [
                         Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
                         Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
-                    ),
-                    'required' => false
-                )
+                    ],
+                    'required' => true
+                ]
             )
             ->add(
                 'birthday',
                 DateType::class,
-                array('label'  => 'Geburtsdatum',
-                      'years'  => range(Date('Y') - 30, Date('Y') - 3),
-                      //                      'widget' => 'single_text',
-                      //                      'format' => 'yyyy-MM-dd',
-                      'format' => 'dd.MM.yyyy',
-                )
+                ['label'  => 'Geburtsdatum',
+                 'years'  => range(Date('Y') - 30, Date('Y') - 3),
+                 //                      'widget' => 'single_text',
+                 //                      'format' => 'yyyy-MM-dd',
+                 'format' => 'dd.MM.yyyy',
+                 'required' => true
+                ]
             )
             ->add(
                 'infoMedical',
                 TextareaType::class,
-                array('label'      => 'Medizinische Hinweise',
-                      'attr'       => array('aria-describedby' => 'help-info-medical'),
-                      'required'   => false,
-                      'empty_data' => '',
-                      //may not work due to issue https://github.com/symfony/symfony/issues/5906
-                )
+                ['label'      => 'Medizinische Hinweise',
+                 'attr'       => ['aria-describedby' => 'help-info-medical'],
+                 'required'   => false,
+                 'empty_data' => '',
+                 //may not work due to issue https://github.com/symfony/symfony/issues/5906
+                ]
             )
             ->add(
                 'infoGeneral',
                 TextareaType::class,
-                array('label'      => 'Allgemeine Hinweise',
-                      'attr'       => array('aria-describedby' => 'help-info-general'),
-                      'required'   => false,
-                      'empty_data' => '',
-                      //may not work due to issue https://github.com/symfony/symfony/issues/5906
-                )
+                ['label'      => 'Allgemeine Hinweise',
+                 'attr'       => ['aria-describedby' => 'help-info-general'],
+                 'required'   => false,
+                 'empty_data' => '',
+                 //may not work due to issue https://github.com/symfony/symfony/issues/5906
+                ]
             )
             ->add(
                 'food',
                 ChoiceType::class,
-                array(
+                [
                     'label'    => 'Ernährung',
                     'choices'  => array_flip($foodMask->labels()),
                     'expanded' => true,
                     'multiple' => true,
                     'required' => false,
-                    'attr'     => array('aria-describedby' => 'help-food')
-                )
+                    'attr'     => ['aria-describedby' => 'help-food']
+                ]
             );
 
         /** @var Participation $participation */
@@ -95,12 +96,15 @@ class ParticipantType extends AbstractType
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
             $bid              = $attribute->getBid();
-            $attributeOptions = array(
+            $attributeOptions = [
                 'label'    => $attribute->getFormTitle(),
                 'required' => $attribute->isRequired()
-            );
+            ];
             if (ChoiceType::class == $attribute->getFieldType()) {
                 $attributeOptions['placeholder'] = 'keine Option gewählt';
+            }
+            if (isset($attributeOptions['multiple']) && $attributeOptions['multiple']) {
+                $attributeOptions['data'] = [];
             }
 
             try {
@@ -139,9 +143,9 @@ class ParticipantType extends AbstractType
         $resolver->setAllowedTypes('participation', Participation::class);
 
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => Participant::class,
-            )
+            ]
         );
     }
 }

@@ -14,3 +14,10 @@
     margin-left: 0;
   }
 }
+
+/**
+ * No bottom margin if form element is in bottom of a panel
+ */
+.panel .panel-footer .form-group {
+  margin-bottom: 0;
+}

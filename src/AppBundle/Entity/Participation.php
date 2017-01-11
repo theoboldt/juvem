@@ -69,6 +69,11 @@ class Participation
      * Contains the phone numbers assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"all"}, mappedBy="participation")
+     * @Assert\Valid()
+     * @Assert\Count(
+     *      min = "1",
+     *      minMessage = "Bei einer Anmeldung muss mindestens eine Telefonnummer angegeben werden, unter der wir Sie in Notfällen erreichen können. Bitte fügen Sie mindestens noch eine Telefonnummer hinzu."
+     * )
      */
     protected $phoneNumbers;
 
@@ -76,6 +81,11 @@ class Participation
      * Contains the participants assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participant", cascade={"all"}, mappedBy="participation")
+     * @Assert\Valid()
+     * @Assert\Count(
+     *      min = "1",
+     *      minMessage = "Bei einer Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen Sie noch mindestens einen Teilnehmer hinzu."
+     * )
      */
     protected $participants;
 

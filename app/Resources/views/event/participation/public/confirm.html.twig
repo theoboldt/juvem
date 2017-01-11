@@ -45,7 +45,13 @@
                                     <dd class="address-container">
                                         {% for phoneNumber in participation.phoneNumbers %}
                                             <address>
-                                                <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                                                {% if phoneNumber.number %}
+                                                    <strong>
+                                                        {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}
+                                                    </strong>
+                                                {% else %}
+                                                    <i>(keine)</i>
+                                                {% endif %}
                                                 {% if phoneNumber.description %}
                                                     <br>{{ phoneNumber.description }}
                                                 {% endif %}

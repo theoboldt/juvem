@@ -17,30 +17,31 @@ class PhoneNumberType extends AbstractType
         $builder->add(
             'number',
             PhoneNumberTypeField::class,
-            array(
+            [
                 'default_region' => 'DE',
                 'format'         => PhoneNumberFormat::NATIONAL,
                 'label'          => 'Telefonnummer',
-                'attr'           => array('aria-describedby' => 'help-info-phone-number')
-            )
+                'attr'           => ['aria-describedby' => 'help-info-phone-number'],
+                'required'       => true
+            ]
         )
                 ->add(
                     'description',
                     TextType::class,
-                    array(
+                    [
                         'label'    => 'Hinweis',
                         'required' => false,
-                        'attr'     => array('aria-describedby' => 'help-info-phone-description')
-                    )
+                        'attr'     => ['aria-describedby' => 'help-info-phone-description']
+                    ]
                 );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => 'AppBundle\Entity\PhoneNumber',
-            )
+            ]
         );
     }
 }
