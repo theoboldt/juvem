@@ -285,12 +285,12 @@
                                                 <div class="form-group">
                                                     {{ form_label(formField) }}
                                                     {% if acquisitionFieldsParticipant[fieldName].formDescription %}
-                                                        {{ form_widget(formField) }}
                                                         <button type="button" class="btn btn-default btn-xs btn-round"
                                                                 data-toggle="popover"
                                                                 data-content="{{ acquisitionFieldsParticipant[fieldName].formDescription }}">
                                                             <span class="glyphicon glyphicon-question-sign"></span>
                                                         </button>
+                                                        {{ form_widget(formField) }}
                                                     {% endif %}
                                                 </div>
                                             </div>
