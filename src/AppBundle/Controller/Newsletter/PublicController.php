@@ -6,11 +6,10 @@ use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterSubscriptionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class PublicController extends Controller
+class PublicController extends AbstractController
 {
     /**
      * Page for creating a subscription or managing subscription as registered user
@@ -19,6 +18,7 @@ class PublicController extends Controller
      */
     public function newsletterSubscribeAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $subscriptionAvailable = false;
 
         /** @var User $user */
@@ -76,7 +76,7 @@ class PublicController extends Controller
         }
 
         return $this->render(
-            'newsletter/public/subscription.html.twig', array('form' => $form->createView())
+            'newsletter/public/subscription.html.twig', ['form' => $form->createView()]
         );
     }
 
@@ -88,6 +88,7 @@ class PublicController extends Controller
      */
     public function newsletterSubscriptionViaTokenAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
 
@@ -114,7 +115,7 @@ class PublicController extends Controller
         }
 
         return $this->render(
-            'newsletter/public/subscription.html.twig', array('form' => $form->createView())
+            'newsletter/public/subscription.html.twig', ['form' => $form->createView()]
         );
     }
 
@@ -127,6 +128,7 @@ class PublicController extends Controller
      */
     public function newsletterConfirmAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $token      = $request->get('token');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         /** @var NewsletterSubscription $subscription */
@@ -139,7 +141,7 @@ class PublicController extends Controller
             $em->persist($subscription);
             $em->merge($subscription);
 
-            $subscriptionListOther = $repository->findBy(array('email' => $subscription->getEmail()));
+            $subscriptionListOther = $repository->findBy(['email' => $subscription->getEmail()]);
             foreach ($subscriptionListOther as $subscriptionToDelete) {
                 if ($subscription->getRid() != $subscriptionToDelete->getRid()) {
                     $em->remove($subscriptionToDelete);
@@ -152,7 +154,7 @@ class PublicController extends Controller
                 'Das Newsletter-Abonnement wurde erfolgreich bestätigt. Auf dieser Seite können Sie auch in Zukunft ihr Abonnement konfigurieren.'
             );
             return $this->redirectToRoute(
-                'newsletter_subscription_token', array('token' => $subscription->getDisableToken())
+                'newsletter_subscription_token', ['token' => $subscription->getDisableToken()]
             );
         }
         return $this->redirectToRoute('newsletter_subscription');

@@ -64,6 +64,7 @@ twig:
         assetJsIntegrity: "%app.version.integrity.js%"
         customization: "@app.twig_global_customization"
         kernelRootDir: "%kernel.root_dir%"
+        featureNewsletter: "%feature.newsletter%"
 
 # Doctrine Configuration
 doctrine:

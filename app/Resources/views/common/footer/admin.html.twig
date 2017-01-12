@@ -25,7 +25,7 @@
                     <li><a href="{{ path('acquisition_new') }}">Feld erstellen</a></li>
                 </ul>
             {% endif %}
-
+            {% if featureNewsletter %}
             <h3>Newsletter</h3>
             <ul>
                 {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
@@ -37,6 +37,7 @@
                     <li><a href="{{ path('newsletter_admin_create') }}">Newsletter erstellen</a></li>
                 {% endif %}
             </ul>
+            {% endif %}
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3><a href="{{ path('fos_user_profile_show') }}">Konto</a></h3>

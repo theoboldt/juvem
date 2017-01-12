@@ -10,14 +10,13 @@ use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
-class AdminController extends Controller
+class AdminController extends AbstractController
 {
 
     /**
@@ -28,6 +27,7 @@ class AdminController extends Controller
      */
     public function overviewAction()
     {
+        $this->dieIfNewsletterNotEnabled();
         return $this->render(
             'newsletter/admin/overview.html.twig'
         );
@@ -41,6 +41,7 @@ class AdminController extends Controller
      */
     public function listSubscriptionsAction()
     {
+        $this->dieIfNewsletterNotEnabled();
         return $this->render(
             'newsletter/admin/subscription/list.html.twig'
         );
@@ -55,6 +56,7 @@ class AdminController extends Controller
      */
     public function listSubscriptionsDataAction()
     {
+        $this->dieIfNewsletterNotEnabled();
         $repository             = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
         $subscriptionEntityList = $repository->findAll();
         $subscriptionList       = array();
@@ -102,6 +104,7 @@ class AdminController extends Controller
      */
     public function listNewsletterAction()
     {
+        $this->dieIfNewsletterNotEnabled();
         return $this->render(
             'newsletter/admin/newsletter/list.html.twig'
         );
@@ -116,6 +119,7 @@ class AdminController extends Controller
      */
     public function listNewsletterDataAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $repository           = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
         $newsletterEntityList = $repository->findAll();
         $newsletterList       = array();
@@ -157,6 +161,7 @@ class AdminController extends Controller
      */
     public function subscriptionDetailAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $rid        = $request->get('rid');
         $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
 
@@ -191,6 +196,7 @@ class AdminController extends Controller
      */
     public function affectedNewsletterRecipientAmountAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $token              = $request->get('_token');
         $ageRangeBegin      = (int)$request->get('ageRangeBegin');
         $ageRangeEnd        = (int)$request->get('ageRangeEnd');
@@ -223,6 +229,7 @@ class AdminController extends Controller
      */
     public function affectedNewsletterRecipientAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $token              = $request->get('_token');
         $lid                = (int)$request->get('lid');
         $ageRangeBegin      = (int)$request->get('ageRangeBegin');
@@ -257,6 +264,7 @@ class AdminController extends Controller
      */
     public function sendNewsletterAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $token = $request->get('_token');
         $lid   = (int)$request->get('lid');
 
@@ -313,6 +321,7 @@ class AdminController extends Controller
      */
     public function createNewsletterAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $newsletter = new Newsletter();
         $form       = $this->createForm(NewsletterMailType::class, $newsletter);
         $form->handleRequest($request);
@@ -343,6 +352,7 @@ class AdminController extends Controller
      */
     public function detailedNewsletterAction(Request $request)
     {
+        $this->dieIfNewsletterNotEnabled();
         $lid        = $request->get('lid');
         $repository = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
 

@@ -22,12 +22,14 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-main">
                 <ul class="nav navbar-nav">
                     {% if app.user is null %}
-                        <li class="first"><a href="{{ path('homepage') }}">Veranstaltungen</a></li>
-                        <li class="last"><a href="{{ path('newsletter_subscription') }}">Newsletter</a></li>
+                        <li class="first{% if not featureNewsletter %} last{% endif %}"><a href="{{ path('homepage') }}">Veranstaltungen</a></li>
+                        {% if featureNewsletter %}
+                            <li class="last"><a href="{{ path('newsletter_subscription') }}">Newsletter</a></li>
+                        {% endif %}
                     {% else %}
                         <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
                         {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
-                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
+                            {% if featureNewsletter and is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER')) %}
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newsletter
                                         <b class="caret"></b>

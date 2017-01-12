@@ -11,12 +11,14 @@
             <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
             {{ render(controller('AppBundle:Event/Public:listActiveEventLinks')) }}
         </div>
+        {% if featureNewsletter %}
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3>Newsletter</h3>
             <ul>
                 <li><a href="{{ path('newsletter_subscription') }}" title="Newsletter abonnieren">Abonnieren</a></li>
             </ul>
         </div>
+        {% endif %}
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3>Konto</h3>
             <ul>

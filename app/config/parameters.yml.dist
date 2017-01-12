@@ -29,3 +29,6 @@ parameters:
     customization.organization_website: ~
     customization.organization_facebook: ~
     customization.juvem_website: ~
+
+    # Set to true to enable newsletter feature
+    feature.newsletter: true
