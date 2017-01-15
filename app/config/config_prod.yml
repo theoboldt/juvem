@@ -15,6 +15,27 @@ imports:
 
 monolog:
     handlers:
+        mail:
+            type:         fingers_crossed
+            action_level: error
+            handler:      grouped
+        grouped:
+            type:    group
+            members: [streamed, buffered]
+        streamed:
+            type:  stream
+            path:  %kernel.logs_dir%/%kernel.environment%.log
+            level: debug
+        # buffered is used to accumulate errors and send them as batch to the email address
+        buffered:
+            type:    buffer
+            handler: swift
+        swift:
+            type:       swift_mailer
+            from_email: "%mailer_user%"
+            to_email:   "erik@theoboldt.eu"
+            subject:    "[%customization.app_title%] Error"
+            level:      debug
         main:
             type:         fingers_crossed
             action_level: error

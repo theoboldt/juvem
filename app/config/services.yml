@@ -67,4 +67,11 @@ services:
         arguments: ['@doctrine']
         tags:
             - { name: kernel.event_subscriber }
+    app.exception_listener:
+        class: AppBundle\EventListeners\ExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: -1}
+            - { name: monolog.logger, channel: mychannel }
+        arguments:
+            - "@logger"
 
