@@ -240,7 +240,7 @@ class AcquisitionAttribute
      *
      * @param \DateTime $createdAt
      *
-     * @return Event
+     * @return self
      */
     public function setCreatedAt($createdAt)
     {
@@ -318,10 +318,19 @@ class AcquisitionAttribute
      */
     public function getFieldOptions()
     {
-        if (!$this->fieldOptions) {
-            return array();
+        $options = $this->fieldOptions;
+        if (!$options) {
+            $options = [];
         }
-        return array_merge($this->fieldOptions, array('mapped' => true));
+        $options['label']    = $this->getFormTitle();
+        $options['required'] = $this->isRequired();
+        $options['mapped']   = true;
+
+        if ($this->getFieldType() == FormChoiceType::class) {
+            $options['placeholder'] = 'keine Option gewählt';
+        }
+
+        return $options;
     }
 
     /**
@@ -335,7 +344,7 @@ class AcquisitionAttribute
     {
         if ($this->getFieldType() == FormChoiceType::class) {
             $options             = $this->getFieldOptions();
-            $options['multiple'] = $multiple;
+            $options['multiple'] = (bool)$multiple;
             $this->setFieldOptions($options);
         }
 
@@ -345,7 +354,7 @@ class AcquisitionAttribute
     /**
      * Get field choices if this is a choice attribute
      *
-     * @return array
+     * @return bool
      */
     public function getFieldTypeChoiceType()
     {
@@ -355,7 +364,7 @@ class AcquisitionAttribute
             return $options['multiple'];
         }
 
-        return 0;
+        return false;
     }
 
 

@@ -81,7 +81,8 @@ class AcquisitionAttributeFillout
      *
      * @return int
      */
-    public function getBid() {
+    public function getBid()
+    {
         return $this->getAttribute()->getBid();
     }
 
@@ -143,12 +144,15 @@ class AcquisitionAttributeFillout
     /**
      * Set value of this fillout
      *
-     * @param string $value
+     * @param string|array $value
      *
      * @return AcquisitionAttributeFillout
      */
     public function setValue($value)
     {
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
         $this->value = $value;
 
         return $this;
@@ -157,11 +161,21 @@ class AcquisitionAttributeFillout
     /**
      * Get value of this fillout
      *
-     * @return string
+     * @return string|array
      */
     public function getValue()
     {
-        return $this->value;
+        $value     = $this->value;
+        $attribute = $this->getAttribute();
+        if ($attribute->getFieldTypeChoiceType()) {
+            if ($value) {
+                $value = json_decode($value);
+            } else {
+                $value = [];
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -172,15 +186,24 @@ class AcquisitionAttributeFillout
      *
      * @return string
      */
-    public function __toString() {
-        if ($this->value === null) {
+    public function __toString()
+    {
+        $value = $this->getValue();
+        if ($value === null) {
             return '';
         }
-        $attribute  = $this->getAttribute();
+        $attribute = $this->getAttribute();
         if ($attribute->getFieldType() == FormChoiceType::class) {
             $options = array_flip($attribute->getFieldTypeChoiceOptions(true));
-            return (string)$options[$this->value];
+            if ($attribute->getFieldTypeChoiceType()) {
+                foreach ($value as &$option) {
+                    $option = $options[$option];
+                }
+                return implode(', ', $value);
+            } else {
+                return (string)$options[$value];
+            }
         }
-        return (string)$this->value;
+        return (string)$value;
     }
 }

@@ -6,8 +6,9 @@ use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
+use AppBundle\Form\Transformer\FoodTransformer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -47,11 +48,11 @@ class ParticipantType extends AbstractType
             ->add(
                 'birthday',
                 DateType::class,
-                ['label'  => 'Geburtsdatum',
-                 'years'  => range(Date('Y') - 30, Date('Y') - 3),
+                ['label'    => 'Geburtsdatum',
+                 'years'    => range(Date('Y') - 30, Date('Y') - 3),
                  //                      'widget' => 'single_text',
                  //                      'format' => 'yyyy-MM-dd',
-                 'format' => 'dd.MM.yyyy',
+                 'format'   => 'dd.MM.yyyy',
                  'required' => true
                 ]
             )
@@ -89,22 +90,18 @@ class ParticipantType extends AbstractType
             );
 
         /** @var Participation $participation */
-        $participation = $options['participation'];
-        $event         = $participation->getEvent();
-        $attributes    = $event->getAcquisitionAttributes(false, true);
+        $participation        = $options['participation'];
+        $event                = $participation->getEvent();
+        $attributes           = $event->getAcquisitionAttributes(false, true);
+        $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
-            $bid              = $attribute->getBid();
-            $attributeOptions = [
-                'label'    => $attribute->getFormTitle(),
-                'required' => $attribute->isRequired()
-            ];
-            if (ChoiceType::class == $attribute->getFieldType()) {
-                $attributeOptions['placeholder'] = 'keine Option gewählt';
-            }
-            if (isset($attributeOptions['multiple']) && $attributeOptions['multiple']) {
-                $attributeOptions['data'] = [];
+            $bid = $attribute->getBid();
+
+            $attributeOptions = $attribute->getFieldOptions();
+            if ($attribute->getFieldTypeChoiceType()) {
+                $attributeOptions['empty_data'] = [];
             }
 
             try {
@@ -120,21 +117,10 @@ class ParticipantType extends AbstractType
                 $attribute->getFieldType(),
                 array_merge($attributeOptions, $attribute->getFieldOptions())
             );
+            $builder->get($attribute->getName())->addModelTransformer($attributeTransformer);
         }
 
-        $builder->get('food')
-                ->addModelTransformer(
-                    new CallbackTransformer(
-                        function ($originalFoodSum) {
-                            $mask = new ParticipantFood($originalFoodSum);
-                            return $mask->getActiveList();
-                        },
-                        function ($submittedFood) {
-                            return new ParticipantFood(array_sum($submittedFood));
-                        }
-                    )
-                );
-
+        $builder->get('food')->addModelTransformer(new FoodTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver)

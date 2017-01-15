@@ -74,6 +74,7 @@ trait AcquisitionAttributeFilloutTrait
             }
         }
         if ($createIfNotFound) {
+            /** @var Event $event */
             $event = $this->getEvent();
             if (!$event) {
                 throw new \InvalidArgumentException('Can not create fillout if no related event is configured');

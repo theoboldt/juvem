@@ -4,6 +4,7 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -71,32 +72,34 @@ class ParticipationBaseType extends AbstractType
                 ]
             );
 
-        $event      = $participation->getEvent();
-        $attributes = $event->getAcquisitionAttributes(true, false);
+        $event                = $participation->getEvent();
+        $attributes           = $event->getAcquisitionAttributes(true, false);
+        $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
         /** @var AcquisitionAttribute $attribute */
         foreach ($attributes as $attribute) {
             $bid              = $attribute->getBid();
-            $attributeOptions = [
-                'label'    => $attribute->getFormTitle(),
-                'required' => $attribute->isRequired()
-            ];
-            if (ChoiceType::class == $attribute->getFieldType()) {
-                $attributeOptions['placeholder'] = 'keine Option gewählt';
+
+            $attributeOptions = $attribute->getFieldOptions();
+            if ($attribute->getFieldTypeChoiceType()) {
+                $attributeOptions['empty_data'] = [];
             }
 
             try {
-                $fillout                  = $participation->getAcquisitionAttributeFillout($bid);
-                $attributeOptions['data'] = $fillout->getValue();
+                if (isset($options['data']) && $options['data'] instanceof Participation) {
+                    $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
+                    $attributeOptions['data'] = $fillout->getValue();
+                }
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
             }
-            $a = 1;
+
             $builder->add(
                 $attribute->getName(),
                 $attribute->getFieldType(),
                 array_merge($attributeOptions, $attribute->getFieldOptions())
             );
+            $builder->get($attribute->getName())->addModelTransformer($attributeTransformer);
         }
 
     }
