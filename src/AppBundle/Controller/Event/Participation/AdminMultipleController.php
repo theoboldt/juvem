@@ -139,22 +139,19 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsAction($eid)
     {
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event           = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event) {
             return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
+                'event/public/miss.html.twig', ['eid' => $eid],
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
         $participantList = $eventRepository->participantsList($event);
 
-        $export = new ParticipantsExport($event, $participantList, $this->getUser());
+        $export = new ParticipantsExport(
+            $this->get('app.twig_global_customization'), $event, $participantList, $this->getUser()
+        );
         $export->setMetadata();
         $export->process();
 
@@ -183,22 +180,19 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipationsAction($eid)
     {
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event           = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event) {
             return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
+                'event/public/miss.html.twig', ['eid' => $eid],
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-
-        $eventRepository    = $this->getDoctrine()
-                                   ->getRepository('AppBundle:Event');
         $participationsList = $eventRepository->participationsList($event);
 
-        $export = new ParticipationsExport($event, $participationsList, $this->getUser());
+        $export = new ParticipationsExport(
+            $this->get('app.twig_global_customization'), $event, $participationsList, $this->getUser()
+        );
         $export->setMetadata();
         $export->process();
 
@@ -226,22 +220,17 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsBirthdayAddressAction($eid)
     {
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event           = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event) {
             return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
+                'event/public/miss.html.twig', ['eid' => $eid],
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
         $participantList = $eventRepository->participantsList($event);
 
-        $export = new ParticipantsBirthdayAddressExport($event, $participantList, $this->getUser());
+        $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
         $export->setMetadata();
         $export->process();
 
@@ -270,23 +259,21 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsMailAction($eid)
     {
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event           = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event) {
             return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
+                'event/public/miss.html.twig', ['eid' => $eid],
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
 
-        $eventRepository    = $this->getDoctrine()
-                                   ->getRepository('AppBundle:Event');
         $participantList    = $eventRepository->participantsList($event);
         $participationsList = $eventRepository->participationsList($event);
 
-        $export = new ParticipantsMailExport($event, $participantList, $participationsList, $this->getUser());
+        $export = new ParticipantsMailExport(
+            $this->get('app.twig_global_customization'), $event, $participantList, $participationsList, $this->getUser()
+        );
         $export->setMetadata();
         $export->process();
 

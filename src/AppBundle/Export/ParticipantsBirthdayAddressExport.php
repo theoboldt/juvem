@@ -5,6 +5,7 @@ namespace AppBundle\Export;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\Export\Sheet\ParticipantsBirthdayAddressSheet;
+use AppBundle\Twig\GlobalCustomization;
 
 class ParticipantsBirthdayAddressExport extends Export
 {
@@ -23,12 +24,21 @@ class ParticipantsBirthdayAddressExport extends Export
      */
     protected $participants;
 
-    public function __construct(Event $event, array $participants, User $modifier)
+
+    /**
+     * ParticipationsExport constructor.
+     *
+     * @param GlobalCustomization $customization Customization provider in order to eg. add company information
+     * @param Event               $event         Event to export
+     * @param array               $participants  List of participants qualified for export
+     * @param User|null           $modifier      Modifier/creator of export
+     */
+    public function __construct($customization, Event $event, array $participants, User $modifier)
     {
         $this->event        = $event;
         $this->participants = $participants;
 
-        parent::__construct($modifier);
+        parent::__construct($customization, $modifier);
     }
 
     public function setMetadata()
@@ -45,7 +55,6 @@ class ParticipantsBirthdayAddressExport extends Export
 
     public function process()
     {
-
         $sheet = $this->addSheet();
 
         $participantsSheet = new ParticipantsBirthdayAddressSheet($sheet, $this->event, $this->participants);

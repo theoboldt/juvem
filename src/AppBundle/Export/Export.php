@@ -3,7 +3,9 @@ namespace AppBundle\Export;
 
 
 use AppBundle\Entity\User;
+use AppBundle\Twig\GlobalCustomization;
 use PHPExcel;
+use PHPExcel_Worksheet_PageSetup;
 use PHPExcel_Writer_Excel2007;
 
 abstract class Export
@@ -44,22 +46,42 @@ abstract class Export
      */
     public $sheet;
 
+    /**
+     * Customization provider
+     *
+     * @var GlobalCustomization
+     */
+    protected $customization;
 
-    public function __construct(User $modifier = null)
+    /**
+     * Export constructor.
+     *
+     * @param GlobalCustomization $customization Customization provider in order to eg. add company information
+     * @param User|null           $modifier      Modifier/creator of export
+     */
+    public function __construct($customization, User $modifier = null)
     {
-        $this->timestamp = new \DateTime();
-        $this->document  = new PHPExcel();
-        $this->modifier  = $modifier;
+        $this->customization = $customization;
+        $this->modifier      = $modifier;
+        $this->timestamp     = new \DateTime();
+        $this->document      = new PHPExcel();
     }
 
+    /**
+     * Setup metadata for exported file
+     */
     public function setMetadata()
     {
         $this->document->getProperties()
-                       ->setCreator('Evangelisches Jugendwerk Stuttgart Vaihingen');
+                       ->setCreator($this->customization->organizationName());
+        $this->document->getProperties()
+                       ->setCompany($this->customization->organizationName());
+        $this->document->getProperties()
+                       ->setCategory('Juvem');
         if ($this->modifier) {
             $name = $this->modifier->fullname($this->modifier->getNameLast(), $this->modifier->getNameFirst());
-            $this->document->getProperties()
-                           ->setLastModifiedBy($name);
+            $this->document->getProperties()->setCreator($name);
+            $this->document->getProperties()->setLastModifiedBy($name);
         }
     }
 
@@ -80,10 +102,14 @@ abstract class Export
 
         $this->document->setActiveSheetIndex($this->sheetIndex);
         $this->sheet = $this->document->getActiveSheet();
+        $this->sheet->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
 
         return $this->sheet;
     }
 
+    /**
+     * Execute data processing
+     */
     public function process()
     {
         $this->setMetadata();
