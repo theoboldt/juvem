@@ -54,7 +54,7 @@
                             </th>
                         {% endfor %}
                         {% for attribute in event.getAcquisitionAttributes(false, true) %}
-                            <th data-field="participants_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
+                            <th data-field="participant_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
                                 <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                             </th>
                         {% endfor %}
