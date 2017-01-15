@@ -44,10 +44,12 @@ class ParticipantsSheet extends AbstractSheet
                 );
             }
         );
+        $column->setWidth(10);
         $this->addColumn($column);
 
         $column = new EntitySheetColumn('ageAtEvent', 'Alter');
         $column->setNumberFormat('#,##0.0');
+        $column->setWidth(4);
         $this->addColumn($column);
 
         $column = EntitySheetColumn::createSmallColumn('gender', 'Geschlecht');
@@ -115,7 +117,7 @@ class ParticipantsSheet extends AbstractSheet
         $this->addColumn($column);
 
         $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
-        $column->setNumberFormat('dd.mm.yyyy h:mm');
+        $column->setNumberFormat('dd.mm.yyyy hh:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
                 return \PHPExcel_Shared_Date::FormattedPHPToExcel(
@@ -127,13 +129,17 @@ class ParticipantsSheet extends AbstractSheet
         $column->setWidth(14);
         $this->addColumn($column);
 
-        $this->addColumn(new EntitySheetColumn('aid', 'AID'));
+        $column = new EntitySheetColumn('aid', 'AID');
+        $column->setWidth(4);
+        $this->addColumn($column);
+
         $column = new EntitySheetColumn('participation', 'PID');
         $column->setConverter(
             function (Participation $value) {
                 return $value->getPid();
             }
         );
+        $column->setWidth(4);
         $this->addColumn($column);
 
     }

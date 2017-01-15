@@ -2,6 +2,9 @@
 namespace AppBundle\Export\Sheet;
 
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+
 class EntitySheetColumn extends AbstractSheetColumn
 {
 
@@ -11,6 +14,13 @@ class EntitySheetColumn extends AbstractSheetColumn
 	 * @var    string
 	 */
 	protected $dataAttribute;
+
+    /**
+     * Contains the symfony property accessor used in order to read data from entity
+     *
+     * @var PropertyAccessor
+     */
+	private $accessor;
 
     /**
      * Create a new small column and apply some styles
@@ -89,19 +99,16 @@ class EntitySheetColumn extends AbstractSheetColumn
 
 	/**
 	 * Get value by identifier of this column for transmitted entity
-	 *
-	 * @param    Object $entity Entity
-	 * @return mixed
-	 */
+     *
+     * @param   Object  $entity Entity
+     * @return  mixed
+     */
 	public function getData($entity)
 	{
-		$accessor = 'get' . ucfirst($this->dataAttribute);
-
-		if (!method_exists($entity, $accessor)) {
-			throw new \InvalidArgumentException('Transmitted entity has not expected accessor');
-		}
-		return $entity->$accessor();
-
+	    if (!$this->accessor) {
+    	    $this->accessor = PropertyAccess::createPropertyAccessor();
+        }
+        return $this->accessor->getValue($entity, $this->dataAttribute);
 	}
 
 	/**
