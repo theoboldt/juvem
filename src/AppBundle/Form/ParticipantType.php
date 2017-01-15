@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantType extends AbstractType
@@ -131,6 +132,11 @@ class ParticipantType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => Participant::class,
+                'empty_data' => function (FormInterface $form) {
+                    $participation = $form->getConfig()->getOption('participation');
+                    $participant   = new Participant($participation);
+                    return $participant;
+                },
             ]
         );
     }

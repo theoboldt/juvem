@@ -95,8 +95,12 @@ class Participant
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Participation $participation = null)
     {
+        if ($participation) {
+            $this->setParticipation($participation);
+        }
+
         $this->modifiedAt = new \DateTime();
         $this->createdAt  = new \DateTime();
 
