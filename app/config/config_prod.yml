@@ -21,11 +21,7 @@ monolog:
             handler:      grouped
         grouped:
             type:    group
-            members: [streamed, buffered]
-        streamed:
-            type:  stream
-            path:  %kernel.logs_dir%/%kernel.environment%.log
-            level: debug
+            members: [buffered]
         # buffered is used to accumulate errors and send them as batch to the email address
         buffered:
             type:    buffer
