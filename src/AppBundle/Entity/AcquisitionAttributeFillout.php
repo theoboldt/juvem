@@ -195,14 +195,18 @@ class AcquisitionAttributeFillout
         $attribute = $this->getAttribute();
         if ($attribute->getFieldType() == FormChoiceType::class) {
             $options = array_flip($attribute->getFieldTypeChoiceOptions(true));
-            if ($attribute->getFieldTypeChoiceType()) {
+            if (is_array($value)) {
+                //multiple option, multiple values
                 foreach ($value as &$option) {
                     $option = $options[$option];
                 }
-                return implode(', ', $value);
+            } elseif (isset($options[$value])) {
+                //multiple option, single value
+                $value = (string)[$options[$value]];
             } else {
-                return (string)$options[$value];
+                throw new \InvalidArgumentException('Unknown value stored');
             }
+            return implode(', ', $value);
         }
         return (string)$value;
     }
