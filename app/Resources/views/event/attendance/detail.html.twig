@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends "base.html.twig" %}
 
 {% block title %}Anwesenheitsliste ausfüllen ({{ event.title }}){% endblock %}
 
@@ -30,8 +30,8 @@
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
-                       data-url="{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}"
-                       data-sort-name="nameLast" data-sort-order="asc">
+                       data-sort-name="nameLast" data-sort-order="asc"
+                       data-url="{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}">
                     <thead>
                     <tr>
                         <th data-field="did" data-sortable="true" data-visible="false">#</th>
@@ -40,8 +40,14 @@
                         <th data-field="pid" data-sortable="true" data-visible="false">#P</th>
                         <th data-field="nameFirst" data-sortable="true">Vorname</th>
                         <th data-field="nameLast" data-sortable="true">Nachname</th>
+                        <th data-field="isAttendant" data-class="cell-button cell-attendant" data-sortable="false">AT
+                        </th>
+                        <th data-field="isPaid" data-class="cell-button cell-paid" data-sortable="false">P</th>
+                        <th data-field="isPublicTransport" data-class="cell-button cell-public-transport"
+                            data-sortable="false">T
+                        </th>
+
                         <th data-field="status" data-sortable="false" data-visible="false">Status</th>
-                        <th data-field="action" data-sortable="false">Aktion</th>
                     </tr>
                     </thead>
                 </table>
@@ -56,6 +62,9 @@
             var reloadBlocked = false,
                 table = $('#participantsAttendanceListTable');
 
+            /**
+             * Auto refresh
+             **/
             var autoRefresh = function () {
                     if (!reloadBlocked) {
                         reloadBlocked = true;
@@ -64,26 +73,7 @@
                             url: '{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}',
                             datatype: 'json',
                             success: function (dataNew) {
-                                var changed = false,
-                                    rowCurrent;
-                                $.each(dataNew, function (indexRow, rowData) {
-                                    if (changed) {
-                                        return false;
-                                    }
-                                    if (rowData.did) {
-                                        rowCurrent = table.bootstrapTable('getRowByUniqueId', rowData.aid);
-                                        $.each(rowCurrent, function (indexColumn, cellValue) {
-                                            if (cellValue !== rowCurrent[indexColumn]) {
-                                                changed = true;
-                                                return false;
-                                            }
-                                        });
-                                    }
-                                });
-
-                                if (changed) {
-                                    table.bootstrapTable('load', dataNew);
-                                }
+                                table.bootstrapTable('load', dataNew);
                                 reloadBlocked = false;
                             },
                             error: function () {
@@ -106,7 +96,6 @@
                     }
                 },
                 autoRefreshInterval = false;
-
             $('#autoRefresh').click(function () {
                 var checkbox = $(this).find('input'),
                     oldValue = checkbox.prop('checked'),
@@ -117,6 +106,94 @@
                     autoRefreshInterval = setInterval(autoRefresh, 10000);
                 } else if (autoRefreshInterval !== false) {
                     clearInterval(autoRefreshInterval);
+                }
+            });
+
+            var renderActionButton = function () {
+                $('tbody .cell-button').each(function () {
+                    var html = '',
+                        element = $(this),
+                        row = table.bootstrapTable('getRowByUniqueId', element.parent().data('uniqueid'));
+
+                    var generateButton = function (property, valueOld) {
+                        var valueNew = valueOld ? 0 : 1,
+                            glyph,
+                            labelClass = 'btn btn-lg btn-primary';
+                        if (valueOld) {
+                            labelClass += ' active';
+                        }
+
+                        switch (property) {
+                            case 'isAttendant':
+                                glyph = 'ok';
+                                break;
+                            case 'isPaid':
+                                glyph = 'euro';
+                                break;
+                            case 'isPublicTransport':
+                                glyph = 'credit-card';
+                                break;
+                        }
+
+                        return '<label class="' + labelClass + '"' +
+                            ' data-property="' + property + '"' +
+                            ' data-value-new="' + valueNew + '"' +
+                            '><span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span></label> ';
+                    };
+
+                    if (element.hasClass('cell-attendant')) {
+                        html = generateButton('isAttendant', row.isAttendant);
+                    }
+                    if (element.hasClass('cell-paid')) {
+                        html = generateButton('isPaid', row.isPaid);
+                    }
+                    if (element.hasClass('cell-public-transport')) {
+                        html = generateButton('isPublicTransport', row.isPublicTransport);
+                    }
+
+                    element.html(html);
+                });
+            };
+
+            table.on('post-body.bs.table', renderActionButton);
+            table.on('load-success.bs.table', renderActionButton);
+
+            table.on('click-cell.bs.table', function (e, field, value, row, $element) {
+                var elementLabel = $element.find('label'),
+                    aid = row.aid,
+                    valueNew = value ? 0 : 1;
+
+                if (elementLabel && (field == 'isAttendant' || field == 'isPaid' || field == 'isPublicTransport')) {
+                    elementLabel.addClass('disabled');
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ path('event_attendance_list_change', {tid: list.tid} ) }}',
+                        data: {
+                            _token: '{{ csrf_token(list.tid ) }}',
+                            aid: aid,
+                            property: field,
+                            valueNew: valueNew
+                        },
+                        datatype: 'json',
+                        success: function () {
+                            if (row[field] != undefined) {
+                                var rowUpdate = {};
+                                rowUpdate[field] = valueNew;
+                                table.bootstrapTable('updateByUniqueId', {id: aid, row: rowUpdate});
+                            }
+
+                        },
+                        error: function (response) {
+                            $(document).trigger('add-alerts', {
+                                message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                                priority: 'error'
+                            });
+                        },
+                        complete: function (response) {
+                            elementLabel.removeClass('disabled');
+                        }
+                    });
+                    return false;
                 }
             });
 

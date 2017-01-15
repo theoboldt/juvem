@@ -210,9 +210,9 @@ class AdminAttendanceListController extends Controller
             $aid = $participant->getAid();
 
             $participantEntry = [
-                'tid'               => $tid,
-                'did'               => $did,
-                'aid'               => $aid,
+                'tid'               => (int)$tid,
+                'did'               => (int)$did,
+                'aid'               => (int)$aid,
                 'pid'               => $participant->getParticipation()->getPid(),
                 'nameFirst'         => $participant->getNameFirst(),
                 'nameLast'          => $participant->getNameLast(),
@@ -220,8 +220,7 @@ class AdminAttendanceListController extends Controller
                 'isAttendant'       => (int)($fillout ? $fillout->getIsAttendant() : 0),
                 'isPaid'            => (int)($fillout ? $fillout->getIsPaid() : 0),
                 'isPublicTransport' => (int)($fillout ? $fillout->getIsPublicTransport() : 0),
-                'comment'           => $fillout ? $fillout->getComment() : false,
-                'action'            => sprintf('<div class="fillout-action" data-id="%d"></div>', $aid)
+                'comment'           => $fillout ? $fillout->getComment() : false
             ];
 
             $participantList[] = $participantEntry;
