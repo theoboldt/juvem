@@ -202,7 +202,7 @@ class AcquisitionAttributeFillout
                 }
             } elseif (isset($options[$value])) {
                 //multiple option, single value
-                $value = (string)[$options[$value]];
+                $value = [$options[$value]];
             } else {
                 throw new \InvalidArgumentException('Unknown value stored');
             }
