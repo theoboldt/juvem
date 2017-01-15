@@ -50,6 +50,7 @@ services:
             - '%customization.organization_website%'
             - '%customization.organization_facebook%'
             - '%customization.juvem_website%'
+        lazy: true
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
         arguments: ['@twig', '@app.twig_global_customization']
