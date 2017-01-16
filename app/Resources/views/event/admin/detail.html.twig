@@ -84,13 +84,13 @@
                         </div>
                     {% if event.deletedAt %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="restore">
-                            {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen</span>
+                                data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
+                            {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen</span>
                         </button>
                     {% else %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="delete">
-                            {{ 'trash'|glyph }}<span class="hidden-xs"> in Papierkorb verschieben</span>
+                                data-target="#dialogModal" data-action="delete" title="in den Papierkorb verschieben">
+                            {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span>
                         </button>
                     {% endif %}
                     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog"

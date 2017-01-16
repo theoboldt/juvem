@@ -198,8 +198,7 @@ class AdminController extends Controller
     public function detailEventAction(Request $request)
     {
         $eid        = $request->get('eid');
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
 
         $event = $repository->findOneBy(array('eid' => $eid));
         if (!$event) {
@@ -218,6 +217,33 @@ class AdminController extends Controller
                      ->add('action', HiddenType::class)
                      ->getForm();
 
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $action = $form->get('action')->getData();
+
+            switch ($action) {
+                case 'delete':
+                    $event->setDeletedAt(new \DateTime());
+                    $this->addFlash(
+                        'success',
+                        'Die Veranstaltung wurde in den Papierkorb verschoben'
+                    );
+                    break;
+                case 'restore':
+                    $event->setDeletedAt(null);
+                    $this->addFlash(
+                        'success',
+                        'Die Veranstaltung wurde wiederhergestellt'
+                    );
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown action transmitted');
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($event);
+            $em->flush();
+        }
+
         $acquisitionAssignmentForm = $this->createForm(
             EventAcquisitionType::class,
             $event,
@@ -227,24 +253,6 @@ class AdminController extends Controller
                 ),
             )
         );
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $action = $form->get('action')
-                           ->getData();
-            switch ($action) {
-                case 'delete':
-                    $event->setDeletedAt(new \DateTime());
-                    break;
-                case 'restore':
-                    $event->setDeletedAt(null);
-                    break;
-                default:
-                    throw new \InvalidArgumentException('Unknown action transmitted');
-            }
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($event);
-        }
 
         return $this->render(
             'event/admin/detail.html.twig',
