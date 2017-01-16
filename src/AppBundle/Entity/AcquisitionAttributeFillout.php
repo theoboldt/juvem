@@ -204,7 +204,7 @@ class AcquisitionAttributeFillout
                 //multiple option, single value
                 $value = [$options[$value]];
             } else {
-                throw new \InvalidArgumentException('Unknown value stored');
+                return (string)$value;
             }
             return implode(', ', $value);
         }
