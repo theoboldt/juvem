@@ -31,7 +31,7 @@ class FlashController extends Controller
     public function listDataAction(Request $request)
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Flash');
-        $list       = $repository->findValid();
+        $list       = $repository->findAll();
 
         $result = [];
         /** @var Flash $flash */
