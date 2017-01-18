@@ -3,6 +3,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\BitMask\ParticipantFood;
+use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -115,6 +116,11 @@ class ParticipantsSheet extends AbstractSheet
         );
         $column->setWidth(35);
         $this->addColumn($column);
+
+        /** @var AcquisitionAttribute $attribute */
+        foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
+            $this->addColumn(new EntitySheetColumn('acq_field_'.$attribute->getBid(), $attribute->getManagementTitle()));
+        }
 
         $column = new EntitySheetColumn('createdAt', 'Eingang Anmeldung');
         $column->setNumberFormat('dd.mm.yyyy hh:mm');
