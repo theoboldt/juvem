@@ -38,13 +38,6 @@ class User extends BaseUser
     /**
      * Contains the participations assigned to this event
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Event", mappedBy="assignedUser", cascade={"persist"})
-     */
-    protected $assignedEvents;
-
-    /**
-     * Contains the participations assigned to this event
-     *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="assignedUser", cascade={"persist"})
      */
     protected $assignedParticipations;
@@ -56,6 +49,18 @@ class User extends BaseUser
      *                                                                       cascade={"persist"})
      */
     protected $assignedNewsletterSubscription;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Event[]
+     *
+     * @ORM\ManyToMany(targetEntity="Event", inversedBy="subscribers", cascade={"persist"})
+     * @ORM\JoinTable(
+     *  name="user_event_subscription",
+     *  joinColumns={@ORM\JoinColumn(referencedColumnName="uid")},
+     *  inverseJoinColumns={@ORM\JoinColumn(referencedColumnName="eid")}
+     * )
+     */
+    protected $subscribedEvents;
 
     /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
@@ -74,8 +79,8 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->assignedEvents         = new ArrayCollection();
         $this->assignedParticipations = new ArrayCollection();
+        $this->subscribedEvents       = new ArrayCollection();
     }
 
 
@@ -126,47 +131,13 @@ class User extends BaseUser
     }
 
     /**
-     * Add assignedEvent
-     *
-     * @param \AppBundle\Entity\Event $assignedEvent
-     *
-     * @return User
-     */
-    public function addAssignedEvent(\AppBundle\Entity\Event $assignedEvent)
-    {
-        $this->assignedEvents[] = $assignedEvent;
-
-        return $this;
-    }
-
-    /**
-     * Remove assignedEvent
-     *
-     * @param \AppBundle\Entity\Event $assignedEvent
-     */
-    public function removeAssignedEvent(\AppBundle\Entity\Event $assignedEvent)
-    {
-        $this->assignedEvents->removeElement($assignedEvent);
-    }
-
-    /**
-     * Get assignedEvents
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAssignedEvents()
-    {
-        return $this->assignedEvents;
-    }
-
-    /**
      * Add assignedParticipation
      *
-     * @param \AppBundle\Entity\Participation $assignedParticipation
+     * @param Participation $assignedParticipation
      *
      * @return User
      */
-    public function addAssignedParticipation(\AppBundle\Entity\Participation $assignedParticipation)
+    public function addAssignedParticipation(Participation $assignedParticipation)
     {
         $this->assignedParticipations[] = $assignedParticipation;
 
@@ -176,9 +147,9 @@ class User extends BaseUser
     /**
      * Remove assignedParticipation
      *
-     * @param \AppBundle\Entity\Participation $assignedParticipation
+     * @param Participation $assignedParticipation
      */
-    public function removeAssignedParticipation(\AppBundle\Entity\Participation $assignedParticipation)
+    public function removeAssignedParticipation(Participation $assignedParticipation)
     {
         $this->assignedParticipations->removeElement($assignedParticipation);
     }
@@ -191,6 +162,32 @@ class User extends BaseUser
     public function getAssignedParticipations()
     {
         return $this->assignedParticipations;
+    }
+
+
+    /**
+     * Set assignedNewsletterSubscription
+     *
+     * @param NewsletterSubscription $assignedNewsletterSubscription
+     *
+     * @return User
+     */
+    public function setAssignedNewsletterSubscription(NewsletterSubscription $assignedNewsletterSubscription = null
+    )
+    {
+        $this->assignedNewsletterSubscription = $assignedNewsletterSubscription;
+
+        return $this;
+    }
+
+    /**
+     * Get assignedNewsletterSubscription
+     *
+     * @return NewsletterSubscription
+     */
+    public function getAssignedNewsletterSubscription()
+    {
+        return $this->assignedNewsletterSubscription;
     }
 
     /**
@@ -251,29 +248,43 @@ class User extends BaseUser
         return $this->settings;
     }
 
-
     /**
-     * Set assignedNewsletterSubscription
+     * Add event subscription
      *
-     * @param \AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription
-     *
-     * @return User
+     * @param Event $event
+     * @return self
      */
-    public function setAssignedNewsletterSubscription(\AppBundle\Entity\NewsletterSubscription $assignedNewsletterSubscription = null
-    )
+    public function addSubscribedEvent(Event $event)
     {
-        $this->assignedNewsletterSubscription = $assignedNewsletterSubscription;
-
+        if (!$this->subscribedEvents->contains($event)) {
+            $this->subscribedEvents->add($event);
+            $event->addSubscriber($this);
+        }
         return $this;
     }
 
     /**
-     * Get assignedNewsletterSubscription
+     * Remove event subscription
      *
-     * @return \AppBundle\Entity\NewsletterSubscription
+     * @param Event $event
+     * @return self
      */
-    public function getAssignedNewsletterSubscription()
+    public function removeSubscribedEvent(Event $event)
     {
-        return $this->assignedNewsletterSubscription;
+        if ($this->subscribedEvents->contains($event)) {
+            $this->subscribedEvents->removeElement($event);
+            $event->removeSubscriber($this);
+        }
+        return $this;
+    }
+
+    /**
+     * Get subscribedEvents
+     *
+     * @return \Doctrine\Common\Collections\Collection|Event[]
+     */
+    public function getSubscribedEvents()
+    {
+        return $this->subscribedEvents;
     }
 }

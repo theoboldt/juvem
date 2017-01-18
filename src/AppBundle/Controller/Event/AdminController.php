@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class AdminController extends Controller
@@ -26,8 +28,7 @@ class AdminController extends Controller
      */
     public function listAction()
     {
-        $repository      = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
+        $repository      = $this->getDoctrine()->getRepository('AppBundle:Event');
         $eventListFuture = $repository->findEidListFutureEvents();
         $eventListPast   = $repository->findEidListPastEvents();
 
@@ -367,5 +368,40 @@ class AdminController extends Controller
     public function eventNotFoundAction($eid)
     {
         return $this->render('event/public/miss.html.twig', array('eid' => $eid));
+    }
+
+    /**
+     * Handler for subscription button
+     *
+     * @Route("/admin/event/subscription", name="event_admin_subscription")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function subscriptionAction(Request $request)
+    {
+        $token    = $request->get('_token');
+        $eid      = $request->get('eid');
+        $valueNew = $request->get('valueNew');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('Eventsubscribe' . $eid)) {
+            throw new AccessDeniedHttpException('Invalid token');
+        }
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event      = $repository->findOneBy(['eid' => $eid]);
+        if (!$event) {
+            throw new NotFoundHttpException('Could not find requested event');
+        }
+
+        if ($valueNew) {
+            $event->addSubscriber($this->getUser());
+        } else {
+            $event->removeSubscriber($this->getUser());
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($event);
+        $em->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

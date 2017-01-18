@@ -147,11 +147,11 @@ class Event
     protected $participationsConfirmedCount = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="assignedEvents")
-     * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
+     * @var \Doctrine\Common\Collections\Collection|User[]
+     *
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="subscribedEvents")
      */
-    protected $assignedUser;
-
+    protected $subscribers;
 
     /**
      * CONSTRUCTOR
@@ -160,6 +160,7 @@ class Event
     {
         $this->participations        = new ArrayCollection();
         $this->acquisitionAttributes = new ArrayCollection();
+        $this->subscribers           = new ArrayCollection();
     }
 
     /**
@@ -562,31 +563,6 @@ class Event
         return $this;
     }
 
-
-    /**
-     * Set assignedUser
-     *
-     * @param \AppBundle\Entity\User $assignedUser
-     *
-     * @return Event
-     */
-    public function setAssignedUser(\AppBundle\Entity\User $assignedUser = null)
-    {
-        $this->assignedUser = $assignedUser;
-
-        return $this;
-    }
-
-    /**
-     * Get assignedUser
-     *
-     * @return \AppBundle\Entity\User
-     */
-    public function getAssignedUser()
-    {
-        return $this->assignedUser;
-    }
-
     /**
      * Add an acquisition attribute assignment to this event
      *
@@ -616,7 +592,7 @@ class Event
      *
      * @param bool $includeParticipationFields
      * @param bool $includeParticipantFields
-     * @return ArrayCollection
+     * @return ArrayCollection|array
      */
     public function getAcquisitionAttributes($includeParticipationFields = true, $includeParticipantFields = true)
     {
@@ -747,5 +723,56 @@ class Event
     public function getAttendanceLists()
     {
         return $this->attendanceLists;
+    }
+
+    /**
+     * Add subscriber
+     *
+     * @param User $subscriber
+     * @return self
+     */
+    public function addSubscriber(User $subscriber)
+    {
+        if (!$this->subscribers->contains($subscriber)) {
+            $this->subscribers->add($subscriber);
+            $subscriber->addSubscribedEvent($this);
+        }
+        return $this;
+    }
+
+    /**
+     * Remove subscriber
+     *
+     * @param User $subscriber
+     * @return self
+     */
+    public function removeSubscriber(User $subscriber)
+    {
+        if ($this->subscribers->contains($subscriber)) {
+            $this->subscribers->removeElement($subscriber);
+            $subscriber->removeSubscribedEvent($this);
+        }
+        return $this;
+    }
+
+    /**
+     * Get subscribers
+     *
+     * @return \Doctrine\Common\Collections\Collection|User[]
+     */
+    public function getSubscribers()
+    {
+        return $this->subscribers;
+    }
+
+    /**
+     * Find out if event is subscribed by
+     *
+     * @param User $subscriber
+     * @return bool
+     */
+    public function isSubscribedBy(User $subscriber)
+    {
+        return ($this->subscribers->contains($subscriber));
     }
 }
