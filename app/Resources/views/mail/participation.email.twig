@@ -26,6 +26,8 @@ DATEN DER ELTERN:
     {{ participation.addressStreet }}
     {{ participation.addressZip }} {{ participation.addressCity }}
   E-Mail Adresse: {{ participation.email }}
+{% for fillout in  participation.acquisitionAttributeFillouts %}
+    {{ fillout.attribute.formTitle }}: {{ fillout }}{% endfor %}
 
 DATEN DER TEILNEHMER:
 {% for participant in participation.getParticipants() %}
@@ -35,6 +37,8 @@ DATEN DER TEILNEHMER:
     Geschlecht: {{ participant.getGender(true) }}
     Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
     Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
+{% for fillout in participant.acquisitionAttributeFillouts %}
+    {{ fillout.attribute.formTitle }}: {{ fillout }}{% endfor %}
 
     Medizinische Hinweise: {% if not participant.infoMedical %}(keine Besonderheiten){% else %}
        {{ participant.infoMedical }}{% endif %}
@@ -75,11 +79,17 @@ Mit besten Grüßen,
                 <td>{{ participation.nameFirst }}</td>
             </tr>
             <tr>
-                <td class="thead">Nachname</td>
+                <td class="thead" style="min-width:150px;">Nachname</td>
                 <td>{{ participation.nameLast }}</td>
             </tr>
+            {% for fillout in participation.acquisitionAttributeFillouts %}
+                <tr>
+                    <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
+                    <td>{{ fillout }}</td>
+                </tr>
+            {% endfor %}
             <tr>
-                <td class="thead">Telefonnummern</td>
+                <td class="thead"><abbr title="Telefonnummern">Telefon</abbr></td>
                 <td>
                     {% for phoneNumber in participation.phoneNumbers %}
                         <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
@@ -99,7 +109,7 @@ Mit besten Grüßen,
                 </td>
             </tr>
             <tr>
-                <td class="thead" style="padding-bottom: 2px;">E-Mail Adresse</td>
+                <td class="thead" style="padding-bottom: 2px;"><abbr title="E-Mail Adresse">E-Mail</abbr></td>
                 <td style="padding-bottom: 2px;">
                     {{ participation.email }}
                 </td>
@@ -126,13 +136,19 @@ Mit besten Grüßen,
                     <td>{{ participant.nameLast }}</td>
                 </tr>
                 <tr>
-                    <td class="thead">Geschlecht</td>
+                    <td class="thead" style="min-width:150px;">Geschlecht</td>
                     <td>{{ participant.getGender(true) }}</td>
                 </tr>
                 <tr>
                     <td class="thead">Geburtsdatum</td>
                     <td>{{ participant.getBirthday|date("d.m.Y") }}</td>
                 </tr>
+                {% for fillout in participant.acquisitionAttributeFillouts %}
+                    <tr>
+                        <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
+                        <td>{{ fillout }}</td>
+                    </tr>
+                {% endfor %}
                 <tr>
                     <td class="thead">Ernährung</td>
                     <td>
