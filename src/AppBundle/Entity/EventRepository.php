@@ -109,6 +109,20 @@ class EventRepository extends EntityRepository
     }
 
     /**
+     * Find list of events, subscribing users included
+     *
+     * @return Event[]
+     */
+    public function findWithSubscriptions() {
+         $qb = $this->createQueryBuilder('AppBundle:Event')
+                   ->select('e', 's')
+                   ->from('AppBundle:Event', 'e')
+                   ->innerJoin('e.subscribers', 's')
+                   ->orderBy('e.title', 'ASC');
+        return $qb->getQuery()->execute();
+    }
+
+    /**
      * Get a list of participations of an event
      *
      * @param   Event $event            The event
@@ -181,7 +195,7 @@ class EventRepository extends EntityRepository
                    ->leftJoin('p.phoneNumbers', 'pn')
                    ->where('a.participation = p.pid')
                    ->andWhere('p.event = :eid')
-                   ->orderBy('a.nameFirst, a.nameLast', 'ASC');
+                   ->orderBy('a.nameLast, a.nameFirst', 'ASC');
 
         if (!$includeDeleted) {
             $qb->andWhere('a.deletedAt IS NULL');

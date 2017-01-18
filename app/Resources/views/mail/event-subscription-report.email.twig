@@ -1,0 +1,41 @@
+{% block subject %}[Juvem] Anmeldungsbericht: {{ participantsCount }} neue Teilnehmer{% endblock %}
+
+{% block body_text %}
+{% autoescape false %}
+Hallo {{ user.nameFirst }} {{ user.nameLast }},
+seit dem {{ lastRun|date('d.m.Y H:i') }} wurden Anmeldungen für {{ participantsCount }} Teilnehmer bei {{ events|length }} Veranstaltungen abgegeben die noch nicht bestätigt wurden.
+
+{% for event in events %}
+ * Veranstaltung {{ event.event.title }}{% for participant in event.participants %}
+   * {{ participant.nameFirst }} {{ participant.nameLast }} ({{ participant.createdAt|date('d.m.Y H:i')}}){% endfor %}
+{% endfor %}
+
+Mit besten Grüßen,
+{{ customization.organizationName }}
+{% endautoescape %}
+{% endblock %}
+
+{% block body_html %}
+{% embed 'mail/template.html.twig' %}
+    {% block title %}Anmeldungsbericht {{ 'now'|date('d.m.Y') }}{% endblock %}
+    {% block lead %}{{ participantsCount }} neue Teilnehmer bei {{ events|length }} Veranstaltungen{% endblock %}
+    {% block content %}
+        <p>Hallo {{ user.nameFirst }} {{ user.nameLast }},</p>
+        <p>seit dem {{ lastRun|date('d.m.Y H:i') }} wurden bei {{ events|length }} der von Ihnen abonnierten Veranstaltungen Anmeldungen für {{ participantsCount }} Teilnehmer abgegeben, die in der Zwischenzeit noch nicht bestätigt wurden.</p>
+        <ul>
+        {% for event in events %}
+            <li>
+                Veranstaltung <a href="{{ url('event', {'eid': event.event.eid }) }}">{{ event.event.title }}</a>
+                <ul>
+                    {% for participant in event.participants %}
+                        <li><a href="{{ url('event_participation_detail', {'eid': event.event.eid, 'pid': participant.participation.pid }) }}">{{ participant.nameFirst }} {{ participant.nameLast }}</a> ({{ participant.createdAt|date('d.m.Y H:i')}})</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+        <p>Mit besten Grüßen,<br>{{ customization.organizationName }}</p>
+    {% endblock %}
+
+{% endembed %}
+{% endblock %}
