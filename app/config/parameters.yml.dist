@@ -19,6 +19,9 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
+    # A secret key thats can be used to call the cron urls
+    cron_secret: 3bc5321e96ee8b50967e6796b9eb9f05d466762265e53e
+
     customization.app_title: ~
     customization.organization_name: ~
     customization.organization_address_street: ~
