@@ -56,7 +56,7 @@
 
                             <p>{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
 
-                            <p>
+                            <div class="btn-toolbar" role="toolbar">
                                 {% if event.isActive %}
                                 {% if app.user is not null %}
                                 {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
@@ -92,7 +92,7 @@
                             {% endif %}
                             <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"
                                class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
