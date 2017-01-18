@@ -21,3 +21,13 @@
 .panel .panel-footer .form-group {
   margin-bottom: 0;
 }
+
+.btn-toolbar .btn-group,
+.btn-toolbar .btn {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.btn-toolbar .btn-group .btn {
+  margin-top: 0;
+  margin-bottom: 0;
+}
