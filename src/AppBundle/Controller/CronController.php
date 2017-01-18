@@ -6,7 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,13 +26,13 @@ class CronController extends Controller
         $application->setAutoExit(false);
 
         $input  = new ArrayInput(['command' => 'app:event:subscription']);
-        $output = new NullOutput();
+        $output = new BufferedOutput();
         $result = $application->run($input, $output);
 
         if ($result) {
-            return new Response(null, Response::HTTP_NOT_FOUND);
+            return new Response($output->fetch(), Response::HTTP_NOT_FOUND);
         } else {
-            return new Response(null, Response::HTTP_NO_CONTENT);
+            return new Response('Successfully sent');
         }
     }
 }
