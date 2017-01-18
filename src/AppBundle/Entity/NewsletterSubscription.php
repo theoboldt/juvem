@@ -23,6 +23,7 @@ class NewsletterSubscription extends NewsletterAbstract
     /**
      * @ORM\Column(type="string", length=128, name="email")
      * @Assert\NotBlank()
+     * @Assert\Email()
      */
     protected $email;
 
