@@ -97,6 +97,13 @@ class Participation
     protected $acquisitionAttributeFillouts;
 
     /**
+     * Contains the comments assigned
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipationComment", cascade={"all"}, mappedBy="participation")
+     */
+    protected $comments;
+
+    /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedParticipations")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
      */
@@ -597,5 +604,39 @@ class Participation
         }
 
         return $participation;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param \AppBundle\Entity\ParticipationComment $comment
+     *
+     * @return Participation
+     */
+    public function addComment(\AppBundle\Entity\ParticipationComment $comment)
+    {
+        $this->comments[] = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param \AppBundle\Entity\ParticipationComment $comment
+     */
+    public function removeComment(\AppBundle\Entity\ParticipationComment $comment)
+    {
+        $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

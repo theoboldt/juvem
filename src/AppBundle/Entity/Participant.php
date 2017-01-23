@@ -93,6 +93,13 @@ class Participant
     protected $attendanceListsFillouts;
 
     /**
+     * Contains the comments assigned
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipantComment", cascade={"all"}, mappedBy="participant")
+     */
+    protected $comments;
+
+    /**
      * Constructor
      */
     public function __construct(Participation $participation = null)
@@ -464,5 +471,39 @@ class Participant
     public function getAttendanceListsFillouts()
     {
         return $this->attendanceListsFillouts;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param \AppBundle\Entity\ParticipantComment $comment
+     *
+     * @return Participant
+     */
+    public function addComment(\AppBundle\Entity\ParticipantComment $comment)
+    {
+        $this->comments[] = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param \AppBundle\Entity\ParticipantComment $comment
+     */
+    public function removeComment(\AppBundle\Entity\ParticipantComment $comment)
+    {
+        $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }
