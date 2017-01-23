@@ -68,6 +68,9 @@ services:
         arguments: ['@doctrine']
         tags:
             - { name: kernel.event_subscriber }
+    app.comment_manager:
+        class: AppBundle\Manager\CommentManager
+        arguments: ['@doctrine', '@security.token_storage']
     app.exception_listener:
         class: AppBundle\EventListeners\ExceptionListener
         tags:
