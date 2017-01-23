@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity\Audit;
 
+use Doctrine\ORM\Mapping as ORM;
 
 trait CreatedModifiedTrait
 {
