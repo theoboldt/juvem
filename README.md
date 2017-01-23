@@ -23,15 +23,26 @@ People can register themselves in order to receive the newsletter. For each news
 
 ## Requirements
 Juvem is a symfony 3.2 based application.
- 
+
+### Production
 * PHP 7 and above
-* MySQL database
+* MySQL InnoDB database
+* ~ 175 MB disk space (including dependencies)
+
+### Development/Deployment
+* PHP 7 and above
+* MySQL InnoDB database
+* Npm/Grunt for css/js deployment, having `grunt-cli` installed globally 
+* Having sass gem installed
+* ~ 225 MB disk space (including dev/deployment dependencies, node modules)
 
 ## Installation and deployment
 * Checkout project
 * Navigate into project folder
 * Install PHP composer dependencies with `composer install`. If you did not configure configs parameters.yml file before, you may be asked now to do so.
 * Setup database by executing `./app/console doctrine:schema:create`
+* If `grunt-cli` is not yet installed, install it via `npm install -g grunt-cli`
+* If sass gem is not yet installed, install it via `gem install sass`
 * Install npm dependencies with `npm install`
 * In order to have CSS and JS build, you need to execute grunt task `grunt deploy`
 
