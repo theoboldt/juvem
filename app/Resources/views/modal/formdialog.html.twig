@@ -18,7 +18,8 @@
     </div>
 </div>
 <!--
-<script type='text/javascript'>
+{% cspscript %}
+<script nonce="{{ csp_nonce }}" type='text/javascript'>
     $(function () {
         $('#{{ modal.id }}').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget),
@@ -58,4 +59,5 @@
             });
     });
 </script>
+{% endcspscript %}
 -->

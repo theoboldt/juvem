@@ -21,8 +21,6 @@ security:
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
-                # if you are using Symfony < 2.8, use the following config instead:
-                # csrf_provider: form.csrf_provider
                 require_previous_session: false
 
             logout:       true
@@ -32,6 +30,7 @@ security:
                 secret:   "%secret%"
                 lifetime: 2419200 # 4 weeks in seconds
                 path:     /
+                secure: true
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -41,3 +40,52 @@ security:
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
+
+nelmio_security:
+    csp:
+        enabled: true
+        report_logger_service: logger
+        hosts: []
+#        compat_headers: false
+        report_logger_service: monolog.logger.security
+        hash:
+            algorithm: sha256
+        enforce:
+            # Provides compatibility with CSP level 1 (old / non-yet-compatible browsers) when using CSP level 2
+            # features likes hash and nonce. It adds a 'unsafe-inline' source to a directive whenever a nonce or hash
+            # is used.
+            # From RFC: " If 'unsafe-inline' is not in the list of allowed style sources, or if at least one
+            #             nonce-source or hash-source is present in the list of allowed style sources "
+            # See https://www.w3.org/TR/CSP2/#directive-style-src and https://www.w3.org/TR/CSP2/#directive-script-src
+            level1_fallback: true
+            default-src: ['self']
+            script-src:
+                - 'self'
+                - 'unsafe-inline'
+            block-all-mixed-content: true # defaults to false, blocks HTTP content over HTTPS transport
+            # upgrade-insecure-requests: true # defaults to false, upgrades HTTP requests to HTTPS transport
+        report:
+            # see full description below
+            level1_fallback: true
+            # only send directives supported by the browser, defaults to false
+            # this is a port of https://github.com/twitter/secureheaders/blob/83a564a235c8be1a8a3901373dbc769da32f6ed7/lib/secure_headers/headers/policy_management.rb#L97
+#            browser_adaptive:
+#                enabled: true
+            report-uri: %router.request_context.base_url%/nelmio/csp/report
+            script-src:
+                - 'self'
+                - 'unsafe-inline'
+    clickjacking:
+        paths:
+            '^/admin/event/\d+/mail': SAMEORIGIN
+            '^/admin/newsletter/create': SAMEORIGIN
+            '^/admin/newsletter/\d+/edit': SAMEORIGIN
+            '^/.*': DENY
+        content_types: []
+    external_redirects:
+        abort: true
+    content_type:
+        nosniff: true
+    xss_protection:
+        enabled: true
+        mode_block: true

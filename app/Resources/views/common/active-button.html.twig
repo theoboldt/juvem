@@ -1,7 +1,8 @@
 {% set buttonId = random() %}
 <button type="button" class="btn btn-default" id="{{ buttonId }}">
     {% include 'common/active-button-content.html.twig' with {buttonIsEnabled: button.isEnabled, buttons: button.buttons} %}
-    <script type='text/javascript'>
+    {% cspscript %}
+    <script nonce="{{ csp_nonce }}" type='text/javascript'>
         $(function () {
             $('#{{ buttonId }}').click(function () {
                 var button = $('#{{ buttonId }}');
@@ -51,4 +52,5 @@
             });
         });
     </script>
+    {% endcspscript %}
 </button>

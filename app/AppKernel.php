@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
         	new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
+            new Nelmio\SecurityBundle\NelmioSecurityBundle(),
             new AppBundle\AppBundle(),
         );
 

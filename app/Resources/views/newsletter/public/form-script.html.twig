@@ -1,4 +1,5 @@
-<script type='text/javascript'>
+{% cspscript %}
+<script nonce="{{ csp_nonce }}" type='text/javascript'>
     jQuery(document).ready(function () {
         var updateRange,
                 elAgeRangeBegin = $('#{{ formMain }}_ageRangeBegin'),
@@ -70,3 +71,4 @@
         });
     });
 </script>
+{% endcspscript %}

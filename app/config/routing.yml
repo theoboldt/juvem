@@ -4,3 +4,8 @@ app:
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+nelmio_security:
+    path:     /nelmio/csp/report
+    defaults: { _controller: nelmio_security.csp_reporter_controller:indexAction }
+    methods:  [POST]

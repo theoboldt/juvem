@@ -57,7 +57,8 @@
     </div>
 {% endblock %}
 {% block javascriptCustom %}
-    <script type='text/javascript'>
+    {% cspscript %}
+    <script nonce="{{ csp_nonce }}" type='text/javascript'>
         $(function () {
             var reloadBlocked = false,
                 table = $('#participantsAttendanceListTable');
@@ -199,4 +200,5 @@
 
         });
     </script>
+    {% endcspscript %}
 {% endblock %}
