@@ -74,10 +74,7 @@ nelmio_security:
             report-uri: %router.request_context.base_url%/nelmio/csp/report
     clickjacking:
         paths:
-            '^/admin/event/\d+/mail': SAMEORIGIN
-            '^/admin/newsletter/create': SAMEORIGIN
-            '^/admin/newsletter/\d+/edit': SAMEORIGIN
-            '^/.*': DENY
+            '^/.*': SAMEORIGIN
         content_types: []
     external_redirects:
         abort: true
