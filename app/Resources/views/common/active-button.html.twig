@@ -2,7 +2,7 @@
 <button type="button" class="btn btn-default" id="{{ buttonId }}">
     {% include 'common/active-button-content.html.twig' with {buttonIsEnabled: button.isEnabled, buttons: button.buttons} %}
     {% cspscript %}
-    <script nonce="{{ csp_nonce }}" type='text/javascript'>
+    <script type='text/javascript'>
         $(function () {
             $('#{{ buttonId }}').click(function () {
                 var button = $('#{{ buttonId }}');

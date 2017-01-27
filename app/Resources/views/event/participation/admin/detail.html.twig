@@ -258,7 +258,7 @@
 {% endblock %}
 {% block javascriptCustom %}
     {% cspscript %}
-    <script nonce="{{ csp_nonce }}" type='text/javascript'>
+    <script type='text/javascript'>
         jQuery(document).ready(function () {
             $('#dialogModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget),
