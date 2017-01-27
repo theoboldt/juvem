@@ -8,6 +8,7 @@ use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Export\CustomizedExportConfiguration;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
@@ -17,6 +18,7 @@ use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -249,7 +251,6 @@ class AdminMultipleController extends Controller
         return $response;
     }
 
-
     /**
      * Page for list of participants of an event
      *
@@ -291,4 +292,39 @@ class AdminMultipleController extends Controller
 
         return $response;
     }
+
+     /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function exportGeneratorAction($eid)
+    {
+            return $this->render(
+                'event/public/miss.html.twig', ['eid' => $eid],
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(['eid' => $eid]);
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', ['eid' => $eid],
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $config = ['export' => ['participant' => ['firstName' => true, 'lastName' => false], 'participation' => []]];
+
+        $processor     = new Processor();
+        $configuration = new CustomizedExportConfiguration($event);
+        $tree          = $configuration->getConfigTreeBuilder()->buildTree();
+
+
+        $processedConfiguration = $processor->processConfiguration($configuration, $config);
+
+        return $this->render('event/admin/export-generator.html.twig', array('event' => $event, 'config' => $tree->getChildren()));
+    }
+
 }
