@@ -35,11 +35,9 @@
                     <div class="form-group">
                         <label class="control-label">{{ group.info }}</label>
                         {% for option in group.children %}
-                            {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooeanNode') %}
                                 <div class="checkbox"><label><input type="checkbox" name="participantfirstName"
                                                                     value="participantfirstName"> {{ option.info }}</label>
                                 </div>
-                            {% endif %}
                         {{ dump(option) }}
 
                         {% endfor %}
