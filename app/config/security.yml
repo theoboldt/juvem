@@ -83,3 +83,8 @@ nelmio_security:
     xss_protection:
         enabled: true
         mode_block: true
+    referrer_policy:
+        enabled: true
+        policies:
+            - 'no-referrer'
+            - 'strict-origin-when-cross-origin'
