@@ -1,7 +1,7 @@
 (function (window) {
     var document = window.document;
 
-    var cookieName = 'hideCookieConsent',
+    var cookieName = 'c',
         dismissLinkId = 'cookieChoiceDismiss',
         cookieChoiceElement = document.getElementById('cookiechoice');
 
