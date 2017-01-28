@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class DefaultController extends Controller
 {
@@ -75,16 +76,49 @@ class DefaultController extends Controller
      * @Route("/m")
      * @Route("/mobile")
      */
-    public function redirectToHomeAction() {
-            return $this->redirectToRoute('homepage');
+    public function redirectToHomeAction()
+    {
+        return $this->redirectToRoute('homepage');
     }
 
     /**
+     * @Route("/crossdomain.xml")
+     * @Route("/clientaccesspolicy.xml")
      * @Route("/.well-known/assetlinks.json")
      */
     public function unsupportedAction()
     {
         return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    /**
+     * @Route("/contribute.json")
+     */
+    public function contributeAction()
+    {
+        return new JsonResponse(
+            [
+                'name'        => 'Juvem',
+                'description' => 'Juvem is a symfony based web application to manage events and newsletters',
+                'repository'  => [
+                    'url'     => 'https://github.com/theoboldt/juvem.git',
+                    'license' => 'MIT'
+                ],
+                'keywords'    => [
+                    'PHP',
+                    'Symfony',
+                    'Twitter Bootstrap',
+                    'jQuery'
+                ],
+                'bugs'        => [
+                    'list'   => 'https://github.com/theoboldt/juvem/issues',
+                    'report' => 'https://github.com/theoboldt/juvem/issues/new'
+                ],
+                'urls'        => [
+                    'prod' => $this->generateUrl('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL)
+                ]
+            ]
+        );
     }
 
 }
