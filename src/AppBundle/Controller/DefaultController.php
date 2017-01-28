@@ -104,6 +104,11 @@ class DefaultController extends Controller
                     'url'     => 'https://github.com/theoboldt/juvem.git',
                     'license' => 'MIT'
                 ],
+                'participate' => [
+                    'home' => 'https://github.com/theoboldt/juvem',
+                    'irc' => '',
+                    'irc-contacts' => []
+                ],
                 'keywords'    => [
                     'PHP',
                     'Symfony',
@@ -120,5 +125,4 @@ class DefaultController extends Controller
             ]
         );
     }
-
 }
