@@ -34,6 +34,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_extension_is_instanceof:
+        class: AppBundle\Twig\Extension\IsInstanceof
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_global_customization:
         class: AppBundle\Twig\GlobalCustomization
         arguments:

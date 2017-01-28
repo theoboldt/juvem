@@ -301,10 +301,6 @@ class AdminMultipleController extends Controller
      */
     public function exportGeneratorAction($eid)
     {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
         $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
 
         $event = $eventRepository->findOneBy(['eid' => $eid]);

@@ -29,19 +29,47 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top:20px;">
             {% for group in config %}
                 <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <label class="control-label">{{ group.info }}</label>
-                        {% for option in group.children %}
-                                <div class="checkbox"><label><input type="checkbox" name="participantfirstName"
-                                                                    value="participantfirstName"> {{ option.info }}</label>
-                                </div>
-                        {{ dump(option) }}
-
-                        {% endfor %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{ group.info }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% for option in group.children %}
+                                {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="participantfirstName"
+                                                   value="participantfirstName"> {{ option.info }}
+                                        </label>
+                                    </div>
+                                {% endif %}
+                                {% if option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                                    <div class="form-group">
+                                        <label class="control-label">{{ option.info }}</label>
+                                    {% for subOption in option.children %}
+                                        {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="participantfirstName"
+                                                           value="participantfirstName"> {{ subOption.info }}
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
+
+                    {#
+
+                {{ dump(option) }}
+#}
+
                 </div>
             {% endfor %}
         </div>
