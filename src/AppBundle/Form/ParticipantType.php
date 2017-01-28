@@ -22,6 +22,8 @@ class ParticipantType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $foodMask = new ParticipantFood();
+        $foodLabels = $foodMask->labels();
+        unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
 
         $builder
             ->add(
@@ -82,7 +84,7 @@ class ParticipantType extends AbstractType
                 ChoiceType::class,
                 [
                     'label'    => 'Ernährung',
-                    'choices'  => array_flip($foodMask->labels()),
+                    'choices'  => array_flip($foodLabels),
                     'expanded' => true,
                     'multiple' => true,
                     'required' => false,
