@@ -96,6 +96,10 @@ class AdminMultipleController extends Controller
                 $glyph = new BootstrapGlyph();
                 $age .= ' ' . $glyph->bootstrapGlyph('gift');
             }
+            $participantStatusText = $statusFormatter->formatMask($participantStatus);
+            if ($participant->getDeletedAt()) {
+                $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
+            }
 
             $participantEntry = array(
                 'aid'              => $participant->getAid(),
@@ -108,7 +112,7 @@ class AdminMultipleController extends Controller
                 'nameLast'         => $participant->getNameLast(),
                 'age'              => $age,
                 'phone'            => implode(', ', $participantPhoneList),
-                'status'           => $statusFormatter->formatMask($participantStatus),
+                'status'           => $participantStatusText,
                 'gender'           => $participant->getGender(true),
                 'registrationDate' => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'           => $participantAction

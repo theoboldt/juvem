@@ -75,8 +75,13 @@ class PublicManagementController extends Controller
 
             $participantsString = '';
             foreach ($participation->getParticipants() as $participant) {
+                $participantStatusText = $statusFormatter->formatMask($participant->getStatus(true));
+                if ($participant->getDeletedAt()) {
+                    $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
+                }
+
                 $participantsString .= sprintf(
-                    ' %s %s', $participant->getNameFirst(), $statusFormatter->formatMask($participant->getStatus(true))
+                    ' %s %s', $participant->getNameFirst(), $participantStatusText
                 );
             }
 
