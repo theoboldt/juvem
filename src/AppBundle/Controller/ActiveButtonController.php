@@ -30,7 +30,7 @@ class ActiveButtonController extends Controller
         $toggleValue = $request->get('toggle');
         $buttons     = $request->get('buttons');
         $isXs        = $request->get('isXs');
-dump($isXs);
+
         switch ($valueNew) {
             case null:
             default:
