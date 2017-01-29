@@ -476,7 +476,7 @@ class Participation
      * Set conformation value for all related participants
      *
      * @param   bool $paid New value
-     * @return bool
+     * @return self
      */
     public function setIsPaid($paid = true)
     {

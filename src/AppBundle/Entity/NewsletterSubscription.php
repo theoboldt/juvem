@@ -39,14 +39,14 @@ class NewsletterSubscription extends NewsletterAbstract
     protected $assignedUser;
 
     /**
-     * @ORM\Column(name="is_enabled", type="boolean", options={"unsigned":true,"default":1})
+     * @ORM\Column(name="is_enabled", type="smallint", options={"unsigned":true,"default":1})
      *
      * @var boolean
      */
     protected $isEnabled = true;
 
     /**
-     * @ORM\Column(name="is_confirmed", type="boolean", options={"unsigned":true, "default":0})
+     * @ORM\Column(name="is_confirmed", type="smallint", options={"unsigned":true, "default":0})
      *
      * @var boolean
      */

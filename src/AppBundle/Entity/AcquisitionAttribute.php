@@ -67,21 +67,21 @@ class AcquisitionAttribute
     protected $fieldOptions = array();
 
     /**
-     * @ORM\Column(name="use_at_participation", type="boolean", options={"unsigned":true,"default":0})
+     * @ORM\Column(name="use_at_participation", type="smallint", options={"unsigned":true,"default":0})
      *
      * @var boolean
      */
     protected $useAtParticipation = false;
 
     /**
-     * @ORM\Column(name="use_at_participant", type="boolean", options={"unsigned":true,"default":0})
+     * @ORM\Column(name="use_at_participant", type="smallint", options={"unsigned":true,"default":0})
      *
      * @var boolean
      */
     protected $useAtParticipant = false;
 
     /**
-     * @ORM\Column(name="is_required", type="boolean", options={"unsigned":true,"default":0})
+     * @ORM\Column(name="is_required", type="smallint", options={"unsigned":true,"default":0})
      *
      * @var boolean
      */
