@@ -9,7 +9,6 @@ use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
-use AppBundle\Form\PhoneNumberListType;
 use AppBundle\InvalidTokenHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -31,8 +30,7 @@ class AdminSingleController extends Controller
      */
     public function participationDetailAction(Request $request)
     {
-        $participationRepository = $this->getDoctrine()
-                                        ->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
 
         $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
         if (!$participation) {
@@ -74,22 +72,24 @@ class AdminSingleController extends Controller
 
         $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */
-        foreach ($participation->getPhoneNumbers()
-                               ->getIterator() as $phoneNumberEntity) {
+        foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumberEntity) {
             /** @var \libphonenumber\PhoneNumber $phoneNumber */
             $phoneNumber       = $phoneNumberEntity->getNumber();
             $phoneNumberList[] = $phoneNumber;
         }
+        $commentManager = $this->container->get('app.comment_manager');
 
         return $this->render(
             'event/participation/admin/detail.html.twig',
-            array('event'           => $event,
-                  'participation'   => $participation,
-                  'foodFormatter'   => $foodFormatter,
-                  'statusFormatter' => $statusFormatter,
-                  'phoneNumberList' => $phoneNumberList,
-                  'form'            => $form->createView()
-            )
+            [
+                'commentManager'  => $commentManager,
+                'event'           => $event,
+                'participation'   => $participation,
+                'foodFormatter'   => $foodFormatter,
+                'statusFormatter' => $statusFormatter,
+                'phoneNumberList' => $phoneNumberList,
+                'form'            => $form->createView()
+            ]
         );
     }
 

@@ -1,0 +1,23 @@
+<div class="comment" data-cid="{{ comment.cid }}">
+    <div class="content">
+        {{ comment.content|markdown }}
+    </div>
+    <p class="meta">
+        <small>
+            <a href="{{ path('user_detail', {uid: comment.createdBy.uid}) }}">{{ participation.fullname(comment.createdBy.nameLast, comment.createdBy.nameFirst) }}</a>
+            <span title="{{ comment.createdAt|date("d.m.Y h:i") }}"
+                  data-toggle="tooltip">{{ comment.createdAt|ago }}</span>{% if comment.modifiedAt %},
+            geändert von <a
+                href="{{ path('user_detail', {uid: comment.modifiedBy.uid}) }}">{{ participation.fullname(comment.modifiedBy.nameLast, comment.modifiedBy.nameFirst) }}</a>
+            <span title="{{ comment.modifiedAt|date("d.m.Y h:i") }}"
+                  data-toggle="tooltip">{{ comment.modifiedAt|ago }}</span>{% endif %}{% if comment.deletedAt %},
+                gelöscht <span title="{{ comment.deletedAt|date("d.m.Y h:i") }}"
+                               data-toggle="tooltip">{{ comment.deletedAt|ago }}</span>
+            {% endif %}
+        </small>
+        {% if app.user == comment.createdBy %}
+            <button class="btn btn-xs btn-default btn-edit-comment" data-toggle="modal" data-target="#dialogModalComment"
+                    data-cid="{{ comment.cid }}" data-content="{{ comment.content }}" data-comment-class="{{ comment.baseClassName }}" data-related-id="{{ comment.relatedId }}">{{ 'pencil'|glyph }}</button>
+        {% endif %}
+    </p>
+</div>

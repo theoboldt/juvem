@@ -3,6 +3,29 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalCommentLabel">Anmerkungen</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <textarea class="form-control" id="modalCommentContent"></textarea>
+                    </div>
+                    <p class="meta"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
         <div class="modal-dialog" role="document">
             {{ form_start(form) }}
@@ -103,6 +126,9 @@
                             <div class="col-xs-3 text-right">
                                 <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
                                    class="btn btn-default btn-xs" title="Telefonnummern bearbeiten" data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
+                                <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"
+                                        data-target="#comment-footer-pid-{{ participation.pid }}" aria-expanded="false"
+                                        aria-controls="comment-footer-pid-{{ participation.pid }}">{{ commentManager.forParticipation(participation)|length }} {{ 'comment'|glyph }}</button>
                                 <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
                                    class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                             </div>
@@ -166,6 +192,14 @@
 
                         </dl>
                     </div>
+                    <div class="panel-footer panel-comments {#collapse#}" id="comment-footer-pid-{{ participation.pid }}">
+                        <div>
+                        {% for comment in commentManager.forParticipation(participation) %}
+                            {{ include('common/comment-content.html.twig', {comment: comment}) }}
+                        {% endfor %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         {% if participation.participants.count > 1 %}
@@ -192,6 +226,9 @@
                                             data-button-enable-label="Anmeldung von {{ participant.nameFirst }} zurückziehen" data-button-enable-glyph="share-alt"
                                             data-button-disable-label="Anmeldung von {{ participant.nameFirst }} reaktivieren"
                                             data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
+                                    <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"
+                                            data-target="#comment-footer-aid-{{ participant.aid }}" aria-expanded="false"
+                                            aria-controls="comment-footer-aid-{{ participant.aid }}">{{ commentManager.forParticipant(participant)|length }} {{ 'comment'|glyph }}</button>
                                     <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
                                        class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                 </div>
@@ -254,10 +291,21 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
-                        {#
-                        <div class="panel-footer">
+                        <div class="panel-footer collapse" id="comment-footer-aid-{{ participant.aid }}" style="padding: 0;">
+                            <div style="padding: 10px 15px;">
+                            {% for comment in commentManager.forParticipant(participant) %}
+                                    {{ comment.content|markdown }}
+                                    <small>
+                                        <a href="{{ path('user_detail', {uid: comment.createdBy.uid}) }}">{{ participation.fullname(comment.createdBy.nameLast, comment.createdBy.nameFirst) }}</a>
+                                        <span title="{{ comment.createdAt|date("d.m.Y h:i") }}" data-toggle="tooltip">{{ comment.createdAt|ago }}</span>{% if comment.modifiedAt %},
+                                    geändert von <a href="{{ path('user_detail', {uid: comment.modifiedBy.uid}) }}">{{ participation.fullname(comment.modifiedBy.nameLast, comment.modifiedBy.nameFirst) }}</a>
+                                        <span title="{{ comment.modifiedAt|date("d.m.Y h:i") }}" data-toggle="tooltip">{{ comment.modifiedAt|ago }}</span>
+                                    {% endif %}
+                                    </small>
+                            {% endfor %}
+                            </div>
                         </div>
-                        #}
+
                     </div>
                 </div>
             {% endfor %}

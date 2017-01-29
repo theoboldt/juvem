@@ -14,6 +14,7 @@
   min-height: 500px;
 }
 
+/** Event participation detail **/
 @media (min-width: 992px) {
   .participation-panels .btn-toolbar {
     margin-top: 12px;
@@ -23,5 +24,32 @@
 @media (max-width: 991px) {
   .participation-panels .btn-toolbar {
     margin-bottom: 20px;
+  }
+}
+
+/** Comments **/
+#dialogModalComment p.meta {
+  margin: 0;
+}
+
+.panel-comments {
+
+  padding: 0; //prevent collapse from flipping
+  > div {
+    padding: 10px 15px; //prevent collapse from flipping
+  }
+}
+
+.comment {
+  .content p:last-of-type {
+    margin: 0;
+  }
+
+  //edit button
+  .btn-edit-comment {
+    visibility: hidden;
+  }
+  :hover .btn-edit-comment {
+    visibility: visible;
   }
 }

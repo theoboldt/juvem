@@ -101,6 +101,8 @@ class Participant
 
     /**
      * Constructor
+     *
+     * @param Participation $participation  Related participation
      */
     public function __construct(Participation $participation = null)
     {

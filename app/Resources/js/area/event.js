@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
 
     /**
      * EVENT: Handle via prototype injected forms
@@ -113,5 +113,30 @@ $(function(){
     $('*#mail-form .btn-update-preview').click(updateMailPreview);
     $('*#mail-form input, *#mail-form textarea').change(updateMailPreview);
 
+
+    /**
+     * EVENT: Handle comment form call
+     */
+    $('#dialogModalComment').on('show.bs.modal', function (event) {
+        var modal = $(this),
+            button = $(event.relatedTarget),
+            cid = parseInt(button.data('cid')),
+            content = button.data('content'),
+            meta = cid ? button.parent().find('small').html() : null;
+
+        if (cid) {
+            modal.find('#dialogModalCommentLabel').text('Anmerkung bearbeiten');
+            modal.find('input[type=submit]').val('Änderungen speichern');
+        } else {
+            modal.find('#dialogModalCommentLabel').text('Anmerkungen hinzufügen');
+            modal.find('input[type=submit]').val('Anmerkungen hinzufügen');
+        }
+
+        if (meta) {
+            modal.find('p.meta').html(meta);
+        }
+
+        modal.find('#modalCommentContent').val(content)
+    })
 
 });

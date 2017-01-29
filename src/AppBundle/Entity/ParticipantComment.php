@@ -5,7 +5,6 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\Audit\BlameableTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
-use AppBundle\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -47,5 +46,15 @@ class ParticipantComment extends CommentBase
     public function getParticipant()
     {
         return $this->participant;
+    }
+
+    /**
+     * Get related objects id
+     *
+     * @return string
+     */
+    public function getRelatedId()
+    {
+        return $this->getParticipant()->getAid();
     }
 }

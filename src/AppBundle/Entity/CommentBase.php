@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class CommentBase
 {
-	use CreatedModifiedTrait, SoftDeleteTrait, BlameableTrait;
+    use CreatedModifiedTrait, SoftDeleteTrait, BlameableTrait;
 
     /**
      * @ORM\Column(type="integer", name="cid")
@@ -64,5 +64,42 @@ abstract class CommentBase
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * Get class name
+     *
+     * @return string
+     */
+    public function getBaseClassName()
+    {
+        return get_class($this);
+    }
+
+    /**
+     * Get id of related object
+     *
+     * @return integer
+     */
+    public abstract function getRelatedId();
+
+    /**
+     * Get related object
+     *
+     * @return string
+     */
+    public function getRelated()
+    {
+        if (preg_match('/(?:\\\\)*([^\\\\]+)Comment$/', $this->getBaseClassName(), $classData)) {
+            $relatedAcessor = 'get'.$classData[1];
+            $comment      = new \ReflectionClass(get_class($this));
+            if ($comment->hasMethod($relatedAcessor)) {
+                return $this->$relatedAcessor();
+            } else {
+                throw new \InvalidArgumentException('Comment class has not expected accessor for related object');
+            }
+        } else {
+            throw new \InvalidArgumentException('Comment class name is not as expected');
+        }
     }
 }
