@@ -64,7 +64,6 @@ $(function(){
                 data: $.extend(formData, {toggle: 1}),
                 dataType: 'json',
                 success: function (response) {
-                    console.log(response);
                     button.empty();
                     if (response && response.html) {
                         button.html(response.html);
