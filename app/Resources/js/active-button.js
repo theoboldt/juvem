@@ -53,6 +53,9 @@ $(function(){
             },
             complete: function () {
                 button.prop('disabled', false);
+                button.find('[data-toggle="tooltip"]').tooltip({
+                    container: 'body'
+                });
             }
         });
 
@@ -79,6 +82,9 @@ $(function(){
                 },
                 complete: function (response) {
                     button.prop('disabled', false);
+                    button.find('[data-toggle="tooltip"]').tooltip({
+                        container: 'body'
+                    });
                     button.trigger('juvem.activeButton.complete', [button, response]);
                 }
             });

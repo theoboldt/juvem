@@ -39,9 +39,10 @@ class ParticipationsParticipantsNamesGrouped extends \Twig_Extension
     {
         $groups = [];
         /** @var Participant $participant */
+
         foreach ($participation->getParticipants() as $participant) {
             $groups[$participant->getNameLast()][] = sprintf(
-                '<span title="%1$s %2$s">%1$s</span>', $participant->getNameFirst(), $participant->getNameLast()
+                '<span title="%1$s %2$s" data-toggle="tooltip">%1$s</span>', $participant->getNameFirst(), $participant->getNameLast()
             );
         }
 

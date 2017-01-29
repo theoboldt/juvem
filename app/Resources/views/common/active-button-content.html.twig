@@ -1,5 +1,5 @@
 {% if buttonIsEnabled %}
-    <span {% if buttons.buttonDisable.label is defined %}title="{{ buttons.buttonDisable.label}}"{% endif %}>
+    <span {% if buttons.buttonDisable.label is defined %}title="{{ buttons.buttonDisable.label}}" data-toggle="tooltip"{% endif %}>
     {% if buttons.buttonDisable.glyph is defined %}
         {{ buttons.buttonDisable.glyph|glyph }}
     {% endif %}
@@ -8,7 +8,7 @@
     {% endif %}
     </span>
 {% else %}
-    <span {% if buttons.buttonEnable.label is defined %}title="{{ buttons.buttonEnable.label}}"{% endif %}>
+    <span {% if buttons.buttonEnable.label is defined %}title="{{ buttons.buttonEnable.label}}" data-toggle="tooltip"{% endif %}>
     {% if buttons.buttonEnable.glyph is defined %}
         {{ buttons.buttonEnable.glyph|glyph }}
     {% endif %}
