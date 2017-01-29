@@ -84,12 +84,14 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <div class="row">
-                            <div class="col-xs-10">
+                            <div class="col-xs-9">
                                 <h3 class="panel-title">Anmeldung</h3>
                             </div>
-                            <div class="col-xs-2 text-right">
+                            <div class="col-xs-3 text-right">
+                                <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten">{{ 'phone-alt'|glyph }}</a>
                                 <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>
@@ -101,6 +103,19 @@
                             <dd>{{ participation.nameFirst }}</dd>
                             <dt>Nachname</dt>
                             <dd>{{ participation.nameLast }}</dd>
+                            <dt>Telefon</dt>
+                            <dd>
+                            {% for phoneNumber in participation.phoneNumbers %}
+                                <address>
+                                    <a href="tel:{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}">{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</a>
+                                    {% if phoneNumber.description %}
+                                    <br>
+                                    <i>{{ phoneNumber.description }}</i>
+                                    {% endif %}
+                                </address>
+                            {% endfor %}
+
+                            </dd>
                             <dt>Anschrift</dt>
                             <dd class="address-container">
                                 <address>
@@ -138,34 +153,10 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-xs-12 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-10">
-                                <h3 class="panel-title">Telefonnummern</h3>
-                            </div>
-                            <div class="col-xs-2 text-right">
-                                <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <dl class="dl-horizontal">
-                            {% for phoneNumber in participation.phoneNumbers %}
-                                <dt>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</dt>
-                                <dd>
-                                    {{ phoneNumber.description }}
-                                </dd>
-                            {% endfor %}
-                        </dl>
-                    </div>
-                </div>
-            </div>
+        {% if participation.participants.count > 1 %}
         </div>
         <div class="row">
+        {% endif %}
             {% for participant in participation.participants %}
                 <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
