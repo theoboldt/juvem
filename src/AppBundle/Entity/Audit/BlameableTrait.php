@@ -8,7 +8,7 @@ trait BlameableTrait
 {
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="uid", onDelete="SET NULL")
      */
     protected $createdBy;
 
