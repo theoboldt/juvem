@@ -16,44 +16,7 @@
                 </h1>
             </div>
             {% endblock %}
-            <div id="page-global-messages">
-                <div data-alerts="alerts">
-                    <noscript>
-                        <div class="alert alert-warning">
-                            Auf dieser Website wird Javascript eingesetzt, um den Besuchern das beste Webseiten-Erlebnis zu ermöglichen.
-                            Ihr Browser scheint die Nutzung von Javascript nicht zu erlauben. Bitte <a href="http://enable-javascript.com/de/" hreflang="de">aktivieren Sie Javascript</a>, um alle Funktionen der Website nutzen zu können.
-                        </div>
-                    </noscript>
-                    {% if app.session.flashBag.has('success') %}
-                        {% for msg in app.session.flashBag.get('success') %}
-                            <div class="alert alert-success">
-                                {{ msg|raw }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% if app.session.flashBag.has('info') %}
-                        {% for msg in app.session.flashBag.get('info') %}
-                            <div class="alert alert-info">
-                                {{ msg|raw }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% if app.session.flashBag.has('warning') %}
-                        {% for msg in app.session.flashBag.get('warning') %}
-                            <div class="alert alert-warning">
-                                {{ msg|raw }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% if app.session.flashBag.has('danger') %}
-                        {% for msg in app.session.flashBag.get('danger') %}
-                            <div class="alert alert-danger">
-                                {{ msg|raw }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
+            {% include 'common/header/page-global-messages.html.twig' %}
         </div>
     </div>
 </div>
