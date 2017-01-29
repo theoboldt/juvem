@@ -9,13 +9,13 @@ use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Form\AttendanceListType;
+use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AdminAttendanceListController extends Controller
 {
@@ -245,7 +245,7 @@ class AdminAttendanceListController extends Controller
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken($tid)) {
-            throw new AccessDeniedHttpException('Invalid token');
+            throw new InvalidTokenHttpException();
         }
 
         $repositoryParticipant = $this->getDoctrine()->getRepository('AppBundle:Participant');

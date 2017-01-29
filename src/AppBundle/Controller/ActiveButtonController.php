@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
+use AppBundle\InvalidTokenHttpException;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -28,7 +29,8 @@ class ActiveButtonController extends Controller
         $valueNew    = $request->get('value');
         $toggleValue = $request->get('toggle');
         $buttons     = $request->get('buttons');
-
+        $isXs        = $request->get('isXs');
+dump($isXs);
         switch ($valueNew) {
             case null:
             default:
@@ -57,7 +59,7 @@ class ActiveButtonController extends Controller
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken($entityName . $property . $entityId)) {
-            throw new AccessDeniedHttpException('Invalid token');
+            throw new InvalidTokenHttpException();
         }
 
         try {
@@ -119,13 +121,14 @@ class ActiveButtonController extends Controller
         }
         $valuePerformed = $entity->$property();
 
-
         $html = $this->container->get('templating')
                                 ->render(
-                                    'common/active-button-content.html.twig', array(
-                                                                                'buttonIsEnabled' => $valuePerformed,
-                                                                                'buttons'         => $buttons
-                                                                            )
+                                    'common/active-button-content.html.twig',
+                                    [
+                                        'isXs'            => $isXs,
+                                        'buttonIsEnabled' => $valuePerformed,
+                                        'buttons'         => $buttons
+                                    ]
                                 );
 
         return new JsonResponse(
