@@ -21,6 +21,7 @@ class AppKernel extends Kernel
         	new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new Nelmio\SecurityBundle\NelmioSecurityBundle(),
+            new Knp\Bundle\TimeBundle\KnpTimeBundle(),
             new AppBundle\AppBundle(),
         );
 
