@@ -1,15 +1,19 @@
 {% if buttonIsEnabled %}
+    <span {% if buttons.buttonDisable.label is defined %}title="{{ buttons.buttonDisable.label}}"{% endif %}>
     {% if buttons.buttonDisable.glyph is defined %}
         {{ buttons.buttonDisable.glyph|glyph }}
     {% endif %}
-    {% if buttons.buttonDisable.label is defined %}
+    {% if buttons.buttonDisable.label is defined and not isXs %}
         <span class="hidden-xs">{{ buttons.buttonDisable.label}}</span>
     {% endif %}
+    </span>
 {% else %}
+    <span {% if buttons.buttonEnable.label is defined %}title="{{ buttons.buttonEnable.label}}"{% endif %}>
     {% if buttons.buttonEnable.glyph is defined %}
         {{ buttons.buttonEnable.glyph|glyph }}
     {% endif %}
-    {% if buttons.buttonEnable.label is defined %}
+    {% if buttons.buttonEnable.label is defined and not isXs %}
         <span class="hidden-xs">{{ buttons.buttonEnable.label}}</span>
     {% endif %}
+    </span>
 {% endif %}

@@ -15,8 +15,10 @@ $(function(){
             enableGlyph = button.data('button-enable-glyph'),
             disableLabel = button.data('button-disable-label'),
             disableGlyph = button.data('button-disable-glyph'),
+            isXs = button.hasClass('btn-xs') ? 1 : 0,
             formData = {
                 _token: token,
+                isXs: isXs,
                 entityName: entityName,
                 entityId: entityId,
                 propertyName: propertyName,
@@ -62,6 +64,7 @@ $(function(){
                 data: $.extend(formData, {toggle: 1}),
                 dataType: 'json',
                 success: function (response) {
+                    console.log(response);
                     button.empty();
                     if (response && response.html) {
                         button.html(response.html);
