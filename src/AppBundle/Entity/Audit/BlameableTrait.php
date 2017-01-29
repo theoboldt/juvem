@@ -14,7 +14,7 @@ trait BlameableTrait
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="modified_by", referencedColumnName="uid", onDelete="SET NULL")
      */
     protected $modifiedBy = null;
 
