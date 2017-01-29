@@ -69,11 +69,8 @@ class AdminSingleController extends Controller
             $em->flush();
         }
 
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
-        $foodFormatter = new LabelFormatter();
+        $statusFormatter = ParticipantStatus::formatter();
+        $foodFormatter   = new LabelFormatter();
 
         $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */

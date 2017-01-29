@@ -2,8 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\BitMask\LabelFormatter;
-use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserRoleAssignmentType;
@@ -122,13 +120,8 @@ class UserController extends Controller
      */
     public function listParticipantsDataAction(Request $request)
     {
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
-
-        $userRepository = $this->getDoctrine()->getRepository('AppBundle:User');
-        $user           = $userRepository->findOneBy(array('id' => $request->get('uid')));
+        $userRepository  = $this->getDoctrine()->getRepository('AppBundle:User');
+        $user            = $userRepository->findOneBy(['id' => $request->get('uid')]);
 
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participationList       = $participationRepository->findBy(array('assignedUser' => $user->getUid(), 'deletedAt' => null));

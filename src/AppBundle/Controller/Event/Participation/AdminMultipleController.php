@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
@@ -71,10 +70,7 @@ class AdminMultipleController extends Controller
         $participantEntityList = $eventRepository->participantsList($event, null, true, true);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
+        $statusFormatter = ParticipantStatus::formatter();
 
         $participantList = array();
         /** @var Participant $participant */

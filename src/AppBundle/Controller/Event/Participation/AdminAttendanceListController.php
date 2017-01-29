@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\AttendanceListFillout;
@@ -192,10 +191,7 @@ class AdminAttendanceListController extends Controller
             $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
         }
 
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
+        $statusFormatter = ParticipantStatus::formatter();
 
         $participantList = [];
         /** @var Participant $participant */

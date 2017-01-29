@@ -1,11 +1,9 @@
 <?php
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
@@ -40,16 +38,9 @@ class PublicManagementController extends Controller
      */
     public function listParticipantsDataAction(Request $request)
     {
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
+        $statusFormatter   = ParticipantStatus::formatter();
 
-        $dateFormatDay     = 'd.m.y';
-        $dateFormatDayHour = 'd.m.y H:i';
-
-        $participationRepository = $this->getDoctrine()
-                                        ->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
 
         $user = $this->getUser();
 
@@ -109,15 +100,10 @@ class PublicManagementController extends Controller
     public function participationDetailedAction(Request $request)
     {
 
-        $statusFormatter = new LabelFormatter();
-        $statusFormatter->addAbsenceLabel(
-            ParticipantStatus::TYPE_STATUS_CONFIRMED, ParticipantStatus::LABEL_STATUS_UNCONFIRMED
-        );
-
+        $statusFormatter   = ParticipantStatus::formatter();
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()
-                                  ->getRepository('AppBundle:Participation');
-        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
+        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participation     = $repository->findOneBy(['pid' => $request->get('pid')]);
         $participationUser = $participation->getAssignedUser();
 
         if ($participationUser && $participationUser->getUid() != $user->getUid()) {
