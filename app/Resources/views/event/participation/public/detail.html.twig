@@ -3,7 +3,7 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': event.title} %}
         {% block breadcrumb %}
             <li><a href="{{ path('public_participations') }}">Anmeldungen</a></li>
             <li class="active">Anmeldung bei {{ event.title }}</li>
@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-xs-2 text-right">
                                 <a href="{{ path('public_edit_participation', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>
@@ -67,10 +67,11 @@
                                 </address>
                             </dd>
                             {% for fillout in participation.acquisitionAttributeFillouts %}
-                                <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                    data-placement="right">{{ fillout.attribute.formTitle }}</dt>
                                 <dd>{{ fillout }}</dd>
                             {% endfor %}
-                            <dt><abbr title="Eingang der Anmeldung">Eingang</abbr></dt>
+                            <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
                         </dl>
                     </div>
@@ -85,7 +86,7 @@
                             </div>
                             <div class="col-xs-2 text-right">
                                 <a href="{{ path('public_edit_phonenumbers', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>
@@ -113,9 +114,9 @@
                                 </div>
                                 <div class="col-xs-3 text-right">
                                 <a href="{{ path('public_add_participant', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen">{{ 'plus'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen" data-toggle="tooltip">{{ 'plus'|glyph }}</a>
                                 <a href="{{ path('public_edit_participant', {'pid': participation.pid, 'aid': participant.aid}) }}"
-                                   class="btn btn-default btn-xs" title="Bearbeiten">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                 </div>
                             </div>
                         </div>
@@ -157,7 +158,8 @@
                                             {% endif %}
                                         </dd>
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
-                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                                data-placement="right">{{ fillout.attribute.formTitle }}</dt>
                                             <dd>{{ fillout }}</dd>
                                         {% endfor %}
                                     </dl>
