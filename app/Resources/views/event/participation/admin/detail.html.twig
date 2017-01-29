@@ -41,7 +41,6 @@
                 <div class="page-header">
                     <h1>Anmeldung <small>{{ participation|participantsgrouped }}</small></h1>
                 </div>
-                {% include 'common/header/page-global-messages.html.twig' %}
             </div>
             <div class="col-xs-12 col-md-6">
                 <div class="btn-toolbar" role="toolbar">
@@ -86,6 +85,11 @@
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'common/header/page-global-messages.html.twig' %}
             </div>
         </div>
         <div class="row">
