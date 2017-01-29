@@ -3,14 +3,6 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Detailansicht'} %}
-        {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
-            <li class="active">Familie {{ participation.nameLast }}</li>
-        {% endblock %}
-    {% endembed %}
     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
         <div class="modal-dialog" role="document">
             {{ form_start(form) }}
@@ -32,9 +24,26 @@
             {{ form_end(form) }}
         </div>
     </div>
-    <div class="container participation-panels">
+    <div class="container participation-panels collapse-breadcrumb-header">
         <div class="row">
             <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                    <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                    <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                    <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                    <li class="active">{{ participation|participantsgrouped }}</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <div class="page-header">
+                    <h1>Anmeldung <small>{{ participation|participantsgrouped }}</small></h1>
+                </div>
+                {% include 'common/header/page-global-messages.html.twig' %}
+            </div>
+            <div class="col-xs-12 col-md-6">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group-vertical" role="group">
                         {% if participation.withdrawn %}
@@ -65,7 +74,7 @@
                                 data-entity="Participation"
                                 data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
                                 data-token="{{ csrf_token('Participation' ~ 'isConfirmed' ~ participation.pid ) }}"
-                                data-button-enable-label="Bestätigen und benachrichtigen" data-button-enable-glyph="ok"
+                                data-button-enable-label="Bestätigen & benachrichtigen" data-button-enable-glyph="ok"
                                 data-button-disable-label="Bestätigung zurücknehmen"
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                         <button type="button" class="btn btn-default" data-element="activebutton"

@@ -39,6 +39,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.participantsgrouped:
+        class: AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_global_customization:
         class: AppBundle\Twig\GlobalCustomization
         arguments:

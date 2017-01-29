@@ -13,3 +13,15 @@
 #event_description {
   min-height: 500px;
 }
+
+@media (min-width: 992px) {
+  .participation-panels .btn-toolbar {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 991px) {
+  .participation-panels .btn-toolbar {
+    margin-bottom: 20px;
+  }
+}

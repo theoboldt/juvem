@@ -10,3 +10,12 @@
 .navbar > .container .navbar-header a:hover {
   background-color: $navbar-inverse-link-hover-bg;
 }
+
+.collapse-breadcrumb-header {
+  .breadcrumb {
+    margin-bottom: 0;
+  }
+  .page-header {
+    margin-top: 0;
+  }
+}
