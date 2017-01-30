@@ -63,7 +63,7 @@ abstract class NewsletterAbstract
      *
      * @param integer $ageRangeBegin
      *
-     * @return NewsletterSubscription
+     * @return self
      */
     public function setAgeRangeBegin($ageRangeBegin)
     {
@@ -87,7 +87,7 @@ abstract class NewsletterAbstract
      *
      * @param integer $ageRangeEnd
      *
-     * @return NewsletterSubscription
+     * @return self
      */
     public function setAgeRangeEnd($ageRangeEnd)
     {

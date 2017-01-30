@@ -193,7 +193,7 @@ class NewsletterSubscription extends NewsletterAbstract
      */
     public function setIsEnabled($isEnabled)
     {
-        $this->isEnabled = $isEnabled;
+        $this->isEnabled = (bool)$isEnabled;
 
         return $this;
     }
@@ -205,7 +205,7 @@ class NewsletterSubscription extends NewsletterAbstract
      */
     public function getIsEnabled()
     {
-        return $this->isEnabled;
+        return (bool)$this->isEnabled;
     }
 
     /**
@@ -217,7 +217,7 @@ class NewsletterSubscription extends NewsletterAbstract
      */
     public function setIsConfirmed($isConfirmed)
     {
-        $this->isConfirmed = $isConfirmed;
+        $this->isConfirmed = (bool)$isConfirmed;
 
         return $this;
     }
@@ -229,7 +229,7 @@ class NewsletterSubscription extends NewsletterAbstract
      */
     public function getIsConfirmed()
     {
-        return $this->isConfirmed;
+        return (bool)$this->isConfirmed;
     }
 
 }

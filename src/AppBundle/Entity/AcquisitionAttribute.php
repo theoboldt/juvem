@@ -432,7 +432,7 @@ class AcquisitionAttribute
      */
     public function setUseAtParticipation($useAtParticipation = true)
     {
-        $this->useAtParticipation = $useAtParticipation;
+        $this->useAtParticipation = (bool)$useAtParticipation;
 
         return $this;
     }
@@ -444,7 +444,7 @@ class AcquisitionAttribute
      */
     public function getUseAtParticipation()
     {
-        return $this->useAtParticipation;
+        return (bool)$this->useAtParticipation;
     }
 
     /**
@@ -456,7 +456,7 @@ class AcquisitionAttribute
      */
     public function setUseAtParticipant($useAtParticipant = true)
     {
-        $this->useAtParticipant = $useAtParticipant;
+        $this->useAtParticipant = (bool)$useAtParticipant;
 
         return $this;
     }
@@ -468,7 +468,7 @@ class AcquisitionAttribute
      */
     public function getUseAtParticipant()
     {
-        return $this->useAtParticipant;
+        return (bool)$this->useAtParticipant;
     }
 
     /**
@@ -480,7 +480,7 @@ class AcquisitionAttribute
      */
     public function setIsRequired($isRequired = true)
     {
-        $this->isRequired = $isRequired;
+        $this->isRequired = (bool)$isRequired;
 
         return $this;
     }
@@ -492,7 +492,7 @@ class AcquisitionAttribute
      */
     public function isRequired()
     {
-        return $this->isRequired;
+        return (bool)$this->isRequired;
     }
 
     /**
