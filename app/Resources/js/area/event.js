@@ -122,11 +122,12 @@ $(function () {
             button = $(event.relatedTarget),
             cid = button.data('cid'),
             content = cid ? button.data('content') : null,
-            meta = cid ? button.parent().parent().find('small').html() : null,
+            meta = cid ? button.parent().parent().find('small').html() : '',
             relatedId = button.data('related-id'),
             relatedClass = button.data('comment-class'),
-            commentElSelector = '.comments[data-comment-class="' + relatedClass.replace(/\\/g, '\\\\') + '"][data-related-id="' + relatedId + '"]',
-            commentsEl = $(commentElSelector);
+            selectorPartClassAndId = '[data-comment-class="' + relatedClass.replace(/\\/g, '\\\\') + '"][data-related-id="' + relatedId + '"]',
+            commentsEl = $('.comments' + selectorPartClassAndId),
+            countEl = $('.comment-count' + selectorPartClassAndId);
 
         if (cid) {
             modal.find('#dialogModalCommentLabel').text('Anmerkung bearbeiten');
@@ -136,14 +137,12 @@ $(function () {
             modal.find('input[type=submit]').val('Anmerkungen hinzufügen');
         }
 
-        if (meta) {
-            modal.find('p.meta').html(meta);
-        }
+        modal.find('p.meta').html(meta);
         modal.find('#modalCommentContent').val(content);
 
         $('#dialogModalCommentButton').unbind('click').click(function () {
+            button.toggleClass('disabled', true);
             commentsEl.toggleClass('loading-text', true);
-            debugger;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
             $.ajax({
                 type: 'POST',
                 url: '/admin/comment/update',
@@ -160,16 +159,19 @@ $(function () {
                     if (response && response.comments) {
                         commentsEl.html(response.comments);
                     }
+                    if (response && response.count) {
+                        countEl.text(response.count);
+                    }
                 },
                 error: function () {
                     $(document).trigger('add-alerts', {
-                        message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                        message: 'Die Anmerkung konnte nicht gespeichert werden',
                         priority: 'error'
                     });
                 },
                 complete: function () {
+                    button.toggleClass('disabled', false);
                     commentsEl.toggleClass('loading-text', false);
-
                 }
             });
 

@@ -263,10 +263,10 @@ class CommentManager
     {
         if ($pid) {
             if ($aid) {
-                if (isset($this->cache[$aid]) && isset($this->cache[$aid]['participants']) &&
-                    isset($this->cache[$aid]['participants'][$aid])
+                if (isset($this->cache[$pid]) && isset($this->cache[$pid]['participants']) &&
+                    isset($this->cache[$pid]['participants'][$aid])
                 ) {
-                    unset($this->cache[$aid]['participants'][$aid]);
+                    unset($this->cache[$pid]['participants'][$aid]);
                 }
             } else {
                 if (isset($this->cache[$aid]) && isset($this->cache[$aid]['comments'])) {

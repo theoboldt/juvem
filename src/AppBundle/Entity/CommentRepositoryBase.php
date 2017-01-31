@@ -66,7 +66,7 @@ abstract class CommentRepositoryBase extends EntityRepository
 			/** @var ParticipantComment $comment */
 			foreach ($flatResult as $comment) {
 				$aid = $comment->getParticipant()->getAid();
-				if (isset($result[$aid])) {
+				if (!isset($result[$aid])) {
 					$result[$aid] = [];
 				}
 				$result[$aid][] = $comment;

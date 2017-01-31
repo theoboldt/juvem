@@ -125,12 +125,20 @@
                             </div>
                             <div class="col-xs-5 text-right">
                                 <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten" data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
-                                <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs" type="button" data-toggle="collapse"
+                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten"
+                                   data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
+                                <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs"
+                                        type="button" data-toggle="collapse"
                                         data-target="#comment-footer-pid-{{ participation.pid }}" aria-expanded="false"
-                                        aria-controls="comment-footer-pid-{{ participation.pid }}">{{ commentManager.countForParticipation(participation) }} {{ 'comment'|glyph }}</button>
+                                        aria-controls="comment-footer-pid-{{ participation.pid }}">
+                                    <span class="comment-count"
+                                          data-comment-class="AppBundle\Entity\ParticipationComment"
+                                          data-related-id="{{ participation.pid }}">{{ commentManager.countForParticipation(participation) }}
+                                    </span> {{ 'comment'|glyph }}
+                                </button>
                                 <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"
+                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                             </div>
                         </div>
                     </div>
@@ -192,7 +200,7 @@
 
                         </dl>
                     </div>
-                    <div class="panel-footer panel-comments {#collapse#}" id="comment-footer-pid-{{ participation.pid }}">
+                    <div class="panel-footer panel-comments collapse" id="comment-footer-pid-{{ participation.pid }}">
                         <div class="comment-add">
                             <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
                                     data-toggle="modal" data-target="#dialogModalComment"
@@ -237,7 +245,11 @@
                                             data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
                                     <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"
                                             data-target="#comment-footer-aid-{{ participant.aid }}" aria-expanded="false"
-                                            aria-controls="comment-footer-aid-{{ participant.aid }}">{{ commentManager.countForParticipant(participant) }} {{ 'comment'|glyph }}</button>
+                                            aria-controls="comment-footer-aid-{{ participant.aid }}">
+                                        <span class="comment-count"
+                                          data-comment-class="AppBundle\Entity\ParticipantComment"
+                                          data-related-id="{{ participant.aid }}">{{ commentManager.countForParticipant(participant) }}
+                                    </span> {{ 'comment'|glyph }}</button>
                                     <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
                                        class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                 </div>
@@ -300,7 +312,7 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
-                        <div class="panel-footer panel-comments"
+                        <div class="panel-footer panel-comments collapse"
                              id="comment-footer-aid-{{ participant.aid }}">
                             <div class="comment-add">
                                 <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
