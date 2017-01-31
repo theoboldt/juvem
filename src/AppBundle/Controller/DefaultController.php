@@ -57,6 +57,7 @@ class DefaultController extends Controller
      * @Route("/js/all.js.map")
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
+     * @Route("/robots.txt")
      */
     public function ressourceUnavailableAction()
     {
