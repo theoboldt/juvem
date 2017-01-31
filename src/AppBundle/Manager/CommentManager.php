@@ -2,7 +2,8 @@
 
 namespace AppBundle\Manager;
 
-use AppBundle\Entity\CommentRepository;
+use AppBundle\Entity\CommentBase;
+use AppBundle\Entity\CommentRepositoryBase;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\Participation;
@@ -23,7 +24,7 @@ class CommentManager
 	/**
 	 * Comment repository
 	 *
-	 * @var CommentRepository
+	 * @var CommentRepositoryBase
 	 */
 	protected $repository;
 
@@ -37,7 +38,7 @@ class CommentManager
 	 *
 	 * @var User|null
 	 */
-	protected $currentUser = null;
+	protected $user = null;
 
 	/**
 	 * CommentManager constructor.
@@ -55,6 +56,120 @@ class CommentManager
 		$this->repository = $this->doctrine->getRepository('AppBundle:ParticipantComment');
 	}
 
+    /**
+     * Creates a comment, invalidates related caches
+     *
+     * @param   string  $property  Related comment class
+     * @param   integer $relatedId Related entity's id
+     * @param   string  $content   Comment content
+     * @return  CommentBase        Resulted comment object
+     */
+    public function createComment($property, $relatedId, $content)
+    {
+        switch ($property) {
+            case ParticipationComment::class:
+                $relatedEntity = $this->doctrine->getRepository(Participation::class)->findOneBy(
+                    ['pid' => $relatedId]
+                );
+                if (!$relatedEntity) {
+                    throw new \InvalidArgumentException('Related participation was not found');
+                }
+                $comment = new ParticipationComment();
+                $comment->setParticipation($relatedEntity);
+                break;
+            case ParticipantComment::class:
+                $relatedEntity = $this->doctrine->getRepository(Participant::class)->findOneBy(
+                    ['aid' => $relatedId]
+                );
+                if (!$relatedEntity) {
+                    throw new \InvalidArgumentException('Related participant was not found');
+                }
+                $comment = new ParticipantComment();
+                $comment->setParticipant($relatedEntity);
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown property class transmitted');
+                break;
+        }
+        $comment->setCreatedBy($this->user);
+        $comment->setContent($content);
+
+        $em = $this->doctrine->getManager();
+        $em->persist($comment);
+        $em->flush();
+
+        $this->invalidateRelatedCache($comment);
+
+        return $comment;
+    }
+
+    /**
+     * Update an existing comment, invalidates caches
+     *
+     * @param CommentBase $comment  Comment entity to update
+     * @param string      $content  New content
+     * @return CommentBase          Updated comment
+     */
+    public function updateComment(CommentBase $comment, $content)
+    {
+        if ($comment->getCreatedBy() != $this->user) {
+            throw new \InvalidArgumentException('You are not allowed to update comments of other users');
+        }
+        $comment->setModifiedBy($this->user);
+        $comment->setContent($content);
+
+        $em = $this->doctrine->getManager();
+        $em->persist($comment);
+        $em->flush();
+
+        $this->invalidateRelatedCache($comment);
+
+        return $comment;
+    }
+
+    /**
+     * Delete an existing comment, invalidates caches
+     *
+     * @param CommentBase $comment  Comment entity to delete
+     */
+    public function deleteComment(CommentBase $comment)
+    {
+        if ($comment->getCreatedBy() != $this->user) {
+            throw new \InvalidArgumentException('You are not allowed to update comments of other users');
+        }
+        $comment->setDeletedAt(new \DateTime());
+
+        $em = $this->doctrine->getManager();
+        $em->persist($comment);
+        $em->flush();
+
+        $this->invalidateRelatedCache($comment);
+    }
+    /**
+     * Fetch a comment by id and related class name
+     *
+     * @param   integer $cid        Desired comment id
+     * @param   string  $property   Related comment class
+     * @return null|object
+     */
+	public function findByCidAndType($cid, $property) {
+	    if (!self::isCommentClassValid($property)){
+	        throw new \InvalidArgumentException('Invalid comment class transmitted');
+        }
+        return $this->doctrine->getRepository($property)->findOneBy(['cid' => $cid]);
+    }
+
+	/**
+	 * Fetch amount of comments for transmitted @see Participation
+	 *
+	 * @param Participation $participation Related participation
+	 * @return integer
+	 */
+	public function countForParticipation(Participation $participation)
+	{
+	    return count($this->forParticipation($participation));
+    }
+
 	/**
 	 * Fetch list of all @see CommentBase for transmitted @see Participation
 	 *
@@ -69,6 +184,17 @@ class CommentManager
 		}
 		return $this->cache[$pid]['comments'];
 	}
+
+	/**
+	 * Fetch amount of comments for transmitted @see Participant
+	 *
+	 * @param Participant $participant Related participant
+	 * @return integer
+	 */
+	public function countForParticipant(Participant $participant)
+	{
+        return count($this->forParticipant($participant));
+    }
 
 	/**
 	 * Fetch list of all @see CommentBase for transmitted @see Participant
@@ -91,4 +217,64 @@ class CommentManager
 			return [];
 		}
 	}
+
+    /**
+     * Verify if transmitted class is in supported comment class list
+     *
+     * @param   string $class Class name to check
+     * @return  bool
+     */
+    public static function isCommentClassValid($class)
+    {
+        return in_array($class, [ParticipationComment::class, ParticipantComment::class]);
+    }
+
+    /**
+     * Invalid caches as required by changes of related comment
+     *
+     * @param CommentBase $comment  Comment of which related cached entries should be deleted
+     * @return  void
+     */
+    public function invalidateRelatedCache(CommentBase $comment)
+    {
+        $relatedEntity = $comment->getRelated();
+        switch ($comment->getBaseClassName()) {
+            case ParticipationComment::class:
+                /** @var Participation $relatedEntity */
+                $this->invalidCache($relatedEntity->getPid());
+                break;
+            case ParticipantComment::class:
+                /** @var Participant $relatedEntity */
+                $this->invalidCache($relatedEntity->getParticipation()->getPid(), $relatedEntity->getAid());
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown property class transmitted');
+                break;
+        }
+    }
+
+    /**
+     * Invalidate caches
+     *
+     * @param int|null $pid Related pid to clear. If not transmitted, complete cache is deleted
+     * @param int|null $aid Related aid to clear. If not transmitted, comments of related $pid deleted
+     */
+    public function invalidCache($pid = null, $aid = null)
+    {
+        if ($pid) {
+            if ($aid) {
+                if (isset($this->cache[$aid]) && isset($this->cache[$aid]['participants']) &&
+                    isset($this->cache[$aid]['participants'][$aid])
+                ) {
+                    unset($this->cache[$aid]['participants'][$aid]);
+                }
+            } else {
+                if (isset($this->cache[$aid]) && isset($this->cache[$aid]['comments'])) {
+                    unset($this->cache[$aid]['comments']);
+                }
+            }
+        } else {
+	        unset($this->cache);
+        }
+    }
 }

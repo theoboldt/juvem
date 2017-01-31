@@ -35,8 +35,19 @@
 .panel-comments {
 
   padding: 0; //prevent collapse from flipping
-  > div {
+
+  > div.comment-add {
+    float: right;
+    padding: 10px 15px 2px 2px;
+  }
+  > div.comments {
     padding: 10px 15px; //prevent collapse from flipping
+
+    .empty {
+      font-size: 85%;
+      font-style: italic;
+      margin: 0 0 6px;
+    }
   }
 }
 
@@ -47,9 +58,14 @@
 
   //edit button
   .btn-edit-comment {
-    visibility: hidden;
+    display: none;
   }
-  :hover .btn-edit-comment {
-    visibility: visible;
+
+  .meta {
+    line-height: 22px;
   }
+}
+
+.comment:hover .btn-edit-comment {
+  display: inline-block;
 }

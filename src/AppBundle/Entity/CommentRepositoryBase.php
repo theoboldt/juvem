@@ -5,10 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * Comment repository
- */
-class CommentRepository extends EntityRepository
+abstract class CommentRepositoryBase extends EntityRepository
 {
 	/**
 	 * Fetch list of all @see CommentBase for transmitted @see Participation
@@ -18,7 +15,6 @@ class CommentRepository extends EntityRepository
 	 */
 	public function findForParticipation(Participation $participation)
 	{
-
 		$qb = $this->createCommentQueryBuilder('AppBundle:ParticipationComment');
 
 		$qb->innerJoin('c.participation', 'r')
@@ -93,7 +89,8 @@ class CommentRepository extends EntityRepository
 		           ->from($alias, 'c')
 		           ->leftJoin('c.createdBy', 'uc')
 		           ->leftJoin('c.modifiedBy', 'um')
-		           ->orderBy('c.createdAt', 'ASC');
+                   ->andWhere('c.deletedAt IS NULL')
+		           ->orderBy('c.createdAt', 'DESC');
 		return $qb;
 	}
 

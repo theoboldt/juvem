@@ -120,9 +120,13 @@ $(function () {
     $('#dialogModalComment').on('show.bs.modal', function (event) {
         var modal = $(this),
             button = $(event.relatedTarget),
-            cid = parseInt(button.data('cid')),
-            content = button.data('content'),
-            meta = cid ? button.parent().find('small').html() : null;
+            cid = button.data('cid'),
+            content = cid ? button.data('content') : null,
+            meta = cid ? button.parent().parent().find('small').html() : null,
+            relatedId = button.data('related-id'),
+            relatedClass = button.data('comment-class'),
+            commentElSelector = '.comments[data-comment-class="' + relatedClass.replace(/\\/g, '\\\\') + '"][data-related-id="' + relatedId + '"]',
+            commentsEl = $(commentElSelector);
 
         if (cid) {
             modal.find('#dialogModalCommentLabel').text('Anmerkung bearbeiten');
@@ -135,8 +139,44 @@ $(function () {
         if (meta) {
             modal.find('p.meta').html(meta);
         }
+        modal.find('#modalCommentContent').val(content);
 
-        modal.find('#modalCommentContent').val(content)
-    })
+        $('#dialogModalCommentButton').unbind('click').click(function () {
+            commentsEl.toggleClass('loading-text', true);
+            debugger;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            $.ajax({
+                type: 'POST',
+                url: '/admin/comment/update',
+                data: {
+                    _token: $('#modalCommentToken').val(),
+                    cid: cid,
+                    relatedClass: relatedClass,
+                    relatedId: relatedId,
+                    content: $('#modalCommentContent').val()
+                },
+                dataType: 'json',
+                success: function (response) {
+                    commentsEl.empty();
+                    if (response && response.comments) {
+                        commentsEl.html(response.comments);
+                    }
+                },
+                error: function () {
+                    $(document).trigger('add-alerts', {
+                        message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                        priority: 'error'
+                    });
+                },
+                complete: function () {
+                    commentsEl.toggleClass('loading-text', false);
+
+                }
+            });
+
+            modal.modal('hide');
+            return false;
+        });
+    });
+
 
 });

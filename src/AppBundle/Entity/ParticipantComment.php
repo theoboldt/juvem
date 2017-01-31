@@ -10,7 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="AppBundle\Entity\CommentRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipantCommentRepository")
  * @ORM\Table(name="participant_comment")
  * @ORM\HasLifecycleCallbacks()
  */
