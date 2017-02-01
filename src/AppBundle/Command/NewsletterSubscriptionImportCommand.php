@@ -2,12 +2,14 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\NewsletterSubscription;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
 {
@@ -59,6 +61,87 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
             }
             $table->render();
         }
+
+        $helper   = $this->getHelper('question');
+        $question = new ConfirmationQuestion('Do you want to import and notify new recipients?', false);
+
+        if (!$helper->ask($input, $output, $question)) {
+            return 0;
+        }
+
+        $subscriptions = 0;
+        $progress      = new ProgressBar($output);
+        $progress->start();
+        try {
+            $subscriptions = $this->processRecipients(
+                $result,
+                function () use ($progress) {
+                    $progress->advance();
+                }
+            );
+        } catch (\Exception $e) {
+            $output->writeln('<error>Failed to process participants: ' . $e->getMessage() . '</error>');
+            return 3;
+        } finally {
+            $progress->finish();
+        }
+        $output->writeln(sprintf("\n       Sent <info>%d</info> invitations for subscription", $subscriptions));
+
+        return 0;
+    }
+
+    /**
+     * Get list of email addresses already present in database
+     *
+     * @return array
+     */
+    protected function givenEmailList()
+    {
+        $repository    = $this->getContainer()->get('doctrine')->getRepository('AppBundle:NewsletterSubscription');
+        $subscriptions = $repository->findAll();
+        $emailList     = [];
+        foreach ($subscriptions as $subscription) {
+            $emailList[] = $subscription->getEmail();
+        }
+        return $emailList;
+    }
+
+    /**
+     * Process new recipients, create subscriptions, send emails
+     *
+     * @param array         $recipientsNew List of new recipients
+     * @param null|callable $stepCallback  Callback called each time a row was read
+     * @return  int                        Amount of new created subscriptions
+     */
+    protected function processRecipients(array $recipientsNew, $stepCallback = null)
+    {
+        $em             = $this->getContainer()->get('doctrine')->getManager();
+        $tokenGenerator = $this->getContainer()->get('fos_user.util.token_generator');
+        $mailManager    = $this->getContainer()->get('app.newsletter_manager');
+        $given          = $this->givenEmailList();
+        $subscriptions  = 0;
+
+        foreach ($recipientsNew as $recipient) {
+            if (!in_array($recipient['email'], $given)) {
+                $subscription = new NewsletterSubscription();
+                $subscription->setNameLast($recipient['name']);
+                $subscription->setEmail($recipient['email']);
+                $subscription->setBaseAge(new \DateTime($recipient['birthday']));
+                $subscription->setAgeRangeBegin(0);
+                $subscription->setAgeRangeEnd($recipient['age_space']);
+                $subscription->setDisableToken($tokenGenerator->generateToken());
+
+                $em->persist($subscription);
+                $em->flush();
+                $mailManager->mailNewsletterSubscriptionImported($subscription);
+
+                ++$subscriptions;
+            }
+            if (is_callable($stepCallback)) {
+                $stepCallback();
+            }
+        }
+        return $subscriptions;
     }
 
     /**

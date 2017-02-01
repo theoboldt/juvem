@@ -26,6 +26,22 @@ class NewsletterManager extends AbstractMailerAwareManager
         $this->mailer->send($message);
     }
 
+    /**
+     * Send a newsletter subscription request email
+     *
+     * @param NewsletterSubscription $subscription
+     */
+    public function mailNewsletterSubscriptionImported(NewsletterSubscription $subscription)
+    {
+        $message  = $this->mailGenerator->getMessage(
+            'newsletter-subscription-import',
+            array('subscription' => $subscription)
+        );
+        $nameLast = $subscription->getNameLast();
+        $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
+
+        $this->mailer->send($message);
+    }
 
     /**
      * Send a newsletter email
