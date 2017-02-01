@@ -98,12 +98,17 @@ class PublicController extends AbstractController
         if (!$subscription) {
             return $this->redirectToRoute('newsletter_subscription');
         }
+        $em = $this->getDoctrine()->getManager();
+        if (!$subscription->getIsConfirmed()) {
+            $subscription->setIsConfirmed(true);
+            $em->persist($subscription);
+            $em->flush();
+        }
+
         $form = $this->createForm(NewsletterSubscriptionType::class, $subscription);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid() && $subscription) {
-            $em = $this->getDoctrine()
-                       ->getManager();
 
             $em->persist($subscription);
             $em->flush();
