@@ -8,7 +8,7 @@ Hallo Herr {{ participation.nameLast }}!
 Hallo Frau  {{ participation.nameLast }}!
 {% endif %}
 
-Die Anmeldung bei der Veranstaltung "{{ event.title }}" wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!
+Die Anmeldung von {{ participation|participantsgrouped(true) }} bei der Veranstaltung "{{ event.title }}" wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!
 {% if event.hasConfirmationMessage %}
 
 {{ event.confirmationMessage }}
@@ -22,7 +22,7 @@ Mit besten Grüßen,
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
     {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
-    {% block content %}<p>Die Anmeldung bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!</p>{% if event.hasConfirmationMessage %}<p>{{ event.confirmationMessage }}</p>{% endif %}
+    {% block content %}<p>Die Anmeldung von {{ participation|participantsgrouped() }} bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!</p>{% if event.hasConfirmationMessage %}<p>{{ event.confirmationMessage }}</p>{% endif %}
 {% endblock %}
 {% endembed %}
 {% endblock %}

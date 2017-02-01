@@ -55,7 +55,7 @@
                     <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                     <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
                     <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
-                    <li class="active">{{ participation|participantsgrouped }}</li>
+                    <li class="active">{{ participation|participantsgrouped() }}</li>
                 </ol>
             </div>
         </div>
@@ -200,7 +200,7 @@
 
                         </dl>
                     </div>
-                    <div class="panel-footer panel-comments collapse" id="comment-footer-pid-{{ participation.pid }}">
+                    <div class="panel-footer panel-comments collapse{% if commentManager.countForParticipation(participation) %} in{% endif %}" id="comment-footer-pid-{{ participation.pid }}">
                         <div class="comment-add">
                             <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
                                     data-toggle="modal" data-target="#dialogModalComment"
@@ -312,7 +312,7 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
-                        <div class="panel-footer panel-comments collapse"
+                        <div class="panel-footer panel-comments collapse{% if commentManager.countForParticipant(participant) %} in{% endif %}"
                              id="comment-footer-aid-{{ participant.aid }}">
                             <div class="comment-add">
                                 <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"

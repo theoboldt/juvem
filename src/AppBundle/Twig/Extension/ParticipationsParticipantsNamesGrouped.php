@@ -4,6 +4,7 @@ namespace AppBundle\Twig\Extension;
 
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use Twig_Environment;
 
 /**
  * Twig extension for fast creation of glyphs
@@ -14,6 +15,7 @@ use AppBundle\Entity\Participation;
  */
 class ParticipationsParticipantsNamesGrouped extends \Twig_Extension
 {
+
     /**
      * {@inheritdoc}
      */
@@ -23,35 +25,47 @@ class ParticipationsParticipantsNamesGrouped extends \Twig_Extension
             new \Twig_SimpleFilter(
                 'participantsgrouped',
                 [$this, 'participationParticipantsNamesGrouped'],
-                ['pre_escape' => 'html', 'is_safe' => ['html']]
+                ['pre_escape' => 'html', 'is_safe' => ['html'], 'needs_environment' => true]
             ),
         ];
-
     }
 
     /**
      * Get participant names grouped by last names
      *
-     * @param Participation $participation Participants of related participations are processed
+     * @param Twig_Environment $env           Twig environment in order to escape names @see twig_escape_filter()
+     * @param Participation    $participation Participants of related participations are processed
+     * @param bool             $noHtml        Default false, set to true to not use html markup
      * @return string
      */
-    public function participationParticipantsNamesGrouped(Participation $participation)
+    public function participationParticipantsNamesGrouped(
+        Twig_Environment $env, Participation $participation, $noHtml = false
+    )
     {
         $groups = [];
         /** @var Participant $participant */
 
-        foreach ($participation->getParticipants() as $participant) {
-            $groups[$participant->getNameLast()][] = sprintf(
-                '<span title="%1$s %2$s" data-toggle="tooltip">%1$s</span>', $participant->getNameFirst(), $participant->getNameLast()
-            );
+
+        if ($noHtml) {
+            $template = '%1$s';
+        } else {
+            $template = '<span title="%1$s %2$s" data-toggle="tooltip">%1$s</span>';
         }
 
-        $groupsCombined  = [];
+        foreach ($participation->getParticipants() as $participant) {
+            $lastName  = twig_escape_filter($env, $participant->getNameLast());
+            $firstName = twig_escape_filter($env, $participant->getNameFirst());
+
+            $groups[$lastName][] = sprintf($template, $firstName, $lastName);
+        }
+
+        $groupsCombined = [];
         foreach ($groups as $lastName => $firstNames) {
-            $groupsCombined[] = implode(', ', $firstNames).' '.$lastName;
+            $groupsCombined[] = implode(', ', $firstNames) . ' ' . $lastName;
         }
         return implode(', ', $groupsCombined);
     }
+
 
     /**
      * {@inheritdoc}
