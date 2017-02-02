@@ -73,3 +73,28 @@
 .comment:hover .btn-edit-comment {
   display: inline-block;
 }
+
+@media print {
+  .print-col-sm-6 > .col-xs-12 {
+    width: 50%;
+  }
+
+  .print-col-sm-6 {
+    .dl-horizontal dd {
+      margin-left: 180px;
+    }
+    .dl-horizontal dt {
+      float: left;
+      width: 160px;
+      clear: left;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .breadcrumb a[href]:after {
+    content: "";
+  }
+
+}

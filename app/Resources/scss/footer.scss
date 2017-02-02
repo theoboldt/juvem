@@ -29,3 +29,10 @@
     margin-bottom: 40px;
   }
 }
+
+@media print {
+  #page-footer,
+  .sf-toolbar {
+    display: none !important;
+  }
+}
