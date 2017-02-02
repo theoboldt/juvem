@@ -80,6 +80,10 @@
   }
 
   .print-col-sm-6 {
+    .btn {
+      display: none !important;;
+    }
+
     .dl-horizontal dd {
       margin-left: 180px;
     }
