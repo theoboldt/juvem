@@ -821,12 +821,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "f9ccd6b4b4b65757b27ba19ff0a7ecd381f74b6c"
+                "reference": "a314d4aef3c3a34742bb6ae99065f27e6e49e000"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/f9ccd6b4b4b65757b27ba19ff0a7ecd381f74b6c",
-                "reference": "f9ccd6b4b4b65757b27ba19ff0a7ecd381f74b6c",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/a314d4aef3c3a34742bb6ae99065f27e6e49e000",
+                "reference": "a314d4aef3c3a34742bb6ae99065f27e6e49e000",
                 "shasum": ""
             },
             "require": {
@@ -890,7 +890,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2017-02-01 19:45:47"
+            "time": "2017-02-02 14:13:19"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -973,16 +973,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.1.0",
+            "version": "8.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "ba82f4f7e9bb9509e6bcddd42e07bebf6f6b2e92"
+                "reference": "e60b052f388b46a60a21e4a680d6ec3115e2c318"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/ba82f4f7e9bb9509e6bcddd42e07bebf6f6b2e92",
-                "reference": "ba82f4f7e9bb9509e6bcddd42e07bebf6f6b2e92",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/e60b052f388b46a60a21e4a680d6ec3115e2c318",
+                "reference": "e60b052f388b46a60a21e4a680d6ec3115e2c318",
                 "shasum": ""
             },
             "require": {
@@ -1031,7 +1031,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2017-01-25T11:07:04+00:00"
+            "time": "2017-02-02T11:19:45+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -1355,17 +1355,17 @@
         },
         {
             "name": "knplabs/knp-time-bundle",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "target-dir": "Knp/Bundle/TimeBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpTimeBundle.git",
-                "reference": "d3aa6a46c9785100bcee0534e93f86edb2cc7b02"
+                "reference": "1a55df4806bcebc3b13a3ec8914284b6379b6029"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/d3aa6a46c9785100bcee0534e93f86edb2cc7b02",
-                "reference": "d3aa6a46c9785100bcee0534e93f86edb2cc7b02",
+                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/1a55df4806bcebc3b13a3ec8914284b6379b6029",
+                "reference": "1a55df4806bcebc3b13a3ec8914284b6379b6029",
                 "shasum": ""
             },
             "require": {
@@ -1416,7 +1416,7 @@
                 "knplabs",
                 "time"
             ],
-            "time": "2017-01-20T19:45:47+00:00"
+            "time": "2017-02-02T19:51:29+00:00"
         },
         {
             "name": "michelf/php-markdown",
@@ -2038,16 +2038,16 @@
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.20",
+            "version": "v3.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "0d8fa024edb41f9228daf78f96552f9d9079854e"
+                "reference": "ed86f6fb1753e76b39ff8b87f527045ca6b97169"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/0d8fa024edb41f9228daf78f96552f9d9079854e",
-                "reference": "0d8fa024edb41f9228daf78f96552f9d9079854e",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/ed86f6fb1753e76b39ff8b87f527045ca6b97169",
+                "reference": "ed86f6fb1753e76b39ff8b87f527045ca6b97169",
                 "shasum": ""
             },
             "require": {
@@ -2102,7 +2102,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2017-02-01T15:59:54+00:00"
+            "time": "2017-02-02T15:31:23+00:00"
         },
         {
             "name": "sensio/generator-bundle",
