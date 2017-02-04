@@ -11,7 +11,13 @@ Create events so that people can request participation on them. Originally *Juve
 #### Participation handling 
 Participations can be confirmed, withdrawn or rejected. It is also possible to enable auto-confirmation for events if you do not want to confirm one by one.
  
+Juvem is able to send emails when somebody requested for participation and when a participation is confirmed. Administrators can also send emails to all participants of an event. 
+ 
 Create excel exports containing participant lists and write emails which are sent to all participants.  
+
+Create and handle attendance lists, check attendance on multiple devices at the same time.
+
+Add notes or comments to participations or participants to share information with your colleagues. 
 
 #### Custom fields
 Beside the default fields like name, age or phone numbers you can define your own fields to be acquired on each participation requests. Those fields can be of type text or selection (single/multiple). You enable those fields on each event you want to acquire this data.
