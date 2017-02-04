@@ -1,17 +1,20 @@
 <?php
+/**
+ * This file is part of the Juvem package.
+ *
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace AppBundle\Manager;
 
-use AppBundle\Entity\Event;
-use \AppBundle\Entity\Participation as ParticipationEntity;
-use AppBundle\Entity\Participant;
 use AppBundle\UploadImage;
 use Doctrine\Common\Cache\FilesystemCache;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
-use Swift_Mailer;
-use Symfony\Component\Templating\EngineInterface;
 
 class UploadImageManager
 {

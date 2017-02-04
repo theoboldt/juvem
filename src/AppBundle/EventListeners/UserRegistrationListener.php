@@ -1,10 +1,19 @@
 <?php
+/**
+ * This file is part of the Juvem package.
+ *
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace AppBundle\EventListeners;
 
 use AppBundle\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\FOSUserEvents;
-use \Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

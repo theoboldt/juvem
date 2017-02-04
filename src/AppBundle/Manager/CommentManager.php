@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the Juvem package.
+ *
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace AppBundle\Manager;
 
@@ -12,6 +20,11 @@ use AppBundle\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
+/**
+ * Class CommentManager
+ *
+ * @package AppBundle\Manager
+ */
 class CommentManager
 {
 	/**
