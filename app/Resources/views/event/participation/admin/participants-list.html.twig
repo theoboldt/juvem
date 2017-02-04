@@ -3,6 +3,30 @@
 {% block title %}Teilnehmer verwalten ({{ event.title }}){% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="dialogModalParticipantsAction" tabindex="-1" role="dialog" aria-labelledby="dialogModalParticipantsActionLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalParticipantsActionLabel">Teilnehmer bearbeiten</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" id="_token" name="_token" value="{{ csrf_token('participants-list-edit' ~ event.eid ) }}" />
+                        <input type="hidden" name="eid" value="{{ event.eid }}" />
+                        <p id="participantsActionText"></p>
+                        <ul id="participantsActionList"></ul>
+                    </div>
+                    <p class="meta"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="dialogModalCommentButton">Bestätigen</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'verwalten'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
@@ -34,6 +58,7 @@
                        data-sort-name="nameLast" data-sort-order="asc">
                     <thead>
                     <tr>
+                        <th data-field="state" data-checkbox="true"></th>
                         <th data-field="aid" data-sortable="true" data-visible="false">#</th>
                         <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs<wbr>nummer
                         </th>
@@ -61,7 +86,12 @@
                     </tr>
                     </thead>
                 </table>
-
+            </div>
+            <div class="col-md-12">
+                <div class="btn-toolbar" role="toolbar">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="confirm">Bestätigen & benachrichtigen</button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="paid">Zahlungseingang vermerken</button>
+                </div>
             </div>
         </div>
     </div>

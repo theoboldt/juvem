@@ -181,4 +181,63 @@ $(function () {
     });
 
 
+    /**
+     * EVENT: Apply confirm/paid status to several participants
+     */
+    $('#dialogModalParticipantsAction').on('show.bs.modal', function (event) {
+        var modalEl = $(this),
+            buttonEl = $(event.relatedTarget),
+            listEl = modalEl.find('#participantsActionList'),
+            action = buttonEl.data('action'),
+            participants = $('#participantsListTable').bootstrapTable('getAllSelections'),
+            participantIds = [],
+            description;
+
+        switch (action) {
+            case 'confirm':
+                description = 'Sollen die Anmeldungen der folgenden Teilnehmer bestätigt werden? Dabei werden auch die entsprechenden E-Mails verschickt.';
+                break;
+            case 'paid':
+                description = 'Sollen für die folgenden Teilnehmer Zahlungseingang vermerkt werden?';
+                break;
+        }
+
+        modalEl.find('#participantsActionText').text(description);
+        listEl.html('');
+        $.each(participants, function(key, participant) {
+            participantIds.push(participant.aid);
+            listEl.append('<li>' + eHtml(participant.nameFirst) + ' ' + eHtml(participant.nameLast) + '</li>');
+        });
+
+        $('#dialogModalCommentButton').unbind('click').click(function () {
+            buttonEl.toggleClass('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '/admin/event/participantschange',
+                data: {
+                    _token: modalEl.find('input[name=_token]').val(),
+                    eid: modalEl.find('input[name=eid]').val(),
+                    action: action,
+                    participants: participantIds
+                },
+                dataType: 'json',
+                success: function () {
+                    $('#participantsListTable').bootstrapTable('refresh');
+                },
+                error: function () {
+                    $(document).trigger('add-alerts', {
+                        message: 'Die Änderungen konnten nicht gespeichert werden',
+                        priority: 'error'
+                    });
+                },
+                complete: function () {
+                    buttonEl.toggleClass('disabled', false);
+                }
+            });
+
+            modalEl.modal('hide');
+            return false;
+        });
+    });
+
 });

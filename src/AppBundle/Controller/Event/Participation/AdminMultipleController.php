@@ -20,6 +20,7 @@ use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
+use AppBundle\InvalidTokenHttpException;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -301,7 +302,68 @@ class AdminMultipleController extends Controller
         return $response;
     }
 
-     /**
+    /**
+     * Apply changes to multiple participants
+     *
+     * @Route("/admin/event/participantschange", name="event_participants_change")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function activeButtonChangeStateHandler(Request $request)
+    {
+        $token        = $request->get('_token');
+        $eid          = $request->get('eid');
+        $action       = $request->get('action');
+        $participants = filter_var_array($request->get('participants'), FILTER_VALIDATE_INT);
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('participants-list-edit' . $eid)) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $event      = $repository->findOneBy(['eid' => $eid]);
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', ['eid' => $eid],
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $participants         = $repository->participantsList($event, $participants, true, true);
+        $participationManager = $this->get('app.participation_manager');
+        $em                   = $this->getDoctrine()->getManager();
+
+        /** @var Participant $participant */
+        foreach ($participants as $participant) {
+            $participation = $participant->getParticipation();
+            $changed = false;
+
+            switch ($action) {
+                case 'confirm':
+                    if (!$participation->isConfirmed()) {
+                        $participation->setIsConfirmed(true);
+                        $participationManager->mailParticipationConfirmed($participation, $participation->getEvent());
+                        $changed = true;
+                    }
+                    break;
+                case 'paid':
+                    if (!$participation->isPaid()) {
+                        $participation->setIsPaid(true);
+                    }
+                    $changed = true;
+                    break;
+            }
+            if ($changed) {
+                $em->persist($participation);
+            }
+        }
+        $em->flush();
+
+        return new JsonResponse();
+    }
+
+    /**
      * Page for list of participants of an event
      *
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
