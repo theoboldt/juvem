@@ -11,9 +11,11 @@
     dl {
       margin: 0;
     }
+    dd.phone-container div,
     dd {
       margin-bottom: 3px;
     }
+    dd.phone-container,
     dd:last-child {
       margin-bottom: 0;
     }
@@ -21,6 +23,7 @@
       margin: 0;
     }
   }
+
 }
 
 #mail-template {

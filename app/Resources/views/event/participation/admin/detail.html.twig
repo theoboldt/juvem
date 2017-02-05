@@ -151,15 +151,15 @@
                             <dt>Nachname</dt>
                             <dd>{{ participation.nameLast }}</dd>
                             <dt>Telefon</dt>
-                            <dd>
+                            <dd class="phone-container">
                             {% for phoneNumber in participation.phoneNumbers %}
-                                <address>
+                                <div>
                                     <a href="tel:{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}">{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</a>
                                     {% if phoneNumber.description %}
                                     <br>
                                     <i>{{ phoneNumber.description }}</i>
                                     {% endif %}
-                                </address>
+                                </div>
                             {% endfor %}
 
                             </dd>
