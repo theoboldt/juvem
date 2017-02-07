@@ -43,8 +43,8 @@
         "misd/phone-number-bundle": "^1.1",
         "imagine/imagine": "0.6.*",
         "knplabs/knp-markdown-bundle": "1.5.*",
-        "nelmio/security-bundle": "^2.1",
-        "twig/twig": "^1.6",
+        "nelmio/security-bundle": "^2",
+        "twig/twig": "^2",
         "knplabs/knp-time-bundle": "^1.7"
     },
     "require-dev": {
