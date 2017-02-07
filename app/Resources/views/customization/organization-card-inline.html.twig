@@ -4,8 +4,8 @@
         <span itemprop="streetAddress">{{ addressStreet }}</span>,
         <span itemprop="postalCode">{{ addressPostalCode }}</span> <span itemprop="addressLocality">{{ addressLocality }}</span>
     </span>
-    (Telefon: <span itemprop="telephone">{{ numberPhone }}</span>,
-    Telefax: <span itemprop="faxNumber">{{ numberFax }}</span>,
+    (Telefon: <span itemprop="telephone">{{ numberPhone }}</span>{% if numberFax %},
+    Telefax: <span itemprop="faxNumber">{{ numberFax }}</span>,{% endif %}
     E-Mail: <span itemprop="email">{{ email }}</span>{% if website %},
     Website: <a itemprop="url" href="http://{{ website }}" target="_blank">{{ website }}</a>{% endif %})
 </span>
