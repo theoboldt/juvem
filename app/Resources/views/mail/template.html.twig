@@ -126,7 +126,7 @@
 {{ customization.organizationAddressStreet }}<br>
 {{ customization.organizationAddressPostalCode }} {{ customization.organizationAddressLocality }}</p>
 <p>Telefon: {{ customization.organizationNumberPhone }}</p>
-<p>Telefax: {{ customization.organizationNumberFax }}</p>
+{% if customization.organizationNumberFax %}<p>Telefax: {{ customization.organizationNumberFax }}</p>{% endif %}
 <p>Email: <a>{{ customization.organizationEmail }}</a></p>
 </td>
 <td class="expander"></td>

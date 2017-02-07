@@ -80,7 +80,7 @@ class GlobalCustomization
     /**
      * Fax number of organization
      *
-     * @var string
+     * @var string|null
      */
     private $numberFax;
 
@@ -333,9 +333,9 @@ class GlobalCustomization
     /**
      * Access organization fax number
      *
-     * @return string
+     * @return string|null
      */
-    public function organizationNumberFax(): string
+    public function organizationNumberFax()
     {
         return $this->numberFax;
     }
