@@ -70,7 +70,7 @@ class AdminController extends AbstractController
         $subscriptionEntityList = $repository->findAll();
         $subscriptionList       = array();
 
-
+        /** @var NewsletterSubscription $subscription */
         foreach ($subscriptionEntityList as $subscription) {
             $ageRangeBegin = $subscription->getAgeRangeBegin();
             $ageRangeEnd   = $subscription->getAgeRangeEnd();
@@ -86,6 +86,8 @@ class AdminController extends AbstractController
 
             $subscriptionList[] = array(
                 'rid'           => $subscription->getRid(),
+                'is_enabled'    => (int)$subscription->getIsEnabled(),
+                'is_confirmed'  => (int)$subscription->getIsConfirmed(),
                 'email'         => $subscription->getEmail(),
                 'nameLast'      => $subscription->getNameLast(),
                 'user'          => $userContent,
