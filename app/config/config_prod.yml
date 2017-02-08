@@ -29,7 +29,7 @@ monolog:
         swift:
             type:       swift_mailer
             from_email: "%mailer_user%"
-            to_email:   "erik@theoboldt.eu"
+            to_email:   "%mailer_admin%"
             subject:    "[%customization.app_title%] Error"
             level:      debug
         main:
