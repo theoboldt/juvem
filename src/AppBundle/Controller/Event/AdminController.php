@@ -100,6 +100,7 @@ class AdminController extends Controller
 
             $eventList[] = array(
                 'eid'                    => $event->getEid(),
+                'is_deleted'             => $event->getDeletedAt() ? 1 : 0,
                 'is_visible'             => (int)$event->isVisible(),
                 'is_active'              => (int)$event->isActive(),
                 'title'                  => $event->getTitle(),

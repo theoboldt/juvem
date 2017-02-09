@@ -19,6 +19,7 @@
                         {{ 'is_active'|tableFilterButtonTri(2, 'nur aktive', 'nur inaktive', 'aktive und inaktive', true) }}
                         {{ 'is_visible'|tableFilterButtonTri(2, 'nur sichtbare', 'nur versteckte', 'sichtbare und versteckte') }}
                         {{ 'eid'|tableFilterButton(0, [{'title': 'nur zukünftige', 'value': eventListFuture}, {'title': 'nur vergangene', 'value': eventListPast}, {'title': 'zuküntige und vergangene', 'value': eventList}]) }}
+                        {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'mit und ohne gelöschte') }}
                     </div>
                 </div>
                 <table id="eventListTable" class="table table-striped table-remote-content" data-id-field="eid"
