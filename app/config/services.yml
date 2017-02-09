@@ -63,7 +63,7 @@ services:
         lazy: true
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
-        arguments: ['@twig', '@app.twig_global_customization']
+        arguments: ['%mailer_address%', '@twig', '@app.twig_global_customization']
     app.participation_manager:
         class: AppBundle\Manager\ParticipationManager
         arguments: ['@mailer', '@app.twig_mail_generator', '@logger']

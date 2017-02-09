@@ -31,13 +31,22 @@ class MailGenerator
     protected $customization;
 
     /**
+     * The e-mail address used for the "from" field of emails
+     *
+     * @var string
+     */
+    private $mailerAddress;
+
+    /**
      * Create new mail generator
      *
+     * @param string              $mailerAddress The e-mail address used for the "from" field of emails
      * @param Twig_Environment    $twig          Twig environment used for rendering
      * @param GlobalCustomization $customization Customization provider service
      */
-    public function __construct(Twig_Environment $twig, GlobalCustomization $customization)
+    public function __construct($mailerAddress, Twig_Environment $twig, GlobalCustomization $customization)
     {
+        $this->mailerAddress = $mailerAddress;
         $this->twig          = $twig;
         $this->customization = $customization;
     }
@@ -54,6 +63,8 @@ class MailGenerator
         if (!isset($parameters['customization'])) {
             $parameters['customization']    = $this->customization;
         }
+        $organizationEmail = $this->customization->organizationEmail();
+        $organizationName  = $this->customization->organizationName();
 
         /** @var Twig_Template $template */
         $template = $this->twig->loadTemplate($path); // Define your own schema
@@ -62,11 +73,17 @@ class MailGenerator
         $bodyHtml = $template->renderBlock('body_html', $parameters);
         $bodyText = $template->renderBlock('body_text', $parameters);
 
-        return Swift_Message::newInstance()
-                            ->setFrom('jungschar.vaihingen@gmail.com', 'Juvem - '.$this->customization->organizationName())
-                            ->setSubject($subject)
-                            ->setBody($bodyText, 'text/plain')
-                            ->addPart($bodyHtml, 'text/html');
+        $message = Swift_Message::newInstance()
+                                ->setFrom($this->mailerAddress, $organizationName . ' [Juvem]')
+                                ->setSubject($subject);
+
+        if ($organizationEmail) {
+            $message->setReplyTo($organizationEmail, $organizationName);
+        }
+        $message->setBody($bodyText, 'text/plain')
+                ->addPart($bodyHtml, 'text/html');
+
+        return $message;
     }
 
     /**

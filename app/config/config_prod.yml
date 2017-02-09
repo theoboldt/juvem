@@ -28,7 +28,7 @@ monolog:
             handler: swift
         swift:
             type:       swift_mailer
-            from_email: "%mailer_user%"
+            from_email: "%mailer_address%"
             to_email:   "%mailer_admin%"
             subject:    "[%customization.app_title%] Error"
             level:      debug
