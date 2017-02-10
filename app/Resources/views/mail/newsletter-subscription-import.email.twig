@@ -33,7 +33,7 @@ Guten Tag!
 {% endif %}{% endblock %}
     {% block lead %}Wir haben unser Newsletter-System verbessert.{% endblock %}
     {% block content %}
-        <p>Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter von {{ customization.organizationName }} angemeldet haben. Wenn Sie unsere Nachrichten weiter erhalten möchten, müssen Sie dies noch bestätigen.</p>
+        <p>Sie erhalten diese E-Mail, weil Sie sich in der Vergangenheit für den Erhalt des Newsletter von {{ customization.organizationName }} angemeldet haben. <b>Wenn Sie unsere Nachrichten weiter erhalten möchten, müssen Sie dies noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>.</b></p>
         <p>Wir haben unser Newsletter-System verbessert. Sie können jetzt ihr Abonnement selbst aktivieren/deaktivieren, Veranstaltungen abonnieren und die Altersspanne auswählen, die für Sie interessant ist. Probieren Sie es einfach aus!</p>
         <p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, verwenden Sie die folgende Internetadresse: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter-Abonnement verwalten</a></p>{% endblock %}
     {% block calltoactioncontent %}<p>Rufen Sie zum Bestätigen die folgende Internetadresse auf, dann halten wir Sie in Zukunft über unsere Aktionen auf dem Laufenden:</p><p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Newsletter-Abonnement bestätigen »</a></p><p>Wenn Sie <b>nichts tun</b>, erhalten Sie <b>keine E-Mails mehr</b> über Jugendwerksveranstaltungen.</p>
