@@ -35,5 +35,10 @@ parameters:
     customization.organization_facebook: ~
     customization.juvem_website: ~
 
+    # Website host address should be defined in order to be able to generate links from console
+    router.request_context.host: ~
+    # Scheme should be defined in order to be able to generate links from console
+    router.request_context.scheme: ~
+
     # Set to true to enable newsletter feature
     feature.newsletter: true
