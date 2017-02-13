@@ -5,7 +5,7 @@
         </button>
         <input type="submit" class="btn btn-primary" value="Speichern"/>
         <button type="button" id="openDialogSend" class="btn btn-default {% if not newsletter.lid %} disabled{% endif %}"
-                data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versandt vorbereiten
+                data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden…
         </button>
         <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel" data-token="{{ csrf_token('newsletterSendDialog') }}">
             <div class="modal-dialog" role="document">
