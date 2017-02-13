@@ -112,6 +112,10 @@ class PublicController extends AbstractController
             $subscription->setIsConfirmed(true);
             $em->persist($subscription);
             $em->flush();
+            $this->addFlash(
+                'success',
+                'Das Newsletter-Abonnement wurde erfolgreich bestätigt. Auf dieser Seite können Sie auch in Zukunft ihr Abonnement konfigurieren.'
+            );
         }
 
         $form = $this->createForm(NewsletterSubscriptionType::class, $subscription);
