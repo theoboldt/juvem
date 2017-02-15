@@ -821,12 +821,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "624191ae6c519e0bdf11183925b7e11b506f94e2"
+                "reference": "182457a595311f7a9b40ae4d83cd1141da6e6f79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/624191ae6c519e0bdf11183925b7e11b506f94e2",
-                "reference": "624191ae6c519e0bdf11183925b7e11b506f94e2",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/182457a595311f7a9b40ae4d83cd1141da6e6f79",
+                "reference": "182457a595311f7a9b40ae4d83cd1141da6e6f79",
                 "shasum": ""
             },
             "require": {
@@ -890,7 +890,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2017-02-14 14:13:05"
+            "time": "2017-02-15 15:15:20"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -973,16 +973,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.2.0",
+            "version": "8.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "e60b052f388b46a60a21e4a680d6ec3115e2c318"
+                "reference": "563c738f18ebb16c83e81ef9bc218ad6e98ce3de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/e60b052f388b46a60a21e4a680d6ec3115e2c318",
-                "reference": "e60b052f388b46a60a21e4a680d6ec3115e2c318",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/563c738f18ebb16c83e81ef9bc218ad6e98ce3de",
+                "reference": "563c738f18ebb16c83e81ef9bc218ad6e98ce3de",
                 "shasum": ""
             },
             "require": {
@@ -1008,7 +1008,13 @@
             "autoload": {
                 "psr-4": {
                     "libphonenumber\\": "src/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "/src/data/",
+                    "/src/carrier/data/",
+                    "/src/geocoding/data/",
+                    "/src/timezone/data/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1031,7 +1037,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2017-02-02T11:19:45+00:00"
+            "time": "2017-02-15T09:09:45+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2038,16 +2044,16 @@
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.21",
+            "version": "v3.0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "ed86f6fb1753e76b39ff8b87f527045ca6b97169"
+                "reference": "1c66c2e3b8f17f06178142386aff5a9f8057a104"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/ed86f6fb1753e76b39ff8b87f527045ca6b97169",
-                "reference": "ed86f6fb1753e76b39ff8b87f527045ca6b97169",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/1c66c2e3b8f17f06178142386aff5a9f8057a104",
+                "reference": "1c66c2e3b8f17f06178142386aff5a9f8057a104",
                 "shasum": ""
             },
             "require": {
@@ -2056,6 +2062,8 @@
                 "symfony/framework-bundle": "~2.3|~3.0"
             },
             "require-dev": {
+                "doctrine/doctrine-bundle": "~1.5",
+                "doctrine/orm": "~2.4,>=2.4.5",
                 "symfony/asset": "~2.7|~3.0",
                 "symfony/browser-kit": "~2.3|~3.0",
                 "symfony/dom-crawler": "~2.3|~3.0",
@@ -2068,7 +2076,7 @@
                 "symfony/translation": "~2.3|~3.0",
                 "symfony/twig-bundle": "~2.3|~3.0",
                 "symfony/yaml": "~2.3|~3.0",
-                "twig/twig": "~1.11|~2.0",
+                "twig/twig": "~1.12|~2.0",
                 "zendframework/zend-diactoros": "^1.3"
             },
             "suggest": {
@@ -2102,7 +2110,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2017-02-02T15:31:23+00:00"
+            "time": "2017-02-15T06:52:30+00:00"
         },
         {
             "name": "sensio/generator-bundle",
