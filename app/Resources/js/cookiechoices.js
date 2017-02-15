@@ -31,10 +31,17 @@
     }
 
     function _saveUserPreference() {
-        var expiryDate = new Date();
+        var expiryDate = new Date(),
+            cookieConfiguration;
         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
-        document.cookie = cookieName + '=y; expires=' + expiryDate.toGMTString() + '; path=/';
+        cookieConfiguration = cookieName + '=y; expires=' + expiryDate.toGMTString() + '; path=/';
+
+        if (location && location.protocol == 'https:') {
+            cookieConfiguration += ';secure';
+        }
+
+        document.cookie = cookieConfiguration;
     }
 
     function _shouldDisplayConsent() {
