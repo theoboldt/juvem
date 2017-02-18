@@ -184,17 +184,79 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
 
 
         $configParticipation = $config['participation'];
-/*
-        if (self::issetAndTrue($configParticipation, 'pid')) {
-            $column = new EntitySheetColumn('participation', 'PID');
+
+        if (self::issetAndTrue($configParticipation, 'salution')) {
+            $column = new EntitySheetColumn('participation_salution', 'Anrede (Eltern)', 'participation');
             $column->setConverter(
-                function (Participation $value) {
-                    return $value->getPid();
+                function (Participation $value, $entity) {
+                    return $value->getSalution();
                 }
             );
             $this->addColumn($column);
         }
-*/
+        if (self::issetAndTrue($configParticipation, 'nameFirst')) {
+            $column = new EntitySheetColumn('participation_nameFirst', 'Vorname (Eltern)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getNameFirst();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'nameLast')) {
+            $column = new EntitySheetColumn('participation_nameLast', 'Nachname (Eltern)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getNameLast();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'addressStreet')) {
+            $column = new EntitySheetColumn('participation_addressStreet', 'Straße (Anschrift)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getAddressStreet();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'addressCity')) {
+            $column = new EntitySheetColumn('participation_addressCity', 'Stadt (Anschrift)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getAddressCity();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'addressZip')) {
+            $column = new EntitySheetColumn('participation_addressZip', 'PLZ (Anschrift)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getAddressZip();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'email')) {
+            $column = new EntitySheetColumn('participation_email', 'E-Mail', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getEmail();
+                }
+            );
+            $this->addColumn($column);
+        }
+        if (self::issetAndTrue($configParticipation, 'nameLast')) {
+            $column = new EntitySheetColumn('participation_nameLast', 'Nachname (Eltern)', 'participation');
+            $column->setConverter(
+                function (Participation $value, $entity) {
+                    return $value->getNameLast();
+                }
+            );
+            $this->addColumn($column);
+        }
     }
 
     /**
