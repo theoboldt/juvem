@@ -248,15 +248,6 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             );
             $this->addColumn($column);
         }
-        if (self::issetAndTrue($configParticipation, 'nameLast')) {
-            $column = new EntitySheetColumn('participation_nameLast', 'Nachname (Eltern)', 'participation');
-            $column->setConverter(
-                function (Participation $value, $entity) {
-                    return $value->getNameLast();
-                }
-            );
-            $this->addColumn($column);
-        }
     }
 
     /**
