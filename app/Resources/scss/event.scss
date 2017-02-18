@@ -13,3 +13,7 @@
 #event_description {
   min-height: 500px;
 }
+
+iframe[name=export-generator-frame] {
+  display: none;
+}

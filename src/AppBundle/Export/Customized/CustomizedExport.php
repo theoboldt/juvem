@@ -8,15 +8,23 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Export;
+namespace AppBundle\Export\Customized;
 
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
+use AppBundle\Export\Export;
+use AppBundle\Export\Sheet\CustomizedParticipantsSheet;
 use AppBundle\Twig\GlobalCustomization;
 
 class CustomizedExport extends Export
 {
+    /**
+     * Customized export configuration
+     *
+     * @var array
+     */
+    private $configuration;
 
     /**
      * The event this participant export belongs to
@@ -39,11 +47,16 @@ class CustomizedExport extends Export
      * @param Event               $event               Event to export
      * @param array               $participants        List of participants qualified for export
      * @param User|null           $modifier            Modifier/creator of export
+     * @param array               $configuration       Configuration definition for export,
+     *                                                 validated via @see Configuration
      */
-    public function __construct($globalCustomization, Event $event, array $participants, User $modifier)
+    public function __construct(
+        $globalCustomization, Event $event, array $participants, User $modifier, array $configuration
+    )
     {
-        $this->event        = $event;
-        $this->participants = $participants;
+        $this->event         = $event;
+        $this->participants  = $participants;
+        $this->configuration = $configuration;
 
         parent::__construct($globalCustomization, $modifier);
     }
@@ -62,7 +75,14 @@ class CustomizedExport extends Export
 
     public function process()
     {
+        $sheet = $this->addSheet();
 
+        $participantsSheet = new CustomizedParticipantsSheet(
+            $sheet, $this->event, $this->participants, $this->configuration
+        );
+        $participantsSheet->process();
+
+        $sheet->setTitle('Teilnehmer');
 
         parent::process();
     }

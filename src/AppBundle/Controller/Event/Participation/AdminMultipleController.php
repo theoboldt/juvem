@@ -15,7 +15,8 @@ use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
-use AppBundle\Export\CustomizedExportConfiguration;
+use AppBundle\Export\Customized\Configuration;
+use AppBundle\Export\Customized\CustomizedExport;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
@@ -32,6 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminMultipleController extends Controller
 {
@@ -116,6 +118,7 @@ class AdminMultipleController extends Controller
                 'is_deleted'       => (int)($participant->getDeletedAt() instanceof \DateTime),
                 'is_paid'          => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
                 'is_withdrawn'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
+                'is_rejected'      => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED),
                 'is_confirmed'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
                 'nameFirst'        => $participant->getNameFirst(),
                 'nameLast'         => $participant->getNameLast(),
@@ -381,16 +384,72 @@ class AdminMultipleController extends Controller
             );
         }
 
-        $config = ['export' => ['participant' => ['firstName' => true, 'lastName' => false], 'participation' => []]];
+        $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processor     = new Processor();
-        $configuration = new CustomizedExportConfiguration($event);
+        $configuration = new Configuration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
 
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
 
         return $this->render('event/admin/export-generator.html.twig', array('event' => $event, 'config' => $tree->getChildren()));
+    }
+
+    /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/export/process", name="event_export_generator_process")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function exportGeneratorProcessAction(Request $request)
+    {
+        $token           = $request->get('_token');
+        $eid             = $request->get('eid');
+        $config          = $request->get('config');
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('export-generator-' . $eid)) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $event = $eventRepository->findOneBy(['eid' => $eid]);
+        if (!$event || !is_array($config)) {
+            throw new NotFoundHttpException('Transmitted event was not found');
+        }
+        $config = ['export' => $config]; //add root config option
+
+        $processor     = new Processor();
+        $configuration = new Configuration($event);
+
+        $processedConfiguration = $processor->processConfiguration($configuration, $config);
+
+        $participantList = $eventRepository->participantsList($event);
+
+        $export = new CustomizedExport(
+            $this->get('app.twig_global_customization'),
+            $event, $participantList,
+            $this->getUser(),
+            $processedConfiguration
+        );
+        $export->setMetadata();
+        $export->process();
+
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $event->getTitle() . ' - Teilnehmer.xlsx'
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        return $response;
     }
 
 }

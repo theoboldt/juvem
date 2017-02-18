@@ -11,7 +11,9 @@
             <li class="active">Exportieren</li>
         {% endblock %}
     {% endembed %}
-    <div class="container">
+    <form class="container" action="{{ path('event_export_generator_process') }}" target="export-generator-frame" method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}" />
+        <input type="hidden" name="eid" value="{{ event.eid }}" />
         <div class="row">
             <div class="col-sm-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Exportvorlagen">
@@ -41,22 +43,41 @@
                                 {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" name="participantfirstName"
-                                                   value="participantfirstName"> {{ option.info }}
+                                            <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}]" value="1"> {{ option.info }}
                                         </label>
                                     </div>
-                                {% endif %}
-                                {% if option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                                {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <label>{{ option.info }}</label>
+                                            <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
+                                                {% for selectionKey, selectionOption in option.values %}
+                                                    <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                                     <div class="form-group">
                                         <label class="control-label">{{ option.info }}</label>
                                     {% for subOption in option.children %}
-                                        {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" name="participantfirstName"
-                                                           value="participantfirstName"> {{ subOption.info }}
-                                                </label>
-                                            </div>
+                                        {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                                            {% for selectionField in subOption.children %}
+                                                <div class="checkbox">
+                                                    <label>
+                                                    {% if selectionField is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                                        <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]"
+                                                               value="1"> {{ subOption.info }}
+                                                    {% elseif selectionField is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                                        <select class="form-control" name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]">
+                                                            {% for selectionKey, selectionOption in selectionField.values %}
+                                                                <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% endif %}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
                                         {% endif %}
                                     {% endfor %}
                                     </div>
@@ -64,14 +85,20 @@
                             {% endfor %}
                         </div>
                     </div>
-
-                    {#
-
-                {{ dump(option) }}
-#}
-
                 </div>
             {% endfor %}
         </div>
-    </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="btn-toolbar" role="toolbar" aria-label="Aktion">
+                            <button class="btn btn-primary" data-action="export-generator-create">Export erstellen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <iframe name="export-generator-frame"></iframe>
 {% endblock %}
