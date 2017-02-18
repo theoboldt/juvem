@@ -541,6 +541,44 @@ class Participation
     }
 
     /**
+     * Check if all related participants are rejected
+     *
+     * @return bool
+     */
+    public function isRejected()
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if (!$status->has(ParticipantStatus::TYPE_STATUS_REJECTED)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Set conformation value for all related participants
+     *
+     * @param   bool $rejected New value
+     * @return self
+     */
+    public function setIsRejected($rejected = true)
+    {
+        /** @var Participant $participant */
+        foreach ($this->getParticipants() as $participant) {
+            $status = $participant->getStatus(true);
+            if ($rejected) {
+                $status->enable(ParticipantStatus::TYPE_STATUS_REJECTED);
+            } else {
+                $status->disable(ParticipantStatus::TYPE_STATUS_REJECTED);
+            }
+            $participant->setStatus($status->__toString());
+        }
+        return $this;
+    }
+
+    /**
      * Create a new participation for transmitted event based on data of given participation
      *
      * @param Participation $participationPrevious Data template
