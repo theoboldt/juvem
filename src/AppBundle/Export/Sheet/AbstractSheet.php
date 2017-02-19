@@ -227,6 +227,10 @@ abstract class AbstractSheet
         $this->column(0);
         $columnStart = 1;
 
+        if (!count($this->columnList)) {
+            return $this;
+        }
+
         /** @var AbstractSheetColumn $dataColumn */
         foreach ($this->columnList as $dataColumn) {
             $column = $dataColumn->getColumnIndex();
