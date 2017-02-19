@@ -59,7 +59,7 @@ class PhoneNumber
     /**
      * Set number
      *
-     * @param string $number
+     * @param string|\libphonenumber\PhoneNumber $number
      *
      * @return PhoneNumber
      */
@@ -73,7 +73,7 @@ class PhoneNumber
     /**
      * Get number
      *
-     * @return string
+     * @return string|\libphonenumber\PhoneNumber
      */
     public function getNumber()
     {
