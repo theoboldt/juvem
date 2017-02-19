@@ -22,11 +22,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
     /**
      * CustomizedParticipantsSheet constructor.
      *
-     * @param \PHPExcel_Worksheet $sheet               The excel workbook to use
-     * @param Event               $event               Event to export
-     * @param array               $participants        List of participants qualified for export
-     * @param array               $config              Configuration definition for export,
-     *                                                 validated via @see Configuration
+     * @param \PHPExcel_Worksheet $sheet        The excel workbook to use
+     * @param Event               $event        Event to export
+     * @param array               $participants List of participants qualified for export
+     * @param array               $config       Configuration definition for export, validated
+     *                                          via @see \AppBundle\Export\Customized\Configuration
      */
     public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participants, array $config)
     {
@@ -277,7 +277,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             $bid = 'acq_field_' . $attribute->getBid();
             if (isset($config[$bid]) && self::issetAndTrue($config[$bid], 'enabled')) {
                 $this->addColumn(
-                    new EntitySheetColumn($related.$bid, $attribute->getManagementTitle(), $bid)
+                    new EntitySheetColumn($related . $bid, $attribute->getManagementTitle(), $bid)
                 );
             }
         }

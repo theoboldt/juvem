@@ -47,15 +47,17 @@
                                         </label>
                                     </div>
                                 {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
-                                    <div class="form-inline">
-                                        <div class="form-group">
-                                            <label>{{ option.info }}</label>
-                                            <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
-                                                {% for selectionKey, selectionOption in option.values %}
-                                                    <option value="{{ selectionOption }}">{{ selectionKey }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
+                                    <div class="checkbox">
+                                        <label for="config[{{ group.name }}][{{ option.name }}]">{{ option.info }}:</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                        <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
+                                            {% for selectionKey, selectionOption in option.values %}
+                                                <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </label>
                                     </div>
                                 {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                                     <div class="form-group">

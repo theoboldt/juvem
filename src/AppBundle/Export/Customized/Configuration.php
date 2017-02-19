@@ -59,14 +59,14 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->info('Teilnehmerdaten')
                     ->children()
-                        ->append($this->booleanNodeCreator('aid', 'AID (Eindeutige Anmeldungsnummer)'))
+                        ->append($this->booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)'))
                         ->append($this->booleanNodeCreator('nameFirst', 'Vorname'))
                         ->append($this->booleanNodeCreator('nameLast', 'Nachname'))
                         ->append($this->booleanNodeCreator('birthday', 'Geburtsdatum'))
                         ->enumNode('ageAtEvent')
                             ->info('Alter (bei Beginn der Veranstaltung)')
                             ->values([
-                                         'Alter nicht exportieren'   => 'none',
+                                         'Nicht exportieren'         => 'none',
                                          'Auf Jahre gerundet'        => 'round',
                                          'Abgerundet'                => 'ceil',
                                          'Mit einer Nachkommastelle' => 'decimalplace'
@@ -86,7 +86,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->info('Anmeldungsdaten')
                     ->children()
-                        ->append($this->booleanNodeCreator('pid', 'PID (Eindeutige Teilnehmernummer)'))
+                        ->append($this->booleanNodeCreator('pid', 'PID (Eindeutige Anmeldungsnummer)'))
                         ->append($this->booleanNodeCreator('salution', 'Anrede'))
                         ->append($this->booleanNodeCreator('nameFirst', 'Vorname (Eltern)'))
                         ->append($this->booleanNodeCreator('nameLast', 'Nachname (Eltern)'))
@@ -94,7 +94,6 @@ class Configuration implements ConfigurationInterface
                         ->append($this->booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressZip', 'PLZ (Anschrift'))
-                        ->append($this->booleanNodeCreator('createdAt', 'Eingang der Anmeldung'))
                         ->append($this->addAcquisitionAttributesNode(true, false))
                     ->end()
                 ->end()
