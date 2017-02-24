@@ -33,6 +33,7 @@
         </div>
         <div class="row" style="margin-top:20px;">
             {% for group in config %}
+                {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                 <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -88,14 +89,20 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             {% endfor %}
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <div class="btn-toolbar" role="toolbar" aria-label="Aktion">
-                            <button class="btn btn-primary" data-action="export-generator-create">Export erstellen</button>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="config[title]">Titel</label>
+                                <input type="text" class="form-control" id="config[title]" name="config[title]" placeholder="Teilnehmer">
+                            </div>
+                            <button class="btn btn-primary" data-action="export-generator-create">Export erstellen
+                            </button>
                         </div>
                     </div>
                 </div>

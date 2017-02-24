@@ -55,6 +55,10 @@ class Configuration implements ConfigurationInterface
         $rootNode    = $treeBuilder->root('export');
         $rootNode
             ->children()
+                ->scalarNode('title')
+                    ->info('Titel')
+                    ->defaultValue('Teilnehmer')
+                ->end()
                 ->arrayNode('participant')
                     ->addDefaultsIfNotSet()
                     ->info('Teilnehmerdaten')
@@ -91,6 +95,14 @@ class Configuration implements ConfigurationInterface
                         ->append($this->booleanNodeCreator('nameFirst', 'Vorname (Eltern)'))
                         ->append($this->booleanNodeCreator('nameLast', 'Nachname (Eltern)'))
                         ->append($this->booleanNodeCreator('email', 'E-Mail Adresse'))
+                        ->enumNode('phoneNumber')
+                            ->info('Telefonnummern')
+                            ->values([
+                                         'Nicht exportieren'                 => 'none',
+                                         'Kommasepariert, ohne Beschreibung' => 'comma',
+                                         'Kommasepariert, mit Beschreibung'  => 'comma_description',
+                            ])
+                        ->end()
                         ->append($this->booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressZip', 'PLZ (Anschrift'))

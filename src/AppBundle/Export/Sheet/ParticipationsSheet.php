@@ -13,8 +13,6 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
-use libphonenumber\PhoneNumberUtil;
 
 class ParticipationsSheet extends AbstractSheet
 {
@@ -51,33 +49,9 @@ class ParticipationsSheet extends AbstractSheet
 
         $this->addColumn(new EntitySheetColumn('email', 'E-Mail'));
 
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
-        $column          = new EntitySheetColumn('phoneNumbers', 'Telefonnummern');
-        $column->setConverter(
-            function ($value, Participation $entity) use ($phoneNumberUtil) {
-                $numberText  = '';
-                $numberCount = count($value);
-                $i           = 1;
-
-                /** @var PhoneNumber $number */
-                foreach ($value as $number) {
-                    $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
-                    if ($number->getDescription()) {
-                        $numberText .= ' (';
-                        $numberText .= $number->getDescription();
-                        $numberText .= ')';
-                    }
-
-                    if ($i++ < $numberCount) {
-                        $numberText .= ', ';
-                    }
-                }
-
-                return $numberText;
-            }
+        $this->addColumn(
+            EntityPhoneNumberSheetColumn::createCommaSeparated('phoneNumbers', 'Telefonnummern', null, true)
         );
-        $column->setWidth(13.5);
-        $this->addColumn($column);
 
         $column = new EntitySheetColumn('createdAt', 'Eingang');
         $column->setNumberFormat('dd.mm.yyyy h:mm');

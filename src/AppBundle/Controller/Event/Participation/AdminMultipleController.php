@@ -425,10 +425,13 @@ class AdminMultipleController extends Controller
         $configuration = new Configuration($event);
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
+        if (!$processedConfiguration['title']) {
+            $processedConfiguration['title'] = 'Teilnehmer';
+        }
 
         $participantList = $eventRepository->participantsList($event);
 
-        $export = new CustomizedExport(
+            $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),
             $event, $participantList,
             $this->getUser(),
@@ -445,7 +448,7 @@ class AdminMultipleController extends Controller
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Teilnehmer.xlsx'
+            $event->getTitle() . ' - '.$processedConfiguration['title'].'.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
 

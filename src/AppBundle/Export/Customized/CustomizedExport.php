@@ -66,7 +66,7 @@ class CustomizedExport extends Export
         parent::setMetadata();
 
         $this->document->getProperties()
-                       ->setTitle('Teilnehmerliste');
+                       ->setTitle($this->configuration['title']);
         $this->document->getProperties()
                        ->setSubject($this->event->getTitle());
         $this->document->getProperties()
@@ -82,7 +82,7 @@ class CustomizedExport extends Export
         );
         $participantsSheet->process();
 
-        $sheet->setTitle('Teilnehmer');
+        $sheet->setTitle($this->configuration['title']);
 
         parent::process();
     }

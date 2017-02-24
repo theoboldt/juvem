@@ -248,6 +248,16 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             );
             $this->addColumn($column);
         }
+
+        if ($configParticipation['phoneNumber'] != 'none') {
+            $this->addColumn(
+                EntityPhoneNumberSheetColumn::createCommaSeparated(
+                    'phoneNumbers',
+                    'Telefonnummern',
+                    'participation',
+                    $configParticipation['phoneNumber'] == 'comma_description' ? true : null)
+            );
+        }
     }
 
     /**
