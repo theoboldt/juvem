@@ -37,13 +37,14 @@ class EntityPhoneNumberSheetColumn extends EntitySheetColumn
                 if ($entity instanceof Participant) {
                     $entity = $entity->getParticipation();
                 }
+                $value = $entity->getPhoneNumbers();
 
                 $numberText  = '';
                 $numberCount = count($value);
                 $i           = 1;
 
                 /** @var PhoneNumber $number */
-                foreach ($entity->getPhoneNumbers() as $number) {
+                foreach ($value as $number) {
                     $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
                     if ($includeDescription && $number->getDescription()) {
                         $numberText .= ' (';
