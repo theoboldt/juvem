@@ -68,37 +68,26 @@
             <div class="col-xs-12 col-md-6 hidden-print">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group-vertical" role="group">
-                        {% if participation.rejected %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="rereject">
-                                {{ 'thumbs-up'|glyph }} wiederaufnehmen
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="reject">
-                                {{ 'thumbs-down'|glyph }} ablehnen
-                            </button>
-                        {% endif %}
                         {% if participation.withdrawn %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="reactivate">
-                                {{ 'retweet'|glyph }} reaktivieren
+                                {{ 'retweet'|glyph }} Anmeldung reaktivieren
                             </button>
                         {% else %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="withdraw">
-                                {{ 'share-alt'|glyph }} zurückziehen
+                                {{ 'share-alt'|glyph }} Anmeldung zurückziehen
                             </button>
                         {% endif %}
                         {% if participation.deletedAt %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }} wiederherstellen
+                                {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb</span> wiederherstellen
                             </button>
                         {% else %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb
+                                {{ 'trash'|glyph }} in Papierkorb verschieben
                             </button>
                         {% endif %}
                     </div>
