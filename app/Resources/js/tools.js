@@ -67,6 +67,39 @@ $(function () {
             });
         }, 600000);
     }();
+
+    /**
+     * GLOBAL: Lazy load images
+     */
+    $(document).ready(function () {
+        $('.lazy-load-image').each(function () {
+            var el = $(this),
+                src = el.data('src'),
+                alt = el.data('alt'),
+                title = el.data('title'),
+                width = el.data('width'),
+                height = el.data('height'),
+                settings;
+
+            settings = {
+                src: src,
+                alt: alt ? alt : ''
+            };
+            if (title) {
+                settings.title = title;
+            }
+            if (width) {
+                settings.width = width;
+            }
+            if (height) {
+                settings.height = height;
+            }
+            $("<img/>").attr(settings).appendTo(el)
+                .on('load', function () {
+                    el.addClass('load');
+                });
+        });
+    });
 });
 
 /**

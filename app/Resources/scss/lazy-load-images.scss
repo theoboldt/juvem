@@ -1,0 +1,23 @@
+/**
+ * Apply thumbnail style also to lazy-loaded images
+ */
+.thumbnail > div > img, .thumbnail a > div > img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lazy-load-image {
+  max-height: 0;
+  overflow: hidden;
+
+  -webkit-transition: max-height 0.8s ease-out;
+  -moz-transition: max-height 0.8s ease-out;
+  transition: max-height 0.8s ease-out;
+}
+
+.lazy-load-image.load {
+  max-height: 400px;
+}

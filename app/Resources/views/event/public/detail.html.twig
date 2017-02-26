@@ -72,8 +72,10 @@
                 <div>
                     {% if event.imageFilename %}
                         <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
-                            <img src="{{ path('event_image',  {'eid': event.eid, 'width': 555, 'height': 555 }) }}"
-                                 alt="Poster-Abbildung wurde nicht geladen" title="Poster">
+                            <div class="lazy-load-image"
+                                  data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
+                                  data-src="{{ path('event_image',  {'eid': event.eid, 'width': 555, 'height': 555 }) }}">
+                            </div>
                         </a>
                     {% else %}
                         <div class="thumbnail">
