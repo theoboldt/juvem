@@ -86,10 +86,10 @@
                     {% endif %}
                 </div>
                 {% if event.price %}
-                    <p itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                    <p class="event-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                         <label class="control-label" for="event-price-{{ event.eid }}">Preis:</label>
                         <span>{{ event.price(true)|number_format(2) }} €</span>
-                        <span class="event-price" itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, '.', "") }}€</span>
+                        <span class="hidden" itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, '.', "") }}€</span>
                         <span itemprop="priceCurrency" content="EUR"/>
                         {% if event.isActive %}
                             <a style="display: none;" itemprop="url" href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen</a>
