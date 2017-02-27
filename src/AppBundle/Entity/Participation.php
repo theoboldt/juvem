@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participation
 {
-    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait;
+    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, AddressTrait;
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
@@ -49,24 +49,6 @@ class Participation
      * @Assert\NotBlank()
      */
     protected $salution;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="address_street")
-     * @Assert\NotBlank()
-     */
-    protected $addressStreet;
-
-    /**
-     * @ORM\Column(type="string", length=128, name="address_city")
-     * @Assert\NotBlank()
-     */
-    protected $addressCity;
-
-    /**
-     * @ORM\Column(type="string", length=16, name="address_zip")
-     * @Assert\NotBlank()
-     */
-    protected $addressZip;
 
     /**
      * @ORM\Column(type="string", length=128, name="email")
@@ -211,79 +193,6 @@ class Participation
     public function getSalution()
     {
         return $this->salution;
-    }
-
-
-    /**
-     * Set addressStreet
-     *
-     * @param string $addressStreet
-     *
-     * @return Participation
-     */
-    public function setAddressStreet($addressStreet)
-    {
-        $this->addressStreet = $addressStreet;
-
-        return $this;
-    }
-
-    /**
-     * Get addressStreet
-     *
-     * @return string
-     */
-    public function getAddressStreet()
-    {
-        return $this->addressStreet;
-    }
-
-    /**
-     * Set addressCity
-     *
-     * @param string $addressCity
-     *
-     * @return Participation
-     */
-    public function setAddressCity($addressCity)
-    {
-        $this->addressCity = $addressCity;
-
-        return $this;
-    }
-
-    /**
-     * Get addressCity
-     *
-     * @return string
-     */
-    public function getAddressCity()
-    {
-        return $this->addressCity;
-    }
-
-    /**
-     * Set addressZip
-     *
-     * @param string $addressZip
-     *
-     * @return Participation
-     */
-    public function setAddressZip($addressZip)
-    {
-        $this->addressZip = $addressZip;
-
-        return $this;
-    }
-
-    /**
-     * Get addressZip
-     *
-     * @return string
-     */
-    public function getAddressZip()
-    {
-        return $this->addressZip;
     }
 
     /**

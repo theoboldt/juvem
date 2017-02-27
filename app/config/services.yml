@@ -44,6 +44,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.eventdates:
+        class: AppBundle\Twig\Extension\EventDates
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_global_customization:
         class: AppBundle\Twig\GlobalCustomization
         arguments:

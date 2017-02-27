@@ -29,7 +29,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Event
 {
-    use CreatedModifiedTrait, SoftDeleteTrait;
+    use CreatedModifiedTrait, SoftDeleteTrait, AddressTrait;
 
     const DATE_FORMAT_DATE      = 'd.m.y';
     const DATE_FORMAT_TIME      = 'H:i';
@@ -100,6 +100,43 @@ class Event
      * @ORM\Column(type="boolean", name="is_auto_confirm")
      */
     protected $isAutoConfirm;
+
+    /**
+     * @Assert\Regex(
+     *     pattern="/(\d+-\d+)|(\d[-]{0,1})|([-]{0,1}\d)|/",
+     *     match=true,
+     *     message="Wenn eine Altersspanne angegeben werden soll, bitte mit Bindestrich ohne Leerzeichen angeben"
+     * )
+     * @ORM\Column(type="string", length=8, nullable=true)
+     */
+    protected $ageRange;
+
+    /**
+     * Contains the events price, in EURO CENT (instead of euro)
+     *
+     * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
+     */
+    protected $price;
+
+    /**
+     * @ORM\Column(type="string", length=128, name="address_title", nullable=true)
+     */
+    protected $addressTitle;
+
+    /**
+     * @ORM\Column(type="string", length=128, name="address_street", nullable=true)
+     */
+    protected $addressStreet;
+
+    /**
+     * @ORM\Column(type="string", length=128, name="address_city", nullable=true)
+     */
+    protected $addressCity;
+
+    /**
+     * @ORM\Column(type="string", length=16, name="address_zip", nullable=true)
+     */
+    protected $addressZip;
 
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageFilename")
@@ -783,5 +820,78 @@ class Event
     public function isSubscribedBy(User $subscriber)
     {
         return ($this->subscribers->contains($subscriber));
+    }
+
+    /**
+     * Set ageRange
+     *
+     * @param string $ageRange
+     *
+     * @return Event
+     */
+    public function setAgeRange($ageRange)
+    {
+        $this->ageRange = $ageRange;
+
+        return $this;
+    }
+
+    /**
+     * Get ageRange
+     *
+     * @return string
+     */
+    public function getAgeRange()
+    {
+        return $this->ageRange;
+    }
+
+    /**
+     * Set price
+     *
+     * @param string $price
+     *
+     * @return Event
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @param bool $inEuro  If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return string
+     */
+    public function getPrice($inEuro = false)
+    {
+        return $inEuro ? $this->price/100 : $this->price;
+    }
+
+    /**
+     * Set addressTitle
+     *
+     * @param string $addressTitle
+     *
+     * @return Event
+     */
+    public function setAddressTitle($addressTitle)
+    {
+        $this->addressTitle = $addressTitle;
+
+        return $this;
+    }
+
+    /**
+     * Get addressTitle
+     *
+     * @return string
+     */
+    public function getAddressTitle()
+    {
+        return $this->addressTitle;
     }
 }

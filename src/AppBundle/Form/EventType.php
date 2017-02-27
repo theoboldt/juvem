@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -107,6 +108,18 @@ class EventType extends AbstractType
                 // not mandatory, default is true
             )
             )
+            ->add(
+                'ageRange', TextType::class,
+                ['label' => 'Altersspanne', 'required' => false, 'empty_data' => null, 'attr' => ['aria-describedby' => 'help-age-range']]
+            )
+            ->add(
+                'price', MoneyType::class,
+                ['label' => 'Preis', 'required' => false, 'divisor' => 100, 'empty_data' => null, 'attr' => ['aria-describedby' => 'help-price'],]
+            )
+            ->add('addressTitle', TextType::class, ['label' => 'Bezeichnung', 'required' => false, 'attr' => array('aria-describedby' => 'help-address-title')])
+            ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => false])
+            ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => false])
+            ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => false])
             ->add(
                 'hasConfirmationMessage', CheckboxType::class,
                 array_merge($smartCheckbox, array('label' => 'Bestätigungs-Text'))

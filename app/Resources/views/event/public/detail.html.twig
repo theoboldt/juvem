@@ -3,13 +3,14 @@
 {% block title %}{{ event.title }}{% endblock %}
 
 {% block body %}
+    <div itemscope itemtype="http://schema.org/Event">
     {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Veranstaltung'} %}
         {% block breadcrumb %}
             <li class="active">{{ event.title }}</li>
         {% endblock %}
         {% block pageheader %}
             <div class="page-header">
-                <h1>{{ event.title }}
+                <h1><span itemprop="name">{{ event.title }}</span>
                     <small>Veranstaltung</small>
                     {% if event.isActive %}
                         <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
@@ -22,7 +23,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-8">
-                {{ event.getDescription|markdown }}
+                <div itemprop="description">{{ event.getDescription|markdown }}</div>
                 <hr>
                 <p>
                     {% if is_granted('ROLE_ADMIN_EVENT') %}
@@ -40,6 +41,7 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-4">
+                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
                 <p>
                     {% if event.isActive() %}
                         <span class="label label-primary">Aktiv</span>
@@ -52,23 +54,16 @@
                         <span class="label label-default">Versteckt</span>
                     {% endif %}
                 </p>
-
+                {% endif %}
                 <p>
-                    {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                    {% if event.hasStartTime %}
-                        {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                    {% endif %}
+                    {{ 'calendar'|glyph }} {{ event|eventStartDate }}
                     {% if event.hasEndDate or event.hasEndTime %}
-                        -
-                        {% if event.hasEndDate %}
-                            {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                        {% endif %}
-                        {% if event.hasEndTime %}
-                            {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                        {% endif %}
+                        - {{ event|eventEndDate }}
                     {% endif %}
                 </p>
-
+                {% if event.ageRange %}
+                    <p itemprop="typicalAgeRange">{{ event.ageRange }} Jahre</p>
+                {% endif %}
                 <div>
                     {% if event.imageFilename %}
                         <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
@@ -77,7 +72,7 @@
                                   data-src="{{ path('event_image',  {'eid': event.eid, 'width': 555, 'height': 555 }) }}">
                             </div>
                         </a>
-                    {% else %}
+                    {% elseif is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
                         <div class="thumbnail">
                             <div class="alert alert-info" role="alert">
                                 <p>Es ist keine Bild-Datei als Poster zu dieser Veranstaltung gespeichert.</p>
@@ -90,7 +85,39 @@
                         </div>
                     {% endif %}
                 </div>
+                {% if event.price %}
+                    <p itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                        <label class="control-label" for="event-price-{{ event.eid }}">Preis:</label>
+                        <span>{{ event.price(true)|number_format(2) }} €</span>
+                        <span class="event-price" itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, '.', "") }}€</span>
+                        <span itemprop="priceCurrency" content="EUR"/>
+                        {% if event.isActive %}
+                            <a style="display: none;" itemprop="url" href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen</a>
+                        {% endif %}
+                    </p>
+                    <div>
+                        {% if event.addressTitle or event.addressStreet or event.addressCity %}
+                        <label class="control-label">Ort:</label>
+                        <div class="location" itemprop="location" itemscope itemtype="http://schema.org/Place">
+                            <address>
+                                {% if event.addressTitle %}<strong itemprop="name">{{ event.addressTitle }}</strong><br>{% endif %}
+                                <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                    {% if event.addressStreet %}{% if not event.addressTitle %}<strong>{% endif %}<span itemprop="streetAddress">{{ event.addressStreet }}</span>{% if not event.addressTitle %}</strong>{% endif %}<br>{% endif %}
+                                    <span itemprop="postalCode">{{ event.addressZip }}</span> <span itemprop="addressLocality">{{ event.addressCity }}</span>
+                                </span>
+                            </address>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
+        </div>
+    </div>
+        <div style="display: none;">
+            <a itemprop="url" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">{{ event.title }}</a>
+            {% if event.imageFilename %}<div itemprop="image">{{ url('event_image',  {'eid': event.eid, 'width': 600, 'height': 600 }) }}</div>{% endif %}
+            <div itemprop="eventStatus">EventScheduled</div>
+            <div itemprop="organizer">{{ customization.organizationCardInline|raw }}</div>
         </div>
     </div>
 {% endblock %}
