@@ -167,7 +167,7 @@
                         <a href="{{ path('event_public_detail', {eid: event.eid}) }}" class="list-group-item">
                             <h4 class="list-group-item-heading">{{ event.title }}</h4>
 
-                            <p class="list-group-item-text">{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
+                            <p class="list-group-item-text">{{ event.descriptionMeta(true)|e }}</p>
                         </a>
                     {% endfor %}
                 </div>

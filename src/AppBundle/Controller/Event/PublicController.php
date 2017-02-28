@@ -63,9 +63,8 @@ class PublicController extends Controller
         }
 
         return $this->render(
-            'event/public/detail.html.twig', array(
-                                               'event' => $event
-                                           )
+            'event/public/detail.html.twig',
+            ['event' => $event, 'pageDescription' => $event->getDescriptionMeta(true)]
         );
     }
 

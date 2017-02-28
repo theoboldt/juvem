@@ -55,6 +55,15 @@ class Event
     protected $description;
 
     /**
+     * @ORM\Column(type="text", length=160, name="description_meta", nullable=true)
+     * @Assert\Length(
+     *      max = 160,
+     *      maxMessage = "Die Meta-Beschreibung darf nicht mehr als {{ limit }} Zeichen umfassen"
+     * )
+     */
+    protected $descriptionMeta;
+
+    /**
      * @ORM\Column(type="text", name="confirmation_message", nullable=true)
      */
     protected $confirmationMessage = null;
@@ -893,5 +902,36 @@ class Event
     public function getAddressTitle()
     {
         return $this->addressTitle;
+    }
+
+    /**
+     * Set descriptionMeta
+     *
+     * @param string $descriptionMeta
+     *
+     * @return Event
+     */
+    public function setDescriptionMeta($descriptionMeta)
+    {
+        $this->descriptionMeta = $descriptionMeta;
+
+        return $this;
+    }
+
+    /**
+     * Get description used for meta tags and short descriptions
+     *
+     * @param bool $useDescriptionExcerptAsFallback If set to true and @see $descriptionMeta is empty an excerpt of @see $description is returned
+     * @return string
+     */
+    public function getDescriptionMeta($useDescriptionExcerptAsFallback = false)
+    {
+        if ($useDescriptionExcerptAsFallback && !$this->descriptionMeta) {
+            if (mb_strlen($this->description) > 156) {
+                return mb_substr($this->description, 0, 154).'…';
+            }
+            return $this->descriptionMeta;
+        }
+        return $this->descriptionMeta;
     }
 }

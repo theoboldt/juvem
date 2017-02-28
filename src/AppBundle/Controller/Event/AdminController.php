@@ -153,10 +153,12 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/admin/edit.html.twig', array(
-                                            'event' => $event,
-                                            'form'  => $form->createView(),
-                                        )
+            'event/admin/edit.html.twig',
+            [
+                'event'           => $event,
+                'form'            => $form->createView(),
+                'pageDescription' => $event->getDescriptionMeta(true)
+            ]
         );
     }
 
@@ -269,6 +271,7 @@ class AdminController extends Controller
             'event/admin/detail.html.twig',
             array(
                 'event'                     => $event,
+                'pageDescription'           => $event->getDescriptionMeta(true),
                 'ageDistribution'           => $ageDistribution,
                 'ageDistributionMax'        => $ageDistributionMax,
                 'genderDistribution'        => $genderDistribution,

@@ -4,7 +4,7 @@
     <ul>
         {% for event in events %}
             <li><a href="{{ path('event_public_detail', {eid: event.eid}) }}"
-                   title="{{ event.description|length > 110 ? event.description|slice(0, 100) ~ '...' : event.description }}">{{ event.title }}</a>
+                   title="{{ event.descriptionMeta(true)|e('html_attr') }}">{{ event.title }}</a>
                 {% if is_granted('ROLE_ADMIN_EVENT') %}
                     <a href="{{ path('event', {eid: event.eid}) }}" title="Veranstaltung bearbeiten">(verwalten)</a>
                 {% endif %}

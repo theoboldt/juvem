@@ -12,7 +12,14 @@
             <div class="col-xs-12">
                 {{ form_label(form.description) }}
                 {{ form_widget(form.description) }}
-                <p class="help-block" id="help-description">Dieser Text wird in der detaillierten Ansicht angezeigt. Es können Formatierungsanweisungen von <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown</a> verwendet werden. Der Text-Ausschnitt auf der Startseite wird im Klartext dargestellt.</p>
+                {{ form_errors(form.description) }}
+                <p class="help-block" id="help-description">Dieser Text wird in der detaillierten Ansicht angezeigt. Es können Formatierungsanweisungen von <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown</a> verwendet werden. Wenn keine <a href="#form-element-description-meta">Kurzbeschreibung</a> angegeben ist, wird der Text-Ausschnitt in der Veranstaltungs-Übersicht wird im Klartext dargestellt.</p>
+            </div>
+            <div class="col-xs-12" id="form-element-description-meta">
+                {{ form_label(form.descriptionMeta) }}
+                {{ form_widget(form.descriptionMeta) }}
+                {{ form_errors(form.descriptionMeta) }}
+                <p class="help-block" id="help-description-meta">Wenn definiert, wird dieser Text in der Veranstaltungs-Übersicht verwendet. Dieser Text wird auch als Auszug für Suchmaschienen verwendet. Es ist nur reiner Text erlaubt.</p>
             </div>
         </div>
     </div>
@@ -21,11 +28,13 @@
             <div class="col-xs-12">
                 {{ form_label(form.price) }}
                 {{ form_widget(form.price) }}
+                {{ form_errors(form.price) }}
                 <p class="help-block" id="help-price">Leer lassen, wenn kein Preis angegeben werden soll. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
             </div>
             <div class="col-xs-12">
                 {{ form_label(form.ageRange) }}
                 {{ form_widget(form.ageRange) }}
+                {{ form_errors(form.ageRange) }}
                 <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der Zielgruppe in Jahren angeben, bspw. <samp>7-13</samp>. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
             </div>
             <div class="col-xs-12">
@@ -38,6 +47,7 @@
             <div class="col-xs-12">
                 {{ form_label(form.addressTitle) }}
                 {{ form_widget(form.addressTitle) }}
+                {{ form_errors(form.addressTitle) }}
                 <p class="help-block small" id="help-address-title">Titel des Veranstaltungsortes, bswp. <samp>Waldheim</samp>.</p>
             </div>
             <div class="col-xs-12">
@@ -45,7 +55,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-4    ">
+            <div class="col-xs-12 col-sm-12 col-md-4">
                 {{ form_row(form.addressZip) }}
             </div>
             <div class="col-xs-12 col-sm-12 col-md-8">

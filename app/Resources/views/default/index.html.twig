@@ -56,7 +56,7 @@
                                 insgesamt <b>{{ event.participationsCount }}</b> Teilnehmer</p>
                             {% endif %}
 
-                            <p>{{ event.description|length > 100 ? event.description|slice(0, 200) ~ '...' : event.description }}</p>
+                            <p>{{ event.descriptionMeta(true)|e }}</p>
 
                             <div class="btn-toolbar" role="toolbar">
                                 {% if event.isActive %}

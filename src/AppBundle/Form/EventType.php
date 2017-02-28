@@ -48,6 +48,10 @@ class EventType extends AbstractType
                 array('label' => 'Beschreibung', 'attr' => array('aria-describedby' => 'help-description'))
             )
             ->add(
+                'descriptionMeta', TextareaType::class,
+                array('label' => 'Kurzbeschreibung', 'attr' => array('aria-describedby' => 'help-description-short'))
+            )
+            ->add(
                 'startDate', DateType::class,
                 array_merge($dateTypeOptions, array('label' => 'Startdatum'))
             )
