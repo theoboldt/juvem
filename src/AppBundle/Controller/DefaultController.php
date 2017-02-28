@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -43,11 +44,34 @@ class DefaultController extends Controller
             $participations = $user->getAssignedParticipations();
         }
 
+        $activeCount = 0;
+        /** @var Event $event */
+        foreach ($eventList as $event) {
+            if ($event->isActive()) {
+                ++$activeCount;
+            }
+        }
+
+        $customization = $this->get('app.twig_global_customization');
+        $description = sprintf('Überblick über alle Veranstaltungen von %s. ', $customization->organizationName());
+        switch ($activeCount ) {
+            case 0:
+                $description .= 'Anmeldungen können hier abgegeben werden.';
+                break;
+            case 1:
+                $description .= 'Anmeldungen können derzeit für eine Veranstaltung abgegeben werden.';
+                break;
+            default:
+                $description .= 'Anmeldungen können derzeit für '.$activeCount.' Veranstaltungen abgegeben werden.';
+                break;
+        }
+
         return $this->render(
             'default/index.html.twig',
             [
-                'events'         => $eventList,
-                'participations' => $participations
+                'events'          => $eventList,
+                'pageDescription' => $description,
+                'participations'  => $participations
             ]
         );
     }

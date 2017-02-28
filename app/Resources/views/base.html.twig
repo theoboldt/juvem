@@ -35,7 +35,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% if pageDescription is defined %}
-        <meta name="description" content="{{ pageDescription|e('html_attr')|length > 157 ? pageDescription|e('html_attr')|slice(0, 155) ~ '…' : pageDescription|e('html_attr') }}">
+        <meta name="description" content="{{ pageDescription|e|length > 157 ? pageDescription|e|slice(0, 155) ~ '…' : pageDescription|e }}">
     {% endif %}
 </head>
 <body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}">
