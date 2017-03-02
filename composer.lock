@@ -2661,16 +2661,16 @@
         },
         {
             "name": "symfony/swiftmailer-bundle",
-            "version": "v2.5.1",
+            "version": "v2.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/swiftmailer-bundle.git",
-                "reference": "271cf8f04c6b9c3d53bcedd5531856c88c3accdb"
+                "reference": "b59a70d03b948e29d070b6c4416b4a03af4748ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/271cf8f04c6b9c3d53bcedd5531856c88c3accdb",
-                "reference": "271cf8f04c6b9c3d53bcedd5531856c88c3accdb",
+                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/b59a70d03b948e29d070b6c4416b4a03af4748ec",
+                "reference": "b59a70d03b948e29d070b6c4416b4a03af4748ec",
                 "shasum": ""
             },
             "require": {
@@ -2716,7 +2716,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2017-03-02T01:33:46+00:00"
+            "time": "2017-03-02T16:47:57+00:00"
         },
         {
             "name": "symfony/symfony",
@@ -3666,16 +3666,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.14",
+            "version": "5.7.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4906b8faf23e42612182fd212eb6f4c0f2954b57"
+                "reference": "b99112aecc01f62acf3d81a3f59646700a1849e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4906b8faf23e42612182fd212eb6f4c0f2954b57",
-                "reference": "4906b8faf23e42612182fd212eb6f4c0f2954b57",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b99112aecc01f62acf3d81a3f59646700a1849e5",
+                "reference": "b99112aecc01f62acf3d81a3f59646700a1849e5",
                 "shasum": ""
             },
             "require": {
@@ -3744,7 +3744,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-02-19T07:22:16+00:00"
+            "time": "2017-03-02T15:22:43+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
