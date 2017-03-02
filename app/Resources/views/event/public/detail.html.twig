@@ -3,13 +3,14 @@
 {% block title %}{{ event.title }}{% endblock %}
 
 {% block body %}
-    <div itemscope itemtype="http://schema.org/Event">
+<section>
+    <article itemscope itemtype="http://schema.org/Event">
     {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Veranstaltung'} %}
         {% block breadcrumb %}
             <li class="active">{{ event.title }}</li>
         {% endblock %}
         {% block pageheader %}
-            <div class="page-header">
+            <header class="page-header">
                 <h1><span itemprop="name">{{ event.title }}</span>
                     <small>Veranstaltung</small>
                     {% if event.isActive %}
@@ -17,7 +18,7 @@
                            style="float: right;" class="btn btn-primary hidden-xs" role="button">Teilnehmen</a>
                     {% endif %}
                 </h1>
-            </div>
+            </header>
         {% endblock %}
     {% endembed %}
     <div class="container">
@@ -110,14 +111,16 @@
                         {% endif %}
                     </div>
                 {% endif %}
+                <div style="display: none;">
+                    <a itemprop="url" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">{{ event.title }}</a>
+                    {% if event.imageFilename %}<div itemprop="image">{{ url('event_image',  {'eid': event.eid, 'width': 600, 'height': 600 }) }}</div>{% endif %}
+                    <div itemprop="eventStatus">EventScheduled</div>
+                    <div itemprop="organizer">{{ customization.organizationCardInline|raw }}</div>
+                </div>
+
             </div>
         </div>
     </div>
-        <div style="display: none;">
-            <a itemprop="url" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">{{ event.title }}</a>
-            {% if event.imageFilename %}<div itemprop="image">{{ url('event_image',  {'eid': event.eid, 'width': 600, 'height': 600 }) }}</div>{% endif %}
-            <div itemprop="eventStatus">EventScheduled</div>
-            <div itemprop="organizer">{{ customization.organizationCardInline|raw }}</div>
-        </div>
-    </div>
+    </article>
+</section>
 {% endblock %}

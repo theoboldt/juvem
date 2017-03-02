@@ -3,6 +3,7 @@
 {% block title %}Newsletter Abonnement{% endblock %}
 
 {% block body %}
+<section><article>
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Newsletter', 'subtitle': 'Abonnement'} %}
         {% block breadcrumb %}
             <li>{% if is_granted('ROLE_ADMIN') %}<a href="{{ path('newsletter_admin_overview') }}">Newsletter</a>{% else %}Newsletter{% endif %}</li>
@@ -30,7 +31,7 @@
                 </div>
                 {% include '/newsletter/public/form-html.html.twig' with {'form': form} %}
             </div>
-            <div class="col-xs-12 col-sm-5 col-md-6">
+            <aside class="col-xs-12 col-sm-5 col-md-6">
                 <p>Es ist uns sehr wichtig, dass Sie die volle Kontrolle darüber haben, welche Nachrichten Sie von uns
                     erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder den Newsletter auch jederzeit
                     ganz abbestellen. Sie sollen keine E-Mails zu Veranstaltungen erhalten, die für Sie nicht von
@@ -38,9 +39,10 @@
 
                 <p>Selbstverständlich sind wir von unseren Veranstaltungen überzeugt, und halten Sie gerne auf dem
                     Laufenden - wenn Sie das möchten!</p>
-            </div>
+            </aside>
         </div>
     </div>
+</article></section>
 {% endblock %}
 {% block javascriptCustom %}
     {% include '/newsletter/public/form-script.html.twig' with { formMain: 'newsletter_subscription'} %}

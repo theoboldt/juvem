@@ -3,6 +3,7 @@
 {% block title %}{{ customization.title }}{% endblock %}
 
 {% block body %}
+    <section>
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': customization.organizationName} %}
         {% block breadcrumbfull %}
             <ol class="breadcrumb">
@@ -20,7 +21,7 @@
                 </div>
             {% endif %}
             {% for event in events %}
-                <div class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
+                <article class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
                     <div class="thumbnail">
                         {% if event.imageFilename %}
                             <div class="lazy-load-image"
@@ -29,8 +30,9 @@
                             </div>
                         {% endif %}
                         <div class="caption">
-                            <h3>{{ event.title }}</h3>
-
+                            <header>
+                                <h2>{{ event.title }}</h2>
+                            </header>
                             <p>
                                 {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
                                 {% if event.hasStartTime %}
@@ -97,10 +99,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </article>
             {% endfor %}
         </div>
     </div>
+    </section>
 {% endblock %}
 
 {% block stylesheets %}

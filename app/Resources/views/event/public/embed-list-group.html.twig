@@ -1,4 +1,4 @@
-<div class="list-group event-embed-list">
+<aside class="list-group event-embed-list">
     {% if events|length == 0 %}
       <div class="list-group-item list-group-item-info">Im Moment sind keine Veranstaltungen aktiv.</div>
     {% endif %}
@@ -8,4 +8,4 @@
             <p class="list-group-item-text">{{ event.descriptionMeta(true)|e }}</p>
         </a>
     {% endfor %}
-</div>
+</aside>

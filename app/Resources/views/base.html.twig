@@ -26,13 +26,13 @@
 </head>
 <body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}">
 <div id="page">
-    <div id="page-navigation">
+    <header id="page-navigation">
         {% include 'navigation.html.twig' %}
-    </div>
+    </header>
     <div id="page-body">
         {% block body %}{% endblock %}
     </div>
-    <div id="page-footer">
+    <footer id="page-footer">
         {% if app.user is null %}
             {% include 'common/footer/public.html.twig' %}
         {% elseif is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
@@ -40,7 +40,7 @@
         {% else %}
             {% include 'common/footer/registered.html.twig' %}
         {% endif %}
-    </div>
+    </footer>
 </div>
 <div id="cookiechoice" style="visibility: hidden;">
     <div class="container">

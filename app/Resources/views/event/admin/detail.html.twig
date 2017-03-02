@@ -3,6 +3,7 @@
 {% block title %}Veranstaltung ({{ event.title }}){% endblock %}
 
 {% block body %}
+<section><article>
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
@@ -228,6 +229,8 @@
             </div>
         </div>
     </div>
+    </div>
+</article></section>
 {% endblock %}
 {% block javascriptCustom %}
     {% cspscript %}

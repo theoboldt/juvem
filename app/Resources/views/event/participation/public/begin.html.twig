@@ -4,6 +4,7 @@
 {% block title %}Anmeldung - {{ event.title }}{% endblock %}
 
 {% block body %}
+<section><article>
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
@@ -15,7 +16,7 @@
                             </li>
                             <li class="active">Anmeldung ausfüllen</li>
                         </ol>
-                        {% include 'common/header/inner-page-header.html.twig' with {'title': 'Anmeldung ausfüllen', 'subtitle': event.title} %}
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': event.title, 'subtitle': 'Anmeldung ausfüllen'} %}
                     </div>
                 </div>
 
@@ -27,7 +28,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <h3>Daten der Eltern</h3>
+                        <h2>Daten der Eltern</h2>
 
                         <p>Bitte geben Sie hier ihre grundlegenden Kontakdaten an.</p>
                     </div>
@@ -102,11 +103,11 @@
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-10 col-sm-8">
-                                        <h4 class="panel-title">
+                                        <h3 class="panel-title">
                                             <!--<a role="button" data-toggle="collapse">-->
                                             Telefonnummer
                                             <!--</a>-->
-                                        </h4>
+                                        </h3>
                                     </div>
                                     <div class="col-xs-2 col-sm-4 text-right">
                                         <a href="#" class="btn btn-danger btn-xs prototype-remove"
@@ -187,7 +188,7 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <h3>Daten der Teilnehmer</h3>
+                        <h2>Daten der Teilnehmer</h2>
                         <p>Bitte geben Sie hier ihre die Daten für einen oder mehrere Teilnehmern an.</p>
                         <p>
                             Abhängig von Art und Dauer der Veranstaltung können mehr oder weniger Informationen nötig
@@ -209,11 +210,11 @@
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-10 col-sm-8">
-                                        <h4 class="panel-title">
+                                        <h3 class="panel-title">
                                             <!--<a role="button" data-toggle="collapse">-->
                                             Teilnehmer
                                             <!--</a>-->
-                                        </h4>
+                                        </h3>
                                     </div>
                                     <div class="col-xs-2 col-sm-4 text-right">
                                         <a href="#" class="btn btn-danger btn-xs prototype-remove"
@@ -323,7 +324,7 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <h3>Datenschutzerklärung</h3>
+                        <h2>Datenschutzerklärung</h2>
 
                         <div class="scrollspy-panel">
                             <nav id="navbar-privacy" class="navbar navbar-default navbar-static">
@@ -374,7 +375,7 @@
                 {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-content') %}
                     <div class="row">
                         <div class="col-xs-12">
-                            <h3>Reisebedingungen</h3>
+                            <h2>Reisebedingungen</h2>
 
                             <div class="scrollspy-panel">
                                 {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-scrollspy') %}
@@ -399,7 +400,7 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <h3>Fortfahren</h3>
+                        <h2>Fortfahren</h2>
                         <p>
                             Sie können die Daten im nächsten Schritt noch mal überprüfen,
                             bevor Sie die Anmeldung engültig abgeben.
@@ -415,4 +416,5 @@
             </div>
         </div>
     </div>
+</article></section>
 {% endblock %}

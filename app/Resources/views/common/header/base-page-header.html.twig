@@ -8,13 +8,13 @@
                 </ol>
             {% endblock %}
             {% block pageheader %}
-            <div class="page-header">
+            <header class="page-header">
                 <h1>{{ title }}
                     {% if subtitle is defined %}
                         <small>{{ subtitle }}</small>
                     {% endif %}
                 </h1>
-            </div>
+            </header>
             {% endblock %}
             {% include 'common/header/page-global-messages.html.twig' %}
         </div>
