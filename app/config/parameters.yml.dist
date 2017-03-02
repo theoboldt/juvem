@@ -24,6 +24,7 @@ parameters:
     cron_secret: 3bc5321e96ee8b50967e6796b9eb9f05d466762265e53e
 
     customization.app_title: ~
+    customization.theme_color: ~
     customization.organization_name: ~
     customization.organization_address_street: ~
     customization.organization_address_postal_code: ~

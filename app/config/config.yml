@@ -66,6 +66,7 @@ twig:
         customization: "@app.twig_global_customization"
         kernelRootDir: "%kernel.root_dir%"
         featureNewsletter: "%feature.newsletter%"
+        themeColor: "%%customization.theme_color%%"
 
 # Doctrine Configuration
 doctrine:
