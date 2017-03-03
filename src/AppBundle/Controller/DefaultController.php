@@ -195,6 +195,9 @@ class DefaultController extends Controller
                     $pageFactory->generateRoute('event_image', ['eid' => $eid, 'width' => 545, 'height' => 545])
                 );
             }
+            if ($event->isActive()) {
+                $page = $pageFactory->create('event_public_participate', ['eid' => $eid], 0.8, $event->getModifiedAt());
+            }
             $pages[] = $page;
         }
 
