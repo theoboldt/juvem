@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+  <loc>{{ url('homepage') }}</loc>
+  <priority>1.0</priority>
+  <lastmod>{{ lastModHomePage.format('Y-m-d') }}</lastmod>
+</url>
+<url>
+  <loc>{{ url('newsletter_subscription') }}</loc>
+  <priority>0.5</priority>
+  <lastmod>2017-01-01</lastmod>
+</url>
+<url>
+  <loc>{{ url('fos_user_security_login') }}</loc>
+  <priority>0.1</priority>
+  <lastmod>2017-01-01</lastmod>
+</url>
+<url>
+  <loc>{{ url('fos_user_registration_register') }}</loc>
+  <priority>0.1</priority>
+  <lastmod>2017-01-01</lastmod>
+</url>
+{% for page in pages %}
+ <url>
+  <loc>{{ page.loc }}</loc>
+  <priority>{{ page.priority }}</priority>
+  <lastmod>{{ page.lastmod.format('Y-m-d') }}</lastmod>
+  {% for image in page.images %}
+    <image:image>
+        <image:loc>{{ image }}</image:loc>
+    </image:image>
+  {% endfor %}
+ </url>
+{% endfor %}
+</urlset>

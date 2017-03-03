@@ -12,6 +12,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
+use AppBundle\Sitemap\Page;
+use AppBundle\Sitemap\PageFactory;
+use AppBundle\SitemapPage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -155,6 +158,51 @@ class DefaultController extends Controller
                 'urls'        => [
                     'prod' => $this->generateUrl('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL)
                 ]
+            ]
+        );
+    }
+
+
+    /**
+     * @Route("/sitemap.xml")
+     */
+    public function sitemapAction()
+    {
+        $configDir   = $this->get('kernel')->getRootDir() . '/config/';
+        $router      = $this->get('router');
+        $pageFactory = new PageFactory($router);
+
+        $eventRepository   = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventLastModified = $eventRepository->lastModified();
+
+        $pages = [
+            $pageFactory->createForPath(
+                $configDir . 'imprint-content.html.twig', 'imprint', 0.2, Page::CHANGEFREQ_MONTHLY
+            ),
+            $pageFactory->createForPath(
+                $configDir . 'conditions-of-travel-content.html.twig', 'conditions_of_travel', 0.2,
+                Page::CHANGEFREQ_MONTHLY
+            ),
+            $pageFactory->create('legal', [], 0.2, null, Page::CHANGEFREQ_MONTHLY),
+        ];
+
+        /** @var Event $event */
+        foreach ($eventRepository->findAllOrderedByTitle(true) as $event) {
+            $eid  = $event->getEid();
+            $page = $pageFactory->create('event_public_detail', ['eid' => $eid], 0.8, $event->getModifiedAt());
+            if ($event->getImageFilename()) {
+                $page->addImage(
+                    $pageFactory->generateRoute('event_image', ['eid' => $eid, 'width' => 545, 'height' => 545])
+                );
+            }
+            $pages[] = $page;
+        }
+
+        return $this->render(
+            'sitemap.xml.twig',
+            [
+                'pages'           => $pages,
+                'lastModHomePage' => $eventLastModified,
             ]
         );
     }

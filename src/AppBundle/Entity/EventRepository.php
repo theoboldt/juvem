@@ -79,15 +79,17 @@ class EventRepository extends EntityRepository
     /**
      * Fetch all events ordered by title
      *
+     * @param bool $excludeDeleted  Set to true to exclude deleted @see Event s
      * @return array
      */
-    public function findAllOrderedByTitle()
+    public function findAllOrderedByTitle($excludeDeleted = false)
     {
-        return $this->getEntityManager()
-                    ->createQuery(
-                        'SELECT e FROM AppBundle:EVENT e ORDER BY e.title ASC'
-                    )
-                    ->getResult();
+         $qb = $this->createQueryBuilder('e')
+                   ->orderBy('e.title', 'ASC');
+         if ($excludeDeleted) {
+             $qb->andWhere('e.deletedAt IS NULL');
+         }
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -363,6 +365,26 @@ class EventRepository extends EntityRepository
         }
 
         return $genderDistribution;
+    }
+
+    /**
+     * Get last modified of any event
+     *
+     * @return \DateTime
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function lastModified()
+    {
+        $stmt = $this->getEntityManager()
+                     ->getConnection()
+                     ->prepare('SELECT MAX(modified_at) FROM event');
+        $stmt->execute();
+        $lastModified = $stmt->fetchColumn();
+        if (!$lastModified) {
+            return new \DateTime('2017-01-01');
+        }
+
+        return new \DateTime($lastModified);
     }
 
     /**
