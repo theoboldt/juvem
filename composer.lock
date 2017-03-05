@@ -1361,17 +1361,17 @@
         },
         {
             "name": "knplabs/knp-time-bundle",
-            "version": "1.7.2",
+            "version": "1.7.3",
             "target-dir": "Knp/Bundle/TimeBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpTimeBundle.git",
-                "reference": "1a55df4806bcebc3b13a3ec8914284b6379b6029"
+                "reference": "272b9d6c127db1a648d2729bc821f0ed19a274d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/1a55df4806bcebc3b13a3ec8914284b6379b6029",
-                "reference": "1a55df4806bcebc3b13a3ec8914284b6379b6029",
+                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/272b9d6c127db1a648d2729bc821f0ed19a274d4",
+                "reference": "272b9d6c127db1a648d2729bc821f0ed19a274d4",
                 "shasum": ""
             },
             "require": {
@@ -1422,7 +1422,7 @@
                 "knplabs",
                 "time"
             ],
-            "time": "2017-02-02T19:51:29+00:00"
+            "time": "2017-03-04T18:34:22+00:00"
         },
         {
             "name": "michelf/php-markdown",
