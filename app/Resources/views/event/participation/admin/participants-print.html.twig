@@ -97,7 +97,7 @@
         </div>
         <div class="row">
             <div class="col-xs-6">
-                <h3>{% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_MALE') %}Teilnehmerin{% else %}Teilnehmer{% endif %}</h3>
+                <h3>{% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}Teilnehmerin{% else %}Teilnehmer{% endif %}</h3>
                 <dl>
                     <dt>Vorname</dt>
                     <dd>{{ participant.nameFirst }}</dd>
