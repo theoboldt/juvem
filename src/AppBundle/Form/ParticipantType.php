@@ -50,8 +50,8 @@ class ParticipantType extends AbstractType
                 [
                     'label'    => 'Geschlecht',
                     'choices'  => [
-                        Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
-                        Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE
+                        Participant::LABEL_GENDER_FEMALE   => Participant::TYPE_GENDER_FEMALE,
+                        Participant::LABEL_GENDER_MALE => Participant::TYPE_GENDER_MALE
                     ],
                     'required' => true
                 ]

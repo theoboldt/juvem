@@ -345,17 +345,17 @@ class EventRepository extends EntityRepository
         $genderDistribution = array();
         foreach ($stmt->fetchAll() as $distribution) {
             switch ($distribution['gender']) {
-                case Participant::TYPE_GENDER_FEMALE:
-                    $genderDistribution[Participant::TYPE_GENDER_FEMALE] = array(
-                        'type'  => Participant::TYPE_GENDER_FEMALE,
-                        'label' => Participant::LABEL_GENDER_FEMALE,
-                        'count' => $distribution['count']
-                    );
-                    break;
                 case Participant::TYPE_GENDER_MALE:
                     $genderDistribution[Participant::TYPE_GENDER_MALE] = array(
                         'type'  => Participant::TYPE_GENDER_MALE,
                         'label' => Participant::LABEL_GENDER_MALE,
+                        'count' => $distribution['count']
+                    );
+                    break;
+                case Participant::TYPE_GENDER_FEMALE:
+                    $genderDistribution[Participant::TYPE_GENDER_FEMALE] = array(
+                        'type'  => Participant::TYPE_GENDER_FEMALE,
+                        'label' => Participant::LABEL_GENDER_FEMALE,
                         'count' => $distribution['count']
                     );
                     break;

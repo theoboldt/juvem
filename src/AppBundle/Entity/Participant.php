@@ -29,11 +29,11 @@ class Participant
 {
     use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, SoftDeleteTrait;
 
-    const TYPE_GENDER_FEMALE = 1;
-    const TYPE_GENDER_MALE   = 2;
+    const TYPE_GENDER_MALE   = 1;
+    const TYPE_GENDER_FEMALE = 2;
 
-    const LABEL_GENDER_FEMALE = 'männlich';
-    const LABEL_GENDER_MALE   = 'weiblich';
+    const LABEL_GENDER_MALE   = 'männlich';
+    const LABEL_GENDER_FEMALE = 'weiblich';
 
     /**
      * @ORM\Column(type="integer", name="aid")
@@ -159,10 +159,10 @@ class Participant
     {
         if ($formatted) {
             switch ($this->gender) {
-                case self::TYPE_GENDER_MALE:
-                    return self::LABEL_GENDER_MALE;
                 case self::TYPE_GENDER_FEMALE:
                     return self::LABEL_GENDER_FEMALE;
+                case self::TYPE_GENDER_MALE:
+                    return self::LABEL_GENDER_MALE;
             }
         }
 

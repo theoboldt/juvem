@@ -386,10 +386,10 @@ class PublicManagementController extends Controller
             $em->persist($participant);
             $em->flush();
 
-            if ($participant->getGender() == Participant::TYPE_GENDER_MALE) {
-                $message = 'Der Teilnehmer ';
+            if ($participant->getGender() == Participant::TYPE_GENDER_FEMALE) {
+                $message = 'Der Teilnehmerin ';
             } else {
-                $message = 'Die Teilnehmerin ';
+                $message = 'Die Teilnehmer ';
             }
             $this->addFlash(
                 'success',
