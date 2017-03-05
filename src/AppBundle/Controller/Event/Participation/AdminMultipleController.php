@@ -455,4 +455,35 @@ class AdminMultipleController extends Controller
         return $response;
     }
 
+    /**
+     * Page for list of participants of an event
+     *
+     * @Route("/admin/event/{eid}/participants/print", requirements={"eid": "\d+"}, name="event_participants_print")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function printParticipantsAction($eid)
+    {
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+
+        $event = $eventRepository->findOneBy(['eid' => $eid]);
+        if (!$event) {
+            return $this->render(
+                'event/public/miss.html.twig', ['eid' => $eid],
+                new Response(null, Response::HTTP_NOT_FOUND)
+            );
+        }
+
+        $participants = $eventRepository->participantsList($event);
+
+        return $this->render(
+            'event/participation/admin/participants-print.html.twig',
+            [
+                'event'           => $event,
+                'participants'    => $participants,
+                'commentManager'  => $this->container->get('app.comment_manager'),
+                'statusFormatter' => ParticipantStatus::formatter()
+
+            ]
+        );
+    }
 }
