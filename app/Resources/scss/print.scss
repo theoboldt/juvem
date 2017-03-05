@@ -1,7 +1,7 @@
 #print-page {
   background: white;
 
-  font-size: 180%;
+  font-size: 175%;
 
   .breadcrumb {
     @media print, screen {
@@ -11,20 +11,21 @@
   }
 
   .participant {
-    height: 450px;
+    height: 425px;
     .dl-horizontal {
       margin: 0;
     }
   }
 
-  dt {
-    .title {
+  dl {
+    margin: 0;
+  }
 
-    }
+  dt {
     .description {
       color: $gray;
       font-weight: normal;
-      font-size: 85%;
+      font-size: 80%;
       line-height: 125%;
     }
   }
@@ -62,9 +63,18 @@
     border-bottom: 1px solid $gray-light;
   }
 
-  .participant-name {
-    font-size: 30px;
-    margin: 20px 0 20px 225px;
+  h3.participant-title {
+    margin: 0 0 20px;
+    line-height: 35px;
+
+    .participant-gender {
+      display: block;
+      float: left;
+      width: 225px
+    }
+    .participant-name {
+      font-size: 30px;
+    }
   }
 
   .participant-end {

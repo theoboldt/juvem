@@ -92,24 +92,45 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <div class="participant-name">{{ participant.nameLast }}, {{ participant.nameFirst }}</div>
+                <h3 class="participant-title">
+                    <span class="participant-gender">{% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}Teilnehmerin{% else %}Teilnehmer{% endif %}</span>
+                    <span class="participant-name">{{ participant.nameLast }}, {{ participant.nameFirst }}</span>
+                </h3>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-6">
-                <h3>{% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}Teilnehmerin{% else %}Teilnehmer{% endif %}</h3>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <dl>
+                            <dt>Vorname</dt>
+                            <dd>{{ participant.nameFirst }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-xs-6">
+                        <dl>
+                            <dt>Nachname</dt>
+                            <dd>{{ participant.nameLast }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-xs-6">
+                        <dl>
+                            <dt>Geschlecht</dt>
+                            <dd>{{ participant.getGender(true) }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-xs-6">
+                        <dl>
+                            <dt>Geburtsdatum</dt>
+                            <dd>
+                                {{ participant.getBirthday|date("d.m.Y") }}{% if (participant.hasBirthdayAtEvent) %}{{ 'gift'|glyph }}{% endif %}
+                                &bull;
+                                {{ participant.getAgeAtEvent|number_format(1) }} Jahre
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
                 <dl>
-                    <dt>Vorname</dt>
-                    <dd>{{ participant.nameFirst }}</dd>
-                    <dt>Nachname</dt>
-                    <dd>{{ participant.nameLast }}</dd>
-                    <dt>Geschlecht</dt>
-                    <dd>{{ participant.getGender(true) }}</dd>
-                    <dt>Geburtsdatum</dt>
-                    <dd>
-                        {{ participant.getBirthday|date("d.m.Y") }}{% if (participant.hasBirthdayAtEvent) %}{{ 'gift'|glyph }}{% endif %};
-                        {{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der Veranstaltung
-                    </dd>
                     <dt>Ernährung</dt>
                     <dd>
                         {% set participantFood = participant.getFood(true) %}
