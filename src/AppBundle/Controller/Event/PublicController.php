@@ -83,15 +83,9 @@ class PublicController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-        if ($event->isVisible()) {
-            return $this->redirectToRoute(
-                'event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY
-            );
-        } else {
-            return $this->render(
-                'event/public/miss-invisible.html.twig', array('eid' => $eid)
-            );
-        }
+        return $this->redirectToRoute(
+            'event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY
+        );
     }
 
     /**
