@@ -14,7 +14,6 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
-use AppBundle\SitemapPage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
