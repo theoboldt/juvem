@@ -199,34 +199,34 @@
                                 </div>
                             </div>
                         </div>
-
-                    <div class="row">
                         {% for age, count in ageDistribution %}
-                            <div class="col-xs-2 col-sm-3 text-right">
-                                {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
-                            </div>
-                            <div class="col-xs-10 col-sm-9">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
-                                         aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
-                                         data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
-                                         style="width: {{ ((count/ageDistributionMax)*100) }}%;">
-                                        <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
-                                            Jahren</span>
-                                        <span title="Anzahl">
-                                            <abbr title="Teilnehmer">{{ count }}</abbr>
-                                        </span>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-3 text-right">
+                                    {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
+                                </div>
+                                <div class="col-xs-10 col-sm-9">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
+                                             aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
+                                             data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
+                                             style="width: {{ ((count/ageDistributionMax)*100) }}%;">
+                                            <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
+                                                Jahren</span>
+                                            <span title="Anzahl">
+                                                <abbr title="Teilnehmer">{{ count }}</abbr>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
-                        {% else %}
+                            {% endfor %}
+                    {% else %}
+                        <div class="row">
                             <div class="col-xs-12">
                                 Im Moment sind keine Teilnehmer angemeldet.
                             </div>
-                        {% endif %}
-                    </div>
-                </div>
+                        </div>
+                    {% endif %}
             </div>
         </div>
     </div>
