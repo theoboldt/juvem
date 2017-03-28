@@ -3,7 +3,8 @@
 {% block title %}Veranstaltung ({{ event.title }}){% endblock %}
 
 {% block body %}
-<section><article>
+<section>
+<article>
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
@@ -199,8 +200,8 @@
                             </div>
                         </div>
 
-                    {% for age, count in ageDistribution %}
-                        <div class="row">
+                    <div class="row">
+                        {% for age, count in ageDistribution %}
                             <div class="col-xs-2 col-sm-3 text-right">
                                 {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
                             </div>
@@ -218,20 +219,19 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                    {% else %}
-                        <div class="row">
+                        {% endfor %}
+                        {% else %}
                             <div class="col-xs-12">
                                 Im Moment sind keine Teilnehmer angemeldet.
                             </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-</article></section>
+</article>
+</section>
 {% endblock %}
 {% block javascriptCustom %}
     {% cspscript %}
