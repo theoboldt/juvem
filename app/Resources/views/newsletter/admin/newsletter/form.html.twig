@@ -1,12 +1,18 @@
 {{ form_start(form) }}
 <div class="row">
     <div class="col-xs-12">
-        <button type="button" class="btn btn-default btn-update-preview">{{ 'sunglasses'|glyph }} Vorschau aktualisieren
-        </button>
-        <input type="submit" class="btn btn-primary" value="Speichern"/>
-        <button type="button" id="openDialogSend" class="btn btn-default {% if not newsletter.lid %} disabled{% endif %}"
-                data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden…
-        </button>
+        <div class="btn-toolbar" role="toolbar">
+            <button type="button" class="btn btn-default btn-update-preview">
+                {{ 'sunglasses'|glyph }} Vorschau aktualisieren
+            </button>
+            <input type="submit" class="btn btn-primary" value="Speichern"/>
+            <button type="button" id="openDialogSend" class="btn btn-default {% if not newsletter.lid %} disabled{% endif %}"
+                    data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden…
+            </button>
+            <button type="button" id="openDialogSendTest" class="btn btn-default"
+                    data-toggle="modal" data-target="#dialogSendTest">{{ 'flash'|glyph }} Test E-Mail versenden…
+            </button>
+        </div>
         <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel" data-token="{{ csrf_token('newsletterSendDialog') }}">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -58,6 +64,33 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
                         <button type="button" class="btn btn-primary" id="sendMessageButton" data-lid="{{ newsletter.lid }}">Newsletter abschicken</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="dialogSendTest" tabindex="-1" role="dialog" aria-labelledby="dialogModalTestLabel" data-token="{{ csrf_token('newsletterSendDialogTest') }}">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="dialogModalTestLabel">Test E-Mail versenden</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="control-label" for="newsletter_test_email">E-Mail</label>
+                                <input type="text" id="newsletter_test_email" name="newsletter_test_email"
+                                       aria-describedby="help-email-test" class="form-control"
+                                       value="{% if app.user is not null %}{{ app.user.email}}{% endif %}">
+                                <p class="help-block" id="help-email-test">Sie können den Newsletter im aktuellen
+                                    Zustand zu Testzwecken an die hier angegebene E-Mail Adresse verschicken.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                        <button type="button" class="btn btn-primary" id="sendTestMessageButton">Abschicken</button>
                     </div>
                 </div>
             </div>

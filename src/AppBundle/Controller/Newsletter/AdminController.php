@@ -325,6 +325,46 @@ class AdminController extends AbstractController
     }
 
     /**
+     * Send newsletter
+     *
+     * @Route("/admin/newsletter/send_test", name="newsletter_send_test")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     */
+    public function sendNewsletterTestAction(Request $request)
+    {
+        $this->dieIfNewsletterNotEnabled();
+        $token   = $request->get('_token');
+        $subject = $request->get('subject');
+        $title   = $request->get('title');
+        $lead    = $request->get('lead');
+        $content = $request->get('content');
+        $email   = $request->get('email');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('newsletterSendDialogTest')) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $newsletter = new Newsletter();
+        $newsletter->setSubject($subject)
+                   ->setTitle($title)
+                   ->setLead($lead)
+                   ->setContent($content);
+
+        $recipient = new NewsletterSubscription();
+        $recipient->setEmail($email)
+                  ->setNameLast('Muster')
+                  ->setIsConfirmed(true)
+                  ->setIsEnabled(true);
+
+        $mailManager = $this->get('app.newsletter_manager');
+        $sentCount   = $mailManager->mailNewsletter($newsletter, [$recipient]);
+
+        return new JsonResponse(['sentCount' => $sentCount]);
+    }
+
+    /**
      * Create new newsletter page
      *
      * @Route("/admin/newsletter/create", name="newsletter_admin_create")

@@ -180,4 +180,40 @@ $(function () {
     });
 
 
+    /**
+     * NEWSLETTER: Send test newsletter
+     */
+    var btnSendTest = $('#sendTestMessageButton');
+    $('#sendTestMessageButton').click(function () {
+        btnSendTest.prop('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/newsletter/send_test',
+            data: {
+                _token: $('*#dialogSendTest').data('token'),
+                email: $('*#newsletter_test_email').val(),
+                subject: $('*#newsletter_mail_subject').val(),
+                title: $('*#newsletter_mail_title').val(),
+                lead: $('*#newsletter_mail_lead').val(),
+                content: $('*#newsletter_mail_content').val()
+            },
+            dataType: 'json',
+            success: function () {
+                btnSendTest.prop('disabled', false);
+                $('#dialogSendTest').modal('hide');
+                $(document).trigger('add-alerts', {
+                    message: 'Die Test-E-Mail wurde versandt',
+                    priority: 'success'
+                });
+            },
+            fail: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Beim versenden der E-Mail ist ein Fehler aufgetreten',
+                    priority: 'error'
+                });
+            }
+        });
+    });
+
 });
