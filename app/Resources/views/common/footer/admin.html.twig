@@ -9,8 +9,8 @@
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
-            <ul>
                 {{ render(controller('AppBundle:Event/Public:listActiveEventLinks')) }}
+            <ul>
                 {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
                     <li><a href="{{ path('event_list') }}">Veranstaltungen verwalten</a></li>
                     <li><a href="{{ path('event_new') }}">Veranstaltung erstellen</a></li>

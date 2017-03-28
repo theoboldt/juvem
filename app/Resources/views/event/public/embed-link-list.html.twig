@@ -1,16 +1,16 @@
 <aside>
-{% if events|length == 0 %}
-    <p><i>Im Moment sind keine Veranstaltungen aktiv.</i></p>
-{% else %}
     <ul>
-        {% for event in events %}
-            <li><a href="{{ path('event_public_detail', {eid: event.eid}) }}"
-                   title="{{ event.descriptionMeta(true)|e('html_attr') }}">{{ event.title }}</a>
-                {% if is_granted('ROLE_ADMIN_EVENT') %}
-                    <a href="{{ path('event', {eid: event.eid}) }}" title="Veranstaltung bearbeiten">(verwalten)</a>
-                {% endif %}
-            </li>
-        {% endfor %}
+        {% if events|length == 0 %}
+            <li><i>Im Moment sind keine Veranstaltungen aktiv.</i></li>
+        {% else %}
+            {% for event in events %}
+                <li><a href="{{ path('event_public_detail', {eid: event.eid}) }}"
+                       title="{{ event.descriptionMeta(true)|e('html_attr') }}">{{ event.title }}</a>
+                    {% if is_granted('ROLE_ADMIN_EVENT') %}
+                        <a href="{{ path('event', {eid: event.eid}) }}" title="Veranstaltung bearbeiten">(verwalten)</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endif %}
     </ul>
-{% endif %}
 </aside>
