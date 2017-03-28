@@ -11,7 +11,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -30,7 +29,7 @@ class NewsletterSubscription extends NewsletterAbstract
     protected $rid;
 
     /**
-     * @ORM\Column(type="string", length=128, name="email")
+     * @ORM\Column(type="string", length=128, name="email", unique=true)
      * @Assert\NotBlank()
      * @Assert\Email()
      */
