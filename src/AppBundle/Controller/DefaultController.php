@@ -99,6 +99,15 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/{url2}",
+     * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-admin)(?:.*)$"})
+     */
+    public function honeyPotQualifiedAction()
+    {
+        return new Response(null, Response::HTTP_GONE);
+    }
+
+    /**
      * @Route("/apple-app-site-association")
      * @Route("/.well-known/apple-app-site-association")
      */
