@@ -39,7 +39,7 @@
         "gedmo/doctrine-extensions": "2.4.*",
         "phpoffice/phpexcel": "dev-master",
         "vich/uploader-bundle": "1.5.*",
-        "friendsofsymfony/user-bundle": "~2.0@dev",
+        "friendsofsymfony/user-bundle": "^2.0",
         "misd/phone-number-bundle": "^1.1",
         "imagine/imagine": "0.6.*",
         "knplabs/knp-markdown-bundle": "1.5.*",
