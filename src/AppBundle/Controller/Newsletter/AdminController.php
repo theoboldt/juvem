@@ -386,7 +386,7 @@ class AdminController extends AbstractController
                 'Der Entwurf wurden gesichert'
             );
 
-            return $this->redirectToRoute('newsletter_edit', array('lid' => 1));
+            return $this->redirectToRoute('newsletter_edit', array('lid' => $newsletter->getLid()));
         }
 
         return $this->render(
