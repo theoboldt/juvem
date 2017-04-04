@@ -60,38 +60,47 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-md-6">
+            <div class="col-xs-12">
                 <div class="page-header">
                     <h1>Anmeldung <small>{{ participation|participantsgrouped }}</small></h1>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-6 hidden-print">
+            <div class="col-xs-12 hidden-print">
                 <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group-vertical" role="group">
+                    <div class="btn-group" role="group">
+                        {% if participation.rejected %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="rereject">
+                                {{ 'thumbs-up'|glyph }} wiederaufnehmen…
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="reject">
+                                {{ 'thumbs-down'|glyph }} ablehnen…
+                            </button>
+                        {% endif %}
                         {% if participation.withdrawn %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="reactivate">
-                                {{ 'retweet'|glyph }} Anmeldung reaktivieren
+                                {{ 'retweet'|glyph }} reaktivieren…
                             </button>
                         {% else %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="withdraw">
-                                {{ 'share-alt'|glyph }} Anmeldung zurückziehen
+                                {{ 'share-alt'|glyph }} zurückziehen…
                             </button>
                         {% endif %}
                         {% if participation.deletedAt %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb</span> wiederherstellen
+                                {{ 'repeat'|glyph }} wiederherstellen…
                             </button>
                         {% else %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb verschieben
+                                {{ 'trash'|glyph }} in Papierkorb…
                             </button>
                         {% endif %}
-                    </div>
-                    <div class="btn-group-vertical" role="group">
                         <button type="button" class="btn btn-default" data-element="activebutton"
                                 data-entity="Participation"
                                 data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
@@ -103,8 +112,8 @@
                                 data-entity="Participation"
                                 data-property="isPaid" data-entity-id="{{ participation.pid }}"
                                 data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
-                                data-button-enable-label="Zahlungseingang vermerken" data-button-enable-glyph="euro"
-                                data-button-disable-label="Zahlung zurücknehmen"
+                                data-button-enable-label="hat bezahlt" data-button-enable-glyph="euro"
+                                data-button-disable-label="Bezahlung offen"
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                 </div>
@@ -365,6 +374,14 @@
                         title = 'Anmeldung reaktivieren';
                         question = 'Soll diese zurückgezogene Anmeldung wirklich wieder aktiviert werden werden?';
                         break;
+                    case 'reject':
+                        title = 'Anmeldung ablehnen';
+                        question = 'Soll diese Anmeldung wirklich abgelehnt werden? Bei einer Ablehung sollten die Eltern informiert werden.';
+                        break;
+                    case 'rereject':
+                        title = 'Ablehnung zurückziehen';
+                        question = 'Soll der "abgelehnt" Status wirklich zurückgenommen werden?';
+                        break;
                 }
                 modal.find('.modal-title').text(title);
                 modal.find('.modal-body > p').text(question);
@@ -418,7 +435,7 @@
             $('[data-property="isPaid"]').on('juvem.activeButton.success', function (event, button, response) {
                 if (response.value !== null) {
                     if (response.value) {
-                        $('.status-label-list').append('<span class="label label-primary option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}">{{ constant('AppBundle\\BitMask\\ParticipantStatus::LABEL_STATUS_PAID') }}</span>');
+                        $('.status-label-list').append('<span class="label label-info option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}">{{ constant('AppBundle\\BitMask\\ParticipantStatus::LABEL_STATUS_PAID') }}</span>');
                     } else {
                         $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}').remove();
                     }

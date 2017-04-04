@@ -67,6 +67,12 @@ class AdminSingleController extends Controller
                 case 'reactivate':
                     $participation->setIsWithdrawn(false);
                     break;
+                case 'reject':
+                    $participation->setIsRejected(true);
+                    break;
+                case 'rereject':
+                    $participation->setIsRejected(false);
+                    break;
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
             }

@@ -111,23 +111,26 @@ class AdminMultipleController extends Controller
             if ($participant->getDeletedAt()) {
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
+            $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+            $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
             $participantEntry = array(
-                'aid'              => $participant->getAid(),
-                'pid'              => $participant->getParticipation()->getPid(),
-                'is_deleted'       => (int)($participant->getDeletedAt() instanceof \DateTime),
-                'is_paid'          => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
-                'is_withdrawn'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN),
-                'is_rejected'      => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED),
-                'is_confirmed'     => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
-                'nameFirst'        => $participant->getNameFirst(),
-                'nameLast'         => $participant->getNameLast(),
-                'age'              => $age,
-                'phone'            => implode(', ', $participantPhoneList),
-                'status'           => $participantStatusText,
-                'gender'           => $participant->getGender(true),
-                'registrationDate' => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
-                'action'           => $participantAction
+                'aid'                      => $participant->getAid(),
+                'pid'                      => $participant->getParticipation()->getPid(),
+                'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
+                'is_paid'                  => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
+                'is_withdrawn'             => (int)$participantStatusWithdrawn,
+                'is_rejected'              => (int)$participantStatusRejected,
+                'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
+                'is_confirmed'             => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
+                'nameFirst'                => $participant->getNameFirst(),
+                'nameLast'                 => $participant->getNameLast(),
+                'age'                      => $age,
+                'phone'                    => implode(', ', $participantPhoneList),
+                'status'                   => $participantStatusText,
+                'gender'                   => $participant->getGender(true),
+                'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
+                'action'                   => $participantAction
             );
             /** @var AcquisitionAttributeFillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {

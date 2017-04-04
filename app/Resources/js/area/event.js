@@ -1,5 +1,14 @@
 $(function () {
-
+/*
+    var markDownEl = document.querySelector(".markdown");
+    new MediumEditor(document.querySelector(".medium-editor"), {
+        extensions: {
+            markdown: new MeMarkdown(function (md) {
+                markDownEl.textContent = md;
+            })
+        }
+    });
+*/
     /**
      * EVENT: Handle via prototype injected forms
      */

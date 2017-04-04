@@ -38,14 +38,18 @@ class EventRepository extends EntityRepository
         $qb->select(
             'e AS eventEntity',
             sprintf(
-                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d AND BIT_AND(a1.status, %2$d) = %2$d) THEN 1 ELSE 0 END) AS participants_count_confirmed',
+                'SUM(CASE WHEN ( BIT_AND(a1.status, %2$d) != %2$d 
+                             AND BIT_AND(a1.status, %3$d) != %3$d 
+                             AND BIT_AND(a1.status, %1$d) = %1$d) THEN 1 ELSE 0 END) AS participants_count_confirmed',
+                ParticipantStatus::TYPE_STATUS_CONFIRMED,
                 ParticipantStatus::TYPE_STATUS_WITHDRAWN,
-                ParticipantStatus::TYPE_STATUS_CONFIRMED
+                ParticipantStatus::TYPE_STATUS_REJECTED
             ),
             sprintf(
-                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d) THEN 1 ELSE 0 END) AS participants_count',
+                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d 
+                            AND BIT_AND(a1.status, %2$d) != %2$d) THEN 1 ELSE 0 END) AS participants_count',
                 ParticipantStatus::TYPE_STATUS_WITHDRAWN,
-                ParticipantStatus::TYPE_STATUS_CONFIRMED
+                ParticipantStatus::TYPE_STATUS_REJECTED
             )
         )
            ->from(Event::class, 'e')
@@ -135,14 +139,14 @@ class EventRepository extends EntityRepository
     /**
      * Get a list of participations of an event
      *
-     * @param   Event $event            The event
-     * @param   bool  $includeDeleted   Set to true to include deleted participations
-     * @param   bool  $includeWithdrawn Set to true to include participations who have only withdrawn participants
-     *                                  assigned
+     * @param   Event $event                    The event
+     * @param   bool  $includeDeleted           Set to true to include deleted participations
+     * @param   bool  $includeWithdrawnRejected Set to true to include participations who have only
+     *                                          withdrawn participants assigned
      * @return  array
      * @throws  \Doctrine\DBAL\DBALException
      */
-    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawn = false)
+    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawnRejected = false)
     {
         $eid = $event->getEid();
 
@@ -156,14 +160,15 @@ class EventRepository extends EntityRepository
             $qb->andWhere('p.deletedAt IS NULL');
         }
 
-        if (!$includeWithdrawn) {
+        if (!$includeWithdrawnRejected) {
             $qb->andWhere(
                 sprintf(
                     'EXISTS (SELECT a
                                    FROM AppBundle:Participant a
                                   WHERE p.pid = a.participation
-                                    AND BIT_AND(a.status, %1$d) != %1$d)',
-                    ParticipantStatus::TYPE_STATUS_WITHDRAWN
+                                    AND (BIT_AND(a.status, %1$d) != %1$d) AND BIT_AND(a.status, %2$d) != %2$d)',
+                    ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+                    ParticipantStatus::TYPE_STATUS_REJECTED
                 )
             );
         }
@@ -178,14 +183,15 @@ class EventRepository extends EntityRepository
     /**
      * Get a list of participants of an event
      *
-     * @param   Event      $event            The event
-     * @param   null|array $filter           Transmit a list of aids to filter out participants not included in list
-     * @param   bool       $includeDeleted   Set to true to include deleted participants
-     * @param   bool       $includeWithdrawn Set to true to include withdrawn participants
+     * @param   Event      $event                    The event
+     * @param   null|array $filter                   Transmit a list of aids to filter out participants
+     *                                               not included in list
+     * @param   bool       $includeDeleted           Set to true to include deleted participants
+     * @param   bool       $includeWithdrawnRejected Set to true to include withdrawn participants
      * @return  array
      */
     public function participantsList(
-        Event $event, array $filter = null, $includeDeleted = false, $includeWithdrawn = false
+        Event $event, array $filter = null, $includeDeleted = false, $includeWithdrawnRejected = false
     )
 	{
         $eid = $event->getEid();
@@ -211,8 +217,14 @@ class EventRepository extends EntityRepository
             $qb->andWhere('a.deletedAt IS NULL');
         }
 
-        if (!$includeWithdrawn) {
-            $qb->andWhere(sprintf('BIT_AND(a.status, %1$d) != %1$d', ParticipantStatus::TYPE_STATUS_WITHDRAWN));
+        if (!$includeWithdrawnRejected) {
+            $qb->andWhere(
+                sprintf(
+                    '(BIT_AND(a.status, %1$d) != %1$d AND BIT_AND(a.status, %2$d) != %2$d)',
+                    ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+                    ParticipantStatus::TYPE_STATUS_REJECTED
+                )
+            );
         }
 
         if ($filter !== null) {
@@ -227,7 +239,7 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get the total amount of an events participants who are not deleted or whose participation is withdrawn
+     * Get the total amount of an events participants who are not deleted or whose participation is withdrawn or rejected
      *
      * @param Event $event
      * @return bool|string
@@ -243,8 +255,10 @@ class EventRepository extends EntityRepository
               WHERE a.pid = p.pid
                 AND a.deleted_at IS NULL
                 AND (a.status & %1$d) != %1$d
+                AND (a.status & %2$d) != %2$d
                 AND p.eid = ?',
-            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+            ParticipantStatus::TYPE_STATUS_REJECTED
         );
 
         $stmt = $this->getEntityManager()
@@ -256,7 +270,7 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get a list of ages of the participants who are not deleted or whose participation is withdrawn
+     * Get a list of ages of the participants who are not deleted or whose participation is withdrawn or rejected
      *
      * @param Event $event
      * @return array
@@ -274,8 +288,10 @@ class EventRepository extends EntityRepository
               WHERE a.pid = p.pid
                 AND a.deleted_at IS NULL
                 AND (a.status & %1$d) != %1$d
+                AND (a.status & %2$d) != %2$d
                 AND p.eid = ?',
-            ParticipantStatus::TYPE_STATUS_WITHDRAWN
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+            ParticipantStatus::TYPE_STATUS_REJECTED
         );
 
         $stmt = $this->getEntityManager()
@@ -326,16 +342,19 @@ class EventRepository extends EntityRepository
      */
     public function participantsGenderDistribution(Event $event)
     {
-        $eid = $event->getEid();
-        $query
-             = 'SELECT gender, COUNT(*) AS count
-                 FROM participant a, participation p
-                WHERE a.pid = p.pid
-                  AND a.deleted_at IS NULL
-                  AND (a.status & ' . ParticipantStatus::TYPE_STATUS_WITHDRAWN . ') != ' .
-               ParticipantStatus::TYPE_STATUS_WITHDRAWN . '
-                  AND p.eid = ?
-             GROUP BY a.gender';
+        $eid   = $event->getEid();
+        $query = sprintf(
+            'SELECT gender, COUNT(*) AS count
+               FROM participant a, participation p
+              WHERE a.pid = p.pid
+                AND a.deleted_at IS NULL
+                AND (a.status & %1$d) != %1$d
+                AND (a.status & %2$d) != %2$d
+                AND p.eid = ?
+           GROUP BY a.gender',
+            ParticipantStatus::TYPE_STATUS_WITHDRAWN,
+            ParticipantStatus::TYPE_STATUS_REJECTED
+        );
 
         $stmt = $this->getEntityManager()
                      ->getConnection()

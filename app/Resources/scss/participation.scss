@@ -1,14 +1,15 @@
-
 /** Event participation detail **/
-@media (min-width: 992px) {
-  .participation-panels .btn-toolbar {
-    margin-top: 12px;
+.participation-panels {
+  .page-header {
+    margin-bottom: 0;
   }
-}
 
-@media (max-width: 991px) {
-  .participation-panels .btn-toolbar {
-    margin-bottom: 20px;
+  .btn-toolbar {
+    margin: 10px 0;
+
+    > .btn-group {
+      margin: 0;
+    }
   }
 }
 
