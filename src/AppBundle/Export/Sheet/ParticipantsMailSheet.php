@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
+use AppBundle\Export\Sheet\Column\EntityColumn;
 use libphonenumber\PhoneNumberUtil;
 
 class ParticipantsMailSheet extends ParticipantsSheet
@@ -22,7 +23,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
     {
         parent::__construct($sheet, $event, $participants);
 
-        $column = new EntitySheetColumn('nameFirstParticipation', 'Eltern Vorname', 'participation');
+        $column = new EntityColumn('nameFirstParticipation', 'Eltern Vorname', 'participation');
         $column->setConverter(
             function (Participation $value) {
                 return $value->getNameFirst();
@@ -30,7 +31,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
         );
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('nameLastParticipation', 'Eltern Nachname', 'participation');
+        $column = new EntityColumn('nameLastParticipation', 'Eltern Nachname', 'participation');
         $column->setConverter(
             function (Participation $value) {
                 return $value->getNameLast();
@@ -39,7 +40,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
         $this->addColumn($column);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
-        $column          = new EntitySheetColumn('phoneNumbersParticipation', 'Eltern Telefonnummern', 'participation');
+        $column          = new EntityColumn('phoneNumbersParticipation', 'Eltern Telefonnummern', 'participation');
         $column->setConverter(
             function (Participation $value, $entity) use ($phoneNumberUtil) {
                 $value = $value->getPhoneNumbers();

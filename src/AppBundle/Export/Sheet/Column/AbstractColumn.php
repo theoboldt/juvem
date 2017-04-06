@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Export\Sheet;
+namespace AppBundle\Export\Sheet\Column;
 
 
-abstract class AbstractSheetColumn
+abstract class AbstractColumn
 {
 	/**
 	 * Column index used in excel sheet
@@ -83,11 +83,11 @@ abstract class AbstractSheetColumn
 	}
 
 	/**
-	 * Get identifier of this column for use in colum list
+	 * Get identifier of this column for use in column list
 	 *
 	 * @return string
 	 */
-	public function getIdentifier()
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
 	}
@@ -95,14 +95,14 @@ abstract class AbstractSheetColumn
 	/**
 	 * @return int
 	 */
-	public function getColumnIndex()
+	public function getColumnIndex(): ?int
 	{
 		return $this->columnIndex;
 	}
 
 	/**
 	 * @param int $columnIndex
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function setColumnIndex($columnIndex)
 	{
@@ -120,7 +120,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param string $title
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function setTitle($title)
 	{
@@ -138,7 +138,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param callable|null $converter
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function setConverter($converter)
 	{
@@ -148,7 +148,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param string $numberFormat
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function setNumberFormat($numberFormat)
 	{
@@ -170,7 +170,7 @@ abstract class AbstractSheetColumn
 	 * Set column width
 	 *
 	 * @param float|null $width
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function setWidth($width)
 	{
@@ -188,7 +188,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param callable[]
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function addHeaderStyleCallback($headerStyle)
 	{
@@ -206,7 +206,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param \callable $dataStyleCallbacks
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function addDataStyleCalback($dataStyleCallbacks)
 	{
@@ -224,7 +224,7 @@ abstract class AbstractSheetColumn
 
 	/**
 	 * @param \PHPExcel_Style_Conditional $dataCellConditional
-	 * @return AbstractSheetColumn
+	 * @return AbstractColumn
 	 */
 	public function addDataCellConditional($dataCellConditional)
 	{

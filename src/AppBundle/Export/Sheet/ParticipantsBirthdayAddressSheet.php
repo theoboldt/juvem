@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Export\Sheet\Column\EntityColumn;
 
 class ParticipantsBirthdayAddressSheet extends AbstractSheet
 {
@@ -39,10 +40,10 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
 
-        $column = new EntitySheetColumn('birthday', 'Geburtstag');
+        $column = new EntityColumn('birthday', 'Geburtstag');
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -53,7 +54,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         );
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('status', 'Anschrift');
+        $column = new EntityColumn('status', 'Anschrift');
         $column->setConverter(
             function ($value, Participant $entity) {
                 return sprintf(
@@ -83,7 +84,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         foreach ($this->participants as $participant) {
             $row = $this->row();
 
-            /** @var EntitySheetColumn $column */
+            /** @var EntityColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

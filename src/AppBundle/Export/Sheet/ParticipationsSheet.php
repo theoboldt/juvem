@@ -13,6 +13,8 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
+use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
 
 class ParticipationsSheet extends AbstractSheet
 {
@@ -39,21 +41,21 @@ class ParticipationsSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntitySheetColumn('salution', 'Anrede'));
-        $this->addColumn(new EntitySheetColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new EntitySheetColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntityColumn('salution', 'Anrede'));
+        $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
 
-        $this->addColumn(new EntitySheetColumn('addressStreet', 'Straße (Anschrift)'));
-        $this->addColumn(new EntitySheetColumn('addressCity', 'Stadt (Anschrift)'));
-        $this->addColumn(new EntitySheetColumn('addressZip', 'PLZ (Anschrift)'));
+        $this->addColumn(new EntityColumn('addressStreet', 'Straße (Anschrift)'));
+        $this->addColumn(new EntityColumn('addressCity', 'Stadt (Anschrift)'));
+        $this->addColumn(new EntityColumn('addressZip', 'PLZ (Anschrift)'));
 
-        $this->addColumn(new EntitySheetColumn('email', 'E-Mail'));
+        $this->addColumn(new EntityColumn('email', 'E-Mail'));
 
         $this->addColumn(
             EntityPhoneNumberSheetColumn::createCommaSeparated('phoneNumbers', 'Telefonnummern', null, true)
         );
 
-        $column = new EntitySheetColumn('createdAt', 'Eingang');
+        $column = new EntityColumn('createdAt', 'Eingang');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -66,7 +68,7 @@ class ParticipationsSheet extends AbstractSheet
         $column->setWidth(14);
         $this->addColumn($column);
 
-        $column = new EntitySheetColumn('participants', 'Teilnehmer');
+        $column = new EntityColumn('participants', 'Teilnehmer');
         $column->setConverter(
             function ($value, $entity) {
                 return count($value);
@@ -74,7 +76,7 @@ class ParticipationsSheet extends AbstractSheet
         );
         $this->addColumn($column);
 
-        $this->addColumn(new EntitySheetColumn('pid', 'PID'));
+        $this->addColumn(new EntityColumn('pid', 'PID'));
 
     }
 
@@ -91,7 +93,7 @@ class ParticipationsSheet extends AbstractSheet
         foreach ($this->participations as $participation) {
             $row = $this->row();
 
-            /** @var EntitySheetColumn $column */
+            /** @var EntityColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

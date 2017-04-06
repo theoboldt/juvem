@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Export\Sheet\Column\EntityColumn;
 
 abstract class ParticipantsSheetBase extends AbstractSheet
 {
@@ -48,7 +49,7 @@ abstract class ParticipantsSheetBase extends AbstractSheet
         foreach ($this->participants as $participant) {
             $row = $this->row();
 
-            /** @var EntitySheetColumn $column */
+            /** @var EntityColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

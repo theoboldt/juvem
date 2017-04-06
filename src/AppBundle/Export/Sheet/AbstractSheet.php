@@ -11,6 +11,8 @@
 namespace AppBundle\Export\Sheet;
 
 
+use AppBundle\Export\Sheet\Column\AbstractColumn;
+
 abstract class AbstractSheet
 {
 
@@ -73,10 +75,10 @@ abstract class AbstractSheet
     /**
      * Add a data column definition to this sheet
      *
-     * @param AbstractSheetColumn $column
+     * @param AbstractColumn $column
      * @return $this
      */
-    public function addColumn(AbstractSheetColumn $column)
+    public function addColumn(AbstractColumn $column)
     {
         if (array_key_exists($column->getIdentifier(), $this->columnList)) {
             throw new \OutOfBoundsException('Tried to add a column but transmitted index is already in use');
@@ -231,7 +233,7 @@ abstract class AbstractSheet
             return $this;
         }
 
-        /** @var AbstractSheetColumn $dataColumn */
+        /** @var AbstractColumn $dataColumn */
         foreach ($this->columnList as $dataColumn) {
             $column = $dataColumn->getColumnIndex();
             if ($column === null) {

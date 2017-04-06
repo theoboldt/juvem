@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Export\Sheet;
+namespace AppBundle\Export\Sheet\Column;
 
 
-class ArraySheetColumn extends AbstractSheetColumn
+class ArrayColumn extends AbstractColumn
 {
 
 	/**

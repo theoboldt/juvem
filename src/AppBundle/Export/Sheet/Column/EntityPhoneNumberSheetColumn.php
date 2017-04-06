@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Export\Sheet;
+namespace AppBundle\Export\Sheet\Column;
 
 
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
 
-class EntityPhoneNumberSheetColumn extends EntitySheetColumn
+class EntityPhoneNumberSheetColumn extends EntityColumn
 {
 
     /**

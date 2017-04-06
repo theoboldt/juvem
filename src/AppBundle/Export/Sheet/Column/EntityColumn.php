@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Export\Sheet;
+namespace AppBundle\Export\Sheet\Column;
 
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-class EntitySheetColumn extends AbstractSheetColumn
+class EntityColumn extends AbstractColumn
 {
 
 	/**
