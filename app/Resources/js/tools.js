@@ -79,6 +79,7 @@ $(function () {
                 title = el.data('title'),
                 width = el.data('width'),
                 height = el.data('height'),
+                timeBeginLoad = new Date().getTime(),
                 settings;
 
             settings = {
@@ -96,7 +97,12 @@ $(function () {
             }
             $("<img/>").attr(settings).appendTo(el)
                 .on('load', function () {
-                    el.addClass('load');
+                    var timeEndLoad = new Date().getTime();
+                    if (timeEndLoad - timeBeginLoad < 25) {
+                        el.addClass('load-direct');
+                    } else {
+                        el.addClass('load');
+                    }
                 });
         });
     });

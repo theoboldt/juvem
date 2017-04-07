@@ -13,11 +13,14 @@
   max-height: 0;
   overflow: hidden;
 
-  -webkit-transition: max-height 0.8s ease-out;
-  -moz-transition: max-height 0.8s ease-out;
-  transition: max-height 0.8s ease-out;
+}
+.lazy-load-image.load,
+.lazy-load-image.load-direct {
+  max-height: 800px;
 }
 
 .lazy-load-image.load {
-  max-height: 800px;
+  -webkit-transition: max-height 0.8s ease-out;
+  -moz-transition: max-height 0.8s ease-out;
+  transition: max-height 0.8s ease-out;
 }
