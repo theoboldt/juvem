@@ -15,9 +15,60 @@
             <div class="col-sm-8 col-sx-12 checkbox-with-help-block">
                 {% include '/newsletter/public/form-html.html.twig' with {'form': form} %}
             </div>
+            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
+                <div class="col-sm-4 col-sx-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label" for="newsletter_subscription_confirmed">Bestätigung</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-primary{% if subscription.isConfirmed %} active{% endif %}" data-loading-text="Änderungen werden übertragen..." id="newsletter_subscription_confirmed">
+                                    <input name="newsletter_subscription_confirmed" type="checkbox"
+                                           autocomplete="off"{% if subscription.isConfirmed %} checked{% endif %}>
+                                    Bestätigt
+                                </label>
+                            </div>
+                            <p class="help-block">Diese Schaltfläche ist aktiviert, wenn das Abonnement bestätigt wurde. In der Regel muss die Bestätigung durch den Empfänger des Newsletters erfolgen.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
 {% block javascriptCustom %}
     {% include '/newsletter/public/form-script.html.twig' with { formMain: 'newsletter_subscription'} %}
+    {% cspscript %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('#newsletter_subscription_confirmed').click(function () {
+                var btn = $(this),
+                    checkbox = $(this).find('input'),
+                    oldValue = checkbox.prop('checked'),
+                    newValue = !oldValue;
+                btn.button('loading');
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path('newsletter_admin_subscription_confirmation', {rid: subscription.rid}) }}',
+                    data: {
+                        _token: "{{ csrf_token('subscription-confirmation-' ~ subscription.rid) }}",
+                        confirmed: newValue ? 1 : 0
+                    },
+                    datatype: 'json',
+                    complete: function() {
+                        btn.button('reset');
+                    },
+                    error: function () {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Änderung konnte nicht gespeichert werden',
+                            priority: 'error'
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+    {% endcspscript %}
 {% endblock %}

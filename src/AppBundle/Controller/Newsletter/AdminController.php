@@ -200,6 +200,39 @@ class AdminController extends AbstractController
     }
 
     /**
+     * Details of a single subscription
+     *
+     * @Route("/admin/newsletter/subscription/{rid}/forceconfirmation", requirements={"rid": "\d+"},
+     *                                                name="newsletter_admin_subscription_confirmation")
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     */
+    public function subscriptionForceConfirmationAction(Request $request)
+    {
+        $this->dieIfNewsletterNotEnabled();
+        $rid        = $request->get('rid');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+
+        /** @var NewsletterSubscription $subscription */
+        $subscription = $repository->findOneBy(array('rid' => $rid));
+
+        $token      = $request->get('_token');
+        $confirmed  = (int)$request->get('confirmed');
+
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('subscription-confirmation-'. $rid)) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $subscription->setIsConfirmed(($confirmed == 1));
+        $em->persist($subscription);
+        $em->flush();
+
+        return new JsonResponse(['confirmed' => (int)$subscription->getIsConfirmed()]);
+    }
+    /**
      * Data provider for recipient count
      *
      * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
