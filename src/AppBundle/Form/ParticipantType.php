@@ -96,7 +96,11 @@ class ParticipantType extends AbstractType
                     'expanded' => true,
                     'multiple' => true,
                     'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-food']
+                    'attr'     => [
+                        'aria-describedby'         => 'help-food',
+                        'class'                    => 'food-options',
+                        'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE
+                    ]
                 ]
             );
 

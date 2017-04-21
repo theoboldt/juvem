@@ -9,6 +9,52 @@ $(function () {
         }
     });
 */
+
+    /**
+     * EVENT: Participate lactose-free food option force hint
+     */
+    var ensureLactoseFreeAnnotations = function () {
+        var lactoseFreeOption,
+            foodOptionFields = $('.food-options').first();
+
+        if (foodOptionFields.length > 0) {
+            lactoseFreeOption = foodOptionFields.data('food-lactose-option');
+
+            $('.food-options div').each(function () {
+                var popover,
+                    element = $(this),
+                    input = element.find('input');
+
+                if (input.val() == lactoseFreeOption && !element.find('button').length) {
+                    element.append(' <button type="button" class="btn btn-default btn-xs btn-round">' +
+                        '<span class="glyphicon glyphicon-question-sign"></span>' +
+                        '</button>');
+                    popover = element.find('button').popover({
+                        content: 'Bitte geben Sie im Feld für <i>Medizinische Hinweise</i> detailierte Informationen zur Ausprägung der Unverträglichkeit an. Müssen konsequent laktosefreie Produkte verwendet werden (bspw. auch bei Schokoriegeln) oder ist es ausreichend auf laktosearme Produkte zu achten? Verwendet der Teilnehmer Laktase-Tabletten?',
+                        html: true,
+                        trigger: 'manual'
+                    });
+                    element.find('button').on('click', function () {
+                        popover.popover('show');
+                    });
+
+                    popover.on('shown.bs.popover', function () {
+                        $('body').one('click', function () {
+                            popover.popover('hide');
+                        });
+                    });
+
+                    element.find('label input').on('click', function (e) {
+                        if ($(this).prop('checked')) {
+                            popover.popover('show');
+                        }
+                    });
+                }
+            });
+        }
+    };
+    ensureLactoseFreeAnnotations();
+
     /**
      * EVENT: Handle via prototype injected forms
      */
@@ -64,6 +110,8 @@ $(function () {
                 }
 
                 element.find('.prototype-elements').append(newForm);
+
+                ensureLactoseFreeAnnotations();
             });
             addElementHandlers();
         }
@@ -250,7 +298,7 @@ $(function () {
     });
 
     /**
-     * GLOBAL: Export configuratior download
+     * GLOBAL: Export configurator download
      */
     $('.export-generator-create').on('click', function (e) {
         e.preventDefault();
