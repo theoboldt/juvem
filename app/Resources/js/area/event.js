@@ -22,6 +22,7 @@ $(function () {
 
             $('.food-options div').each(function () {
                 var popover,
+                    button,
                     element = $(this),
                     input = element.find('input');
 
@@ -29,23 +30,30 @@ $(function () {
                     element.append(' <button type="button" class="btn btn-default btn-xs btn-round">' +
                         '<span class="glyphicon glyphicon-question-sign"></span>' +
                         '</button>');
-                    popover = element.find('button').popover({
+                    button = element.find('button');
+
+                    popover = button.popover({
                         content: 'Bitte geben Sie im Feld für <i>Medizinische Hinweise</i> detailierte Informationen zur Ausprägung der Unverträglichkeit an. Müssen konsequent laktosefreie Produkte verwendet werden (bspw. auch bei Schokoriegeln) oder ist es ausreichend auf laktosearme Produkte zu achten? Verwendet der Teilnehmer Laktase-Tabletten?',
                         html: true,
                         trigger: 'manual'
                     });
-                    element.find('button').on('click', function () {
+
+                    element.find('button').on('click', function (e) {
+                        e.preventDefault();
                         popover.popover('show');
+                        return false;
                     });
 
                     popover.on('shown.bs.popover', function () {
                         $('body').one('click', function () {
-                            popover.popover('hide');
+                            if (button.next('div.popover:visible').length) {
+                                popover.popover('hide');
+                            }
                         });
                     });
 
                     element.find('label input').on('click', function (e) {
-                        if ($(this).prop('checked')) {
+                        if ($(this).prop('checked') && !button.next('div.popover:visible').length) {
                             popover.popover('show');
                         }
                     });
