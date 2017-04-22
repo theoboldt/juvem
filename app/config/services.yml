@@ -86,6 +86,9 @@ services:
     app.comment_manager:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
+    app.exception_controller:
+        class: AppBundle\Controller\ExceptionController
+        arguments: ['@twig', '%kernel.debug%']
     app.exception_listener:
         class: AppBundle\EventListeners\ExceptionListener
         tags:
@@ -93,4 +96,8 @@ services:
             - { name: monolog.logger, channel: mychannel }
         arguments:
             - "@logger"
-
+    app.converter_event:
+        class: AppBundle\Controller\ParamConverter\EventParamConverter
+        arguments: ['@doctrine']
+        tags:
+            - { name: request.param_converter, priority: 2, converter: converter_event }

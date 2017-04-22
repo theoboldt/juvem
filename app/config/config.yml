@@ -49,6 +49,7 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
         # resources: ['bootstrap_3_horizontal_layout.html.twig']
+    exception_controller: app.exception_controller:showAction
     form_themes:
         - bootstrap_3_layout.html.twig
         - form/vich-fields.html.twig

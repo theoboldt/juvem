@@ -17,6 +17,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,21 +28,12 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminAttendanceListController extends Controller
 {
     /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance", requirements={"eid": "\d+"}, name="event_attendance_lists")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function listAttendanceListsAction($eid)
+    public function listAttendanceListsAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         return $this->render('event/attendance/list.html.twig', ['event' => $event]);
     }
 
@@ -83,21 +75,12 @@ class AdminAttendanceListController extends Controller
     /**
      * Create a new attendance list
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/new", requirements={"eid": "\d+"}, name="event_attendance_list_new")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function newAction($eid, Request $request)
+    public function newAction(Request $request, Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $list = new AttendanceList();
         $list->setEvent($event);
 
@@ -110,7 +93,7 @@ class AdminAttendanceListController extends Controller
             $em->persist($list);
             $em->flush();
 
-            return $this->redirectToRoute('event_attendance_lists', ['eid' => $eid]);
+            return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
 
         return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
@@ -178,20 +161,14 @@ class AdminAttendanceListController extends Controller
     /**
      * Data provider for events participants list grid
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/participants.json", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                                 name="event_attendance_list_participants_data")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function listParticipationsAction($eid, $tid, Request $request)
+    public function listParticipationsAction(Event $event, $tid, Request $request)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
+        $eventRepository       = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participantEntityList = $eventRepository->participantsList($event, null, false, false);
         $filloutRepository     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
         $filloutList           = [];

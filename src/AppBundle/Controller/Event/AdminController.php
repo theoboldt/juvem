@@ -16,6 +16,7 @@ use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\InvalidTokenHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -120,24 +121,12 @@ class AdminController extends Controller
     /**
      * Edit page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function editAction(Request $request)
+    public function editAction(Request $request, Event $event)
     {
-        $eid = $request->get('eid');
-
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
@@ -165,29 +154,18 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/acquisition", requirements={"eid": "\d+"}, name="event_acquisition_assignment")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function editEventAcquisitionAssignmentAction(Request $request)
+    public function editEventAcquisitionAssignmentAction(Request $request, Event $event)
     {
-        $eid        = $request->get('eid');
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $form = $this->createForm(
-            EventAcquisitionType::class, $event, array(
-                                           'action' => $this->generateUrl(
-                                               'event_acquisition_assignment', array('eid' => $eid)
-                                           ),
-                                       )
+            EventAcquisitionType::class,
+            $event,
+            [
+                'action' => $this->generateUrl('event_acquisition_assignment', ['eid' => $event->getEid()]),
+            ]
         );
 
         $form->handleRequest($request);
@@ -205,22 +183,13 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function detailEventAction(Request $request)
+    public function detailEventAction(Request $request, Event $event)
     {
-        $eid        = $request->get('eid');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
+        $repository         = $this->getDoctrine()->getRepository('AppBundle:Event');
         $ageDistribution    = $repository->participantsAgeDistribution($event);
         $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
         $genderDistribution = $repository->participantsGenderDistribution($event);
@@ -262,7 +231,7 @@ class AdminController extends Controller
             $event,
             array(
                 'action' => $this->generateUrl(
-                    'event_acquisition_assignment', array('eid' => $eid)
+                    'event_acquisition_assignment', array('eid' => $event->getEid())
                 ),
             )
         );
@@ -285,24 +254,12 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/mail", requirements={"eid": "\d+"}, name="event_mail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function sendParticipantsEmailAction(Request $request)
+    public function sendParticipantsEmailAction(Request $request, Event $event)
     {
-        $eid = $request->get('eid');
-
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $form = $this->createForm(EventMailType::class);
 
         $form->handleRequest($request);
@@ -317,7 +274,7 @@ class AdminController extends Controller
                 'Die Benachrichtigungs-Emails wurden versandt'
             );
 
-            return $this->redirectToRoute('event', array('eid' => $eid));
+            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
         }
 
         return $this->render(
@@ -370,17 +327,6 @@ class AdminController extends Controller
                                            'form' => $form->createView(),
                                        )
         );
-    }
-
-    /**
-     * Page for list of events
-     *
-     * @Route("/event/miss/{eid}", requirements={"eid": "\d+"}, name="event_miss")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     */
-    public function eventNotFoundAction($eid)
-    {
-        return $this->render('event/public/miss.html.twig', array('eid' => $eid));
     }
 
     /**

@@ -10,8 +10,10 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\ParticipationType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,23 +26,13 @@ class PublicParticipateController extends Controller
     /**
      * Page for list of events
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/participate", requirements={"eid": "\d+"}, name="event_public_participate")
      */
-    public function participateAction(Request $request)
+    public function participateAction(Event $event, Request $request)
     {
-        $eid = $request->get('eid');
+        $eid    = $event->getEid();
 
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-
-        }
         if (!$event->isActive()) {
             $this->addFlash(
                 'danger',
@@ -108,10 +100,11 @@ class PublicParticipateController extends Controller
     /**
      * Page for list of events
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/participate/prefill/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                  name="event_public_participate_prefill")
      */
-    public function participatePrefillAction($eid, $pid, Request $request)
+    public function participatePrefillAction(Event $event, $pid, Request $request)
     {
         $user = $this->getUser();
         if (!$user) {
@@ -122,7 +115,7 @@ class PublicParticipateController extends Controller
                     $this->generateUrl('fos_user_security_login')
                 )
             );
-            return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+            return $this->redirectToRoute('event_public_participate', array('eid' => $event->getEid()));
         }
 
         $em                      = $this->getDoctrine()->getManager();
@@ -135,21 +128,18 @@ class PublicParticipateController extends Controller
                 'danger',
                 'Es konnte keine passende Anmeldung von Ihnen gefunden werden, mit der das Anmeldeformular hätte vorausgefüllt werden können.'
             );
-            return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+            return $this->redirectToRoute('event_public_participate', array('eid' => $event->getEid()));
         }
-
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(array('eid' => $eid));
 
         $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
         $participation->setAssignedUser($user);
 
-        $request->getSession()->set('participation-' . $eid, $participation);
+        $request->getSession()->set('participation-' . $event->getEid(), $participation);
         $this->addFlash(
             'success',
             'Die Anmeldung wurde mit Daten einer früheren Anmeldung vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
         );
-        return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
+        return $this->redirectToRoute('event_public_participate', array('eid' => $event->getEid()));
     }
 
     /**
@@ -171,8 +161,7 @@ class PublicParticipateController extends Controller
         $event         = $participation->getEvent();
 
         if (!$participation instanceof Participation
-            || $eid != $participation->getEvent()
-                                     ->getEid()
+            || $eid != $participation->getEvent()->getEid()
         ) {
             throw new BadRequestHttpException('Given participation data is invalid');
         }

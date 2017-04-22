@@ -24,6 +24,7 @@ use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use libphonenumber\PhoneNumberUtil;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -40,44 +41,25 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants", requirements={"eid": "\d+"}, name="event_participants_list")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function listParticipantsAction($eid)
+    public function listParticipantsAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
 
     /**
      * Data provider for events participants list grid
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants.json", requirements={"eid": "\d+"}, name="event_participants_list_data")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function listParticipantsDataAction(Request $request)
+    public function listParticipantsDataAction(Event $event, Request $request)
     {
-        $eid             = $request->get('eid');
-        $eventRepository = $this->getDoctrine()
-                                ->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
+        $eventRepository       = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participantEntityList = $eventRepository->participantsList($event, null, true, true);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
@@ -151,19 +133,13 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function exportParticipantsAction($eid)
+    public function exportParticipantsAction(Event $event)
     {
         $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
         $participantList = $eventRepository->participantsList($event);
 
         $export = new ParticipantsExport(
@@ -191,20 +167,14 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
      *                                                    name="event_participations_export")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function exportParticipationsAction($eid)
+    public function exportParticipationsAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
+        $eventRepository    = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participationsList = $eventRepository->participationsList($event);
 
         $export = new ParticipationsExport(
@@ -231,20 +201,14 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
-     *                                                    name="event_participants_birthday_address_export")
+     *     name="event_participants_birthday_address_export")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function exportParticipantsBirthdayAddressAction($eid)
+    public function exportParticipantsBirthdayAddressAction(Event $event)
     {
         $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
         $participantList = $eventRepository->participantsList($event);
 
         $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
@@ -269,21 +233,14 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
      *                                                    name="event_participants_mail_export")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function exportParticipantsMailAction($eid)
+    public function exportParticipantsMailAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event           = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
+        $eventRepository    = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participantList    = $eventRepository->participantsList($event);
         $participationsList = $eventRepository->participationsList($event);
 
@@ -372,27 +329,17 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function exportGeneratorAction($eid)
+    public function exportGeneratorAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processor     = new Processor();
         $configuration = new Configuration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
-
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
 
@@ -461,22 +408,14 @@ class AdminMultipleController extends Controller
     /**
      * Page for list of participants of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/print", requirements={"eid": "\d+"}, name="event_participants_print")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function printParticipantsAction($eid)
+    public function printParticipantsAction(Event $event)
     {
         $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $eventRepository->findOneBy(['eid' => $eid]);
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', ['eid' => $eid],
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
-        $participants = $eventRepository->participantsList($event);
+        $participants    = $eventRepository->participantsList($event);
 
         return $this->render(
             'event/participation/admin/participants-print.html.twig',
@@ -485,7 +424,6 @@ class AdminMultipleController extends Controller
                 'participants'    => $participants,
                 'commentManager'  => $this->container->get('app.comment_manager'),
                 'statusFormatter' => ParticipantStatus::formatter()
-
             ]
         );
     }

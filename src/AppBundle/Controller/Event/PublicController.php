@@ -11,7 +11,9 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Entity\Event;
 use AppBundle\ImageResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,46 +24,26 @@ class PublicController extends Controller
     /**
      * Detail page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"},
      *                                               name="event_image")
      */
-    public function eventImageAction($eid, $width, $height)
+    public function eventImageAction(Event $event, $width, $height)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
-
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
 
         return new ImageResponse($image);
     }
 
-
     /**
      * Page for details of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
      */
-    public function showAction($eid)
+    public function showAction(Event $event)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-
-        $event = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-
-        }
-
         return $this->render(
             'event/public/detail.html.twig',
             ['event' => $event, 'pageDescription' => $event->getDescriptionMeta(true)]
@@ -71,20 +53,13 @@ class PublicController extends Controller
     /**
      * Short url redirecting to details of an event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/e/{eid}", requirements={"eid": "\d+"}, name="event_public_short")
      */
-    public function shortLinkAction($eid)
+    public function shortLinkAction(Event $event)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event      = $repository->findOneBy(array('eid' => $eid));
-        if (!$event) {
-            return $this->render(
-                'event/public/miss.html.twig', array('eid' => $eid),
-                new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
         return $this->redirectToRoute(
-            'event_public_detail', array('eid' => $eid), Response::HTTP_MOVED_PERMANENTLY
+            'event_public_detail', array('eid' => $event->getEid()), Response::HTTP_MOVED_PERMANENTLY
         );
     }
 
