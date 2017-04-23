@@ -328,7 +328,7 @@ class Participation
     /**
      * Get assignedUser
      *
-     * @return \AppBundle\Entity\User
+     * @return \AppBundle\Entity\User|null
      */
     public function getAssignedUser()
     {

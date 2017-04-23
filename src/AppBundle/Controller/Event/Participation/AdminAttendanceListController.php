@@ -137,20 +137,13 @@ class AdminAttendanceListController extends Controller
     /**
      * Edit an attendance list
      *
+     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                    name="event_attendance_details")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function detailAction($eid, $tid, Request $request)
+    public function detailAction($eid, AttendanceList $list, Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
-
-        $list = $repository->findOneBy(['tid' => $tid]);
-        if (!$list) {
-            return $this->render(
-                'event/public/miss.html.twig', [], new Response(null, Response::HTTP_NOT_FOUND)
-            );
-        }
         $event = $list->getEvent();
 
         return $this->render(

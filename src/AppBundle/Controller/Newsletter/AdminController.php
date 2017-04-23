@@ -18,6 +18,7 @@ use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use AppBundle\InvalidTokenHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -166,19 +167,15 @@ class AdminController extends AbstractController
     /**
      * Details of a single subscription
      *
+     * @ParamConverter("subscription", class="AppBundle:NewsletterSubscription", options={"id" = "rid"})
      * @Route("/admin/newsletter/subscription/{rid}", requirements={"rid": "\d+"},
      *                                                name="newsletter_admin_subscription_detail")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function subscriptionDetailAction(Request $request)
+    public function subscriptionDetailAction(Request $request, NewsletterSubscription $subscription)
     {
         $this->dieIfNewsletterNotEnabled();
-        $rid        = $request->get('rid');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
-
-        /** @var NewsletterSubscription $subscription */
-        $subscription = $repository->findOneBy(array('rid' => $rid));
-        $form         = $this->createForm(NewsletterSubscriptionType::class, $subscription);
+        $form = $this->createForm(NewsletterSubscriptionType::class, $subscription);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid() && $subscription) {
@@ -200,28 +197,23 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Details of a single subscription
+     * Force confirmation of an subscription
      *
+     * @ParamConverter("subscription", class="AppBundle:NewsletterSubscription", options={"id" = "rid"})
      * @Route("/admin/newsletter/subscription/{rid}/forceconfirmation", requirements={"rid": "\d+"},
      *                                                name="newsletter_admin_subscription_confirmation")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function subscriptionForceConfirmationAction(Request $request)
+    public function subscriptionForceConfirmationAction(Request $request, NewsletterSubscription $subscription)
     {
         $this->dieIfNewsletterNotEnabled();
-        $rid        = $request->get('rid');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
-
-        /** @var NewsletterSubscription $subscription */
-        $subscription = $repository->findOneBy(array('rid' => $rid));
-
         $token      = $request->get('_token');
         $confirmed  = (int)$request->get('confirmed');
 
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken('subscription-confirmation-'. $rid)) {
+        if ($token != $csrf->getToken('subscription-confirmation-'. $subscription->getRid())) {
             throw new InvalidTokenHttpException();
         }
 
@@ -431,18 +423,14 @@ class AdminController extends AbstractController
     /**
      * Page for details of a newsletter
      *
+     * @ParamConverter("newsletter", class="AppBundle:Newsletter", options={"id" = "lid"})
      * @Route("/admin/newsletter/{lid}/edit", requirements={"lid": "\d"}, name="newsletter_edit")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
-    public function detailedNewsletterAction(Request $request)
+    public function detailedNewsletterAction(Request $request, Newsletter $newsletter)
     {
         $this->dieIfNewsletterNotEnabled();
-        $lid        = $request->get('lid');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
-
-        /** @var Newsletter $newsletter */
-        $newsletter = $repository->findOneBy(array('lid' => $lid));
-        $form       = $this->createForm(NewsletterMailType::class, $newsletter);
+        $form = $this->createForm(NewsletterMailType::class, $newsletter);
 
         $form->handleRequest($request);
 

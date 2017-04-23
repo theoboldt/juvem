@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Form\AcquisitionType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,7 +20,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AcquisitionController extends Controller
 {
@@ -64,23 +64,14 @@ class AcquisitionController extends Controller
     }
 
     /**
-     * Detail page for one single event
+     * Detail page for a acquisition attribute
      *
+     * @ParamConverter("attribute", class="AppBundle:AcquisitionAttribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function detailEventAction(Request $request)
+    public function detailEventAction(Request $request, AcquisitionAttribute $attribute)
     {
-        $bid        = $request->get('bid');
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:AcquisitionAttribute');
-
-        $attribute = $repository->findOneBy(array('bid' => $bid));
-
-        if (!$attribute) {
-            throw new NotFoundHttpException('Could not find requested acquisition attribute');
-        }
-
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
                      ->getForm();
@@ -103,11 +94,12 @@ class AcquisitionController extends Controller
         }
 
         return $this->render(
-            'acquisition/detail.html.twig', array(
-                                              'form'        => $form->createView(),
-                                              'acquisition' => $attribute,
-                                              'events'      => $attribute->getEvents()
-                                          )
+            'acquisition/detail.html.twig',
+            [
+                'form'        => $form->createView(),
+                'acquisition' => $attribute,
+                'events'      => $attribute->getEvents()
+            ]
         );
     }
 
@@ -115,21 +107,12 @@ class AcquisitionController extends Controller
     /**
      * Edit page for one single attribute
      *
+     * @ParamConverter("attribute", class="AppBundle:AcquisitionAttribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit", requirements={"bid": "\d+"}, name="acquisition_edit")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function editAction(Request $request)
+    public function editAction(Request $request, AcquisitionAttribute $attribute)
     {
-        $bid = $request->get('bid');
-
-        $repository = $this->getDoctrine()
-                           ->getRepository('AppBundle:AcquisitionAttribute');
-
-        $attribute = $repository->findOneBy(array('bid' => $bid));
-        if (!$attribute) {
-            throw new NotFoundHttpException('Could not find requested acquisition attribute');
-        }
-
         $form = $this->createForm(AcquisitionType::class, $attribute);
 
         $form->handleRequest($request);
@@ -154,7 +137,7 @@ class AcquisitionController extends Controller
     }
 
     /**
-     * Create a new event
+     * Create a new acquisition attribute
      *
      * @Route("/admin/acquisition/new", name="acquisition_new")
      * @Security("has_role('ROLE_ADMIN_EVENT')")

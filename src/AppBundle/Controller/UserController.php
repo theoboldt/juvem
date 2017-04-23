@@ -14,6 +14,7 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserRoleAssignmentType;
 use AppBundle\Twig\Extension\BootstrapGlyph;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -82,14 +83,12 @@ class UserController extends Controller
     }
 
     /**
+     * @ParamConverter("user", class="AppBundle:User", options={"id" = "uid"})
      * @Route("/admin/user/{uid}", requirements={"uid": "\d+"}, name="user_detail")
      * @Security("has_role('ROLE_ADMIN_USER')")
      */
-    public function userDetailAction(Request $request)
+    public function userDetailAction(Request $request, User $user)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:User');
-        $user       = $repository->findOneBy(array('id' => $request->get('uid')));
-
         $form = $this->createForm(
             UserRoleAssignmentType::class,
             array('uid'  => $user->getUid(),
@@ -122,17 +121,17 @@ class UserController extends Controller
     /**
      * Data provider for events participants list grid
      *
+     * @ParamConverter("user", class="AppBundle:User", options={"id" = "uid"})
      * @Route("/admin/user/{uid}/participations.json", requirements={"uid": "\d+"},
      *                                                 name="admin_user_participations_list_data")
      * @Security("has_role('ROLE_ADMIN_USER')")
      */
-    public function listParticipantsDataAction(Request $request)
+    public function listParticipantsDataAction(Request $request, User $user)
     {
-        $userRepository  = $this->getDoctrine()->getRepository('AppBundle:User');
-        $user            = $userRepository->findOneBy(['id' => $request->get('uid')]);
-
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
-        $participationList       = $participationRepository->findBy(array('assignedUser' => $user->getUid(), 'deletedAt' => null));
+        $participationList       = $participationRepository->findBy(
+            ['assignedUser' => $user->getUid(), 'deletedAt' => null]
+        );
 
         $participationListResult = array();
         /** @var Participant $participant */

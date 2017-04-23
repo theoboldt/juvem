@@ -13,11 +13,13 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use Doctrine\Common\Collections\ArrayCollection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -106,21 +108,20 @@ class PublicManagementController extends Controller
     }
 
     /**
-     * Page for list of events
+     * Detail page for a users participation
      *
+     * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}", requirements={"pid": "\d+"}, name="public_participation_detail")
      * @Security("has_role('ROLE_USER')")
      */
-    public function participationDetailedAction(Request $request)
+    public function participationDetailedAction(Request $request, Participation $participation)
     {
 
         $statusFormatter   = ParticipantStatus::formatter();
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
-        $participation     = $repository->findOneBy(['pid' => $request->get('pid')]);
         $participationUser = $participation->getAssignedUser();
 
-        if ($participationUser && $participationUser->getUid() != $user->getUid()) {
+        if (!$participationUser || $participationUser->getUid() != $user->getUid()) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
 
@@ -199,18 +200,17 @@ class PublicManagementController extends Controller
     /**
      * Page edit an participation
      *
+     * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/participation", requirements={"pid": "\d+"}, name="public_edit_participation")
      * @Security("has_role('ROLE_USER')")
      */
-    public function editParticipationAction(Request $request)
+    public function editParticipationAction(Request $request, Participation $participation)
     {
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
-        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
 
-        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        if (!$participationUser || $participationUser->getUid() != $user->getUid()
         ) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
@@ -245,18 +245,17 @@ class PublicManagementController extends Controller
     /**
      * Page edit phone numbers
      *
+     * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/phone", requirements={"pid": "\d+"}, name="public_edit_phonenumbers")
      * @Security("has_role('ROLE_USER')")
      */
-    public function editPhoneNumbersAction(Request $request)
+    public function editPhoneNumbersAction(Request $request, Participation $participation)
     {
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participation');
-        $participation     = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
 
-        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        if (!$participationUser || $participationUser->getUid() != $user->getUid()
         ) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
@@ -307,20 +306,19 @@ class PublicManagementController extends Controller
     /**
      * Page edit a participation
      *
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Route("/participation/{pid}/edit/participant/{aid}", requirements={"pid": "\d+", "aid": "\d+"},
      *                                                       name="public_edit_participant")
      * @Security("has_role('ROLE_USER')")
      */
-    public function editParticipantAction($pid, $aid, Request $request)
+    public function editParticipantAction($pid, Participant $participant, Request $request)
     {
         $user              = $this->getUser();
-        $repository        = $this->getDoctrine()->getRepository('AppBundle:Participant');
-        $participant       = $repository->findOneBy(array('aid' => $aid));
         $participation     = $participant->getParticipation();
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
 
-        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        if (!$participationUser || $participationUser->getUid() != $user->getUid()
         ) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
@@ -359,20 +357,19 @@ class PublicManagementController extends Controller
     /**
      * Page add a participation
      *
+     * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/participant/add", requirements={"pid": "\d+"}, name="public_add_participant")
      * @Security("has_role('ROLE_USER')")
      */
-    public function addParticipantAction($pid, Request $request)
+    public function addParticipantAction(Request $request, Participation $participation)
     {
         $user          = $this->getUser();
-        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
-        $participation = $repository->findOneBy(array('pid' => $pid));
         $participant   = new Participant();
         $participant->setParticipation($participation);
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
 
-        if ($participationUser && $participationUser->getUid() != $user->getUid()
+        if (!$participationUser || $participationUser->getUid() != $user->getUid()
         ) {
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
