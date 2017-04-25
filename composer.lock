@@ -1031,16 +1031,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.4.1",
+            "version": "8.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "eeb3835c8afc6ab35427bc9771ffc7851ce4ed8f"
+                "reference": "01c72a52c38a0a55e4aebb972d65124f618d570a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/eeb3835c8afc6ab35427bc9771ffc7851ce4ed8f",
-                "reference": "eeb3835c8afc6ab35427bc9771ffc7851ce4ed8f",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/01c72a52c38a0a55e4aebb972d65124f618d570a",
+                "reference": "01c72a52c38a0a55e4aebb972d65124f618d570a",
                 "shasum": ""
             },
             "require": {
@@ -1095,7 +1095,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2017-04-11T20:52:21+00:00"
+            "time": "2017-04-25T12:16:41+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2054,16 +2054,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.18",
+            "version": "v5.0.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "17846680901003d26d823c2e3ac9228702837916"
+                "reference": "654c4fa3d11448c8005400a244987896243a990a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/17846680901003d26d823c2e3ac9228702837916",
-                "reference": "17846680901003d26d823c2e3ac9228702837916",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/654c4fa3d11448c8005400a244987896243a990a",
+                "reference": "654c4fa3d11448c8005400a244987896243a990a",
                 "shasum": ""
             },
             "require": {
@@ -2102,7 +2102,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-01-10T14:58:45+00:00"
+            "time": "2017-04-23T22:28:23+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
