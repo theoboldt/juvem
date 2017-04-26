@@ -109,7 +109,7 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
         $subscriptions = $repository->findAll();
         $emailList     = [];
         foreach ($subscriptions as $subscription) {
-            $emailList[] = $subscription->getEmail();
+            $emailList[] = strtolower($subscription->getEmail());
         }
         return $emailList;
     }
@@ -193,7 +193,7 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
                     'name'      => $rowCellList[0],
                     'birthday'  => $rowCellList[1],
                     'age_space' => intval($rowCellList[3], 10),
-                    'email'     => trim($rowCellList[4]),
+                    'email'     => strtolower(trim($rowCellList[4])),
                     'errors'    => $errors
                 ];
 
