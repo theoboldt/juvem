@@ -21,34 +21,52 @@ class NewsletterManager extends AbstractMailerAwareManager
      * Send a newsletter subscription request email
      *
      * @param NewsletterSubscription $subscription
+     * @return int  Number of successful recipients. Can be 0 which indicates failure
      */
     public function mailNewsletterSubscriptionRequested(NewsletterSubscription $subscription)
     {
-        $message  = $this->mailGenerator->getMessage(
-            'newsletter-subscription-requested',
-            array('subscription' => $subscription)
-        );
-        $nameLast = $subscription->getNameLast();
-        $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
-
-        $this->mailer->send($message);
+        return $this->mail($subscription, 'newsletter-subscription-requested');
     }
 
     /**
-     * Send a newsletter subscription request email
+     * Send a newsletter subscription import message
      *
      * @param NewsletterSubscription $subscription
+     * @return int  Number of successful recipients. Can be 0 which indicates failure
      */
     public function mailNewsletterSubscriptionImported(NewsletterSubscription $subscription)
     {
+        return $this->mail($subscription, 'newsletter-subscription-import');
+    }
+
+    /**
+     * Send a newsletter confirmation reminder email
+     *
+     * @param NewsletterSubscription $subscription
+     * @return int  Number of successful recipients. Can be 0 which indicates failure
+     */
+    public function mailNewsletterSubscriptionConfirmationReminder(NewsletterSubscription $subscription)
+    {
+        return $this->mail($subscription, 'newsletter-subscription-reminder');
+    }
+
+    /**
+     * Send mail to transmitted subscription using transmitted template
+     *
+     * @param NewsletterSubscription $subscription Target subscription
+     * @param string                 $template     Mail template to use
+     * @return int                                 Number of successful recipients. Can be 0 which indicates failure
+     */
+    protected function mail(NewsletterSubscription $subscription, $template)
+    {
         $message  = $this->mailGenerator->getMessage(
-            'newsletter-subscription-import',
-            array('subscription' => $subscription)
+            $template,
+            ['subscription' => $subscription]
         );
         $nameLast = $subscription->getNameLast();
         $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
 
-        $this->mailer->send($message);
+        return $this->mailer->send($message);
     }
 
     /**

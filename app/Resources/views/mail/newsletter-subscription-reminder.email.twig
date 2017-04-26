@@ -1,0 +1,37 @@
+{% block subject %}Erinnerung: Newsletter-Abonnement{% endblock %}
+
+{% block body_text %}
+{% autoescape false %}
+{% if subscription.nameLast is not null %}
+Hallo Familie {{ subscription.nameLast  }}!
+{% else %}
+Guten Tag!
+{% endif %}
+
+Sie müssen Ihr Newsletter-Abonnement noch bestätigen! Wenn Sie das nicht tun, erhalten Sie in Zukunft keine E-Mails vom Jugendwerk-Newsletter.
+
+Rufen Sie zum Bestätigen die folgende Internetadresse auf:
+{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}
+
+Wenn Sie die folgende Internetadresse aufrufen, können Sie Ihr Abonnement ändern oder auch ganz beenden:
+{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}
+
+Mit besten Grüßen,
+{{ customization.organizationName }}
+{% endautoescape %}
+{% endblock %}
+
+{% block body_html %}
+{% embed 'mail/template.html.twig' %}
+{% block title %}{% if subscription.nameLast is not null %}
+Hallo Familie {{ subscription.nameLast  }}!
+{% else %}
+Guten Tag!
+{% endif %}{% endblock %}
+    {% block lead %}Sie müssen Ihr Newsletter-Abonnement noch <a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">bestätigen</a>!{% endblock %}
+    {% block content %}<p>Wenn Sie das nicht tun, erhalten Sie in Zukunft keine E-Mails vom Jugendwerk-Newsletter. Rufen Sie zum Bestätigen die folgende Internetadresse auf:</p><p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}</a></p><p>Wenn Sie Ihr Abonnement ändern oder beenden möchten, können Sie die folgende Internetadresse verwenden: <a href="{{ url('newsletter_subscription_token', {'token': subscription.disableToken }) }}">Newsletter-Abonnement verwalten</a></p>{% endblock %}
+    {% block calltoactioncontent %}<p>Besuchen Sie bitte die folgende Seite, um Ihr Newsletter-Abonnement zu bestätigen:</p>
+<p><a href="{{ url('newsletter_subscription_confirm', {'token': subscription.disableToken }) }}">Newsletter-Abonnement bestätigen »</a></p>
+{% endblock %}
+{% endembed %}
+{% endblock %}
