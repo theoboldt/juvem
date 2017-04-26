@@ -26,7 +26,7 @@ class RedirectController extends Controller
 
     /**
      * @Route("/{url}", name="remove_trailing_slash",
-     *     requirements={"url" = ".*\/$"}, methods={"GET"})
+     *     requirements={"url" = "^((?!register).)*$\/$"}, methods={"GET"})
      */
     public function removeTrailingSlashAction(Request $request)
     {
