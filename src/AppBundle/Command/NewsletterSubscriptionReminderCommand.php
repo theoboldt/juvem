@@ -96,8 +96,6 @@ class NewsletterSubscriptionReminderCommand extends ContainerAwareCommand
 
         foreach ($subscriptions as $subscription) {
             $sent += $mailManager->mailNewsletterSubscriptionConfirmationReminder($subscription);
-            break;
-
             if (is_callable($stepCallback)) {
                 $stepCallback();
             }break;
