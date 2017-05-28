@@ -1,83 +1,94 @@
-#print-page {
-  background: white;
+@media print, screen {
 
-  font-size: 175%;
+  #print-page {
+    background: white;
 
-  .breadcrumb {
-    @media print, screen {
-      background: #d6d6d9;
+    font-size: 175%;
+
+    .breadcrumb {
+      background: #d6d6d9 !important;
       margin: 0;
     }
-  }
 
-  .participant {
-    height: 425px;
-    .dl-horizontal {
+    .participant {
+      height: 425px;
+      .dl-horizontal {
+        margin: 0;
+      }
+    }
+
+    dl {
       margin: 0;
     }
-  }
 
-  dl {
-    margin: 0;
-  }
-
-  dt {
-    .description {
-      color: $gray;
-      font-weight: normal;
-      font-size: 80%;
-      line-height: 125%;
+    dt {
+      .description {
+        color: $gray !important;
+        font-weight: normal;
+        font-size: 80%;
+        line-height: 125%;
+      }
     }
-  }
-  .dl-horizontal dt {
-    float: left;
-    width: 160px;
-    clear: left;
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  dd {
-    margin: 0 0 5px 0;
-  }
-
-  .dl-horizontal dd {
-    margin: 0 0 5px 180px;
-  }
-
-  address {
-    margin: 0;
-  }
-
-  p {
-    margin: 0 0 8px;
-  }
-
-  p.meta {
-    color: $gray;
-    font-size: 90%;
-    line-height: 130%;
-    margin-bottom: 10px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid $gray-light;
-  }
-
-  h3.participant-title {
-    margin: 0 0 20px;
-    line-height: 35px;
-
-    .participant-gender {
-      display: block;
+    .dl-horizontal dt {
       float: left;
-      width: 225px
+      width: 160px;
+      clear: left;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .participant-name {
-      font-size: 30px;
+    dd {
+      margin: 0 0 5px 0;
     }
-  }
 
-  .participant-end {
-    page-break-after: always;
+    .dl-horizontal dd {
+      margin: 0 0 5px 180px;
+    }
+
+    address {
+      margin: 0;
+    }
+
+    p {
+      margin: 0 0 8px;
+    }
+
+    p.meta {
+      color: $gray;
+      font-size: 90%;
+      line-height: 130%;
+      margin-bottom: 10px;
+      padding-bottom: 2px;
+      border-bottom: 1px solid $gray-light !important;
+    }
+
+    .row.participant-title {
+      margin: 60px 0 0 60px;
+      > div > div {
+        height: 375px;
+      }
+      .vertical-rotated {
+        height: 875px;
+        transform: rotate(-90deg);
+      }
+
+      h3 {
+        font-size: 4em;
+      }
+      h4 {
+        margin-top: 20px;
+        font-size: 2em;
+        color: $gray-light !important;
+      }
+    }
+
+    .row.participant-title {
+      page-break-after: always;
+    }
+
+    .participant-end {
+      page-break-after: always;
+    }
   }
 }
