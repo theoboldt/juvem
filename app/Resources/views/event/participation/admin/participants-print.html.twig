@@ -145,7 +145,7 @@
                         <div class="{% if commentManager.countForParticipant(participant) %} in{% endif %}"
                              id="comment-footer-aid-{{ participant.aid }}">
                             <div class="comments" data-comment-class="AppBundle\Entity\ParticipantComment"
-                                 data-related-id="{{ participant.aid }}}">
+                                 data-related-id="{{ participant.aid }}">
                                 {% if not commentManager.countForParticipant(participant) %}
                                     <p class="empty">Keine
                                         Anmerkungen {% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}zur Teilnehmerin{% else %}zum Teilnehmer{% endif %}
