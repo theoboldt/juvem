@@ -151,7 +151,7 @@
                                         Anmerkungen {% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}zur Teilnehmerin{% else %}zum Teilnehmer{% endif %}
                                         gespeichert.</p>
                                 {% endif %}
-                                {% for comment in commentManager.countForParticipant(participant) %}
+                                {% for comment in commentManager.forParticipant(participant) %}
                                     <div class="content">
                                         {{ comment.content|markdown }}
                                     </div>
