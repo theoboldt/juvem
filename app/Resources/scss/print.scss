@@ -51,12 +51,8 @@
       margin: 0;
     }
 
-    div.qrcode {
-      margin-top: 60px;
-
-      div > div {
-        background-color: black !important;
-      }
+    div.qrcode div > div {
+      background-color: black !important;
     }
 
     p {
@@ -72,6 +68,15 @@
       border-bottom: 1px solid $gray-light !important;
     }
 
+    .phone-container {
+      .col-xs-6 {
+        min-height: 90px;
+      }
+      .qrcode {
+        float: left;
+        margin: 0 10px 5px 0;
+      }
+    }
     .row.participant-title {
       margin-left: 60px;
       > div > div {
@@ -79,6 +84,10 @@
       }
       .horizontal {
         padding-top: 60px;
+
+        .qrcode {
+          margin-top: 60px;
+        }
       }
 
       .vertical-rotated {

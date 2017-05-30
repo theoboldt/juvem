@@ -188,19 +188,6 @@
                                 <dd>{{ participant.participation.nameFirst }}</dd>
                                 <dt>Nachname</dt>
                                 <dd>{{ participant.participation.nameLast }}</dd>
-                                <dt>Telefon</dt>
-                                <dd class="phone-container">
-                                    {% for phoneNumber in participant.participation.phoneNumbers %}
-                                        <div>
-                                            {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}
-                                            {% if phoneNumber.description %}
-                                                <br>
-                                                <i>{{ phoneNumber.description }}</i>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-
-                                </dd>
                                 <dt>Anschrift</dt>
                                 <dd class="address-container">
                                     <address>
@@ -221,11 +208,32 @@
                         </div>
                     </div>
                     <div class="col-xs-12">
+                        <dt>
+                        <div class="title">Telefon</div>
+                        </dt>
+                        <dd class="phone-container">
+                            <div class="row">
+                                {% for phoneNumber in participant.participation.phoneNumbers %}
+                                    <div class="col-xs-6">
+                                        <div class="qrcode">
+                                            {{ barcode({code: 'tel:' ~ phone_number_format(phoneNumber.number, 'INTERNATIONAL'), type: 'qrcode', format: 'html', width: 3, height: 3}) }}
+                                        </div>
+                                        <div class="text">
+                                            {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}
+                                            {% if phoneNumber.description %}
+                                                <br>
+                                                <i>{{ phoneNumber.description }}</i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </dd>
                         <dl>
                             {% for fillout in participant.participation.acquisitionAttributeFillouts %}
                                 <dt>
-                                <div class="title">{{ fillout.attribute.formTitle }}</div>
-                                <div class="description">{{ fillout.attribute.managementDescription }}</div>
+                                    <div class="title">{{ fillout.attribute.formTitle }}</div>
+                                    <div class="description">{{ fillout.attribute.managementDescription }}</div>
                                 </dt>
                                 <dd>{{ fillout }}</dd>
                             {% endfor %}
