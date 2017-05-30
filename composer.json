@@ -46,6 +46,7 @@
         "nelmio/security-bundle": "^2",
         "twig/twig": "^2",
         "knplabs/knp-time-bundle": "^1.7",
+        "yellowskies/QR-code-bundle": "^1.2",
         "ocramius/proxy-manager": "^2.0"
     },
     "require-dev": {

@@ -38,6 +38,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     dd {
       margin: 0 0 5px 0;
     }
@@ -48,6 +49,14 @@
 
     address {
       margin: 0;
+    }
+
+    div.qrcode {
+      margin-top: 60px;
+
+      div > div {
+        background-color: black !important;
+      }
     }
 
     p {
@@ -64,10 +73,14 @@
     }
 
     .row.participant-title {
-      margin: 60px 0 0 60px;
+      margin-left: 60px;
       > div > div {
         height: 375px;
       }
+      .horizontal {
+        padding-top: 60px;
+      }
+
       .vertical-rotated {
         height: 875px;
         transform: rotate(-90deg);

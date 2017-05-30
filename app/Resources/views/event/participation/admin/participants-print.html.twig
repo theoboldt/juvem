@@ -37,6 +37,9 @@
                     <h4>
                         {{ event.title }} {{ event.startDate.format('Y') }}
                     </h4>
+                    <div class="qrcode">
+                        {{ barcode({code: url('event_participation_detail', {eid: event.eid, pid: participant.participation.pid}), type: 'qrcode', format: 'html', width: 8, height: 8}) }}
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12">

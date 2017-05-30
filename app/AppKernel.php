@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new Nelmio\SecurityBundle\NelmioSecurityBundle(),
             new Knp\Bundle\TimeBundle\KnpTimeBundle(),
+            new Skies\QRcodeBundle\SkiesQRcodeBundle(),
             new AppBundle\AppBundle(),
         );
 
