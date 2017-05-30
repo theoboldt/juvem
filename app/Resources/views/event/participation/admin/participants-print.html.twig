@@ -216,7 +216,7 @@
                                 {% for phoneNumber in participant.participation.phoneNumbers %}
                                     <div class="col-xs-6">
                                         <div class="qrcode">
-                                            {{ barcode({code: 'tel:' ~ phone_number_format(phoneNumber.number, 'INTERNATIONAL'), type: 'qrcode', format: 'html', width: 3, height: 3}) }}
+                                            {{ barcode({code: 'tel:' ~ phone_number_format(phoneNumber.number, 'INTERNATIONAL')|replace({' ': ''}), type: 'qrcode', format: 'html', width: 3, height: 3}) }}
                                         </div>
                                         <div class="text">
                                             {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}
