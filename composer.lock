@@ -1738,16 +1738,16 @@
         },
         {
             "name": "nelmio/security-bundle",
-            "version": "2.3.1",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nelmio/NelmioSecurityBundle.git",
-                "reference": "5ac173e187da907c4054c7e6c3408d69980561e4"
+                "reference": "d0d7b151eda5f0ebe80562528f78b56954c1aec7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nelmio/NelmioSecurityBundle/zipball/5ac173e187da907c4054c7e6c3408d69980561e4",
-                "reference": "5ac173e187da907c4054c7e6c3408d69980561e4",
+                "url": "https://api.github.com/repos/nelmio/NelmioSecurityBundle/zipball/d0d7b151eda5f0ebe80562528f78b56954c1aec7",
+                "reference": "d0d7b151eda5f0ebe80562528f78b56954c1aec7",
                 "shasum": ""
             },
             "require": {
@@ -1769,7 +1769,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -1795,7 +1795,7 @@
             "keywords": [
                 "security"
             ],
-            "time": "2017-03-17T13:43:27+00:00"
+            "time": "2017-06-22T08:11:46+00:00"
         },
         {
             "name": "ocramius/package-versions",
