@@ -31,6 +31,6 @@
 !web/font/.gitkeep
 /web/js/*
 !web/js/.gitkeep
-/web/uploads/*
-!web/uploads/.gitkeep
+/uploads/*
+!/uploads/.gitkeep
 .DS_Store
