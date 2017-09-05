@@ -21,6 +21,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PublicController extends Controller
 {
+
+    /**
+     * Original image file for event image
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/event/{eid}/image/original", name="event_image_original")
+     */
+    public function eventImageOriginalAction(Event $event)
+    {
+        $uploadManager = $this->get('app.upload_image_manager');
+        $image         = $uploadManager->fetch($event->getImageFilename());
+
+        return new ImageResponse($image);
+    }
+
     /**
      * Detail page for one single event
      *

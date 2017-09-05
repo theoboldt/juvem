@@ -56,6 +56,8 @@
                             {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder verwalten</span>
                         </button>
                     </div>
+                    <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
+                       class="btn btn-default">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergallerie</span></a>
                     <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog"
                              aria-labelledby="acquisitionAssignmentButton">
                             <div class="modal-dialog" role="document">
@@ -161,7 +163,7 @@
                 <div>
                     <h4>Poster</h4>
                     {% if event.imageFilename %}
-                        <a href="{{ vich_uploader_asset(event, 'imageFile') }}" class="thumbnail">
+                        <a href="{{ path('event_image_original', {'eid': event.eid}) }}" class="thumbnail">
                             <div class="lazy-load-image"
                                   data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
                                   data-src="{{ path('event_image',  {'eid': event.eid, 'width': 360, 'height': 500 }) }}">
