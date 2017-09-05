@@ -1,14 +1,14 @@
 $(function () {
-/*
-    var markDownEl = document.querySelector(".markdown");
-    new MediumEditor(document.querySelector(".medium-editor"), {
-        extensions: {
-            markdown: new MeMarkdown(function (md) {
-                markDownEl.textContent = md;
-            })
-        }
-    });
-*/
+    /*
+        var markDownEl = document.querySelector(".markdown");
+        new MediumEditor(document.querySelector(".medium-editor"), {
+            extensions: {
+                markdown: new MeMarkdown(function (md) {
+                    markDownEl.textContent = md;
+                })
+            }
+        });
+    */
 
     /**
      * EVENT: Participate lactose-free food option force hint
@@ -269,7 +269,7 @@ $(function () {
 
         modalEl.find('#participantsActionText').text(description);
         listEl.html('');
-        $.each(participants, function(key, participant) {
+        $.each(participants, function (key, participant) {
             participantIds.push(participant.aid);
             listEl.append('<li>' + eHtml(participant.nameFirst) + ' ' + eHtml(participant.nameLast) + '</li>');
         });
@@ -329,4 +329,56 @@ $(function () {
             }, 1000)
         });
     });
+
+    var dropzoneEl = $('#dropzone');
+    if (dropzoneEl) {
+        dropzoneEl.filedrop({
+            url: dropzoneEl.data('upload-target'),
+            paramname: 'f',
+            fallback_id: 'notused',
+            fallback_dropzoneClick: false,
+            data: {
+                token: dropzoneEl.data('token')
+            },
+            error: function (err, file) {
+                switch (err) {
+                    case 'BrowserNotSupported':
+                        $(document).trigger('add-alerts', {
+                            message: 'Der Browser unterstützt leider den Uplaod der Bilder via HTML5 nicht',
+                            priority: 'error'
+                        });
+                        break;
+                    case 'TooManyFiles':
+                        $(document).trigger('add-alerts', {
+                            message: 'Es wurden zu viele Dateien auf einmal zum Hochladen übermittelt',
+                            priority: 'error'
+                        });
+                        break;
+                    case 'FileTooLarge':
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Datei <i>' + eHtml(file.name) + '</i> überschreitet die maximal zulässige Dateigröße',
+                            priority: 'error'
+                        });
+                        break;
+                    case 'FileTypeNotAllowed':
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Datei <i>' + eHtml(file.name) + '</i> hat einen für den Upload ungeeigneten Dateityp',
+                            priority: 'error'
+                        });
+                        break;
+                    case 'FileExtensionNotAllowed':
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Datei <i>' + eHtml(file.name) + '</i> hat eine für den Upload ungeeigneten Dateierweiterung',
+                            priority: 'error'
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            },
+            allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],
+            allowedfileextensions: ['.jpg', '.jpeg', '.png', '.gif']
+        });
+
+    }
 });
