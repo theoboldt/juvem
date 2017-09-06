@@ -188,6 +188,14 @@ class Event
     protected $galleryImages;
 
     /**
+     * Set to true if gallery link sharing is enabled
+     *
+     * @ORM\Column(type="boolean", name="is_gallery_link_sharing")
+     * @var bool
+     */
+    protected $isGalleryLinkSharing = false;
+
+    /**
      * Contains the list of attendance lists assigned to the event
      *
      * @ORM\OneToMany(targetEntity="AttendanceList", mappedBy="event", cascade={"remove"})
@@ -593,6 +601,32 @@ class Event
     public function getGalleryImages()
     {
         return $this->galleryImages;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isGalleryLinkSharing()
+    {
+        return $this->getIsGalleryLinkSharing();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsGalleryLinkSharing()
+    {
+        return $this->isGalleryLinkSharing;
+    }
+
+    /**
+     * @param mixed $isGalleryLinkSharing
+     * @return Event
+     */
+    public function setIsGalleryLinkSharing($isGalleryLinkSharing)
+    {
+        $this->isGalleryLinkSharing = $isGalleryLinkSharing;
+        return $this;
     }
 
     /**

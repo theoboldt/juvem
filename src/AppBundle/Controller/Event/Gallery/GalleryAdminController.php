@@ -19,13 +19,12 @@ use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class GalleryAdminController extends Controller
+class GalleryAdminController extends BaseGalleryController
 {
 
     /**
@@ -37,14 +36,16 @@ class GalleryAdminController extends Controller
      */
     public function detailsAction(Event $event)
     {
-        $repository = $this->getDoctrine()->getRepository(GalleryImage::class);
-        $images     = $repository->findBy(['event' => $event]);
+        $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
+        $images      = $repository->findBy(['event' => $event]);
+        $galleryHash = $this->galleryHash($event);
 
         return $this->render(
-            'event/admin/gallery-detail.html.twig',
+            'event/admin/gallery.html.twig',
             [
-                'event'  => $event,
-                'images' => $images
+                'event'       => $event,
+                'galleryHash' => $galleryHash,
+                'images'      => $images
             ]
         );
     }
@@ -114,17 +115,5 @@ class GalleryAdminController extends Controller
         $image         = $uploadManager->fetch($galleryImage->getFilename());
 
         return new ImageResponse($image);
-    }
-
-
-    /**
-     * Detail page for one single event
-     *
-     * @Route("/admin/mail/template", name="mail_template")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     */
-    public function emailTemplateAction()
-    {
-        return $this->render('mail/notify-participants.html.twig');
     }
 }

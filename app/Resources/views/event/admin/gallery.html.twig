@@ -5,7 +5,7 @@
 {% block body %}
     <section id="dropzone"
              data-upload-target="{{ path('event_gallery_admin_upload', {'eid': event.eid}) }}"
-             data-token="{{ csrf_token('gallery-upload-' ~ event.eid) }}">>
+             data-token="{{ csrf_token('gallery-upload-' ~ event.eid) }}">
         <article>
             {% embed 'common/header/base-page-header.html.twig' with {'title': 'Bildergallerie', 'subtitle': 'Veranstaltung'} %}
                 {% block breadcrumb %}
@@ -15,22 +15,31 @@
                 {% endblock %}
             {% endembed %}
             <div class="container">
+                <div class="row">
+                    <div class="col-xs-3">
+                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                    data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
+                                    data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
+                                    data-button-enable-label="Teilen via Link aktivieren" data-button-enable-glyph="link"
+                                    data-button-disable-label="Teilen via Link deaktivieren"
+                                    data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                    </div>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" value="{{ url('event_gallery', {'eid': event.eid, 'hash': galleryHash}) }}" />
+                    </div>
+                </div>
                 <div class="row" id="upload-progress">
                 </div>
                 <div class="row">
-                    <div class="col-xs-12">
-                        <div>
-                        </div>
-                    </div>
                     <div class="media-gallery">
                         <div class="row gallery" id="dropzone-gallery">
                             {% for image in images %}
-                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">
                                     <div class="gallery-image-wrap">
                                         <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}">
                                             <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid}) }}"
                                                  class="img-responsive">
-                                            <span></span>
+                                            <span>{{ image.title }}</span>
                                         </a>
                                     </div>
                                 </div>
