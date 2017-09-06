@@ -330,7 +330,8 @@ $(function () {
         });
     });
 
-    var dropzoneEl = $('#dropzone');
+    var dropzoneEl = $('#dropzone'),
+        progressEl = $('#upload-progress');
     if (dropzoneEl) {
         dropzoneEl.filedrop({
             url: dropzoneEl.data('upload-target'),
@@ -377,7 +378,41 @@ $(function () {
                 }
             },
             allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],
-            allowedfileextensions: ['.jpg', '.jpeg', '.png', '.gif']
+            allowedfileextensions: ['.jpg', '.jpeg', '.png', '.gif'],
+            maxfiles: 100,
+            maxfilesize: 10,
+            uploadFinished: function (i, file, response, time) {
+                if (response.iid) {
+                    $('#dropzone-gallery').append('<div class="col-xs-6 col-sm-6 col-md-3">' +
+                        '<a href="/event/' + response.eid + '/gallery/' + response.iid + '/original" >' +
+                        '<img src="/event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive">' +
+                        '<span></span></a>\n' +
+                        '</div>');
+                }
+            },
+            uploadStarted: function (i, file, len) {
+                progressEl.append(
+                    '<div class="col-xs-2" id="file-upload-progress-' + i + '">' +
+                    ' <div class="progress">' +
+                    '  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">' +
+                    '   0%' +
+                    '  </div>' +
+                    ' </div>' +
+                    '</div>'
+                );
+            },
+            uploadFinished: function (i, file, response, time) {
+                progressEl.find('#file-upload-progress-' + i).remove();
+            },
+            progressUpdated: function (i, file, progress) {
+                var barEl = progressEl.find('#file-upload-progress-' + i + ' .progress-bar');
+                barEl.data('aria-valuenow', progress);
+                barEl.css('width', progress + '%');
+                barEl.text(progress + '%');
+            },
+            speedUpdated: function (i, file, speed) {
+                // speed in kb/s
+            }
         });
 
     }

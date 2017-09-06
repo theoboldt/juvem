@@ -77,7 +77,10 @@ services:
         arguments: ['@mailer', '@app.twig_mail_generator', '@logger']
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%']
+        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'event_image']
+    app.gallery_image_manager:
+        class: AppBundle\Manager\UploadImageManager
+        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'gallery_image']
     app.user_registration.participation_listener:
         class: AppBundle\EventListeners\UserRegistrationListener
         arguments: ['@doctrine']

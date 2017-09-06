@@ -61,6 +61,7 @@ $icon-font-path: '../font/';
 @import 'lazy-load-images.scss';
 @import 'cookiechoice';
 @import 'print';
+@import 'gallery';
 
 html, body {
   background-color: $brandPrimaryDark;

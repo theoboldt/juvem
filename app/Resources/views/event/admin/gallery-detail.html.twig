@@ -3,22 +3,43 @@
 {% block title %}Veranstaltung ({{ event.title }}){% endblock %}
 
 {% block body %}
-<section>
-    <article>
-        {% embed 'common/header/base-page-header.html.twig' with {'title': 'Bildergallerie', 'subtitle': 'Veranstaltung'} %}
-            {% block breadcrumb %}
-                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li class="active">Bildergallerie</li>
-            {% endblock %}
-        {% endembed %}
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div id="dropzone" data-upload-target="{{ path('event_gallery_admin_upload', {'eid': event.eid}) }}" data-token="{{ csrf_token('gallery-upload-' ~ event.eid) }}">DROP</div>
+    <section id="dropzone"
+             data-upload-target="{{ path('event_gallery_admin_upload', {'eid': event.eid}) }}"
+             data-token="{{ csrf_token('gallery-upload-' ~ event.eid) }}">>
+        <article>
+            {% embed 'common/header/base-page-header.html.twig' with {'title': 'Bildergallerie', 'subtitle': 'Veranstaltung'} %}
+                {% block breadcrumb %}
+                    <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                    <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                    <li class="active">Bildergallerie</li>
+                {% endblock %}
+            {% endembed %}
+            <div class="container">
+                <div class="row" id="upload-progress">
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div>
+                        </div>
+                    </div>
+                    <div class="media-gallery">
+                        <div class="row gallery" id="dropzone-gallery">
+                            {% for image in images %}
+                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                    <div class="gallery-image-wrap">
+                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}">
+                                            <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid}) }}"
+                                                 class="img-responsive">
+                                            <span></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </div>
-    </article>
-</section>
+        </article>
+    </section>
 {% endblock %}

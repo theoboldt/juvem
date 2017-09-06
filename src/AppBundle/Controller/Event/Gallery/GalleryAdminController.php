@@ -12,12 +12,16 @@ namespace AppBundle\Controller\Event\Gallery;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\GalleryImage;
+use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -33,14 +37,19 @@ class GalleryAdminController extends Controller
      */
     public function detailsAction(Event $event)
     {
+        $repository = $this->getDoctrine()->getRepository(GalleryImage::class);
+        $images     = $repository->findBy(['event' => $event]);
+
         return $this->render(
             'event/admin/gallery-detail.html.twig',
-            array(
-                'event' => $event
-            )
+            [
+                'event'  => $event,
+                'images' => $images
+            ]
         );
     }
-/**
+
+    /**
      * Page for list of events
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -52,23 +61,61 @@ class GalleryAdminController extends Controller
         $token = $request->request->get('token');
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken('gallery-upload-'.$event->getEid())) {
+        if ($token != $csrf->getToken('gallery-upload-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
+        }
+        $em = $this->getDoctrine()->getManager();
+
+        if (!$request->files->count()) {
+            return new JsonResponse([]);
         }
 
         /** @var UploadedFile $file */
         foreach ($request->files as $file) {
-
+            $galleryImage = new GalleryImage($event, $file);
+            $em->persist($galleryImage);
         }
+        $em->flush();
 
-        $a=1;
-        return $this->render(
-            'event/admin/gallery-detail.html.twig',
-            array(
-                'event' => $event
-            )
-        );
+        return new JsonResponse(['eid' => $event->getEid(), 'iid' => $galleryImage->getIid()]);
     }
+
+    /**
+     * Detail page for one single event
+     *
+     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                               name="gallery_image_thumbnail")
+     * @param GalleryImage $galleryImage
+     * @return ImageResponse
+     */
+    public function thumbnailImageAction(GalleryImage $galleryImage)
+    {
+        $uploadManager = $this->get('app.gallery_image_manager');
+        $image         = $uploadManager->fetchResized(
+            $galleryImage->getFilename(), 150, 150, ImageInterface::THUMBNAIL_OUTBOUND, 30
+        );
+
+        return new ImageResponse($image);
+    }
+
+    /**
+     * Detail page for one single event
+     *
+     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @Route("/event/{eid}/gallery/{iid}/original", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                               name="gallery_image_original")
+     * @param GalleryImage $galleryImage
+     * @return ImageResponse
+     */
+    public function originalImageAction(GalleryImage $galleryImage)
+    {
+        $uploadManager = $this->get('app.gallery_image_manager');
+        $image         = $uploadManager->fetch($galleryImage->getFilename());
+
+        return new ImageResponse($image);
+    }
+
 
     /**
      * Detail page for one single event

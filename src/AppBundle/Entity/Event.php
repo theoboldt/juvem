@@ -181,6 +181,13 @@ class Event
     protected $participations;
 
     /**
+     * Contains the gallery images assigned to this event
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GalleryImage", mappedBy="event", cascade={"remove"})
+     */
+    protected $galleryImages;
+
+    /**
      * Contains the list of attendance lists assigned to the event
      *
      * @ORM\OneToMany(targetEntity="AttendanceList", mappedBy="event", cascade={"remove"})
@@ -214,6 +221,7 @@ class Event
     public function __construct()
     {
         $this->participations        = new ArrayCollection();
+        $this->galleryImages         = new ArrayCollection();
         $this->acquisitionAttributes = new ArrayCollection();
         $this->subscribers           = new ArrayCollection();
     }
@@ -551,6 +559,40 @@ class Event
     public function getParticipations()
     {
         return $this->participations;
+    }
+
+    /**
+     * Add galleryImage
+     *
+     * @param GalleryImage $galleryImage
+     *
+     * @return Event
+     */
+    public function addGalleryImage(GalleryImage $galleryImage)
+    {
+        $this->galleryImages[] = $galleryImage;
+
+        return $this;
+    }
+
+    /**
+     * Remove galleryImage
+     *
+     * @param GalleryImage $galleryImage
+     */
+    public function removeGalleryImage(GalleryImage $galleryImage)
+    {
+        $this->galleryImages->removeElement($galleryImage);
+    }
+
+    /**
+     * Get galleryImages
+     *
+     * @return \Doctrine\Common\Collections\Collection|GalleryImage[]
+     */
+    public function getGalleryImages()
+    {
+        return $this->galleryImages;
     }
 
     /**

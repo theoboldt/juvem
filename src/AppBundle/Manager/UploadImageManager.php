@@ -42,18 +42,19 @@ class UploadImageManager
     /**
      * Create new instance of upload image manager
      *
-     * @param string $cacheDir Cache dir where modified images reside
+     * @param string $cacheDir       Cache dir where modified images reside
      * @param array  $uploadMappings Available upload mappings
+     * @param string $mapping
      */
-    public function __construct($cacheDir, array $uploadMappings)
+    public function __construct($cacheDir, array $uploadMappings, $mapping)
     {
         $this->cache = new FilesystemCache($cacheDir);
 
-        if (!array_key_exists('event_image', $uploadMappings)) {
-            throw new \InvalidArgumentException('Could not find any upload mapping in vich upload configuration');
+        if (!array_key_exists($mapping, $uploadMappings)) {
+            throw new \InvalidArgumentException('Could not find desired upload mapping in vich upload configuration');
         }
-        $this->uploadMapping = 'event_image';
-        $this->uploadsDir    = $uploadMappings['event_image']['upload_destination'];
+        $this->uploadMapping = $mapping;
+        $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
     }
 
     public function fetch($name, $width = null, $height = null)
@@ -70,24 +71,27 @@ class UploadImageManager
     /**
      * Fetch a resized image
      *
-     * @param   string  $name Image name
-     * @param   integer $width Width of image
-     * @param   integer $height Height of image
+     * @param  string  $name    Image name
+     * @param  integer $width   Width of image
+     * @param  integer $height  Height of image
+     * @param  string  $mode    Either ImageInterface::THUMBNAIL_INSET or ImageInterface::THUMBNAIL_OUTBOUND
+     * @param  int     $quality JPG image quality applied when resizing
      * @return UploadImage
      */
-    public function fetchResized($name, $width, $height)
+    public function fetchResized($name, $width, $height, $mode = ImageInterface::THUMBNAIL_INSET, $quality = 70)
     {
-        $key = $this->key($name, $width, $height);
+        $key = $this->key($name, $width, $height, $mode);
         if (!$this->cache->contains($key)) {
             $imagine = new Imagine();
             $size    = new Box($width, $height);
-            $mode    = ImageInterface::THUMBNAIL_INSET;
             $image   = $imagine->open($this->getOriginalImagePath($name))
                                ->thumbnail($size, $mode)
                                ->get(
-                                   $this->getOriginalImageType($name), array('jpeg_quality'          => 70,
-                                                                             'png_compression_level' => 9
-                                                                     )
+                                   $this->getOriginalImageType($name),
+                                   [
+                                       'jpeg_quality'          => $quality,
+                                       'png_compression_level' => 9
+                                   ]
                                );
 
             $this->cache->save($key, $image);
@@ -126,8 +130,8 @@ class UploadImageManager
         return ($mimeType == 'image/jpeg') ? 'jpg' : 'png';
     }
 
-    public function key($name, $width, $height)
+    public function key($name, $width, $height, $mode)
     {
-        return sprintf('%s_%s_%s_%s', $this->uploadMapping, $name, $width, $height);
+        return sprintf('%s_%s_%s_%s_%s', $this->uploadMapping, $name, $width, $height, $mode);
     }
 }
