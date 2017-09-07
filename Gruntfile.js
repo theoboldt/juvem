@@ -52,6 +52,7 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
                     'node_modules/jquery-range/jquery.range.js',
+                    'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
                     '<%= resourcesPath %>/js/user-settings.js',
@@ -67,6 +68,7 @@ module.exports = function (grunt) {
             },
             distCss: {
                 src: [
+                    'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'app/cache/dep/all-sass.css',
                     'node_modules/jquery-range/jquery.range.css',
                     'node_modules/bootstrap-table/src/bootstrap-table.css'

@@ -8,6 +8,7 @@
     "jquery": "^3",
     "jquery-storage-api": "^1.9",
     "jquery-range": "^1",
+    "ekko-lightbox": "^5.2",
     "grunt": "^1.0",
     "grunt-contrib-clean": "^1.0",
     "grunt-contrib-concat": "^1.0",
