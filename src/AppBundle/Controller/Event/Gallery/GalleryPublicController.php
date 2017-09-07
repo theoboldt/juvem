@@ -70,6 +70,24 @@ class GalleryPublicController extends BaseGalleryController
     }
 
     /**
+     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @Route("/event/{eid}/gallery/{iid}/detail", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                               name="gallery_image_detail")
+     * @param GalleryImage $galleryImage
+     * @return ImageResponse
+     */
+    public function detailImageAction(GalleryImage $galleryImage)
+    {
+        $uploadManager = $this->get('app.gallery_image_manager');
+        $image         = $uploadManager->fetchResized(
+            $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
+            ImageInterface::THUMBNAIL_INSET, 80
+        );
+
+        return new ImageResponse($image);
+    }
+
+    /**
      * Detail page for one single event
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})

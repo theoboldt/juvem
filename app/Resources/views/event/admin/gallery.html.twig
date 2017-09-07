@@ -16,6 +16,41 @@
             {% endembed %}
             <div class="container">
                 <div class="row">
+                    <div class="modal fade" id="galleryImageDetails" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-md" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Bilddetails bearbeiten</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="control-label required" for="event_title">Titel</label>
+                                                <input type="text" id="galleryImageTitle" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <div class="embed-responsive embed-responsive-4by3" id="galleryImageImage">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-xs-4 text-left">
+                                            <button type="button" class="btn btn-default" id="galleryImageDelete" data-iid="" data-token="{{ csrf_token('gallery-image-delete-' ~ event.eid) }}">{{ 'remove'|glyph }} Löschen</button>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                                            <button type="button" class="btn btn-default" id="galleryImageSave" data-token="{{ csrf_token('gallery-image-save-' ~ event.eid) }}">Speichern</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-xs-12">
                         <div class="btn-toolbar" role="toolbar" aria-label="Bildergallerie bearbeiten">
                             <div class="row">
@@ -29,27 +64,30 @@
                                             data-button-disable-label="Teilen via Link deaktivieren"
                                             data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
                                 </div>
-                                <div class="col-xs-9">
+                                <div class="col-xs-1" id="galleryUploadSpeed">
+                                </div>
+                                <div class="col-xs-8">
                                     <input type="text" class="form-control"
                                            value="{{ url('event_gallery', {'eid': event.eid, 'hash': galleryHash}) }}"/>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12" style="margin: 15px 0;">
-                        <div class="row" id="upload-progress">
+                    <div class="col-xs-12" id="upload-progress">
+                        <div class="row">
                         </div>
                     </div>
                 <div class="row">
                     <div class="media-gallery">
                         <div class="row gallery" id="dropzone-gallery">
                             {% for image in images %}
-                                <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-{{ image.iid }}">
                                     <div class="gallery-image-wrap">
-                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}">
+                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}"
+                                           data-eid="{{ event.eid }}" data-iid="{{ image.iid }}" data-title="{{ image.title|e('html_attr') }}">
                                             <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid}) }}"
                                                  class="img-responsive">
-                                            <span>{{ image.title }}</span>
+                                            <span>{{ image.title|e }}</span>
                                         </a>
                                     </div>
                                 </div>

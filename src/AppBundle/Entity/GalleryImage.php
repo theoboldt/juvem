@@ -29,6 +29,8 @@ class GalleryImage
     use CreatedModifiedTrait;
 
     const THUMBNAIL_DIMENSION = 150;
+    const THUMBNAIL_ADMIN = 600;
+    const THUMBNAIL_DETAIL = 800;
 
     /**
      * Gallery image id
@@ -36,17 +38,23 @@ class GalleryImage
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $iid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="galleryImages", cascade={"all"})
-     * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="galleryImages")
+     * @ORM\JoinColumn(name="eid", referencedColumnName="eid")
+     *
+     * @var Event
      */
     private $event;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @var string
      */
     private $title = '';
 
@@ -60,12 +68,13 @@ class GalleryImage
     /**
      * @ORM\Column(type="string", length=255, name="filename", nullable=true)
      *
-     * @var string
+     * @var string|null
      */
-    private $filename;
+    private $filename = null;
 
     /**
      * @ORM\Column(type="datetime", name="recorded_at", nullable=true)
+     *
      * @var \DateTime
      */
     protected $recordedAt = null;
@@ -87,7 +96,7 @@ class GalleryImage
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getIid()
     {
@@ -95,7 +104,7 @@ class GalleryImage
     }
 
     /**
-     * @param mixed $iid
+     * @param int $iid
      * @return GalleryImage
      */
     public function setIid($iid)
@@ -105,7 +114,7 @@ class GalleryImage
     }
 
     /**
-     * @return mixed
+     * @return Event
      */
     public function getEvent()
     {
@@ -123,7 +132,7 @@ class GalleryImage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTitle()
     {
@@ -131,7 +140,7 @@ class GalleryImage
     }
 
     /**
-     * @param mixed $title
+     * @param string $title
      * @return GalleryImage
      */
     public function setTitle($title)
@@ -143,7 +152,7 @@ class GalleryImage
     /**
      * @return File
      */
-    public function getFile(): File
+    public function getFile()
     {
         return $this->file;
     }
@@ -182,7 +191,7 @@ class GalleryImage
      * @param string $filename
      * @return GalleryImage
      */
-    public function setFilename(string $filename): GalleryImage
+    public function setFilename(string $filename = null): GalleryImage
     {
         $this->filename = $filename;
         return $this;

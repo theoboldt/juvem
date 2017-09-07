@@ -331,8 +331,9 @@ $(function () {
     });
 
     var dropzoneEl = $('#dropzone'),
-        progressEl = $('#upload-progress');
+        progressEl = $('#upload-progress .row');
     if (dropzoneEl) {
+        var speedEl = $('#galleryUploadSpeed');
         dropzoneEl.filedrop({
             url: dropzoneEl.data('upload-target'),
             paramname: 'f',
@@ -384,11 +385,16 @@ $(function () {
             uploadFinished: function (i, file, response, time) {
                 progressEl.find('#file-upload-progress-' + i).remove();
                 if (response.iid) {
-                    $('#dropzone-gallery').append('<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">' +
-                        '<a href="/event/' + response.eid + '/gallery/' + response.iid + '/original" >' +
-                        '<img src="/event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive">' +
-                        '<span></span></a>\n' +
-                        '</div>');
+                    $('#dropzone-gallery').append(
+                        '<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-' + response.iid + '">' +
+                        ' <div class="gallery-image-wrap">' +
+                        '  <a href="/event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '">' +
+                        '  <img src="/event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive" />' +
+                        '  <span><i>' + eHtml(file.name) + '</i></span></a>' +
+                        ' </div>' +
+                        '</div>'
+                    );
+                    $('#galleryImage-' + response.iid).on('click', handleImageClick);
                 }
             },
             uploadStarted: function (i, file, len) {
@@ -404,14 +410,92 @@ $(function () {
             },
             progressUpdated: function (i, file, progress) {
                 var barEl = progressEl.find('#file-upload-progress-' + i + ' .progress-bar');
-                barEl.data('aria-valuenow', progress);
-                barEl.css('width', progress + '%');
-                barEl.text(progress + '%');
+                if (barEl.data('aria-valuenow') != progress) {
+                    barEl.data('aria-valuenow', progress);
+                    barEl.css('width', progress + '%');
+                    barEl.text(progress + '%');
+                }
             },
             speedUpdated: function (i, file, speed) {
-                // speed in kb/s
+                speedEl.text(speed.toFixed(1) + ' kb/s');
+            },
+            afterAll: function () {
+                speedEl.text('');
             }
         });
 
+        var modalEl = $('#galleryImageDetails'),
+            titleEl = $('#galleryImageTitle'),
+            imageEl = $('#galleryImageImage'),
+            deleteEl = $('#galleryImageDelete'),
+            saveEl = $('#galleryImageSave'),
+            handleImageClick;
+
+        handleImageClick = function (e) {
+            var el = $(this),
+                iid = el.data('iid');
+            e.preventDefault();
+            titleEl.val(el.data('title'));
+            modalEl.modal('show');
+            imageEl.html('<img src="/admin/event/' + el.data('eid') + '/gallery/' + iid + '/detail" class="img-responsive">');
+            deleteEl.data('iid', iid);
+        };
+        $('#dropzone-gallery a').on('click', handleImageClick);
+
+        deleteEl.on('click', function (e) {
+            var iid = deleteEl.data('iid');
+            deleteEl.toggleClass('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '/admin/event/gallery/image/delete',
+                data: {
+                    _token: deleteEl.data('token'),
+                    iid: iid
+                },
+                dataType: 'json',
+                success: function () {
+                    debugger;
+                    $('#galleryImage-' + iid).remove();
+                    modalEl.modal('hide');
+                },
+                error: function () {
+                    $(document).trigger('add-alerts', {
+                        message: 'Das Bild konnte nicht gelöscht werden',
+                        priority: 'error'
+                    });
+                },
+                complete: function () {
+                    deleteEl.toggleClass('disabled', false);
+                }
+            });
+        });
+        saveEl.on('click', function (e) {
+            var iid = deleteEl.data('iid'),
+                title = $('#galleryImageTitle').val();
+            saveEl.toggleClass('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '/admin/event/gallery/image/save',
+                data: {
+                    _token: saveEl.data('token'),
+                    title: title,
+                    iid: iid
+                },
+                dataType: 'json',
+                success: function () {
+                    $('#galleryImage-' + iid + ' span').text(title);
+                    modalEl.modal('hide');
+                },
+                error: function () {
+                    $(document).trigger('add-alerts', {
+                        message: 'Das Bild konnte nicht gespeichert werden',
+                        priority: 'error'
+                    });
+                },
+                complete: function () {
+                    saveEl.toggleClass('disabled', false);
+                }
+            });
+        });
     }
 });
