@@ -13,9 +13,7 @@ namespace AppBundle\Controller\Event\Gallery;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
-use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
-use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -37,7 +35,7 @@ class GalleryAdminController extends BaseGalleryController
     public function detailsAction(Event $event)
     {
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
-        $images      = $repository->findBy(['event' => $event]);
+        $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
 
         return $this->render(
@@ -74,6 +72,26 @@ class GalleryAdminController extends BaseGalleryController
         /** @var UploadedFile $file */
         foreach ($request->files as $file) {
             $galleryImage = new GalleryImage($event, $file);
+            try {
+                $exif = exif_read_data($file->getPathname());
+            } catch (\Exception $e) {
+                $exif = [];
+            }
+            try {
+                if (isset($exif['DateTimeOriginal'])) {
+                    $recorded = new \DateTime($exif['DateTimeOriginal']);
+                } elseif (isset($exif['DateTimeDigitized'])) {
+                    $recorded = new \DateTime($exif['DateTimeDigitized']);
+                } elseif (isset($exif['DateTime'])) {
+                    $recorded = new \DateTime($exif['DateTime']);
+                } else {
+                    $recorded = null;
+                }
+                $galleryImage->setRecordedAt($recorded);
+            } catch (\Exception $e) {
+                $this->get('logger')->error($e->getMessage());
+            }
+
             $em->persist($galleryImage);
         }
         $em->flush();
@@ -81,39 +99,4 @@ class GalleryAdminController extends BaseGalleryController
         return new JsonResponse(['eid' => $event->getEid(), 'iid' => $galleryImage->getIid()]);
     }
 
-    /**
-     * Detail page for one single event
-     *
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                               name="gallery_image_thumbnail")
-     * @param GalleryImage $galleryImage
-     * @return ImageResponse
-     */
-    public function thumbnailImageAction(GalleryImage $galleryImage)
-    {
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetchResized(
-            $galleryImage->getFilename(), 150, 150, ImageInterface::THUMBNAIL_OUTBOUND, 30
-        );
-
-        return new ImageResponse($image);
-    }
-
-    /**
-     * Detail page for one single event
-     *
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/original", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                               name="gallery_image_original")
-     * @param GalleryImage $galleryImage
-     * @return ImageResponse
-     */
-    public function originalImageAction(GalleryImage $galleryImage)
-    {
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetch($galleryImage->getFilename());
-
-        return new ImageResponse($image);
-    }
 }

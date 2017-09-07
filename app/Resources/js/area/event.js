@@ -382,8 +382,9 @@ $(function () {
             maxfiles: 100,
             maxfilesize: 10,
             uploadFinished: function (i, file, response, time) {
+                progressEl.find('#file-upload-progress-' + i).remove();
                 if (response.iid) {
-                    $('#dropzone-gallery').append('<div class="col-xs-6 col-sm-6 col-md-3">' +
+                    $('#dropzone-gallery').append('<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">' +
                         '<a href="/event/' + response.eid + '/gallery/' + response.iid + '/original" >' +
                         '<img src="/event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive">' +
                         '<span></span></a>\n' +
@@ -400,9 +401,6 @@ $(function () {
                     ' </div>' +
                     '</div>'
                 );
-            },
-            uploadFinished: function (i, file, response, time) {
-                progressEl.find('#file-upload-progress-' + i).remove();
             },
             progressUpdated: function (i, file, progress) {
                 var barEl = progressEl.find('#file-upload-progress-' + i + ' .progress-bar');

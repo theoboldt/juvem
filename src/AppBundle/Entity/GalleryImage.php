@@ -63,6 +63,12 @@ class GalleryImage
     private $filename;
 
     /**
+     * @ORM\Column(type="datetime", name="recorded_at", nullable=true)
+     * @var \DateTime
+     */
+    protected $recordedAt = null;
+
+    /**
      * GalleryImage constructor.
      *
      * @param Event|null $event
@@ -180,5 +186,22 @@ class GalleryImage
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getRecordedAt()
+    {
+        return $this->recordedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface $recordedAt
+     * @return GalleryImage
+     */
+    public function setRecordedAt(\DateTimeInterface $recordedAt = null)
+    {
+        $this->recordedAt = $recordedAt;
+        return $this;
+    }
 
 }

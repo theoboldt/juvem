@@ -16,20 +16,30 @@
             {% endembed %}
             <div class="container">
                 <div class="row">
-                    <div class="col-xs-3">
-                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
-                                    data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
-                                    data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
-                                    data-button-enable-label="Teilen via Link aktivieren" data-button-enable-glyph="link"
-                                    data-button-disable-label="Teilen via Link deaktivieren"
-                                    data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                    <div class="col-xs-12">
+                        <div class="btn-toolbar" role="toolbar" aria-label="Bildergallerie bearbeiten">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <button type="button" class="btn btn-default" data-element="activebutton"
+                                            data-entity="Event"
+                                            data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
+                                            data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
+                                            data-button-enable-label="Teilen via Link aktivieren"
+                                            data-button-enable-glyph="link"
+                                            data-button-disable-label="Teilen via Link deaktivieren"
+                                            data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                                </div>
+                                <div class="col-xs-9">
+                                    <input type="text" class="form-control"
+                                           value="{{ url('event_gallery', {'eid': event.eid, 'hash': galleryHash}) }}"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-xs-9">
-                        <input type="text" class="form-control" value="{{ url('event_gallery', {'eid': event.eid, 'hash': galleryHash}) }}" />
+                    <div class="col-xs-12" style="margin: 15px 0;">
+                        <div class="row" id="upload-progress">
+                        </div>
                     </div>
-                </div>
-                <div class="row" id="upload-progress">
-                </div>
                 <div class="row">
                     <div class="media-gallery">
                         <div class="row gallery" id="dropzone-gallery">
