@@ -23,6 +23,8 @@
     {% if pageDescription is defined %}
         <meta name="description" content="{{ pageDescription|e|length > 157 ? pageDescription|e|slice(0, 155) ~ '…' : pageDescription|e }}">
     {% endif %}
+    {% block head %}
+    {% endblock %}
 </head>
 <body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}">
 <div id="page">
