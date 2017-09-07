@@ -62,7 +62,8 @@ class GalleryPublicController extends BaseGalleryController
     {
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetchResized(
-            $galleryImage->getFilename(), 150, 150, ImageInterface::THUMBNAIL_OUTBOUND, 30
+            $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
+            ImageInterface::THUMBNAIL_OUTBOUND, 30
         );
 
         return new ImageResponse($image);

@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Event\Gallery;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
 use AppBundle\InvalidTokenHttpException;
+use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -95,8 +96,15 @@ class GalleryAdminController extends BaseGalleryController
             $em->persist($galleryImage);
         }
         $em->flush();
+        $iid = $galleryImage->getIid();
 
-        return new JsonResponse(['eid' => $event->getEid(), 'iid' => $galleryImage->getIid()]);
+        $this->get('app.gallery_image_manager')->fetchResized(
+            $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
+            ImageInterface::THUMBNAIL_OUTBOUND, 30
+        );
+        unset($galleryImage);
+
+        return new JsonResponse(['eid' => $event->getEid(), 'iid' => $iid]);
     }
 
 }
