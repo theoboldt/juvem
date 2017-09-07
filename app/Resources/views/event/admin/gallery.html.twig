@@ -83,9 +83,9 @@
                             {% for image in images %}
                                 <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-{{ image.iid }}">
                                     <div class="gallery-image-wrap">
-                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}"
+                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid, 'hash': galleryHash}) }}"
                                            data-eid="{{ event.eid }}" data-iid="{{ image.iid }}" data-title="{{ image.title|e('html_attr') }}">
-                                            <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid}) }}"
+                                            <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid, 'hash': galleryHash}) }}"
                                                  class="img-responsive">
                                             <span>{{ image.title|e }}</span>
                                         </a>
