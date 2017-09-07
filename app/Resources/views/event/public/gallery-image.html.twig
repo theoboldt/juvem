@@ -1,0 +1,8 @@
+<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="gallery-image-wrap">
+        <a href="{{ path('gallery_image_original', {'eid': eid, 'iid': image.iid, 'hash': hash}) }}">
+            <img src="{{ path('gallery_image_thumbnail', {'eid': eid, 'iid': image.iid, 'hash': hash}) }}" class="img-responsive">
+            <span>{{ image.title|e }}</span>
+        </a>
+    </div>
+</div>

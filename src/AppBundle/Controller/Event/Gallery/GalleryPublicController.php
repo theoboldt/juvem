@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Event\Gallery;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
+use AppBundle\Entity\User;
 use AppBundle\ImageResponse;
 use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -53,13 +54,18 @@ class GalleryPublicController extends BaseGalleryController
      * Detail page for one single event
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+",},
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                               name="gallery_image_thumbnail")
-     * @param GalleryImage $galleryImage
+     * @param  string       $hash
+     * @param  GalleryImage $galleryImage
      * @return ImageResponse
      */
-    public function thumbnailImageAction(GalleryImage $galleryImage)
+    public function thumbnailImageAction($hash, GalleryImage $galleryImage)
     {
+        if (!$this->isAccessGranted($galleryImage, $hash)) {
+            throw new NotFoundHttpException('Not allowed to access image');
+        }
+
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
@@ -71,13 +77,18 @@ class GalleryPublicController extends BaseGalleryController
 
     /**
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/detail", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                               name="gallery_image_detail")
-     * @param GalleryImage $galleryImage
+     * @Route("/event/{eid}/gallery/{iid}/detail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                                    name="gallery_image_detail")
+     * @param  string       $hash
+     * @param  GalleryImage $galleryImage
      * @return ImageResponse
      */
-    public function detailImageAction(GalleryImage $galleryImage)
+    public function detailImageAction($hash, GalleryImage $galleryImage)
     {
+        if (!$this->isAccessGranted($galleryImage, $hash)) {
+            throw new NotFoundHttpException('Not allowed to access image');
+        }
+
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
@@ -91,16 +102,44 @@ class GalleryPublicController extends BaseGalleryController
      * Detail page for one single event
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/original", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                               name="gallery_image_original")
-     * @param GalleryImage $galleryImage
+     * @Route("/event/{eid}/gallery/{iid}/original/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                                      name="gallery_image_original")
+     * @param  string       $hash
+     * @param  GalleryImage $galleryImage
      * @return ImageResponse
      */
-    public function originalImageAction(GalleryImage $galleryImage)
+    public function originalImageAction($hash, GalleryImage $galleryImage)
     {
+        if (!$this->isAccessGranted($galleryImage, $hash)) {
+            throw new NotFoundHttpException('Not allowed to access image');
+        }
+
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetch($galleryImage->getFilename());
 
+
         return new ImageResponse($image);
+    }
+
+    /**
+     * Check if access is granted for gallery
+     *
+     * @param GalleryImage $galleryImage
+     * @param string       $hash
+     * @return bool
+     */
+    private function isAccessGranted(GalleryImage $galleryImage, $hash)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user && $user->hasRole('ROLE_ADMIN_EVENT')) {
+            return true;
+        }
+        $event = $galleryImage->getEvent();
+        if ($event->isGalleryLinkSharing() && hash_equals($this->galleryHash($event), $hash)) {
+            return true;
+        }
+
+        return false;
     }
 }

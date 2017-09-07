@@ -17,15 +17,8 @@
                     <div class="media-gallery">
                         <div class="row gallery" id="dropzone-gallery">
                             {% for image in images %}
-                                <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                                    <div class="gallery-image-wrap">
-                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid}) }}">
-                                            <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid}) }}"
-                                                 class="img-responsive">
-                                            <span>{{ image.title }}</span>
-                                        </a>
-                                    </div>
-                                </div>
+                                {% embed 'event/public/gallery-image.html.twig' with {'eid': event.eid, 'image': image, 'hash': galleryHash} %}
+                                {% endembed %}
                             {% endfor %}
                         </div>
                     </div>
