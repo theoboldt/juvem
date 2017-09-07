@@ -2,16 +2,16 @@
 
 {% block head %}<meta name="robots" content="noindex, follow">{% endblock %}
 
-{% block title %}Veranstaltung ({{ event.title }}){% endblock %}
+{% block title %}Bildergalerie ({{ event.title }}){% endblock %}
 
 {% block body %}
     <section>
         <article>
-            {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Bildergallerie'} %}
+            {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Bildergalerie'} %}
                 {% block breadcrumb %}
                     <li><a href="{{ path('homepage') }}">Juvem</a></li>
                     <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a>
-                    <li class="active">Bildergallerie</li>
+                    <li class="active">Bildergalerie</li>
                 {% endblock %}
             {% endembed %}
             <div class="container">
