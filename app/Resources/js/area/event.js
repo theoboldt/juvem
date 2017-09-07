@@ -380,6 +380,7 @@ $(function () {
             },
             allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],
             allowedfileextensions: ['.jpg', '.jpeg', '.png', '.gif'],
+            queuefiles: 4,
             maxfiles: 100,
             maxfilesize: 10,
             uploadFinished: function (i, file, response, time) {
