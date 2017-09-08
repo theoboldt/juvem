@@ -5,9 +5,20 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
+
+    // Append this init function below
+
+    public function __construct($environment, $debug)
+    {
+        if (!ini_get('date.timezone')) {
+            date_default_timezone_set('Europe/Paris');
+        }
+        parent::__construct($environment, $debug);
+    }
+
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
@@ -18,15 +29,15 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new FOS\UserBundle\FOSUserBundle(),
-        	new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
+            new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new Nelmio\SecurityBundle\NelmioSecurityBundle(),
             new Knp\Bundle\TimeBundle\KnpTimeBundle(),
             new Skies\QRcodeBundle\SkiesQRcodeBundle(),
             new AppBundle\AppBundle(),
-        );
+        ];
 
-        if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
@@ -39,6 +50,6 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
     }
 }
