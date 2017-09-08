@@ -18,6 +18,7 @@ use AppBundle\ImageResponse;
 use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
@@ -30,7 +31,7 @@ class GalleryPublicController extends BaseGalleryController
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/gallery/{hash}", requirements={"eid": "\d+"}, name="event_gallery")
      */
-    public function showAction(Event $event, $hash)
+    public function showAction(Request $request, Event $event, $hash)
     {
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
@@ -39,6 +40,11 @@ class GalleryPublicController extends BaseGalleryController
         if (!hash_equals($galleryHash, $hash) || !$event->getIsGalleryLinkSharing()) {
             throw new NotFoundHttpException('Hash incorrect or link sharing disabled');
         }
+
+        $grantedGalleries = $request->getSession()->get('grantedGalleries', []);
+        $request->getSession()->set(
+            'grantedGalleries', array_unique(array_merge($grantedGalleries, [$event->getEid()]))
+        );
 
         return $this->render(
             'event/public/gallery.html.twig',
@@ -54,18 +60,18 @@ class GalleryPublicController extends BaseGalleryController
      * Detail page for one single event
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_thumbnail")
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+",},
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+"},
      *                                                name="gallery_image_thumbnail_without_hash")
-     * @param  string       $hash
-     * @param  GalleryImage $galleryImage
+     * @param Request       $request      Request used to ensure that user has visited overview page before
+     * @param  GalleryImage $galleryImage Desired image
+     * @param  string       $hash         Gallery hash to ensure that user is allowed to access image
      * @return ImageResponse
-	 * @throws NotFoundHttpException If no access granted
      */
-    public function thumbnailImageAction(GalleryImage $galleryImage, $hash = null)
+    public function thumbnailImageAction(Request $request, GalleryImage $galleryImage, $hash = null)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessGranted($galleryImage, $request, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
 
@@ -80,19 +86,18 @@ class GalleryPublicController extends BaseGalleryController
 
     /**
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/detail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                                    name="gallery_image_detail")
-     * @Route("/event/{eid}/gallery/{iid}/detail", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                             name="gallery_image_detail_without_hash")
-	 * defaults={"_format": "html"}
-     * @param  string       $hash
-     * @param  GalleryImage $galleryImage
+     * @Route("/event/{eid}/gallery/{iid}/detail/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
+     *     defaults={"hash": "0"}, name="gallery_image_detail")
+     *
+     * @param Request       $request      Request used to ensure that user has visited overview page before
+     * @param  GalleryImage $galleryImage Desired image
+     * @param  string       $hash         Gallery hash to ensure that user is allowed to access image
      * @return ImageResponse
-	 * @throws NotFoundHttpException If no access granted
+     * @throws NotFoundHttpException If no access granted
      */
-    public function detailImageAction(GalleryImage $galleryImage, $hash = null)
+    public function detailImageAction(Request $request, GalleryImage $galleryImage, $hash = null)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessGranted($galleryImage, $request, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
 
@@ -111,14 +116,15 @@ class GalleryPublicController extends BaseGalleryController
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/original/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                                      name="gallery_image_original")
-     * @param  string       $hash
-     * @param  GalleryImage $galleryImage
+     * @param Request       $request      Request used to ensure that user has visited overview page before
+     * @param  GalleryImage $galleryImage Desired image
+     * @param  string       $hash         Gallery hash to ensure that user is allowed to access image
      * @return ImageResponse
-	 * @throws NotFoundHttpException If no access granted
+     * @throws NotFoundHttpException If no access granted
      */
-    public function originalImageAction($hash, GalleryImage $galleryImage)
+    public function originalImageAction(Request $request, $hash, GalleryImage $galleryImage)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessGranted($galleryImage, $request, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
 
@@ -133,10 +139,11 @@ class GalleryPublicController extends BaseGalleryController
      * Check if access is granted for gallery
      *
      * @param GalleryImage $galleryImage
+     * @param Request      $request
      * @param string       $hash
      * @return bool
      */
-    private function isAccessGranted(GalleryImage $galleryImage, $hash = null)
+    private function isAccessGranted(GalleryImage $galleryImage, Request $request, $hash = null)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -144,9 +151,13 @@ class GalleryPublicController extends BaseGalleryController
             return true;
         }
         $event = $galleryImage->getEvent();
-        if ($event->isGalleryLinkSharing() && hash_equals($this->galleryHash($event), $hash)) {
+        if ($event->isGalleryLinkSharing()
+            && hash_equals($this->galleryHash($event), $hash)
+            && in_array($event->getEid(), $request->getSession()->get('grantedGalleries', []))
+        ) {
             return true;
         }
+
 
         return false;
     }
