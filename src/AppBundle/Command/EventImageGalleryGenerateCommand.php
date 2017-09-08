@@ -36,7 +36,7 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('app:event:gallery')
-             ->setDescription('Send event subscription emails')
+             ->setDescription('Ensure gallery images are cached')
              ->addOption('dry-run', 'd', InputOption::VALUE_NONE)
              ->addArgument('event', InputArgument::REQUIRED, 'Event ID of which images should be cached');
     }
@@ -46,8 +46,10 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        \ini_set('memory_limit', '512M');
+        \ini_set('memory_limit', '256M');
+
         $dry  = $input->getOption('dry-run');
-        $run  = new \DateTime();
 
         $eventRepository = $this->getContainer()->get('doctrine')->getRepository(Event::class);
         /** @var Event $event */
