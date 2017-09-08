@@ -23,7 +23,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 
 class GalleryAdminController extends BaseGalleryController
@@ -101,11 +103,17 @@ class GalleryAdminController extends BaseGalleryController
         $em->flush();
         $iid = $galleryImage->getIid();
 
-        $this->get('app.gallery_image_manager')->fetchResized(
-            $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
-            ImageInterface::THUMBNAIL_OUTBOUND, 30
-        );
-        unset($galleryImage);
+        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function(PostResponseEvent $event) use ($galleryImage) {
+            ignore_user_abort(true);
+            if( ini_get('max_execution_time') < 10*60 ){
+                ini_set('max_execution_time', 10*60);
+            }
+
+			unset($galleryImage);
+
+        });
+
+
 
         return new JsonResponse(['eid' => $event->getEid(), 'iid' => $iid]);
     }

@@ -389,8 +389,8 @@ $(function () {
                     $('#dropzone-gallery').append(
                         '<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-' + response.iid + '">' +
                         ' <div class="gallery-image-wrap">' +
-                        '  <a href="/event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '">' +
-                        '  <img src="/event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive" />' +
+                        '  <a href="/../event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '">' +
+                        '  <img src="/../event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive" />' +
                         '  <span><i>' + eHtml(file.name) + '</i></span></a>' +
                         ' </div>' +
                         '</div>'

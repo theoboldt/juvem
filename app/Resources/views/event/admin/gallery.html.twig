@@ -85,7 +85,7 @@
                                     <div class="gallery-image-wrap">
                                         <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid, 'hash': galleryHash}) }}"
                                            data-eid="{{ event.eid }}" data-iid="{{ image.iid }}" data-title="{{ image.title|e('html_attr') }}">
-                                            <img src="{{ path('gallery_image_thumbnail', {'eid': event.eid, 'iid': image.iid, 'hash': galleryHash}) }}"
+                                            <img src="{{ path('gallery_image_thumbnail_without_hash', {'eid': event.eid, 'iid': image.iid}) }}"
                                                  class="img-responsive">
                                             <span>{{ image.title|e }}</span>
                                         </a>

@@ -56,9 +56,12 @@ class GalleryPublicController extends BaseGalleryController
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                               name="gallery_image_thumbnail")
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                                name="gallery_image_thumbnail_without_hash")
      * @param  string       $hash
      * @param  GalleryImage $galleryImage
      * @return ImageResponse
+	 * @throws NotFoundHttpException If no access granted
      */
     public function thumbnailImageAction($hash, GalleryImage $galleryImage)
     {
@@ -79,11 +82,15 @@ class GalleryPublicController extends BaseGalleryController
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/detail/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                                    name="gallery_image_detail")
+     * @Route("/event/{eid}/gallery/{iid}/detail", requirements={"eid": "\d+", "iid": "\d+",},
+     *                                             name="gallery_image_detail_without_hash")
+	 * defaults={"_format": "html"}
      * @param  string       $hash
      * @param  GalleryImage $galleryImage
      * @return ImageResponse
+	 * @throws NotFoundHttpException If no access granted
      */
-    public function detailImageAction($hash, GalleryImage $galleryImage)
+    public function detailImageAction(GalleryImage $galleryImage, $hash = null)
     {
         if (!$this->isAccessGranted($galleryImage, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
@@ -107,6 +114,7 @@ class GalleryPublicController extends BaseGalleryController
      * @param  string       $hash
      * @param  GalleryImage $galleryImage
      * @return ImageResponse
+	 * @throws NotFoundHttpException If no access granted
      */
     public function originalImageAction($hash, GalleryImage $galleryImage)
     {
@@ -128,7 +136,7 @@ class GalleryPublicController extends BaseGalleryController
      * @param string       $hash
      * @return bool
      */
-    private function isAccessGranted(GalleryImage $galleryImage, $hash)
+    private function isAccessGranted(GalleryImage $galleryImage, $hash = null)
     {
         /** @var User $user */
         $user = $this->getUser();
