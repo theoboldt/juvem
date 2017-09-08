@@ -63,7 +63,7 @@ class GalleryPublicController extends BaseGalleryController
      * @return ImageResponse
 	 * @throws NotFoundHttpException If no access granted
      */
-    public function thumbnailImageAction($hash, GalleryImage $galleryImage)
+    public function thumbnailImageAction(GalleryImage $galleryImage, $hash = null)
     {
         if (!$this->isAccessGranted($galleryImage, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');

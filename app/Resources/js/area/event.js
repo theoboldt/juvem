@@ -386,16 +386,15 @@ $(function () {
             uploadFinished: function (i, file, response, time) {
                 progressEl.find('#file-upload-progress-' + i).remove();
                 if (response.iid) {
-                    $('#dropzone-gallery').append(
-                        '<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-' + response.iid + '">' +
+                    var html = '<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-' + response.iid + '">' +
                         ' <div class="gallery-image-wrap">' +
-                        '  <a href="/../event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '">' +
+                        '  <a href="/../event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '" >' +
                         '  <img src="/../event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive" />' +
                         '  <span><i>' + eHtml(file.name) + '</i></span></a>' +
                         ' </div>' +
-                        '</div>'
-                    );
-                    $('#galleryImage-' + response.iid).on('click', handleImageClick);
+                        '</div>';
+                    $('#dropzone-gallery').append(html);
+                    $('#galleryImage-' + response.iid + ' a').on('click', handleImageClick);
                 }
             },
             uploadStarted: function (i, file, len) {
@@ -438,7 +437,7 @@ $(function () {
             e.preventDefault();
             titleEl.val(el.data('title'));
             modalEl.modal('show');
-            imageEl.html('<img src="/admin/event/' + el.data('eid') + '/gallery/' + iid + '/detail" class="img-responsive">');
+            imageEl.html('<img src="/../event/' + el.data('eid') + '/gallery/' + iid + '/detail" class="img-responsive">');
             deleteEl.data('iid', iid);
         };
         $('#dropzone-gallery a').on('click', handleImageClick);

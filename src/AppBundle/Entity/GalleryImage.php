@@ -29,7 +29,6 @@ class GalleryImage
     use CreatedModifiedTrait;
 
     const THUMBNAIL_DIMENSION = 150;
-    const THUMBNAIL_ADMIN = 600;
     const THUMBNAIL_DETAIL = 800;
 
     /**

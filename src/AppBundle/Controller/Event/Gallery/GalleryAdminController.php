@@ -13,7 +13,6 @@ namespace AppBundle\Controller\Event\Gallery;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
-use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -103,38 +102,28 @@ class GalleryAdminController extends BaseGalleryController
         $em->flush();
         $iid = $galleryImage->getIid();
 
-        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function(PostResponseEvent $event) use ($galleryImage) {
+        $uploadManager = $this->get('app.gallery_image_manager');
+        $this->get('event_dispatcher')->addListener(
+            KernelEvents::TERMINATE, function (PostResponseEvent $event) use ($galleryImage, $uploadManager) {
             ignore_user_abort(true);
-            if( ini_get('max_execution_time') < 10*60 ){
-                ini_set('max_execution_time', 10*60);
+            if (ini_get('max_execution_time') < 10 * 60) {
+                ini_set('max_execution_time', 10 * 60);
             }
+            $uploadManager->fetchResized(
+                $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
+                ImageInterface::THUMBNAIL_OUTBOUND, 30
+            );
+            $uploadManager->fetchResized(
+                $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
+                ImageInterface::THUMBNAIL_INSET, 70
+            );
 
-			unset($galleryImage);
-
+            unset($galleryImage);
         });
 
 
 
         return new JsonResponse(['eid' => $event->getEid(), 'iid' => $iid]);
-    }
-
-    /**
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/admin/event/{eid}/gallery/{iid}/detail", requirements={"eid": "\d+", "iid": "\d+",},
-     *                                               name="gallery_image_detail_admin")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     * @param GalleryImage $galleryImage
-     * @return ImageResponse
-     */
-    public function detailImageAction(GalleryImage $galleryImage)
-    {
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetchResized(
-            $galleryImage->getFilename(), GalleryImage::THUMBNAIL_ADMIN, GalleryImage::THUMBNAIL_ADMIN,
-            ImageInterface::THUMBNAIL_INSET, 70
-        );
-
-        return new ImageResponse($image);
     }
 
     /**
