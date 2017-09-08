@@ -12,7 +12,6 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
-use AppBundle\Entity\Task;
 use Imagine\Image\ImageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -24,13 +23,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class EventImageGalleryGenerateCommand extends ContainerAwareCommand
 {
     /**
-     * Event Task
-     *
-     * @var Task
-     */
-    protected $task;
-
-    /**
      * {@inheritdoc}
      */
     protected function configure()
@@ -38,7 +30,8 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
         $this->setName('app:event:gallery')
              ->setDescription('Ensure gallery images are cached')
              ->addOption('dry-run', 'd', InputOption::VALUE_NONE)
-             ->addArgument('event', InputArgument::REQUIRED, 'Event ID of which images should be cached');
+             ->addArgument('event', InputArgument::REQUIRED, 'Event ID of which images should be cached')
+             ->addArgument('memory', InputArgument::OPTIONAL, 'Memory limit override in M');
     }
 
     /**
@@ -46,14 +39,20 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        \ini_set('memory_limit', '512M');
-        \ini_set('memory_limit', '256M');
+        $memoryLimit = null;
+        if ($input->hasArgument('memory')) {
+            $memoryLimit = $input->getArgument('memory');
+        }
+        if (!is_numeric($memoryLimit) || $memoryLimit < 256) {
+            $memoryLimit = 512;
+        }
+        \ini_set('memory_limit', $memoryLimit . 'M');
 
-        $dry  = $input->getOption('dry-run');
+        $dry = $input->getOption('dry-run');
 
         $eventRepository = $this->getContainer()->get('doctrine')->getRepository(Event::class);
         /** @var Event $event */
-        $event           = $eventRepository->find($input->getArgument('event'));
+        $event = $eventRepository->find($input->getArgument('event'));
         if (!$event) {
             throw new \RuntimeException('Did not find event with transmitted id');
         }
