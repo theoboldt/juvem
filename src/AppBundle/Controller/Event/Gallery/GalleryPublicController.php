@@ -31,6 +31,7 @@ class GalleryPublicController extends BaseGalleryController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/gallery/{hash}", requirements={"eid": "\d+"}, name="event_gallery")
+     * @Route("/event/{eid}/gallery/{hash}/", requirements={"eid": "\d+"})
      */
     public function showAction(Request $request, Event $event, $hash)
     {
