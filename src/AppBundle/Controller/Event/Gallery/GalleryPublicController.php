@@ -39,6 +39,17 @@ class GalleryPublicController extends BaseGalleryController
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
 
+        $lastModified = $event->getModifiedAt();
+        $eTag         = $lastModified->format('U');
+        foreach ($images as $image) {
+            $imageModified = $image->getModifiedAt();
+            $eTag          .= $image->getIid() . $imageModified->format('U');
+            if ($imageModified > $lastModified) {
+                $lastModified = $imageModified;
+            }
+        }
+        $eTag = sha1($eTag);
+
         if (!$this->isAccessOnEventGranted($event, $hash)) {
             throw new NotFoundHttpException('Hash incorrect or link sharing disabled');
         }
@@ -48,7 +59,7 @@ class GalleryPublicController extends BaseGalleryController
             'grantedGalleries', array_unique(array_merge($grantedGalleries, [$event->getEid()]))
         );
 
-        return $this->render(
+        $response = $this->render(
             'event/public/gallery.html.twig',
             [
                 'event'       => $event,
@@ -56,6 +67,13 @@ class GalleryPublicController extends BaseGalleryController
                 'images'      => $images
             ]
         );
+        $response->setLastModified($lastModified)
+                 ->setMaxAge(14 * 24 * 60 * 60)
+                 ->setETag($eTag)
+                 ->setPublic()
+                 ->isNotModified($request);
+
+        return $response;
     }
 
     /**

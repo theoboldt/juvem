@@ -189,6 +189,7 @@ class GalleryAdminController extends BaseGalleryController
                 throw new InvalidTokenHttpException();
             }
             $image->setTitle($title);
+            $image->setModifiedAtNow();
             $em = $this->getDoctrine()->getManager();
             $em->persist($image);
             $em->flush();

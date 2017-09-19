@@ -38,13 +38,13 @@ class ImageResponse extends StreamedResponse
     )
     {
         $response = new Response('', Response::HTTP_OK);
-        self::setCacheHeaders($image, $response);
+        self::setCacheHeaders($image, $response, $request);
 
         if ($response->isNotModified($request)) {
             return $response;
         }
 
-//        $image  = $request->query->get('image');
+        //        $image  = $request->query->get('image');
         $width  = $request->query->get('width', $defaultWidth);
         $height = $request->query->get('height', $defaultHeight);
 
@@ -52,15 +52,19 @@ class ImageResponse extends StreamedResponse
     }
 
     /**
-     * @param UploadImage $image
-     * @param Response    $response
+     * @param UploadImage  $image
+     * @param Response     $response
+     * @param Request|null $request Transmit @see Request in order to be able to do an ETAG compare
      */
-    private static function setCacheHeaders(UploadImage $image, Response $response)
+    private static function setCacheHeaders(UploadImage $image, Response $response, Request $request = null)
     {
         $response->setEtag($image->getETag())
                  ->setLastModified($image->getMTime())
                  ->setMaxAge(14 * 24 * 60 * 60)
                  ->setPublic();
+        if ($request) {
+            $response->isNotModified($request);
+        }
     }
 
     /**
@@ -75,9 +79,10 @@ class ImageResponse extends StreamedResponse
     /**
      * Constructor
      *
-     * @param UploadImage $image
+     * @param UploadImage  $image   Image to provide
+     * @param Request|null $request Transmit @see Request in order to be able to do an ETAG compare
      */
-    public function __construct(UploadImage $image)
+    public function __construct(UploadImage $image, Request $request = null)
     {
         parent::__construct(
             function () use ($image) {
@@ -87,6 +92,6 @@ class ImageResponse extends StreamedResponse
             ['Content-Type' => $image->getType(true)]
         );
 
-        self::setCacheHeaders($image, $this);
+        self::setCacheHeaders($image, $this, $request);
     }
 }
