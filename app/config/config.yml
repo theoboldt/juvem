@@ -62,6 +62,7 @@ twig:
         thousands_separator: '.'
     globals:
         version: "%app.version%"
+        appTitle: "%customization.app_title%"
         assetJsIntegrity: "%app.version.integrity.js%"
         customization: "@app.twig_global_customization"
         kernelRootDir: "%kernel.root_dir%"

@@ -7,7 +7,7 @@
     {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': customization.organizationName} %}
         {% block breadcrumbfull %}
             <ol class="breadcrumb">
-                <li class="active"><a href="{{ path('homepage') }}">Juvem</a></li>
+                <li class="active"><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
             </ol>
         {% endblock %}
     {% endembed %}

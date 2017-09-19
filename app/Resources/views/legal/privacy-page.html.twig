@@ -3,10 +3,10 @@
 {% block title %}Datenschutzerklärung{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Datenschutzerklärung', 'subtitle': 'Juvem'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Datenschutzerklärung', 'subtitle': appTitle} %}
         {% block breadcrumbfull %}
             <ol class="breadcrumb">
-                <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
                 <li><a href="{{ path('imprint') }}">Impressum</a></li>
                 <li class="active">Datenschutzerklärung</li>
             </ol>

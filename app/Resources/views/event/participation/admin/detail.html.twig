@@ -51,7 +51,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                    <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
                     <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                     <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
                     <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>

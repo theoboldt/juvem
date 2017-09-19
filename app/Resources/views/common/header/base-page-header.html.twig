@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             {% block breadcrumbfull %}
                 <ol class="breadcrumb">
-                    <li><a href="{{ path('homepage') }}">Juvem</a></li>
+                    <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
                     {% block breadcrumb %}{% endblock %}
                 </ol>
             {% endblock %}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <title>Teilnehmer ({{ event.title }}) - Juvem</title>
+    <title>Teilnehmer ({{ event.title }}) - {{ appTitle }}</title>
     {% if app.environment == 'dev' %}
         <link rel="stylesheet" href="{{ asset('css/all.css', 'css') }}">
         <script src="//localhost:35729/livereload.js"></script>
@@ -58,7 +58,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li>Juvem</li>
+                    <li>{{ appTitle }}</li>
                     <li>{{ event.title }} {{ event.startDate.format('Y') }}</li>
                     <li class="active">{{ participant.nameLast }}, {{ participant.nameFirst }}</li>
                 </ol>

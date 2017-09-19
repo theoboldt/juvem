@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <title>{% block title %}{% endblock %} - Juvem</title>
+    <title>{% block title %}{% endblock %} - {{ appTitle }}</title>
     {% block stylesheets %}{% endblock %}
 
     {% if app.environment == 'dev' %}
