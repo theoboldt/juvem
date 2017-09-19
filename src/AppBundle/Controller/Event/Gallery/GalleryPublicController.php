@@ -33,13 +33,13 @@ class GalleryPublicController extends BaseGalleryController
      * @Route("/event/{eid}/gallery/{hash}", requirements={"eid": "\d+"}, name="event_gallery")
      * @Route("/event/{eid}/gallery/{hash}/", requirements={"eid": "\d+"})
      */
-    public function showAction(Request $request, Event $event, $hash)
+    public function showAction(Request $request, Event $event, $hash = null)
     {
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
 
-        if (!hash_equals($galleryHash, $hash) || !$event->getIsGalleryLinkSharing()) {
+        if (!$this->isAccessOnEventGranted($event, $hash)) {
             throw new NotFoundHttpException('Hash incorrect or link sharing disabled');
         }
 
@@ -73,12 +73,18 @@ class GalleryPublicController extends BaseGalleryController
      */
     public function thumbnailImageAction(Request $request, GalleryImage $galleryImage, $hash = null)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessOnImageGranted($galleryImage, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
         $event = $galleryImage->getEvent();
         if (!in_array($event->getEid(), $request->getSession()->get('grantedGalleries', []))) {
-            return new RedirectResponse($this->generateUrl('event_gallery', ['eid' => $event->getEid(), 'hash' => $hash]));
+            $route      = 'event_gallery';
+            $parameters = ['eid' => $event->getEid()];
+            if (!$hash) {
+                $route              = 'event_gallery_admin';
+                $parameters['hash'] = $hash;
+            }
+            return new RedirectResponse($this->generateUrl($route, $parameters));
         }
 
         $uploadManager = $this->get('app.gallery_image_manager');
@@ -103,7 +109,7 @@ class GalleryPublicController extends BaseGalleryController
      */
     public function detailImageAction(Request $request, GalleryImage $galleryImage, $hash = null)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessOnImageGranted($galleryImage, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
         $event = $galleryImage->getEvent();
@@ -134,7 +140,7 @@ class GalleryPublicController extends BaseGalleryController
      */
     public function originalImageAction(Request $request, $hash, GalleryImage $galleryImage)
     {
-        if (!$this->isAccessGranted($galleryImage, $hash)) {
+        if (!$this->isAccessOnImageGranted($galleryImage, $hash)) {
             throw new NotFoundHttpException('Not allowed to access image');
         }
         $event = $galleryImage->getEvent();
@@ -149,21 +155,31 @@ class GalleryPublicController extends BaseGalleryController
     }
 
     /**
-     * Check if access is granted for gallery
+     * Check if access is granted for gallery image
      *
      * @param GalleryImage $galleryImage
      * @param string       $hash
      * @return bool
-     * @internal param Request $request
      */
-    private function isAccessGranted(GalleryImage $galleryImage, $hash = null)
+    private function isAccessOnImageGranted(GalleryImage $galleryImage, $hash) {
+        $event = $galleryImage->getEvent();
+        return $this->isAccessOnEventGranted($event, $hash);
+    }
+
+    /**
+     * Check if access is granted for event
+     *
+     * @param Event  $event
+     * @param string $hash
+     * @return bool
+     */
+    private function isAccessOnEventGranted(Event $event, $hash = null)
     {
         /** @var User $user */
         $user = $this->getUser();
         if ($user && $user->hasRole('ROLE_ADMIN_EVENT')) {
             return true;
         }
-        $event = $galleryImage->getEvent();
         if ($event->isGalleryLinkSharing() && hash_equals($this->galleryHash($event), $hash)) {
             return true;
         }

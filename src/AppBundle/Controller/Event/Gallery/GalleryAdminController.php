@@ -36,12 +36,20 @@ class GalleryAdminController extends BaseGalleryController
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery", requirements={"eid": "\d+"}, name="event_gallery_admin")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @param Event   $event
+     * @return Response
      */
-    public function detailsAction(Event $event)
+    public function detailsAction(Request $request, Event $event)
     {
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
+
+        $grantedGalleries = $request->getSession()->get('grantedGalleries', []);
+        $request->getSession()->set(
+            'grantedGalleries', array_unique(array_merge($grantedGalleries, [$event->getEid()]))
+        );
 
         return $this->render(
             'event/admin/gallery.html.twig',
