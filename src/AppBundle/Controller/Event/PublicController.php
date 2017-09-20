@@ -66,6 +66,19 @@ class PublicController extends Controller
     }
 
     /**
+     * Redirect for trailing characters
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/event/{eid}{wildcard}", requirements={"eid": "\d+", "wildcard": "\.|,|\s|/"}, name="event_public_detail")
+     */
+    public function redirectToShowAction(Event $event)
+    {
+        return $this->redirectToRoute(
+            'event_public_detail', array('eid' => $event->getEid()), Response::HTTP_MOVED_PERMANENTLY
+        );
+    }
+
+    /**
      * Short url redirecting to details of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
