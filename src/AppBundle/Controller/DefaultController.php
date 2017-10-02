@@ -92,6 +92,8 @@ class DefaultController extends Controller
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
      * @Route("/robots.txt")
+     * @Route("/login_check", methods={GET})
+     * @Route("apple-touch-icon-{a}x{b}{c}.png", requirements={"a" = "\d+", "b" = "\d+", "c" = "-precomposed|"})
      */
     public function ressourceUnavailableAction()
     {
@@ -100,7 +102,10 @@ class DefaultController extends Controller
 
     /**
      * @Route("/{url2}",
-     * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-admin)(?:.*)$"})
+     * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-includes|wp-admin)(?:.*)$"})
+     * @Route("/wp-login.php")
+     * @Route("/jm-ajax/upload_file/")
+     * @Route("/js/")
      */
     public function honeyPotQualifiedAction()
     {
@@ -119,6 +124,7 @@ class DefaultController extends Controller
     /**
      * @Route("/m")
      * @Route("/mobile")
+     * @Route("/index.php")
      */
     public function redirectToHomeAction()
     {
