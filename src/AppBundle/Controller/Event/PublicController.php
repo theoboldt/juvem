@@ -69,7 +69,7 @@ class PublicController extends Controller
      * Redirect for trailing characters
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/event/{eid}{wildcard}", requirements={"eid": "\d+", "wildcard": "\.|,|\s|/"}, name="event_public_detail")
+     * @Route("/{eventIdentifier}/{eid}{wildcard}", requirements={"eventIdentifier": "(event|e)", "eid": "\d+", "wildcard": "(\.|,|\s|\/)"})
      */
     public function redirectToShowAction(Event $event)
     {
