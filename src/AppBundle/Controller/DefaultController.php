@@ -14,6 +14,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -92,7 +93,6 @@ class DefaultController extends Controller
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
      * @Route("/robots.txt")
-     * @Route("/login_check", methods={GET})
      * @Route("apple-touch-icon-{a}x{b}{c}.png", requirements={"a" = "\d+", "b" = "\d+", "c" = "-precomposed|"})
      */
     public function ressourceUnavailableAction()
@@ -131,6 +131,14 @@ class DefaultController extends Controller
         return $this->redirectToRoute('homepage');
     }
 
+    /**
+     * @Route("/login_check")
+     * @Method({"GET"})
+     */
+    public function loginCheckFallbackAction()
+    {
+        return $this->redirectToRoute('homepage');
+    }
     /**
      * @Route("/crossdomain.xml")
      * @Route("/clientaccesspolicy.xml")
