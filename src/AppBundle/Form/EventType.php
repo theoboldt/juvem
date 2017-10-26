@@ -49,7 +49,11 @@ class EventType extends AbstractType
             )
             ->add(
                 'descriptionMeta', TextareaType::class,
-                array('label' => 'Kurzbeschreibung', 'attr' => array('aria-describedby' => 'help-description-short'))
+                [
+                    'required' => false,
+                    'label'    => 'Kurzbeschreibung',
+                    'attr'     => ['aria-describedby' => 'help-description-short']
+                ]
             )
             ->add(
                 'startDate', DateType::class,
