@@ -466,16 +466,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "f8bff22d608224ed88e90b24e9d884cb10b389bb"
+                "reference": "41d6b7c9a1a37e08ab1c321193446c12d6afb5ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/f8bff22d608224ed88e90b24e9d884cb10b389bb",
-                "reference": "f8bff22d608224ed88e90b24e9d884cb10b389bb",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/41d6b7c9a1a37e08ab1c321193446c12d6afb5ed",
+                "reference": "41d6b7c9a1a37e08ab1c321193446c12d6afb5ed",
                 "shasum": ""
             },
             "require": {
@@ -543,7 +543,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2017-09-29T15:26:21+00:00"
+            "time": "2017-10-24T15:58:25+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -1483,17 +1483,17 @@
         },
         {
             "name": "knplabs/knp-time-bundle",
-            "version": "1.7.4",
+            "version": "1.7.5",
             "target-dir": "Knp/Bundle/TimeBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpTimeBundle.git",
-                "reference": "2e576761fa3d30d059c88bbebb0226571bf3c19e"
+                "reference": "52d0bd566ee32af56d8ce06b3eef05fd994a19eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/2e576761fa3d30d059c88bbebb0226571bf3c19e",
-                "reference": "2e576761fa3d30d059c88bbebb0226571bf3c19e",
+                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/52d0bd566ee32af56d8ce06b3eef05fd994a19eb",
+                "reference": "52d0bd566ee32af56d8ce06b3eef05fd994a19eb",
                 "shasum": ""
             },
             "require": {
@@ -1544,7 +1544,7 @@
                 "knplabs",
                 "time"
             ],
-            "time": "2017-07-12T16:38:48+00:00"
+            "time": "2017-10-27T14:19:10+00:00"
         },
         {
             "name": "michelf/php-markdown",
@@ -2024,7 +2024,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-05-05 00:10:25"
+            "time": "2015-05-05T00:10:25+00:00"
         },
         {
             "name": "psr/cache",
