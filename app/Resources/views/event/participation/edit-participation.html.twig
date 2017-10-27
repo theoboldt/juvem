@@ -69,7 +69,7 @@
             {% for fieldName,formField in form %}
                 {% if fieldName starts with 'acq_field_' %}
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group acquisition-attribute">
                             {{ form_label(formField) }}
                             {% if acquisitionFields[fieldName].formDescription %}
                                 <button type="button" class="btn btn-default btn-xs btn-round"

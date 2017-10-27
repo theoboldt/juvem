@@ -83,7 +83,7 @@
                     {% if fieldName starts with 'acq_field_' %}
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="form-group">
+                                <div class="form-group acquisition-attribute">
                                     {{ form_label(formField) }}
                                     {% if acquisitionFieldsParticipation[fieldName].formDescription %}
                                         <p class="help-block">{{ acquisitionFieldsParticipation[fieldName].formDescription }}</p>
@@ -279,7 +279,7 @@
                                     {% for fieldName,formField in formElement %}
                                         {% if fieldName starts with 'acq_field_' %}
                                             <div class="col-xs-12">
-                                                <div class="form-group">
+                                                <div class="form-group acquisition-attribute">
                                                     {{ form_label(formField) }}
                                                     {% if acquisitionFieldsParticipant[fieldName].formDescription %}
                                                         <p class="help-block">{{ acquisitionFieldsParticipant[fieldName].formDescription }}</p>
