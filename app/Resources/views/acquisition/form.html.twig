@@ -1,0 +1,71 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+            <div class="btn-group" role="group">
+                <input type="submit" value="{{ submitTitle }}" class="btn btn-primary"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+        {{ form_errors(form) }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-4">
+                {{ form_label(form.managementTitle) }}
+                {{ form_widget(form.managementTitle) }}
+                {{ form_errors(form.managementTitle) }}
+                <p class="help-block" id="help-management-title">Wird für die Tabellenspalten in der Verwaltung
+                    verwendet, sollte möglichst kurz sein</p>
+            </div>
+            <div class="col-xs-12 col-sm-8">
+                {{ form_label(form.managementDescription) }}
+                {{ form_widget(form.managementDescription) }}
+                {{ form_errors(form.managementDescription) }}
+                <p class="help-block" id="help-management-description">Wird in der Verwaltung in Tooltips zu den
+                    Tabellenspalten angezeigt</p>
+            </div>
+        </div>
+        {{ form_row(form.formTitle) }}
+        {{ form_row(form.formDescription) }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label">Erfassung</label>
+                    <p class="help-block">Die Eingabe des Feldes kann Gleichzeitig je Anmeldung und je Teilnehmer
+                        erfasst werden. </p>
+                    {{ form_row(form.useAtParticipation) }}
+                    {{ form_row(form.useAtParticipant) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label">Gewichtung</label>
+                    {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-4">
+                {{ form_row(form.fieldType) }}
+            </div>
+        </div>
+        <div class="form-group-choice" style="{% if not (showChoiceOptions) %}display:none;{% endif %}">
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    {{ form_row(form.fieldTypeChoiceType) }}
+                </div>
+            </div>
+            {{ form_label(form.fieldTypeChoiceOptions) }}
+            {{ form_widget(form.fieldTypeChoiceOptions) }}
+            {{ form_errors(form.fieldTypeChoiceOptions) }}
+            <p class="help-block" id="help-options">Einzelne Optionen durch Semikolon <code>;</code> trennen. Wenn die
+                Optionen nachträglich geändert werden, können bereits erfasste Daten ihre Zuordnung verlieren.
+                <br><span id="form-choice-option-list"></span>
+            </p>
+        </div>
+        <input type="submit" value="{{ submitTitle }}" class="btn btn-primary"/>
+    </div>
+</div>
+{{ form_end(form) }}

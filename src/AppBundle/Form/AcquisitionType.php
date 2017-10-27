@@ -27,108 +27,103 @@ class AcquisitionType extends AbstractType
         $builder->add(
             'managementTitle',
             TextType::class,
-            array(
+            [
                 'label'    => 'Titel (Intern)',
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-management-title'],
+            ]
+        )->add(
+            'managementDescription',
+            TextType::class,
+            [
+                'label'    => 'Beschreibung (Intern)',
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-management-description'],
+            ]
+        )->add(
+            'formTitle',
+            TextType::class,
+            [
+                'label'    => 'Titel (im Formular)',
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-form-title'],
+            ]
+        )->add(
+            'formDescription',
+            TextareaType::class,
+            [
+                'label'    => 'Beschreibung (im Formular)',
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-form-description'],
+            ]
+        )->add(
+            'fieldType',
+            ChoiceType::class,
+            [
+                'label'    => 'Typ',
+                'choices'  => [
+                    AcquisitionAttribute::LABEL_FIELD_TEXT     => TextType::class,
+                    AcquisitionAttribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
+                    AcquisitionAttribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
+                ],
+                'required' => true,
+                'attr'     => ['aria-describedby' => 'help-type'],
+            ]
+        )->add(
+            'useAtParticipation',
+            CheckboxType::class,
+            [
+                'label'    => 'Je Anmeldung erfassen',
+                'required' => false,
+            ]
+        )->add(
+            'useAtParticipant',
+            CheckboxType::class,
+            [
+                'label'    => 'Je Teilnehmer erfassen',
                 'required' => false
-            )
-        )
-                ->add(
-                    'managementDescription',
-                    TextType::class,
-                    array(
-                        'label'    => 'Beschreibung (Intern)',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'formTitle',
-                    TextType::class,
-                    array(
-                        'label'    => 'Titel (im Formular)',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'formDescription',
-                    TextType::class,
-                    array(
-                        'label'    => 'Beschreibung (im Formular)',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'fieldType',
-                    ChoiceType::class,
-                    array(
-                        'label'    => 'Typ',
-                        'choices'  => array(
-                            AcquisitionAttribute::LABEL_FIELD_TEXT     => TextType::class,
-                            AcquisitionAttribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
-                            AcquisitionAttribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
-                        ),
-                        'required' => true
+            ]
+        )->add(
+            'isRequired',
+            CheckboxType::class,
+            [
+                'label'    => 'Pflichtfeld',
+                'required' => false
+            ]
+        )->add(
+            'fieldTypeChoiceType',
+            ChoiceType::class,
+            [
+                'label'      => 'Typ der Auswahl',
+                'label_attr' => ['class' => 'control-label required'],
+                //label_attr has to be defined here due to an error
+                'choices'    => [
+                    'Mehrere Optionen auswählbar' => 1,
+                    'Nur eine Option auswählbar'  => 0
+                ],
+                'mapped'     => true,
+                'required'   => false
+            ]
+        )->add(
+            'fieldTypeChoiceOptions',
+            TextType::class,
+            [
+                'label'      => 'Optionen der Auswahl',
+                'label_attr' => ['class' => 'control-label required'],
+                'attr'       => ['aria-describedby' => 'help-options'],
+                'mapped'     => true,
+                'required'   => false
 
-                    )
-                )
-                ->add(
-                    'useAtParticipation',
-                    CheckboxType::class,
-                    array(
-                        'label'    => 'Je Anmeldung erfassen',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'useAtParticipant',
-                    CheckboxType::class,
-                    array(
-                        'label'    => 'Je Teilnehmer erfassen',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'isRequired',
-                    CheckboxType::class,
-                    array(
-                        'label'    => 'Pflichtfeld',
-                        'required' => false
-                    )
-                )
-                ->add(
-                    'fieldTypeChoiceType',
-                    ChoiceType::class,
-                    array(
-                        'label'      => 'Typ der Auswahl',
-                        'label_attr' => array('class' => 'col-sm-4 control-label required'),
-                        //label_attr has to be defined here due to an error
-                        'choices'    => array(
-                            'Mehrere Optionen auswählbar' => 1,
-                            'Nur eine Option auswählbar' => 0
-                        ),
-                        'mapped'     => true,
-                        'required'   => false
-                    )
-                )
-                ->add(
-                    'fieldTypeChoiceOptions',
-                    TextType::class,
-                    array(
-                        'label'      => 'Optionen der Auswahl',
-                        'label_attr' => array('class' => 'col-sm-4 control-label required'),
-                        'attr'       => array('aria-describedby' => 'help-options'),
-                        'mapped'     => true,
-                        'required'   => false
-
-                    )
-                );
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => 'AppBundle\Entity\AcquisitionAttribute',
-            )
+            ]
         );
     }
 }

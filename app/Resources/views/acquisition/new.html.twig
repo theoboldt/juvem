@@ -10,66 +10,6 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
-        {{ form_start(form) }}
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_errors(form) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-8">
-                <div class="row">
-                    <div class="col-xs-12">
-                        {{ form_row(form.managementTitle) }}
-                    </div>
-                    <div class="col-xs-12">
-                        {{ form_row(form.managementDescription) }}
-                    </div>
-                    <div class="col-xs-12">
-                        {{ form_row(form.formTitle) }}
-                    </div>
-                    <div class="col-xs-12">
-                        {{ form_row(form.formDescription) }}
-                    </div>
-                    <div class="col-xs-12">
-                        {{ form_row(form.fieldType) }}
-                    </div>
-                    <div class="form-group-choice" style="display:none;">
-                        <div class="col-xs-12">
-                            {{ form_row(form.fieldTypeChoiceType, {'label_attr': {'class': 'control-label required'}}) }}
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                {{ form_row(form.fieldTypeChoiceOptions, {'label_attr': {'class': 'control-label required'}}) }}
-                                <p class="help-block" id="help-options">Einzelne Optionen durch Semikolon
-                                    <code>;</code>
-                                    trennen
-                                    <br><span id="form-choice-option-list"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label">Erfassung</label>
-                            {{ form_row(form.useAtParticipation) }}
-                            {{ form_row(form.useAtParticipant) }}
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label">Gewichtung</label>
-                            {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <input type="submit" value="Feld erstellen" class="btn btn-primary"/>
-            </div>
-            {{ form_end(form) }}
-        </div>
+        {% include '/acquisition/form.html.twig' with {'form': form, submitTitle: 'Feld anlegen', showChoiceOptions: false} %}
     </div>
 {% endblock %}

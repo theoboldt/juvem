@@ -92,4 +92,33 @@ class AdminSystemController extends Controller
         return $this->redirect('/');
     }
 
+
+    /**
+     * Page for list of events
+     *
+     * @Route("/admin/database/state", name="admin_database_state")
+     */
+    public function databaseStateAction()
+    {
+        $kernel      = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input  = new ArrayInput(
+            array(
+                'command' => 'doctrine:schema:update',
+                '--force' => true
+            )
+        );
+        $output = new BufferedOutput();
+        $application->run($input, $output);
+
+        $content = $output->fetch();
+
+        $this->addFlash(
+            'notice',
+            $content
+        );
+        return $this->redirect('/');
+    }
 }

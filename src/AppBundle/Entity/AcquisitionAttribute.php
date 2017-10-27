@@ -60,7 +60,7 @@ class AcquisitionAttribute
     protected $formTitle;
 
     /**
-     * @ORM\Column(type="string", length=255, name="form_description")
+     * @ORM\Column(type="text", name="form_description", length=65535)
      * @Assert\NotBlank()
      */
     protected $formDescription;
