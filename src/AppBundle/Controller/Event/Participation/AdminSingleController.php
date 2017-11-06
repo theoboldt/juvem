@@ -93,16 +93,23 @@ class AdminSingleController extends Controller
         }
         $commentManager = $this->container->get('app.comment_manager');
 
+        $similarParticipants = [];
+        /** @var Participant $participant */
+        foreach ($participation->getParticipants() as $participant) {
+            $similarParticipants[$participant->getAid()] = $participationRepository->relatedParticipants($participant);
+        }
+
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
-                'commentManager'  => $commentManager,
-                'event'           => $event,
-                'participation'   => $participation,
-                'foodFormatter'   => $foodFormatter,
-                'statusFormatter' => $statusFormatter,
-                'phoneNumberList' => $phoneNumberList,
-                'form'            => $form->createView()
+                'commentManager'      => $commentManager,
+                'event'               => $event,
+                'participation'       => $participation,
+                'similarParticipants' => $similarParticipants,
+                'foodFormatter'       => $foodFormatter,
+                'statusFormatter'     => $statusFormatter,
+                'phoneNumberList'     => $phoneNumberList,
+                'form'                => $form->createView()
             ]
         );
     }

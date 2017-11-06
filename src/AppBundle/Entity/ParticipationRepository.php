@@ -124,4 +124,41 @@ class ParticipationRepository extends EntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * Find related participants by comparing birthday (exact) and name (fuzzy)
+     *
+     * @param Participant $baseParticipant Participant for compare
+     * @return array|Participant[]         Related participants
+     */
+    public function relatedParticipants(Participant $baseParticipant)
+    {
+        $qb = $this->createQueryBuilder('AppBundle:Participant');
+        $qb->select('a, p, e')
+           ->from('AppBundle:Participant', 'a')
+           ->innerJoin('a.participation', 'p')
+           ->innerJoin('p.event', 'e')
+           ->andWhere($qb->expr()->eq('a.birthday', ':birthday'))
+           ->orderBy('e.startDate', 'DESC')
+           ->setParameter('birthday', $baseParticipant->getBirthday()->format('Y-m-d'));
+        $query = $qb->getQuery();
+
+        $aid = $baseParticipant->getAid();
+        $firstName = trim($baseParticipant->getNameFirst());
+        $lastName  = trim($baseParticipant->getNameLast());
+
+        $result = [];
+
+        /** @var Participant $participant */
+        foreach ($query->execute() as $participant) {
+            if ($aid != $participant->getAid()
+            && levenshtein($firstName, trim($participant->getNameFirst())) < 5
+            && levenshtein($lastName, trim($participant->getNameLast())) < 5
+            ) {
+                $result[] = $participant;
+            }
+        }
+
+        return $result;
+    }
 }
