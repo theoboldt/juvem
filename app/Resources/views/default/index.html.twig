@@ -21,7 +21,7 @@
                 </div>
             {% endif %}
             {% for event in events %}
-                <article class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ events|length > 2 ? 4 : 6 }}">
+                <article class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ (loop.length == 4 or loop.length > 2) ? 4 : 6 }}">
                     <div class="thumbnail">
                         {% if event.imageFilename %}
                             <div class="lazy-load-image"
