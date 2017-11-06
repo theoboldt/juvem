@@ -59,8 +59,8 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
-        $eventRepository       = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participantEntityList = $eventRepository->participantsList($event, null, true, true);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = ParticipantStatus::formatter();
@@ -139,8 +139,8 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participantList = $eventRepository->participantsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantList         = $participationRepository->participantsList($event);
 
         $export = new ParticipantsExport(
             $this->get('app.twig_global_customization'), $event, $participantList, $this->getUser()
@@ -174,8 +174,8 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipationsAction(Event $event)
     {
-        $eventRepository    = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participationsList = $eventRepository->participationsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationsList      = $participationRepository->participationsList($event);
 
         $export = new ParticipationsExport(
             $this->get('app.twig_global_customization'), $event, $participationsList, $this->getUser()
@@ -208,8 +208,8 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsBirthdayAddressAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participantList = $eventRepository->participantsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantList         = $participationRepository->participantsList($event);
 
         $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
         $export->setMetadata();
@@ -240,9 +240,9 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsMailAction(Event $event)
     {
-        $eventRepository    = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participantList    = $eventRepository->participantsList($event);
-        $participationsList = $eventRepository->participationsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantList         = $participationRepository->participantsList($event);
+        $participationsList      = $participationRepository->participationsList($event);
 
         $export = new ParticipantsMailExport(
             $this->get('app.twig_global_customization'), $event, $participantList, $participationsList, $this->getUser()
@@ -284,8 +284,9 @@ class AdminMultipleController extends Controller
             throw new InvalidTokenHttpException();
         }
 
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $event      = $repository->findOneBy(['eid' => $eid]);
+        $eventRepository         = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $event                   = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event) {
             return $this->render(
                 'event/public/miss.html.twig', ['eid' => $eid],
@@ -293,7 +294,7 @@ class AdminMultipleController extends Controller
             );
         }
 
-        $participants         = $repository->participantsList($event, $participants, true, true);
+        $participants         = $participationRepository->participantsList($event, $participants, true, true);
         $participationManager = $this->get('app.participation_manager');
         $em                   = $this->getDoctrine()->getManager();
 
@@ -379,7 +380,8 @@ class AdminMultipleController extends Controller
             $processedConfiguration['title'] = 'Teilnehmer';
         }
 
-        $participantList = $eventRepository->participantsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantList         = $participationRepository->participantsList($event);
 
             $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),
@@ -414,8 +416,8 @@ class AdminMultipleController extends Controller
      */
     public function printParticipantsAction(Event $event)
     {
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participants    = $eventRepository->participantsList($event);
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participants            = $participationRepository->participantsList($event);
 
         return $this->render(
             'event/participation/admin/participants-print.html.twig',

@@ -189,6 +189,7 @@ class AdminController extends Controller
      */
     public function detailEventAction(Request $request, Event $event)
     {
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $repository         = $this->getDoctrine()->getRepository('AppBundle:Event');
         $ageDistribution    = $repository->participantsAgeDistribution($event);
         $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;

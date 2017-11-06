@@ -113,16 +113,17 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
      */
     protected function executeParticipantParse(OutputInterface $output)
     {
-        $last       = $this->getLastTaskRun();
-        $repository = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Event');
-        $eventList  = $repository->findWithSubscriptions();
+        $last                    = $this->getLastTaskRun();
+        $eventRepository         = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Event');
+        $participationRepository = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Participation');
+        $eventList               = $eventRepository->findWithSubscriptions();
 
         $progress = new ProgressBar($output, count($eventList));
         $progress->start();
         /** @var Event $event */
         foreach ($eventList as $event) {
             $participants = array_filter(
-                $repository->participantsList($event), function (Participant $participant) use ($last) {
+                $participationRepository->participantsList($event), function (Participant $participant) use ($last) {
                 return (!$participant->getStatus(true)->has(ParticipantStatus::TYPE_STATUS_CONFIRMED) &&
                         $participant->getCreatedAt() > $last);
             }

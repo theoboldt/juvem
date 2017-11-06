@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="participation")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
 class Participation
 {
