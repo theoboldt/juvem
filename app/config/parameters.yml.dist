@@ -35,6 +35,7 @@ parameters:
     customization.organization_website: ~
     customization.organization_facebook: ~
     customization.juvem_website: ~
+    customization.logo_website: ~
 
     # Website host address should be defined in order to be able to generate links from console
     router.request_context.host: ~

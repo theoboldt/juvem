@@ -113,6 +113,13 @@ class GlobalCustomization
     private $juvemWebsite;
 
     /**
+     * If configured, link of application logo will not redirect to homepage but to specified url
+     *
+     * @var string|null
+     */
+    private $logoLink;
+
+    /**
      * Customization constructor
      *
      * @param Twig_Environment $twig              Twig environment used for rendering
@@ -128,10 +135,12 @@ class GlobalCustomization
      * @param string|null      $website           Website of organization
      * @param string|null      $facebook          Facebook link if available
      * @param string|null      $juvemWebsite      Juvem app website base url
+     * @param string|null      $logoLink          If configured, link of application logo will redirect to specified url
      */
     public function __construct(
         Twig_Environment $twig, $rootDir, $appTitle, $organizationName, $addressStreet, $addressPostalCode,
-        $addressLocality, $numberPhone, $numberFax, $email, $website = null, $facebook = null, $juvemWebsite = null
+        $addressLocality, $numberPhone, $numberFax, $email, $website = null, $facebook = null, $juvemWebsite = null,
+        $logoLink = null
     )
     {
         $this->twig              = $twig;
@@ -147,6 +156,7 @@ class GlobalCustomization
         $this->website           = $website;
         $this->facebook          = $facebook;
         $this->juvemWebsite      = $juvemWebsite;
+        $this->logoLink          = $logoLink;
     }
 
     /**
@@ -380,6 +390,13 @@ class GlobalCustomization
         return $this->juvemWebsite;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getLogoLink()
+    {
+        return $this->logoLink;
+    }
 
 
 }

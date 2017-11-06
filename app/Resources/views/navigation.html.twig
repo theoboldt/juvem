@@ -11,8 +11,8 @@
                 </button>
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="{{ path('homepage') }}"
-                           title="Veranstaltungs-Manager {{ customization.organizationName }}">
+                        <a class="navbar-brand" href="{% if customization.logoLink %}{{ customization.logoLink }}{% else %}{{ path('homepage') }}{% endif %}"
+                           title="{% if not customization.logoLink %}Veranstaltungs-Manager {% endif %}{{ customization.organizationName }}">
                             <img alt="{{ appTitle }}" title="{{ customization.organizationName }}"
                                  src="{{ asset('favicon-96x96.png') }}" height="45" width="45">
                         </a>
