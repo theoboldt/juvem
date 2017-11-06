@@ -97,15 +97,6 @@
                                                 <dd>{{ participant.getGender(true) }}</dd>
                                                 <dt>Geburtsdatum</dt>
                                                 <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
-                                                <dt>Ernährung</dt>
-                                                <dd>
-                                                    {% set participantFood = participant.getFood(true) %}
-                                                    {% if participantFood.getValue() %}
-                                                        {{ ' '|bitmask(participantFood) }}
-                                                    {% else %}
-                                                        <i>(keine Besonderheiten)</i>
-                                                    {% endif %}
-                                                </dd>
                                                 <dt>Medizinische Hinweise</dt>
                                                 <dd>
                                                     {% if participant.infoMedical %}
@@ -119,6 +110,15 @@
                                                 <dd>
                                                     {% if participant.infoGeneral %}
                                                         {{ participant.infoGeneral }}
+                                                    {% else %}
+                                                        <i>(keine Besonderheiten)</i>
+                                                    {% endif %}
+                                                </dd>
+                                                <dt>Ernährung</dt>
+                                                <dd>
+                                                    {% set participantFood = participant.getFood(true) %}
+                                                    {% if participantFood.getValue() %}
+                                                        {{ ' '|bitmask(participantFood) }}
                                                     {% else %}
                                                         <i>(keine Besonderheiten)</i>
                                                     {% endif %}
