@@ -10,18 +10,20 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="`user`")
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  */
 class User extends BaseUser
 {
-    use HumanTrait;
+    use CreatedModifiedTrait, HumanTrait;
 
     const ROLE_ADMIN       = 'ROLE_ADMIN';
     const ROLE_ADMIN_LABEL = 'Administration';
@@ -42,6 +44,11 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="datetime", name="created_at", options={"default" : "2017-01-01 12:00:00"})
+     */
+    protected $createdAt;
 
     /**
      * Contains the participations assigned to this event
