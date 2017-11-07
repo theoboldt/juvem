@@ -43,4 +43,27 @@ class CronController extends Controller
             return new Response('Successfully sent');
         }
     }
+    /**
+     * @Route("/cron/user/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_clenaup_user")
+     */
+    public function cleanupUserRegistrationRequestsAction($token)
+    {
+        if ($token != $this->getParameter('cron_secret')) {
+            throw new AccessDeniedException('Called cron task with incorrect credentials');
+        }
+
+        $kernel      = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input  = new ArrayInput(['command' => 'app:user:cleanup']);
+        $output = new BufferedOutput();
+        $result = $application->run($input, $output);
+
+        if ($result) {
+            return new Response($output->fetch(), Response::HTTP_NOT_FOUND);
+        } else {
+            return new Response('Successfully removed');
+        }
+    }
 }
