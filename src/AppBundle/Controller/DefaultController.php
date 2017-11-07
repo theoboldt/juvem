@@ -102,7 +102,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/{url2}",
-     * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-includes|wp-admin)(?:.*)$"})
+     * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-includes|wp-admin|utility\/convert)(?:.*)$"})
      * @Route("/wp-login.php")
      * @Route("/jm-ajax/upload_file/")
      * @Route("/js/")
