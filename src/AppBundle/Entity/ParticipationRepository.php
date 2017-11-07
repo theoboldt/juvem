@@ -36,9 +36,7 @@ class ParticipationRepository extends EntityRepository
     {
         $eid = $event->getEid();
 
-        $qb = $this->createQueryBuilder('AppBundle:Participation')
-                   ->select('p')
-                   ->from('AppBundle:Participation', 'p')
+        $qb = $this->createQueryBuilder('p')
                    ->andWhere('p.event = :eid')
                    ->orderBy('p.nameFirst, p.nameLast', 'ASC');
 
@@ -87,18 +85,17 @@ class ParticipationRepository extends EntityRepository
             return []; //empty result
         }
 
-        $qb = $this->createQueryBuilder('AppBundle:Participant')
-                   ->select('a, p, pn, aaf, aaafa, paf, paafa')
-                   ->from('AppBundle:Participant', 'a')
-                   ->innerJoin('a.participation', 'p')
-                   ->leftJoin('a.acquisitionAttributeFillouts', 'aaf')
-                   ->leftJoin('aaf.attribute', 'aaafa')
-                   ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
-                   ->leftJoin('paf.attribute', 'paafa')
-                   ->leftJoin('p.phoneNumbers', 'pn')
-                   ->where('a.participation = p.pid')
-                   ->andWhere('p.event = :eid')
-                   ->orderBy('a.nameLast, a.nameFirst', 'ASC');
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('a, p, pn, aaf, aaafa, paf, paafa')
+           ->from(Participant::class, 'a')
+           ->innerJoin('a.participation', 'p')
+           ->leftJoin('a.acquisitionAttributeFillouts', 'aaf')
+           ->leftJoin('aaf.attribute', 'aaafa')
+           ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
+           ->leftJoin('paf.attribute', 'paafa')
+           ->leftJoin('p.phoneNumbers', 'pn')
+           ->andWhere('p.event = :eid')
+           ->orderBy('a.nameLast, a.nameFirst', 'ASC');
 
         if (!$includeDeleted) {
             $qb->andWhere('a.deletedAt IS NULL');
@@ -133,8 +130,9 @@ class ParticipationRepository extends EntityRepository
      */
     public function relatedParticipants(Participant $baseParticipant)
     {
-        $qb = $this->createQueryBuilder('AppBundle:Participant');
+        $qb = $this->_em->createQueryBuilder();
         $qb->select('a, p, e')
+           ->from(Participant::class, 'a')
            ->from('AppBundle:Participant', 'a')
            ->innerJoin('a.participation', 'p')
            ->innerJoin('p.event', 'e')
@@ -143,7 +141,7 @@ class ParticipationRepository extends EntityRepository
            ->setParameter('birthday', $baseParticipant->getBirthday()->format('Y-m-d'));
         $query = $qb->getQuery();
 
-        $aid = $baseParticipant->getAid();
+        $aid       = $baseParticipant->getAid();
         $firstName = trim($baseParticipant->getNameFirst());
         $lastName  = trim($baseParticipant->getNameLast());
 
@@ -152,8 +150,8 @@ class ParticipationRepository extends EntityRepository
         /** @var Participant $participant */
         foreach ($query->execute() as $participant) {
             if ($aid != $participant->getAid()
-            && levenshtein($firstName, trim($participant->getNameFirst())) < 5
-            && levenshtein($lastName, trim($participant->getNameLast())) < 5
+                && levenshtein($firstName, trim($participant->getNameFirst())) < 5
+                && levenshtein($lastName, trim($participant->getNameLast())) < 5
             ) {
                 $result[] = $participant;
             }
