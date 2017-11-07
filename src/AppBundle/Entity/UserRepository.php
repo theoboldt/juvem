@@ -30,6 +30,7 @@ class UserRepository extends EntityRepository
     public function findUnconfirmed(int $createdBeforeDays = null)
     {
         $qb = $this->createQueryBuilder('u')
+                   ->andWhere('u.enabled <> 1')
                    ->andWhere('u.confirmationToken IS NOT NULL')
                    ->andWhere('u.lastLogin IS NULL')
                    ->orderBy('u.nameLast, u.nameFirst', 'ASC');
