@@ -31,7 +31,7 @@ class UserRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('u')
                    ->andWhere('u.confirmationToken IS NOT NULL')
-                   ->andWhere('u.passwordRequestedAt IS NULL')
+                   ->andWhere('u.lastLogin IS NULL')
                    ->orderBy('u.nameLast, u.nameFirst', 'ASC');
 
         if ($createdBeforeDays) {
