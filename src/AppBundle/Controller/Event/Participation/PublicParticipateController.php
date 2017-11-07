@@ -149,15 +149,12 @@ class PublicParticipateController extends Controller
      */
     public function confirmParticipationAction($eid, Request $request)
     {
-        if (!$request->getSession()
-                     ->has('participation-' . $eid)
-        ) {
+        if (!$request->getSession()->has('participation-' . $eid)) {
             return $this->redirectToRoute('event_public_participate', array('eid' => $eid));
         }
 
         /** @var Participation $participation */
-        $participation = $request->getSession()
-                                 ->get('participation-' . $eid);
+        $participation = $request->getSession()->get('participation-' . $eid);
         $event         = $participation->getEvent();
 
         if (!$participation instanceof Participation
@@ -167,11 +164,12 @@ class PublicParticipateController extends Controller
         }
 
         if ($request->query->has('confirm')) {
-            $em = $this->getDoctrine()
-                       ->getManager();
+            $user = $this->getUser();
+            $em   = $this->getDoctrine()->getManager();
             if ($event->getIsAutoConfirm()) {
                 $participation->setIsConfirmed(true);
             }
+            $participation->setAssignedUser($user);
             $managedParticipation = $em->merge($participation);
 
             $em->persist($managedParticipation);
@@ -180,14 +178,10 @@ class PublicParticipateController extends Controller
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailParticipationRequested($participation, $event);
 
-            $request->getSession()
-                    ->remove('participation-' . $eid);
+            $request->getSession()->remove('participation-' . $eid);
 
-            if ($request->getSession()
-                        ->has('participationList')
-            ) {
-                $participationList = $request->getSession()
-                                             ->get('participationList');
+            if ($request->getSession()->has('participationList')) {
+                $participationList = $request->getSession()->get('participationList');
             } else {
                 $participationList = array();
             }
@@ -198,7 +192,7 @@ class PublicParticipateController extends Controller
             $message
                 = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
 
-            if (!$this->getUser()) {
+            if (!$user) {
                 $message .= sprintf(
                     '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
                     $this->container->get('router')->generate('fos_user_registration_register')
