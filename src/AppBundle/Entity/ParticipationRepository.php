@@ -133,7 +133,6 @@ class ParticipationRepository extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('a, p, e')
            ->from(Participant::class, 'a')
-           ->from('AppBundle:Participant', 'a')
            ->innerJoin('a.participation', 'p')
            ->innerJoin('p.event', 'e')
            ->andWhere($qb->expr()->eq('a.birthday', ':birthday'))
