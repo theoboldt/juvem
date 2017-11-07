@@ -124,7 +124,7 @@ class AdminSystemController extends Controller
 
         $content = $output->fetch();
 
-        $this->addFlash('notice', $content);
+        $this->addFlash('notice', 'Database: '.$content);
         return $this->redirect('/');
     }
 }
