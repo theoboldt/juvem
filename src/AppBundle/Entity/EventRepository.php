@@ -38,7 +38,8 @@ class EventRepository extends EntityRepository
         $qb->select(
             'e AS eventEntity',
             sprintf(
-                'SUM(CASE WHEN ( BIT_AND(a1.status, %2$d) != %2$d 
+                'SUM(CASE WHEN (a1.deletedAt IS NULL 
+                             AND BIT_AND(a1.status, %2$d) != %2$d 
                              AND BIT_AND(a1.status, %3$d) != %3$d 
                              AND BIT_AND(a1.status, %1$d) = %1$d) THEN 1 ELSE 0 END) AS participants_count_confirmed',
                 ParticipantStatus::TYPE_STATUS_CONFIRMED,
@@ -46,7 +47,8 @@ class EventRepository extends EntityRepository
                 ParticipantStatus::TYPE_STATUS_REJECTED
             ),
             sprintf(
-                'SUM(CASE WHEN (BIT_AND(a1.status, %1$d) != %1$d 
+                'SUM(CASE WHEN (a1.deletedAt IS NULL
+                            AND BIT_AND(a1.status, %1$d) != %1$d 
                             AND BIT_AND(a1.status, %2$d) != %2$d) THEN 1 ELSE 0 END) AS participants_count',
                 ParticipantStatus::TYPE_STATUS_WITHDRAWN,
                 ParticipantStatus::TYPE_STATUS_REJECTED
@@ -64,8 +66,7 @@ class EventRepository extends EntityRepository
             $qb->andWhere('e.isVisible = 1');
         }
 
-        $qb->andWhere('a1.deletedAt IS NULL')
-           ->orderBy('e.startDate, e.startTime, e.title', 'ASC');
+        $qb->orderBy('e.startDate, e.startTime, e.title', 'ASC');
 
         $query = $qb->getQuery();
 
