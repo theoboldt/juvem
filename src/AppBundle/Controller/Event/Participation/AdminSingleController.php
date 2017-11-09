@@ -15,6 +15,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
+use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\InvalidTokenHttpException;
@@ -46,14 +47,15 @@ class AdminSingleController extends Controller
         }
         $event = $participation->getEvent();
 
-        $form = $this->createFormBuilder()
-                     ->add('action', HiddenType::class)
-                     ->getForm();
+        $formAction = $this->createFormBuilder()
+                           ->add('action', HiddenType::class)
+                           ->getForm();
+        $formUser   = $this->createForm(ParticipationAssignUserType::class, $participation);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $action = $form->get('action')
-                           ->getData();
+        $formAction->handleRequest($request);
+        if ($formAction->isSubmitted() && $formAction->isValid()) {
+            $action = $formAction->get('action')
+                                 ->getData();
             switch ($action) {
                 case 'delete':
                     $participation->setDeletedAt(new \DateTime());
@@ -79,6 +81,15 @@ class AdminSingleController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($participation);
             $em->flush();
+        } else {
+
+            $formUser->handleRequest($request);
+            if ($formUser->isSubmitted() && $formUser->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+
+                $em->persist($participation);
+                $em->flush();
+            }
         }
 
         $statusFormatter = ParticipantStatus::formatter();
@@ -109,7 +120,8 @@ class AdminSingleController extends Controller
                 'foodFormatter'       => $foodFormatter,
                 'statusFormatter'     => $statusFormatter,
                 'phoneNumberList'     => $phoneNumberList,
-                'form'                => $form->createView()
+                'form'                => $formAction->createView(),
+                'formAssignUser'      => $formUser->createView(),
             ]
         );
     }

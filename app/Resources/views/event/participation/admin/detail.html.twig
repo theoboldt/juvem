@@ -47,6 +47,34 @@
             {{ form_end(form) }}
         </div>
     </div>
+    <div class="modal fade" id="dialogModalAssignUser" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabelAssignUser">
+        <div class="modal-dialog" role="document">
+            {{ form_start(formAssignUser) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalLabelAssignUser">Benutzerkonto verknüpfen</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_widget(formAssignUser.assignedUser) }}
+                            <p class="help-block">Hier kann die Anmeldung mit einem Benutzerkonto verknüpft werden, mit
+                                dem diese Anmeldung abgegeben wurde. Sie erscheint dann in der Liste der Anmeldungen
+                                dieses Benutzers.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                </div>
+            </div>
+            {{ form_end(formAssignUser) }}
+        </div>
+    </div>
     <div class="container participation-panels collapse-breadcrumb-header">
         <div class="row">
             <div class="col-xs-12">
@@ -198,13 +226,14 @@
                                 Benutzerkonto
                             </dt>
                             <dd>
-                                {% if participation.assignedUser %}<a
-                                    href="{{ path('user_detail', {'uid': participation.assignedUser.uid}) }}">
-                                    {{ participation.assignedUser|fullname }}
-                                    </a>
+                                {% if participation.assignedUser %}<a href="{{ path('user_detail', {'uid': participation.assignedUser.uid}) }}">
+                                    {{ participation.assignedUser|fullname }}</a>
                                 {% else %}
                                     <i>(keines)</i>
                                 {% endif %}
+                                <button data-toggle="modal" data-target="#dialogModalAssignUser"
+                                        class="btn btn-default btn-xs"
+                                        title="Benutzerkonto verknüpfen">{{ 'pencil'|glyph }}</button>
                             </dd>
 
                         </dl>
