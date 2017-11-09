@@ -97,6 +97,11 @@ class User extends BaseUser
 
         $this->assignedParticipations = new ArrayCollection();
         $this->subscribedEvents       = new ArrayCollection();
+
+        //ensure created is stored if pre persist annotation does not work
+        if (!$this->createdAt) {
+            $this->setCreatedAtNow();
+        }
     }
 
 
