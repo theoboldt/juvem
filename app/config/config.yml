@@ -13,7 +13,7 @@ parameters:
 framework:
     assets:
         version: "%app.version%"
-        version_format: %%s?%%s
+        version_format: "%%s?%%s"
         packages:
             js:
                 version: "%app.version.hash.js%"
