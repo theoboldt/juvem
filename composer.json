@@ -74,6 +74,7 @@
         "platform": {
             "php": "7.0"
         },
+        "optimize-autoloader": true,
         "bin-dir": "bin"
     },
     "extra": {
