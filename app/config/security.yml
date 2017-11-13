@@ -44,7 +44,6 @@ security:
 nelmio_security:
     csp:
         enabled: true
-        report_logger_service: logger
         hosts: []
 #        compat_headers: false
         report_logger_service: monolog.logger.security
