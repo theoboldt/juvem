@@ -57,6 +57,14 @@ class UploadImageManager
         $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
     }
 
+    /**
+     * Fetch image
+     *
+     * @param string   $name
+     * @param null|int $width
+     * @param null|int $height
+     * @return UploadImage
+     */
     public function fetch($name, $width = null, $height = null)
     {
         if ($width === null && $height === null) {

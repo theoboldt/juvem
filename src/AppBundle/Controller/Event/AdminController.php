@@ -15,6 +15,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
+use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -363,5 +364,24 @@ class AdminController extends Controller
         $em->flush();
 
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Access uploaded image
+     *
+     * @Route("/uploads/event/{filename}", requirements={"filename": "([^/])+"}, name="event_upload_image")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function uploadEventImageAction(string $filename)
+    {
+
+        $uploadManager = $this->get('app.upload_image_manager');
+        $image         = $uploadManager->fetch($filename);
+
+        if (!$image->exists()) {
+            throw new NotFoundHttpException('Requested image not found');
+        }
+
+        return new ImageResponse($image);
     }
 }

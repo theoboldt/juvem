@@ -44,6 +44,15 @@ class UploadImage
     }
 
     /**
+     * Determine if this image actually exists
+     *
+     * @return bool
+     */
+    public function exists() {
+        return file_exists($this->fileName) && is_readable($this->fileName);
+    }
+
+    /**
      * Get modification Etag for file
      *
      * @return string
