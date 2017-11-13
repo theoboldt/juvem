@@ -47,7 +47,7 @@
                                             <address>
                                                 {% if phoneNumber.number %}
                                                     <strong>
-                                                        {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}
+                                                        {{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}
                                                     </strong>
                                                 {% else %}
                                                     <i>(keine)</i>

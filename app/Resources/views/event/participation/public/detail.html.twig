@@ -93,7 +93,7 @@
                     <div class="panel-body">
                         <dl class="dl-horizontal">
                             {% for phoneNumber in participation.phoneNumbers %}
-                                <dt>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</dt>
+                                <dt>{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</dt>
                                 <dd>
                                     {{ phoneNumber.description }}
                                 </dd>

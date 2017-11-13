@@ -191,7 +191,7 @@
                             <dd class="phone-container">
                             {% for phoneNumber in participation.phoneNumbers %}
                                 <div>
-                                    <a href="tel:{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}">{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</a>
+                                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}">{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
                                     {% if phoneNumber.description %}
                                     <br>
                                     <i>{{ phoneNumber.description }}</i>

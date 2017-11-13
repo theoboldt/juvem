@@ -18,7 +18,7 @@ DATEN DER ELTERN:
   Nachname: {{ participation.nameLast }}
   Telefonnummern: {% for phoneNumber in participation.phoneNumbers %}
 
-    {{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }} - {% if phoneNumber.description %}{{ phoneNumber.description }}{% endif %}
+    {{ phoneNumber.number|phone_number_format('INTERNATIONAL') }} - {% if phoneNumber.description %}{{ phoneNumber.description }}{% endif %}
 {% endfor %}
 
   Anschrift:
@@ -92,7 +92,7 @@ Mit besten Grüßen,
                 <td class="thead"><abbr title="Telefonnummern">Telefon</abbr></td>
                 <td>
                     {% for phoneNumber in participation.phoneNumbers %}
-                        <strong>{{ phone_number_format(phoneNumber.number, 'INTERNATIONAL') }}</strong>
+                        <strong>{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</strong>
                         {% if phoneNumber.description %}
                             {{ phoneNumber.description }}
                         {% endif %}
