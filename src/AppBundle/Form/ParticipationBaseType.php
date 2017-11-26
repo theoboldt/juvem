@@ -16,6 +16,7 @@ use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -52,7 +53,7 @@ class ParticipationBaseType extends AbstractType
             ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => true])
             ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => true])
             ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => true])
-            ->add('email', TextType::class, ['label' => 'E-Mail', 'required' => true])
+            ->add('email', EmailType::class, ['label' => 'E-Mail', 'required' => true])
             ->add(
                 'phoneNumbers',
                 CollectionType::class,
