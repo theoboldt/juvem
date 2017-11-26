@@ -106,7 +106,8 @@ class NewsletterManager extends AbstractMailerAwareManager
             ['lid' => $newsletter->getLid(), 'count' => count($subscriptions)]
         );
 
-        $sentCount = 0;
+        $sentCount  = 0;
+        $exceptions = [];
 
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
@@ -138,9 +139,14 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $message->setTo($email);
                 }
 
-                $resultCount = $this->mailer->send($message);
-                $sentCount += $resultCount;
-                $newsletter->addRecipient($subscription);
+                $resultCount = 0;
+                try {
+                    $resultCount = $this->mailer->send($message);
+                    $sentCount   += $resultCount;
+                    $newsletter->addRecipient($subscription);
+                } catch (\Exception $e) {
+                    $exceptions[] = $e;
+                }
 
                 $duration = round(microtime(true) - $startTime);
                 if ($resultCount) {
@@ -154,6 +160,20 @@ class NewsletterManager extends AbstractMailerAwareManager
                         ['rid' => $subscription->getRid(), 'duration' => $duration]
                     );
                 }
+            }
+        }
+
+        if (count($exceptions)) {
+            /** @var \Exception $exception */
+            foreach ($exceptions as $exception) {
+                $this->logger->error(
+                    'Exception occured while sending in file {file}:{line}: {message}',
+                    [
+                        'file'    => $exception->getFile(),
+                        'line'    => $exception->getLine(),
+                        'message' => $exception->getMessage()
+                    ]
+                );
             }
         }
 
