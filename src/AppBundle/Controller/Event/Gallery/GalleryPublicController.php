@@ -198,7 +198,7 @@ class GalleryPublicController extends BaseGalleryController
         if ($user && $user->hasRole('ROLE_ADMIN_EVENT')) {
             return true;
         }
-        if ($event->isGalleryLinkSharing() && hash_equals($this->galleryHash($event), $hash)) {
+        if ($event->isGalleryLinkSharing() && hash_equals($this->galleryHash($event), (string)$hash)) {
             return true;
         }
 
