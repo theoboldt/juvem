@@ -191,7 +191,7 @@ class GalleryPublicController extends BaseGalleryController
      * @param string $hash
      * @return bool
      */
-    private function isAccessOnEventGranted(Event $event, $hash = null)
+    private function isAccessOnEventGranted(Event $event, $hash = '')
     {
         /** @var User $user */
         $user = $this->getUser();
