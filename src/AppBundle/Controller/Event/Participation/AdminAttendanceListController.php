@@ -161,10 +161,10 @@ class AdminAttendanceListController extends Controller
      */
     public function listParticipationsAction(Event $event, $tid, Request $request)
     {
-        $eventRepository       = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participantEntityList = $eventRepository->participantsList($event, null, false, false);
-        $filloutRepository     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
-        $filloutList           = [];
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
+        $filloutRepository       = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
+        $filloutList             = [];
         foreach ($filloutRepository->findBy(['attendanceList' => $tid]) as $fillout) {
             $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
         }
