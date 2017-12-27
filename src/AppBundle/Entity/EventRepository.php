@@ -129,9 +129,8 @@ class EventRepository extends EntityRepository
      * @return Event[]
      */
     public function findWithSubscriptions() {
-         $qb = $this->createQueryBuilder('AppBundle:Event')
+         $qb = $this->createQueryBuilder('e')
                    ->select('e', 's')
-                   ->from('AppBundle:Event', 'e')
                    ->innerJoin('e.subscribers', 's')
                    ->orderBy('e.title', 'ASC');
         return $qb->getQuery()->execute();
