@@ -10,6 +10,7 @@
 
 namespace AppBundle\EventListeners;
 
+use AppBundle\InvalidTokenHttpException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -29,20 +30,23 @@ class ExceptionListener
         $this->logger = $logger;
     }
 
-    /**
-     * @param GetResponseForExceptionEvent $event
-     */
-    public function onKernelException(GetResponseForExceptionEvent $event)
-    {
-        if ($this->logger === null) {
-            return;
-        }
-        $exception        = $event->getException();
-        $flattenException = FlattenException::create($exception);
-        $this->logger->error('Stack trace');
-        foreach ($flattenException->getTrace() as $trace) {
-            $traceMessage = sprintf('  at %s line %s', $trace['file'], $trace['line']);
-            $this->logger->error($traceMessage);
-        }
-    }
+	/**
+	 * @param GetResponseForExceptionEvent $event
+	 */
+	public function onKernelException(GetResponseForExceptionEvent $event) {
+		if ($this->logger === null) {
+			return;
+		}
+		$exception = $event->getException();
+		if ($exception instanceof InvalidTokenHttpException) {
+			return; //do not log token exceptions
+		}
+
+		$flattenException = FlattenException::create($exception);
+		$this->logger->error('Stack trace');
+		foreach ($flattenException->getTrace() as $trace) {
+			$traceMessage = sprintf('  at %s line %s', $trace['file'], $trace['line']);
+			$this->logger->error($traceMessage);
+		}
+	}
 }
