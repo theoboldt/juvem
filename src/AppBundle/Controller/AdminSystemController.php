@@ -86,7 +86,7 @@ class AdminSystemController extends Controller
         $content = $output->fetch();
 
         $this->addFlash(
-            'notice',
+            'info',
             $content
         );
         return $this->redirect('/');
@@ -124,7 +124,7 @@ class AdminSystemController extends Controller
 
         $content = $output->fetch();
 
-        $this->addFlash('notice', 'Database: '.$content);
+        $this->addFlash('info', 'Database: '.$content);
         return $this->redirect('/');
     }
 }
