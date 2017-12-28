@@ -13,7 +13,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\InvalidTokenHttpException;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,16 +66,11 @@ class ActiveButtonController extends Controller
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken($entityName . $property . $entityId)) {
-            return new JsonResponse([]);
             throw new InvalidTokenHttpException();
         }
 
-        try {
-            $repository = $this->getDoctrine()
-                               ->getRepository('AppBundle:' . $entityName);
-        } catch (MappingException $e) {
-            throw new AccessDeniedHttpException('Unavailable entity');
-        }
+        $repository = $this->getDoctrine()
+                           ->getRepository('AppBundle:' . $entityName);
 
         switch ($entityName) {
             case 'User':
@@ -104,14 +98,14 @@ class ActiveButtonController extends Controller
                 }
                 break;
             default:
-                throw new AccessDeniedHttpException('Unmanaged entity');
+                throw new \InvalidArgumentException('Unmanaged entity');
         }
 
         /** @var Event $entity */
         $entity = $repository->findOneBy(array($idColumn => $entityId));
 
         if (!method_exists($entity, $property)) {
-            throw new AccessDeniedHttpException('Unavailable property');
+            throw new \InvalidArgumentException('Unavailable property');
         }
         $valueOriginal = $entity->$property();
 

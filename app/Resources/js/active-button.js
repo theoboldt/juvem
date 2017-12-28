@@ -43,12 +43,6 @@ $(function(){
                     button.html(response.html);
                 }
             },
-            error: function () {
-                $(document).trigger('add-alerts', {
-                    message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
-                    priority: 'error'
-                });
-            },
             complete: function () {
                 button.prop('disabled', false);
                 button.find('[data-toggle="tooltip"]').tooltip({
@@ -68,13 +62,6 @@ $(function(){
                         button.html(response.html);
                     }
                     button.trigger('juvem.activeButton.success', [button, response]);
-                },
-                error: function (response) {
-                    $(document).trigger('add-alerts', {
-                        message: 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
-                        priority: 'error'
-                    });
-                    button.trigger('juvem.activeButton.error', [button, response]);
                 },
                 complete: function (response) {
                     button.prop('disabled', false);

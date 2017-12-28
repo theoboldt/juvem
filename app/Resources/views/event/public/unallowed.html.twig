@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nicht berechtigt{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Nicht berechtigt', 'subtitle': appTitle} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Sie haben nicht die nötigen Berechtigung um die gewünschte Aktion durchzuführen.
+                        </p>
+                        <p>
+                            Wenn das ein Fehler ist, erbitten Sie die Berechtigung bei den Verantwortlichen Personen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <h3>Aktive Veranstaltungen</h3>
+
+                {{ render(controller('AppBundle:Event/Public:listActiveEvents')) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

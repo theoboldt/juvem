@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inhalte geändert{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Inhalte geändert', 'subtitle': appTitle} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            In der Zwischenzeit haben sich Teile dieser Seite geändert.
+                            Sie müssen sie aktualisieren, um fortfahren zu können.
+                        </p>
+
+                        <h2>Mögliche Ursachen</h2>
+                        <h3>Hintergrund-Browserfenster</h3>
+                        <p>
+                            Wenn dieses Browserfenster vor langer Zeit geöffnet wurde und den Fokus verlor, also nicht mehr auf ihrem Bildschirm sichtbar war, kann dieser Fehler auftreten.
+                        </p>
+                        <p>
+                            Generell sollten Sie beispielsweise das Ausfüllen eines Formulars innerhalb einer halben Stunde erledigen können. Es ist dabei ausreichend, wenn sie das Formular abschicken.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <h3>Aktive Veranstaltungen</h3>
+
+                {{ render(controller('AppBundle:Event/Public:listActiveEvents')) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

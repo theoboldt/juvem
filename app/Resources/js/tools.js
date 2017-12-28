@@ -5,7 +5,25 @@ $(function () {
      */
     $.ajaxSetup({
         type: 'POST',
-        dataType: 'json'
+        dataType: 'json',
+        error: function (jqXHR) {
+            var message = 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
+                priority = 'error';
+debugger;
+            if (this.dataType === 'json'
+                && jqXHR.responseJSON
+                && jqXHR.responseJSON.message
+                && jqXHR.responseJSON.message.content
+                && jqXHR.responseJSON.message.type
+            ) {
+                message = jqXHR.responseJSON.message.content;
+                priority = jqXHR.responseJSON.message.type;
+            }
+            $(document).trigger('add-alerts', {
+                message: message,
+                priority: priority
+            });
+        }
     });
 
     /**
