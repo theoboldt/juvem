@@ -224,6 +224,12 @@ class Event
     protected $subscribers;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"remove"})
+     * @var \Doctrine\Common\Collections\Collection|EventUserAssignment[]
+     */
+    protected $userAssignments;
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -232,6 +238,7 @@ class Event
         $this->galleryImages         = new ArrayCollection();
         $this->acquisitionAttributes = new ArrayCollection();
         $this->subscribers           = new ArrayCollection();
+        $this->userAssignments       = new ArrayCollection();
     }
 
     /**
@@ -905,6 +912,14 @@ class Event
     public function isSubscribedBy(User $subscriber)
     {
         return ($this->subscribers->contains($subscriber));
+    }
+
+    /**
+     * @return EventUserAssignment[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getUserAssignments()
+    {
+        return $this->userAssignments;
     }
 
     /**

@@ -14,7 +14,6 @@ use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -31,6 +30,9 @@ class User extends BaseUser
 
     const ROLE_ADMIN_EVENT       = 'ROLE_ADMIN_EVENT';
     const ROLE_ADMIN_EVENT_LABEL = 'Veranstaltungsverwaltung';
+
+    const ROLE_ADMIN_EVENT_GLOBAL       = 'ROLE_ADMIN_EVENT_GLOBAL';
+    const ROLE_ADMIN_EVENT_GLOBAL_LABEL = 'Veranstaltungsverwaltung (alle)';
 
     const ROLE_ADMIN_USER       = 'ROLE_ADMIN_USER';
     const ROLE_ADMIN_USER_LABEL = 'Benutzerverwaltung';
@@ -77,6 +79,12 @@ class User extends BaseUser
      * )
      */
     protected $subscribedEvents;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="user", cascade={"remove"})
+     * @var \Doctrine\Common\Collections\Collection|EventUserAssignment[]
+     */
+    protected $eventAssignments;
 
     /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
@@ -307,5 +315,13 @@ class User extends BaseUser
     public function getSubscribedEvents()
     {
         return $this->subscribedEvents;
+    }
+
+    /**
+     * @return EventUserAssignment[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getEventAssignments()
+    {
+        return $this->eventAssignments;
     }
 }
