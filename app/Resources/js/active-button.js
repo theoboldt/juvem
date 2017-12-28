@@ -35,10 +35,8 @@ $(function(){
             };
 
         $.ajax({
-            type: 'POST',
             url: '/admin/active/button',
             data: formData,
-            dataType: 'json',
             success: function (response) {
                 button.empty();
                 if (response && response.html) {
@@ -62,10 +60,8 @@ $(function(){
         button.click(function () {
             button.prop('disabled', true);
             $.ajax({
-                type: 'POST',
                 url: '/admin/active/button',
                 data: $.extend(formData, {toggle: 1}),
-                dataType: 'json',
                 success: function (response) {
                     button.empty();
                     if (response && response.html) {

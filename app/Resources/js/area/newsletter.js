@@ -70,7 +70,6 @@ $(function () {
         textField.attr('class', 'loading-text');
 
         $.ajax({
-            type: 'POST',
             url: '/admin/newsletter/affected-recipient-count',
             data: {
                 _token: $('*#dialogSend').data('token'),
@@ -78,7 +77,6 @@ $(function () {
                 ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
                 events: $('*#newsletter_mail_events').val() || []
             },
-            dataType: 'json',
             success: function (response) {
                 var text;
                 if (response.count == 1) {
@@ -116,7 +114,6 @@ $(function () {
             btnSend.toggleClass('disabled', true);
 
             $.ajax({
-                type: 'POST',
                 url: '/admin/newsletter/affected-recipient-list',
                 data: {
                     _token: $('*#dialogSend').data('token'),
@@ -125,7 +122,6 @@ $(function () {
                     ageRangeEnd: $('*#newsletter_mail_ageRangeEnd').val(),
                     events: $('*#newsletter_mail_events').val() || []
                 },
-                dataType: 'json',
                 success: function (response) {
                     recpientEl.html("");
                     if (response.length) {
@@ -162,13 +158,11 @@ $(function () {
         btnSend.prop('disabled', true);
 
         $.ajax({
-            type: 'POST',
             url: '/admin/newsletter/send',
             data: {
                 _token: $('*#dialogSend').data('token'),
                 lid: lid
             },
-            dataType: 'json',
             success: function () {
                 location.reload(true);
             },
@@ -188,7 +182,6 @@ $(function () {
         btnSendTest.prop('disabled', true);
 
         $.ajax({
-            type: 'POST',
             url: '/admin/newsletter/send_test',
             data: {
                 _token: $('*#dialogSendTest').data('token'),
@@ -198,7 +191,6 @@ $(function () {
                 lead: $('*#newsletter_mail_lead').val(),
                 content: $('*#newsletter_mail_content').val()
             },
-            dataType: 'json',
             success: function () {
                 btnSendTest.prop('disabled', false);
                 $('#dialogSendTest').modal('hide');

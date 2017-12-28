@@ -1,6 +1,14 @@
 $(function () {
 
     /**
+     * GLOBAL request configuration
+     */
+    $.ajaxSetup({
+        type: 'POST',
+        dataType: 'json'
+    });
+
+    /**
      * GLOBAL Escape html
      */
     window.eHtml = function (value) {

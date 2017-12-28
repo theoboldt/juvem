@@ -209,7 +209,6 @@ $(function () {
             button.toggleClass('disabled', true);
             commentsEl.toggleClass('loading-text', true);
             $.ajax({
-                type: 'POST',
                 url: '/admin/comment/update',
                 data: {
                     _token: $('#modalCommentToken').val(),
@@ -218,7 +217,6 @@ $(function () {
                     relatedId: relatedId,
                     content: $('#modalCommentContent').val()
                 },
-                dataType: 'json',
                 success: function (response) {
                     commentsEl.empty();
                     if (response && response.comments) {
@@ -277,7 +275,6 @@ $(function () {
         $('#dialogModalCommentButton').unbind('click').click(function () {
             buttonEl.toggleClass('disabled', true);
             $.ajax({
-                type: 'POST',
                 url: '/admin/event/participantschange',
                 data: {
                     _token: modalEl.find('input[name=_token]').val(),
@@ -285,7 +282,6 @@ $(function () {
                     action: action,
                     participants: participantIds
                 },
-                dataType: 'json',
                 success: function () {
                     $('#participantsListTable').bootstrapTable('refresh');
                 },
@@ -446,13 +442,11 @@ $(function () {
             var iid = deleteEl.data('iid');
             deleteEl.toggleClass('disabled', true);
             $.ajax({
-                type: 'POST',
                 url: '/admin/event/gallery/image/delete',
                 data: {
                     _token: deleteEl.data('token'),
                     iid: iid
                 },
-                dataType: 'json',
                 success: function () {
                     debugger;
                     $('#galleryImage-' + iid).remove();
@@ -474,14 +468,12 @@ $(function () {
                 title = $('#galleryImageTitle').val();
             saveEl.toggleClass('disabled', true);
             $.ajax({
-                type: 'POST',
                 url: '/admin/event/gallery/image/save',
                 data: {
                     _token: saveEl.data('token'),
                     title: title,
                     iid: iid
                 },
-                dataType: 'json',
                 success: function () {
                     $('#galleryImage-' + iid + ' span').text(title);
                     modalEl.modal('hide');

@@ -22,7 +22,6 @@ $(function(){
             $.ajax({
                 type: 'GET',
                 url: '/user/settings/load',
-                dataType: 'json',
                 success: function (response) {
                     if (response && response.hash && response.settings) {
                         storage.set('user-settings-hash', response.hash);
@@ -43,7 +42,6 @@ $(function(){
                         _token: $('body').data('user-settings-token'),
                         settings: storage.get('user-settings')
                     },
-                    dataType: 'json',
                     async: async,
                     success: function (response) {
                         if (response && response.hash) {
