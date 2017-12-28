@@ -67,6 +67,7 @@ class ActiveButtonController extends Controller
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken($entityName . $property . $entityId)) {
+            return new JsonResponse([]);
             throw new InvalidTokenHttpException();
         }
 
