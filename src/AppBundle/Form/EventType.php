@@ -122,7 +122,7 @@ class EventType extends AbstractType
             )
             ->add(
                 'price', MoneyType::class,
-                ['label' => 'Preis', 'required' => false, 'divisor' => 100, 'empty_data' => null, 'attr' => ['aria-describedby' => 'help-price'],]
+                ['label' => 'Preis', 'required' => false, 'divisor' => 100, 'attr' => ['aria-describedby' => 'help-price'],]
             )
             ->add('addressTitle', TextType::class, ['label' => 'Bezeichnung', 'required' => false, 'attr' => array('aria-describedby' => 'help-address-title')])
             ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => false])
