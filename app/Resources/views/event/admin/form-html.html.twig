@@ -26,18 +26,6 @@
     <div class="col-xs-12 col-sm-4">
         <div class="row">
             <div class="col-xs-12">
-                {{ form_label(form.price) }}
-                {{ form_widget(form.price) }}
-                {{ form_errors(form.price) }}
-                <p class="help-block" id="help-price">Leer lassen, wenn kein Preis angegeben werden soll. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
-            </div>
-            <div class="col-xs-12">
-                {{ form_label(form.ageRange) }}
-                {{ form_widget(form.ageRange) }}
-                {{ form_errors(form.ageRange) }}
-                <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der Zielgruppe in Jahren angeben, bspw. <samp>7-13</samp>. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
-            </div>
-            <div class="col-xs-12">
                 {{ form_row(form.imageFile) }}
             </div>
             <div class="col-xs-12">
@@ -101,6 +89,24 @@
         {{ form_row(form.isAutoConfirm) }}
     </div>
 </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-4">
+        {{ form_label(form.price) }}
+        {{ form_widget(form.price) }}
+        {{ form_errors(form.price) }}
+        <p class="help-block" id="help-price">Leer lassen, wenn kein Preis angegeben werden soll. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+        {{ form_label(form.ageRange) }}
+        {{ form_widget(form.ageRange) }}
+        {{ form_errors(form.ageRange) }}
+        <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der Zielgruppe in Jahren angeben, bspw. <samp>7-13</samp>. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+    </div>
+</div>
+
+
 <div class="row">
     <div class="col-xs-12 col-sm-8">
         <div class="form-group">

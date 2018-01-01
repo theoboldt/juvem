@@ -87,13 +87,15 @@ class EventType extends AbstractType
             )
             )
             ->add(
-                'isVisible', ChoiceType::class, array(
-                'label'             => 'Sichtbarkeit',
-                'choices'           => array('Aktiv'     => true,
-                                             'Versteckt' => false
-                ),
-                'expanded'          => true
-            )
+                'isVisible',
+                ChoiceType::class,
+                [
+                    'label'    => 'Sichtbarkeit',
+                    'choices'  => ['Auf Startseite präsentieren' => true,
+                                   'Nicht präsentieren'          => false
+                    ],
+                    'expanded' => true
+                ]
             )
             ->add(
                 'isAutoConfirm', ChoiceType::class, array(
