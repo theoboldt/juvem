@@ -41,6 +41,12 @@ class EventUserAssignment
     protected $allowedToEdit = false;
 
     /**
+     * @ORM\Column(type="boolean", name="allowed_to_manage_participants", nullable=false)
+     * @var bool
+     */
+    protected $allowedToManageParticipants = false;
+
+    /**
      * @ORM\Column(type="boolean", name="allowed_to_read_comments", nullable=false)
      * @var bool
      */
