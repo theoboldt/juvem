@@ -65,6 +65,7 @@ class MailGenerator
         }
         $organizationEmail = $this->customization->organizationEmail();
         $organizationName  = $this->customization->organizationName();
+        $appTitle          = $this->customization->title();
 
         /** @var Twig_Template $template */
         $template = $this->twig->loadTemplate($path); // Define your own schema
@@ -73,12 +74,15 @@ class MailGenerator
         $bodyHtml = $template->renderBlock('body_html', $parameters);
         $bodyText = $template->renderBlock('body_text', $parameters);
 
+        $senderName = $organizationName . ' ['.$appTitle.']';
         $message = Swift_Message::newInstance()
-                                ->setFrom($this->mailerAddress, $organizationName . ' [Juvem]')
+                                ->setFrom($this->mailerAddress, $senderName)
+                                ->setSender($this->mailerAddress, $senderName)
                                 ->setSubject($subject);
 
         if ($organizationEmail) {
-            $message->setReplyTo($organizationEmail, $organizationName);
+            $message->setReplyTo($organizationEmail, $organizationName)
+                    ->setReturnPath($organizationEmail);
         }
         $message->setBody($bodyText, 'text/plain')
                 ->addPart($bodyHtml, 'text/html');
