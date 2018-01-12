@@ -50,10 +50,11 @@
         </div>
         {{ form_label(form.useAging) }}
         {{ form_widget(form.useAging) }}
+        {% set ageRangeEndForExample = form.ageRangeEnd.vars.value < 18 ? form.ageRangeEnd.vars.value : 17 %}
         <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne
             automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }}
-                bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit
-            <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
+                bis {{ ageRangeEndForExample }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit
+            <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ ageRangeEndForExample+1 }}</i> ausgewählt sein. </p>
     </div>
     <div class="col-xs-12 col-sm-6">
         {{ form_label(form.events) }}
