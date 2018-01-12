@@ -1,60 +1,69 @@
 {{ form_start(form) }}
-{{ form_label(form.email) }}
-{{ form_widget(form.email) }}
-<p class="help-block" id="help-email">Die E-Mails des Newsletter werden an diese E-Mail Adresse
-    verschickt. Diese E-Mail Adresse kann von der im
-    {% if app.user is null %}
-        Benutzerprofil
-    {% else %}
-        <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a>
-    {% endif %}
-    konfigurierten Adresse abweichen.</p>
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+        <p class="help-block" id="help-email">Die Newsletter werden an diese Adresse
+            verschickt. Sie kann von der im
+            {% if app.user is null %}
+                Benutzerprofil
+            {% else %}
+                <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a>
+            {% endif %}
+            konfigurierten Adresse abweichen.</p>
 
-{{ form_label(form.isEnabled) }}
-{{ form_widget(form.isEnabled) }}
-<p class="help-block" id="help-newsletter-enable">Diese Option muss aktiviert sein, wenn Sie Newsletter erhalten
-    möchten. Wenn Sie diese Option deaktivieren, werden an die oben genannte E-Mail Adresse keine E-Mails versandt.</p>
-
-{{ form_label(form.nameLast) }}
-{{ form_widget(form.nameLast) }}
-<p class="help-block" id="help-last-name">Wenn Sie möchten, können Sie hier Ihren Familiennamen hinterlegen.
-    {% if app.user is not null %}
-        Der Name kann von dem, der für das <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a> konfiguriert ist abweichen.
-    {% endif %}
-    </p>
-
-<label class="control-label">Altersspanne</label>
-<p class="help-block" id="help-topic-age-range">Mithilfe des folgenden Bedienelementes können Sie die
-    Altersspanne konfigurieren, die für Sie von Interesse ist. Wenn Sie hier den linken Regler
-    beispielsweise auf 6 und den rechten auf 16 stellen, erhalten sie alle E-Mails zu Veranstaltungen
-    die für Kinder im Alter von 6 bis 16 Jahren interessant sind.</p>
-<div class="row" style="margin-bottom: 10px;">
-    <div class="col-sm-2 col-xs-6">
-        <label class="control-label">von <span class="visible-xs-inline">x Jahren</span></label>
-        {{ form_widget(form.ageRangeBegin) }}
+        {{ form_label(form.isEnabled) }}
+        {{ form_widget(form.isEnabled) }}
+        <p class="help-block" id="help-newsletter-enable">Diese Option muss aktiviert sein, wenn Sie Newsletter erhalten
+            möchten. Ist diese Option deaktiviert, erhalten Sie <b>keine</b> Newsletter.</p>
     </div>
-    <div class="col-sm-8  col-xs-12 contains-slider">
-        <input type="hidden" class="slider-input"
-               value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
-    </div>
-    <div class="col-sm-2 col-xs-6">
-        <label class="control-label">bis <span class="visible-xs-inline">x Jahre</span></label>
-        {{ form_widget(form.ageRangeEnd) }}
+    <div class="col-xs-12 col-sm-6">
+        {{ form_label(form.nameLast) }}
+        {{ form_widget(form.nameLast) }}
+        <p class="help-block" id="help-last-name">Wenn Sie möchten, können Sie hier Ihren Familiennamen hinterlegen.
+            {% if app.user is not null %}
+                Er kann von dem, der für das <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a> konfiguriert ist, abweichen.
+            {% endif %}
+            </p>
     </div>
 </div>
-{{ form_label(form.useAging) }}
-{{ form_widget(form.useAging) }}
-<p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne
-    automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }}
-        bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit
-    <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
-
-{{ form_label(form.events) }}
-{{ form_widget(form.events) }}
-<p class="help-block" id="help-topic-subscribed"> Ist diese Option aktiviert, erhalten Sie E-Mails zu Veranstaltungen,
-    die den oben ausgewählten Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir
-    einige verangene Veranstaltungen aus, die zum Thema des Newsletter passen oder die eine Nachfolgeveranstaltung
-    darstellen.</p>
-
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <label class="control-label">Altersspanne</label>
+        <p class="help-block" id="help-topic-age-range">Mithilfe des folgenden Bedienelementes können Sie die
+            Altersspanne konfigurieren, die für Sie von Interesse ist. Wenn Sie hier den linken Regler
+            beispielsweise auf 6 und den rechten auf 16 stellen, erhalten sie alle E-Mails zu Veranstaltungen
+            die für Kinder im Alter von 6 bis 16 Jahren interessant sind.</p>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-sm-2 col-xs-6">
+                <label class="control-label">von <span class="visible-xs-inline">x Jahren</span></label>
+                {{ form_widget(form.ageRangeBegin) }}
+            </div>
+            <div class="col-sm-8  col-xs-12 contains-slider">
+                <input type="hidden" class="slider-input"
+                       value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
+            </div>
+            <div class="col-sm-2 col-xs-6">
+                <label class="control-label">bis <span class="visible-xs-inline">x Jahre</span></label>
+                {{ form_widget(form.ageRangeEnd) }}
+            </div>
+        </div>
+        {{ form_label(form.useAging) }}
+        {{ form_widget(form.useAging) }}
+        <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne
+            automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }}
+                bis {{ form.ageRangeEnd.vars.value }}</i> ausgewählt haben, wird nächstes Jahr um diese Zeit
+            <i>{{ form.ageRangeBegin.vars.value+1 }} bis {{ form.ageRangeEnd.vars.value+1 }}</i> ausgewählt sein. </p>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        {{ form_label(form.events) }}
+        {{ form_widget(form.events) }}
+        <p class="help-block" id="help-topic-subscribed"> Ist diese Option aktiviert, erhalten Sie E-Mails zu Veranstaltungen,
+            die den oben ausgewählten Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir
+            einige verangene Veranstaltungen aus, die zum Thema des Newsletter passen oder die eine Nachfolgeveranstaltung
+            darstellen.</p>
+    </div>
+</div>
+<hr />
 <input type="submit" value="Änderungen speichern" class="btn btn-primary"/>
 {{ form_end(form) }}

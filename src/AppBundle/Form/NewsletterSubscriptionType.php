@@ -41,7 +41,7 @@ class NewsletterSubscriptionType extends AbstractType
                 array(
                     'label'      => 'Newsletter erhalten',
                     'attr'       => array('aria-describedby' => 'help-newsletter-enable', 'class' => 'checkbox-smart'),
-                    'label_attr' => array('class' => 'control-label checkbox-smart-label'),
+                    'label_attr' => array('class' => 'control-label checkbox-smart-label', 'id' => 'label-newsletter-enabled'),
                     'required'   => false,
                     'mapped'     => true
                 )

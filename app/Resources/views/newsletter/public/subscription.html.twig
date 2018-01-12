@@ -12,34 +12,47 @@
     {% endembed %}
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 col-sm-7 col-md-6 checkbox-with-help-block">
-                {% if app.user is null %}
-                    <p>Wir informieren Sie gerne über bevorstehende Aktionen. Auf dieser Seite können Sie den Newsletter
-                        abonnieren und Ihren Wünschen entsprechend zuscheinden. Natürlich können Sie den Newsletter
-                        jederzeit abbestellen.</p>
-                    <p>Nutzen Sie dazu einfach den entsprechenden Link in einem unserer Newsletter den Sie erhalten
-                        haben, oder <a href="mailto:mail@jugendwerk-vaihingen.de">wenden Sie sich direkt an uns</a>.</p>
-                {% else %}
-                    <p>Auf dieser Seite können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über
-                        die bevorstehenden Aktionen informiert zu sein.</p>
-                {% endif %}
-
-                <label class="control-label" id="help-templates">Schnellwahl</label><br>
-                <div class="btn-group" role="group" aria-label="help-templates" style="margin-bottom: 10px;">
-                  <button type="button" class="btn btn-default btn-sm" id="preselectNone" >keine Newsletter erhalten</button>
-                  <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abbonieren</button>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {% if app.user is null %}
+                            <p>Wir informieren Sie gerne über bevorstehende Aktionen. Auf dieser Seite können Sie den Newsletter
+                                abonnieren und Ihren Wünschen entsprechend zuscheinden. Natürlich können Sie den Newsletter
+                                jederzeit abbestellen oder <a href="#label-newsletter-enabled">deaktivieren</a>.</p>
+                            <p>Nutzen Sie dazu einfach den entsprechenden Link in einem unserer Newsletter den Sie erhalten
+                                haben, oder <a href="mailto:mail@jugendwerk-vaihingen.de">wenden Sie sich direkt an uns</a>.</p>
+                        {% else %}
+                            <p>Hier können Sie konfigurieren, welche E-Mails Sie von uns erhalten möchten, um über
+                                die bevorstehenden Aktionen informiert zu sein.</p>
+                        {% endif %}
+                    </div>
+                    <aside class="col-xs-12">
+                        <p>Es ist uns sehr wichtig, dass Sie die volle Kontrolle darüber haben, welche Nachrichten Sie von uns
+                            erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder den Newsletter auch jederzeit
+                            ganz  <a href="#label-newsletter-enabled">deaktivieren</a>. Sie sollen keine E-Mails zu Veranstaltungen erhalten, die für Sie nicht von Interesse sind.</p>
+                    </aside>
                 </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <aside class="col-xs-12">
+                        <p>Selbstverständlich sind wir von unseren Veranstaltungen überzeugt, und halten Sie gerne auf dem
+                            Laufenden - wenn Sie das möchten!</p>
+                    </aside>
+                    <div class="col-xs-12 checkbox-with-help-block">
+                        <label class="control-label" id="help-templates">Schnellwahl</label><br>
+                        <div class="btn-group" role="group" aria-label="help-templates" style="margin-bottom: 10px;">
+                          <button type="button" class="btn btn-default btn-sm" id="preselectNone" >keine Newsletter erhalten</button>
+                          <button type="button" class="btn btn-default btn-sm" id="preselectAll" >alle Newsletter abbonieren</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
                 {% include '/newsletter/public/form-html.html.twig' with {'form': form} %}
             </div>
-            <aside class="col-xs-12 col-sm-5 col-md-6">
-                <p>Es ist uns sehr wichtig, dass Sie die volle Kontrolle darüber haben, welche Nachrichten Sie von uns
-                    erhalten. Deshalb können Sie hier unter einigen Optionen wählen, oder den Newsletter auch jederzeit
-                    ganz abbestellen. Sie sollen keine E-Mails zu Veranstaltungen erhalten, die für Sie nicht von
-                    Interesse sind.</p>
-
-                <p>Selbstverständlich sind wir von unseren Veranstaltungen überzeugt, und halten Sie gerne auf dem
-                    Laufenden - wenn Sie das möchten!</p>
-            </aside>
         </div>
     </div>
 </article></section>
