@@ -64,7 +64,7 @@ class NewsletterSubscriptionRepository extends EntityRepository
 
         /** @var \DateTime $start */
         $queryAgeRangeClearance = sprintf(
-            'FLOOR(DATEDIFF( CURDATE(), base_age) / %d)', EventRepository::DAYS_OF_YEAR
+            'FLOOR(ABS(DATEDIFF( CURDATE(), base_age)) / %d)', EventRepository::DAYS_OF_YEAR
         );
         $query                  = sprintf(
             'SELECT DISTINCT s.rid
