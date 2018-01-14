@@ -50,7 +50,9 @@ class NewsletterSubscriptionRepository extends EntityRepository
      * @return  int[]|array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function qualifiedNewsletterSubscriptionIdList($ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null)
+    public function qualifiedNewsletterSubscriptionIdList(
+        int $ageRangeBegin, int $ageRangeEnd, array $similarEventIdList = null
+    )
     {
         if (!$similarEventIdList || !count($similarEventIdList)) {
             $similarEventIdList = array(0);
@@ -66,6 +68,15 @@ class NewsletterSubscriptionRepository extends EntityRepository
         $queryAgeRangeClearance = sprintf(
             'FLOOR(ABS(DATEDIFF( CURDATE(), base_age)) / %d)', EventRepository::DAYS_OF_YEAR
         );
+
+        if ($ageRangeEnd === 18) {
+            $queryAgeOver18rangeAddition = sprintf(
+                'OR (s.base_age IS NOT NULL AND (s.age_range_end + %1$s) >= 18)', $queryAgeRangeClearance
+            );
+        } else {
+            $queryAgeOver18rangeAddition = '';
+        }
+
         $query                  = sprintf(
             'SELECT DISTINCT s.rid
                FROM newsletter_subscription s
@@ -76,6 +87,7 @@ class NewsletterSubscriptionRepository extends EntityRepository
                       ( :ageRangeBegin <= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_end + %1$s) ELSE s.age_range_end END)
                         AND :ageRangeEnd >= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_begin + %1$s) ELSE s.age_range_begin END)
                       ) OR es.rid IS NOT NULL
+                      '.$queryAgeOver18rangeAddition.'
                     )
               ',
             $queryAgeRangeClearance,
@@ -101,9 +113,10 @@ class NewsletterSubscriptionRepository extends EntityRepository
      * @param int|null $excludeFromNewsletter     Define newsletter id here to exclude subscriptions which have already
      *                                            received the transmitted newsletter
      * @return array|NewsletterSubscription[]
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function qualifiedNewsletterSubscriptionList(
-        $ageRangeBegin, $ageRangeEnd, array $similarEventIdList = null, $excludeFromNewsletter = null
+        int $ageRangeBegin, int $ageRangeEnd, array $similarEventIdList = null, $excludeFromNewsletter = null
     )
     {
         if ($excludeFromNewsletter instanceof Newsletter) {

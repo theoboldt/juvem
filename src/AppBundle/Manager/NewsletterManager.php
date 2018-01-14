@@ -13,6 +13,7 @@ namespace AppBundle\Manager;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class NewsletterManager extends AbstractMailerAwareManager
 {
@@ -113,6 +114,21 @@ class NewsletterManager extends AbstractMailerAwareManager
         foreach ($subscriptions as $subscription) {
             $startTime = microtime(true);
             if ($subscription->getIsEnabled() && $subscription->getIsConfirmed()) {
+                if ($newsletter->getAgeRangeEnd() === 18 && $subscription->getAgeRangeBegin(true) > 18) {
+                    $dataHtml['calltoactioncontent'] = sprintf(
+                        '<p>Dieser Newsletter wurde Ihnen zugestellt, obwohl in Ihrem Abonnement eigentlich eine Altersspanne <i>%1$d bis %2$d Jahre</i> konfiguriert ist. Um auch über Veranstaltungen für jüngere Zielgruppen auf dem Laufenden zu bleiben, sollten Sie ihre abonnierte <a href="%3$s">Altersspanne korrigieren</a> oder das <a href="%3$s">mitwachsen der Altersspanne deaktivieren</a>.</p>
+                        <p><a href="%3$s">Abonnement verwalten &raquo;</a></p>',
+                        $subscription->getAgeRangeBegin(true),
+                        $subscription->getAgeRangeEnd(true),
+                        $this->urlGenerator->generate(
+                            'newsletter_subscription_token', ['token' => $subscription->getDisableToken()],
+                            UrlGeneratorInterface::ABSOLUTE_URL
+                        )
+                    );
+                } else {
+                    $dataHtml['calltoactioncontent'] = null;
+                }
+
                 $dataBoth     = array(
                     'text' => $dataText,
                     'html' => $dataHtml

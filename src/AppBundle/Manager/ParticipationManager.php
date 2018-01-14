@@ -96,12 +96,14 @@ class ParticipationManager extends AbstractMailerAwareManager
             $dataHtml[$area] = $contentHtml;
         }
         unset($content);
+        $dataHtml['calltoactioncontent'] = null;
 
         /** @var Participation $participation */
         foreach ($event->getParticipations() as $participation) {
             if ($participation->isConfirmed()) {
-                $dataBoth = ['text' => $dataText,
-                             'html' => $dataHtml
+                $dataBoth = [
+                    'text' => $dataText,
+                    'html' => $dataHtml,
                 ];
 
                 $contentList = null;

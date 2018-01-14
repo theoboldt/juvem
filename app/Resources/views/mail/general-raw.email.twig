@@ -13,6 +13,9 @@
 {% block body_html %}
     {% embed 'mail/template.html.twig' %}
         {% block title %}{{ html.title|raw }}{% endblock %}
+        {% if html.calltoactioncontent is defined %}
+                {% block calltoactioncontent %}{{ html.calltoactioncontent|raw }}{% endblock %}
+        {% endif %}
         {% if html.lead is defined %}
             {% if html.lead is defined %}
                 {% block lead %}{{ html.lead|raw }}{% endblock %}

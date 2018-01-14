@@ -14,6 +14,7 @@ use AppBundle\Twig\MailGenerator;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swift_Mailer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 abstract class AbstractMailerAwareManager
@@ -35,17 +36,31 @@ abstract class AbstractMailerAwareManager
     protected $logger;
 
     /**
+     * Router used to create the routes for the transmitted pages
+     *
+     * @var UrlGeneratorInterface
+     */
+    protected $urlGenerator;
+
+    /**
      * Initiate a participation manager service
      *
-     * @param Swift_Mailer         $mailer
-     * @param MailGenerator        $mailGenerator
-     * @param LoggerInterface|null $logger
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param Swift_Mailer          $mailer
+     * @param MailGenerator         $mailGenerator
+     * @param LoggerInterface|null  $logger
      */
-    public function __construct(Swift_Mailer $mailer, MailGenerator $mailGenerator, LoggerInterface $logger = null)
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        Swift_Mailer $mailer,
+        MailGenerator $mailGenerator,
+        LoggerInterface $logger = null
+    )
     {
         if (!$logger) {
             $logger = new NullLogger();
         }
+        $this->urlGenerator  = $urlGenerator;
         $this->mailer        = $mailer;
         $this->mailGenerator = $mailGenerator;
         $this->logger        = $logger;

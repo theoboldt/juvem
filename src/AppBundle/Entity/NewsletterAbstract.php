@@ -84,11 +84,12 @@ abstract class NewsletterAbstract
     /**
      * Get ageRangeBegin
      *
+     * @param  bool    $ignoreAgingLimits If enabled, aging limits are not applied
      * @return integer
      */
-    public function getAgeRangeBegin()
+    public function getAgeRangeBegin($ignoreAgingLimits = false)
     {
-        return $this->applyAging($this->ageRangeBegin);
+        return $this->applyAging($this->ageRangeBegin, $ignoreAgingLimits);
     }
 
     /**
@@ -108,11 +109,12 @@ abstract class NewsletterAbstract
     /**
      * Get ageRangeEnd
      *
+     * @param  bool    $ignoreAgingLimits If enabled, aging limits are not applied
      * @return integer
      */
-    public function getAgeRangeEnd()
+    public function getAgeRangeEnd($ignoreAgingLimits = false)
     {
-        return $this->applyAging($this->ageRangeEnd);
+        return $this->applyAging($this->ageRangeEnd, $ignoreAgingLimits);
     }
 
     /**
@@ -168,10 +170,11 @@ abstract class NewsletterAbstract
     /**
      * Apply aging to transmitted age
      *
-     * @param   integer $age
-     * @return  number
+     * @param  integer $age               Age where aging should be applied to
+     * @param  bool    $ignoreAgingLimits If enabled, aging limits are not applied
+     * @return number
      */
-    public function applyAging($age)
+    public function applyAging($age, $ignoreAgingLimits = false)
     {
         $baseAge = $this->getBaseAge();
         if ($baseAge) {
@@ -180,11 +183,13 @@ abstract class NewsletterAbstract
             $age += abs($interval->format('%y'));
         }
 
-        if ($age < self::AGE_RANGE_MIN) {
-            return self::AGE_RANGE_MIN;
-        }
-        if ($age > self::AGE_RANGE_MAX) {
-            return self::AGE_RANGE_MAX;
+        if (!$ignoreAgingLimits) {
+            if ($age < self::AGE_RANGE_MIN) {
+                return self::AGE_RANGE_MIN;
+            }
+            if ($age > self::AGE_RANGE_MAX) {
+                return self::AGE_RANGE_MAX;
+            }
         }
 
         return $age;
