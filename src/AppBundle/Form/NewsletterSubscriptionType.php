@@ -58,12 +58,13 @@ class NewsletterSubscriptionType extends AbstractType
             ->add(
                 'useAging',
                 CheckboxType::class,
-                array(
-                    'label'    => 'Abbonierte Altersspanne wächst mit',
-                    'attr'     => array('aria-describedby' => 'help-topic-ageing'),
-                    'required' => false,
-                    'mapped'   => true
-                )
+                [
+                    'label'      => 'Abbonierte Altersspanne wächst mit',
+                    'attr'       => ['aria-describedby' => 'help-topic-ageing'],
+                    'label_attr' => ['id' => 'newsletter_subscription_useAgingLabel'],
+                    'required'   => false,
+                    'mapped'     => true
+                ]
             )
             ->add(
                 'ageRangeBegin',

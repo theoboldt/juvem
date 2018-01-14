@@ -49,3 +49,13 @@
     color: lighten(#646465, 25%);
   }
 }
+
+
+#aging-range-section {
+  &.has-warning .sign {
+    display: inline;
+  }
+  .sign {
+    display:none;
+  }
+}

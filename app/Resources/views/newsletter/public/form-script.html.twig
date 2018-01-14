@@ -2,26 +2,46 @@
 <script type='text/javascript'>
     jQuery(document).ready(function () {
         var updateRange,
-                elAgeRangeBegin = $('#{{ formMain }}_ageRangeBegin'),
-                elAgeRangeEnd = $('#{{ formMain }}_ageRangeEnd'),
-                slider = $('.slider-input');
+            elAgeRangeBegin = $('#{{ formMain }}_ageRangeBegin'),
+            elAgeRangeEnd = $('#{{ formMain }}_ageRangeEnd'),
+            elAging = $('#{{ formMain }}_useAging'),
+            elAgingRangeSection = $('#aging-range-section'),
+            slider = $('.slider-input'),
+            sliderChangeTimer,
+            ageRangeHint = '<span id="age-range-aging-end-hint">Für die Altersspanne ist <i>18 bis 18</i>, <i>mitwachsend</i> eingestellt. Da 18 Jahre das obere Ende der möglichen Altersspanne ist, wird die Einstellung nächstes Jahr auch <i>18 bis 18</i> bleiben. Sie werden dann nur noch Newsletter erhalten, die 18 Jahre einschließen.</span>';
+
+        addAgeRangeAlertIfRequired = function () {
+            var showHints = elAging.prop("checked") && parseInt(elAgeRangeBegin.val()) === 18;
+            if (showHints) {
+                $(document).trigger('add-alerts', {
+                    message: ageRangeHint,
+                    priority: 'warning'
+                });
+            }
+            elAgingRangeSection.toggleClass('has-warning', showHints);
+        }();
+
+        resetAlertsAddIfRequired = function () {
+            $(document).trigger("clear-alerts");
+            addAgeRangeAlertIfRequired();
+        };
 
         updateRange = function () {
             var min = parseInt(elAgeRangeBegin.val()),
-                    max = parseInt(elAgeRangeEnd.val()),
-                    switcher;
+                max = parseInt(elAgeRangeEnd.val()),
+                switcher;
             if (min > max) {
                 switcher = min;
                 min = max;
                 max = switcher;
             }
             slider.jRange('setValue', min + ',' + max);
+            resetAlertsAddIfRequired();
         };
 
         elAgeRangeBegin.on('change', updateRange);
         elAgeRangeEnd.on('change', updateRange);
-
-        var sliderChangeTimer;
+        elAging.on('click', resetAlertsAddIfRequired);
 
         slider.jRange({
             from: {{ constant('AppBundle\\Entity\\NewsletterSubscription::AGE_RANGE_MIN') }},
@@ -65,7 +85,7 @@
 
 
             $('#{{ formMain }}_isEnabled').prop("checked", true);
-            $('#{{ formMain }}_useAging').prop("checked", false);
+            elAging.prop("checked", false);
 
             $("#{{ formMain }}_events option:selected").prop("selected", false);
         });
