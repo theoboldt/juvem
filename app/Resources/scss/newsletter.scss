@@ -2,6 +2,10 @@
   margin-bottom: 0;
 }
 
+[name="newsletter_mail[content]"] {
+  min-height: 259px;
+}
+
 .contains-slider {
 
   height: 58px;
@@ -49,7 +53,6 @@
     color: lighten(#646465, 25%);
   }
 }
-
 
 #aging-range-section {
   &.has-warning .sign {
