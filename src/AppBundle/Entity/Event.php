@@ -646,7 +646,7 @@ class Event
         if ($this->participationsCount === null) {
             $participations = $this->getParticipations()->filter(
                 function (Participation $participation) {
-                    return !$participation->getDeletedAt() === null && !$participation->isWithdrawn();
+                    return $participation->getDeletedAt() === null && !$participation->isWithdrawn();
                 }
             );
 
@@ -666,7 +666,7 @@ class Event
         if ($this->participationsConfirmedCount === null) {
             $participations = $this->participations->filter(
                 function (Participation $participation) {
-                    return !$participation->getDeletedAt() === null && !$participation->isWithdrawn() &&
+                    return $participation->getDeletedAt() === null && !$participation->isWithdrawn() &&
                            $participation->isConfirmed();
                 }
             );
