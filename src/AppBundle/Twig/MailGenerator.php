@@ -74,11 +74,11 @@ class MailGenerator
         $bodyHtml = $template->renderBlock('body_html', $parameters);
         $bodyText = $template->renderBlock('body_text', $parameters);
 
-        $senderName = $organizationName . ' ['.$appTitle.']';
-        $message = Swift_Message::newInstance()
-                                ->setFrom($this->mailerAddress, $senderName)
-                                ->setSender($this->mailerAddress, $senderName)
-                                ->setSubject($subject);
+        $senderName = $organizationName . ' [' . $appTitle . ']';
+        $message    = (new Swift_Message())
+            ->setFrom($this->mailerAddress, $senderName)
+            ->setSender($this->mailerAddress, $senderName)
+            ->setSubject($subject);
 
         if ($organizationEmail) {
             $message->setReplyTo($organizationEmail, $organizationName)

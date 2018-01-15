@@ -17,7 +17,9 @@ security:
 
     firewalls:
         main:
+            provider: fos_userbundle
             pattern: ^/
+            logout_on_user_change: true
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
@@ -27,9 +29,9 @@ security:
             anonymous:    true
         # disables authentication for assets and the profiler, adapt it according to your needs
             remember_me:
-                secret:   "%secret%"
+                secret: "%secret%"
                 lifetime: 2419200 # 4 weeks in seconds
-                path:     /
+                path: /
                 secure: true
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

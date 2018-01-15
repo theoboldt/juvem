@@ -124,7 +124,7 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
     protected function processRecipients(array $recipientsNew, $stepCallback = null)
     {
         $em             = $this->getContainer()->get('doctrine')->getManager();
-        $tokenGenerator = $this->getContainer()->get('fos_user.util.token_generator');
+        $tokenGenerator = $this->getContainer()->get('app.newsletter_token_generator');
         $mailManager    = $this->getContainer()->get('app.newsletter_manager');
         $given          = $this->givenEmailList();
         $subscriptions  = 0;
