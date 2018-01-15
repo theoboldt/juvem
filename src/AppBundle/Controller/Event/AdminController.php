@@ -12,11 +12,16 @@ namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventUserAssignment;
+use AppBundle\Entity\User;
 use AppBundle\Form\EventAcquisitionType;
+use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
+use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -48,7 +53,7 @@ class AdminController extends Controller
             array(
                 'eventListFuture' => $eventListFuture,
                 'eventListPast'   => $eventListPast,
-                'eventList'       => array_merge($eventListFuture, $eventListPast)
+                'eventList'       => array_merge($eventListFuture, $eventListPast),
             )
         );
     }
@@ -111,7 +116,7 @@ class AdminController extends Controller
                 'end_date'               => $eventEndDate,
                 'participants_confirmed' => $event->getParticipationsConfirmedCount(),
                 'participants'           => $event->getParticipationsCount(),
-                'status'                 => $eventStatus
+                'status'                 => $eventStatus,
             );
         }
 
@@ -147,7 +152,7 @@ class AdminController extends Controller
             [
                 'event'           => $event,
                 'form'            => $form->createView(),
-                'pageDescription' => $event->getDescriptionMeta(true)
+                'pageDescription' => $event->getDescriptionMeta(true),
             ]
         );
     }
@@ -248,7 +253,7 @@ class AdminController extends Controller
                 'genderDistribution'        => $genderDistribution,
                 'participantsCount'         => $participantsCount,
                 'form'                      => $form->createView(),
-                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
+                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView(),
             )
         );
     }
@@ -383,5 +388,66 @@ class AdminController extends Controller
         }
 
         return new ImageResponse($image);
+    }
+
+    /**
+     * Manage User assignments of events
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/users", requirements={"eid": "\d+"}, name="event_user_admin")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @param Event   $event
+     * @return Response
+     */
+    public function manageUserAssignmentsAction(Request $request, Event $event)
+    {
+        $originalAssignments = new ArrayCollection();
+        $em = $this->getDoctrine()->getManager();
+
+        $formAddUsers = $this->createForm(EventAddUserAssignmentsType::class, null, ['event' => $event]);
+        $formAddUsers->handleRequest($request);
+        if ($formAddUsers->isSubmitted() && $formAddUsers->isValid()) {
+            $assignUser = $formAddUsers->get('assignUser');
+            /** @var User $user */
+            foreach ($assignUser->getData() as $user) {
+                $assignment = new EventUserAssignment($event, $user);
+                $event->getUserAssignments()->add($assignment);
+            }
+            $em->persist($event);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Weitere Benutzer hinzugefügt'
+            );
+        }
+        foreach ($event->getUserAssignments() as $assignment) {
+            $originalAssignments->add($assignment);
+        }
+
+        $form = $this->createForm(EventUserAssignmentsType::class, $event);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($originalAssignments as $assignment) {
+                if (false === $event->getUserAssignments()->contains($assignment)) {
+                    $em->remove($assignment);
+                }
+            }
+            $em->persist($event);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Änderungen an den Zuweisungen gespeichert'
+            );
+        }
+
+        return $this->render(
+            'event/admin/user-assignment.html.twig',
+            [
+                'event'       => $event,
+                'form'        => $form->createView(),
+                'formAddUser' => $formAddUsers->createView(),
+            ]
+        );
     }
 }

@@ -20,7 +20,7 @@ class EventUserAssignment
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="eventAssignments", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="eventAssignments", cascade={"persist"})
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="cascade")
      * @var User
      */
@@ -28,7 +28,7 @@ class EventUserAssignment
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Event", inversedBy="userAssignments", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="Event", inversedBy="userAssignments", cascade={"persist"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      * @var Event
      */
@@ -59,9 +59,21 @@ class EventUserAssignment
     protected $allowedToComment = false;
 
     /**
+     * EventUserAssignment constructor.
+     *
+     * @param Event $event
+     * @param User  $user
+     */
+    public function __construct(Event $event, User $user = null)
+    {
+        $this->event = $event;
+        $this->user  = $user;
+    }
+
+    /**
      * @return User
      */
-    public function getUser(): User
+    public function getUser()
     {
         return $this->user;
     }
@@ -148,6 +160,23 @@ class EventUserAssignment
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAllowedToManageParticipants(): bool
+    {
+        return $this->allowedToManageParticipants;
+    }
+
+    /**
+     * @param bool $allowedToManageParticipants
+     * @return EventUserAssignment
+     */
+    public function setAllowedToManageParticipants(bool $allowedToManageParticipants): EventUserAssignment
+    {
+        $this->allowedToManageParticipants = $allowedToManageParticipants;
+        return $this;
+    }
 
 
 }

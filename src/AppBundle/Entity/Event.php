@@ -224,7 +224,7 @@ class Event
     protected $subscribers;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"persist", "remove"})
      * @var \Doctrine\Common\Collections\Collection|EventUserAssignment[]
      */
     protected $userAssignments;

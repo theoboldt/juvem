@@ -52,12 +52,14 @@
                                 data-button-disable-label="Deaktivieren"
                                 data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
                         <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton">
-                            {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder verwalten</span>
+                                data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton" title="Felder verwalten">
+                            {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder</span>
                         </button>
                     </div>
                     <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
-                       class="btn btn-default">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
+                       class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
+                    <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
+                       class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">Benutzer</span></a>
                     <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog"
                              aria-labelledby="acquisitionAssignmentButton">
                             <div class="modal-dialog" role="document">
@@ -160,75 +162,93 @@
                 {{ event.getDescription|markdown }}
             </div>
             <div class="col-xs-12 col-sm-4">
-                <div>
-                    <h4>Poster</h4>
-                    {% if event.imageFilename %}
-                        <a href="{{ path('event_image_original', {'eid': event.eid}) }}" class="thumbnail">
-                            <div class="lazy-load-image"
-                                  data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
-                                  data-src="{{ path('event_image',  {'eid': event.eid, 'width': 360, 'height': 500 }) }}">
-                            </div>
-                        </a>
-                    {% else %}
-                        <div class="thumbnail">
-                            <div class="alert alert-info" role="alert">
-                                <p>Es ist keine Bild-Datei als Poster zu dieser Veranstaltung gespeichert.</p>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>Poster</h4>
+                        {% if event.imageFilename %}
+                            <a href="{{ path('event_image_original', {'eid': event.eid}) }}" class="thumbnail">
+                                <div class="lazy-load-image"
+                                      data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
+                                      data-src="{{ path('event_image',  {'eid': event.eid, 'width': 360, 'height': 500 }) }}">
+                                </div>
+                            </a>
+                        {% else %}
+                            <div class="thumbnail">
+                                <div class="alert alert-info" role="alert">
+                                    <p>Es ist keine Bild-Datei als Poster zu dieser Veranstaltung gespeichert.</p>
 
-                                <p> Beim <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="alert-link">Bearbeiten</a>
-                                    dieser Veranstaltung kann ein entsprechendes Bild hochgeladen werden.</p>
+                                    <p> Beim <a href="{{ path('event_edit', {'eid': event.eid }) }}" class="alert-link">Bearbeiten</a>
+                                        dieser Veranstaltung kann ein entsprechendes Bild hochgeladen werden.</p>
 
-                                <p>Dadurch wird die Veranstaltung besser präsentiert.</p>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="flat-progress-bar">
-                    <h4>Verteilung</h4>
-                    {% if ageDistribution|length %}
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="progress">
-                                    {% for code, genderData in genderDistribution %}
-                                        <div class="progress-bar progress-bar-gender-{{ genderData.type }}"
-                                             data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}"
-                                             role="progressbar" aria-valuenow="{{ genderData.count }}"
-                                             aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
-                                             style="width: {{ ((genderData.count/participantsCount)*100) }}%;">
-                                            <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}</span>
-                                            <span>{{ genderData.count }}</span>
-                                        </div>
-                                    {% endfor %}
+                                    <p>Dadurch wird die Veranstaltung besser präsentiert.</p>
                                 </div>
                             </div>
-                        </div>
-                        {% for age, count in ageDistribution %}
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-12 flat-progress-bar">
+                        <h4>Verteilung</h4>
+                        {% if ageDistribution|length %}
                             <div class="row">
-                                <div class="col-xs-2 col-sm-3 text-right">
-                                    {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
-                                </div>
-                                <div class="col-xs-10 col-sm-9">
+                                <div class="col-xs-12">
                                     <div class="progress">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
-                                             aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
-                                             data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
-                                             style="width: {{ ((count/ageDistributionMax)*100) }}%;">
-                                            <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
-                                                Jahren</span>
-                                            <span title="Anzahl">
-                                                <abbr title="Teilnehmer">{{ count }}</abbr>
-                                            </span>
-                                        </div>
+                                        {% for code, genderData in genderDistribution %}
+                                            <div class="progress-bar progress-bar-gender-{{ genderData.type }}"
+                                                 data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}"
+                                                 role="progressbar" aria-valuenow="{{ genderData.count }}"
+                                                 aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
+                                                 style="width: {{ ((genderData.count/participantsCount)*100) }}%;">
+                                                <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}</span>
+                                                <span>{{ genderData.count }}</span>
+                                            </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
-                    {% else %}
-                        <div class="row">
-                            <div class="col-xs-12">
-                                Im Moment sind keine Teilnehmer angemeldet.
+                            {% for age, count in ageDistribution %}
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-3 text-right">
+                                        {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
+                                    </div>
+                                    <div class="col-xs-10 col-sm-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
+                                                 aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
+                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
+                                                 style="width: {{ ((count/ageDistributionMax)*100) }}%;">
+                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
+                                                    Jahren</span>
+                                                <span title="Anzahl">
+                                                    <abbr title="Teilnehmer">{{ count }}</abbr>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                        {% else %}
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    Im Moment sind keine Teilnehmer angemeldet.
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-12">
+                        <h4>Benutzer</h4>
+                        {% if event.userAssignments|length %}
+                        <ul>
+                            {% for assignment in event.userAssignments %}
+                                <li><a href="{{ path('user_detail', {uid: assignment.user.uid}) }}">{{ assignment.user|fullname }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                            <div class="alert alert-info" role="alert">
+                                <p>Der Veranstaltung sind noch keine Benutzer zugewiesen.</p>
+                            </div>
+
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
