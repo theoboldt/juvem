@@ -112,3 +112,8 @@ services:
         arguments: ['@doctrine']
         tags:
             - { name: request.param_converter, priority: 2, converter: converter_event }
+
+    AppBundle\Security\EventVoter:
+      autowire: true
+      tags:
+        - security.voter

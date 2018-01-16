@@ -15,56 +15,60 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
-                    <div class="btn-group" role="group">
-                        <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
-                           class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer
-                                {% if event.participationsUnconfirmedCount -%}
-                                    <span class="badge">{{- event.participationsUnconfirmedCount }}</span>{%- endif -%}</span>
-                        </a>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                            <span class="caret"></span>
-                            <span class="sr-only">Menü erweitern</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer verwalten</a></li>
-                            <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten</a></li>
-                            <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
-                            <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
-                            <li><a href="{{ path('event_participants_print', {'eid': event.eid }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe drucken</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer exportieren</a></li>
-                            <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren</a></li>
-                            <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Für Serienbrief exportieren</a></li>
-                            <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussanträge exportieren</a></li>
-                        </ul>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <a href="{{ path('event_edit', {'eid': event.eid }) }}"
-                           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
-                        <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
-                                data-property="isVisible" data-entity-id="{{ event.eid }}"
-                                data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
-                                data-button-enable-label="Sichtbar schalten" data-button-enable-glyph="eye-open"
-                                data-button-disable-label="Verstecken"
-                                data-button-disable-glyph="eye-close">{{ 'option-horizontal'|glyph }}</button>
-                        <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
-                                data-property="isActive" data-entity-id="{{ event.eid }}"
-                                data-token="{{ csrf_token('Event' ~ 'isActive' ~ event.eid ) }}"
-                                data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
-                                data-button-disable-label="Deaktivieren"
-                                data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton" title="Felder verwalten">
-                            {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder</span>
-                        </button>
-                    </div>
+                    {%- if allowed_participants %}
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
+                               class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer
+                                    {% if event.participationsUnconfirmedCount -%}
+                                        <span class="badge">{{- event.participationsUnconfirmedCount }}</span>{%- endif -%}</span>
+                            </a>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Menü erweitern</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer verwalten</a></li>
+                                <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten</a></li>
+                                <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
+                                <li><a href="{{ path('event_participants_print', {'eid': event.eid }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe drucken</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer exportieren</a></li>
+                                <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren</a></li>
+                                <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Für Serienbrief exportieren</a></li>
+                                <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussanträge exportieren</a></li>
+                            </ul>
+                        </div>
+                    {%- endif %}
+                    {%- if allowed_to_edit -%}
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('event_edit', {'eid': event.eid }) }}"
+                               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                    data-property="isVisible" data-entity-id="{{ event.eid }}"
+                                    data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
+                                    data-button-enable-label="Sichtbar schalten" data-button-enable-glyph="eye-open"
+                                    data-button-disable-label="Verstecken"
+                                    data-button-disable-glyph="eye-close">{{ 'option-horizontal'|glyph }}</button>
+                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                    data-property="isActive" data-entity-id="{{ event.eid }}"
+                                    data-token="{{ csrf_token('Event' ~ 'isActive' ~ event.eid ) }}"
+                                    data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
+                                    data-button-disable-label="Deaktivieren"
+                                    data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton" title="Felder verwalten">
+                                {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder</span>
+                            </button>
+                        </div>
+                    {% endif -%}
                     <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
                        class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
-                    <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
-                       class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
-                    <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog"
-                             aria-labelledby="acquisitionAssignmentButton">
+                    {% if allowed_to_edit -%}
+                        <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
+                           class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
+                        <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog" aria-labelledby="acquisitionAssignmentButton">
                             <div class="modal-dialog" role="document">
                                 {{ form_start(acquisitionAssignmentForm) }}
                                 <div class="modal-content">
@@ -87,22 +91,22 @@
                                 {{ form_end(acquisitionAssignmentForm) }}
                             </div>
                         </div>
-                    {% if event.deletedAt %}
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
-                            {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen…</span>
-                        </button>
-                    {% else %}
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="delete" title="in den Papierkorb verschieben">
-                            {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
-                        </button>
-                    {% endif %}
+                        {% if event.deletedAt -%}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
+                                {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen…</span>
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="delete" title="in den Papierkorb verschieben">
+                                {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
+                            </button>
+                        {%- endif -%}
+                    {%- endif -%}
 
                     {% if app.user is not null %}
                         <label id="event-subscription-button" class="btn btn-default {% if event.subscribedBy(app.user) %}active{% endif %}">{{ 'bell'|glyph }} <span class="hidden-xs">Abonnieren</span></label>
                     {% endif %}
-
                     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog"
                          aria-labelledby="dialogModalLabel">
                         <div class="modal-dialog" role="document">

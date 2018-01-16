@@ -133,6 +133,7 @@ class AdminController extends Controller
      */
     public function editAction(Request $request, Event $event)
     {
+        $this->denyAccessUnlessGranted('edit', $event);
         $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
@@ -158,7 +159,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Detail page for one single event
+     * Edit acquisitions
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/acquisition", requirements={"eid": "\d+"}, name="event_acquisition_assignment")
@@ -166,6 +167,7 @@ class AdminController extends Controller
      */
     public function editEventAcquisitionAssignmentAction(Request $request, Event $event)
     {
+        $this->denyAccessUnlessGranted('edit', $event);
         $form = $this->createForm(
             EventAcquisitionType::class,
             $event,
@@ -176,9 +178,7 @@ class AdminController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()
-                       ->getManager();
-
+            $em = $this->getDoctrine()->getManager();
             $em->persist($event);
             $em->flush();
         }
@@ -195,6 +195,7 @@ class AdminController extends Controller
      */
     public function detailEventAction(Request $request, Event $event)
     {
+        $this->denyAccessUnlessGranted('read', $event);
         $repository         = $this->getDoctrine()->getRepository('AppBundle:Event');
         $ageDistribution    = $repository->participantsAgeDistribution($event);
         $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
@@ -244,7 +245,7 @@ class AdminController extends Controller
 
         return $this->render(
             'event/admin/detail.html.twig',
-            array(
+            [
                 'event'                     => $event,
                 'pageDescription'           => $event->getDescriptionMeta(true),
                 'ageDistribution'           => $ageDistribution,
@@ -253,7 +254,9 @@ class AdminController extends Controller
                 'participantsCount'         => $participantsCount,
                 'form'                      => $form->createView(),
                 'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView(),
-            )
+                'allowed_to_edit'           => $this->isGranted('edit', $event),
+                'allowed_participants'      => $this->isGranted('participants', $event),
+            ]
         );
     }
 
@@ -266,6 +269,7 @@ class AdminController extends Controller
      */
     public function sendParticipantsEmailAction(Request $request, Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $form = $this->createForm(EventMailType::class);
 
         $form->handleRequest($request);
@@ -329,9 +333,8 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/admin/new.html.twig', array(
-                                           'form' => $form->createView(),
-                                       )
+            'event/admin/new.html.twig',
+            ['form' => $form->createView()]
         );
     }
 
@@ -354,6 +357,7 @@ class AdminController extends Controller
         }
         $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
         $event      = $repository->findOneBy(['eid' => $eid]);
+        $this->denyAccessUnlessGranted('read', $event);
         if (!$event) {
             throw new NotFoundHttpException('Could not find requested event');
         }
@@ -378,7 +382,6 @@ class AdminController extends Controller
      */
     public function uploadEventImageAction(string $filename)
     {
-
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetch($filename);
 
@@ -401,6 +404,7 @@ class AdminController extends Controller
      */
     public function manageUserAssignmentsAction(Request $request, Event $event)
     {
+        $this->denyAccessUnlessGranted('edit', $event);
         $originalAssignments = new ArrayCollection();
         $em = $this->getDoctrine()->getManager();
 

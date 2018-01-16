@@ -101,8 +101,12 @@ class ActiveButtonController extends Controller
                 throw new \InvalidArgumentException('Unmanaged entity');
         }
 
-        /** @var Event $entity */
         $entity = $repository->findOneBy(array($idColumn => $entityId));
+
+        /** @var Event $entity */
+        if ($entity instanceof Event) {
+            $this->denyAccessUnlessGranted('edit', $entity);
+        }
 
         if (!method_exists($entity, $property)) {
             throw new \InvalidArgumentException('Unavailable property');

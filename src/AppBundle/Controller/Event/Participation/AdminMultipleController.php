@@ -47,6 +47,7 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
 
@@ -59,6 +60,7 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
@@ -139,6 +141,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
 
@@ -174,6 +177,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipationsAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participationsList      = $participationRepository->participationsList($event);
 
@@ -208,6 +212,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsBirthdayAddressAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
 
@@ -240,6 +245,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsMailAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
         $participationsList      = $participationRepository->participationsList($event);
@@ -287,6 +293,7 @@ class AdminMultipleController extends Controller
         $eventRepository         = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $event                   = $eventRepository->findOneBy(['eid' => $eid]);
+        $this->denyAccessUnlessGranted('participants', $event);
         if (!$event) {
             return $this->render(
                 'event/public/miss.html.twig', ['eid' => $eid],
@@ -336,6 +343,7 @@ class AdminMultipleController extends Controller
      */
     public function exportGeneratorAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processor     = new Processor();
@@ -355,6 +363,7 @@ class AdminMultipleController extends Controller
      */
     public function exportGeneratorProcessAction(Request $request)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
         $config          = $request->get('config');
@@ -416,6 +425,7 @@ class AdminMultipleController extends Controller
      */
     public function printParticipantsAction(Event $event)
     {
+        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participants            = $participationRepository->participantsList($event);
 

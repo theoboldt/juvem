@@ -46,6 +46,7 @@ class AdminSingleController extends Controller
             throw new BadRequestHttpException('Requested participation event not found');
         }
         $event = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $formAction = $this->createFormBuilder()
                            ->add('action', HiddenType::class)
@@ -150,9 +151,11 @@ class AdminSingleController extends Controller
         if (!$participation) {
             throw new BadRequestHttpException('Requested participation event not found');
         }
+        $event = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $participationManager = $this->get('app.participation_manager');
-        $participationManager->mailParticipationConfirmed($participation, $participation->getEvent());
+        $participationManager->mailParticipationConfirmed($participation, $event);
 
         return new JsonResponse(
             array(
@@ -173,6 +176,7 @@ class AdminSingleController extends Controller
         $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $form = $this->createForm(ParticipationBaseType::class, $participation);
         $form->remove('phoneNumbers');
@@ -215,6 +219,7 @@ class AdminSingleController extends Controller
         $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $originalPhoneNumbers = new ArrayCollection();
         foreach ($participation->getPhoneNumbers() as $number) {
@@ -272,6 +277,7 @@ class AdminSingleController extends Controller
         $participant   = $repository->findOneBy(array('aid' => $aid));
         $participation = $participant->getParticipation();
         $event         = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $form = $this->createForm(
             ParticipantType::class, $participant, array('participation' => $participation)
@@ -323,6 +329,7 @@ class AdminSingleController extends Controller
         $participant   = new Participant();
         $participant->setParticipation($participation);
         $event = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants', $event);
 
         $form = $this->createForm(
             ParticipantType::class, $participant, array('participation' => $participation)
