@@ -14,16 +14,10 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\HumanTrait;
 use AppBundle\Entity\User;
 use AppBundle\Entity\UserRepository;
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EventAddUserAssignmentsType extends AbstractType
@@ -34,6 +28,10 @@ class EventAddUserAssignmentsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Event $event */
+        $event = $options['event'];
+        $eid   = $event->getEid();
+
         $builder
             ->add(
                 'assignUser',
@@ -41,15 +39,14 @@ class EventAddUserAssignmentsType extends AbstractType
                 [
                     'label'         => 'Benutzer',
                     'class'         => User::class,
-                    'query_builder' => function (UserRepository $r) {
+                    'query_builder' => function (UserRepository $r) use ($eid) {
                         $qb = $r->createQueryBuilder('u');
                         return $qb->andWhere($qb->expr()->like('u.roles', ':requiredRole'))
                                   ->setParameter('requiredRole', '%"ROLE_ADMIN_EVENT"%')
                                   ->andWhere('u.enabled = 1')
                                   ->addOrderBy('u.nameLast', 'ASC')
                                   ->addOrderBy('u.nameFirst', 'ASC')
-                                  ->leftJoin('u.eventAssignments', 'a')
-                                  ->groupBy('u.id')
+                                  ->leftJoin('u.eventAssignments', 'a', Join::WITH, 'a.event = ' . $eid)
                                   ->andWhere('a IS NULL');
                     },
                     'choice_label'  => function (User $user) {
