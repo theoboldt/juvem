@@ -19,7 +19,6 @@ use PDO;
  */
 class EventRepository extends EntityRepository
 {
-
     /**
      * Amount of days per year
      */
@@ -28,11 +27,12 @@ class EventRepository extends EntityRepository
     /**
      * Fetch all events ordered by title, including participants count data
      *
-     * @param bool $includeDeleted   Set to true to include deleted events in result
-     * @param bool $includeInvisible Set to true to include invisible events
+     * @param bool      $includeDeleted   Set to true to include deleted events in result
+     * @param bool      $includeInvisible Set to true to include invisible events
+     * @param User|null $filterForUser    If set, result is filtered by events the current user is assigned to
      * @return array|Event[]
      */
-    public function findAllWithCounts($includeDeleted = false, $includeInvisible = false)
+    public function findAllWithCounts($includeDeleted = false, $includeInvisible = false, User $filterForUser = null)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
@@ -64,6 +64,10 @@ class EventRepository extends EntityRepository
         }
         if (!$includeInvisible) {
             $qb->andWhere('e.isVisible = 1');
+        }
+        if ($filterForUser) {
+            $qb->innerJoin('e.userAssignments', 'ua')
+               ->andWhere($qb->expr()->eq('ua.user', $filterForUser->getUid()));
         }
 
         $qb->orderBy('e.startDate, e.startTime, e.title', 'ASC');

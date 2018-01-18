@@ -67,7 +67,9 @@ class AdminController extends Controller
     public function listDataAction(Request $request)
     {
         $repository      = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventEntityList = $repository->findAllWithCounts(true, true);
+        $eventEntityList = $repository->findAllWithCounts(
+            true, true, !$this->isGranted('ROLE_ADMIN_EVENT_GLOBAL') ? $this->getUser() : null
+        );
 
         $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
@@ -253,9 +255,7 @@ class AdminController extends Controller
                 'genderDistribution'        => $genderDistribution,
                 'participantsCount'         => $participantsCount,
                 'form'                      => $form->createView(),
-                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView(),
-                'allowed_to_edit'           => $this->isGranted('edit', $event),
-                'allowed_participants'      => $this->isGranted('participants', $event),
+                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
             ]
         );
     }
