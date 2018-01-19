@@ -37,6 +37,9 @@ parameters:
     customization.juvem_website: ~
     customization.logo_website: ~
 
+    juvimg.url: ~
+    juvimg.password: ~
+
     # Website host address should be defined in order to be able to generate links from console
     router.request_context.host: ~
     # Scheme should be defined in order to be able to generate links from console

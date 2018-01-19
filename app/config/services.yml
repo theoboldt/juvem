@@ -82,12 +82,19 @@ services:
     app.newsletter_token_generator:
         class: FOS\UserBundle\Util\TokenGenerator
         public: true
+    app.juvimg.service:
+        class: AppBundle\Juvimg\JuvimgService
+        factory: ['AppBundle\Juvimg\JuvimgService', create]
+        public: true
+        arguments:
+          - "%juvimg.url%"
+          - "%juvimg.password%"
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'event_image']
+        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'event_image', '@?app.juvimg.service']
     app.gallery_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'gallery_image']
+        arguments: ['%app.upload_image_manager.path%', '%vich_uploader.mappings%', 'gallery_image', '@?app.juvimg.service']
         public: true
     app.user_registration.participation_listener:
         class: AppBundle\EventListeners\UserRegistrationListener

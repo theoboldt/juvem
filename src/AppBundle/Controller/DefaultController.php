@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
+use AppBundle\Juvimg\JuvimgService;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

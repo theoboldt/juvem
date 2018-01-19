@@ -10,6 +10,7 @@
 
 namespace AppBundle\Manager;
 
+use AppBundle\Juvimg\JuvimgService;
 use AppBundle\UploadImage;
 use Doctrine\Common\Cache\FilesystemCache;
 use Imagine\Gd\Imagine;
@@ -40,13 +41,21 @@ class UploadImageManager
     protected $uploadMapping;
 
     /**
+     * JuvimgService if available
+     *
+     * @var JuvimgService|null
+     */
+    private $juvimgService;
+
+    /**
      * Create new instance of upload image manager
      *
-     * @param string $cacheDir       Cache dir where modified images reside
-     * @param array  $uploadMappings Available upload mappings
-     * @param string $mapping
+     * @param string             $cacheDir       Cache dir where modified images reside
+     * @param array              $uploadMappings Available upload mappings
+     * @param string             $mapping        Mapping to use
+     * @param JuvimgService|null $juvimg         Juvimg Resize service if available
      */
-    public function __construct($cacheDir, array $uploadMappings, $mapping)
+    public function __construct($cacheDir, array $uploadMappings, $mapping, JuvimgService $juvimg = null)
     {
         $this->cache = new FilesystemCache($cacheDir);
 
@@ -55,6 +64,7 @@ class UploadImageManager
         }
         $this->uploadMapping = $mapping;
         $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
+        $this->juvimgService = $juvimg;
     }
 
     /**
@@ -90,17 +100,24 @@ class UploadImageManager
     {
         $key = $this->key($name, $width, $height, $mode);
         if (!$this->cache->contains($key)) {
-            $imagine = new Imagine();
-            $size    = new Box($width, $height);
-            $image   = $imagine->open($this->getOriginalImagePath($name))
-                               ->thumbnail($size, $mode)
-                               ->get(
-                                   $this->getOriginalImageType($name),
-                                   [
-                                       'jpeg_quality'          => $quality,
-                                       'png_compression_level' => 9
-                                   ]
-                               );
+            if ($this->juvimgService && $this->juvimgService->isAccessible()) {
+                $result = $this->juvimgService->resize(
+                    $this->getOriginalImagePath($name), $width, $height, $mode, $quality
+                );
+                $image = $result->getContents();
+            } else {
+                $imagine = new Imagine();
+                $size    = new Box($width, $height);
+                $image   = $imagine->open($this->getOriginalImagePath($name))
+                                   ->thumbnail($size, $mode)
+                                   ->get(
+                                       $this->getOriginalImageType($name),
+                                       [
+                                           'jpeg_quality'          => $quality,
+                                           'png_compression_level' => 9
+                                       ]
+                                   );
+            }
 
             $this->cache->save($key, $image);
         }
