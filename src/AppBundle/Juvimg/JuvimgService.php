@@ -14,9 +14,17 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Imagine\Image\ImageInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\AbstractLogger;
+use Psr\Log\NullLogger;
 
 class JuvimgService
 {
+    /**
+     * Logger
+     *
+     * @var AbstractLogger
+     */
+    private $logger;
 
     /**
      * URL to juvimg installation
@@ -40,7 +48,7 @@ class JuvimgService
     private $accessible = null;
 
     /**
-     * Cached client
+     * Cached HTTP client
      *
      * @var Client
      */
@@ -49,14 +57,15 @@ class JuvimgService
     /**
      * Create instance if configuration is valid
      *
-     * @param string|null $url      URL to juvimg installation
-     * @param string|null $password Password configured in juvimg for Basic authentication
-     * @return JuvimgService|null   Service or null if not valid
+     * @param string|null    $url      URL to juvimg installation
+     * @param string|null    $password Password configured in juvimg for Basic authentication
+     * @param AbstractLogger $logger   Logger
+     * @return JuvimgService|null      Service or null if not valid
      */
-    public static function create(string $url = null, string $password = null)
+    public static function create(string $url = null, string $password = null, AbstractLogger $logger = null)
     {
-        if ($url && $password) {
-            return new self($url, $password);
+        if (!empty($url) && !empty($password)) {
+            return new self($url, $password, $logger);
         } else {
             return null;
         }
@@ -65,23 +74,25 @@ class JuvimgService
     /**
      * JuvimgService constructor.
      *
-     * @param string $url      URL to juvimg installation
-     * @param string $password Password configured in juvimg for Basic authentication
+     * @param string              $url      URL to juvimg installation
+     * @param string              $password Password configured in juvimg for Basic authentication
+     * @param AbstractLogger|null $logger   Logger
      */
-    public function __construct(string $url, string $password)
+    public function __construct(string $url, string $password, AbstractLogger $logger = null)
     {
         $this->url      = rtrim($url, '/');
         $this->password = $password;
+        $this->logger   = $logger ?: new NullLogger();
     }
 
     /**
      * Resize an image using juvimg
      *
-     * @param string $path
-     * @param int    $width
-     * @param int    $height
-     * @param string $mode
-     * @param int    $quality
+     * @param  string  $path    Path to image file on local filesystem
+     * @param  integer $width   Width of image
+     * @param  integer $height  Height of image
+     * @param  string  $mode    Either ImageInterface::THUMBNAIL_INSET or ImageInterface::THUMBNAIL_OUTBOUND
+     * @param  int     $quality JPG image quality applied when resizing
      * @return StreamInterface
      */
     public function resize(
@@ -89,15 +100,25 @@ class JuvimgService
     )
     {
         if ($this->accessible === false) {
-            throw new JuvimgUnaccessibleException('Can not resize image because Juvimg is unaccessible');
+            $this->logger->warning('Resize requested but juvimg is unaccessible');
+            throw new JuvimgUnaccessibleException('Can not resize image because juvimg is unaccessible');
         }
 
         try {
+            $this->logger->debug('Requested resize of "' . $path . '"');
             $result = $this->client()->post(
                 $this->getResizeUrl($width, $height, $mode, $quality),
                 ['body' => fopen($path, 'r')]
             );
         } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $body = $e->getResponse()->getBody();
+                if ($body->getSize() < 1024) {
+                    $this->logger->warning('Failed to resize image: ' . $body->getContents());
+                } else {
+                    $this->logger->warning('Failed to resize image');
+                }
+            }
             throw new JuvimgImageResizeFailedException('Failed to resize image', $e->getCode(), $e);
         }
         $this->accessible = true;
@@ -117,11 +138,12 @@ class JuvimgService
                 $response = $this->client()->get('/');
                 $body     = $response->getBody();
                 if ($body->getSize() < 1024 && $body->getContents() === 'OK') {
+                    $this->logger->notice('Juvimg service is not accessible');
                     $this->accessible = true;
                     return true;
                 }
             } catch (RequestException $e) {
-                throw new JuvimgImageResizeFailedException('Failed to resize image', $e->getCode(), $e);
+                $this->logger->debug('Juvimg service is not accessible, request failed');
             }
             $this->accessible = false;
         }
@@ -149,10 +171,10 @@ class JuvimgService
     /**
      * Configure resize url
      *
-     * @param int    $width
-     * @param int    $height
-     * @param string $mode
-     * @param int    $quality
+     * @param  integer $width   Width of image
+     * @param  integer $height  Height of image
+     * @param  string  $mode    Either ImageInterface::THUMBNAIL_INSET or ImageInterface::THUMBNAIL_OUTBOUND
+     * @param  int     $quality JPG image quality applied when resizing
      * @return string
      */
     private function getResizeUrl(

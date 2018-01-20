@@ -12,7 +12,7 @@
 namespace AppBundle\Juvimg;
 
 
-class JuvimgImageResizeFailedException extends \RuntimeException
+class JuvimgImageResizeFailedException extends JuvimgNoResizePerformedException
 {
 
 }

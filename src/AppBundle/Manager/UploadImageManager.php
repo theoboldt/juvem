@@ -10,6 +10,7 @@
 
 namespace AppBundle\Manager;
 
+use AppBundle\Juvimg\JuvimgNoResizePerformedException;
 use AppBundle\Juvimg\JuvimgService;
 use AppBundle\UploadImage;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -100,12 +101,18 @@ class UploadImageManager
     {
         $key = $this->key($name, $width, $height, $mode);
         if (!$this->cache->contains($key)) {
+            $image = null;
             if ($this->juvimgService && $this->juvimgService->isAccessible()) {
-                $result = $this->juvimgService->resize(
-                    $this->getOriginalImagePath($name), $width, $height, $mode, $quality
-                );
-                $image = $result->getContents();
-            } else {
+                try {
+                    $result = $this->juvimgService->resize(
+                        $this->getOriginalImagePath($name), $width, $height, $mode, $quality
+                    );
+                    $image  = $result->getContents();
+                } catch (JuvimgNoResizePerformedException $e) {
+                    //intentionally left empty
+                }
+            }
+            if (!$image) {
                 $imagine = new Imagine();
                 $size    = new Box($width, $height);
                 $image   = $imagine->open($this->getOriginalImagePath($name))
@@ -114,7 +121,7 @@ class UploadImageManager
                                        $this->getOriginalImageType($name),
                                        [
                                            'jpeg_quality'          => $quality,
-                                           'png_compression_level' => 9
+                                           'png_compression_level' => 9,
                                        ]
                                    );
             }
