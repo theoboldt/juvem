@@ -27,9 +27,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantType extends AbstractType
 {
+
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $foodMask = new ParticipantFood();
+        $foodMask   = new ParticipantFood();
         $foodLabels = $foodMask->labels();
         unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
 
@@ -50,10 +54,10 @@ class ParticipantType extends AbstractType
                 [
                     'label'    => 'Geschlecht',
                     'choices'  => [
-                        Participant::LABEL_GENDER_FEMALE   => Participant::TYPE_GENDER_FEMALE,
-                        Participant::LABEL_GENDER_MALE => Participant::TYPE_GENDER_MALE
+                        Participant::LABEL_GENDER_FEMALE => Participant::TYPE_GENDER_FEMALE,
+                        Participant::LABEL_GENDER_MALE   => Participant::TYPE_GENDER_MALE,
                     ],
-                    'required' => true
+                    'required' => true,
                 ]
             )
             ->add(
@@ -64,7 +68,7 @@ class ParticipantType extends AbstractType
                  //                      'widget' => 'single_text',
                  //                      'format' => 'yyyy-MM-dd',
                  'format'   => 'dd.MM.yyyy',
-                 'required' => true
+                 'required' => true,
                 ]
             )
             ->add(
@@ -99,8 +103,8 @@ class ParticipantType extends AbstractType
                     'attr'     => [
                         'aria-describedby'         => 'help-food',
                         'class'                    => 'food-options',
-                        'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE
-                    ]
+                        'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE,
+                    ],
                 ]
             );
 
@@ -138,6 +142,9 @@ class ParticipantType extends AbstractType
         $builder->get('food')->addModelTransformer(new FoodTransformer());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired('participation');
