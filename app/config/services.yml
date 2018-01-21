@@ -104,6 +104,7 @@ services:
     app.comment_manager:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
+        public: true
     app.exception_controller:
         class: AppBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
