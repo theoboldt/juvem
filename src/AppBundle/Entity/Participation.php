@@ -64,7 +64,8 @@ class Participation
      * @Assert\Valid()
      * @Assert\Count(
      *      min = "1",
-     *      minMessage = "Bei einer Anmeldung muss mindestens eine Telefonnummer angegeben werden, unter der wir Sie in Notfällen erreichen können. Bitte fügen Sie mindestens noch eine Telefonnummer hinzu."
+     *      minMessage = "Bei einer Anmeldung muss mindestens eine Telefonnummer angegeben werden, unter der wir Sie in
+     *      Notfällen erreichen können. Bitte fügen Sie mindestens noch eine Telefonnummer hinzu."
      * )
      */
     protected $phoneNumbers;
@@ -76,7 +77,8 @@ class Participation
      * @Assert\Valid()
      * @Assert\Count(
      *      min = "1",
-     *      minMessage = "Bei einer Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen Sie noch mindestens einen Teilnehmer hinzu."
+     *      minMessage = "Bei einer Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen Sie noch
+     *      mindestens einen Teilnehmer hinzu."
      * )
      */
     protected $participants;
@@ -104,11 +106,19 @@ class Participation
     /**
      * Constructor
      *
-     * @param bool $omitPhoneNumberInit If set to false, a single empty phone number is added
-     * @param bool $omitParticipantInit If set to false, a single empty participant is added
+     * @param Event|null $event               If set, related event is automatically defined
+     * @param bool       $omitPhoneNumberInit If set to false, a single empty phone number is added
+     * @param bool       $omitParticipantInit If set to false, a single empty participant is added
      */
-    public function __construct($omitPhoneNumberInit = false, $omitParticipantInit = false)
-    {
+    public function __construct(
+        Event $event = null,
+        bool $omitPhoneNumberInit = false,
+        bool $omitParticipantInit = false
+    ) {
+        if ($event) {
+            $this->setEvent($event);
+        }
+
         $this->phoneNumbers = new ArrayCollection();
         if (!$omitPhoneNumberInit) {
             $phoneNumber = new PhoneNumber();
@@ -117,7 +127,7 @@ class Participation
 
         $this->participants = new ArrayCollection();
         if (!$omitParticipantInit) {
-            $participant = new Participant();
+            $participant = new Participant($this);
             $this->addParticipant($participant);
         }
 
@@ -497,8 +507,7 @@ class Participation
      */
     public static function createFromTemplateForEvent(Participation $participationPrevious, Event $event)
     {
-        $participation = new self(true, true);
-        $participation->setEvent($event);
+        $participation = new self($event, true, true);
         $participation->setNameLast($participationPrevious->getNameLast());
         $participation->setNameFirst($participationPrevious->getNameFirst());
         $participation->setAddressCity($participationPrevious->getAddressCity());
@@ -532,8 +541,7 @@ class Participation
 
         /** @var Participant $participantPrevious */
         foreach ($participationPrevious->getParticipants() as $participantPrevious) {
-            $participant = new Participant();
-            $participant->setParticipation($participation);
+            $participant = new Participant($participation);
             $participant->setNameLast($participantPrevious->getNameLast());
             $participant->setNameFirst($participantPrevious->getNameFirst());
             $participant->setBirthday($participantPrevious->getBirthday());

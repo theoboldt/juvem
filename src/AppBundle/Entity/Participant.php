@@ -128,6 +128,9 @@ class Participant
     {
         if ($participation) {
             $this->setParticipation($participation);
+            if ($participation->getEvent()) {
+                $this->setPrice($participation->getEvent()->getPrice());
+            }
         }
 
         $this->modifiedAt = new \DateTime();
