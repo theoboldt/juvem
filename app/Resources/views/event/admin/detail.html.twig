@@ -19,8 +19,8 @@
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
                                class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer
-                                    {% if event.participationsUnconfirmedCount -%}
-                                        <span class="badge">{{- event.participationsUnconfirmedCount }}</span>{%- endif -%}</span>
+                                    {% if event.participantsUnconfirmedCount -%}
+                                        <span class="badge">{{- event.participantsUnconfirmedCount }}</span>{%- endif -%}</span>
                             </a>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">

@@ -116,8 +116,8 @@ class AdminController extends Controller
                 'description'            => $event->getTitle(),
                 'start_date'             => $eventStartDate,
                 'end_date'               => $eventEndDate,
-                'participants_confirmed' => $event->getParticipationsConfirmedCount(),
-                'participants'           => $event->getParticipationsCount(),
+                'participants_confirmed' => $event->getParticipantsConfirmedCount(),
+                'participants'           => $event->getParticipantsCount(),
                 'status'                 => $eventStatus,
             );
         }

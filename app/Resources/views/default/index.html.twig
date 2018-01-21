@@ -51,11 +51,11 @@
 
                             {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
                             <p>{{ 'user'|glyph }}
-                                <b>{{ event.participationsConfirmedCount }}</b>
-                                bestätigte{% if event.participationsConfirmedCount == 1 %}r{% endif %},
-                                <b>{{ event.participationsUnconfirmedCount }}</b>
-                                unbestätigte{% if event.participationsUnconfirmedCount == 1 %}r{% endif %},
-                                insgesamt <b>{{ event.participationsCount }}</b> Teilnehmer</p>
+                                <b>{{ event.participantsConfirmedCount }}</b>
+                                bestätigte{% if event.participantsConfirmedCount == 1 %}r{% endif %},
+                                <b>{{ event.participantsUnconfirmedCount }}</b>
+                                unbestätigte{% if event.participantsUnconfirmedCount == 1 %}r{% endif %},
+                                insgesamt <b>{{ event.participantsCount }}</b> Teilnehmer</p>
                             {% endif %}
 
                             <p>{{ event.descriptionMeta(true)|e }}</p>
@@ -90,8 +90,8 @@
                             {% endif %}
                             {% if is_granted('read', event) %}
                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
-                                   class="btn btn-default">Verwalten{% if event.participationsUnconfirmedCount %}
-                                    <span class="badge">{{ event.participationsUnconfirmedCount }}</span>{% endif %}
+                                   class="btn btn-default">Verwalten{% if event.participantsUnconfirmedCount %}
+                                    <span class="badge">{{ event.participantsUnconfirmedCount }}</span>{% endif %}
                                 </a>
                             {% endif %}
                             <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"

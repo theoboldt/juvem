@@ -207,14 +207,14 @@ class Event
      *
      * @var int|null
      */
-    protected $participationsCount = null;
+    protected $participantsCount = null;
 
     /**
      * Able to store the amount of participations are not withdrawn nor deleted but confirmed
      *
      * @var int|null
      */
-    protected $participationsConfirmedCount = null;
+    protected $participantsConfirmedCount = null;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|User[]
@@ -224,7 +224,8 @@ class Event
     protected $subscribers;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"persist",
+     *                                                                     "remove"})
      * @var \Doctrine\Common\Collections\Collection|EventUserAssignment[]
      */
     protected $userAssignments;
@@ -637,23 +638,63 @@ class Event
     }
 
     /**
+     * Count @see Participant entites, which fulfill filter, assigned to this entity via @see Participation
+     *
+     * @param callable $filter Filter to check
+     * @return int             Amount of participants
+     */
+    private function countParticipantsByFilter(callable $filter)
+    {
+        $count = 0;
+        /** @var Participation $participation */
+        foreach ($this->participations as $participation) {
+            /** @var Participant $participant */
+            $participations = $participation->getParticipants()->filter($filter);
+            $count          += $participations->count();
+        }
+
+        return $count;
+    }
+
+    /**
      * Get value of amount of participations not withdrawn nor deleted
      *
      * @return int
      */
-    public function getParticipationsCount()
+    public function getParticipantsCount()
     {
-        if ($this->participationsCount === null) {
-            $participations = $this->getParticipations()->filter(
-                function (Participation $participation) {
-                    return $participation->getDeletedAt() === null && !$participation->isWithdrawn();
+        if ($this->participantsCount === null) {
+            $this->participantsCount = $this->countParticipantsByFilter(
+                function (Participant $participant) {
+                    return $participant->getParticipation()->getDeletedAt() === null
+                           && $participant->getDeletedAt() === null
+                           && !$participant->isWithdrawn();
                 }
             );
-
-            $this->participationsCount = $participations->count();
         }
 
-        return $this->participationsCount;
+        return $this->participantsCount;
+    }
+
+    /**
+     * Get value of amount of participations not withdrawn nor deleted but not confirmed
+     *
+     * @return int
+     */
+    public function getParticipantsConfirmedCount()
+    {
+        if ($this->participantsConfirmedCount === null) {
+            $this->participantsConfirmedCount = $this->countParticipantsByFilter(
+                function (Participant $participant) {
+                    return $participant->getParticipation()->getDeletedAt() === null
+                           && $participant->getDeletedAt() === null
+                           && $participant->isConfirmed()
+                           && !$participant->isWithdrawn();
+                }
+            );
+        }
+
+        return $this->participantsConfirmedCount;
     }
 
     /**
@@ -661,43 +702,22 @@ class Event
      *
      * @return int
      */
-    public function getParticipationsConfirmedCount()
+    public function getParticipantsUnconfirmedCount()
     {
-        if ($this->participationsConfirmedCount === null) {
-            $participations = $this->participations->filter(
-                function (Participation $participation) {
-                    return $participation->getDeletedAt() === null && !$participation->isWithdrawn() &&
-                           $participation->isConfirmed();
-                }
-            );
-
-            $this->participationsConfirmedCount = $participations->count();
-        }
-
-        return $this->participationsConfirmedCount;
-    }
-
-    /**
-     * Get value of amount of participations not withdrawn nor deleted but unconfirmed
-     *
-     * @return int
-     */
-    public function ParticipationsUnconfirmedCount()
-    {
-        return $this->getParticipationsCount() - $this->getParticipationsConfirmedCount();
+        return $this->getParticipantsCount() - $this->getParticipantsConfirmedCount();
     }
 
     /**
      * Set value of amount of participations
      *
-     * @param int $participationsCount          Amount of participations not withdrawn nor deleted
-     * @param int $participationsConfirmedCount Amount of participations not withdrawn nor deleted but confirmed
+     * @param int $participantsCount          Amount of participations not withdrawn nor deleted
+     * @param int $participantsConfirmedCount Amount of participations not withdrawn nor deleted but confirmed
      * @return Event
      */
-    public function setParticipationsCounts($participationsCount, $participationsConfirmedCount)
+    public function setParticipantsCounts($participantsCount, $participantsConfirmedCount)
     {
-        $this->participationsCount          = $participationsCount;
-        $this->participationsConfirmedCount = $participationsConfirmedCount;
+        $this->participantsCount          = $participantsCount;
+        $this->participantsConfirmedCount = $participantsConfirmedCount;
         return $this;
     }
 
@@ -1012,7 +1032,8 @@ class Event
     /**
      * Get description used for meta tags and short descriptions
      *
-     * @param bool $useDescriptionExcerptAsFallback If set to true and @see $descriptionMeta is empty an excerpt of @see $description is returned
+     * @param bool $useDescriptionExcerptAsFallback If set to true and @see $descriptionMeta is empty an excerpt of
+     *                                              @see $description is returned
      * @return string
      */
     public function getDescriptionMeta($useDescriptionExcerptAsFallback = false)
