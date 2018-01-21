@@ -14,6 +14,7 @@ use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ParticipantComment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -98,6 +99,7 @@ class Participant
      * Contains the participants assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participant")
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $acquisitionAttributeFillouts;
 
@@ -105,6 +107,7 @@ class Participant
      * Contains the list of attendance lists fillouts of this participation
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListFillout", mappedBy="participant", cascade={"all"})
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $attendanceListsFillouts;
 
@@ -112,6 +115,7 @@ class Participant
      * Contains the comments assigned
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipantComment", cascade={"all"}, mappedBy="participant")
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $comments;
 
@@ -130,6 +134,8 @@ class Participant
         $this->createdAt  = new \DateTime();
 
         $this->acquisitionAttributeFillouts = new ArrayCollection();
+        $this->attendanceListsFillouts      = new ArrayCollection();
+        $this->comments                     = new ArrayCollection();
     }
 
     /**
@@ -267,11 +273,10 @@ class Participant
      */
     public function setInfoMedical($infoMedical)
     {
-        if ($infoMedical === null) {
-            //due to issue https://github.com/symfony/symfony/issues/5906
+        if ($infoMedical === null || self::isInfoEmpty($infoMedical)) {
+            //null comparison due to issue https://github.com/symfony/symfony/issues/5906
             $infoMedical = '';
         }
-
         $this->infoMedical = $infoMedical;
 
         return $this;
@@ -296,8 +301,8 @@ class Participant
      */
     public function setInfoGeneral($infoGeneral)
     {
-        if ($infoGeneral === null) {
-            //due to issue https://github.com/symfony/symfony/issues/5906
+        if ($infoGeneral === null || self::isInfoEmpty($infoGeneral)) {
+            //null comparison due to issue https://github.com/symfony/symfony/issues/5906
             $infoGeneral = '';
         }
 
@@ -524,11 +529,11 @@ class Participant
     /**
      * Add comment
      *
-     * @param \AppBundle\Entity\ParticipantComment $comment
+     * @param ParticipantComment $comment
      *
      * @return Participant
      */
-    public function addComment(\AppBundle\Entity\ParticipantComment $comment)
+    public function addComment(ParticipantComment $comment)
     {
         $this->comments[] = $comment;
 
@@ -538,9 +543,9 @@ class Participant
     /**
      * Remove comment
      *
-     * @param \AppBundle\Entity\ParticipantComment $comment
+     * @param ParticipantComment $comment
      */
-    public function removeComment(\AppBundle\Entity\ParticipantComment $comment)
+    public function removeComment(ParticipantComment $comment)
     {
         $this->comments->removeElement($comment);
     }
@@ -553,5 +558,29 @@ class Participant
     public function getComments()
     {
         return $this->comments;
+    }
+
+
+    /**
+     * Determine if the value of an info field is considered as empty
+     *
+     * @param string|null $value Value to check
+     * @return bool              True if regarded as empty, false if not
+     */
+    private static function isInfoEmpty(string $value = null): bool
+    {
+        $acceptedAsEmpty = [
+            'keine',
+            '- keine -',
+            'keine allergien',
+            'keine besonderheiten',
+            'nichts',
+            '-',
+            '--',
+            'n/a',
+            'nichts bekannt',
+            'nichts bekannt!',
+        ];
+        return empty($value) || in_array(trim(mb_strtolower($value)), $acceptedAsEmpty);
     }
 }
