@@ -88,6 +88,13 @@ class Participant
     protected $status = 0;
 
     /**
+     * Contains the price for this participant, in EURO CENT (instead of euro)
+     *
+     * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
+     */
+    protected $price = null;
+
+    /**
      * Contains the participants assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participant")
@@ -347,6 +354,36 @@ class Participant
         }
 
         return $participation->getEvent();
+    }
+
+    /**
+     * Set price
+     *
+     * @param int|double|null $price  Price for event in euro cents
+     * @param bool            $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     *
+     * @return Participant
+     */
+    public function setPrice($price, $inEuro = false)
+    {
+        if ($inEuro) {
+            $price = $price / 100;
+        }
+
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|double|null
+     */
+    public function getPrice($inEuro = false)
+    {
+        return $inEuro ? $this->price / 100 : $this->price;
     }
 
     /**
