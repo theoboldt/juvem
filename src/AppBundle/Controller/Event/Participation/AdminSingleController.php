@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
@@ -46,17 +47,17 @@ class AdminSingleController extends Controller
             throw new BadRequestHttpException('Requested participation event not found');
         }
         $event = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_read', $event);
 
         $formAction = $this->createFormBuilder()
                            ->add('action', HiddenType::class)
                            ->getForm();
         $formUser   = $this->createForm(ParticipationAssignUserType::class, $participation);
 
+        $participationChanged = false;
         $formAction->handleRequest($request);
         if ($formAction->isSubmitted() && $formAction->isValid()) {
-            $action = $formAction->get('action')
-                                 ->getData();
+            $action = $formAction->get('action')->getData();
             switch ($action) {
                 case 'delete':
                     $participation->setDeletedAt(new \DateTime());
@@ -79,18 +80,19 @@ class AdminSingleController extends Controller
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
             }
+            $participationChanged = true;
+        } else {
+            $formUser->handleRequest($request);
+            if ($formUser->isSubmitted() && $formUser->isValid()) {
+                $participationChanged = true;
+
+            }
+        }
+        if ($participationChanged) {
+            $this->denyAccessUnlessGranted('participants_edit', $event);
             $em = $this->getDoctrine()->getManager();
             $em->persist($participation);
             $em->flush();
-        } else {
-
-            $formUser->handleRequest($request);
-            if ($formUser->isSubmitted() && $formUser->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-
-                $em->persist($participation);
-                $em->flush();
-            }
         }
 
         $statusFormatter = ParticipantStatus::formatter();
@@ -144,15 +146,14 @@ class AdminSingleController extends Controller
             throw new InvalidTokenHttpException();
         }
 
-        $participationRepository = $this->getDoctrine()
-                                        ->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
 
         $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
         if (!$participation) {
             throw new BadRequestHttpException('Requested participation event not found');
         }
         $event = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $participationManager = $this->get('app.participation_manager');
         $participationManager->mailParticipationConfirmed($participation, $event);
@@ -176,7 +177,7 @@ class AdminSingleController extends Controller
         $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $form = $this->createForm(ParticipationBaseType::class, $participation);
         $form->remove('phoneNumbers');
@@ -216,10 +217,11 @@ class AdminSingleController extends Controller
      */
     public function editPhoneNumbersAction(Request $request)
     {
-        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $originalPhoneNumbers = new ArrayCollection();
         foreach ($participation->getPhoneNumbers() as $number) {
@@ -274,10 +276,11 @@ class AdminSingleController extends Controller
     public function editParticipantAction($eid, $pid, $aid, Request $request)
     {
         $repository    = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        /** @var Participant $participation */
         $participant   = $repository->findOneBy(array('aid' => $aid));
         $participation = $participant->getParticipation();
         $event         = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $form = $this->createForm(
             ParticipantType::class, $participant, array('participation' => $participation)
@@ -325,11 +328,12 @@ class AdminSingleController extends Controller
     public function addParticipantAction($eid, $pid, Request $request)
     {
         $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $pid));
         $participant   = new Participant();
         $participant->setParticipation($participation);
         $event = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $form = $this->createForm(
             ParticipantType::class, $participant, array('participation' => $participation)

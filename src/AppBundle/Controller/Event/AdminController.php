@@ -265,11 +265,10 @@ class AdminController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/mail", requirements={"eid": "\d+"}, name="event_mail")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_edit', event)")
      */
     public function sendParticipantsEmailAction(Request $request, Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $form = $this->createForm(EventMailType::class);
 
         $form->handleRequest($request);

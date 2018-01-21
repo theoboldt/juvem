@@ -42,6 +42,8 @@ class Participation
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="participations", cascade={"all"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
+     *
+     * @var Event
      */
     protected $event;
 

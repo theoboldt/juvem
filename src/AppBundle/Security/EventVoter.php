@@ -21,11 +21,12 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventVoter extends Voter
 {
-    const READ         = 'read';
-    const EDIT         = 'edit';
-    const PARTICIPANTS = 'participants';
-    const COMMENT_READ = 'comment_read';
-    const COMMENT_ADD  = 'comment_add';
+    const READ              = 'read';
+    const EDIT              = 'edit';
+    const PARTICIPANTS_READ = 'participants_read';
+    const PARTICIPANTS_EDIT = 'participants_edit';
+    const COMMENT_READ      = 'comment_read';
+    const COMMENT_ADD       = 'comment_add';
 
     /**
      * Decision manager
@@ -49,14 +50,20 @@ class EventVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        // if the attribute isn't one we support, return false
         if (!in_array(
-            $attribute, [self::READ, self::EDIT, self::PARTICIPANTS, self::COMMENT_READ, self::COMMENT_ADD]
+            $attribute,
+            [
+                self::READ,
+                self::EDIT,
+                self::PARTICIPANTS_READ,
+                self::PARTICIPANTS_EDIT,
+                self::COMMENT_READ,
+                self::COMMENT_ADD,
+            ]
         )) {
             return false;
         }
 
-        // only vote on Post objects inside this voter
         if (!$subject instanceof Event) {
             return false;
         }
@@ -77,7 +84,11 @@ class EventVoter extends Voter
         $uid = $user->getUid();
 
         if ($this->decisionManager->decide($token, [User::ROLE_ADMIN_EVENT_GLOBAL])) {
+            //allow everything
             return true;
+        } elseif (!$this->decisionManager->decide($token, [User::ROLE_ADMIN_EVENT])) {
+            //if not even this permission is granted, disallow all
+            return false;
         }
 
         /** @var Event $event */
@@ -97,10 +108,11 @@ class EventVoter extends Voter
 
         switch ($attribute) {
             case self::READ:
+            case self::PARTICIPANTS_READ:
                 return true;
             case self::EDIT:
                 return $userAssignment->isAllowedToEdit();
-            case self::PARTICIPANTS:
+            case self::PARTICIPANTS_EDIT:
                 return $userAssignment->isAllowedToManageParticipants();
             case self::COMMENT_READ:
                 return $userAssignment->isAllowedToReadComments();

@@ -30,11 +30,10 @@ class AdminAttendanceListController extends Controller
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance", requirements={"eid": "\d+"}, name="event_attendance_lists")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function listAttendanceListsAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         return $this->render('event/attendance/list.html.twig', ['event' => $event]);
     }
 
@@ -43,11 +42,10 @@ class AdminAttendanceListController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance-lists.json", requirements={"eid": "\d+"},
      *                                                    name="event_attendance_lists_data")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function listAttendanceListsDataAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $repository = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
         $eid        = $event->getEid();
 
@@ -80,11 +78,10 @@ class AdminAttendanceListController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/new", requirements={"eid": "\d+"}, name="event_attendance_list_new")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function newAction(Event $event, Request $request)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $list = new AttendanceList();
         $list->setEvent($event);
 
@@ -109,11 +106,10 @@ class AdminAttendanceListController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/edit", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                    name="event_attendance_list_edit")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function editAction(Event $event, $tid, Request $request)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $repository = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
 
         $list = $repository->findOneBy(['tid' => $tid]);
@@ -143,16 +139,14 @@ class AdminAttendanceListController extends Controller
     /**
      * Edit an attendance list
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                    name="event_attendance_details")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
-    public function detailAction($eid, AttendanceList $list, Request $request)
+    public function detailAction(Event $event, AttendanceList $list, Request $request)
     {
-        $event = $list->getEvent();
-        $this->denyAccessUnlessGranted('participants', $event);
-
         return $this->render(
             '/event/attendance/detail.html.twig', ['list' => $list, 'event' => $event]
         );
@@ -164,11 +158,10 @@ class AdminAttendanceListController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/participants.json", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                                 name="event_attendance_list_participants_data")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function listParticipationsAction(Event $event, $tid, Request $request)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
         $filloutRepository       = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
@@ -237,7 +230,7 @@ class AdminAttendanceListController extends Controller
         $event                 = $list->getEvent();
         $repositoryFillout     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
 
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
 
         if (!$participant || !$list) {
             throw new \InvalidArgumentException('Unknown participant or list transmitted');

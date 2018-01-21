@@ -43,11 +43,10 @@ class AdminMultipleController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants", requirements={"eid": "\d+"}, name="event_participants_list")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function listParticipantsAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
     }
 
@@ -56,11 +55,10 @@ class AdminMultipleController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants.json", requirements={"eid": "\d+"}, name="event_participants_list_data")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
@@ -137,11 +135,10 @@ class AdminMultipleController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function exportParticipantsAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
 
@@ -173,11 +170,10 @@ class AdminMultipleController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
      *                                                    name="event_participations_export")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function exportParticipationsAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participationsList      = $participationRepository->participationsList($event);
 
@@ -208,11 +204,10 @@ class AdminMultipleController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
      *     name="event_participants_birthday_address_export")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function exportParticipantsBirthdayAddressAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
 
@@ -241,11 +236,10 @@ class AdminMultipleController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
      *                                                    name="event_participants_mail_export")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function exportParticipantsMailAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participantList         = $participationRepository->participantsList($event);
         $participationsList      = $participationRepository->participationsList($event);
@@ -293,7 +287,7 @@ class AdminMultipleController extends Controller
         $eventRepository         = $this->getDoctrine()->getRepository('AppBundle:Event');
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $event                   = $eventRepository->findOneBy(['eid' => $eid]);
-        $this->denyAccessUnlessGranted('participants', $event);
+        $this->denyAccessUnlessGranted('participants_edit', $event);
         if (!$event) {
             return $this->render(
                 'event/public/miss.html.twig', ['eid' => $eid],
@@ -339,11 +333,10 @@ class AdminMultipleController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function exportGeneratorAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processor     = new Processor();
@@ -359,11 +352,9 @@ class AdminMultipleController extends Controller
      * Page for list of participants of an event
      *
      * @Route("/admin/event/export/process", name="event_export_generator_process")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function exportGeneratorProcessAction(Request $request)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
         $config          = $request->get('config');
@@ -379,6 +370,7 @@ class AdminMultipleController extends Controller
         if (!$event || !is_array($config)) {
             throw new NotFoundHttpException('Transmitted event was not found');
         }
+        $this->denyAccessUnlessGranted('participants_read', $event);
         $config = ['export' => $config]; //add root config option
 
         $processor     = new Processor();
@@ -421,11 +413,10 @@ class AdminMultipleController extends Controller
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/print", requirements={"eid": "\d+"}, name="event_participants_print")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      */
     public function printParticipantsAction(Event $event)
     {
-        $this->denyAccessUnlessGranted('participants', $event);
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participants            = $participationRepository->participantsList($event);
 

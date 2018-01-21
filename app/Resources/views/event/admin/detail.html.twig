@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
-                    {%- if is_granted('participants', event) %}
+                    {%- if is_granted('participants_read', event) %}
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
                                class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer
