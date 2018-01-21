@@ -58,7 +58,9 @@
                        data-sort-name="nameLast" data-sort-order="asc">
                     <thead>
                     <tr>
+                        {%- if is_granted('participants_edit', event) -%}
                         <th data-field="state" data-checkbox="true"></th>
+                        {% endif %}
                         <th data-field="aid" data-sortable="true" data-visible="false">#</th>
                         <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs<wbr>nummer
                         </th>
@@ -88,10 +90,12 @@
                 </table>
             </div>
             <div class="col-md-12">
+                {% if is_granted('participants_edit', event) -%}
                 <div class="btn-toolbar" role="toolbar">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="confirm">Bestätigen & benachrichtigen…</button>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="paid">Zahlungseingang vermerken…</button>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

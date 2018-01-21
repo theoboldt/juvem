@@ -15,6 +15,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-12">
+                    <p>
+                        Benutzer, die einer Veranstaltung zugewiesen sind können Veranstaltungs-Details sowie die Teilnehmerdaten ansehen und exportieren.
+                        Nur Benutzer, denen die Rolle <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_LABEL') }}</i> zugewiesen ist, können Veranstaltungen zugewiesen werden.
+                    </p>
+                </div>
+                <div class="col-xs-12">
                     <div class="btn-toolbar" role="toolbar">
                         <button type="button" class="btn btn-default" data-toggle="modal"
                                 data-target="#addUserAssignmentModal" id ="addUserAssignmentButton" title="Weitere Benutzer zuweisen">
@@ -96,7 +102,6 @@
                             {% endif %}
                             <div class="prototype-missing-message"{% if form.userAssignments|length > 0 %} style="display:none"{% endif %}>
                                 <div class="alert alert-info">
-
                                     <ul class="list-unstyled">
                                         <li>Der Veranstaltung sind noch keine Benutzer zugewiesen</li>
                                     </ul>

@@ -3,6 +3,7 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
+    {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
     <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -25,7 +26,8 @@
             </div>
         </div>
     </div>
-
+    {% endif -%}
+    {% if is_granted('participants_edit', event) -%}
     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
         <div class="modal-dialog" role="document">
             {{ form_start(form) }}
@@ -75,6 +77,7 @@
             {{ form_end(formAssignUser) }}
         </div>
     </div>
+    {% endif -%}
     <div class="container participation-panels collapse-breadcrumb-header">
         <div class="row">
             <div class="col-xs-12">
@@ -94,6 +97,7 @@
                 </div>
             </div>
             <div class="col-xs-12 hidden-print">
+                {% if is_granted('participants_edit', event) -%}
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
                         {% if participation.rejected %}
@@ -145,6 +149,7 @@
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                     </div>
                 </div>
+                {% endif -%}
             </div>
         </div>
         <div class="row">
@@ -161,9 +166,15 @@
                                 <h3 class="panel-title">Anmeldung</h3>
                             </div>
                             <div class="col-xs-5 text-right hidden-print">
+                                {% if is_granted('participants_edit', event) -%}
                                 <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
                                    class="btn btn-default btn-xs" title="Telefonnummern bearbeiten"
                                    data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
+                                <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
+                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"
+                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                {% endif -%}
+                                {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                 <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs"
                                         type="button" data-toggle="collapse"
                                         data-target="#comment-footer-pid-{{ participation.pid }}" aria-expanded="false"
@@ -173,9 +184,7 @@
                                           data-related-id="{{ participation.pid }}">{{ commentManager.countForParticipation(participation) }}
                                     </span> {{ 'comment'|glyph }}
                                 </button>
-                                <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"
-                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                {% endif -%}
                             </div>
                         </div>
                     </div>
@@ -231,30 +240,40 @@
                                 {% else %}
                                     <i>(keines)</i>
                                 {% endif %}
+                                {% if is_granted('participants_edit', event) -%}
                                 <button data-toggle="modal" data-target="#dialogModalAssignUser"
                                         class="btn btn-default btn-xs"
                                         title="Benutzerkonto verknüpfen">{{ 'pencil'|glyph }}</button>
+                                {% endif -%}
                             </dd>
 
                         </dl>
                     </div>
+                    {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                     <div class="panel-footer panel-comments collapse{% if commentManager.countForParticipation(participation) %} in{% endif %}" id="comment-footer-pid-{{ participation.pid }}">
-                        <div class="comment-add">
-                            <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
-                                    data-toggle="modal" data-target="#dialogModalComment"
-                                    data-comment-class="AppBundle\Entity\ParticipationComment"
-                                    data-related-id="{{ participation.pid }}">{{ 'plus'|glyph }}</button>
-                        </div>
-                        <div class="comments" data-comment-class="AppBundle\Entity\ParticipationComment"
-                             data-related-id="{{ participation.pid }}">
-                        {% if not commentManager.countForParticipation(participation) %}
-                            <p class="empty">Keine Anmerkungen gespeichert.</p>
-                        {% endif %}
-                        {% for comment in commentManager.forParticipation(participation) %}
-                            {{ include('common/comment-content.html.twig', {comment: comment}) }}
-                        {% endfor %}
+                        {% if is_granted('comment_add', event) -%}
+                            <div class="comment-add">
+                                <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
+                                        data-toggle="modal" data-target="#dialogModalComment"
+                                        data-comment-class="AppBundle\Entity\ParticipationComment"
+                                        data-related-id="{{ participation.pid }}">{{ 'plus'|glyph }}</button>
+                            </div>
+                        {% endif -%}
+                            <div class="comments" data-comment-class="AppBundle\Entity\ParticipationComment"
+                                 data-related-id="{{ participation.pid }}">
+                            {% if is_granted('comment_read', event) -%}
+                                {% if not commentManager.countForParticipation(participation) %}
+                                    <p class="empty">Keine Anmerkungen gespeichert.</p>
+                                {% endif %}
+                                {% for comment in commentManager.forParticipation(participation) %}
+                                    {{ include('common/comment-content.html.twig', {comment: comment}) }}
+                                {% endfor %}
+                            {% else %}
+                                <p>&nbsp;</p>
+                            {% endif -%}
                         </div>
                     </div>
+                    {% endif -%}
                 </div>
             </div>
         {% if participation.participants.count > 1 %}
@@ -271,6 +290,7 @@
                                                 class="hidden-xs">Teilnehmer </span>{{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-6 text-right hidden-print">
+                                    {% if is_granted('participants_edit', event) -%}
                                     <a href="{{ path('admin_add_participant', {'eid': event.eid, 'pid': participation.pid}) }}"
                                        class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen"
                                        data-toggle="tooltip">{{ 'plus'|glyph }}</a>
@@ -281,6 +301,10 @@
                                             data-button-enable-label="Anmeldung von {{ participant.nameFirst }} zurückziehen" data-button-enable-glyph="share-alt"
                                             data-button-disable-label="Anmeldung von {{ participant.nameFirst }} reaktivieren"
                                             data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
+                                    <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
+                                       class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                    {% endif -%}
+                                    {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                     <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"
                                             data-target="#comment-footer-aid-{{ participant.aid }}" aria-expanded="false"
                                             aria-controls="comment-footer-aid-{{ participant.aid }}">
@@ -288,8 +312,7 @@
                                           data-comment-class="AppBundle\Entity\ParticipantComment"
                                           data-related-id="{{ participant.aid }}">{{ commentManager.countForParticipant(participant) }}
                                     </span> {{ 'comment'|glyph }}</button>
-                                    <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
-                                       class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                    {% endif -%}
                                 </div>
                             </div>
                         </div>
@@ -361,24 +384,32 @@
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
                             </div>
                         </div>
+                        {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                         <div class="panel-footer panel-comments collapse{% if commentManager.countForParticipant(participant) %} in{% endif %}"
                              id="comment-footer-aid-{{ participant.aid }}">
+                            {% if is_granted('comment_add', event) -%}
                             <div class="comment-add">
                                 <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
                                         data-toggle="modal" data-target="#dialogModalComment"
                                         data-comment-class="AppBundle\Entity\ParticipantComment"
                                         data-related-id="{{ participant.aid }}">{{ 'plus'|glyph }}</button>
                             </div>
+                            {% endif -%}
                             <div class="comments" data-comment-class="AppBundle\Entity\ParticipantComment"
                                  data-related-id="{{ participant.aid }}">
-                                {% if not commentManager.countForParticipant(participant) %}
-                                    <p class="empty">Keine Anmerkungen gespeichert.</p>
-                                {% endif %}
-                                {% for comment in commentManager.forParticipant(participant) %}
-                                    {{ include('common/comment-content.html.twig', {comment: comment}) }}
-                                {% endfor %}
+                                {% if is_granted('comment_read', event) -%}
+                                    {% if not commentManager.countForParticipant(participant) %}
+                                        <p class="empty">Keine Anmerkungen gespeichert.</p>
+                                    {% endif %}
+                                    {% for comment in commentManager.forParticipant(participant) %}
+                                        {{ include('common/comment-content.html.twig', {comment: comment}) }}
+                                    {% endfor %}
+                                {% else %}
+                                    <p>&nbsp;</p>
+                                {% endif -%}
                             </div>
                         </div>
+                        {% endif -%}
                     </div>
                 </div>
             {% endfor %}

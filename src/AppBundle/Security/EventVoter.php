@@ -15,11 +15,9 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 
-class EventVoter extends Voter
+class EventVoter extends AbstractDecisionManagerAwareVoter
 {
     const READ              = 'read';
     const EDIT              = 'edit';
@@ -27,23 +25,6 @@ class EventVoter extends Voter
     const PARTICIPANTS_EDIT = 'participants_edit';
     const COMMENT_READ      = 'comment_read';
     const COMMENT_ADD       = 'comment_add';
-
-    /**
-     * Decision manager
-     *
-     * @var AccessDecisionManagerInterface
-     */
-    private $decisionManager;
-
-    /**
-     * EventVoter constructor.
-     *
-     * @param AccessDecisionManagerInterface $decisionManager
-     */
-    public function __construct(AccessDecisionManagerInterface $decisionManager)
-    {
-        $this->decisionManager = $decisionManager;
-    }
 
     /**
      * {@inheritdoc}

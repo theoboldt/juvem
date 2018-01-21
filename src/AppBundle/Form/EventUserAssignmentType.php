@@ -41,7 +41,7 @@ class EventUserAssignmentType extends AbstractType
                 CheckboxType::class,
                 array_merge(
                     $smartCheckbox,
-                    ['label' => 'Darf Teilnehmer verwalten, Teilnehmerdaten bearbeiten, bestätigen und ablehnen']
+                    ['label' => 'Darf Teilnehmerdaten bearbeiten, bestätigen und ablehnen sowie E-Mails versenden']
                 )
             )
             ->add(

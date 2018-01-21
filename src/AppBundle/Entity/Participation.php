@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation
+class Participation implements EventRelatedEntity
 {
     use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, AddressTrait;
     use SoftDeleteTrait {
