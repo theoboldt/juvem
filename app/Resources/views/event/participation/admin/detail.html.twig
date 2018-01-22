@@ -122,17 +122,6 @@
                                 {{ 'share-alt'|glyph }} zurückziehen…
                             </button>
                         {% endif %}
-                        {% if participation.deletedAt %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }} wiederherstellen…
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb…
-                            </button>
-                        {% endif %}
                         <button type="button" class="btn btn-default" data-element="activebutton"
                                 data-entity="Participation"
                                 data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
@@ -147,6 +136,17 @@
                                 data-button-enable-label="hat bezahlt" data-button-enable-glyph="euro"
                                 data-button-disable-label="Bezahlung offen"
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
+                        {% if participation.deletedAt %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="restore">
+                                {{ 'repeat'|glyph }} wiederherstellen…
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="delete">
+                                {{ 'trash'|glyph }} in Papierkorb…
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif -%}
