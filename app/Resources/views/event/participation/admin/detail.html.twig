@@ -30,7 +30,7 @@
     {% if is_granted('participants_edit', event) -%}
     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
         <div class="modal-dialog" role="document">
-            {{ form_start(form) }}
+            {{ form_start(formAction) }}
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
@@ -46,7 +46,7 @@
                     <input type="submit" class="btn btn-primary" value="Bestätigen"/>
                 </div>
             </div>
-            {{ form_end(form) }}
+            {{ form_end(formAction) }}
         </div>
     </div>
     <div class="modal fade" id="dialogModalAssignUser" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabelAssignUser">
