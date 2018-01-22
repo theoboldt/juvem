@@ -14,50 +14,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait CreatedModifiedTrait
 {
-
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
+    use CreatedTrait;
 
     /**
      * @ORM\Column(type="datetime", name="modified_at", nullable=true)
      */
     protected $modifiedAt = null;
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return self
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Set createdAt to now
-     *
-     * @ORM\PrePersist
-     */
-    public function setCreatedAtNow()
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
 
     /**
      * Set modifiedAt to now

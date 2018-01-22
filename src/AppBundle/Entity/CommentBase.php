@@ -10,7 +10,7 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Entity\Audit\BlameableTrait;
+use AppBundle\Entity\Audit\CreatorModifierTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class CommentBase
 {
-    use CreatedModifiedTrait, SoftDeleteTrait, BlameableTrait;
+    use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
 
     /**
      * @ORM\Column(type="integer", name="cid")
