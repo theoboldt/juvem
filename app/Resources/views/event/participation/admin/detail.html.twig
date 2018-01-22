@@ -362,6 +362,12 @@
                                                 <i>(keine Besonderheiten)</i>
                                             {% endif %}
                                         </dd>
+                                        {% if participant.price %}
+                                            <dt>Preis</dt>
+                                            <dd>
+                                                {{ participant.price(true)|number_format(2) }} €
+                                            </dd>
+                                            {% endif %}
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
                                             <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip" data-placement="right">{{ fillout.attribute.formTitle }}</dt>
                                             <dd>{{ fillout }}</dd>
