@@ -105,6 +105,10 @@ services:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
         public: true
+    app.payment_manager:
+        class: AppBundle\Manager\PaymentManager
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage']
+        public: true
     app.exception_controller:
         class: AppBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']

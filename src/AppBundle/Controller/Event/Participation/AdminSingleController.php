@@ -20,6 +20,7 @@ use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\PaymentManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -28,6 +29,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminSingleController extends Controller
 {
@@ -369,4 +371,48 @@ class AdminSingleController extends Controller
             )
         );
     }
+
+    /**
+     * Page edit an participant
+     *
+     * @Route("/admin/event/participant/price", name="admin_participation_price")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function participantPaymentAction(Request $request)
+    {
+        $token       = $request->get('_token');
+        $aids        = explode(';', $request->get('aids'));
+        $value       = $request->get('value');
+        $description = $request->get('description');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('Participationprice')) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $participants = [];
+        $repository   = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        foreach ($aids as $aid) {
+            /** @var Participant $participant */
+            $participant = $repository->findOneBy(['aid' => $aid]);
+            if (!$participant) {
+                throw new NotFoundHttpException('Participant not found');
+            }
+            $this->denyAccessUnlessGranted('participants_edit', $participant->getEvent());
+            $participants[] = $participant;
+        }
+
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager->setPrice($participants, $value, $description);
+
+        return new JsonResponse(
+            array(
+                'success' => true,
+            )
+        );
+
+    }
+
 }

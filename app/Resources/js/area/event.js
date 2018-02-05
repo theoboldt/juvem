@@ -1,15 +1,4 @@
 $(function () {
-    /*
-        var markDownEl = document.querySelector(".markdown");
-        new MediumEditor(document.querySelector(".medium-editor"), {
-            extensions: {
-                markdown: new MeMarkdown(function (md) {
-                    markDownEl.textContent = md;
-                })
-            }
-        });
-    */
-
     /**
      * EVENT: Participate lactose-free food option force hint
      */
@@ -302,6 +291,69 @@ $(function () {
     });
 
     /**
+     * PARTICIPATION: Participation details
+     */
+    $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget),
+            modal = $(this);
+        modal.find('.modal-title span').text(button.data('title'));
+        modal.data('aids', button.data('aids'));
+    });
+    $('#dialogPriceConfiguration #price .btn-predefined').on('click', function (e) {
+        e.preventDefault();
+        var button = $(this);
+
+        if (button.data('value')) {
+            $('#newPriceValue').val(button.data('value'));
+        }
+        if (button.data('description')) {
+            $('#newPriceDescription').val(button.data('description'));
+        }
+    });
+    $('#dialogPriceConfiguration .btn-primary').on('click', function (e) {
+        e.preventDefault();
+        var button = $(this),
+            modal = $('#dialogPriceConfiguration'),
+            action = button.data('action'),
+            aids = modal.data('aids'),
+            value,
+            description;
+        button.toggleClass('disabled', true);
+
+        switch (action) {
+            case 'newPrice':
+                value = modal.find('#newPriceValue').val();
+                description = modal.find('#newPriceDescription').val();
+                break;
+        }
+
+        $.ajax({
+            url: '/admin/event/participant/price',
+            data: {
+                _token: modal.data('token'),
+                action: action,
+                aids: aids,
+                value: value,
+                description: description
+            },
+            success: function () {
+                debugger
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'x',
+                    priority: 'error'
+                });
+            },
+            complete: function () {
+                button.toggleClass('disabled', false);
+            }
+        });
+
+    });
+
+
+    /**
      * GLOBAL: Export configurator download
      */
     $('.export-generator-create').on('click', function (e) {
@@ -448,7 +500,6 @@ $(function () {
                     iid: iid
                 },
                 success: function () {
-                    debugger;
                     $('#galleryImage-' + iid).remove();
                     modalEl.modal('hide');
                 },

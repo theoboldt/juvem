@@ -76,3 +76,9 @@ textarea {
 .btn-toolbar-spacer {
   margin-bottom: 10px;
 }
+
+@media (min-width: $screen-sm-min) {
+  .btn-inline-save {
+    margin-top: 24px;
+  }
+}

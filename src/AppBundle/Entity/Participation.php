@@ -301,6 +301,20 @@ class Participation implements EventRelatedEntity
     }
 
     /**
+     * Get list of participants aids
+     *
+     * @return array|int[]
+     */
+    public function getParticipantsIdList() {
+        $ids = [];
+        /** @var Participant $participant */
+        foreach($this->participants as $participant) {
+            $ids[] = $participant->getAid();
+        }
+        return $ids;
+    }
+
+    /**
      * Set event
      *
      * @param Event $event

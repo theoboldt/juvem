@@ -20,7 +20,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="attendance_list_fillout")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AttendanceListFilloutRepository")
  */
-class AttendanceListFillout
+class   AttendanceListFillout
 {
     use CreatedModifiedTrait;
 
