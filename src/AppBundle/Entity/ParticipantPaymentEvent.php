@@ -58,6 +58,12 @@ class ParticipantPaymentEvent
     protected $value;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="paymentEvents")
+     * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade")
+     */
+    protected $participant;
+
+    /**
      * Create new payment event
      *
      * @param User        $createdBy   User who caused this event
@@ -130,6 +136,7 @@ class ParticipantPaymentEvent
      * Define event type
      *
      * @param string $type
+     * @return self
      */
     public function setEventType($type)
     {
@@ -195,5 +202,23 @@ class ParticipantPaymentEvent
     public static function isEventTypeValid($type)
     {
         return in_array($type, [self::EVENT_TYPE_SET, self::EVENT_TYPE_PAYMENT]);
+    }
+
+    /**
+     * @return Participant
+     */
+    public function getParticipant()
+    {
+        return $this->participant;
+    }
+
+    /**
+     * @param mixed $participant
+     * @return ParticipantPaymentEvent
+     */
+    public function setParticipant($participant)
+    {
+        $this->participant = $participant;
+        return $this;
     }
 }

@@ -82,12 +82,14 @@ class PaymentManager
         return $em->transactional(
             function (EntityManager $em) use ($participants, $price, $description) {
                 $events = [];
+                /** @var Participant $participant */
                 foreach ($participants as $participant) {
                     $participant->setPrice($price);
                     $em->persist($participant);
                     $event = ParticipantPaymentEvent::createPriceSetEvent(
                         $this->user, $price, $description
                     );
+                    $participant->addPaymentEvent($event);
                     $em->persist($event);
                     $events[] = $event;
                 }
@@ -113,5 +115,12 @@ class PaymentManager
         } else {
             throw new \InvalidArgumentException('Failed to convert "' . $priceInEuro . '" to euro cents');
         }
+    }
+
+    public function paymentHistoryForParticipation(Participation $participation) {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('e')
+            ->from(ParticipantPaymentEvent::class, 'p')
+            ;
     }
 }

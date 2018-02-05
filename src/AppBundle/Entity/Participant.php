@@ -120,6 +120,13 @@ class Participant implements EventRelatedEntity
     protected $comments;
 
     /**
+     * Contains all payment events related to this participant
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipantPaymentEvent", cascade={"all"}, mappedBy="participant")
+     */
+    protected $paymentEvents;
+
+    /**
      * Constructor
      *
      * @param Participation $participation  Related participation
@@ -139,6 +146,7 @@ class Participant implements EventRelatedEntity
         $this->acquisitionAttributeFillouts = new ArrayCollection();
         $this->attendanceListsFillouts      = new ArrayCollection();
         $this->comments                     = new ArrayCollection();
+        $this->paymentEvents                = new ArrayCollection();
     }
 
     /**
@@ -551,6 +559,33 @@ class Participant implements EventRelatedEntity
     public function removeComment(ParticipantComment $comment)
     {
         $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Add payment
+     *
+     * @param ParticipantPaymentEvent $event
+     *
+     * @return self
+     */
+    public function addPaymentEvent(ParticipantPaymentEvent $event)
+    {
+        $event->setParticipant($this);
+        $this->paymentEvents->add($event);
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param ParticipantPaymentEvent $event
+     * @return self
+     */
+    public function removePaymentEvent(ParticipantPaymentEvent $event)
+    {
+        $this->paymentEvents->removeElement($event);
+        return $this;
     }
 
     /**
