@@ -293,11 +293,72 @@ $(function () {
     /**
      * PARTICIPATION: Participation details
      */
+    var priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+        displayPriceHistory = function (data) {
+        var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
+            var glyph;
+
+            switch (type) {
+                case 'payment_received':
+                    glyph = 'log-in';
+                    break;
+                case 'price_set':
+                    glyph = 'pencil';
+                    break;
+            }
+
+            return '<tr class="' + type + '">' +
+            '    <td class="symbol"><span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span></td>' +
+            '    <td class="participant">' + participant + '</td>' +
+            '    <td class="value">' + value + ' €</td>' +
+            '    <td class="description">' + description + '</td>' +
+            '    <td><span class="created">' + date + '</span>, <a class="creator" href="/admin/user/'+creatorId+'">' + creatorName + '</a></td>' +
+            '</tr>';
+        };
+
+        var rawRow,
+            rawRows = '';
+        jQuery.each(data, function (key, rowData) {
+            rawRow = createPriceRow(
+                rowData.type,
+                rowData.value,
+                eHtml(rowData.description),
+                rowData.created_at,
+                rowData.created_by_uid,
+                eHtml(rowData.created_by_name),
+                eHtml(rowData.participant_name)
+            );
+            rawRows += rawRow;
+        });
+        priceHistoryTableEl.html(rawRows);
+    };
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
+            aids = button.data('aids'),
             modal = $(this);
+        priceHistoryTableEl.toggleClass('loading-text', true);
         modal.find('.modal-title span').text(button.data('title'));
-        modal.data('aids', button.data('aids'));
+        modal.data('aids', aids);
+        $.ajax({
+            url: '/admin/event/participant/price/history',
+            data: {
+                aids: aids
+            },
+            success: function (data) {
+                if (data.payment_history) {
+                    displayPriceHistory(data.payment_history);
+                }
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Preishistorie konnte nicht geladen werden',
+                    priority: 'error'
+                });
+            },
+            complete: function () {
+                priceHistoryTableEl.toggleClass('loading-text', false);
+            }
+        });
     });
     $('#dialogPriceConfiguration #price .btn-predefined').on('click', function (e) {
         e.preventDefault();
@@ -319,6 +380,7 @@ $(function () {
             value,
             description;
         button.toggleClass('disabled', true);
+        priceHistoryTableEl.toggleClass('loading-text', true);
 
         switch (action) {
             case 'newPrice':
@@ -336,16 +398,28 @@ $(function () {
                 value: value,
                 description: description
             },
-            success: function () {
-                debugger
+            success: function (result) {
+                if (result && result.payment_history) {
+                    displayPriceHistory(result.payment_history);
+                }
             },
             error: function () {
+                var message;
+                switch (action) {
+                    case 'newPrice':
+                        message = 'Der Preis konnte nicht festgelegt werden';
+                        break;
+                    default:
+                        message = 'Der Bezahlvorgang konnte nicht verarbeitet werden';
+                        break;
+                }
                 $(document).trigger('add-alerts', {
-                    message: 'x',
+                    message: message,
                     priority: 'error'
                 });
             },
             complete: function () {
+                priceHistoryTableEl.toggleClass('loading-text', false);
                 button.toggleClass('disabled', false);
             }
         });

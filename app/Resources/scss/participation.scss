@@ -141,3 +141,17 @@
     margin-bottom: 10px;
   }
 }
+
+#priceHistory table {
+  thead td {
+    font-weight: bold;
+  }
+
+  tbody tr.price_set td {
+    border-top: 1px solid #aaa;
+    border-bottom: 2px solid #bbb;
+  }
+  tbody td.value {
+    text-align: right;
+  }
+}

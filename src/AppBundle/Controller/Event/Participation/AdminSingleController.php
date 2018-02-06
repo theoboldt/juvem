@@ -12,9 +12,13 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Event;
+use AppBundle\Entity\HumanTrait;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Entity\User;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
@@ -115,12 +119,17 @@ class AdminSingleController extends Controller
             $similarParticipants[$participant->getAid()] = $participationRepository->relatedParticipants($participant);
         }
 
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        $paymentHistory = $paymentManager->paymentHistoryForParticipation($participation);
+
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
                 'commentManager'      => $commentManager,
                 'event'               => $event,
                 'participation'       => $participation,
+                'paymentHistory'      => $paymentHistory,
                 'similarParticipants' => $similarParticipants,
                 'foodFormatter'       => $foodFormatter,
                 'statusFormatter'     => $statusFormatter,
@@ -162,7 +171,7 @@ class AdminSingleController extends Controller
 
         return new JsonResponse(
             array(
-                'success' => true
+                'success' => true,
             )
         );
     }
@@ -373,7 +382,7 @@ class AdminSingleController extends Controller
     }
 
     /**
-     * Page edit an participant
+     * Handle payment or price change
      *
      * @Route("/admin/event/participant/price", name="admin_participation_price")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
@@ -390,29 +399,91 @@ class AdminSingleController extends Controller
         if ($token != $csrf->getToken('Participationprice')) {
             throw new InvalidTokenHttpException();
         }
-
-        $participants = [];
-        $repository   = $this->getDoctrine()->getRepository('AppBundle:Participant');
-        foreach ($aids as $aid) {
-            /** @var Participant $participant */
-            $participant = $repository->findOneBy(['aid' => $aid]);
-            if (!$participant) {
-                throw new NotFoundHttpException('Participant not found');
-            }
-            $this->denyAccessUnlessGranted('participants_edit', $participant->getEvent());
-            $participants[] = $participant;
-        }
+        $participants = $this->extractParticipantsFromAid($aids, 'participants_edit');
 
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
         $paymentManager->setPrice($participants, $value, $description);
 
         return new JsonResponse(
-            array(
-                'success' => true,
-            )
+            [
+                'success'         => true,
+                'payment_history' => $this->paymentHistory($participants),
+            ]
         );
-
     }
 
+    /**
+     *
+     * @Route("/admin/event/participant/price/history", methods={"POST"}, name="admin_participation_price_history")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function participantsPaymentHistory(Request $request) {
+        $aids         = explode(';', $request->get('aids'));
+        $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
+
+
+        return new JsonResponse(
+            [
+                'payment_history' => $this->paymentHistory($participants),
+            ]
+        );
+    }
+
+    /**
+     * Get flat array list of payment events
+     *
+     * @param array $participants List of participants
+     * @return array
+     */
+    private function paymentHistory(array $participants)
+    {
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        $paymentEvents  = $paymentManager->paymentHistoryForParticipantList($participants);
+        $flatEvents     = [];
+
+        /** @var ParticipantPaymentEvent $paymentEvent */
+        foreach ($paymentEvents as $paymentEvent) {
+            $user         = $paymentEvent->getCreatedBy();
+            $participant  = $paymentEvent->getParticipant();
+            $flatEvents[] = [
+                'created_by_name'  => $user->userFullname(),
+                'created_by_uid'   => $user->getUid(),
+                'created_at'       => $paymentEvent->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
+                'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
+                'participant_aid'  => Participant::fullname($participant->getAid()),
+                'value'            => number_format($paymentEvent->getValue(true), 2, ',', '.'),
+                'description'      => $paymentEvent->getDescription(),
+                'type'             => $paymentEvent->getEventType(),
+                'type_label'       => $paymentEvent->getEventTypeLabeled(),
+            ];
+        }
+        return $flatEvents;
+    }
+
+    /**
+     * Extract @see Participant entities from aid list
+     *
+     * @param array  $aidList            List of aids
+     * @param string $requiredPermission Permission required for this operation
+     * @return Participant[]
+     */
+    private function extractParticipantsFromAid(array $aidList, string $requiredPermission)
+    {
+        $participants = [];
+        $repository   = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        foreach ($aidList as $aid) {
+            /** @var Participant $participant */
+            $participant = $repository->findOneBy(['aid' => $aid]);
+            if (!$participant) {
+                throw new NotFoundHttpException('Participant not found');
+            }
+            $this->denyAccessUnlessGranted($requiredPermission, $participant->getEvent());
+            $participants[] = $participant;
+        }
+        return $participants;
+    }
 }

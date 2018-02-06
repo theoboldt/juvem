@@ -325,4 +325,13 @@ class User extends BaseUser
     {
         return $this->eventAssignments;
     }
+
+    /**
+     * Get user full name
+     *
+     * @return string
+     */
+    public function userFullname() {
+        return self::fullname($this->getNameLast(), $this->getNameFirst());
+    }
 }

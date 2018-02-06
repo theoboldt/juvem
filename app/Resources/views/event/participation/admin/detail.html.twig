@@ -40,16 +40,19 @@
                     <div>
                       <ul class="nav nav-tabs" role="tablist">
                         {#
-                          <li role="presentation" class="active"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
-                          <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis festlegen</a></li>
-                          <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
+                          <li role="presentation"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
                           #}
+                          <li role="presentation" class="active"><a href="#priceHistory" aria-controls="priceHistory" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
+                          <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis festlegen</a></li>
                       </ul>
                         <div class="tab-content">
-                        {#
-                        <div role="tabpanel" class="tab-pane active" id="payment">...</div>
-                        #}
-                        <div role="tabpanel" class="tab-pane active" id="price">
+                        <div role="tabpanel" class="tab-pane" id="payment">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="price">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="btn-group btn-group-justified" role="group">
@@ -86,13 +89,34 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-2">
-                                            <button class="btn btn-primary btn-inline-save" title="Geänderten Preis speichern" data-action="newPrice">{{ 'floppy-disk'|glyph }} <span class="visible-xs-inline">Geänderten Preis speichern</span></button>
+                                            <button class="btn btn-primary btn-inline-save" title="Preis festlegen" data-action="newPrice">{{ 'floppy-disk'|glyph }} <span class="visible-xs-inline">Geänderten Preis speichern</span></button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="history">...</div>
+                        <div role="tabpanel" class="tab-pane active" id="priceHistory">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <td></td>
+                                            <td>Teilnehmer</td>
+                                            <td>Wert</td>
+                                            <td>Beschreibung</td>
+                                            <td>Erfassung</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="5" class="text-center">(Wird geladen)</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                       </div>
 
                     </div>

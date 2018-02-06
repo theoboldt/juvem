@@ -106,7 +106,6 @@ class ParticipantPaymentEvent
         $this->setEventType($type);
     }
 
-
     /**
      * Set value
      *
@@ -130,6 +129,14 @@ class ParticipantPaymentEvent
     public function getValue($inEuro = false)
     {
         return $inEuro ? $this->value / 100 : $this->value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

@@ -117,10 +117,41 @@ class PaymentManager
         }
     }
 
+    /**
+     * Get all payment events for transmitted @see Participation
+     *
+     * @param Participation $participation Desired participation
+     * @return array|ParticipantPaymentEvent[]
+     */
     public function paymentHistoryForParticipation(Participation $participation) {
         $qb = $this->em->createQueryBuilder();
         $qb->select('e')
-            ->from(ParticipantPaymentEvent::class, 'p')
-            ;
+            ->from(ParticipantPaymentEvent::class, 'e')
+            ->innerJoin('e.participant', 'a')
+            ->innerJoin('a.participation', 'p')
+            ->andWhere($qb->expr()->eq('p.pid', $participation->getPid()))
+            ->orderBy('e.createdAt', 'DESC');
+        $result = $qb->getQuery()->execute();
+        return $result;
+    }
+
+    /**
+     * Get all payment events for transmitted @see Participants
+     *
+     * @param array|Participant[] $participants List of Participants
+     * @return array|ParticipantPaymentEvent[]
+     */
+    public function paymentHistoryForParticipantList(array $participants) {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('e')
+            ->from(ParticipantPaymentEvent::class, 'e')
+            ->innerJoin('e.participant', 'a')
+            ->orderBy('e.createdAt', 'DESC');
+        /** @var Participant $participant */
+        foreach ($participants as $participant) {
+            $qb->orWhere($qb->expr()->eq('e.participant', $participant->getAid()));
+        }
+        $result = $qb->getQuery()->execute();
+        return $result;
     }
 }
