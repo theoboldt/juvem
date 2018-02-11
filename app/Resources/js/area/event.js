@@ -371,11 +371,18 @@ $(function () {
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
             aids = button.data('aids'),
-            modal = $(this);
+            modal = $(this),
+            inputEls = modal.find('input');
         paymentManagementModal.toggleClass('loading', true);
         toPayFooterTableEl.html('');
         modal.find('.modal-title span').text(button.data('title'));
         modal.data('aids', aids);
+
+        $.each(inputEls, function (i, el) {
+            $(el).val('');
+        });
+
+
         $.ajax({
             url: '/admin/event/participant/price/history',
             data: {
