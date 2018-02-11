@@ -116,15 +116,14 @@ class AdminSingleController extends Controller
 
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
-        $paymentHistory = $paymentManager->paymentHistoryForParticipation($participation);
 
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
                 'commentManager'      => $commentManager,
+                'paymentManager'      => $paymentManager,
                 'event'               => $event,
                 'participation'       => $participation,
-                'paymentHistory'      => $paymentHistory,
                 'similarParticipants' => $similarParticipants,
                 'foodFormatter'       => $foodFormatter,
                 'statusFormatter'     => $statusFormatter,

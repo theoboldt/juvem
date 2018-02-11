@@ -540,6 +540,12 @@
                                             <dd>
                                             {% if participant.price %}
                                                 {{ participant.price(true)|number_format(2) }} €
+                                                {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
+                                                {% if toPay %}
+                                                    (noch zu zahlen: {{ toPay|number_format(2) }} €)
+                                                {% else %}
+                                                    (bezahlt)
+                                                {% endif %}
                                             {% else %}
                                                 <i>(keiner festgelegt)</i>
                                             {% endif %}
