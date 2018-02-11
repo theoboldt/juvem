@@ -53,7 +53,7 @@ class ParticipantPaymentEvent
     /**
      * Contains the events value, in EURO CENT (instead of euro)
      *
-     * @ORM\Column(type="integer", nullable=true, name="price_value")
+     * @ORM\Column(type="integer", name="price_value")
      */
     protected $value;
 
@@ -124,7 +124,7 @@ class ParticipantPaymentEvent
      * Get value
      *
      * @param bool $inEuro If set to true, resulting value is returned in EURO instead of EURO CENT
-     * @return string
+     * @return int|float
      */
     public function getValue($inEuro = false)
     {
