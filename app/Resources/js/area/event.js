@@ -471,8 +471,8 @@ $(function () {
                     if (result.to_pay) {
                         displayToPayInfo(result.to_pay);
                     }
-                    if (data.to_pay_all) {
-                        displayPaymentFullValue(data.to_pay_all, (aids.toString().split(';').length > 1));
+                    if (result.to_pay_all) {
+                        displayPaymentFullValue(result.to_pay_all, (aids.toString().split(';').length > 1));
                     }
                 }
             },
