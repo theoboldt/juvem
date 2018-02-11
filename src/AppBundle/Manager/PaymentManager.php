@@ -108,11 +108,17 @@ class PaymentManager
     {
         if (empty($priceInEuro)) {
             return 0;
-        } elseif (preg_match('/^(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
-            $euros = $priceParts[1] ?: 0;
-            $cents = $priceParts[2] ?: 0;
+        } elseif (preg_match('/^(?:[^\d]*?)([-]{0,1})(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
+            $euros = $priceParts[2] ?: 0;
+            $cents = $priceParts[3] ?: 0;
 
-            return ($euros * 100 + $cents);
+            $priceInCents = ($euros * 100 + $cents);
+
+            if ($priceParts[1] === '-') {
+                $priceInCents *= -1;
+            }
+
+            return $priceInCents;
         } else {
             throw new \InvalidArgumentException('Failed to convert "' . $priceInEuro . '" to euro cents');
         }
@@ -131,9 +137,9 @@ class PaymentManager
            ->from(ParticipantPaymentEvent::class, 'e')
            ->innerJoin('e.participant', 'a')
            ->innerJoin('a.participation', 'p')
-           ->andWhere($qb->expr()->eq('p.pid', $participation->getPid()))
+           ->andWhere($qb->expr()->eq('p.pid', ':pid'))
            ->orderBy('e.createdAt', 'DESC');
-        $result = $qb->getQuery()->execute();
+        $result = $qb->getQuery()->execute(['pid' => $participation->getPid()]);
         return $result;
     }
 
@@ -149,9 +155,9 @@ class PaymentManager
         $qb->select('e')
            ->from(ParticipantPaymentEvent::class, 'e')
            ->innerJoin('e.participant', 'a')
-           ->andWhere($qb->expr()->eq('a.aid', $participant->getAid()))
+           ->andWhere($qb->expr()->eq('a.aid', ':aid'))
            ->orderBy('e.createdAt', 'DESC');
-        $result = $qb->getQuery()->execute();
+        $result = $qb->getQuery()->execute(['aid' => $participant->getAid()]);
         return $result;
     }
 
@@ -201,9 +207,10 @@ class PaymentManager
      * Get amount of money which still needs to be paid for a single @see Participant
      *
      * @param Participant $participant Target participant
+     * @param bool        $inEuro      If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return int|null                Value needed to be payed
      */
-    public function toPayValueForParticipant(Participant $participant)
+    public function toPayValueForParticipant(Participant $participant, $inEuro = false)
     {
         $fullHistory  = $this->paymentHistoryForParticipant($participant);
         $currentPrice = null;
@@ -229,6 +236,10 @@ class PaymentManager
         /** @var ParticipantPaymentEvent $payment */
         foreach ($payments as $payment) {
             $currentPrice += $payment->getValue();
+        }
+
+        if ($inEuro) {
+            $currentPrice /= 100;
         }
 
         return $currentPrice;

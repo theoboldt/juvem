@@ -29,7 +29,7 @@ class AdminPaymentController extends Controller
 {
 
     const ACTION_PAYMENT_RECEIVED = 'paymentReceived';
-    const ACTION_PRICE_SET = 'newPrice';
+    const ACTION_PRICE_SET        = 'newPrice';
 
 
     /**
@@ -55,14 +55,14 @@ class AdminPaymentController extends Controller
 
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
-        $price = PaymentManager::convertEuroToCent($value);
+        $price          = PaymentManager::convertEuroToCent($value);
 
-        switch($action) {
+        switch ($action) {
             case self::ACTION_PRICE_SET:
                 $paymentManager->setPrice($participants, $price, $description);
                 break;
             case self::ACTION_PAYMENT_RECEIVED:
-                $price = $price*-1; //flip the sign of value
+                $price = $price * -1; //flip the sign of value
 
                 if (count($participants) === 1) {
                     $participant = reset($participants);
@@ -72,13 +72,14 @@ class AdminPaymentController extends Controller
                 }
                 break;
             default:
-                throw new BadRequestHttpException('Unknown action "'.$action.'" transmitted');
+                throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
 
         return new JsonResponse(
             [
                 'success'         => true,
                 'payment_history' => $this->paymentHistory($participants),
+                'to_pay'          => $this->toPay($participants),
             ]
         );
     }
@@ -99,6 +100,7 @@ class AdminPaymentController extends Controller
         return new JsonResponse(
             [
                 'payment_history' => $this->paymentHistory($participants),
+                'to_pay'          => $this->toPay($participants),
             ]
         );
     }
@@ -133,6 +135,32 @@ class AdminPaymentController extends Controller
             ];
         }
         return $flatEvents;
+    }
+
+    /**
+     * Get value which still needs to be payed for transmitted list of participants
+     *
+     * @param array $participants List of @see Participant
+     * @return array
+     */
+    private function toPay(array $participants)
+    {
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        /** @var Participant $participant */
+
+        $detailedValues = [];
+
+        foreach ($participants as $participant) {
+            $value            = $paymentManager->toPayValueForParticipant($participant, true);
+            $detailedValues[] = [
+                'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
+                'participant_aid'  => Participant::fullname($participant->getAid()),
+                'value'            => number_format($value, 2, ',', '.'),
+            ];
+        }
+
+        return $detailedValues;
     }
 
     /**

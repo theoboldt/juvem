@@ -293,7 +293,26 @@ $(function () {
     /**
      * PARTICIPATION: Participation details
      */
-    var priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+    var toPayTableEl = $('#dialogPriceConfiguration #payment tbody'),
+        priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+        displayToPayInfo = function (data) {
+            var rawRow,
+                rawRows = '',
+                createInfoRow = function (value, participantName) {
+                    return '<tr>' +
+                        '    <td class="value text-right">' + value + ' €</td>' +
+                        '    <td class="participant">' + participantName + '</td>' +
+                        '</tr>';
+            };
+            jQuery.each(data, function (key, rowData) {
+                rawRow = createInfoRow(
+                    rowData.value,
+                    eHtml(rowData.participant_name)
+                );
+                rawRows += rawRow;
+            });
+            toPayTableEl.html(rawRows);
+        },
         displayPriceHistory = function (data) {
         var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
             var glyph;
@@ -347,6 +366,9 @@ $(function () {
             success: function (data) {
                 if (data.payment_history) {
                     displayPriceHistory(data.payment_history);
+                }
+                if (data.to_pay) {
+                    displayToPayInfo(data.to_pay);
                 }
             },
             error: function () {
@@ -403,8 +425,13 @@ $(function () {
                 description: description
             },
             success: function (result) {
-                if (result && result.payment_history) {
-                    displayPriceHistory(result.payment_history);
+                if (result) {
+                    if (result.payment_history) {
+                        displayPriceHistory(result.payment_history);
+                    }
+                    if (result.to_pay) {
+                        displayToPayInfo(result.to_pay);
+                    }
                 }
             },
             error: function () {
