@@ -541,8 +541,12 @@
                                             {% if participant.price %}
                                                 {{ participant.price(true)|number_format(2) }} €
                                                 {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
-                                                {% if toPay %}
+                                                {% if toPay > 0 %}
                                                     (noch zu zahlen: {{ toPay|number_format(2) }} €)
+                                                {% elseif toPay < 0 %}
+                                                    (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
+                                                {% elseif toPay == 0 %}
+                                                    (bezahlt)
                                                 {% else %}
                                                     (bezahlt)
                                                 {% endif %}
