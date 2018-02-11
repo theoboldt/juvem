@@ -294,6 +294,7 @@ $(function () {
      * PARTICIPATION: Participation details
      */
     var toPayTableEl = $('#dialogPriceConfiguration #payment tbody'),
+        toPayFooterTableEl = $('#dialogPriceConfiguration #payment tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
         displayToPayInfo = function (data) {
             var rawRow,
@@ -350,12 +351,27 @@ $(function () {
             rawRows += rawRow;
         });
         priceHistoryTableEl.html(rawRows);
+    },
+    displayPaymentFullValue = function(value) {
+        var btn = $('.btn-payment-full');
+
+        btn.data('value', value);
+        btn.html('<b>' + value + ' €</b> Komplett');
+
+        toPayFooterTableEl.html(
+            '<tr>' +
+            '    <td class="value text-right"><b>' + value + ' €</b></td>' +
+            '    <td class="participant"><b>Summe</b> (für alle Teilnehmer)</td>' +
+            '</tr>'
+        );
     };
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
             aids = button.data('aids'),
             modal = $(this);
         priceHistoryTableEl.toggleClass('loading-text', true);
+        toPayTableEl.toggleClass('loading-text', true);
+        toPayFooterTableEl.html('');
         modal.find('.modal-title span').text(button.data('title'));
         modal.data('aids', aids);
         $.ajax({
@@ -370,6 +386,9 @@ $(function () {
                 if (data.to_pay) {
                     displayToPayInfo(data.to_pay);
                 }
+                if (aids.length > 1 && data.to_pay_participation) {
+                    displayPaymentFullValue(data.to_pay_participation);
+                }
             },
             error: function () {
                 $(document).trigger('add-alerts', {
@@ -379,8 +398,20 @@ $(function () {
             },
             complete: function () {
                 priceHistoryTableEl.toggleClass('loading-text', false);
+                toPayTableEl.toggleClass('loading-text', false);
             }
         });
+    });
+    $('#dialogPriceConfiguration #payment .btn-predefined').on('click', function (e) {
+        e.preventDefault();
+        var button = $(this);
+
+        if (button.data('value')) {
+            $('#paymentValue').val(button.data('value'));
+        }
+        if (button.data('description')) {
+            $('#paymentDescription').val(button.data('description'));
+        }
     });
     $('#dialogPriceConfiguration #price .btn-predefined').on('click', function (e) {
         e.preventDefault();
@@ -431,6 +462,9 @@ $(function () {
                     }
                     if (result.to_pay) {
                         displayToPayInfo(result.to_pay);
+                    }
+                    if (data.to_pay_participation) {
+                        displayPaymentFullValue(data.to_pay_participation);
                     }
                 }
             },

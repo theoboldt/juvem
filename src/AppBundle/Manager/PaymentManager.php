@@ -75,7 +75,7 @@ class PaymentManager
      */
     public function setPrice(array $participants, $value, string $description)
     {
-        $em    = $this->em;
+        $em = $this->em;
         /** @var Participant $participant */
 
         return $em->transactional(
@@ -194,13 +194,89 @@ class PaymentManager
      */
     public function paymentForParticipant(Participant $participant, $value, string $description)
     {
-        $event = new ParticipantPaymentEvent(
-            $this->user, ParticipantPaymentEvent::EVENT_TYPE_PAYMENT, $value, $description
+        return $this->em->transactional(
+            function () use ($participant, $value, $description) {
+                $payment = new ParticipantPaymentEvent(
+                    $this->user, ParticipantPaymentEvent::EVENT_TYPE_PAYMENT, $value, $description
+                );
+                $participant->addPaymentEvent($payment);
+
+                if ($this->toPayValueForParticipant($participant, false) <= 0) {
+                }
+                $participation = $participant->getParticipation();
+                $allPaid       = true;
+                /** @var Participant $participantRelated */
+                foreach ($participation->getParticipants() as $participantRelated) {
+                    #                    if (!$participantRelated->isPaid()) {
+                    $allPaid = false;
+                    break;
+                    #                    }
+                }
+                if ($allPaid) {
+                    #                   $participation->setIsPaid();
+                }
+
+                $this->em->persist($payment);
+                $this->em->flush([$participant, $payment, $participation]);
+                return $payment;
+            }
         );
-        $participant->addPaymentEvent($event);
-        $this->em->persist($event);
-        $this->em->flush($event);
-        return $event;
+    }
+
+    /**
+     * Get amount of money which still needs to be paid for a single @see Participant
+     *
+     * @param Participation $participation Target participation
+     * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|null                    Value needed to be payed
+     */
+    public function toPayValueForParticipation(Participation $participation, $inEuro = false)
+    {
+        $fullHistory   = $this->paymentHistoryForParticipation($participation);
+        $currentPrices = [];
+        $payments      = [];
+        /** @var Participant $participant */
+        foreach ($participation->getParticipants() as $participant) {
+            $currentPrices[$participant->getAid()] = null;
+        }
+        /** @var ParticipantPaymentEvent $event */
+        foreach ($fullHistory as $event) {
+            $aid = $event->getParticipant()->getAid();
+            if ($event->isPricePaymentEvent()) {
+                $payments[] = $event;
+            } elseif ($event->isPriceSetEvent() && $currentPrices[$aid] === null) {
+                $currentPrices[$aid] = $event->getValue();
+            }
+        }
+        foreach ($currentPrices as $aid => $currentPrice) {
+            if ($currentPrices === null) {
+                //no price set event for current participant present, so default price of event is used
+                $currentPrices[$aid] = $participant->getEvent()->getPrice();
+            }
+        }
+        $allPricesNull = true;
+        foreach ($currentPrices as $currentPrice) {
+            if($currentPrice !== null){
+                $allPricesNull = false;
+                break;
+            }
+        }
+        if ($allPricesNull) {
+            return 0;
+        }
+
+        $currentTotalPrice = array_sum($currentPrices);
+
+        /** @var ParticipantPaymentEvent $payment */
+        foreach ($payments as $payment) {
+            $currentTotalPrice += $payment->getValue();
+        }
+
+        if ($inEuro) {
+            $currentTotalPrice /= 100;
+        }
+
+        return $currentTotalPrice;
     }
 
     /**

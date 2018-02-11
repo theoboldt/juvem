@@ -75,11 +75,20 @@ class AdminPaymentController extends Controller
                 throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
 
+        $participant = reset($participants);
+        $toPayReadable = number_format(
+            $paymentManager->toPayValueForParticipation($participant->getParticipation(), true),
+            2,
+            ',',
+            '.'
+        );
+
         return new JsonResponse(
             [
-                'success'         => true,
-                'payment_history' => $this->paymentHistory($participants),
-                'to_pay'          => $this->toPay($participants),
+                'success'              => true,
+                'payment_history'      => $this->paymentHistory($participants),
+                'to_pay'               => $this->toPay($participants),
+                'to_pay_participation' => $toPayReadable,
             ]
         );
     }
@@ -93,14 +102,21 @@ class AdminPaymentController extends Controller
      */
     public function participantsPaymentHistory(Request $request)
     {
-        $aids         = explode(';', $request->get('aids'));
-        $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
-
+        $aids          = explode(';', $request->get('aids'));
+        $participants  = $this->extractParticipantsFromAid($aids, 'participants_read');
+        $participant   = reset($participants);
+        $toPayReadable = number_format(
+            $this->get('app.payment_manager')->toPayValueForParticipation($participant->getParticipation(), true),
+            2,
+            ',',
+            '.'
+        );
 
         return new JsonResponse(
             [
-                'payment_history' => $this->paymentHistory($participants),
-                'to_pay'          => $this->toPay($participants),
+                'payment_history'      => $this->paymentHistory($participants),
+                'to_pay'               => $this->toPay($participants),
+                'to_pay_participation' => $toPayReadable,
             ]
         );
     }

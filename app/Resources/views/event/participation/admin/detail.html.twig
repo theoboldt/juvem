@@ -60,12 +60,30 @@
                                             <td colspan="2" class="text-center">(Wird geladen)</td>
                                         </tr>
                                         </tbody>
+                                        <tfoot>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-12">
                                     <h5>Vorgang erfassen</h5>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="btn-group btn-group-justified" role="group">
+                                        <div class="btn-group" role="group">
+                                            {% set paymentParticipation = paymentManager.toPayValueForParticipation(participation, true) %}
+                                            <button type="button" class="btn btn-default btn-predefined btn-payment-full" data-value="{{ paymentParticipation|number_format(2) }}" data-description="Komplett"><b>{{ paymentParticipation|number_format(2) }} €</b> Komplett</button>
+                                        </div>
+                                        {#
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default btn-predefined" data-value="2,00" data-description="Ermäßigt"><b> 2 €</b> Ermäßigt</button>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default btn-predefined" data-value="100,00" data-description="Premium"><b>100 €</b> Premium</button>
+                                        </div>
+                                        #}
+                                    </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="form-group">
