@@ -135,6 +135,27 @@
   }
 }
 
+#dialogPriceConfiguration.loading {
+
+  tbody td, thead td, .btn-payment-full {
+    @include transition(color 0.2s);
+    color: #454546;
+    animation: pulse 3s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    color: lighten(#646465, 25%);
+  }
+  50% {
+    color: #454546;
+  }
+  100% {
+    color: lighten(#646465, 25%);
+  }
+}
+
 #dialogPriceConfiguration {
   .btn-group.btn-group-justified,
   .nav.nav-tabs {

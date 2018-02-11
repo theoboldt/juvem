@@ -28,16 +28,12 @@
   @include progress-bar-variant(#d6d6d9);
 }
 
-
-.loading-text {
-  @include transition(color 0.2s);
-}
-
 #affectedSubscription {
   color: black;
 }
 
 .loading-text {
+  @include transition(color 0.2s);
   color: #454546;
   animation: pulse 3s infinite;
 }

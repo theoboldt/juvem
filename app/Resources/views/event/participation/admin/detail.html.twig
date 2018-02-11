@@ -47,29 +47,6 @@
                         <div role="tabpanel" class="tab-pane active" id="payment">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <h5>Offene Beträge</h5>
-                                    <table class="table table-striped table-condensed">
-                                        <thead>
-                                        <tr>
-                                            <td class="text-right">Betrag</td>
-                                            <td>Teilnehmer</td>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td colspan="2" class="text-center">(Wird geladen)</td>
-                                        </tr>
-                                        </tbody>
-                                        <tfoot>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <h5>Vorgang erfassen</h5>
-                                </div>
-                                <div class="col-xs-12">
                                     <div class="btn-group btn-group-justified" role="group">
                                         <div class="btn-group" role="group">
                                             {% set paymentParticipation = paymentManager.toPayValueForParticipation(participation, true) %}
@@ -108,6 +85,25 @@
                                                 <span class="visible-xs-inline">Zahlungsvorgang buchen</span></button>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <td class="text-right">Betrag</td>
+                                            <td>Teilnehmer</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="2" class="text-center">(Wird geladen)</td>
+                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+                                        </tfoot>
+                                    </table>
                                 </div>
                             </div>
                             <div class="row">

@@ -293,7 +293,8 @@ $(function () {
     /**
      * PARTICIPATION: Participation details
      */
-    var toPayTableEl = $('#dialogPriceConfiguration #payment tbody'),
+    var paymentManagementModal = $('#dialogPriceConfiguration'),
+        toPayTableEl = $('#dialogPriceConfiguration #payment tbody'),
         toPayFooterTableEl = $('#dialogPriceConfiguration #payment tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
         displayToPayInfo = function (data) {
@@ -352,25 +353,26 @@ $(function () {
         });
         priceHistoryTableEl.html(rawRows);
     },
-    displayPaymentFullValue = function(value) {
+    displayPaymentFullValue = function(value, multiple) {
         var btn = $('.btn-payment-full');
 
         btn.data('value', value);
         btn.html('<b>' + value + ' €</b> Komplett');
 
-        toPayFooterTableEl.html(
-            '<tr>' +
-            '    <td class="value text-right"><b>' + value + ' €</b></td>' +
-            '    <td class="participant"><b>Summe</b> (für alle Teilnehmer)</td>' +
-            '</tr>'
-        );
+        if (multiple) {
+            toPayFooterTableEl.html(
+                '<tr>' +
+                '    <td class="value text-right"><b>' + value + ' €</b></td>' +
+                '    <td class="participant"><b>Summe</b> (für alle Teilnehmer)</td>' +
+                '</tr>'
+            );
+        }
     };
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
             aids = button.data('aids'),
             modal = $(this);
-        priceHistoryTableEl.toggleClass('loading-text', true);
-        toPayTableEl.toggleClass('loading-text', true);
+        paymentManagementModal.toggleClass('loading', true);
         toPayFooterTableEl.html('');
         modal.find('.modal-title span').text(button.data('title'));
         modal.data('aids', aids);
@@ -386,8 +388,8 @@ $(function () {
                 if (data.to_pay) {
                     displayToPayInfo(data.to_pay);
                 }
-                if (aids.length > 1 && data.to_pay_participation) {
-                    displayPaymentFullValue(data.to_pay_participation);
+                if (data.to_pay_all) {
+                    displayPaymentFullValue(data.to_pay_all, (aids.toString().split(';').length > 1));
                 }
             },
             error: function () {
@@ -397,8 +399,7 @@ $(function () {
                 });
             },
             complete: function () {
-                priceHistoryTableEl.toggleClass('loading-text', false);
-                toPayTableEl.toggleClass('loading-text', false);
+                paymentManagementModal.toggleClass('loading', false);
             }
         });
     });
@@ -433,7 +434,7 @@ $(function () {
             value,
             description;
         button.toggleClass('disabled', true);
-        priceHistoryTableEl.toggleClass('loading-text', true);
+        paymentManagementModal.toggleClass('loading', true);
 
         switch (action) {
             case 'paymentReceived':
@@ -463,8 +464,8 @@ $(function () {
                     if (result.to_pay) {
                         displayToPayInfo(result.to_pay);
                     }
-                    if (data.to_pay_participation) {
-                        displayPaymentFullValue(data.to_pay_participation);
+                    if (data.to_pay_all) {
+                        displayPaymentFullValue(data.to_pay_all, (aids.toString().split(';').length > 1));
                     }
                 }
             },
@@ -484,7 +485,7 @@ $(function () {
                 });
             },
             complete: function () {
-                priceHistoryTableEl.toggleClass('loading-text', false);
+                paymentManagementModal.toggleClass('loading', false);
                 button.toggleClass('disabled', false);
             }
         });

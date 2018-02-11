@@ -75,20 +75,16 @@ class AdminPaymentController extends Controller
                 throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
 
-        $participant = reset($participants);
-        $toPayReadable = number_format(
-            $paymentManager->toPayValueForParticipation($participant->getParticipation(), true),
-            2,
-            ',',
-            '.'
-        );
+        $participant   = reset($participants);
+        $toPayReadable = $paymentManager->toPayValueForParticipation($participant->getParticipation(), true);
+
 
         return new JsonResponse(
             [
-                'success'              => true,
-                'payment_history'      => $this->paymentHistory($participants),
-                'to_pay'               => $this->toPay($participants),
-                'to_pay_participation' => $toPayReadable,
+                'success'         => true,
+                'payment_history' => $this->paymentHistory($participants),
+                'to_pay'          => $this->toPay($participants),
+                'to_pay_all'      => number_format($toPayReadable, 2, ',', '.'),
             ]
         );
     }
@@ -102,21 +98,19 @@ class AdminPaymentController extends Controller
      */
     public function participantsPaymentHistory(Request $request)
     {
-        $aids          = explode(';', $request->get('aids'));
-        $participants  = $this->extractParticipantsFromAid($aids, 'participants_read');
-        $participant   = reset($participants);
-        $toPayReadable = number_format(
-            $this->get('app.payment_manager')->toPayValueForParticipation($participant->getParticipation(), true),
-            2,
-            ',',
-            '.'
-        );
+        $aids         = explode(';', $request->get('aids'));
+        $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
+        $toPayList    = $this->toPay($participants);
+        $toPayTotal   = 0;
+        foreach ($toPayList as $payItem) {
+            $toPayTotal += $payItem['value_raw'];
+        }
 
         return new JsonResponse(
             [
-                'payment_history'      => $this->paymentHistory($participants),
-                'to_pay'               => $this->toPay($participants),
-                'to_pay_participation' => $toPayReadable,
+                'payment_history' => $this->paymentHistory($participants),
+                'to_pay'          => $toPayList,
+                'to_pay_all'      => number_format($toPayTotal, 2, ',', '.'),
             ]
         );
     }
@@ -173,6 +167,7 @@ class AdminPaymentController extends Controller
                 'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
                 'participant_aid'  => Participant::fullname($participant->getAid()),
                 'value'            => number_format($value, 2, ',', '.'),
+                'value_raw'        => $value
             ];
         }
 
