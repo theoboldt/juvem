@@ -39,16 +39,43 @@
                 <div class="modal-body">
                     <div>
                       <ul class="nav nav-tabs" role="tablist">
-                        {#
-                          <li role="presentation"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
-                          #}
-                          <li role="presentation" class="active"><a href="#priceHistory" aria-controls="priceHistory" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
+                          <li role="presentation" class="active"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
                           <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis festlegen</a></li>
+                          <li role="presentation"><a href="#priceHistory" aria-controls="priceHistory" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
                       </ul>
                         <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane" id="payment">
+                        <div role="tabpanel" class="tab-pane active" id="payment">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-3">
+                                    <div class="form-group">
+                                        <label for="newPrice">Betrag</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">€</div>
+                                            <input type="text" class="form-control" id="paymentValue" placeholder="Betrag">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-10">
+                                            <div class="form-group">
+                                                <label for="newPriceDescription">Anmerkung</label>
+                                                <input type="text" class="form-control" id="paymentDescription" placeholder="Barzahlung, Überweisung oder Zuschuss">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <button class="btn btn-primary btn-inline-save" title="Zahlungsvorgang buchen"
+                                                    data-action="{{ constant('AppBundle\\Controller\\Event\\Participation\\AdminPaymentController::ACTION_PAYMENT_RECEIVED') }}">{{ 'floppy-disk'|glyph }}
+                                                <span class="visible-xs-inline">Zahlungsvorgang buchen</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-xs-12">
+                                    <p class="help-block">Soll eine Zahlung für mehrere Teilnehmer erfasst werden, die den gesamten offenen Betrag für die Anemldung deckt, werden die Zahlungen entsprechend auf die Teilnehmer aufgeteilt.</p>
+                                    <p class="help-block">Bei Teil-Zahlungen für mehrere Teilnehmer wird der Betrag gleichmäßig auf die angemeldeten Teilnehmer aufgeteilt.</p>
+                                    <p class="help-block">Wenn eine Korrekturbuchung vorgenommen werden soll, bitte ein negatives Vorzeichen <code>-</code> voranstellen.</p>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +100,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="form-group">
-                                        <label for="newPrice">Preis</label>
+                                        <label for="newPrice">Preis je <abbr title="Teilnehmer">TN</abbr></label>
                                         <div class="input-group">
                                             <div class="input-group-addon">€</div>
                                             <input type="text" class="form-control" id="newPriceValue" placeholder="Preis">
@@ -89,13 +116,16 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-2">
-                                            <button class="btn btn-primary btn-inline-save" title="Preis festlegen" data-action="newPrice">{{ 'floppy-disk'|glyph }} <span class="visible-xs-inline">Geänderten Preis speichern</span></button>
+                                            <button class="btn btn-primary btn-inline-save" title="Preis festlegen"
+                                                    data-action="{{ constant('AppBundle\\Controller\\Event\\Participation\\AdminPaymentController::ACTION_PRICE_SET') }}">{{ 'floppy-disk'|glyph }}
+                                                <span class="visible-xs-inline">Geänderten Preis speichern</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div role="tabpanel" class="tab-pane active" id="priceHistory">
+                        <div role="tabpanel" class="tab-pane" id="priceHistory">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <table class="table table-striped table-condensed">
@@ -248,7 +278,7 @@
                                 data-button-disable-label="Bestätigung zurücknehmen"
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
-                            {{ 'euro'|glyph }} Preis festlegen
+                            {{ 'credit-card'|glyph }} Zahlungsverwaltung
                         </button>
 
                         <button type="button" class="btn btn-default" data-element="activebutton"

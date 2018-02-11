@@ -299,7 +299,7 @@ $(function () {
             var glyph;
 
             switch (type) {
-                case 'payment_received':
+                case 'price_payment':
                     glyph = 'log-in';
                     break;
                 case 'price_set':
@@ -312,7 +312,7 @@ $(function () {
             '    <td class="participant">' + participant + '</td>' +
             '    <td class="value">' + value + ' €</td>' +
             '    <td class="description">' + description + '</td>' +
-            '    <td><span class="created">' + date + '</span>, <a class="creator" href="/admin/user/'+creatorId+'">' + creatorName + '</a></td>' +
+            '    <td class="small"><span class="created">' + date + '</span>, <a class="creator" href="/admin/user/'+creatorId+'">' + creatorName + '</a></td>' +
             '</tr>';
         };
 
@@ -383,6 +383,10 @@ $(function () {
         priceHistoryTableEl.toggleClass('loading-text', true);
 
         switch (action) {
+            case 'paymentReceived':
+                value = modal.find('#paymentValue').val();
+                description = modal.find('#paymentDescription').val();
+                break;
             case 'newPrice':
                 value = modal.find('#newPriceValue').val();
                 description = modal.find('#newPriceDescription').val();

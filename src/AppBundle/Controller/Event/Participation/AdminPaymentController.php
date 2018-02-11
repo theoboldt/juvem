@@ -22,10 +22,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminPaymentController extends Controller
 {
+
+    const ACTION_PAYMENT_RECEIVED = 'paymentReceived';
+    const ACTION_PRICE_SET = 'newPrice';
+
 
     /**
      * Handle payment or price change
@@ -36,6 +41,7 @@ class AdminPaymentController extends Controller
     public function participantPaymentAction(Request $request)
     {
         $token       = $request->get('_token');
+        $action      = $request->get('action');
         $aids        = explode(';', $request->get('aids'));
         $value       = $request->get('value');
         $description = $request->get('description');
@@ -49,7 +55,25 @@ class AdminPaymentController extends Controller
 
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
-        $paymentManager->setPrice($participants, $value, $description);
+        $price = PaymentManager::convertEuroToCent($value);
+
+        switch($action) {
+            case self::ACTION_PRICE_SET:
+                $paymentManager->setPrice($participants, $price, $description);
+                break;
+            case self::ACTION_PAYMENT_RECEIVED:
+                $price = $price*-1; //flip the sign of value
+
+                if (count($participants) === 1) {
+                    $participant = reset($participants);
+                    $paymentManager->paymentForParticipant($participant, $price, $description);
+                } else {
+                    throw new BadRequestHttpException();
+                }
+                break;
+            default:
+                throw new BadRequestHttpException('Unknown action "'.$action.'" transmitted');
+        }
 
         return new JsonResponse(
             [

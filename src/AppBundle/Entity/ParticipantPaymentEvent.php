@@ -181,6 +181,24 @@ class ParticipantPaymentEvent
     }
 
     /**
+     * Determine if this is an payment event
+     *
+     * @return bool
+     */
+    public function isPricePaymentEvent() {
+        return $this->getEventType() === self::EVENT_TYPE_PAYMENT;
+    }
+
+    /**
+     * Determine if this is an price set event
+     *
+     * @return bool
+     */
+    public function isPriceSetEvent() {
+        return $this->getEventType() === self::EVENT_TYPE_SET;
+    }
+
+    /**
      * Get label for event type of this payment event
      *
      * @return string
