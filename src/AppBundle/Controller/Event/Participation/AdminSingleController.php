@@ -101,7 +101,7 @@ class AdminSingleController extends Controller
 
         $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */
-        foreach ($participation->getPhoneNumbers()->getIterator() as $phoneNumberEntity) {
+        foreach ($participation->getPhoneNumbers() as $phoneNumberEntity) {
             /** @var \libphonenumber\PhoneNumber $phoneNumber */
             $phoneNumber       = $phoneNumberEntity->getNumber();
             $phoneNumberList[] = $phoneNumber;
