@@ -571,10 +571,12 @@
                                                             class="btn btn-default btn-xs"
                                                             title="Preis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
-                                                {% if toPay < 0 %}
-                                                    <span class="label label-info option-2">überzahlt</span>
-                                                {% elseif toPay == 0 %}
-                                                    <span class="label label-info option-2">bezahlt</span>
+                                                {%  if toPay is defined %}
+                                                    {% if toPay < 0 %}
+                                                        <span class="label label-info option-2">überzahlt</span>
+                                                    {% elseif toPay == 0 %}
+                                                        <span class="label label-info option-2">bezahlt</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             </dd>
                                             {% endif -%}
