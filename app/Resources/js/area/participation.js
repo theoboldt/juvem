@@ -47,20 +47,25 @@ $(function () {
                     '</tr>';
             };
 
-            var rawRow,
-                rawRows = '';
-            jQuery.each(data, function (key, rowData) {
-                rawRow = createPriceRow(
-                    rowData.type,
-                    rowData.value,
-                    eHtml(rowData.description),
-                    rowData.created_at,
-                    rowData.created_by_uid,
-                    eHtml(rowData.created_by_name),
-                    eHtml(rowData.participant_name)
-                );
-                rawRows += rawRow;
-            });
+            var rawRows = '';
+            if (data && data.length > 1) {
+                var rawRow;
+
+                jQuery.each(data, function (key, rowData) {
+                    rawRow = createPriceRow(
+                        rowData.type,
+                        rowData.value,
+                        eHtml(rowData.description),
+                        rowData.created_at,
+                        rowData.created_by_uid,
+                        eHtml(rowData.created_by_name),
+                        eHtml(rowData.participant_name)
+                    );
+                    rawRows += rawRow;
+                });
+            } else {
+                rawRows = '<td colspan="5" class="text-center">(Kein Vorgang erfasst)</td>';
+            }
             priceHistoryTableEl.html(rawRows);
         },
         displayPaymentFullValue = function (value, multiple) {
