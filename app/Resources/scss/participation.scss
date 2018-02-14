@@ -137,7 +137,7 @@
 
 #dialogPriceConfiguration.loading {
 
-  tbody td, thead td, .btn-payment-full {
+  tbody td, tfoot td, .btn-payment-full {
     @include transition(color 0.2s);
     color: #454546;
     animation: pulse 3s infinite;

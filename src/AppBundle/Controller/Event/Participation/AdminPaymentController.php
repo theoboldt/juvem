@@ -68,7 +68,7 @@ class AdminPaymentController extends Controller
                     $participant = reset($participants);
                     $paymentManager->paymentForParticipant($participant, $price, $description);
                 } else {
-                    throw new BadRequestHttpException();
+                    $paymentManager->paymentForParticipants($participants, $price, $description);
                 }
                 break;
             default:

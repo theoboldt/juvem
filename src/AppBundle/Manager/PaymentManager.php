@@ -183,6 +183,88 @@ class PaymentManager
     }
 
     /**
+     * Payment for a multiple participants received
+     *
+     * @param Participant[] $participantsUnordered Participant on which operation will be applied to
+     * @param int|float     $value                 Numeric value of the payment event - Note that a negative sign
+     *                                             indicates a reduction of price which still needs to be payed, a
+     *                                             positive indicates a reverse booking, which results in increase of
+     *                                             the value which still needs to be payed
+     * @param string        $description           Info text for payment event
+     * @return ParticipantPaymentEvent[]           New created payment event
+     */
+    public function paymentForParticipants(array $participantsUnordered, $value, string $description)
+    {
+        $participants = [];
+        /** @var Participant $participant */
+        foreach ($participantsUnordered as $participant) {
+            $participants[$participant->getAid()] = $participant;
+        }
+        unset($participantsUnordered);
+
+        if (!count($participants)) {
+            return [];
+        }
+
+        return $this->em->transactional(
+            function () use ($participants, $value, $description) {
+                $toPayList   = [];
+                $participation = null;
+
+                /** @var Participant $participant */
+                foreach ($participants as $participant) {
+                    $aid             = $participant->getAid();
+                    $toPayList[$aid] = $this->toPayValueForParticipant($participant, false);
+                    if (!$participation) {
+                        $participation = $participant->getParticipation();
+                    }
+                }
+                $paymentsMade = array_fill_keys(array_keys($toPayList), 0);
+
+                $valueLeft = $value;
+                if ((array_sum($toPayList)+$value) >= 0 && count(array_count_values($toPayList)) === 1) {
+                    //all participants cost same, so distribute payment equally
+                    //but not in case of overpayment
+                    $toPay        = $value / count($toPayList);
+                    $paymentsMade = array_fill_keys(array_keys($toPayList), $toPay);
+
+                } else {
+                    //start with first to pay list
+                    foreach ($toPayList as $aid => $toPay) {
+                        $valueLeft = $toPay+$valueLeft;
+                        if ($valueLeft <= 0) {
+                            $paymentsMade[$aid] = $toPay*-1;
+                        } else {
+                            //not enough for full payment
+                            $paymentsMade[$aid] = ($toPay-$valueLeft)*-1;
+                            break;
+                        }
+                    }
+
+                    //there's still something left, positive or negative, add it to first participant
+                    reset($paymentsMade);
+                    $aid = key($paymentsMade);
+                    $paymentsMade[$aid] += $valueLeft;
+                }
+                $payments = [];
+                foreach ($paymentsMade as $aid => $paymentValue) {
+                    $payment = new ParticipantPaymentEvent(
+                        $this->user, ParticipantPaymentEvent::EVENT_TYPE_PAYMENT, $paymentValue, $description
+                    );
+                    $participants[$aid]->addPaymentEvent($payment);
+                    $this->em->persist($participants[$aid]);
+                    $payments[] = $payment;
+                }
+                $this->em->flush();
+                $this->updatePaidStatus($participation);
+
+                $this->em->flush();
+                return $payments;
+            }
+        );
+    }
+
+    /**
      * Payment for a single participant received
      *
      * @param Participant $participant Participant on which operation will be applied to
@@ -201,26 +283,31 @@ class PaymentManager
                 );
                 $participant->addPaymentEvent($payment);
 
-                if ($this->toPayValueForParticipant($participant, false) <= 0) {
-                }
-                $participation = $participant->getParticipation();
-                $allPaid       = true;
-                /** @var Participant $participantRelated */
-                foreach ($participation->getParticipants() as $participantRelated) {
-                    #                    if (!$participantRelated->isPaid()) {
-                    $allPaid = false;
-                    break;
-                    #                    }
-                }
-                if ($allPaid) {
-                    #                   $participation->setIsPaid();
-                }
-
                 $this->em->persist($payment);
-                $this->em->flush([$participant, $payment, $participation]);
+                $this->em->flush();
+
+                $participation = $participant->getParticipation();
+                $this->updatePaidStatus($participation);
+
+                $this->em->flush();
                 return $payment;
             }
         );
+    }
+
+    /**
+     * Add or remove paid status depending on if there is still something which needs to be paid
+     *
+     * @param Participation $participation Target participation to check
+     */
+    private function updatePaidStatus(Participation $participation) {
+        $isPaidExpected = ($this->toPayValueForParticipation($participation) <= 0);
+        $isPaidGiven    = $participation->isPaid();
+
+        if ($isPaidExpected !== $isPaidGiven) {
+            $participation->setIsPaid($isPaidExpected);
+            $this->em->persist($participation);
+        }
     }
 
     /**

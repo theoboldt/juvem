@@ -559,8 +559,6 @@
                                                     (noch zu zahlen: {{ toPay|number_format(2) }} €)
                                                 {% elseif toPay < 0 %}
                                                     (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
-                                                {% elseif toPay == 0 %}
-                                                    (bezahlt)
                                                 {% else %}
                                                     (bezahlt)
                                                 {% endif %}
@@ -573,6 +571,11 @@
                                                             class="btn btn-default btn-xs"
                                                             title="Preis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
+                                                {% if toPay < 0 %}
+                                                    <span class="label label-info option-2">überzahlt</span>
+                                                {% elseif toPay == 0 %}
+                                                    <span class="label label-info option-2">bezahlt</span>
+                                                {% endif %}
                                             </dd>
                                             {% endif -%}
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
