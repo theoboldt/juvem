@@ -124,7 +124,7 @@ debugger;
             $("<img/>").attr(settings).appendTo(el)
                 .on('load', function () {
                     var timeEndLoad = new Date().getTime();
-                    if (timeEndLoad - timeBeginLoad < 25) {
+                    if (timeEndLoad - timeBeginLoad < 30) {
                         el.addClass('load-direct');
                     } else {
                         el.addClass('load');
