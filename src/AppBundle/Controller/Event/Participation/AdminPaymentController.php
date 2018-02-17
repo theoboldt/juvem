@@ -101,16 +101,19 @@ class AdminPaymentController extends Controller
         $aids         = explode(';', $request->get('aids'));
         $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
         $toPayList    = $this->toPay($participants);
-        $toPayTotal   = 0;
+        $toPayTotal   = null;
         foreach ($toPayList as $payItem) {
-            $toPayTotal += $payItem['value_raw'];
+            $payValue = $payItem['value_raw'];
+            if (is_numeric($payValue)) {
+                $toPayTotal += $payValue;
+            }
         }
 
         return new JsonResponse(
             [
                 'payment_history' => $this->paymentHistory($participants),
                 'to_pay'          => $toPayList,
-                'to_pay_all'      => number_format($toPayTotal, 2, ',', '.'),
+                'to_pay_all'      => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
             ]
         );
     }

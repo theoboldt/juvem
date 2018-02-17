@@ -213,12 +213,20 @@ class PaymentManager
 
                 /** @var Participant $participant */
                 foreach ($participants as $participant) {
-                    $aid             = $participant->getAid();
-                    $toPayList[$aid] = $this->toPayValueForParticipant($participant, false);
+                    $aid  = $participant->getAid();
+                    $toPay = $this->toPayValueForParticipant($participant, false);
+                    if ($toPay === null) {
+                        continue;
+                    }
+                    $toPayList[$aid] = $toPay;
                     if (!$participation) {
                         $participation = $participant->getParticipation();
                     }
                 }
+                if (count($toPayList)) {
+                    return [];
+                }
+
                 $paymentsMade = array_fill_keys(array_keys($toPayList), 0);
 
                 $valueLeft = $value;
@@ -388,8 +396,8 @@ class PaymentManager
             }
         }
         if ($currentPrice === null) {
-            //no price set event for current participant present, so default price of event is used
-            $currentPrice = $participant->getEvent()->getPrice();
+            //no price set event for current participant present, default price of event is not used
+            return null;
         }
 
         if ($currentPrice === null) {

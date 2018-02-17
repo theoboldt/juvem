@@ -10,15 +10,22 @@ $(function () {
         displayToPayInfo = function (data) {
             var rawRow,
                 rawRows = '',
-                createInfoRow = function (value, participantName) {
+                createInfoRow = function (value, valueRaw, participantName) {
+                    if (valueRaw === null) {
+                        cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
+                    } else {
+                        cellValue = value+' €';
+                    }
+
                     return '<tr>' +
-                        '    <td class="value text-right">' + value + ' €</td>' +
+                        '    <td class="value text-right">' + cellValue + '</td>' +
                         '    <td class="participant">' + participantName + '</td>' +
                         '</tr>';
                 };
             jQuery.each(data, function (key, rowData) {
                 rawRow = createInfoRow(
                     rowData.value,
+                    rowData.value_raw,
                     eHtml(rowData.participant_name)
                 );
                 rawRows += rawRow;
@@ -27,19 +34,24 @@ $(function () {
         },
         displayPriceHistory = function (data) {
             var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
-                var glyph;
+                var glyph,
+                    symbolTitle;
 
                 switch (type) {
                     case 'price_payment':
                         glyph = 'log-in';
+                        symbolTitle = 'Zahlung erfasst';
                         break;
                     case 'price_set':
                         glyph = 'pencil';
+                        symbolTitle = 'Preis festgelegt';
                         break;
                 }
 
                 return '<tr class="' + type + '">' +
-                    '    <td class="symbol"><span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span></td>' +
+                    '    <td class="symbol" title="'+symbolTitle+'">' +
+                    '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
+                    '   </td>' +
                     '    <td class="participant">' + participant + '</td>' +
                     '    <td class="value">' + value + ' €</td>' +
                     '    <td class="description">' + description + '</td>' +
@@ -48,9 +60,8 @@ $(function () {
             };
 
             var rawRows = '';
-            if (data && data.length > 1) {
+            if (data && data.length) {
                 var rawRow;
-
                 jQuery.each(data, function (key, rowData) {
                     rawRow = createPriceRow(
                         rowData.type,
@@ -69,19 +80,27 @@ $(function () {
             priceHistoryTableEl.html(rawRows);
         },
         displayPaymentFullValue = function (value, multiple) {
-            var btn = $('.btn-payment-full');
+            var btn = $('.btn-payment-full'),
+                valueText;
 
-            btn.data('value', value);
-            btn.html('<b>' + value + ' €</b> Komplett');
-
-            if (multiple) {
-                toPayFooterTableEl.html(
-                    '<tr>' +
-                    '    <td class="value text-right"><b>' + value + ' €</b></td>' +
-                    '    <td class="participant"><b>Summe</b> (für alle Teilnehmer)</td>' +
-                    '</tr>'
-                );
+            if (value === null) {
+                valueText = '<i title="Kein Preis festgelegt">keiner</i>';
+                btn.css('display', 'none');
+            } else {
+                valueText = value + ' €';
+                btn.data('value', value);
+                btn.html('<b>' + valueText + '</b> Komplett');
+                btn.css('display', 'block');
             }
+
+            toPayFooterTableEl.html(
+                '<tr>' +
+                '    <td class="value text-right"><b>' + valueText + '</b></td>' +
+                '    <td class="participant">' +
+                '       <b>Summe</b>'+ (multiple ? '' : ' (für alle Teilnehmer)') +
+                '   </td>' +
+                '</tr>'
+            );
         };
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
@@ -189,6 +208,7 @@ $(function () {
                     if (result.to_pay_all) {
                         displayPaymentFullValue(result.to_pay_all, (aids.toString().split(';').length > 1));
                     }
+                    $('#priceHistory').tab('show');
                 }
             },
             error: function () {
