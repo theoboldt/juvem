@@ -548,29 +548,31 @@
                                                 <i>(keine Besonderheiten)</i>
                                             {% endif %}
                                         </dd>
-                                            {% if event.price %}
+                                        {% if event.price %}
                                             <dt>Preis</dt>
                                             <dd>
-                                            {% if participant.price %}
-                                                {{ participant.price(true)|number_format(2) }} €
-                                                {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
-                                                {% if toPay > 0 %}
-                                                    (noch zu zahlen: {{ toPay|number_format(2) }} €)
-                                                {% elseif toPay < 0 %}
-                                                    (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
+                                                {% if participant.price %}
+                                                    {{ participant.price(true)|number_format(2) }} €
+                                                    {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
+                                                    {% if toPay > 0 %}
+                                                        (noch zu zahlen: {{ toPay|number_format(2) }} €)
+                                                    {% elseif toPay < 0 %}
+                                                        (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
+                                                    {% else %}
+                                                        (bezahlt)
+                                                    {% endif %}
                                                 {% else %}
-                                                    (bezahlt)
+                                                    <i>(keiner festgelegt)</i>
                                                 {% endif %}
-                                            {% else %}
-                                                <i>(keiner festgelegt)</i>
-                                            {% endif %}
                                                 {% if is_granted('participants_edit', event) -%}
-                                                    <button data-toggle="modal" data-target="#dialogPriceConfiguration"
-                                                            data-aids="{{ participant.aid }}" data-title="{{ participant|fullname }}"
+                                                    <button data-toggle="modal"
+                                                            data-target="#dialogPriceConfiguration"
+                                                            data-aids="{{ participant.aid }}"
+                                                            data-title="{{ participant|fullname }}"
                                                             class="btn btn-default btn-xs"
                                                             title="Preis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
-                                                {%  if toPay is defined %}
+                                                {% if toPay is defined %}
                                                     {% if toPay < 0 %}
                                                         <span class="label label-info option-2">überzahlt</span>
                                                     {% elseif toPay == 0 %}
@@ -578,7 +580,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                             </dd>
-                                            {% endif -%}
+                                        {% endif -%}
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
                                             <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip" data-placement="right">{{ fillout.attribute.formTitle }}</dt>
                                             <dd>{{ fillout }}</dd>
