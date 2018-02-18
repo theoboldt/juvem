@@ -18,17 +18,19 @@ trait CreatorTrait
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="uid", onDelete="SET NULL")
+     *
+     * @var User|null
      */
-    protected $createdBy;
+    protected $createdBy = null;
 
     /**
      * Set createdBy
      *
-     * @param User $createdBy
+     * @param User|null $createdBy
      *
      * @return self
      */
-    public function setCreatedBy(User $createdBy)
+    public function setCreatedBy(User $createdBy = null)
     {
         $this->createdBy = $createdBy;
 
@@ -38,7 +40,7 @@ trait CreatorTrait
     /**
      * Get createdBy
      *
-     * @return User
+     * @return User|null
      */
     public function getCreatedBy()
     {

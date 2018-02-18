@@ -20,17 +20,19 @@ trait CreatorModifierTrait
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="modified_by", referencedColumnName="uid", onDelete="SET NULL")
+     *
+     * @var User|null
      */
     protected $modifiedBy = null;
 
     /**
      * Set modifiedBy
      *
-     * @param User $modifiedBy
+     * @param User|null $modifiedBy
      *
      * @return self
      */
-    public function setModifiedBy(User $modifiedBy)
+    public function setModifiedBy(User $modifiedBy = null)
     {
         $this->modifiedBy = $modifiedBy;
 
