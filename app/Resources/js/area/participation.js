@@ -215,7 +215,7 @@ $(function () {
                     if (result.to_pay_all) {
                         displayPaymentFullValue(result.to_pay_all, (aids.toString().split(';').length > 1));
                     }
-                    $('#priceHistory').tab('show');
+                    $('#priceHistoryLink').tab('show');
                 }
             },
             error: function () {
