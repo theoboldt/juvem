@@ -51,6 +51,32 @@ class PaymentManager
     protected $user = null;
 
     /**
+     * Convert value in euro to value in euro cents
+     *
+     * @param   string|float|int $priceInEuro Value in euros, separated by comma
+     * @return  float|int
+     */
+    public static function convertEuroToCent($priceInEuro)
+    {
+        if (empty($priceInEuro)) {
+            return 0;
+        } elseif (preg_match('/^(?:[^\d]*?)([-]{0,1})(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
+            $euros = $priceParts[2] ?: 0;
+            $cents = $priceParts[3] ?: 0;
+
+            $priceInCents = ($euros * 100 + $cents);
+
+            if ($priceParts[1] === '-') {
+                $priceInCents *= -1;
+            }
+
+            return $priceInCents;
+        } else {
+            throw new \InvalidArgumentException('Failed to convert "' . $priceInEuro . '" to euro cents');
+        }
+    }
+
+    /**
      * CommentManager constructor.
      *
      * @param EntityManagerInterface $em
@@ -96,32 +122,6 @@ class PaymentManager
                 return $events;
             }
         );
-    }
-
-    /**
-     * Convert value in euro to value in euro cents
-     *
-     * @param   string|float|int $priceInEuro Value in euros, separated by comma
-     * @return float|int
-     */
-    public static function convertEuroToCent($priceInEuro)
-    {
-        if (empty($priceInEuro)) {
-            return 0;
-        } elseif (preg_match('/^(?:[^\d]*?)([-]{0,1})(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
-            $euros = $priceParts[2] ?: 0;
-            $cents = $priceParts[3] ?: 0;
-
-            $priceInCents = ($euros * 100 + $cents);
-
-            if ($priceParts[1] === '-') {
-                $priceInCents *= -1;
-            }
-
-            return $priceInCents;
-        } else {
-            throw new \InvalidArgumentException('Failed to convert "' . $priceInEuro . '" to euro cents');
-        }
     }
 
     /**
@@ -208,12 +208,12 @@ class PaymentManager
 
         return $this->em->transactional(
             function () use ($participants, $value, $description) {
-                $toPayList   = [];
+                $toPayList     = [];
                 $participation = null;
 
                 /** @var Participant $participant */
                 foreach ($participants as $participant) {
-                    $aid  = $participant->getAid();
+                    $aid   = $participant->getAid();
                     $toPay = $this->toPayValueForParticipant($participant, false);
                     if ($toPay === null) {
                         continue;
@@ -230,7 +230,7 @@ class PaymentManager
                 $paymentsMade = array_fill_keys(array_keys($toPayList), 0);
 
                 $valueLeft = $value;
-                if ((array_sum($toPayList)+$value) >= 0 && count(array_count_values($toPayList)) === 1) {
+                if ((array_sum($toPayList) + $value) >= 0 && count(array_count_values($toPayList)) === 1) {
                     //all participants cost same, so distribute payment equally
                     //but not in case of overpayment
                     $toPay        = $value / count($toPayList);
@@ -239,19 +239,19 @@ class PaymentManager
                 } else {
                     //start with first to pay list
                     foreach ($toPayList as $aid => $toPay) {
-                        $valueLeft = $toPay+$valueLeft;
+                        $valueLeft = $toPay + $valueLeft;
                         if ($valueLeft <= 0) {
-                            $paymentsMade[$aid] = $toPay*-1;
+                            $paymentsMade[$aid] = $toPay * -1;
                         } else {
                             //not enough for full payment
-                            $paymentsMade[$aid] = ($toPay-$valueLeft)*-1;
+                            $paymentsMade[$aid] = ($toPay - $valueLeft) * -1;
                             break;
                         }
                     }
 
                     //there's still something left, positive or negative, add it to first participant
                     reset($paymentsMade);
-                    $aid = key($paymentsMade);
+                    $aid                = key($paymentsMade);
                     $paymentsMade[$aid] += $valueLeft;
                 }
                 $payments = [];
@@ -304,21 +304,6 @@ class PaymentManager
     }
 
     /**
-     * Add or remove paid status depending on if there is still something which needs to be paid
-     *
-     * @param Participation $participation Target participation to check
-     */
-    private function updatePaidStatus(Participation $participation) {
-        $isPaidExpected = ($this->toPayValueForParticipation($participation) <= 0);
-        $isPaidGiven    = $participation->isPaid();
-
-        if ($isPaidExpected !== $isPaidGiven) {
-            $participation->setIsPaid($isPaidExpected);
-            $this->em->persist($participation);
-        }
-    }
-
-    /**
      * Get amount of money which still needs to be paid for a single @see Participant
      *
      * @param Participation $participation Target participation
@@ -351,7 +336,7 @@ class PaymentManager
         }
         $allPricesNull = true;
         foreach ($currentPrices as $currentPrice) {
-            if($currentPrice !== null){
+            if ($currentPrice !== null) {
                 $allPricesNull = false;
                 break;
             }
@@ -415,4 +400,21 @@ class PaymentManager
 
         return $currentPrice;
     }
+
+    /**
+     * Add or remove paid status depending on if there is still something which needs to be paid
+     *
+     * @param Participation $participation Target participation to check
+     */
+    private function updatePaidStatus(Participation $participation)
+    {
+        $isPaidExpected = ($this->toPayValueForParticipation($participation) <= 0);
+        $isPaidGiven    = $participation->isPaid();
+
+        if ($isPaidExpected !== $isPaidGiven) {
+            $participation->setIsPaid($isPaidExpected);
+            $this->em->persist($participation);
+        }
+    }
+
 }
