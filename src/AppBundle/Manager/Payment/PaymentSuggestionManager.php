@@ -81,8 +81,14 @@ class PaymentSuggestionManager
     private function suggestionListForParticipation(Participation $participation, bool $isPriceSet, bool $isPayment)
     {
         $list = new PaymentSuggestionList();
+        $event = $participation->getEvent();
 
-        $suggestionForEvent = $this->suggestionsForEvent($participation->getEvent(), $isPriceSet, $isPayment);
+        if ($event->getPrice()) {
+            $suggestion = new PaymentSuggestion((int)$event->getPrice(), 'Standard', 1, ['event']);
+            $list->add($suggestion);
+        }
+
+        $suggestionForEvent = $this->suggestionsForEvent($event, $isPriceSet, $isPayment);
         foreach ($suggestionForEvent as $suggestionRaw) {
             $suggestion = new PaymentSuggestion(
                 (int)$suggestionRaw['value'], $suggestionRaw['description'], (int)$suggestionRaw['count'], ['event']

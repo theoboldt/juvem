@@ -228,7 +228,7 @@ class ParticipationManager extends AbstractMailerAwareManager
                         $participant->setPrice($price);
                         $em->persist($participant);
                         $payment = ParticipantPaymentEvent::createPriceSetEvent(
-                            null, $price, 'Standard (bei Anmeldung festgelegt)'
+                            null, $price, 'Standard'
                         );
                         $participant->addPaymentEvent($payment);
                         $em->persist($payment);
