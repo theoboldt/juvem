@@ -17,7 +17,7 @@ use AppBundle\Entity\ParticipantPaymentEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
 use AppBundle\InvalidTokenHttpException;
-use AppBundle\Manager\PaymentManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -20,7 +20,7 @@ use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\InvalidTokenHttpException;
-use AppBundle\Manager\PaymentManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

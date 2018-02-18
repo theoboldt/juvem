@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Manager;
+namespace AppBundle\Manager\Payment;
 
 use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\CommentRepositoryBase;
