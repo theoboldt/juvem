@@ -551,6 +551,7 @@
                                         {% if event.price %}
                                             <dt>Preis</dt>
                                             <dd>
+                                                {% set toPay = null %}
                                                 {% if participant.price %}
                                                     {{ participant.price(true)|number_format(2) }} €
                                                     {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
@@ -575,7 +576,7 @@
                                                 {% if toPay is defined %}
                                                     {% if toPay < 0 %}
                                                         <span class="label label-info option-2">überzahlt</span>
-                                                    {% elseif toPay == 0 %}
+                                                    {% elseif toPay is same as( 0 ) %}
                                                         <span class="label label-info option-2">bezahlt</span>
                                                     {% endif %}
                                                 {% endif %}
