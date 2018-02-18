@@ -66,12 +66,12 @@ class ParticipantPaymentEvent
     /**
      * Create new payment event
      *
-     * @param User        $createdBy   User who caused this event
+     * @param User|null   $createdBy   User who caused this event
      * @param int         $value       Value of event
      * @param string|null $description Description
      * @return ParticipantPaymentEvent
      */
-    public static function createPaymentEvent(User $createdBy, int $value, string $description = null)
+    public static function createPaymentEvent(User $createdBy = null, int $value, string $description = null)
     {
         return new self($createdBy, self::EVENT_TYPE_PAYMENT, $value, $description);
     }
@@ -79,12 +79,12 @@ class ParticipantPaymentEvent
     /**
      * Create price set event
      *
-     * @param User        $createdBy   User who caused this event
+     * @param User|null   $createdBy   User who caused this event
      * @param int         $value       Value of event
      * @param string|null $description Description
      * @return ParticipantPaymentEvent
      */
-    public static function createPriceSetEvent(User $createdBy, int $value, string $description = null)
+    public static function createPriceSetEvent(User $createdBy = null, int $value, string $description = null)
     {
         return new self($createdBy, self::EVENT_TYPE_SET, $value, $description);
     }
@@ -92,12 +92,12 @@ class ParticipantPaymentEvent
     /**
      * ParticipantPaymentEvent constructor.
      *
-     * @param User        $createdBy   User who caused this event
+     * @param User|null   $createdBy   User who caused this event
      * @param string      $type        Event type
      * @param int         $value       Value of event
      * @param string|null $description Description
      */
-    public function __construct(User $createdBy, string $type, int $value, string $description = null)
+    public function __construct(User $createdBy = null, string $type, int $value, string $description = null)
     {
         $this->createdAt   = new \DateTime();
         $this->createdBy   = $createdBy;

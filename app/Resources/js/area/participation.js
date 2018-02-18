@@ -35,7 +35,8 @@ $(function () {
         displayPriceHistory = function (data) {
             var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
                 var glyph,
-                    symbolTitle;
+                    symbolTitle,
+                    creatorHtml;
 
                 switch (type) {
                     case 'price_payment':
@@ -48,6 +49,12 @@ $(function () {
                         break;
                 }
 
+                if (creatorId) {
+                    creatorHtml = '<a class="creator" href="/admin/user/' + creatorId + '">' + creatorName + '</a>';
+                } else {
+                    creatorHtml = creatorName;
+                }
+
                 return '<tr class="' + type + '">' +
                     '    <td class="symbol" title="'+symbolTitle+'">' +
                     '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
@@ -55,7 +62,7 @@ $(function () {
                     '    <td class="participant">' + participant + '</td>' +
                     '    <td class="value">' + value + ' €</td>' +
                     '    <td class="description">' + description + '</td>' +
-                    '    <td class="small"><span class="created">' + date + '</span>, <a class="creator" href="/admin/user/' + creatorId + '">' + creatorName + '</a></td>' +
+                    '    <td class="small"><span class="created">' + date + '</span>, '+creatorHtml+'</td>' +
                     '</tr>';
             };
 

@@ -136,8 +136,8 @@ class AdminPaymentController extends Controller
             $user         = $paymentEvent->getCreatedBy();
             $participant  = $paymentEvent->getParticipant();
             $flatEvents[] = [
-                'created_by_name'  => $user->userFullname(),
-                'created_by_uid'   => $user->getUid(),
+                'created_by_name'  => $user === null ? 'System': $user->userFullname(),
+                'created_by_uid'   => $user === null ? null : $user->getUid(),
                 'created_at'       => $paymentEvent->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
                 'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
                 'participant_aid'  => Participant::fullname($participant->getAid()),

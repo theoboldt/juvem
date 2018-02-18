@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -160,16 +161,10 @@ class PublicParticipateController extends Controller
         }
 
         if ($request->query->has('confirm')) {
-            $user = $this->getUser();
-            $em   = $this->getDoctrine()->getManager();
-            if ($event->getIsAutoConfirm()) {
-                $participation->setIsConfirmed(true);
-            }
-            $participation->setAssignedUser($user);
-            $managedParticipation = $em->merge($participation);
-
-            $em->persist($managedParticipation);
-            $em->flush();
+            $user                 = $this->getUser();
+            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
+                $participation, $user
+            );
 
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailParticipationRequested($participation, $event);

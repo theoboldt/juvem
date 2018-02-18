@@ -32,6 +32,8 @@ class PaymentManager
 {
 
     /**
+     * EntityManager
+     *
      * @var EntityManager
      */
     protected $em;

@@ -73,7 +73,7 @@ services:
         arguments: ['%mailer_address%', '@twig', '@app.twig_global_customization']
     app.participation_manager:
         class: AppBundle\Manager\ParticipationManager
-        arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger']
+        arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager']
         public: true
     app.newsletter_manager:
         class: AppBundle\Manager\NewsletterManager

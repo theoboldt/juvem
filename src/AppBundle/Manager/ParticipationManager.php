@@ -12,12 +12,47 @@ namespace AppBundle\Manager;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\User;
+use AppBundle\Twig\MailGenerator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
+use Psr\Log\LoggerInterface;
+use Swift_Mailer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ParticipationManager extends AbstractMailerAwareManager
 {
+
+    /**
+     * EntityManager
+     *
+     * @var EntityManagerInterface
+     */
+    protected $em;
+
+    /**
+     * Initiate a participation manager service
+     *
+     * @param UrlGeneratorInterface  $urlGenerator
+     * @param Swift_Mailer           $mailer
+     * @param MailGenerator          $mailGenerator
+     * @param LoggerInterface|null   $logger
+     * @param EntityManagerInterface $em
+     */
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        Swift_Mailer $mailer,
+        MailGenerator $mailGenerator,
+        LoggerInterface $logger = null,
+        EntityManagerInterface $em
+    ) {
+        $this->em = $em;
+        parent::__construct($urlGenerator, $mailer, $mailGenerator, $logger);
+    }
 
     /**
      * Send a participation request email
@@ -157,6 +192,54 @@ class ParticipationManager extends AbstractMailerAwareManager
             User::fullname($user->getNameLast(), $user->getNameFirst())
         );
         $this->mailer->send($message);
+    }
+
+    /**
+     * Add a new participation (request) to database, set price etc
+     *
+     * @param  Participation $participation New participation containing related @see Event and @see Participant
+     * @param  User|null     $user          Related user account if any used
+     * @return Participation
+     */
+    public function receiveParticipationRequest(Participation $participation, User $user = null)
+    {
+        $em = $this->em;
+        /** @var Participant $participant */
+
+        return $em->transactional(
+            function (EntityManager $em) use ($participation, $user) {
+                $participation->setAssignedUser($user);
+
+                $event = $participation->getEvent();
+
+                if ($event->getIsAutoConfirm()) {
+                    $participation->setIsConfirmed(true);
+                }
+
+                // replace $participation by managed version
+                $participation = $em->merge($participation);
+                $em->persist($participation);
+
+                $price = $event->getPrice();
+                if ($price) {
+                    $paymentEvents = [];
+                    /** @var Participant $participant */
+                    foreach ($participation->getParticipants() as $participant) {
+                        $participant->setPrice($price);
+                        $em->persist($participant);
+                        $payment = ParticipantPaymentEvent::createPriceSetEvent(
+                            null, $price, 'Standard (bei Anmeldung festgelegt)'
+                        );
+                        $participant->addPaymentEvent($payment);
+                        $em->persist($payment);
+                    }
+                }
+
+                $em->persist($participation);
+                $em->flush();
+                return $participation;
+            }
+        );
     }
 
 }
