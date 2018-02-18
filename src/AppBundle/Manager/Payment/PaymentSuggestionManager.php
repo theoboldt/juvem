@@ -45,16 +45,51 @@ class PaymentSuggestionManager
      */
     public function priceSuggestionsForParticipation(Participation $participation)
     {
+        return $this->suggestionListForParticipation($participation, true, false);
+    }
+
+    /**
+     * Get payment suggestion optimized for participation
+     *
+     * @param Participation $participation
+     * @return PaymentSuggestionList
+     */
+    public function paymentSuggestionsForParticipation(Participation $participation)
+    {
         $list = new PaymentSuggestionList();
 
-        $suggestionForEvent = $this->suggestionsForEvent($participation->getEvent(), true, false);
+        $suggestionForParticipation = $this->suggestionsForParticipation($participation, false, true);
+        foreach ($suggestionForParticipation as $suggestionRaw) {
+            $suggestion = new PaymentSuggestion(
+                ((int)$suggestionRaw['value'])*-1,
+                $suggestionRaw['description'],
+                (int)$suggestionRaw['count'],
+                ['participation']
+            );
+            $list->add($suggestion);
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param Participation $participation Related participation
+     * @param bool          $isPriceSet    If set to true, only price set events are checked
+     * @param bool          $isPayment     If set to true, only payment events are checked
+     * @return PaymentSuggestionList
+     */
+    private function suggestionListForParticipation(Participation $participation, bool $isPriceSet, bool $isPayment)
+    {
+        $list = new PaymentSuggestionList();
+
+        $suggestionForEvent = $this->suggestionsForEvent($participation->getEvent(), $isPriceSet, $isPayment);
         foreach ($suggestionForEvent as $suggestionRaw) {
             $suggestion = new PaymentSuggestion(
                 (int)$suggestionRaw['value'], $suggestionRaw['description'], (int)$suggestionRaw['count'], ['event']
             );
             $list->add($suggestion);
         }
-        $suggestionForParticipation = $this->suggestionsForParticipation($participation, true, false);
+        $suggestionForParticipation = $this->suggestionsForParticipation($participation, $isPriceSet, $isPayment);
         foreach ($suggestionForParticipation as $suggestionRaw) {
             $suggestion = new PaymentSuggestion(
                 (int)$suggestionRaw['value'],
@@ -66,7 +101,6 @@ class PaymentSuggestionManager
         }
 
         return $list;
-
     }
 
     /**

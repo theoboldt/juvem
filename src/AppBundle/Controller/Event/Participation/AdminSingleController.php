@@ -21,6 +21,7 @@ use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Payment\PaymentManager;
+use AppBundle\Manager\Payment\PaymentSuggestionManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -116,12 +117,21 @@ class AdminSingleController extends Controller
 
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
-
+        /** @var PaymentSuggestionManager $paymentSuggestions */
+        $paymentSuggestionsManager = $this->get('app.payment_suggestion_manager');
+        $priceSuggestions          = $paymentSuggestionsManager->priceSuggestionsForParticipation(
+            $participant->getParticipation()
+        );
+        $paymentSuggestions          = $paymentSuggestionsManager->paymentSuggestionsForParticipation(
+            $participant->getParticipation()
+        );
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
                 'commentManager'      => $commentManager,
                 'paymentManager'      => $paymentManager,
+                'priceSuggestions'    => $priceSuggestions,
+                'paymentSuggestions'  => $paymentSuggestions,
                 'event'               => $event,
                 'participation'       => $participation,
                 'similarParticipants' => $similarParticipants,

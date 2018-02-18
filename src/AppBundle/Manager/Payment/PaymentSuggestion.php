@@ -60,11 +60,12 @@ class PaymentSuggestion
     }
 
     /**
-     * @return int
+     * @param bool $inEuro
+     * @return int|float
      */
-    public function getValue(): int
+    public function getValue($inEuro = false)
     {
-        return $this->value;
+        return $inEuro ? $this->value / 100 : $this->value;
     }
 
     /**
@@ -106,7 +107,8 @@ class PaymentSuggestion
      *
      * @param PaymentSuggestion $suggestion
      */
-    public function merge(PaymentSuggestion $suggestion) {
+    public function merge(PaymentSuggestion $suggestion)
+    {
         $this->increaseCount($suggestion->getCount());
         $this->groups = array_merge($this->groups, $suggestion->getGroups());
         array_unique($this->groups);
