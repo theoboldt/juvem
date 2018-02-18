@@ -109,6 +109,10 @@ services:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments: ['@doctrine.orm.entity_manager', '@security.token_storage']
         public: true
+    app.payment_suggestion_manager:
+        class: AppBundle\Manager\Payment\PaymentSuggestionManager
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
     app.exception_controller:
         class: AppBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
