@@ -387,10 +387,6 @@ class PaymentManager
             return null;
         }
 
-        if ($currentPrice === null) {
-            return 0;
-        }
-
         /** @var ParticipantPaymentEvent $payment */
         foreach ($payments as $payment) {
             $currentPrice += $payment->getValue();
