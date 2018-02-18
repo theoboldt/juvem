@@ -225,7 +225,7 @@ class PaymentManager
                         $participation = $participant->getParticipation();
                     }
                 }
-                if (count($toPayList)) {
+                if (!count($toPayList)) {
                     return [];
                 }
 
