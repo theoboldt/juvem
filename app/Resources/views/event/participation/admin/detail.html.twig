@@ -562,7 +562,7 @@
                                                         (noch zu zahlen: {{ toPay|number_format(2) }} €)
                                                     {% elseif toPay < 0 %}
                                                         (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
-                                                    {% else %}
+                                                    {% elseif toPay is same as( 0 ) %}
                                                         (bezahlt)
                                                     {% endif %}
                                                 {% else %}
