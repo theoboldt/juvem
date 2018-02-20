@@ -97,7 +97,7 @@ class PaymentManager
      * Set price for multiple participants
      *
      * @param array     $participants List of participants where this operation should be applied to
-     * @param int|float $value        New price
+     * @param int|float $value        New price (euro cent)
      * @param string    $description  Description for change
      * @return array|ParticipantPaymentEvent[]
      */
