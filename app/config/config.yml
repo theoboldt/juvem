@@ -99,6 +99,13 @@ doctrine:
                 CURDATE: AppBundle\Query\MysqlCurDate
                 DATEDIFF: AppBundle\Query\MysqlDateDiff
 
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/Migrations"
+    namespace: Application\Migrations
+    table_name: migration_versions
+    name: Juvem Migrations
+    organize_migrations: false
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
