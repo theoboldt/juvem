@@ -399,7 +399,11 @@ class Participant implements EventRelatedEntity
      */
     public function getPrice($inEuro = false)
     {
-        return $inEuro ? $this->price / 100 : $this->price;
+        if ($this->price === null) {
+            return null;
+        } else {
+            return $inEuro ? $this->price / 100 : $this->price;
+        }
     }
 
     /**
