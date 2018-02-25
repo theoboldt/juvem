@@ -12,6 +12,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
@@ -65,7 +66,7 @@ class ParticipationsSheet extends AbstractSheet
                 );
             }
         );
-        $column->setWidth(14);
+        $column->setWidth(15);
         $this->addColumn($column);
 
         $column = new EntityColumn('participants', 'Teilnehmer');
@@ -75,6 +76,18 @@ class ParticipationsSheet extends AbstractSheet
             }
         );
         $this->addColumn($column);
+
+        if ($event->getPrice()) {
+            $column = new EntityColumn('price', 'Preis');
+            $column->setNumberFormat('#,##0.00 €');
+            $column->setWidth(8);
+            $column->setConverter(
+                function ($value, Participation $participation) {
+                    return $participation->getPrice(true);
+                }
+            );
+            $this->addColumn($column);
+        }
 
         $this->addColumn(new EntityColumn('pid', 'PID'));
 

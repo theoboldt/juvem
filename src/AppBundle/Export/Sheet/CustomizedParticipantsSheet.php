@@ -166,6 +166,18 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             $this->addColumn($column);
         }
 
+        if (self::issetAndTrue($configParticipant, 'price') && $event->getPrice()) {
+            $column = new EntityColumn('price', 'Preis');
+            $column->setNumberFormat('#,##0.00 €');
+            $column->setWidth(8);
+            $column->setConverter(
+                function ($value, Participant $entity) {
+                    return $entity->getPrice(true);
+                }
+            );
+            $this->addColumn($column);
+        }
+
         if (self::issetAndTrue($configParticipant, 'createdAt')) {
             $column = new EntityColumn('createdAt', 'Eingang Anmeldung');
             $column->setNumberFormat('dd.mm.yyyy hh:mm');
@@ -177,7 +189,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                     );
                 }
             );
-            $column->setWidth(14);
+            $column->setWidth(15);
             $this->addColumn($column);
         }
 

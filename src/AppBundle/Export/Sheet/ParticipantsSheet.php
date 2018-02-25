@@ -45,7 +45,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
 
         $column = new EntityColumn('ageAtEvent', 'Alter');
         $column->setNumberFormat('#,##0.0');
-        $column->setWidth(4);
+        $column->setWidth(5);
         $this->addColumn($column);
 
         $column = EntityColumn::createSmallColumn('gender', 'Geschlecht');
@@ -109,6 +109,18 @@ class ParticipantsSheet extends ParticipantsSheetBase
         }
         //TODO subject to change
 
+        if ($event->getPrice()) {
+            $column = new EntityColumn('price', 'Preis');
+            $column->setNumberFormat('#,##0.00 €');
+            $column->setWidth(8);
+            $column->setConverter(
+                function ($value, Participant $entity) {
+                    return $entity->getPrice(true);
+                }
+            );
+            $this->addColumn($column);
+        }
+
         $column = new EntityColumn('createdAt', 'Eingang Anmeldung');
         $column->setNumberFormat('dd.mm.yyyy hh:mm');
         $column->setConverter(
@@ -119,7 +131,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
                 );
             }
         );
-        $column->setWidth(14);
+        $column->setWidth(15);
         $this->addColumn($column);
 
         $column = new EntityColumn('aid', 'AID');

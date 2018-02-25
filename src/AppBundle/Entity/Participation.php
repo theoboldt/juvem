@@ -315,6 +315,31 @@ class Participation implements EventRelatedEntity
     }
 
     /**
+     * Get price for all related participants
+     *
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|double|null
+     */
+    public function getPrice($inEuro = false)
+    {
+        $price = null;
+
+        /** @var Participant $participant */
+        foreach ($this->participants as $participant) {
+            $participantPrice = $participant->getPrice();
+            if ($participantPrice !== null) {
+                $price += $participantPrice;
+            }
+        }
+
+        if ($price === null) {
+            return null;
+        } else {
+            return $inEuro ? $price / 100 : $price;
+        }
+    }
+
+    /**
      * Set event
      *
      * @param Event $event
