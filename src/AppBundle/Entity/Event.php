@@ -668,6 +668,7 @@ class Event
                 function (Participant $participant) {
                     return $participant->getParticipation()->getDeletedAt() === null
                            && $participant->getDeletedAt() === null
+                           && !$participant->isRejected()
                            && !$participant->isWithdrawn();
                 }
             );
@@ -689,6 +690,7 @@ class Event
                     return $participant->getParticipation()->getDeletedAt() === null
                            && $participant->getDeletedAt() === null
                            && $participant->isConfirmed()
+                           && !$participant->isRejected()
                            && !$participant->isWithdrawn();
                 }
             );

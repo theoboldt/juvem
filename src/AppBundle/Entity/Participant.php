@@ -506,6 +506,33 @@ class Participant implements EventRelatedEntity
         return $this->setStatus($status);
     }
 
+    /**
+     * Check if this participant is rejected
+     *
+     * @return bool
+     */
+    public function isRejected()
+    {
+        $status = $this->getStatus(true);
+        return $status->has(ParticipantStatus::TYPE_STATUS_REJECTED);
+    }
+
+    /**
+     * Set this participant as rejected
+     *
+     * @param   bool $rejected New value
+     * @return self
+     */
+    public function setIsRejected($rejected = true)
+    {
+        $status = $this->getStatus(true);
+        if ($rejected) {
+            $status->enable(ParticipantStatus::TYPE_STATUS_REJECTED);
+        } else {
+            $status->disable(ParticipantStatus::TYPE_STATUS_REJECTED);
+        }
+        return $this->setStatus($status);
+    }
 
     /**
      * Add attendanceListsFillout
