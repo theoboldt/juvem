@@ -6,7 +6,7 @@ $(function () {
      * @param url   Url to visit
      */
     var openInNewTabOnMetaKey = function (url) {
-        if (window.event.metaKey) {
+        if (window.event.metaKey || window.event.ctrlKey) {
             window.open(url, '_blank');
         } else {
             location.href = url;
