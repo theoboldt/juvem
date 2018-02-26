@@ -609,7 +609,7 @@ class Participant implements EventRelatedEntity
      * @param string|null $value Value to check
      * @return bool              True if regarded as empty, false if not
      */
-    private static function isInfoEmpty(string $value = null): bool
+    public static function isInfoEmpty(string $value = null): bool
     {
         $acceptedAsEmpty = [
             'keine',
