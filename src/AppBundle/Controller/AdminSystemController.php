@@ -124,7 +124,35 @@ class AdminSystemController extends Controller
 
         $content = $output->fetch();
 
-        $this->addFlash('info', 'Database: '.nl2br($content));
+        $this->addFlash('info', 'Database: <pre>' . nl2br($content) . '</pre>');
+        return $this->redirect('/');
+    }
+
+    /**
+     * Execute migrations
+     *
+     * @Route("/admin/database/migrate", name="admin_database_migrate")
+     * @Security("has_role('ROLE_ADMIN')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function databaseMigrateAction()
+    {
+        $kernel      = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $parameters = [
+            'command'          => 'doctrine:migrations:migrate',
+            '--no-interaction' => true,
+        ];
+
+        $input  = new ArrayInput($parameters);
+        $output = new BufferedOutput();
+        $application->run($input, $output);
+
+        $content = $output->fetch();
+
+        $this->addFlash('info', 'Migrations: <pre>' . nl2br($content).'</pre>');
         return $this->redirect('/');
     }
 }
