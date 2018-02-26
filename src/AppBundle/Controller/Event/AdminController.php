@@ -191,7 +191,7 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
@@ -263,7 +263,7 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participations"})
      * @Route("/admin/event/{eid}/mail", requirements={"eid": "\d+"}, name="event_mail")
      * @Security("is_granted('participants_edit', event)")
      */
@@ -394,7 +394,7 @@ class AdminController extends Controller
     /**
      * Manage User assignments of events
      *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
      * @Route("/admin/event/{eid}/users", requirements={"eid": "\d+"}, name="event_user_admin")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request

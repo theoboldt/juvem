@@ -25,6 +25,78 @@ class EventRepository extends EntityRepository
     const DAYS_OF_YEAR = 365;
 
     /**
+     * Find one single events having participations joined
+     *
+     * @param int $eid Id of desired event
+     * @return Event|null
+     */
+    public function findWithParticipations(int $eid)
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->select('e', 'p')
+           ->leftJoin('e.participations', 'p')
+           ->addOrderBy('p.nameLast')
+           ->addOrderBy('p.nameFirst')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $eid);
+        $result = $qb->getQuery()->execute();
+        if (count($result)) {
+            $result = reset($result);
+            return $result;
+        }
+        return null;
+    }
+
+    /**
+     * Find one single events having participants joined
+     *
+     * @param int $eid Id of desired event
+     * @return Event|null
+     */
+    public function findWithParticipants(int $eid)
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->select('e', 'p', 'a')
+           ->leftJoin('e.participations', 'p')
+           ->leftJoin('p.participants', 'a')
+           ->addOrderBy('p.nameLast')
+           ->addOrderBy('p.nameFirst')
+           ->addOrderBy('a.nameLast')
+           ->addOrderBy('a.nameFirst')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $eid);
+        $result = $qb->getQuery()->execute();
+        if (count($result)) {
+            $result = reset($result);
+            return $result;
+        }
+        return null;
+    }
+    /**
+     * Find one single events having participants joined
+     *
+     * @param int $eid Id of desired event
+     * @return Event|null
+     */
+    public function findWithUserAssignments(int $eid)
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->select('e', 'a', 'u')
+           ->leftJoin('e.userAssignments', 'a')
+           ->leftJoin('a.user', 'u')
+           ->addOrderBy('u.nameLast')
+           ->addOrderBy('u.nameFirst')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $eid);
+        $result = $qb->getQuery()->execute();
+        if (count($result)) {
+            $result = reset($result);
+            return $result;
+        }
+        return null;
+    }
+
+    /**
      * Fetch all events ordered by title, including participants count data
      *
      * @param bool      $includeDeleted   Set to true to include deleted events in result

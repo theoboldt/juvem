@@ -125,9 +125,15 @@ services:
             - "@logger"
     app.converter_event:
         class: AppBundle\Controller\ParamConverter\EventParamConverter
-        arguments: ['@doctrine']
+        arguments: ['@app.repository.event']
         tags:
             - { name: request.param_converter, priority: 2, converter: converter_event }
+
+    app.repository.event:
+        class: AppBundle\Entity\EventRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:Event'
 
     AppBundle\Security\EventVoter:
       autowire: true
