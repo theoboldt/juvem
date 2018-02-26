@@ -620,6 +620,7 @@ class Participant implements EventRelatedEntity
             '-',
             '--',
             'n/a',
+            'nix',
             'nichts bekannt',
             'nichts bekannt!',
         ];
