@@ -19,6 +19,17 @@ class NewsletterSubscriptionRepository extends EntityRepository
 {
 
     /**
+     * Finds a single entity by transmitted user id
+     *
+     * @param User $user Related user
+     * @return  NewsletterSubscription|null
+     */
+    public function findOneByUser(User $user)
+    {
+        return $this->findOneBy(['assignedUser' => $user->getId()]);
+    }
+
+    /**
      * Finds a single entity by transmitted e-mail address
      *
      * @param   string $email E-mail uniquely identifying an subscription

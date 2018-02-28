@@ -139,8 +139,8 @@ class AdminPaymentController extends Controller
                 'created_by_name'  => $user === null ? 'System': $user->userFullname(),
                 'created_by_uid'   => $user === null ? null : $user->getUid(),
                 'created_at'       => $paymentEvent->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
-                'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
-                'participant_aid'  => Participant::fullname($participant->getAid()),
+                'participant_name' => $participant->fullname(),
+                'participant_aid'  => $participant->getAid(),
                 'value'            => number_format($paymentEvent->getValue(true), 2, ',', '.'),
                 'description'      => $paymentEvent->getDescription(),
                 'type'             => $paymentEvent->getEventType(),
@@ -167,8 +167,8 @@ class AdminPaymentController extends Controller
         foreach ($participants as $participant) {
             $value            = $paymentManager->toPayValueForParticipant($participant, true);
             $detailedValues[] = [
-                'participant_name' => Participant::fullname($participant->getNameLast(), $participant->getNameFirst()),
-                'participant_aid'  => Participant::fullname($participant->getAid()),
+                'participant_name' => $participant->fullname(),
+                'participant_aid'  => $participant->getAid(),
                 'value'            => number_format($value, 2, ',', '.'),
                 'value_raw'        => $value
             ];

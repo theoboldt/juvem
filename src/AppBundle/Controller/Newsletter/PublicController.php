@@ -33,7 +33,10 @@ class PublicController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $subscription = $user->getAssignedNewsletterSubscription();
+            $newsletterRepository = $this->get('doctrine.orm.entity_manager')->getRepository(
+                NewsletterSubscription::class
+            );
+            $subscription         = $newsletterRepository->findOneByUser($user);
             if ($subscription) {
                 $subscriptionAvailable = true;
             } else {

@@ -51,9 +51,7 @@ class EventAddUserAssignmentsType extends AbstractType
                                   ->leftJoin('u.eventAssignments', 'a', Join::WITH, 'a.event = ' . $eid)
                                   ->andWhere('a IS NULL');
                     },
-                    'choice_label'  => function (User $user) {
-                        return HumanTrait::fullname($user->getNameLast(), $user->getNameFirst());
-                    },
+                    'choice_label'  => 'fullname',
                     'multiple'      => true,
                     'required'      => false,
                 ]

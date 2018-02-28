@@ -62,14 +62,6 @@ class User extends BaseUser
     protected $assignedParticipations;
 
     /**
-     * Contains the newsletter setting container of this user
-     *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\NewsletterSubscription", mappedBy="assignedUser",
-     *                                                                       cascade={"persist"})
-     */
-    protected $assignedNewsletterSubscription;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection|Event[]
      *
      * @ORM\ManyToMany(targetEntity="Event", inversedBy="subscribers", cascade={"persist"})
@@ -196,31 +188,6 @@ class User extends BaseUser
 
 
     /**
-     * Set assignedNewsletterSubscription
-     *
-     * @param NewsletterSubscription $assignedNewsletterSubscription
-     *
-     * @return User
-     */
-    public function setAssignedNewsletterSubscription(NewsletterSubscription $assignedNewsletterSubscription = null
-    )
-    {
-        $this->assignedNewsletterSubscription = $assignedNewsletterSubscription;
-
-        return $this;
-    }
-
-    /**
-     * Get assignedNewsletterSubscription
-     *
-     * @return NewsletterSubscription
-     */
-    public function getAssignedNewsletterSubscription()
-    {
-        return $this->assignedNewsletterSubscription;
-    }
-
-    /**
      * Set settingsHash
      *
      * @param string $settingsHash
@@ -329,9 +296,10 @@ class User extends BaseUser
     /**
      * Get user full name
      *
+     * @deprecated
      * @return string
      */
     public function userFullname() {
-        return self::fullname($this->getNameLast(), $this->getNameFirst());
+        return $this->fullname();
     }
 }

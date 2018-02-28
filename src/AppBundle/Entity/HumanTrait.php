@@ -76,13 +76,22 @@ trait HumanTrait
     }
 
     /**
+     * Get fullname
+     *
+     * @return string
+     */
+    public function fullname() {
+        return self::generateFullname($this->nameLast, $this->nameFirst);
+    }
+
+    /**
      * Generate a full name from name pars
      *
      * @param string $nameLast  Persons last name
      * @param string $nameFirst Persons first name
      * @return string           Full name
      */
-    public static function fullname($nameLast, $nameFirst = '')
+    public static function generateFullname($nameLast, $nameFirst = '')
     {
         if ($nameFirst && $nameLast) {
             return $nameFirst . ' ' . $nameLast;

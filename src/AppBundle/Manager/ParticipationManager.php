@@ -99,7 +99,7 @@ class ParticipationManager extends AbstractMailerAwareManager
         );
         $message->setTo(
             $participation->getEmail(),
-            Participation::fullname($participation->getNameLast(), $participation->getNameFirst())
+            $participation->fullname()
         );
 
         $this->mailer->send($message);
@@ -157,7 +157,7 @@ class ParticipationManager extends AbstractMailerAwareManager
                 );
                 $message->setTo(
                     $participation->getEmail(),
-                    Participant::fullname($participation->getNameLast(), $participation->getNameFirst())
+                    $participation->fullname()
                 );
 
                 $this->mailer->send($message);
@@ -189,7 +189,7 @@ class ParticipationManager extends AbstractMailerAwareManager
         );
         $message->setTo(
             $user->getEmail(),
-            User::fullname($user->getNameLast(), $user->getNameFirst())
+            $user->fullname()
         );
         $this->mailer->send($message);
     }

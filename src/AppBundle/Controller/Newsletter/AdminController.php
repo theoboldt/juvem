@@ -81,7 +81,7 @@ class AdminController extends AbstractController
                 $userContent = sprintf(
                     '<a href="%s">%s</a>',
                     $this->generateUrl('user_detail', array('uid' => $user->getUid())),
-                    User::fullname($user->getNameLast(), $user->getNameFirst())
+                    $user->fullname()
                 );
             }
 

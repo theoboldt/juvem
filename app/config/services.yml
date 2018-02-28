@@ -123,7 +123,8 @@ services:
             - { name: monolog.logger, channel: mychannel }
         arguments:
             - "@logger"
-    app.converter_event:
+
+    app.converter.event:
         class: AppBundle\Controller\ParamConverter\EventParamConverter
         arguments: ['@app.repository.event']
         tags:
@@ -134,6 +135,12 @@ services:
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
             - 'AppBundle:Event'
+
+    app.repository.participation:
+        class: AppBundle\Entity\ParticipationRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:Participation'
 
     AppBundle\Security\EventVoter:
       autowire: true

@@ -23,6 +23,31 @@ class ParticipationRepository extends EntityRepository
 {
 
     /**
+     * Find one participation with all related participants and fillouts
+     *
+     * @param int $pid Id of related participation
+     * @return Participation|null
+     */
+    public function findDetailed(int $pid)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p', 'e', 'a', 'n')
+           ->innerJoin('p.event', 'e')
+           ->leftJoin('p.participants', 'a')
+           ->leftJoin('p.phoneNumbers', 'n')
+           ->addOrderBy('p.nameLast')
+           ->addOrderBy('p.nameFirst')
+           ->andWhere($qb->expr()->eq('p.pid', ':pid'))
+           ->setParameter('pid', $pid);
+        $result = $qb->getQuery()->execute();
+        if (count($result)) {
+            $result = reset($result);
+            return $result;
+        }
+        return null;
+    }
+
+    /**
      * Get a list of participations of an event
      *
      * @param   Event $event                    The event
@@ -76,9 +101,11 @@ class ParticipationRepository extends EntityRepository
      * @return  array
      */
     public function participantsList(
-        Event $event, array $filter = null, $includeDeleted = false, $includeWithdrawnRejected = false
-    )
-    {
+        Event $event,
+        array $filter = null,
+        $includeDeleted = false,
+        $includeWithdrawnRejected = false
+    ) {
         $eid = $event->getEid();
 
         if ($filter === []) {

@@ -44,7 +44,7 @@ class AdminSingleController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
 
-        $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
+        $participation = $participationRepository->findDetailed($request->get('pid'));
         if (!$participation) {
             throw new BadRequestHttpException('Requested participation event not found');
         }
@@ -125,6 +125,7 @@ class AdminSingleController extends Controller
         $paymentSuggestions          = $paymentSuggestionsManager->paymentSuggestionsForParticipation(
             $participant->getParticipation()
         );
+
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [

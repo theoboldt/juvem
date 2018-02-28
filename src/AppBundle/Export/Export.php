@@ -88,7 +88,7 @@ abstract class Export
         $this->document->getProperties()
                        ->setCategory('Juvem');
         if ($this->modifier) {
-            $name = $this->modifier->fullname($this->modifier->getNameLast(), $this->modifier->getNameFirst());
+            $name = $this->modifier->fullname();
             $this->document->getProperties()->setCreator($name);
             $this->document->getProperties()->setLastModifiedBy($name);
         }

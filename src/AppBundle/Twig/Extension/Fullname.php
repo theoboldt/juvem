@@ -50,9 +50,9 @@ class Fullname extends \Twig_Extension
     {
 
         if (method_exists($nameLastOrUser, 'getNameLast') && method_exists($nameLastOrUser, 'getNameFirst')) {
-            return User::fullname($nameLastOrUser->getNameLast(), $nameLastOrUser->getNameFirst());
+            return User::generateFullname($nameLastOrUser->getNameLast(), $nameLastOrUser->getNameFirst());
         } else {
-            return User::fullname($nameLastOrUser, $nameFirst);
+            return User::generateFullname($nameLastOrUser, $nameFirst);
         }
     }
 
@@ -61,6 +61,6 @@ class Fullname extends \Twig_Extension
      */
     public function getName()
     {
-        return 'fullname';
+        return 'generateFullname';
     }
 }

@@ -29,6 +29,7 @@ class ParticipationAssignUserType extends AbstractType
                 EntityType::class,
                 [
                     'label'         => 'Verknüpftes Benutzerkonto',
+                    'placeholder'   => '(keines)',
                     'class'         => User::class,
                     'query_builder' => function (UserRepository $r) {
                         return $r->createQueryBuilder('u')
@@ -36,11 +37,9 @@ class ParticipationAssignUserType extends AbstractType
                                  ->addOrderBy('u.nameLast', 'ASC')
                                  ->addOrderBy('u.nameFirst', 'ASC');
                     },
-                    'choice_label'  => function (User $user) {
-                        return HumanTrait::fullname($user->getNameLast(), $user->getNameFirst());
-                    },
+                    'choice_label'  => 'fullname',
                     'multiple'      => false,
-                    'required'      => false
+                    'required'      => false,
                 ]
             );
     }

@@ -41,7 +41,7 @@ class NewsletterSubscription extends NewsletterAbstract
     protected $nameLast = null;
 
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="assignedNewsletterSubscription")
+     * @ORM\OneToOne(targetEntity="User")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL", nullable=true)
      */
     protected $assignedUser;

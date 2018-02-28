@@ -147,7 +147,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                 if ($assignedUser) {
                     $message->setTo(
                         $email,
-                        (User::fullname($lastName, $firstName))
+                        (User::generateFullname($lastName, $firstName))
                     );
                 } elseif ($lastName) {
                     $message->setTo($email, $lastName);
