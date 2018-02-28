@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Class ParticipationRepository
@@ -23,7 +24,7 @@ class ParticipationRepository extends EntityRepository
 {
 
     /**
-     * Find one participation with all related participants and fillouts
+     * Find one participation with all related participants, the related event and acquisition attributes
      *
      * @param int $pid Id of related participation
      * @return Participation|null
@@ -31,8 +32,9 @@ class ParticipationRepository extends EntityRepository
     public function findDetailed(int $pid)
     {
         $qb = $this->createQueryBuilder('p');
-        $qb->select('p', 'e', 'a', 'n')
+        $qb->select('p', 'e', 's', 'a', 'n')
            ->innerJoin('p.event', 'e')
+           ->leftJoin('e.acquisitionAttributes', 's')
            ->leftJoin('p.participants', 'a')
            ->leftJoin('p.phoneNumbers', 'n')
            ->addOrderBy('p.nameLast')

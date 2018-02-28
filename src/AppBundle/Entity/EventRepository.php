@@ -30,6 +30,26 @@ class EventRepository extends EntityRepository
      * @param int $eid Id of desired event
      * @return Event|null
      */
+    public function findWithAcquisitionAttributes(int $eid)
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->select('e', 'a')
+           ->leftJoin('e.acquisitionAttributes', 'a')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $eid);
+        $result = $qb->getQuery()->execute();
+        if (count($result)) {
+            $result = reset($result);
+            return $result;
+        }
+        return null;
+    }
+    /**
+     * Find one single events having participations joined
+     *
+     * @param int $eid Id of desired event
+     * @return Event|null
+     */
     public function findWithParticipations(int $eid)
     {
         $qb = $this->createQueryBuilder('e');

@@ -80,6 +80,8 @@ class EventParamConverter implements ParamConverterInterface
     private function find(int $eid, string $include = null)
     {
         switch ($include) {
+            case 'acquisition_attributes':
+                return $this->repository->findWithAcquisitionAttributes($eid);
             case 'participations':
                 return $this->repository->findWithParticipations($eid);
             case 'participants':
