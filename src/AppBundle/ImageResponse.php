@@ -22,76 +22,57 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ImageResponse extends StreamedResponse
 {
     /**
-     * @param UploadImage $image
-     * @param string      $format
-     * @param Request     $request
-     * @param int|null    $defaultWidth
-     * @param int|null    $defaultHeight
-     * @return static
+     * Check @see Request and determine if not modified or image response should be sent
+     *
+     * @param UploadImage $image Image to provide
+     * @param Request     $request Request
+     * @return Response|ImageResponse
      */
     public static function createFromRequest(
         UploadImage $image,
-        $format,
-        Request $request,
-        $defaultWidth = 128,
-        $defaultHeight = 128
+        Request $request
     )
     {
-        $response = new Response('', Response::HTTP_OK);
-        self::setCacheHeaders($image, $response, $request);
+        $response = new Response('', Response::HTTP_NOT_MODIFIED);
+        self::setCacheHeaders($image, $response);
 
         if ($response->isNotModified($request)) {
             return $response;
         }
 
-        //        $image  = $request->query->get('image');
-        $width  = $request->query->get('width', $defaultWidth);
-        $height = $request->query->get('height', $defaultHeight);
-
-        return new static($image, $format, $width, $height);
+        return new self($image);
     }
 
     /**
-     * @param UploadImage  $image
-     * @param Response     $response
-     * @param Request|null $request Transmit @see Request in order to be able to do an ETAG compare
+     * Set http headers and content type by image
+     *
+     * @param UploadImage  $image    Image to provide
+     * @param Response     $response Response to modify
+     * @return void
      */
-    private static function setCacheHeaders(UploadImage $image, Response $response, Request $request = null)
+    private static function setCacheHeaders(UploadImage $image, Response $response)
     {
         $response->setEtag($image->getETag())
                  ->setLastModified($image->getMTime())
                  ->setMaxAge(14 * 24 * 60 * 60)
                  ->setPublic();
-        if ($request) {
-            $response->isNotModified($request);
-        }
+        $response->headers->set('Content-Type', $image->getType(true));
     }
 
     /**
-     * @param string $format
-     * @return string
-     */
-    private static function getMimeType($format)
-    {
-        return ($format == 'png') ? 'image/png' : 'image/jpeg';
-    }
-
-    /**
-     * Constructor
+     * Create image response
      *
      * @param UploadImage  $image   Image to provide
-     * @param Request|null $request Transmit @see Request in order to be able to do an ETAG compare
      */
-    public function __construct(UploadImage $image, Request $request = null)
+    public function __construct(UploadImage $image)
     {
         parent::__construct(
             function () use ($image) {
                 echo $image->get();
             },
-            Response::HTTP_OK,
-            ['Content-Type' => $image->getType(true)]
+            Response::HTTP_OK
         );
 
-        self::setCacheHeaders($image, $this, $request);
+        self::setCacheHeaders($image, $this);
     }
 }

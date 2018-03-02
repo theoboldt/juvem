@@ -16,6 +16,7 @@ use AppBundle\ImageResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -28,27 +29,27 @@ class PublicController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/image/original", name="event_image_original")
      */
-    public function eventImageOriginalAction(Event $event)
+    public function eventImageOriginalAction(Request $request, Event $event)
     {
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetch($event->getImageFilename());
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**
-     * Detail page for one single event
+     *
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"},
      *                                               name="event_image")
      */
-    public function eventImageAction(Event $event, $width, $height)
+    public function eventImageAction(Request $request, Event $event, $width, $height)
     {
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**

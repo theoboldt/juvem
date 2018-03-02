@@ -379,7 +379,7 @@ class AdminController extends Controller
      * @Route("/uploads/event/{filename}", requirements={"filename": "([^/])+"}, name="event_upload_image")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function uploadEventImageAction(string $filename)
+    public function uploadEventImageAction(Request $request, string $filename)
     {
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetch($filename);
@@ -388,7 +388,7 @@ class AdminController extends Controller
             throw new NotFoundHttpException('Requested image not found');
         }
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**

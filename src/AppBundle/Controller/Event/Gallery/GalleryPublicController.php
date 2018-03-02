@@ -111,7 +111,7 @@ class GalleryPublicController extends BaseGalleryController
             ImageInterface::THUMBNAIL_OUTBOUND, 30
         );
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**
@@ -141,7 +141,7 @@ class GalleryPublicController extends BaseGalleryController
             ImageInterface::THUMBNAIL_INSET, 80
         );
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**
@@ -169,7 +169,7 @@ class GalleryPublicController extends BaseGalleryController
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetch($galleryImage->getFilename());
 
-        return new ImageResponse($image);
+        return ImageResponse::createFromRequest($image, $request);
     }
 
     /**
