@@ -12,7 +12,7 @@ namespace AppBundle\Manager;
 
 use AppBundle\Juvimg\JuvimgNoResizePerformedException;
 use AppBundle\Juvimg\JuvimgService;
-use AppBundle\UploadImage;
+use AppBundle\UploadImage\DataUploadImage;
 use Doctrine\Common\Cache\FilesystemCache;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
@@ -74,12 +74,12 @@ class UploadImageManager
      * @param string   $name
      * @param null|int $width
      * @param null|int $height
-     * @return UploadImage
+     * @return DataUploadImage
      */
     public function fetch($name, $width = null, $height = null)
     {
         if ($width === null && $height === null) {
-            return new UploadImage(
+            return new DataUploadImage(
                 $this->getOriginalImagePath($name)
             );
         } else {
@@ -95,7 +95,7 @@ class UploadImageManager
      * @param  integer $height  Height of image
      * @param  string  $mode    Either ImageInterface::THUMBNAIL_INSET or ImageInterface::THUMBNAIL_OUTBOUND
      * @param  int     $quality JPG image quality applied when resizing
-     * @return UploadImage
+     * @return DataUploadImage
      */
     public function fetchResized($name, $width, $height, $mode = ImageInterface::THUMBNAIL_INSET, $quality = 70)
     {
@@ -129,7 +129,7 @@ class UploadImageManager
             $this->cache->save($key, $image);
         }
 
-        return new UploadImage($this->getOriginalImagePath($name), $this->cache->fetch($key));
+        return new DataUploadImage($this->getOriginalImagePath($name), $this->cache->fetch($key));
     }
 
     /**

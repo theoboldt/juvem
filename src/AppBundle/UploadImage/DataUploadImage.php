@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle;
+namespace AppBundle\UploadImage;
 
 /**
- * Class UploadImage
+ * Class DataUploadImage
  *
  * @package AppBundle
  */
-class UploadImage
+class DataUploadImage
 {
     /**
      * Path to the file
@@ -32,7 +32,7 @@ class UploadImage
     protected $imageContent;
 
     /**
-     * UploadImage constructor.
+     * DataUploadImage constructor.
      *
      * @param string $fileName Path to original image
      * @param string $imageContent Binary Content of image

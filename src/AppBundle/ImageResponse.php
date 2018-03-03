@@ -10,6 +10,7 @@
 
 namespace AppBundle;
 
+use AppBundle\UploadImage\DataUploadImage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -24,12 +25,12 @@ class ImageResponse extends StreamedResponse
     /**
      * Check @see Request and determine if not modified or image response should be sent
      *
-     * @param UploadImage $image Image to provide
-     * @param Request     $request Request
+     * @param DataUploadImage $image   Image to provide
+     * @param Request         $request Request
      * @return Response|ImageResponse
      */
     public static function createFromRequest(
-        UploadImage $image,
+        DataUploadImage $image,
         Request $request
     )
     {
@@ -46,11 +47,11 @@ class ImageResponse extends StreamedResponse
     /**
      * Set http headers and content type by image
      *
-     * @param UploadImage  $image    Image to provide
-     * @param Response     $response Response to modify
+     * @param DataUploadImage $image    Image to provide
+     * @param Response        $response Response to modify
      * @return void
      */
-    private static function setCacheHeaders(UploadImage $image, Response $response)
+    private static function setCacheHeaders(DataUploadImage $image, Response $response)
     {
         $response->setEtag($image->getETag())
                  ->setLastModified($image->getMTime())
@@ -62,9 +63,9 @@ class ImageResponse extends StreamedResponse
     /**
      * Create image response
      *
-     * @param UploadImage  $image   Image to provide
+     * @param DataUploadImage $image Image to provide
      */
-    public function __construct(UploadImage $image)
+    public function __construct(DataUploadImage $image)
     {
         parent::__construct(
             function () use ($image) {
