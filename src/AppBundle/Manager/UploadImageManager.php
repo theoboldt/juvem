@@ -119,19 +119,24 @@ class UploadImageManager
         $key          = new FileCachePathGeneratorResizedImage($width, $height, $mode, $name);
         $originalPath = $this->getOriginalImagePath($name);
         if (!$this->cache->contains($key)) {
+            $tmpFile = tempnam($this->tmpDir, 'imagine_resize');
             $image = null;
             if ($this->juvimgService && $this->juvimgService->isAccessible()) {
                 try {
                     $result = $this->juvimgService->resize(
                         $originalPath, $width, $height, $mode, $quality
                     );
-                    $image  = $result->getContents();
+
+                    $image = fopen($tmpFile, 'w');
+                    // Read until the stream is closed
+                    while (!$result->eof()) {
+                        fwrite($image, $result->read(8192));
+                    }
                 } catch (JuvimgNoResizePerformedException $e) {
-                    //intentionally left empty
+                    $image = null;
                 }
             }
             if (!$image) {
-                $tmpFile = tempnam($this->tmpDir, 'imagine_resize');
                 $imagine = new Imagine();
                 $size    = new Box($width, $height);
                 $imagine->open($originalPath)
@@ -147,9 +152,9 @@ class UploadImageManager
             }
 
             $this->cache->save($key, $image);
-        }
-        if ($tmpFile) {
-            unlink($tmpFile);
+            if ($tmpFile) {
+                unlink($tmpFile);
+            }
         }
 
         return new ResizedUploadImage($this->cache->fetch($key)->getPathname(), $originalPath);
