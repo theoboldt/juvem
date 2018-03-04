@@ -118,7 +118,7 @@ class FileCache
     public function saveString(FileCachePathGenerator $key, string $value)
     {
         $this->ensureDirectoryExists($key);
-        return file_put_contents($key->getPath(), $value);
+        return file_put_contents($this->path($key), $value);
     }
 
     /**
