@@ -132,6 +132,8 @@ class UploadImageManager
                     while (!$result->eof()) {
                         fwrite($image, $result->read(8192));
                     }
+                    fclose($image);
+                    $image = new \SplFileInfo($tmpFile);
                 } catch (JuvimgNoResizePerformedException $e) {
                     $image = null;
                 }
