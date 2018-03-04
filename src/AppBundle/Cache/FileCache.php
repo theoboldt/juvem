@@ -97,8 +97,11 @@ class FileCache
      * @param resource               $value Data resource
      * @return bool
      */
-    public function saveResource(FileCachePathGenerator $key, resource $value)
+    public function saveResource(FileCachePathGenerator $key, $value)
     {
+        if (!is_resource($value)) {
+            throw new \InvalidArgumentException('A resource must be transmitted');
+        }
         $this->ensureDirectoryExists($key);
         $target = fopen($this->path($key), 'w');
         while (!feof($value)) {
