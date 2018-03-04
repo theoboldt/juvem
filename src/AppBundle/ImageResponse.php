@@ -10,7 +10,8 @@
 
 namespace AppBundle;
 
-use AppBundle\UploadImage\DataUploadImage;
+use AppBundle\UploadImage\UploadImage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -20,17 +21,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *
  * @package AppBundle\Response
  */
-class ImageResponse extends StreamedResponse
+class ImageResponse extends BinaryFileResponse
 {
     /**
      * Check @see Request and determine if not modified or image response should be sent
      *
-     * @param DataUploadImage $image   Image to provide
-     * @param Request         $request Request
+     * @param UploadImage $image   Image to provide
+     * @param Request     $request Request
      * @return Response|ImageResponse
      */
     public static function createFromRequest(
-        DataUploadImage $image,
+        UploadImage $image,
         Request $request
     )
     {
@@ -47,11 +48,11 @@ class ImageResponse extends StreamedResponse
     /**
      * Set http headers and content type by image
      *
-     * @param DataUploadImage $image    Image to provide
-     * @param Response        $response Response to modify
+     * @param UploadImage $image    Image to provide
+     * @param Response    $response Response to modify
      * @return void
      */
-    private static function setCacheHeaders(DataUploadImage $image, Response $response)
+    private static function setCacheHeaders(UploadImage $image, Response $response)
     {
         $response->setEtag($image->getETag())
                  ->setLastModified($image->getMTime())
@@ -63,17 +64,11 @@ class ImageResponse extends StreamedResponse
     /**
      * Create image response
      *
-     * @param DataUploadImage $image Image to provide
+     * @param UploadImage $image Image to provide
      */
-    public function __construct(DataUploadImage $image)
+    public function __construct(UploadImage $image)
     {
-        parent::__construct(
-            function () use ($image) {
-                echo $image->get();
-            },
-            Response::HTTP_OK
-        );
-
+        parent::__construct($image->getPath(), Response::HTTP_OK, [], true, null, false, false);
         self::setCacheHeaders($image, $this);
     }
 }

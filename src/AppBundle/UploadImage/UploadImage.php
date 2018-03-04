@@ -11,36 +11,38 @@
 namespace AppBundle\UploadImage;
 
 /**
- * Class DataUploadImage
+ * Class UploadImage
  *
  * @package AppBundle
  */
-class DataUploadImage
+class UploadImage
 {
     /**
      * Path to the file
      *
      * @var string
      */
-    protected $fileName;
+    protected $path;
 
     /**
-     * Contains binary content of image
+     * Create from File info
      *
-     * @var string
+     * @param \SplFileInfo $fileInfo
+     * @return UploadImage
      */
-    protected $imageContent;
-
-    /**
-     * DataUploadImage constructor.
-     *
-     * @param string $fileName Path to original image
-     * @param string $imageContent Binary Content of image
-     */
-    public function __construct($fileName, $imageContent = null)
+    public static function createFromFileInfo(\SplFileInfo $fileInfo)
     {
-        $this->fileName     = $fileName;
-        $this->imageContent = $imageContent;
+        return new self($fileInfo->getPathname());
+    }
+
+    /**
+     * UploadImage constructor.
+     *
+     * @param string $path Path to image
+     */
+    public function __construct(string $path)
+    {
+        $this->path = $path;
     }
 
     /**
@@ -48,8 +50,9 @@ class DataUploadImage
      *
      * @return bool
      */
-    public function exists() {
-        return file_exists($this->fileName) && is_readable($this->fileName);
+    public function exists()
+    {
+        return file_exists($this->path) && is_readable($this->path);
     }
 
     /**
@@ -59,7 +62,7 @@ class DataUploadImage
      */
     public function getETag()
     {
-        return sha1($this->fileName);
+        return sha1($this->path);
     }
 
     /**
@@ -69,21 +72,28 @@ class DataUploadImage
      */
     public function getMTime()
     {
-        return \DateTime::createFromFormat('U', filemtime($this->fileName));
+        return \DateTime::createFromFormat('U', filemtime($this->path));
     }
 
     /**
-     * Get the image as binary output in selected format and dimension
+     * Get the image path
      *
      * @return string
      */
-    public function get()
+    public function getPath(): string
     {
-        if (!$this->imageContent) {
-            $this->imageContent = file_get_contents($this->fileName);
-        }
+        return $this->path;
+    }
 
-        return $this->imageContent;
+    /**
+     * Get the image resource
+     *
+     * @return resource
+     */
+    public function getResource(): resource
+    {
+        $handle = fopen($this->path, 'r');
+        return $handle;
     }
 
     /**
@@ -94,7 +104,7 @@ class DataUploadImage
      */
     public function getType($asMimeType = false)
     {
-        $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $this->fileName);
+        $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $this->path);
 
         if ($asMimeType) {
             return $mimeType;

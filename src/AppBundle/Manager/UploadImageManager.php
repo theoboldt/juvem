@@ -10,10 +10,12 @@
 
 namespace AppBundle\Manager;
 
+use AppBundle\Cache\FileCache;
+use AppBundle\Cache\FileCachePathGeneratorResizedImage;
 use AppBundle\Juvimg\JuvimgNoResizePerformedException;
 use AppBundle\Juvimg\JuvimgService;
-use AppBundle\UploadImage\DataUploadImage;
-use Doctrine\Common\Cache\FilesystemCache;
+use AppBundle\UploadImage\ResizedUploadImage;
+use AppBundle\UploadImage\UploadImage;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -23,9 +25,16 @@ class UploadImageManager
     /**
      * Contains the cache instance
      *
-     * @var FilesystemCache|null
+     * @var FileCache
      */
-    protected $cache = null;
+    protected $cache;
+
+    /**
+     * Temporary dir for resized images
+     *
+     * @var string
+     */
+    private $tmpDir;
 
     /**
      * Contains the path where upload images are stored
@@ -51,18 +60,25 @@ class UploadImageManager
     /**
      * Create new instance of upload image manager
      *
-     * @param string             $cacheDir       Cache dir where modified images reside
+     * @param FileCache          $cache
+     * @param string             $tmpDir
      * @param array              $uploadMappings Available upload mappings
      * @param string             $mapping        Mapping to use
      * @param JuvimgService|null $juvimg         Juvimg Resize service if available
      */
-    public function __construct($cacheDir, array $uploadMappings, $mapping, JuvimgService $juvimg = null)
-    {
-        $this->cache = new FilesystemCache($cacheDir);
+    public function __construct(
+        FileCache $cache,
+        string $tmpDir,
+        array $uploadMappings,
+        string $mapping,
+        JuvimgService $juvimg = null
+    ) {
 
         if (!array_key_exists($mapping, $uploadMappings)) {
             throw new \InvalidArgumentException('Could not find desired upload mapping in vich upload configuration');
         }
+        $this->cache         = $cache;
+        $this->tmpDir        = $tmpDir;
         $this->uploadMapping = $mapping;
         $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
         $this->juvimgService = $juvimg;
@@ -74,12 +90,12 @@ class UploadImageManager
      * @param string   $name
      * @param null|int $width
      * @param null|int $height
-     * @return DataUploadImage
+     * @return UploadImage
      */
     public function fetch($name, $width = null, $height = null)
     {
         if ($width === null && $height === null) {
-            return new DataUploadImage(
+            return new UploadImage(
                 $this->getOriginalImagePath($name)
             );
         } else {
@@ -95,17 +111,19 @@ class UploadImageManager
      * @param  integer $height  Height of image
      * @param  string  $mode    Either ImageInterface::THUMBNAIL_INSET or ImageInterface::THUMBNAIL_OUTBOUND
      * @param  int     $quality JPG image quality applied when resizing
-     * @return DataUploadImage
+     * @return UploadImage
      */
     public function fetchResized($name, $width, $height, $mode = ImageInterface::THUMBNAIL_INSET, $quality = 70)
     {
-        $key = $this->key($name, $width, $height, $mode);
+        $tmpFile      = null;
+        $key          = new FileCachePathGeneratorResizedImage($width, $height, $mode, $name);
+        $originalPath = $this->getOriginalImagePath($name);
         if (!$this->cache->contains($key)) {
             $image = null;
             if ($this->juvimgService && $this->juvimgService->isAccessible()) {
                 try {
                     $result = $this->juvimgService->resize(
-                        $this->getOriginalImagePath($name), $width, $height, $mode, $quality
+                        $originalPath, $width, $height, $mode, $quality
                     );
                     $image  = $result->getContents();
                 } catch (JuvimgNoResizePerformedException $e) {
@@ -113,23 +131,28 @@ class UploadImageManager
                 }
             }
             if (!$image) {
+                $tmpFile = tempnam($this->tmpDir, 'imagine_resize');
                 $imagine = new Imagine();
                 $size    = new Box($width, $height);
-                $image   = $imagine->open($this->getOriginalImagePath($name))
-                                   ->thumbnail($size, $mode)
-                                   ->get(
-                                       $this->getOriginalImageType($name),
-                                       [
-                                           'jpeg_quality'          => $quality,
-                                           'png_compression_level' => 9,
-                                       ]
-                                   );
+                $imagine->open($originalPath)
+                        ->thumbnail($size, $mode)
+                        ->save(
+                            $tmpFile,
+                            [
+                                'jpeg_quality'          => $quality,
+                                'png_compression_level' => 9,
+                            ]
+                        );
+                $image = new \SplFileInfo($tmpFile);
             }
 
             $this->cache->save($key, $image);
         }
+        if ($tmpFile) {
+            unlink($tmpFile);
+        }
 
-        return new DataUploadImage($this->getOriginalImagePath($name), $this->cache->fetch($key));
+        return new ResizedUploadImage($this->cache->fetch($key)->getPathname(), $originalPath);
     }
 
     /**
@@ -160,10 +183,5 @@ class UploadImageManager
         }
 
         return ($mimeType == 'image/jpeg') ? 'jpg' : 'png';
-    }
-
-    public function key($name, $width, $height, $mode)
-    {
-        return sprintf('%s_%s_%s_%s_%s', $this->uploadMapping, $name, $width, $height, $mode);
     }
 }
