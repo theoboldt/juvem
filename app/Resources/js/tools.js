@@ -9,7 +9,7 @@ $(function () {
         error: function (jqXHR) {
             var message = 'Die gewünschte Aktion wurde nicht korrekt ausgeführt',
                 priority = 'error';
-debugger;
+
             if (this.dataType === 'json'
                 && jqXHR.responseJSON
                 && jqXHR.responseJSON.message
@@ -124,7 +124,7 @@ debugger;
             $("<img/>").attr(settings).appendTo(el)
                 .on('load', function () {
                     var timeEndLoad = new Date().getTime();
-                    if (timeEndLoad - timeBeginLoad < 40) {
+                    if (timeEndLoad - timeBeginLoad < 800) {
                         el.addClass('load-direct');
                     } else {
                         el.addClass('load');
