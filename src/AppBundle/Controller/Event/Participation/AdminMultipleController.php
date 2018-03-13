@@ -97,6 +97,7 @@ class AdminMultipleController extends Controller
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
             $price = $participant->getPrice(true);
+            $toPay = $participant->getToPay(true);
 
             $participantEntry = array(
                 'aid'                      => $participant->getAid(),
@@ -107,7 +108,8 @@ class AdminMultipleController extends Controller
                 'is_rejected'              => (int)$participantStatusRejected,
                 'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
                 'is_confirmed'             => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
-                'payment_price'            => $price === null ? '<i>keiner</i>' : number_format($price, 2, ',', '.').' €',
+                'payment_price'            => $price === null ? '<i>keiner</i>' : number_format($price, 2, ',', '.').'&nbsp;€',
+                'payment_to_pay'            => $toPay === null ? '<i>nichts</i>' : number_format($toPay, 2, ',', '.').'&nbsp;€',
                 'nameFirst'                => $participant->getNameFirst(),
                 'nameLast'                 => $participant->getNameLast(),
                 'age'                      => $age,

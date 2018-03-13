@@ -10,15 +10,11 @@
 
 namespace AppBundle\Manager\Payment;
 
-use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\CommentRepositoryBase;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
-use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -87,7 +83,7 @@ class PaymentManager
     public function __construct(EntityManagerInterface $em, TokenStorage $tokenStorage = null)
     {
         $this->em = $em;
-        if ($tokenStorage) {
+        if ($tokenStorage && $tokenStorage->getToken()) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
         $this->repository = $this->em->getRepository('AppBundle:ParticipantPaymentEvent');
@@ -111,13 +107,17 @@ class PaymentManager
                 $events = [];
                 /** @var Participant $participant */
                 foreach ($participants as $participant) {
-                    $participant->setPrice($value);
-                    $em->persist($participant);
                     $event = ParticipantPaymentEvent::createPriceSetEvent(
                         $this->user, $value, $description
                     );
                     $participant->addPaymentEvent($event);
+                    $participant->setPrice($value);
                     $em->persist($event);
+                    $em->flush($event); //ensure events are on db before fetching for to pay cache
+
+                    $participantToPay = $this->toPayValueForParticipant($participant);
+                    $participant->setToPay($participantToPay);
+                    $em->persist($participant);
                     $events[] = $event;
                 }
                 $em->flush();
@@ -161,6 +161,31 @@ class PaymentManager
            ->orderBy('e.createdAt', 'DESC');
         $result = $qb->getQuery()->execute(['aid' => $participant->getAid()]);
         return $result;
+    }
+
+    /**
+     * Get current price for transmitted @see Participant
+     *
+     * @param Participant $participant Desired participant
+     * @return int
+     */
+    public function getPriceForParticipant(Participant $participant)
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('e.value')
+           ->from(ParticipantPaymentEvent::class, 'e')
+           ->innerJoin('e.participant', 'a')
+           ->andWhere($qb->expr()->eq('a.aid', ':aid'))
+            ->andWhere('e.isPriceSet = 1')
+           ->orderBy('e.createdAt', 'DESC')
+           ->setMaxResults(1);
+
+        $result = $qb->getQuery()->execute(['aid' => $participant->getAid()]);
+        if (is_array($result) && isset($result[0]) && isset($result[0]['value'])) {
+            return $result[0]['value'];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -258,9 +283,19 @@ class PaymentManager
                 }
                 $payments = [];
                 foreach ($paymentsMade as $aid => $paymentValue) {
-                    $payment = ParticipantPaymentEvent::createPaymentEvent($this->user, $paymentValue, $description);
-                    $participants[$aid]->addPaymentEvent($payment);
-                    $this->em->persist($participants[$aid]);
+                    /** @var Participant $participant */
+                    $participant = $participants[$aid];
+                    $payment     = ParticipantPaymentEvent::createPaymentEvent(
+                        $this->user, $paymentValue, $description
+                    );
+                    $participant->addPaymentEvent($payment);
+                    $this->em->persist($payment);
+                    $this->em->flush($payment); //ensure payment event is stored
+
+                    $participantToPay = $this->toPayValueForParticipant($participant);
+                    $participant->setToPay($participantToPay);
+
+                    $this->em->persist($participant);
                     $payments[] = $payment;
                 }
                 $this->em->flush();
@@ -290,7 +325,11 @@ class PaymentManager
                 $participant->addPaymentEvent($payment);
 
                 $this->em->persist($payment);
-                $this->em->flush();
+                $this->em->flush($payment);
+
+                $participantToPay = $this->toPayValueForParticipant($participant);
+                $participant->setToPay($participantToPay);
+
 
                 $participation = $participant->getParticipation();
                 $this->updatePaidStatus($participation);
