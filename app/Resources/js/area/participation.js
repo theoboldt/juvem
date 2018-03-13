@@ -14,7 +14,7 @@ $(function () {
                     if (valueRaw === null) {
                         cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
                     } else {
-                        cellValue = value+' €';
+                        cellValue = value+'&nbsp;€';
                     }
 
                     return '<tr>' +
@@ -60,7 +60,7 @@ $(function () {
                     '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
                     '   </td>' +
                     '    <td class="participant">' + participant + '</td>' +
-                    '    <td class="value">' + value + ' €</td>' +
+                    '    <td class="value">' + value + '&nbsp;€</td>' +
                     '    <td class="description">' + description + '</td>' +
                     '    <td class="small"><span class="created">' + date + '</span>, '+creatorHtml+'</td>' +
                     '</tr>';
@@ -94,7 +94,7 @@ $(function () {
                 valueText = '<i title="Kein Preis festgelegt">keiner</i>';
                 btn.css('display', 'none');
             } else {
-                valueText = value + ' €';
+                valueText = value + '&nbsp;€';
                 btn.data('value', value);
                 btn.html('<b>' + valueText + '</b> Komplett');
                 btn.css('display', 'block');
