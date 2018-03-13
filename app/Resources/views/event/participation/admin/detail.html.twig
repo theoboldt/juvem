@@ -315,7 +315,7 @@
                                 data-button-disable-label="Bestätigung zurücknehmen"
                                 data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
-                            {{ 'credit-card'|glyph }} Zahlungsverwaltung
+                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung</span>
                         </button>
 
                         <button type="button" class="btn btn-default" data-element="activebutton"
