@@ -144,7 +144,12 @@ $(function () {
 function germanNumberFormatSorter(a, b) {
     'use strict';
     var numberize = function (n) {
-        return parseFloat(n.replace(/\./g, '').replace(',', '.'));
+        var nFloat = parseFloat(n.replace(/\./g, '').replace(',', '.'));
+        if (isNaN(nFloat)) {
+            return Number.MIN_SAFE_INTEGER ? Number.MIN_SAFE_INTEGER : -900719925474099;
+        } else {
+            return nFloat;
+        }
     };
     a = numberize(a);
     b = numberize(b);
