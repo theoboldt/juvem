@@ -258,9 +258,7 @@ class PaymentManager
                 }
                 $payments = [];
                 foreach ($paymentsMade as $aid => $paymentValue) {
-                    $payment = new ParticipantPaymentEvent(
-                        $this->user, ParticipantPaymentEvent::EVENT_TYPE_PAYMENT, $paymentValue, $description
-                    );
+                    $payment = ParticipantPaymentEvent::createPaymentEvent($this->user, $paymentValue, $description);
                     $participants[$aid]->addPaymentEvent($payment);
                     $this->em->persist($participants[$aid]);
                     $payments[] = $payment;
@@ -288,9 +286,7 @@ class PaymentManager
     {
         return $this->em->transactional(
             function () use ($participant, $value, $description) {
-                $payment = new ParticipantPaymentEvent(
-                    $this->user, ParticipantPaymentEvent::EVENT_TYPE_PAYMENT, $value, $description
-                );
+                $payment = ParticipantPaymentEvent::createPaymentEvent($this->user, $value, $description);
                 $participant->addPaymentEvent($payment);
 
                 $this->em->persist($payment);
