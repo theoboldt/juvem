@@ -25,3 +25,12 @@ iframe[name=export-generator-frame] {
 #event_add_user_assignments_assignUser {
   min-height: 300px;
 }
+
+#participantsListTable .payment-cell {
+  text-align: right;
+
+  i {
+    opacity: 0.2;
+  }
+
+}
