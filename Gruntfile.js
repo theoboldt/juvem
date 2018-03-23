@@ -32,7 +32,7 @@ module.exports = function (grunt) {
                 sourceMap: true,
                 separator: ';'
             },
-            distJs: {
+            distWebJs: {
                 src: [
                     '<%= resourcesPath %>/js/cookiechoices.js',
                     'node_modules/jquery/dist/jquery.js',
@@ -67,7 +67,7 @@ module.exports = function (grunt) {
                 ],
                 dest: 'web/js/all.js'
             },
-            distCss: {
+            distCssWeb: {
                 src: [
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'app/cache/dep/all-sass.css',
@@ -75,16 +75,30 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-table/src/bootstrap-table.css'
                 ],
                 dest: 'web/css/all.css'
+            },
+            distCssPrint: {
+                src: [
+                    'app/cache/dep/all-sass-print.css'
+                ],
+                dest: 'web/css/print.css'
             }
         },
 
         sass: {
-            dist: {
+            web: {
                 options: {
                     style: 'expanded'
                 },
                 files: {
-                    'app/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/main.scss'
+                    'app/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss'
+                }
+            },
+            print: {
+                options: {
+                    style: 'expanded'
+                },
+                files: {
+                    'app/cache/dep/all-sass-print.css': '<%= resourcesPath %>/scss/print/main.scss'
                 }
             }
         },
@@ -108,32 +122,44 @@ module.exports = function (grunt) {
         },
 
         cssmin: {
-            options: {
-                shorthandCompacting: false,
-                roundingPrecision: -1,
-                sourceMap: false
+            web: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1,
+                    sourceMap: false
+                },
+                src: 'web/css/all.css',
+                dest:'web/css/all.min.css'
             },
-            target: {
-                files: {
-                    'web/css/all.min.css': ['web/css/all.css']
-                }
+            print: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1,
+                    sourceMap: false
+                },
+                src: 'web/css/print.css',
+                dest:'web/css/print.min.css'
             }
         },
 
         watch: {
             js: {
                 files: '<%= resourcesPath %>/js/**/*.js',
-                tasks: ['clean:js', 'concat:distJs', 'uglify'],
+                tasks: ['clean:js', 'concat:distWebJs', 'uglify'],
                 options: {
                     livereload: true
                 }
             },
-            sass: {
-                files: ['<%= resourcesPath %>/scss/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
-                tasks: ['sass', 'concat:distCss', 'cssmin'],
+            sassWeb: {
+                files: ['<%= resourcesPath %>/scss/web/**/*.scss', '<%= resourcesPath %>/scss/shared/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
+                tasks: ['sass:web', 'concat:distCssWeb', 'cssmin:web'],
                 options: {
                     livereload: true
                 }
+            },
+            sassPrint: {
+                files: ['<%= resourcesPath %>/scss/print/**/*.scss', '<%= resourcesPath %>/scss/shared/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
+                tasks: ['sass:print', 'concat:distCssPrint', 'cssmin:print']
             }
         }
 
@@ -154,8 +180,8 @@ module.exports = function (grunt) {
         'deploy',
         [
             'clean:font', 'copy',
-            'clean:dep', 'clean:css', 'sass', 'concat:distCss', 'cssmin',
-            'clean:js', 'concat:distJs', 'uglify',
+            'clean:dep', 'clean:css', 'sass', 'concat:distCssWeb', 'concat:distCssPrint', 'cssmin',
+            'clean:js', 'concat:distWebJs', 'concat:distCssPrint', 'uglify',
             'clean:dep'
         ]
     );
