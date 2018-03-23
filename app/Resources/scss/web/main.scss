@@ -4,7 +4,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-@import '../../config/branding';
+@import '../../../config/branding';
 
 $brand-primary: $brandPrimaryDark;
 
@@ -47,7 +47,7 @@ $link-hover-color: lighten($link-color, 20%);
 
 $icon-font-path: '../font/';
 @import 'bootstrap';
-@import 'bootstrap-corrections';
+@import '../shared/bootstrap-corrections';
 @import 'bootstrap-table';
 @import 'alert';
 @import 'header';
@@ -60,7 +60,7 @@ $icon-font-path: '../font/';
 @import 'newsletter';
 @import 'lazy-load-images.scss';
 @import 'cookiechoice';
-@import 'print';
+@import '../shared/print';
 @import 'gallery';
 
 html, body {

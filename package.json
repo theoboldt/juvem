@@ -6,7 +6,7 @@
     "bootstrap-sass": "^3.3",
     "bootstrap-table": "^1.11.2",
     "ekko-lightbox": "^5.3.0",
-    "grunt": "^1.0",
+    "grunt": "^1.0.2",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-concat": "^1.0",
     "grunt-contrib-copy": "^1.0",
@@ -15,8 +15,11 @@
     "grunt-contrib-sass": "^1.0",
     "grunt-contrib-uglify": "^1.0",
     "grunt-contrib-watch": "^1.0",
-    "jquery": "^3.2.1",
+    "jquery": "^3.3.1",
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9"
+  },
+  "dependencies": {
+    "npm": "^5.7.1"
   }
 }

@@ -1,0 +1,63 @@
+/*!
+ * Bootstrap v3.3.6 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+@import '../../../config/branding';
+
+$brand-primary: $brandPrimaryDark;
+
+
+/*
+//bootstrap base theme
+$navbar-default-bg: $brandSecondary;
+$navbar-default-color: darken($brandSecondary, 5%);
+*/
+
+$input-border-focus: $brandPrimaryDark;
+/*
+$headings-small-color: $brandSecondary;
+
+//panel
+$panel-default-heading-bg: lighten($brandPrimaryDark, 45%);
+$panel-default-border: lighten($brandPrimaryDark, 15%);
+
+//input
+$input-border: lighten($brandPrimaryDark, 5%);
+$input-group-addon-bg: darken($panel-default-heading-bg, 10%);
+//$input-color: darken($brandSecondary, 30%);
+
+
+
+//button
+$btn-default-bg: darken($panel-default-heading-bg, 2%);
+$btn-default-color: $brandSecondary;
+$btn-default-border: $input-border;
+
+
+//alert
+$state-info-bg: lighten(#9cdeff, 15%);
+$state-info-text: darken($state-info-bg, 70%);
+
+
+//$input-border-focus: red;
+$legend-color: darken($brandPrimaryDark, 25%);
+*/
+
+$link-color: lighten(#333, 20%);
+$link-hover-color: lighten($link-color, 20%);
+
+$icon-font-path: '../font/';
+@import 'bootstrap';
+@import '../shared/print';
+
+html, body {
+  background-color: $brandPrimaryDark;
+}
+
+
+#page {
+  background-color: white;
+}
+
