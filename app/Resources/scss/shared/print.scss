@@ -19,6 +19,13 @@
 
     dl {
       margin: 0;
+      dd {
+        line-height: 110%;
+        i {
+          font-size: 80%;
+          color: #222;
+        }
+      }
     }
 
     dt {
@@ -26,37 +33,56 @@
         color: $gray !important;
         font-weight: normal;
         font-size: 80%;
-        line-height: 125%;
+        line-height: 115%;
+        margin-bottom: 3px;
       }
     }
     .dl-horizontal dt {
       float: left;
-      width: 160px;
+      width: 80px;
       clear: left;
-      text-align: right;
+      text-align: left;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     dd {
-      margin: 0 0 5px 0;
+      margin: 0 0 10px 0;
     }
 
     .dl-horizontal dd {
-      margin: 0 0 5px 180px;
+      margin: 0 0 10px 90px;
     }
 
     address {
       margin: 0;
+
+      strong {
+        font-weight: 500;
+      }
     }
 
     div.qrcode div > div {
       background-color: black !important;
     }
+    div.text {
+      margin-top: -2px;
+      line-height: 110%;
+    }
+
+    h3 {
+      margin-bottom: 0;
+    }
+
+    .status-label-list {
+      margin-top: 20px;
+    }
 
     p {
-      margin: 0 0 8px;
+      background: #eee;
+      margin: 0;
+      padding: 0 0 8px;
     }
 
     p.meta {
@@ -76,6 +102,10 @@
         float: left;
         margin: 0 10px 5px 0;
       }
+
+      i {
+        font-size: 90%;
+      }
     }
     .row.participant-title {
       margin-left: 60px;
@@ -92,12 +122,15 @@
 
       .vertical-rotated {
         height: 875px;
+        padding-top: 60px;
+        padding-bottom: 15px;
         transform: rotate(-90deg);
       }
 
       h3 {
         font-size: 4em;
       }
+
       h4 {
         margin-top: 20px;
         font-size: 2em;

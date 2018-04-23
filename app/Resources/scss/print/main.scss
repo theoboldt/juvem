@@ -56,6 +56,11 @@ html, body {
   background-color: $brandPrimaryDark;
 }
 
+@media print {
+  div.sf-toolbar {
+    display: none !important;
+  }
+}
 
 #page {
   background-color: white;
