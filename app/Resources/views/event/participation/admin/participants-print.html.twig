@@ -143,17 +143,28 @@
                     </div>
                 </div>
                 <div class="row">
-                    {% for fillout in participant.acquisitionAttributeFillouts %}
-                    <div class="col-xs-4">
-                        <dl>
-                            <dt>
-                            <div class="title">{{ fillout.attribute.formTitle }}</div>
-                            <div class="description">{{ fillout.attribute.managementDescription }}</div>
-                            </dt>
-                            <dd>{{ fillout }}</dd>
-                        </dl>
+                    <div class="grid">
+                        <div class="grid-sizer col-xs-4"></div>
+                        {% for fillout in participant.acquisitionAttributeFillouts %}
+                            <div class="grid-item col-xs-4">
+                                <div class="grid-item-content">
+                                    <dl>
+                                        <dt>
+                                        <div class="title">{{ fillout.attribute.formTitle }}</div>
+                                        <div class="description">{{ fillout.attribute.managementDescription }}</div>
+                                        </dt>
+                                        <dd>
+                                            {% if fillout is empty %}
+                                                <i>(keine Angabe)</i>
+                                            {% else %}
+                                                {{ fillout }}
+                                            {% endif %}
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
             <div class="col-xs-12">
@@ -192,17 +203,29 @@
                     </div>
                 </div>
                 <div class="row">
-                    {% for fillout in participant.participation.acquisitionAttributeFillouts %}
-                        <div class="col-xs-4">
-                            <dl>
-                                <dt>
-                                    <div class="title">{{ fillout.attribute.formTitle }}</div>
-                                    <div class="description">{{ fillout.attribute.managementDescription }}</div>
-                                </dt>
-                                <dd>{{ fillout }}</dd>
-                            </dl>
+                    <div class="grid">
+                        <div class="grid-sizer col-xs-4"></div>
+                            {% for fillout in participant.participation.acquisitionAttributeFillouts %}
+                            <div class="grid-item col-xs-4">
+                                <div class="grid-item-content">
+                                    <dl>
+                                        <dt>
+                                            <div class="title">{{ fillout.attribute.formTitle }}</div>
+                                            <div class="description">{{ fillout.attribute.managementDescription }}</div>
+                                        </dt>
+                                        <dd>
+                                            {% if fillout is empty %}
+                                                <i>(keine Angabe)</i>
+                                            {% else %}
+                                                {{ fillout }}
+                                            {% endif %}
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
@@ -230,16 +253,17 @@
                     </div>
                     <div class="col-xs-12">
                         <h3>Anmerkungen</h3>
-                        <div class="row" id="comment-footer-aid-{{ participant.aid }}">
+                        <div class="row" id="comments-list">
                             {% if not commentManager.countForParticipation(participant.participation) and not commentManager.countForParticipant(participant) %}
                                 <div class="col-xs-12">
                                     <p class="empty">Keine Anmerkungen gespeichert.</p>
                                 </div>
                             {% endif %}
-                            <div class="comments" data-comment-class="AppBundle\Entity\ParticipationComment"
-                                 data-related-id="{{ participant.participation.pid }}">
+                            <div class="grid">
+                                <div class="grid-sizer col-xs-6"></div>
                                 {% for comment in commentManager.forParticipation(participant.participation) %}
-                                <div class="col-xs-6">
+                                <div class="grid-item col-xs-6">
+                                    <div class="grid-item-content">
                                     <div class="content">
                                         {{ comment.content|markdown }}
                                     </div>
@@ -253,13 +277,12 @@
                                         {% endif %}
                                         zur Anmeldung
                                     </p>
+                                    </div>
                                 </div>
                                 {% endfor %}
-                            </div>
-                            <div class="comments" data-comment-class="AppBundle\Entity\ParticipantComment"
-                                 data-related-id="{{ participant.aid }}">
                                 {% for comment in commentManager.forParticipant(participant) %}
-                                <div class="col-xs-6">
+                                <div class="grid-item col-xs-6">
+                                    <div class="grid-item-content">
                                     <div class="content">
                                         {{ comment.content|markdown }}
                                     </div>
@@ -273,6 +296,7 @@
                                         {% endif %}
                                         {% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}zur Teilnehmerin{% else %}zum Teilnehmer{% endif %}
                                     </p>
+                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -295,7 +319,12 @@
 {% endblock %}
     {% cspscript %}
     <script type='text/javascript'>
-        jQuery(document).ready(function () {
+        $('.grid').masonry({
+            itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+            columnWidth: '.grid-sizer',
+            percentPosition: true
+        });
+        $(document).ready(function () {
             window.print();
         });
     </script>

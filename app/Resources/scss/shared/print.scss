@@ -1,5 +1,10 @@
 @media print, screen {
 
+  span.label {
+    padding: .1em .5em;
+    margin: .1em;
+  }
+
   #print-page {
     background: white;
 
@@ -24,6 +29,10 @@
         i {
           font-size: 90%;
           color: #222;
+        }
+
+        &.address-container {
+          margin-bottom: 0;
         }
       }
     }
@@ -80,16 +89,25 @@
     }
 
     p {
-      background: #eee;
       margin: 0;
       padding: 0 0 8px;
+    }
+    .content, p.meta {
+      background: #f7f7f7 !important;
+
+      pre {
+        margin: 0;
+        padding: 1em 0;
+      }
+    }
+    p.empty {
+      background: transparent;
     }
 
     p.meta {
       color: $gray;
       font-size: 90%;
       line-height: 130%;
-      margin-bottom: 10px;
       padding-bottom: 2px;
       border-bottom: 1px solid $gray-light !important;
     }
@@ -121,9 +139,9 @@
       }
 
       .vertical-rotated {
+        max-width: 550px;
         height: 875px;
-        padding-top: 60px;
-        padding-bottom: 15px;
+        padding: 130px 100px 15px 0;
         transform: rotate(-90deg);
       }
 
@@ -138,11 +156,28 @@
       }
     }
 
+    #comments-list {
+      .grid-item {
+        page-break-inside: avoid;
+        .grid-item-content {
+          page-break-inside: avoid;
+          padding-bottom: 10px;
+        }
+
+      }
+
+      blockquote {
+        border: 0 !important;
+        margin: 0 !important;
+      }
+    }
+
     .row.participant-title {
       page-break-after: always;
     }
 
     .participant-end {
+      clear: both;
       page-break-after: always;
     }
   }
