@@ -120,29 +120,49 @@ class GlobalCustomization
     private $logoLink;
 
     /**
+     * Name of person responsible for data privacy
+     *
+     * @var null
+     */
+    private $privacyResponsible;
+
+    /**
      * Customization constructor
      *
-     * @param Twig_Environment $twig              Twig environment used for rendering
-     * @param string           $rootDir           Applications root dir
-     * @param string           $appTitle          Name of app
-     * @param string           $organizationName  Name of organization
-     * @param string           $addressStreet     Address of organization, street name
-     * @param string           $addressPostalCode Address of organization, postal code
-     * @param string           $addressLocality   Address of organization, city
-     * @param string           $numberPhone       Phone number of organization
-     * @param string           $numberFax         Fax number of organization
-     * @param string           $email             E-mail address of organization
-     * @param string|null      $website           Website of organization
-     * @param string|null      $facebook          Facebook link if available
-     * @param string|null      $juvemWebsite      Juvem app website base url
-     * @param string|null      $logoLink          If configured, link of application logo will redirect to specified url
+     * @param Twig_Environment $twig               Twig environment used for rendering
+     * @param string           $rootDir            Applications root dir
+     * @param string           $appTitle           Name of app
+     * @param string           $organizationName   Name of organization
+     * @param string           $addressStreet      Address of organization, street name
+     * @param string           $addressPostalCode  Address of organization, postal code
+     * @param string           $addressLocality    Address of organization, city
+     * @param string           $numberPhone        Phone number of organization
+     * @param string           $numberFax          Fax number of organization
+     * @param string           $email              E-mail address of organization
+     * @param null             $privacyResponsible Name of person responsible for data privacy
+     * @param string|null      $website            Website of organization
+     * @param string|null      $facebook           Facebook link if available
+     * @param string|null      $juvemWebsite       Juvem app website base url
+     * @param string|null      $logoLink           If configured, link of application logo will redirect to specified
+     *                                             url
      */
     public function __construct(
-        Twig_Environment $twig, $rootDir, $appTitle, $organizationName, $addressStreet, $addressPostalCode,
-        $addressLocality, $numberPhone, $numberFax, $email, $website = null, $facebook = null, $juvemWebsite = null,
+        Twig_Environment $twig,
+        $rootDir,
+        $appTitle,
+        $organizationName,
+        $addressStreet,
+        $addressPostalCode,
+        $addressLocality,
+        $numberPhone,
+        $numberFax,
+        $email,
+        $privacyResponsible = null,
+        $website = null,
+        $facebook = null,
+        $juvemWebsite = null,
         $logoLink = null
-    )
-    {
+    ) {
         $this->twig              = $twig;
         $this->rootDir           = $rootDir;
         $this->appTitle          = $appTitle;
@@ -157,6 +177,7 @@ class GlobalCustomization
         $this->facebook          = $facebook;
         $this->juvemWebsite      = $juvemWebsite;
         $this->logoLink          = $logoLink;
+        $this->privacyResponsible = $privacyResponsible;
     }
 
     /**
@@ -202,6 +223,29 @@ class GlobalCustomization
                 'numberFax'         => $this->numberFax,
                 'email'             => $this->email,
                 'website'           => $this->website
+            ]
+        );
+    }
+
+    /**
+     * HTML markup for privacy page organization data
+     *
+     * @return string
+     */
+    public function privacyCard(): string
+    {
+        return $this->twig->render(
+            'customization/privacy-card.html.twig',
+            [
+                'organizationName'   => $this->organizationName,
+                'addressStreet'      => $this->addressStreet,
+                'addressPostalCode'  => $this->addressPostalCode,
+                'addressLocality'    => $this->addressLocality,
+                'numberPhone'        => $this->numberPhone,
+                'numberFax'          => $this->numberFax,
+                'email'              => $this->email,
+                'website'            => $this->website,
+                'privacyResponsible' => $this->privacyResponsible,
             ]
         );
     }
@@ -359,6 +403,17 @@ class GlobalCustomization
     {
         return $this->email;
     }
+
+    /**
+     * Name of person responsible for data privacy
+     *
+     * @return string|null
+     */
+    public function privacyResponsible()
+    {
+        return $this->privacyResponsible;
+    }
+
 
     /**
      * Access organization website

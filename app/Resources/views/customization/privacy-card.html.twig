@@ -1,0 +1,16 @@
+<div itemscope itemtype="http://schema.org/Organization">
+    <address>
+        <strong itemprop="name">{{ organizationName }}</strong><br>
+        <div>
+            {{ privacyResponsible }}
+        </div>
+        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+            <span itemprop="streetAddress">{{ addressStreet }}</span><br>
+            <span itemprop="postalCode">{{ addressPostalCode }}</span> <span itemprop="addressLocality">{{ addressLocality }}</span><br>
+        </div>
+        <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> <span itemprop="telephone">{{ numberPhone }}</span><br>
+        {% if numberFax %}<span class="glyphicon glyphicon-print" aria-hidden="true"></span> <span itemprop="faxNumber">{{ numberFax }}</span><br>{% endif %}
+        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <span itemprop="email">{{ email }}</span>{% if website %}<br>
+        <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> <a itemprop="url" href="http://{{ website }}" target="_blank">{{ website }}</a>{% endif %}
+    </address>
+</div>

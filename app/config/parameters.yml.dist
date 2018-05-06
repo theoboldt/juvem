@@ -32,6 +32,7 @@ parameters:
     customization.organization_number_phone: ~
     customization.organization_number_fax: ~
     customization.organization_email: ~
+    customization.privacy_responsible: ~
     customization.organization_website: ~
     customization.organization_facebook: ~
     customization.juvem_website: ~
