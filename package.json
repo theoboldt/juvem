@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
+    "masonry-layout": "^4.2.1",
     "bootstrap-sass": "^3.3",
     "bootstrap-table": "^1.11.2",
     "ekko-lightbox": "^5.3.0",

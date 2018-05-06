@@ -51,6 +51,7 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
+                    'node_modules/masonry-layout/dist/masonry.pkgd.js',
                     'node_modules/jquery-range/jquery.range.js',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
@@ -147,14 +148,14 @@ module.exports = function (grunt) {
                 files: '<%= resourcesPath %>/js/**/*.js',
                 tasks: ['clean:js', 'concat:distWebJs', 'uglify'],
                 options: {
-                    livereload: true
+                    livereload: false
                 }
             },
             sassWeb: {
                 files: ['<%= resourcesPath %>/scss/web/**/*.scss', '<%= resourcesPath %>/scss/shared/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
                 tasks: ['sass:web', 'concat:distCssWeb', 'cssmin:web'],
                 options: {
-                    livereload: true
+                    livereload: false
                 }
             },
             sassPrint: {
