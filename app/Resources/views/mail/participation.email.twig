@@ -5,10 +5,10 @@
 {% if participation.salution == 'Herr' %}
 Hallo Herr {{ participation.nameLast }}!
 {% else %}
-Hallo Frau  {{ participation.nameLast }}!
+Hallo Frau {{ participation.nameLast }}!
 {% endif %}
 
-Ihre Anmeldung für die Veranstaltung "{{ event.title }}" ist eingegangen. Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn Ihre Anmeldung bestätigt wurde.
+Ihre Anmeldung für die Veranstaltung "{{ event.title }}" ist eingegangen. {% if event.hasWaitingListThreshold() and event.participantsCount >= event.waitingListThreshold -%}Da im Moment alle Plätze der Veranstaltung belegt zu sein scheinen, erfolgt ihre Anmeldung zunächst auf Warteliste.{% endif %} Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn Ihre Anmeldung bestätigt wurde.
 
 Wir haben die von Ihnen angegebenen Anmeldedaten im Anschluss noch einmal aufgeführt. Sollte Ihnen noch ein Fehler auffallen, oder muss eine Korrektur vorgenommen werden, unterrichten Sie uns einfach darüber. Wir können die Daten dann anpassen.
 
@@ -58,7 +58,7 @@ Mit besten Grüßen,
 {% embed 'mail/template.html.twig' %}
     {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
     {% block lead %}Ihre Anmeldung für die Veranstaltung <i>{{ event.title }}</i> ist eingegangen.{% endblock %}
-    {% block content %}<p>Wir werden sie so bald wie möglich bearbeiten. Sie erhalten eine weitere E-Mail, wenn Ihre Anmeldung bestätigt wurde.</p>
+    {% block content %}<p>Wir werden sie so bald wie möglich bearbeiten. {% if event.hasWaitingListThreshold() and event.participantsCount >= event.waitingListThreshold -%}Da im Moment alle Plätze der Veranstaltung belegt zu sein scheinen, erfolgt ihre Anmeldung zunächst auf <b>Warteliste</b>.{% endif %} Sie erhalten eine weitere E-Mail, wenn Ihre Anmeldung bestätigt wurde.</p>
 
         <p>Wir haben die von Ihnen angegebenen Anmeldedaten im Anschluss noch einmal aufgeführt. Sollte Ihnen noch ein Fehler auffallen, oder muss eine Korrektur vorgenommen werden, unterrichten Sie uns einfach darüber. Wir können die Daten dann anpassen.</p>
         <table class="classic" width="98%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0;border-bottom: 1px solid #222222;">
