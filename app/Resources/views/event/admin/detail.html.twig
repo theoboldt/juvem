@@ -167,6 +167,9 @@
                     {% if event.isAutoConfirm() %}
                         <span class="label label-primary">Automatische Bestätigungen</span>
                     {% endif %}
+                    {% if event.hasWaitingListThreshold() %}
+                        <span class="label label-primary">Warteliste ab {{ event.waitingListThreshold }} <abbr title="Teilnehmern">TN</abbr></span>
+                    {% endif %}
                 </p>
                 {{ event.getDescription|markdown }}
             </div>

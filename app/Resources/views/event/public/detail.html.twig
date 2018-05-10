@@ -15,7 +15,14 @@
                     <small>Veranstaltung</small>
                     {% if event.isActive %}
                         <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                           style="float: right;" class="btn btn-primary hidden-xs" role="button">Teilnehmen</a>
+                           style="float: right;" class="btn btn-{% if is_granted('ROLE_ADMIN_EVENT') %}default{% else %}primary{% endif %} hidden-xs" role="button">Teilnehmen
+                                {% if event.hasWaitingListThreshold() -%}
+                                    {%- if event.participantsCount >= event.waitingListThreshold -%}
+                                        (Warteliste)
+                                    {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
+                                        (wenig Plätze frei)
+                                    {%- endif -%}
+                                {%- endif -%}</a>
                     {% endif %}
                 </h1>
             </header>
@@ -35,8 +42,15 @@
                         <a href="{{ path('event', {eid: event.eid}) }}" class="btn btn-primary">Verwalten</a>
                     {% else %}
                         {% if event.isActive %}
-                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                               class="btn btn-primary" role="button">Teilnehmen</a>
+                            <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary">Teilnehmen
+                                {% if event.hasWaitingListThreshold() -%}
+                                    {%- if event.participantsCount >= event.waitingListThreshold -%}
+                                        (Warteliste)
+                                    {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
+                                        (wenig Plätze frei)
+                                    {%- endif -%}
+                                {%- endif -%}
+                            </a>
                         {% endif %}
                     {% endif %}
                 </p>

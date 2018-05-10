@@ -10,8 +10,8 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Controller\Event\WaitingListFlashTrait;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -23,6 +23,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PublicParticipateController extends Controller
 {
+    use WaitingListFlashTrait;
 
     /**
      * Page for list of events
@@ -42,6 +43,7 @@ class PublicParticipateController extends Controller
 
             return $this->redirectToRoute('homepage', ['eid' => $eid]);
         }
+        $this->addWaitingListFlashIfRequired($event);
 
         if ($request->getSession()->has('participation-' . $eid)) {
             /** @var Participation $participation */
@@ -115,6 +117,7 @@ class PublicParticipateController extends Controller
             );
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
+        $this->addWaitingListFlashIfRequired($event);
 
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participationPrevious   = $participationRepository->findOneBy(
@@ -153,6 +156,7 @@ class PublicParticipateController extends Controller
         /** @var Participation $participation */
         $participation = $request->getSession()->get('participation-' . $eid);
         $event         = $participation->getEvent();
+        $this->addWaitingListFlashIfRequired($event);
 
         if (!$participation instanceof Participation
             || $eid != $participation->getEvent()->getEid()

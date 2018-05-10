@@ -170,9 +170,8 @@ class EventRepository extends EntityRepository
         foreach ($query->execute() as $row) {
             $event = $row['eventEntity'];
             /** @var Event $event */
-            $event->setParticipantsCounts(
-                (int)$row['participants_count'], (int)$row['participants_count_confirmed']
-            );
+            $event->setParticipantsCounts((int)$row['participants_count']);
+            $event->setParticipantsConfirmedCount((int)$row['participants_count_confirmed']);
             $result[] = $event;
         }
 

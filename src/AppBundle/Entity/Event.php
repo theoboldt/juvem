@@ -720,13 +720,23 @@ class Event
     /**
      * Set value of amount of participations
      *
-     * @param int $participantsCount          Amount of participations not withdrawn nor deleted
+     * @param int $participantsCount Amount of participations not withdrawn nor deleted
+     * @return Event
+     */
+    public function setParticipantsCounts(int $participantsCount): Event
+    {
+        $this->participantsCount = $participantsCount;
+        return $this;
+    }
+
+    /**
+     * Set value of amount of participations
+     *
      * @param int $participantsConfirmedCount Amount of participations not withdrawn nor deleted but confirmed
      * @return Event
      */
-    public function setParticipantsCounts($participantsCount, $participantsConfirmedCount)
+    public function setParticipantsConfirmedCount(int $participantsConfirmedCount): Event
     {
-        $this->participantsCount          = $participantsCount;
         $this->participantsConfirmedCount = $participantsConfirmedCount;
         return $this;
     }

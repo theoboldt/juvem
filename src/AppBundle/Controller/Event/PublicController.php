@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PublicController extends Controller
 {
+    use WaitingListFlashTrait;
 
     /**
      * Original image file for event image
@@ -60,6 +61,7 @@ class PublicController extends Controller
      */
     public function showAction(Event $event)
     {
+        $this->addWaitingListFlashIfRequired($event);
         return $this->render(
             'event/public/detail.html.twig',
             ['event' => $event, 'pageDescription' => $event->getDescriptionMeta(true)]
