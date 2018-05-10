@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -140,6 +141,19 @@ class EventType extends AbstractType
                     'label' => 'Bestätigungs-Text',
                     'attr'  => array('aria-describedby' => 'help-confirmation-message')
                 )
+            )
+            ->add(
+                'hasWaitingListThreshold', CheckboxType::class,
+                array_merge($smartCheckbox, array('label' => 'Warteliste-Schwelle'))
+            )
+            ->add(
+                'waitingListThreshold',
+                IntegerType::class,
+                [
+                    'label'    => 'Schwelle',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-waiting-list'],
+                ]
             )
             ->add('save', SubmitType::class);
 

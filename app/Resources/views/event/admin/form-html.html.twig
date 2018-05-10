@@ -103,6 +103,12 @@
         <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der Zielgruppe in Jahren angeben, bspw. <samp>7-13</samp>. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
     </div>
     <div class="col-xs-12 col-sm-4">
+        <div class="form-group">
+            {{ form_widget(form.hasWaitingListThreshold) }}
+            {{ form_errors(form.waitingListThreshold) }}
+            {{ form_widget(form.waitingListThreshold) }}
+            <p class="help-block" id="help-waiting-list">Wird die hier festgelegte Zahl Anmeldungen (Teilnehmer) erreicht, erfolgen eingehende Anmeldungen auf Warteliste. Die Veranstaltungsseite und Eingangs-E-Mails erhalten diesen hinweis. Ist die Differenz zwischen Schwelle und Teilnehmern &le; 3, wird die Info "wenig Plätze frei" angezeigt.</p>
+        </div>
     </div>
 </div>
 

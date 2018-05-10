@@ -231,6 +231,14 @@ class Event
     protected $userAssignments;
 
     /**
+     * If defined and number of participants is equal or greater than threadshold, waiting list warning is displayed
+     *
+     * @var int
+     * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
+     */
+    protected $waitingListThreshold = null;
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -809,6 +817,7 @@ class Event
     /**
      * Get confirmationMessage
      *
+     * @param null $value Need to have $value parameter for form
      * @return string
      */
     public function hasConfirmationMessage($value = null)
@@ -1048,4 +1057,39 @@ class Event
         }
         return $this->descriptionMeta;
     }
+
+    /**
+     * Defined threshold for waiting list
+     *
+     * @return int|null
+     */
+    public function getWaitingListThreshold()
+    {
+        return $this->waitingListThreshold;
+    }
+
+    /**
+     * Determine if threshold for waiting list specified
+     *
+     * @param null $value Need to have $value parameter for form
+     * @return bool
+     */
+    public function hasWaitingListThreshold($value = null)
+    {
+        return $this->waitingListThreshold !== null;
+    }
+
+    /**
+     * Define threshold for waiting list
+     *
+     * @param int|null $waitingListThreshold
+     * @return Event
+     */
+    public function setWaitingListThreshold(int $waitingListThreshold = null)
+    {
+        $this->waitingListThreshold = $waitingListThreshold;
+        return $this;
+    }
+
+
 }
