@@ -43,7 +43,6 @@ class PublicParticipateController extends Controller
 
             return $this->redirectToRoute('homepage', ['eid' => $eid]);
         }
-        $this->addWaitingListFlashIfRequired($event);
 
         if ($request->getSession()->has('participation-' . $eid)) {
             /** @var Participation $participation */
@@ -78,6 +77,7 @@ class PublicParticipateController extends Controller
 
             return $this->redirectToRoute('event_public_participate_confirm', ['eid' => $eid]);
         }
+        $this->addWaitingListFlashIfRequired($event);
 
         $user           = $this->getUser();
         $participations = [];
@@ -117,7 +117,6 @@ class PublicParticipateController extends Controller
             );
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
-        $this->addWaitingListFlashIfRequired($event);
 
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participationPrevious   = $participationRepository->findOneBy(
@@ -130,6 +129,7 @@ class PublicParticipateController extends Controller
             );
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
+        $this->addWaitingListFlashIfRequired($event);
 
         $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
         $participation->setAssignedUser($user);
@@ -156,7 +156,6 @@ class PublicParticipateController extends Controller
         /** @var Participation $participation */
         $participation = $request->getSession()->get('participation-' . $eid);
         $event         = $participation->getEvent();
-        $this->addWaitingListFlashIfRequired($event);
 
         if (!$participation instanceof Participation
             || $eid != $participation->getEvent()->getEid()
@@ -208,6 +207,7 @@ class PublicParticipateController extends Controller
 
             return $this->redirectToRoute('event_public_detail', ['eid' => $eid]);
         } else {
+            $this->addWaitingListFlashIfRequired($event);
             return $this->render(
                 'event/participation/public/confirm.html.twig',
                 [
