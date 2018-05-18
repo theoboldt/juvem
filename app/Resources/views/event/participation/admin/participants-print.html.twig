@@ -63,7 +63,8 @@
                 </ol>
             </div>
         </div>
-        <div class="row participant">
+        <div class="participant">
+        <div class="row">
             <div class="col-xs-3">
                 <h3>{% if participant.gender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}Teilnehmerin{% else %}Teilnehmer{% endif %}</h3>
             </div>
@@ -104,47 +105,51 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-4">
-                        <dl>
-                            <dt>Medizinische Hinweise</dt>
-                            <dd>
-                                {% if participant.infoMedical %}
-                                    {{ participant.infoMedical }}
-                                {% else %}
-                                    <i>(keine Besonderheiten)</i>
-                                {% endif %}
-                            </dd>
-                        </dl>
-                    </div>
-                    <div class="col-xs-4">
-                        <dl>
-                            <dt>Allgemeine Hinweise</dt>
-                            <dd>
-                                {% if participant.infoGeneral %}
-                                    {{ participant.infoGeneral }}
-                                {% else %}
-                                    <i>(keine Besonderheiten)</i>
-                                {% endif %}
-                            </dd>
-                        </dl>
-                    </div>
-                    <div class="col-xs-4">
-                        <dl class="food">
-                            <dt>Ernährung</dt>
-                            <dd>
-                                {% set participantFood = participant.getFood(true) %}
-                                {% if participantFood.getValue() %}
-                                    {{ ' '|bitmask(participantFood) }}
-                                {% else %}
-                                    <i>(keine Besonderheiten)</i>
-                                {% endif %}
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="grid">
-                        <div class="grid-sizer col-xs-4"></div>
+                        {#<div class="grid-sizer col-xs-4"></div>#}
+                        <div class="grid-item col-xs-4">
+                            <div class="grid-item-content">
+                                <dl>
+                                    <dt>Medizinische Hinweise</dt>
+                                    <dd>
+                                        {% if participant.infoMedical %}
+                                            {{ participant.infoMedical }}
+                                        {% else %}
+                                            <i>(keine Besonderheiten)</i>
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="grid-item col-xs-4">
+                            <div class="grid-item-content">
+                                <dl>
+                                    <dt>Allgemeine Hinweise</dt>
+                                    <dd>
+                                        {% if participant.infoGeneral %}
+                                            {{ participant.infoGeneral }}
+                                        {% else %}
+                                            <i>(keine Besonderheiten)</i>
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="grid-item col-xs-4">
+                            <div class="grid-item-content">
+                                <dl class="food">
+                                    <dt>Ernährung</dt>
+                                    <dd>
+                                        {% set participantFood = participant.getFood(true) %}
+                                        {% if participantFood.getValue() %}
+                                            {{ ' '|bitmask(participantFood) }}
+                                        {% else %}
+                                            <i>(keine Besonderheiten)</i>
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
                         {% for fillout in participant.acquisitionAttributeFillouts %}
                             <div class="grid-item col-xs-4">
                                 <div class="grid-item-content">
@@ -167,6 +172,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-xs-12">
                 <div class="row participation">
                     <div class="col-xs-12">
@@ -204,7 +211,7 @@
                 </div>
                 <div class="row">
                     <div class="grid">
-                        <div class="grid-sizer col-xs-4"></div>
+                        {#<div class="grid-sizer col-xs-4"></div>#}
                             {% for fillout in participant.participation.acquisitionAttributeFillouts %}
                             <div class="grid-item col-xs-4">
                                 <div class="grid-item-content">
@@ -227,7 +234,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
                     <div class="col-xs-12">
                         <dt>
                         <div class="title">Telefon</div>
@@ -260,7 +266,7 @@
                                 </div>
                             {% endif %}
                             <div class="grid">
-                                <div class="grid-sizer col-xs-6"></div>
+                                {#<div class="grid-sizer col-xs-6"></div>#}
                                 {% for comment in commentManager.forParticipation(participant.participation) %}
                                 <div class="grid-item col-xs-6">
                                     <div class="grid-item-content">
@@ -319,11 +325,13 @@
 {% endblock %}
     {% cspscript %}
     <script type='text/javascript'>
+        {#
         $('.grid').masonry({
             itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
             columnWidth: '.grid-sizer',
             percentPosition: true
         });
+        #}
         $(document).ready(function () {
             window.print();
         });

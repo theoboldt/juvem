@@ -1,6 +1,11 @@
 @media print, screen {
 
   #print-page {
+    width: 210mm;
+    height: 297mm;
+    size: A4;
+    margin: 0;
+
     span.label {
       padding: .1em .5em;
       margin: .1em;
@@ -8,7 +13,7 @@
 
     background: white;
 
-    font-size: 175%;
+    //font-size: 175%;
 
     .breadcrumb {
       background: #d6d6d9 !important;
@@ -16,18 +21,29 @@
     }
 
     .participant {
-      height: 425px;
+      //      height: 425px;
       .dl-horizontal {
         margin: 0;
+      }
+      h3 {
+        font-size: 24px;
+        //font-size: 4em;
+      }
+
+      h4 {
+        font-size: 18px;
       }
     }
 
     dl {
       margin: 0;
       dd {
-        line-height: 110%;
+        font-size: 17px;
+        line-height: 18px;
+        //line-height: 115%;
         i {
-          font-size: 90%;
+          font-size: 16px;
+          //font-size: 90%;
           color: #222;
         }
 
@@ -38,14 +54,20 @@
     }
 
     dt {
+      font-size: 18px;
+      line-height: 19px;
+
       .description {
         color: $gray !important;
         font-weight: normal;
-        font-size: 80%;
-        line-height: 115%;
+        font-size: 17px;
+        //font-size: 80%;
+        line-height: 18px;
+        //line-height: 116%;
         padding-bottom: 3px;
       }
     }
+
     .dl-horizontal dt {
       float: left;
       width: 80px;
@@ -77,7 +99,8 @@
     }
     div.text {
       margin-top: -2px;
-      line-height: 110%;
+      line-height: 19px;
+      //line-height: 110%;
     }
 
     h3 {
@@ -91,6 +114,8 @@
     p {
       margin: 0;
       padding: 0 0 8px;
+      font-size: 17px;
+      line-height: 18px;
     }
     .content, p.meta {
       background: #f7f7f7 !important;
@@ -106,8 +131,10 @@
 
     p.meta {
       color: $gray;
-      font-size: 90%;
-      line-height: 130%;
+      font-size: 15px;
+      //font-size: 90%;
+      line-height: 16px;
+      //line-height: 130%;
       padding-bottom: 2px;
       border-bottom: 1px solid $gray-light !important;
     }
@@ -122,7 +149,9 @@
       }
 
       i {
-        font-size: 90%;
+        font-size: 16px;
+        line-height: 17px;
+        //font-size: 90%;
       }
     }
     .row.participant-title {
@@ -146,12 +175,14 @@
       }
 
       h3 {
-        font-size: 4em;
+        font-size: 65px;
+        //font-size: 4em;
       }
 
       h4 {
+        font-size: 35px;
         margin-top: 20px;
-        font-size: 2em;
+        //font-size: 2em;
         color: $gray-light !important;
       }
     }
