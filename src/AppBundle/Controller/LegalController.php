@@ -13,6 +13,7 @@ namespace AppBundle\Controller;
 use AppBundle\Twig\GlobalCustomization;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class LegalController extends Controller
 {
@@ -25,7 +26,11 @@ class LegalController extends Controller
     public function legalAction()
     {
         $description   = 'Aufklärung über die Art, den Umfang und Zwecke der Erhebung und Verwendung personenbezogener Daten dieser Seite.';
-        return $this->render('legal/privacy-page.html.twig', ['pageDescription' => $description]);
+
+        $response = new Response();
+        $response->headers->add(['X-Robots-Tag' => ['noindex', 'noarchive']]);
+
+        return $this->render('legal/privacy-page.html.twig', ['pageDescription' => $description], $response);
     }
 
     /**
@@ -53,6 +58,9 @@ class LegalController extends Controller
     {
         $description   = 'Hier finden Sie alle Angaben zu Verantwortlichkeiten und Informationen, wie Sie mit uns Kontakt auf nehmen können.';
 
-        return $this->render('legal/imprint-page.html.twig', ['pageDescription' => $description]);
+        $response = new Response();
+        $response->headers->add(['X-Robots-Tag' => ['noindex', 'noarchive']]);
+
+        return $this->render('legal/imprint-page.html.twig', ['pageDescription' => $description], $response);
     }
 }

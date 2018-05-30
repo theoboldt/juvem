@@ -200,13 +200,9 @@ class DefaultController extends Controller
 
         $pages = [
             $pageFactory->createForPath(
-                $configDir . 'imprint-content.html.twig', 'imprint', 0.2, Page::CHANGEFREQ_MONTHLY
-            ),
-            $pageFactory->createForPath(
                 $configDir . 'conditions-of-travel-content.html.twig', 'conditions_of_travel', 0.2,
                 Page::CHANGEFREQ_MONTHLY
             ),
-            $pageFactory->create('legal', [], 0.2, null, Page::CHANGEFREQ_MONTHLY),
         ];
 
         /** @var Event $event */

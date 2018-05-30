@@ -1,5 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block head -%}
+<meta name="robots" content="noindex, follow, noarchive, nosnippet, notranslate" />
+<meta name="googlebot" content="noindex, follow, noarchive, nosnippet, notranslate" />
+<meta name="googlebot-news" content="noindex, follow, noarchive, nosnippet, notranslate" />
+{%- endblock %}
+
 {% block title %}Datenschutzerklärung{% endblock %}
 
 {% block body %}
