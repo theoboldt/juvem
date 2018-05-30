@@ -36,7 +36,7 @@ trait WaitingListFlashTrait
      */
     protected function addWaitingListFlashIfRequired(Event $event)
     {
-        if ($event->hasWaitingListThreshold()) {
+        if ($event->hasWaitingListThreshold() && $event->isActive()) {
             $this->addParticipantsCountToCache($event);
             if ($event->getParticipantsCount() >= $event->getWaitingListThreshold()) {
                 $this->addFlash(
