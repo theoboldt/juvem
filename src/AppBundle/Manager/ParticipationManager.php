@@ -16,6 +16,7 @@ use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\User;
+use AppBundle\Form\EventMailType;
 use AppBundle\Twig\MailGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -94,7 +95,7 @@ class ParticipationManager extends AbstractMailerAwareManager
             $template, [
                          'event'         => $event,
                          'participation' => $participation,
-                         'participants'  => $participation->getParticipants()
+                         'participants'  => $participation->getParticipants(),
                      ]
         );
         $message->setTo(
@@ -108,10 +109,13 @@ class ParticipationManager extends AbstractMailerAwareManager
     /**
      * Send a participation email, containing participation and event information
      *
-     * @param array $data  The custom text for email
-     * @param Event $event The event
+     * @param array $data      The custom text for email
+     * @param Event $event     The event
+     * @param int   $recipient Code for recipient, either \AppBundle\Form\EventMailType::RECIPIENT_ALL,
+     *                         \AppBundle\Form\EventMailType::RECIPIENT_CONFIRMED,
+     *                         \AppBundle\Form\EventMailType::RECIPIENT_UNNFIRMED
      */
-    public function mailEventParticipants(array $data, Event $event)
+    public function mailEventParticipants(array $data, Event $event, int $recipient)
     {
         $dataText = [];
         $dataHtml = [];
@@ -135,34 +139,39 @@ class ParticipationManager extends AbstractMailerAwareManager
 
         /** @var Participation $participation */
         foreach ($event->getParticipations() as $participation) {
-            if ($participation->isConfirmed()) {
-                $dataBoth = [
-                    'text' => $dataText,
-                    'html' => $dataHtml,
-                ];
-
-                $contentList = null;
-                foreach ($dataBoth as $type => &$contentList) {
-                    $content = null;
-                    foreach ($contentList as $area => &$content) {
-                        $content = str_replace('{PARTICIPATION_SALUTION}', $participation->getSalution(), $content);
-                        $content = str_replace('{PARTICIPATION_NAME_LAST}', $participation->getNameLast(), $content);
-                    }
-                    unset($content);
-                }
-                unset($contentList);
-
-                $message = $this->mailGenerator->getMessage(
-                    'general-raw', $dataBoth
-                );
-                $message->setTo(
-                    $participation->getEmail(),
-                    $participation->fullname()
-                );
-
-                $this->mailer->send($message);
-
+            if ($participation->isRejected()
+                || $participation->isWithdrawn()
+                || $participation->getDeletedAt() !== null
+                || ($participation->isConfirmed() && $recipient === EventMailType::RECIPIENT_UNCONFIRMED)
+                || (!$participation->isConfirmed() && $recipient === EventMailType::RECIPIENT_CONFIRMED)
+            ) {
+                continue;
             }
+            $dataBoth = [
+                'text' => $dataText,
+                'html' => $dataHtml,
+            ];
+
+            $contentList = null;
+            foreach ($dataBoth as $type => &$contentList) {
+                $content = null;
+                foreach ($contentList as $area => &$content) {
+                    $content = str_replace('{PARTICIPATION_SALUTION}', $participation->getSalution(), $content);
+                    $content = str_replace('{PARTICIPATION_NAME_LAST}', $participation->getNameLast(), $content);
+                }
+                unset($content);
+            }
+            unset($contentList);
+
+            $message = $this->mailGenerator->getMessage(
+                'general-raw', $dataBoth
+            );
+            $message->setTo(
+                $participation->getEmail(),
+                $participation->fullname()
+            );
+
+            $this->mailer->send($message);
         }
     }
 

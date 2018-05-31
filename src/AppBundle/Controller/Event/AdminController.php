@@ -275,9 +275,11 @@ class AdminController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            $recipient = $data['recipient'];
+            unset($data['recipient']);
 
             $participationManager = $this->get('app.participation_manager');
-            $participationManager->mailEventParticipants($data, $event);
+            $participationManager->mailEventParticipants($data, $event, $recipient);
             $this->addFlash(
                 'info',
                 'Die Benachrichtigungs-Emails wurden versandt'
@@ -287,10 +289,11 @@ class AdminController extends Controller
         }
 
         return $this->render(
-            'event/admin/mail.html.twig', array(
-                                            'event' => $event,
-                                            'form'  => $form->createView(),
-                                        )
+            'event/admin/mail.html.twig',
+            [
+                'event' => $event,
+                'form'  => $form->createView(),
+            ]
         );
     }
 
