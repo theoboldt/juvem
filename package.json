@@ -21,6 +21,6 @@
     "jquery-storage-api": "^1.9"
   },
   "dependencies": {
-    "npm": "^5.8.0"
+    "npm": "^5.10.0"
   }
 }
