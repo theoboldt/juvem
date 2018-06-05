@@ -16,7 +16,6 @@ use AppBundle\Export\Sheet\Column\AbstractColumn;
 abstract class AbstractSheet
 {
 
-
     /**
      * Current sheet
      *
@@ -65,11 +64,24 @@ abstract class AbstractSheet
      * @var integer
      */
     protected $rowHeaderLine = null;
-
-
+    
+    /**
+     * Date of file creation
+     *
+     * @var \DateTimeImmutable
+     */
+    protected $created;
+    
+    /**
+     * AbstractSheet constructor.
+     *
+     * @param \PHPExcel_Worksheet $sheet
+     * @throws \Exception In case @see \DateTimeImmutable() creation fails
+     */
     public function __construct(\PHPExcel_Worksheet $sheet)
     {
         $this->sheet = $sheet;
+        $this->created = new \DateTimeImmutable();
     }
 
     /**
@@ -160,6 +172,15 @@ abstract class AbstractSheet
     {
         $sheet = $this->sheet;
 
+        $headerFooter = $sheet->getHeaderFooter();
+        $headerFooter->setDifferentFirst(true);
+        
+        $firstHeaderText = sprintf('&L&K%s %s &K000000 - &B&K%s %s', '1C639E', $title, '262626', $subtitle);
+        $headerFooter->setFirstHeader($firstHeaderText);
+        $footerText = sprintf('&L %s - &B %s &R &P/&N', $title, $subtitle);
+        $headerFooter->setFirstFooter($footerText);
+        $headerFooter->setOddFooter($footerText);
+        
         $column = $this->column();
         $sheet->getColumnDimensionByColumn($column)
               ->setWidth(3);
