@@ -4,11 +4,11 @@
     </div>
     <p class="meta">
         <small>
-            <a href="{{ path('user_detail', {uid: comment.createdBy.uid}) }}">{{ app.user.fullname(comment.createdBy.nameLast, comment.createdBy.nameFirst) }}</a>
+            <a href="{{ path('user_detail', {uid: comment.createdBy.uid}) }}">{{ comment.createdBy|fullname }}</a>
             <span title="{{ comment.createdAt|date("d.m.Y h:i") }}"
                   data-toggle="tooltip">{{ comment.createdAt|ago }}</span>{% if comment.modifiedAt %},
             geändert von <a
-                href="{{ path('user_detail', {uid: comment.modifiedBy.uid}) }}">{{ app.user.fullname(comment.modifiedBy.nameLast, comment.modifiedBy.nameFirst) }}</a>
+                href="{{ path('user_detail', {uid: comment.modifiedBy.uid}) }}">{{ comment.modifiedBy|fullname }}</a>
             <span title="{{ comment.modifiedAt|date("d.m.Y h:i") }}"
                   data-toggle="tooltip">{{ comment.modifiedAt|ago }}</span>{% endif %}{% if comment.deletedAt %},
                 gelöscht <span title="{{ comment.deletedAt|date("d.m.Y h:i") }}"
