@@ -64,14 +64,14 @@ abstract class AbstractSheet
      * @var integer
      */
     protected $rowHeaderLine = null;
-    
+
     /**
      * Date of file creation
      *
      * @var \DateTimeImmutable
      */
     protected $created;
-    
+
     /**
      * AbstractSheet constructor.
      *
@@ -80,8 +80,31 @@ abstract class AbstractSheet
      */
     public function __construct(\PHPExcel_Worksheet $sheet)
     {
-        $this->sheet = $sheet;
         $this->created = new \DateTimeImmutable();
+        $this->sheet = $sheet;
+
+        $this->sheet->getPageSetup()
+                    ->setOrientation(\PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE)
+                    ->setPaperSize(\PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4)
+            ->setRowsToRepeatAtTop(1)
+            ->setColumnsToRepeatAtLeft(1)
+        ;
+
+        $this->sheet->getPageMargins()
+                    ->setTop(0.75)
+                    ->setRight(0.75)
+                    ->setLeft(0.75)
+                    ->setBottom(0.75);
+
+    }
+
+    /**
+     * Get formatted date of file export
+     *
+     * @return string
+     */
+    protected function getCreatedDateFormatted() {
+        return $this->created->format('d.m.y H:i');
     }
 
     /**
@@ -174,61 +197,34 @@ abstract class AbstractSheet
 
         $headerFooter = $sheet->getHeaderFooter();
         $headerFooter->setDifferentFirst(true);
-        
-        $firstHeaderText = sprintf('&L&K%s %s &K000000 - &B&K%s %s', '1C639E', $title, '262626', $subtitle);
+
+        if ($title && $subtitle) {
+            $firstHeaderTemplate = '&L&K%1$s %2$s &K000000 - &B&K%3$s %4$s &R &8&IExport: %5$s, Druck: &D &T';
+        } elseif ($title) {
+            $firstHeaderTemplate = '&L&K%1$s %2$s &R &8&IExport: %5$s, Druck: &D &T';
+        } elseif ($subtitle) {
+            $firstHeaderTemplate = '&L&B&K%3$s %4$s &R &8&IExport: %5$s, Druck: &D &T';
+        } else {
+            $firstHeaderTemplate = '&R &8&IExport: %5$s, Druck: &D &T';
+        }
+        $firstHeaderText = sprintf(
+            $firstHeaderTemplate,
+            '1C639E',
+            $title,
+            '262626',
+            $subtitle,
+            $this->getCreatedDateFormatted()
+        );
         $headerFooter->setFirstHeader($firstHeaderText);
-        $footerText = sprintf('&L %s - &B %s &R &P/&N', $title, $subtitle);
+
+
+
+        $footerText = sprintf('&L %s - &B %s &"-,Regular"(&A) &R &P/&N', $title, $subtitle);
         $headerFooter->setFirstFooter($footerText);
         $headerFooter->setOddFooter($footerText);
-        
-        $column = $this->column();
-        $sheet->getColumnDimensionByColumn($column)
-              ->setWidth(3);
 
-        $row    = null;
-        $column = $this->column();
-
-        if ($title) {
-            $row = $this->row();
-
-            $sheet->setCellValueByColumnAndRow($column, $row, $title);
-            $sheet->getStyleByColumnAndRow($column, $row)
-                  ->getFont()
-                  ->setBold(true)
-                  ->setName('Arial')
-                  ->setSize(13)
-                  ->getColor()
-                  ->setRGB('1C639E');
-            $sheet->getRowDimension($row)
-                  ->setRowHeight(26);
-        }
-
-        if ($subtitle) {
-            $row = $this->row();
-
-            $sheet->setCellValueByColumnAndRow($column, $row, $subtitle);
-            $sheet->getStyleByColumnAndRow($column, $row)
-                  ->getFont()
-                  ->setBold(true)
-                  ->setName('Arial')
-                  ->setSize(19)
-                  ->getColor()
-                  ->setRGB('262626');
-            $sheet->getRowDimension($row)
-                  ->setRowHeight(24);
-        }
-
-        if ($row === null) {
-            $row = 0;
-        }
-        $row += 2;
-
-        $this->rowHeaderLine = $this->row($row);
-        $sheet->getRowDimension($row)
-              ->setRowHeight(5);
-
-        $row = $this->row();
-        $sheet->getRowDimension($row)
+        $this->rowHeaderLine = $this->row(0);
+        $sheet->getRowDimension($this->rowHeaderLine)
               ->setRowHeight(22);
 
         return $this;
@@ -247,8 +243,7 @@ abstract class AbstractSheet
         $sheet->getRowDimension($row)
               ->setRowHeight(22);
 
-        $this->column(0);
-        $columnStart = 1;
+        $columnStart = 0;
 
         if (!count($this->columnList)) {
             return $this;

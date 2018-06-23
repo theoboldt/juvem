@@ -82,16 +82,27 @@ abstract class Export
     public function setMetadata()
     {
         $this->document->getProperties()
-                       ->setCreator($this->customization->organizationName());
-        $this->document->getProperties()
-                       ->setCompany($this->customization->organizationName());
-        $this->document->getProperties()
-                       ->setCategory('Juvem');
+                       ->setCreator($this->customization->organizationName())
+                       ->setCompany($this->customization->organizationName())
+                       ->setCategory('Juvem')
+                       ->setCustomProperty('generationDuration', $this->generationDuration(), \PHPExcel_DocumentProperties::PROPERTY_TYPE_INTEGER);
+
         if ($this->modifier) {
             $name = $this->modifier->fullname();
             $this->document->getProperties()->setCreator($name);
             $this->document->getProperties()->setLastModifiedBy($name);
         }
+    }
+
+    /**
+     * Get export generation duration in seconds
+     *
+     * @return int
+     */
+    private function generationDuration()
+    {
+        $now = new \DateTime();
+        return (int)$now->format('U') - (int)$this->getTimestamp()->format('U');
     }
 
     /**

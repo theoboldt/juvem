@@ -36,7 +36,6 @@ abstract class ParticipantsSheetBase extends AbstractSheet
     public function setHeader($title = null, $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Teilnehmer');
-        $this->row = $this->row - 1; //reset row index by 1
         parent::setColumnHeaders();
 
         $this->sheet->getRowDimension($this->row(null, false) - 1)->setRowHeight(-1);
