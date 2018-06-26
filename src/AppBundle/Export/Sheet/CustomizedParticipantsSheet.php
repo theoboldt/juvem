@@ -18,19 +18,20 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CustomizedParticipantsSheet extends ParticipantsSheetBase
 {
     /**
      * CustomizedParticipantsSheet constructor.
      *
-     * @param \PHPExcel_Worksheet $sheet        The excel workbook to use
+     * @param Worksheet $sheet        The excel workbook to use
      * @param Event               $event        Event to export
      * @param array               $participants List of participants qualified for export
      * @param array               $config       Configuration definition for export, validated
      *                                          via @see \AppBundle\Export\Customized\Configuration
      */
-    public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participants, array $config)
+    public function __construct(Worksheet $sheet, Event $event, array $participants, array $config)
     {
         $this->event        = $event;
         $this->participants = $participants;

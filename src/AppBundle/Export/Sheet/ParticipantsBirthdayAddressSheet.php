@@ -14,6 +14,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipantsBirthdayAddressSheet extends AbstractSheet
 {
@@ -33,7 +34,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
     protected $participants;
 
 
-    public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participants)
+    public function __construct(Worksheet $sheet, Event $event, array $participants)
     {
         $this->event        = $event;
         $this->participants = $participants;

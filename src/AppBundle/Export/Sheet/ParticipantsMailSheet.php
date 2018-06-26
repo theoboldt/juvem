@@ -15,11 +15,12 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use libphonenumber\PhoneNumberUtil;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipantsMailSheet extends ParticipantsSheet
 {
 
-    public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participants)
+    public function __construct(Worksheet $sheet, Event $event, array $participants)
     {
         parent::__construct($sheet, $event, $participants);
 

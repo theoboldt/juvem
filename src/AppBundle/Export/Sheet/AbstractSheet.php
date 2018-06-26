@@ -12,6 +12,9 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Export\Sheet\Column\AbstractColumn;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 abstract class AbstractSheet
 {
@@ -19,7 +22,7 @@ abstract class AbstractSheet
     /**
      * Current sheet
      *
-     * @var \PHPExcel_Worksheet
+     * @var Worksheet
      */
     protected $sheet;
 
@@ -35,14 +38,14 @@ abstract class AbstractSheet
      *
      * @var integer
      */
-    protected $column = 0;
+    protected $column = 1;
 
     /**
      * Maximum of column index
      *
      * @var integer
      */
-    protected $columnMax = 0;
+    protected $columnMax = 1;
 
     /**
      * Current row index
@@ -75,27 +78,24 @@ abstract class AbstractSheet
     /**
      * AbstractSheet constructor.
      *
-     * @param \PHPExcel_Worksheet $sheet
+     * @param Worksheet $sheet
      * @throws \Exception In case @see \DateTimeImmutable() creation fails
      */
-    public function __construct(\PHPExcel_Worksheet $sheet)
+    public function __construct(Worksheet $sheet)
     {
         $this->created = new \DateTimeImmutable();
-        $this->sheet = $sheet;
-
+        $this->sheet   = $sheet;
         $this->sheet->getPageSetup()
-                    ->setOrientation(\PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE)
-                    ->setPaperSize(\PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4)
-            ->setRowsToRepeatAtTop(1)
-            ->setColumnsToRepeatAtLeft(1)
-        ;
+                    ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
+                    ->setPaperSize(PageSetup::PAPERSIZE_A4)
+                    ->setRowsToRepeatAtTop([1, 1])
+                    ->setColumnsToRepeatAtLeft([1, 1]);
 
         $this->sheet->getPageMargins()
                     ->setTop(0.75)
                     ->setRight(0.75)
                     ->setLeft(0.75)
                     ->setBottom(0.75);
-
     }
 
     /**
@@ -217,8 +217,6 @@ abstract class AbstractSheet
         );
         $headerFooter->setFirstHeader($firstHeaderText);
 
-
-
         $footerText = sprintf('&L %s - &B %s &"-,Regular"(&A) &R &P/&N', $title, $subtitle);
         $headerFooter->setFirstFooter($footerText);
         $headerFooter->setOddFooter($footerText);
@@ -243,7 +241,7 @@ abstract class AbstractSheet
         $sheet->getRowDimension($row)
               ->setRowHeight(22);
 
-        $columnStart = 0;
+        $columnStart = 1;
 
         if (!count($this->columnList)) {
             return $this;
@@ -317,7 +315,7 @@ abstract class AbstractSheet
               ->applyFromArray(
                   array(
                       'fill' => array(
-                          'type'  => \PHPExcel_Style_Fill::FILL_SOLID,
+                          'type'  => Fill::FILL_SOLID,
                           'color' => array('rgb' => '1C639E')
                       )
                   )

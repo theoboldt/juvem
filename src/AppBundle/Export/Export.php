@@ -13,9 +13,8 @@ namespace AppBundle\Export;
 
 use AppBundle\Entity\User;
 use AppBundle\Twig\GlobalCustomization;
-use PHPExcel;
+use \PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PHPExcel_Worksheet_PageSetup;
-use PHPExcel_Writer_Excel2007;
 
 abstract class Export
 {
@@ -37,7 +36,7 @@ abstract class Export
     /**
      * Excel document
      *
-     * @var PHPExcel
+     * @var \PhpOffice\PhpSpreadsheet\Spreadsheet
      */
     protected $document;
 
@@ -51,7 +50,7 @@ abstract class Export
     /**
      * Current sheet
      *
-     * @var \PHPExcel_Worksheet
+     * @var \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
      */
     public $sheet;
 
@@ -73,7 +72,7 @@ abstract class Export
         $this->customization = $customization;
         $this->modifier      = $modifier;
         $this->timestamp     = new \DateTime();
-        $this->document      = new PHPExcel();
+        $this->document      = new Spreadsheet();
     }
 
     /**
@@ -108,7 +107,7 @@ abstract class Export
     /**
      * Add a new sheet to the excel file and return it
      *
-     * @return \PHPExcel_Worksheet
+     * @return \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
      * @throws \PHPExcel_Exception
      */
     public function addSheet()
@@ -160,11 +159,10 @@ abstract class Export
      * Write result to transmitted path of file
      *
      * @param string $path Path to result file
-     * @throws \PHPExcel_Writer_Exception
      */
     public function write($path)
     {
-        $writer = new PHPExcel_Writer_Excel2007($this->document);
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($this->document);
         $writer->save($path);
     }
 

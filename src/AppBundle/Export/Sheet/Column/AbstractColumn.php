@@ -11,6 +11,8 @@
 namespace AppBundle\Export\Sheet\Column;
 
 
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
+
 abstract class AbstractColumn
 {
 	/**
@@ -65,7 +67,7 @@ abstract class AbstractColumn
 	/**
 	 * Array containing conditional style definitions for data cells
 	 *
-	 * @var \PHPExcel_Style_Conditional[]
+	 * @var Conditional[]
 	 */
 	protected $dataCellConditionals = array();
 
@@ -76,11 +78,17 @@ abstract class AbstractColumn
 	 */
 	protected $identifier;
 
-	public function __construct($identifier, $title)
-	{
-		$this->identifier = $identifier;
-		$this->title = $title;
-	}
+    /**
+     * AbstractColumn constructor.
+     *
+     * @param string $identifier
+     * @param string $title
+     */
+    public function __construct($identifier, $title)
+    {
+        $this->identifier = $identifier;
+        $this->title      = $title;
+    }
 
 	/**
 	 * Get identifier of this column for use in column list
@@ -215,7 +223,7 @@ abstract class AbstractColumn
 	}
 
 	/**
-	 * @return \PHPExcel_Style_Conditional[]
+	 * @return Conditional[]
 	 */
 	public function getDataCellConditionals()
 	{
@@ -223,7 +231,7 @@ abstract class AbstractColumn
 	}
 
 	/**
-	 * @param \PHPExcel_Style_Conditional $dataCellConditional
+	 * @param Conditional $dataCellConditional
 	 * @return AbstractColumn
 	 */
 	public function addDataCellConditional($dataCellConditional)

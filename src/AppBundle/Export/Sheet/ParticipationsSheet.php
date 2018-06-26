@@ -12,10 +12,10 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipationsSheet extends AbstractSheet
 {
@@ -35,7 +35,7 @@ class ParticipationsSheet extends AbstractSheet
     protected $participations;
 
 
-    public function __construct(\PHPExcel_Worksheet $sheet, Event $event, array $participations)
+    public function __construct(Worksheet $sheet, Event $event, array $participations)
     {
         $this->event          = $event;
         $this->participations = $participations;

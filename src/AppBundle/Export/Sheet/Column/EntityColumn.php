@@ -11,6 +11,7 @@
 namespace AppBundle\Export\Sheet\Column;
 
 
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -45,9 +46,9 @@ class EntityColumn extends AbstractColumn
     {
         $column = self::createSmallColumn($identifier, $title, $dataAttribute);
 
-        $conditional = new \PHPExcel_Style_Conditional();
-        $conditional->setConditionType(\PHPExcel_Style_Conditional::CONDITION_CONTAINSTEXT);
-        $conditional->setOperatorType(\PHPExcel_Style_Conditional::OPERATOR_CONTAINSTEXT)->setText('nein');
+        $conditional = new Conditional();
+        $conditional->setConditionType(Conditional::CONDITION_CONTAINSTEXT);
+        $conditional->setOperatorType(Conditional::OPERATOR_CONTAINSTEXT)->setText('nein');
         $conditional->getStyle()->getFont()->getColor()->setRGB('F2F2F2');
 
         $column->addDataCellConditional($conditional);
@@ -123,7 +124,7 @@ class EntityColumn extends AbstractColumn
 	/**
 	 * Write element to excel file
 	 *
-	 * @param \PHPExcel_Worksheet $sheet Excel sheet to write
+	 * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet Excel sheet to write
 	 * @param integer $row Current row
 	 * @param mixed $entity Entity to process
 	 */
