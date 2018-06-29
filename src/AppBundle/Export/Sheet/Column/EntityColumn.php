@@ -86,7 +86,7 @@ class EntityColumn extends AbstractColumn
      * @param string|null $dataAttribute    Name of attribute from witch the data has to be fetched if
      *                                      differing from $identifier
      */
-	public function __construct($identifier, $title, $dataAttribute = null)
+	public function  __construct($identifier, $title, $dataAttribute = null)
 	{
         if ($dataAttribute) {
 		$this->dataAttribute = $dataAttribute;

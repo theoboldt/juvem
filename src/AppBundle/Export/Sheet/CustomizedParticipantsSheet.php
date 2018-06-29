@@ -16,8 +16,10 @@ use AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Export\Sheet\Column\AcquisitionAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CustomizedParticipantsSheet extends ParticipantsSheetBase
@@ -194,8 +196,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             $this->addColumn($column);
         }
 
-        $this->appendAcquisitionColumns($event, $config, true);
-        $this->appendAcquisitionColumns($event, $config, false);
+        $this->appendParticipantAcquisitionColumns($event, $configParticipant['acquisitionFields']);
 
 
         $configParticipation = $config['participation'];
@@ -273,37 +274,46 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                     $configParticipation['phoneNumber'] == 'comma_description' ? true : null)
             );
         }
+
+        $this->appendParticipationAcquisitionColumns($event, $configParticipation['acquisitionFields']);
     }
 
     /**
-     * @param Event $event                             Event to export
-     * @param array $config                            Configuration definition for export,
-     *                                                 validated via @see Configuration
-     * @param bool  $includeParticipationFields        Set to true to append fields for participation, false to add
-     *                                                 the fields related to participants
+     * Append participant related acquisition field fillouts
+     *
+     * @param Event $event  Related event
+     * @param array $config Related config for all participant related fillouts
      */
-    protected function appendAcquisitionColumns(Event $event, array $config, $includeParticipationFields)
+    private function appendParticipantAcquisitionColumns(Event $event, array $config)
     {
-        if ($includeParticipationFields) {
-            $config  = $config['participation']['acquisitionFields'];
-            $related = 'participation_';
-        } else {
-            $config  = $config['participant']['acquisitionFields'];
-            $related = 'participant_';
-        }
-        if (!count($config)) {
-            return;
-        }
-
         /** @var AcquisitionAttribute $attribute */
-        foreach ($event->getAcquisitionAttributes(
-            $includeParticipationFields, !$includeParticipationFields
-        ) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
             $bid = 'acq_field_' . $attribute->getBid();
             if (isset($config[$bid]) && self::issetAndTrue($config[$bid], 'enabled')) {
-                $this->addColumn(
-                    new EntityColumn($related . $bid, $attribute->getManagementTitle(), $bid)
+                $column = new AcquisitionAttributeColumn(
+                    'participant_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
+                $this->addColumn($column);
+            }
+        }
+    }
+
+    /**
+     * Append participation related acquisition field fillouts
+     *
+     * @param Event $event  Related event
+     * @param array $config Related config for all participation related fillouts
+     */
+    private function appendParticipationAcquisitionColumns(Event $event, array $config)
+    {
+        /** @var AcquisitionAttribute $attribute */
+        foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
+            $bid = 'acq_field_' . $attribute->getBid();
+            if (isset($config[$bid]) && self::issetAndTrue($config[$bid], 'enabled')) {
+                $column = new ParticipationAcquisitionAttributeColumn(
+                    'participation_' . $bid, $attribute->getManagementTitle(), $attribute
+                );
+                $this->addColumn($column);
             }
         }
     }
