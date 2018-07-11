@@ -43,6 +43,10 @@ framework:
     fragments:       ~
     http_method_override: true
 
+sensio_framework_extra:
+    router:
+        annotations: false
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
