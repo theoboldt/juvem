@@ -12,11 +12,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
-use AppBundle\Juvimg\JuvimgService;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -133,8 +131,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/login_check")
-     * @Method({"GET"})
+     * @Route("/login_check", methods={"GET"})
      */
     public function loginCheckFallbackAction()
     {
