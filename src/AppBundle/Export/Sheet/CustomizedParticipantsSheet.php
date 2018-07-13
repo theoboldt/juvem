@@ -354,6 +354,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                             $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
                             $attribute
                         );
+                        $column->addHeaderStyleCallback(function($style){
+                            /** @var \PHPExcel_Style $style */
+                            $style->getAlignment()->setTextRotation(45);
+                        });
+                        $column->setWidth(4);
                         $column->setConverter($converter);
                         $this->addColumn($column);
                     }
