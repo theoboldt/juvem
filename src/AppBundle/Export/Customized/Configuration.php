@@ -19,6 +19,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class Configuration implements ConfigurationInterface
 {
+
+    const OPTION_SEPARATE_COLUMNS = 'separateColumns';
+
     /**
      * Event this export is configurated for
      *
@@ -142,10 +145,15 @@ class Configuration implements ConfigurationInterface
 
             if (ChoiceType::class == $attribute->getFieldType()) {
                 if ($attribute->getFieldTypeChoiceType()) {
-                    $optionList = ['Antworten kommasepariert auflisten' => 'commaSeparated'];
+                    $optionList = [
+                        'Antworten kommasepariert auflisten' => 'commaSeparated'
+                    ];
                 } else {
-                    $optionList = ['Gewählte Antwort anzeigen' => 'selectedAnswer'];
+                    $optionList = [
+                        'Gewählte Antwort anzeigen' => 'selectedAnswer'
+                    ];
                 }
+                $optionList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen'] = self::OPTION_SEPARATE_COLUMNS;
 
                 $attributeChildren
                         ->append($this->booleanNodeCreator('enabled', 'Feld anzeigen'))

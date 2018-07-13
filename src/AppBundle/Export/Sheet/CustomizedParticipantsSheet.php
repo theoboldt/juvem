@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -288,13 +289,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
     {
         /** @var AcquisitionAttribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
-            $bid = 'acq_field_' . $attribute->getBid();
-            if (isset($config[$bid]) && self::issetAndTrue($config[$bid], 'enabled')) {
-                $column = new AcquisitionAttributeColumn(
-                    'participant_' . $bid, $attribute->getManagementTitle(), $attribute
-                );
-                $this->addColumn($column);
-            }
+            $this->appendAcquisitionColumn('participant', $attribute, $config);
         }
     }
 
@@ -308,13 +303,67 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
     {
         /** @var AcquisitionAttribute $attribute */
         foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
-            $bid = 'acq_field_' . $attribute->getBid();
-            if (isset($config[$bid]) && self::issetAndTrue($config[$bid], 'enabled')) {
-                $column = new ParticipationAcquisitionAttributeColumn(
-                    'participation_' . $bid, $attribute->getManagementTitle(), $attribute
+            $this->appendAcquisitionColumn('participation', $attribute, $config);
+        }
+    }
+
+    /**
+     * Append transmitted acquisition attribute column
+     *
+     * @param string               $group     Either participant or participation
+     * @param AcquisitionAttribute $attribute Related attribute entity
+     * @param array                $config    Column config
+     */
+    private function appendAcquisitionColumn(
+        string $group,
+        AcquisitionAttribute $attribute,
+        array $config
+    ) {
+        $bid = 'acq_field_' . $attribute->getBid();
+        if (!isset($config[$bid]) || !self::issetAndTrue($config[$bid], 'enabled')) {
+            return;
+        }
+        switch($group) {
+            case 'participant':
+                $class = AcquisitionAttributeColumn::class;
+                break;
+            case 'participation':
+                $class = ParticipationAcquisitionAttributeColumn::class;
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown acquisition field appended');
+        }
+        switch ($config[$bid]['display']) {
+            case \AppBundle\Export\Customized\Configuration::OPTION_SEPARATE_COLUMNS:
+                if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
+                    $options = $attribute->getFieldTypeChoiceOptions(true);
+                    foreach ($options as $optionLabel => $optionKey) {
+                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionKey) {
+                            $selectedOptions = $fillout->getValue();
+                            if (in_array($optionKey, $selectedOptions)) {
+                                return 'x';
+                            } else {
+                                return '';
+                            }
+                        };
+                        /** @var AcquisitionAttributeColumn $column */
+                        $column = new $class(
+                            $group . '_' . $bid.'_'.$optionKey,
+                            $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
+                            $attribute
+                        );
+                        $column->setConverter($converter);
+                        $this->addColumn($column);
+                    }
+                }
+                break;
+            default:
+                /** @var AcquisitionAttributeColumn $column */
+                $column = new $class(
+                    $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
                 $this->addColumn($column);
-            }
+                break;
         }
     }
 
