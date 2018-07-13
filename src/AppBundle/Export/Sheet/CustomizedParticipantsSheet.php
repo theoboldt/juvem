@@ -338,9 +338,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
                     $options = $attribute->getFieldTypeChoiceOptions(true);
                     foreach ($options as $optionLabel => $optionKey) {
-                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionKey) {
+                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionLabel, $optionKey) {
                             $selectedOptions = $fillout->getValue();
-                            if (in_array($optionKey, $selectedOptions)) {
+                            if ((is_array($selectedOptions) && in_array($optionKey, $selectedOptions))
+                                || $selectedOptions === $optionLabel
+                            ) {
                                 return 'x';
                             } else {
                                 return '';
@@ -348,7 +350,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                         };
                         /** @var AcquisitionAttributeColumn $column */
                         $column = new $class(
-                            $group . '_' . $bid.'_'.$optionKey,
+                            $group . '_' . $bid . '_' . $optionKey,
                             $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
                             $attribute
                         );
