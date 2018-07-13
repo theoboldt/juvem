@@ -338,10 +338,10 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
                     $options = $attribute->getFieldTypeChoiceOptions(true);
                     foreach ($options as $optionLabel => $optionKey) {
-                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionLabel, $optionKey) {
+                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionKey) {
                             $selectedOptions = $fillout->getValue();
                             if ((is_array($selectedOptions) && in_array($optionKey, $selectedOptions))
-                                || $selectedOptions === $optionLabel
+                                || $selectedOptions === $optionKey
                             ) {
                                 return 'x';
                             } else {
