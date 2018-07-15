@@ -110,6 +110,20 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-4 control-label">Sichtbarkeit</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if acquisition.isPublic %}
+                                    Daten werden von Eltern eingegeben (Feld wird im Formular aufgeführt)
+                                {% else %}
+                                    Daten werden nur von Adminstratoren eingegeben
+                                {% endif %}
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-4 control-label">Je Anmeldung erfassen</label>
 
                         <div class="col-sm-8">

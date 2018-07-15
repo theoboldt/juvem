@@ -112,6 +112,13 @@ class AcquisitionAttribute
     protected $fillouts;
 
     /**
+     * Stores if attribute is public (and included in form or not)
+     *
+     * @ORM\Column(type="boolean", name="is_public")
+     */
+    protected $isPublic = true;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -502,6 +509,28 @@ class AcquisitionAttribute
     public function isRequired()
     {
         return (bool)$this->isRequired;
+    }
+
+    /**
+     * Get if attribute is public (and included in form or not)
+     *
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return (bool)$this->isPublic;
+    }
+
+    /**
+     * Set if attribute is public (and included in form or not)
+     *
+     * @param bool $isPublic
+     * @return AcquisitionAttribute
+     */
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
+        return $this;
     }
 
     /**

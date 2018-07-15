@@ -91,6 +91,13 @@ class AcquisitionType extends AbstractType
                 'required' => false
             ]
         )->add(
+            'isPublic',
+            CheckboxType::class,
+            [
+                'label'    => 'Sichtbarkeit',
+                'required' => false
+            ]
+        )->add(
             'fieldTypeChoiceType',
             ChoiceType::class,
             [

@@ -33,16 +33,27 @@
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group">
                     <label class="control-label">Erfassung</label>
-                    <p class="help-block">Die Eingabe des Feldes kann Gleichzeitig je Anmeldung und je Teilnehmer
-                        erfasst werden. </p>
+                    <p class="help-block">Die Eingabe des Feldes kann gleichzeitig je Anmeldung und je Teilnehmer erfasst werden. </p>
                     {{ form_row(form.useAtParticipation) }}
                     {{ form_row(form.useAtParticipant) }}
                 </div>
             </div>
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group">
-                    <label class="control-label">Gewichtung</label>
-                    {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">Gewichtung</label>
+                            {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">Öffentlich</label>
+                            {{ form_row(form.isPublic, {'label': 'Wenn das Feld öffentlich erfasst wird, wird es im Anmeldeformular aufgeführt. Wenn nicht, können die Werte für dieses Feld nur von Administratoren eingegeben/gesehen werden. (NICHT ÖFFENTLICHE FELDER WERDEN NOCH NICHT UNTERSTÜTZT.)'}) }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
