@@ -19,7 +19,7 @@
                 <button type="button" class="btn btn-default btn-xs btn-round"
                         data-toggle="popover"
                         data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    {{ 'question-sign'|glyph }}
                 </button>
                 {{ form_widget(form.food) }}
             </div>
@@ -44,7 +44,7 @@
                 <button type="button" class="btn btn-default btn-xs btn-round"
                         data-toggle="popover"
                         data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir ohne schriftliche Anweisungen Teilnehmern keine Medikamente verabreichen dürfen.)">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    {{ 'question-sign'|glyph }}
                 </button>
                 {{ form_widget(form.infoMedical) }}
             </div>
@@ -55,7 +55,7 @@
                 <button type="button" class="btn btn-default btn-xs btn-round"
                         data-toggle="popover"
                         data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    {{ 'question-sign'|glyph }}
                 </button>
                 {{ form_widget(form.infoGeneral) }}
             </div>
@@ -63,15 +63,16 @@
     </div>
     <div class="row">
         {% for fieldName,formField in form %}
+            {% dump(form) %}
             {% if fieldName starts with 'acq_field_' %}
                 <div class="col-xs-12 col-sm-6">
                     <div class="form-group acquisition-attribute">
                         {{ form_label(formField) }}
-                        {% if acquisitionFields[fieldName].formDescription %}
+                        {% if false and acquisitionFields[fieldName].formDescription %}
                             <button type="button" class="btn btn-default btn-xs btn-round"
                                     data-toggle="popover"
                                     data-content="{{ acquisitionFields[fieldName].formDescription }}">
-                                <span class="glyphicon glyphicon-question-sign"></span>
+                                {{ 'question-sign'|glyph }}
                             </button>
                         {% endif %}
                         {{ form_widget(formField) }}
