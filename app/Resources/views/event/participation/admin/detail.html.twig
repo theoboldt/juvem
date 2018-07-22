@@ -414,7 +414,12 @@
                             </dd>
                             {% for fillout in participation.acquisitionAttributeFillouts %}
                                 <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                                    data-placement="right">{{ fillout.attribute.formTitle }}</dt>
+                                    data-placement="right">
+                                    {%- if not fillout.attribute.isPublic -%}
+                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                                    {% endif %}
+                                    {{ fillout.attribute.formTitle }}
+                                </dt>
                                 <dd>{{ fillout }}</dd>
                             {% endfor %}
                             <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
@@ -586,7 +591,13 @@
                                             </dd>
                                         {% endif -%}
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
-                                            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip" data-placement="right">{{ fillout.attribute.formTitle }}</dt>
+                                            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                                data-placement="right">
+                                                {%- if not fillout.attribute.isPublic -%}
+                                                    {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                                                {% endif %}
+                                                {{ fillout.attribute.formTitle }}
+                                            </dt>
                                             <dd>{{ fillout }}</dd>
                                         {% endfor %}
                                         <dt>Weitere Teilnahmen</dt>

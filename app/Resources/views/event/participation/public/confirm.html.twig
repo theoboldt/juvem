@@ -73,8 +73,10 @@
                                         </address>
                                     </dd>
                                     {% for fillout in participation.acquisitionAttributeFillouts %}
-                                        <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                        <dd>{{ fillout }}</dd>
+                                        {% if fillout.attribute.public %}
+                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                            <dd>{{ fillout }}</dd>
+                                        {% endif %}
                                     {% endfor %}
                                 </dl>
                             </div>
@@ -124,8 +126,10 @@
                                                     {% endif %}
                                                 </dd>
                                                 {% for fillout in participant.acquisitionAttributeFillouts %}
-                                                    <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                                    <dd>{{ fillout }}</dd>
+                                                    {% if fillout.attribute.public %}
+                                                        <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                                        <dd>{{ fillout }}</dd>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </dl>
                                         </div>

@@ -71,10 +71,14 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group acquisition-attribute">
                             {{ form_label(formField) }}
-                            {% if acquisitionFields[fieldName].formDescription %}
+                            {%- set acquisitionField = acquisitionFields[fieldName] -%}
+                            {% if not acquisitionField.isPublic %}
+                                {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                            {%- endif -%}
+                            {% if acquisitionField.formDescription %}
                                 <button type="button" class="btn btn-default btn-xs btn-round"
                                         data-toggle="popover"
-                                        data-content="{{ acquisitionFields[fieldName].formDescription }}">
+                                        data-content="{{ acquisitionField.formDescription }}">
                                     <span class="glyphicon glyphicon-question-sign"></span>
                                 </button>
                             {% endif %}

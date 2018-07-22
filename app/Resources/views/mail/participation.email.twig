@@ -27,7 +27,7 @@ DATEN DER ELTERN:
     {{ participation.addressZip }} {{ participation.addressCity }}
   E-Mail Adresse: {{ participation.email }}
 {% for fillout in  participation.acquisitionAttributeFillouts %}
-    {{ fillout.attribute.formTitle }}: {{ fillout }}{% endfor %}
+    {% if fillout.attribute.public %}{{ fillout.attribute.formTitle }}: {{ fillout }}{% endif %}{% endfor %}
 
 DATEN DER TEILNEHMER:
 {% for participant in participation.getParticipants() %}
@@ -38,7 +38,7 @@ DATEN DER TEILNEHMER:
     Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
     Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
 {% for fillout in participant.acquisitionAttributeFillouts %}
-    {{ fillout.attribute.formTitle }}: {{ fillout }}{% endfor %}
+    {% if fillout.attribute.public %}{{ fillout.attribute.formTitle }}: {{ fillout }}{% endif %}{% endfor %}
 
     Medizinische Hinweise: {% if not participant.infoMedical %}(keine Besonderheiten){% else %}
        {{ participant.infoMedical }}{% endif %}
@@ -83,10 +83,12 @@ Mit besten Grüßen,
                 <td>{{ participation.nameLast }}</td>
             </tr>
             {% for fillout in participation.acquisitionAttributeFillouts %}
-                <tr>
-                    <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                    <td>{{ fillout }}</td>
-                </tr>
+                {% if fillout.attribute.public %}
+                    <tr>
+                        <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
+                        <td>{{ fillout }}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
             <tr>
                 <td class="thead"><abbr title="Telefonnummern">Telefon</abbr></td>
@@ -144,10 +146,12 @@ Mit besten Grüßen,
                     <td>{{ participant.getBirthday|date("d.m.Y") }}</td>
                 </tr>
                 {% for fillout in participant.acquisitionAttributeFillouts %}
-                    <tr>
-                        <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                        <td>{{ fillout }}</td>
-                    </tr>
+                    {% if fillout.attribute.public %}
+                        <tr>
+                            <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
+                            <td>{{ fillout }}</td>
+                        </tr>
+                    {% endif -%}
                 {% endfor %}
                 <tr>
                     <td class="thead">Ernährung</td>

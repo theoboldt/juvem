@@ -67,9 +67,11 @@
                                 </address>
                             </dd>
                             {% for fillout in participation.acquisitionAttributeFillouts %}
-                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                                    data-placement="right">{{ fillout.attribute.formTitle }}</dt>
-                                <dd>{{ fillout }}</dd>
+                                {% if fillout.attribute.public %}
+                                    <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                        data-placement="right">{{ fillout.attribute.formTitle }}</dt>
+                                    <dd>{{ fillout }}</dd>
+                                {% endif %}
                             {% endfor %}
                             <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
@@ -158,9 +160,11 @@
                                             {% endif %}
                                         </dd>
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
-                                            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                                                data-placement="right">{{ fillout.attribute.formTitle }}</dt>
-                                            <dd>{{ fillout }}</dd>
+                                            {% if fillout.attribute.public %}
+                                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                                    data-placement="right">{{ fillout.attribute.formTitle }}</dt>
+                                                <dd>{{ fillout }}</dd>
+                                            {% endif %}
                                         {% endfor %}
                                     </dl>
                                 </div>

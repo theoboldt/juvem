@@ -69,7 +69,14 @@ class PublicParticipateController extends Controller
             }
         }
 
-        $form = $this->createForm(ParticipationType::class, $participation);
+        $form = $this->createForm(
+            ParticipationType::class,
+            $participation,
+            [
+                ParticipationType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipationType::ACQUISITION_FIELD_PRIVATE => false,
+            ]
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,9 +96,9 @@ class PublicParticipateController extends Controller
             'event/participation/public/begin.html.twig',
             [
                 'event'                          => $event,
-                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false),
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, true, false),
                 'participations'                 => $participations,
-                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true),
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, true, false),
                 'form'                           => $form->createView(),
             ]
         );

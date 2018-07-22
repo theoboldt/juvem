@@ -195,7 +195,14 @@ class AdminSingleController extends Controller
         $event         = $participation->getEvent();
         $this->denyAccessUnlessGranted('participants_edit', $event);
 
-        $form = $this->createForm(ParticipationBaseType::class, $participation);
+        $form = $this->createForm(
+            ParticipationBaseType::class,
+            $participation,
+            [
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
+        );
         $form->remove('phoneNumbers');
         $form->remove('participants');
         $form->handleRequest($request);
@@ -219,7 +226,7 @@ class AdminSingleController extends Controller
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, true, true),
             )
         );
     }
@@ -299,7 +306,13 @@ class AdminSingleController extends Controller
         $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $form = $this->createForm(
-            ParticipantType::class, $participant, array('participation' => $participation)
+            ParticipantType::class,
+            $participant,
+            [
+                ParticipantType::PARTICIPATION_FIELD       => $participation,
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
         );
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -329,7 +342,7 @@ class AdminSingleController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, true),
             )
         );
     }
@@ -352,7 +365,13 @@ class AdminSingleController extends Controller
         $this->denyAccessUnlessGranted('participants_edit', $event);
 
         $form = $this->createForm(
-            ParticipantType::class, $participant, array('participation' => $participation)
+            ParticipantType::class,
+            $participant,
+            [
+                ParticipantType::PARTICIPATION_FIELD       => $participation,
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
         );
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -381,7 +400,7 @@ class AdminSingleController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, true),
             )
         );
     }

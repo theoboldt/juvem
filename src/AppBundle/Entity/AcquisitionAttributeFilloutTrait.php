@@ -92,19 +92,22 @@ trait AcquisitionAttributeFilloutTrait
             $fillout = new AcquisitionAttributeFillout();
             if ($this instanceof Participation) {
                 $fillout->setParticipation($this);
-                $attributes = $event->getAcquisitionAttributes(true, false);
+                $attributes = $event->getAcquisitionAttributes(true, false, true, true);
             } elseif($this instanceof Participant) {
                 $fillout->setParticipant($this);
-                $attributes = $event->getAcquisitionAttributes(false, true);
+                $attributes = $event->getAcquisitionAttributes(false, true, true, true);
             } else {
                 throw new \InvalidArgumentException('This acquisition attribute fillout trait is used at unknown class');
             }
             /** @var AcquisitionAttribute $attribute */
             foreach ($attributes as $attribute) {
-                if ($attribute->getBid() == $bid) {
+                if ((int)$attribute->getBid() === (int)$bid) {
                     $fillout->setAttribute($attribute);
                     break;
                 }
+            }
+            if (!$fillout->getAttribute()) {
+                throw new \InvalidArgumentException('No attribute for fillout found');
             }
             $this->addAcquisitionAttributeFillout($fillout);
             return $fillout;

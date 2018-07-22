@@ -215,7 +215,13 @@ class PublicManagementController extends Controller
             throw new AccessDeniedHttpException('Participation is related to another user');
         }
 
-        $form = $this->createForm(ParticipationBaseType::class, $participation);
+        $form = $this->createForm(
+            ParticipationBaseType::class,
+            $participation,
+            [
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => false,
+            ]        );
         $form->remove('phoneNumbers');
         $form->remove('participants');
         $form->handleRequest($request);
@@ -324,7 +330,13 @@ class PublicManagementController extends Controller
         }
 
         $form = $this->createForm(
-            ParticipantType::class, $participant, array('participation' => $participation)
+            ParticipantType::class,
+            $participant,
+            [
+                ParticipantType::PARTICIPATION_FIELD       => $participation,
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => false,
+            ]
         );
 
         $form->handleRequest($request);
@@ -349,7 +361,7 @@ class PublicManagementController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, false),
             )
         );
     }
@@ -375,7 +387,13 @@ class PublicManagementController extends Controller
         }
 
         $form = $this->createForm(
-            ParticipantType::class, $participant, array('participation' => $participation)
+            ParticipantType::class,
+            $participant,
+            [
+                ParticipantType::PARTICIPATION_FIELD       => $participation,
+                ParticipantType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipantType::ACQUISITION_FIELD_PRIVATE => false,
+            ]
         );
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -27,6 +27,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantType extends AbstractType
 {
+    const PARTICIPATION_FIELD = 'participation';
+
+    const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
+
+    const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
 
     /**
      * {@inheritdoc}
@@ -109,9 +114,11 @@ class ParticipantType extends AbstractType
             );
 
         /** @var Participation $participation */
-        $participation        = $options['participation'];
+        $participation        = $options[self::PARTICIPATION_FIELD];
         $event                = $participation->getEvent();
-        $attributes           = $event->getAcquisitionAttributes(false, true);
+        $attributes           = $event->getAcquisitionAttributes(
+            false, true, $options[self::ACQUISITION_FIELD_PUBLIC], $options[self::ACQUISITION_FIELD_PRIVATE]
+        );
         $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
         /** @var AcquisitionAttribute $attribute */
@@ -147,8 +154,14 @@ class ParticipantType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired('participation');
-        $resolver->setAllowedTypes('participation', Participation::class);
+        $resolver->setRequired(self::PARTICIPATION_FIELD);
+        $resolver->setAllowedTypes(self::PARTICIPATION_FIELD, Participation::class);
+
+        $resolver->setRequired(self::ACQUISITION_FIELD_PUBLIC);
+        $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PUBLIC, 'bool');
+
+        $resolver->setRequired(self::ACQUISITION_FIELD_PRIVATE);
+        $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PRIVATE, 'bool');
 
         $resolver->setDefaults(
             [

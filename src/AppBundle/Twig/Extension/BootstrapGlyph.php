@@ -325,17 +325,29 @@ class BootstrapGlyph extends \Twig_Extension
     /**
      * Create html for a bootstrap glyph
      *
-     * @param   string $glyph Glyph name
-     * @return  string              Html bootstrap glyph snippet
+     * @param   string      $glyph Glyph name
+     * @param   string|null $title Title text for glyph icon if not null
+     * @return  string             Html bootstrap glyph snippet
      * @throws  \InvalidArgumentException   If transmitted glyph is not available
      */
-    public function bootstrapGlyph($glyph)
+    public function bootstrapGlyph($glyph, string $title = null)
     {
         if (!self::isGlyhiconAvailable($glyph)) {
             throw new \InvalidArgumentException('Transmitted glyph is not available');
         }
 
-        return sprintf('<span class="glyphicon glyphicon-%s" aria-hidden="true"></span>', $glyph);
+        $attributes = [];
+
+        $attributes[]       = 'class="glyphicon glyphicon-' . $glyph.'""';
+        $attributes[] = 'aria-hidden="true"';
+        if ($title) {
+            $attributes[] = 'title="'.$title.'"';
+            $attributes[] = 'data-original-title="'.$title.'"';
+            $attributes[] = 'data-toggle="tooltip"';
+        }
+
+
+        return sprintf('<span %s></span>', implode(' ', $attributes));
     }
 
     /**

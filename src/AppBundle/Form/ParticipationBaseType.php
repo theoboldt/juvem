@@ -11,6 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
@@ -23,6 +24,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipationBaseType extends AbstractType
 {
+
+    const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
+
+    const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dateTypeOptions = [
@@ -75,14 +81,18 @@ class ParticipationBaseType extends AbstractType
                     'allow_add'     => true,
                     'allow_delete'  => true,
                     'entry_options' => [
-                        'participation' => $participation
+                        'participation'                 => $participation,
+                        self::ACQUISITION_FIELD_PUBLIC  => $options[self::ACQUISITION_FIELD_PUBLIC],
+                        self::ACQUISITION_FIELD_PRIVATE => $options[self::ACQUISITION_FIELD_PRIVATE],
                     ],
-                    'required'      => true
+                    'required'      => true,
                 ]
             );
 
         $event                = $participation->getEvent();
-        $attributes           = $event->getAcquisitionAttributes(true, false);
+        $attributes           = $event->getAcquisitionAttributes(
+            true, false, $options[self::ACQUISITION_FIELD_PUBLIC], $options[self::ACQUISITION_FIELD_PRIVATE]
+        );
         $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
         /** @var AcquisitionAttribute $attribute */
@@ -96,6 +106,7 @@ class ParticipationBaseType extends AbstractType
 
             try {
                 if (isset($options['data']) && $options['data'] instanceof Participation) {
+                    /** @var AcquisitionAttributeFillout $fillout */
                     $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
                     $attributeOptions['data'] = $fillout->getValue();
                 }
@@ -115,6 +126,12 @@ class ParticipationBaseType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
+        $resolver->setRequired(self::ACQUISITION_FIELD_PUBLIC);
+        $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PUBLIC, 'bool');
+
+        $resolver->setRequired(self::ACQUISITION_FIELD_PRIVATE);
+        $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PRIVATE, 'bool');
+
         $resolver->setDefaults(
             [
                 'data_class'         => 'AppBundle\Entity\Participation',

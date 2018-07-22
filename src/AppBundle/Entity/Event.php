@@ -768,21 +768,34 @@ class Event
     /**
      * Get acquisition attributes assigned to this event
      *
-     * @param bool $includeParticipationFields
-     * @param bool $includeParticipantFields
-     * @return ArrayCollection|array
+     * @param bool $includeParticipationFields If acquisition fields related to participations should be included
+     * @param bool $includeParticipantFields   If acquisition fields related to participant should be included
+     * @param bool $includePublic              If public fields should be included
+     * @param bool $includePrivate             If non-public fields should be included
+     * @return ArrayCollection|array Result
      */
-    public function getAcquisitionAttributes($includeParticipationFields = true, $includeParticipantFields = true)
-    {
-        if ($includeParticipationFields && $includeParticipantFields) {
+    public function getAcquisitionAttributes(
+        bool $includeParticipationFields = true,
+        bool $includeParticipantFields = true,
+        bool $includePublic = true,
+        bool $includePrivate = false
+    ) {
+        if ($includeParticipationFields && $includeParticipantFields && $includePublic && $includePrivate) {
             return $this->acquisitionAttributes;
         }
         $acquisitionAttributes = [];
 
         /** @var AcquisitionAttribute $acquisitionAttribute */
         foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
-            if (($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
-                ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant())
+            if (
+                (
+                    ($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
+                    ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant())
+                )
+                && (
+                    ($includePublic && $acquisitionAttribute->isPublic()) ||
+                    ($includePrivate && !$acquisitionAttribute->isPublic())
+                )
             ) {
                 $acquisitionAttributes[$acquisitionAttribute->getName()] = $acquisitionAttribute;
             }
