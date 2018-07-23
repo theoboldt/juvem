@@ -333,6 +333,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
             default:
                 throw new \InvalidArgumentException('Unknown acquisition field appended');
         }
+
+        if (!isset($config[$bid]['display'])) {
+            $config[$bid]['display'] = \AppBundle\Export\Customized\Configuration::OPTION_DEFAULT;
+        }
+
         switch ($config[$bid]['display']) {
             case \AppBundle\Export\Customized\Configuration::OPTION_SEPARATE_COLUMNS:
                 if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
@@ -360,7 +365,6 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                         });
                         $column->setWidth(4);
                         $column->setConverter($converter);
-                        $this->addColumn($column);
                     }
                 }
                 break;
@@ -369,9 +373,9 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 $column = new $class(
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
-                $this->addColumn($column);
                 break;
         }
+        $this->addColumn($column);
     }
 
     /**

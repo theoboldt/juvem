@@ -20,6 +20,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class Configuration implements ConfigurationInterface
 {
 
+    const OPTION_DEFAULT = '___default';
+
     const OPTION_SEPARATE_COLUMNS = 'separateColumns';
 
     /**
