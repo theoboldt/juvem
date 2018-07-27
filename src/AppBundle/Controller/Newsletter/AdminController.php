@@ -424,7 +424,7 @@ class AdminController extends AbstractController
      * Page for details of a newsletter
      *
      * @ParamConverter("newsletter", class="AppBundle:Newsletter", options={"id" = "lid"})
-     * @Route("/admin/newsletter/{lid}/edit", requirements={"lid": "\d"}, name="newsletter_edit")
+     * @Route("/admin/newsletter/{lid}/edit", requirements={"lid": "\d+"}, name="newsletter_edit")
      * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
      */
     public function detailedNewsletterAction(Request $request, Newsletter $newsletter)
