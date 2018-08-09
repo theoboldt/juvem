@@ -28,7 +28,8 @@ class GalleryImage
 {
     use CreatedModifiedTrait;
 
-    const THUMBNAIL_DIMENSION = 150;
+    const THUMBNAIL_DIMENSION = 160;
+    const PREVIEW_DIMENSION = 480;
     const THUMBNAIL_DETAIL = 800;
 
     /**
@@ -77,6 +78,20 @@ class GalleryImage
      * @var \DateTime
      */
     protected $recordedAt = null;
+    
+    /**
+     * Image width
+     *
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     */
+    protected $width = 0;
+    
+    /**
+     * Image height
+     *
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     */
+    protected $height = 0;
 
     /**
      * GalleryImage constructor.
@@ -212,6 +227,60 @@ class GalleryImage
     {
         $this->recordedAt = $recordedAt;
         return $this;
+    }
+    
+    /**
+     * Image width in pixels
+     *
+     * @return int
+     */
+    public function getWidth(): int {
+        return $this->width;
+    }
+    
+    /**
+     * Store image width in pixels
+     *
+     * @param int $width
+     * @return GalleryImage
+     */
+    public function setWidth($width) {
+        $this->width = $width;
+        return $this;
+    }
+    
+    /**
+     * Get image width in pixels
+     *
+     * @return int
+     */
+    public function getHeight(): int {
+        return $this->height;
+    }
+    
+    /**
+     * Store image height in pixels
+     *
+     * @param int $height
+     * @return GalleryImage
+     */
+    public function setHeight($height) {
+        $this->height = $height;
+        return $this;
+    }
+    
+    /**
+     * Get image aspect ratio depending on dimensions
+     *
+     * @return float|int
+     */
+    public function getAspectRatio() {
+        $numerator = $this->getWidth();
+        $divisor   = $this->getHeight();
+        if (!$numerator || !$divisor) {
+            return 1;
+        }
+        return $numerator/$divisor;
     }
 
 }

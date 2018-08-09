@@ -101,10 +101,13 @@ class GalleryAdminController extends BaseGalleryController
                     $recorded = null;
                 }
                 $galleryImage->setRecordedAt($recorded);
+
+                list($width, $height) = getimagesize($file->getPathname());
+                $galleryImage->setWidth($width);
+                $galleryImage->setHeight($height);
             } catch (\Exception $e) {
                 $this->get('logger')->error($e->getMessage());
             }
-
             $em->persist($galleryImage);
         }
         $em->flush();

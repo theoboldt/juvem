@@ -77,7 +77,45 @@ class GalleryPublicController extends BaseGalleryController
     }
 
     /**
-     * Detail page for one single event
+     * Preview for image
+     *
+     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @Route("/event/{eid}/gallery/{iid}/preview/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
+     *                                               name="gallery_image_preview")
+     * @Route("/event/{eid}/gallery/{iid}/preview", requirements={"eid": "\d+", "iid": "\d+"},
+     *                                                name="gallery_image_preview_without_hash")
+     * @param Request       $request      Request used to ensure that user has visited overview page before
+     * @param  GalleryImage $galleryImage Desired image
+     * @param  string       $hash         Gallery hash to ensure that user is allowed to access image
+     * @return ImageResponse|RedirectResponse
+     */
+    public function previewImageAction(Request $request, GalleryImage $galleryImage, $hash = null)
+    {
+        if (!$this->isAccessOnImageGranted($galleryImage, $hash)) {
+            throw new NotFoundHttpException('Not allowed to access image');
+        }
+        $event = $galleryImage->getEvent();
+        if (!in_array($event->getEid(), $request->getSession()->get('grantedGalleries', []))) {
+            $route      = 'event_gallery';
+            $parameters = ['eid' => $event->getEid()];
+            if (!$hash) {
+                $route              = 'event_gallery_admin';
+                $parameters['hash'] = $hash;
+            }
+            return new RedirectResponse($this->generateUrl($route, $parameters));
+        }
+
+        $uploadManager = $this->get('app.gallery_image_manager');
+        $image         = $uploadManager->fetchResized(
+            $galleryImage->getFilename(), GalleryImage::PREVIEW_DIMENSION, GalleryImage::PREVIEW_DIMENSION,
+            ImageInterface::THUMBNAIL_INSET, 50
+        );
+
+        return ImageResponse::createFromRequest($image, $request);
+    }
+
+    /**
+     * Thumbnail for image
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
@@ -108,7 +146,7 @@ class GalleryPublicController extends BaseGalleryController
         $uploadManager = $this->get('app.gallery_image_manager');
         $image         = $uploadManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
-            ImageInterface::THUMBNAIL_OUTBOUND, 30
+            ImageInterface::THUMBNAIL_INSET, 15
         );
 
         return ImageResponse::createFromRequest($image, $request);
