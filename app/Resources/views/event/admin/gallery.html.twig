@@ -74,27 +74,14 @@
                         </div>
                     </div>
                     <div class="col-xs-12" id="upload-progress">
-                        <div class="row">
+                        <div class="row"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" id="dropzone-gallery">
+                            {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': false, 'galleryId': 1} %}
+                            {% endembed %}
                         </div>
                     </div>
-                <div class="row">
-                    <div class="media-gallery">
-                        <div class="row gallery" id="dropzone-gallery">
-                            {% for image in images %}
-                                <div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-{{ image.iid }}">
-                                    <div class="gallery-image-wrap">
-                                        <a href="{{ path('gallery_image_original', {'eid': event.eid, 'iid': image.iid, 'hash': galleryHash}) }}"
-                                           data-eid="{{ event.eid }}" data-iid="{{ image.iid }}" data-title="{{ image.title|e('html_attr') }}">
-                                            <img src="{{ path('gallery_image_thumbnail_without_hash', {'eid': event.eid, 'iid': image.iid}) }}"
-                                                 class="img-responsive">
-                                            <span>{{ image.title|e }}</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </article>

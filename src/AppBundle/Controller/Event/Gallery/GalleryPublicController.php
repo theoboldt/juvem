@@ -80,9 +80,9 @@ class GalleryPublicController extends BaseGalleryController
      * Preview for image
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/preview/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
+     * @Route("/event/{eid}/gallery/{iid}/preview/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_preview")
-     * @Route("/event/{eid}/gallery/{iid}/preview", requirements={"eid": "\d+", "iid": "\d+"},
+     * @Route("/event/{eid}/gallery/{iid}/preview/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                                name="gallery_image_preview_without_hash")
      * @param Request       $request      Request used to ensure that user has visited overview page before
      * @param  GalleryImage $galleryImage Desired image
@@ -118,9 +118,9 @@ class GalleryPublicController extends BaseGalleryController
      * Thumbnail for image
      *
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_thumbnail")
-     * @Route("/event/{eid}/gallery/{iid}/thumbnail", requirements={"eid": "\d+", "iid": "\d+"},
+     * @Route("/event/{eid}/gallery/{iid}/thumbnail/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                                name="gallery_image_thumbnail_without_hash")
      * @param Request       $request      Request used to ensure that user has visited overview page before
      * @param  GalleryImage $galleryImage Desired image
@@ -154,7 +154,7 @@ class GalleryPublicController extends BaseGalleryController
 
     /**
      * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
-     * @Route("/event/{eid}/gallery/{iid}/detail/{hash}", requirements={"eid": "\d+", "iid": "\d+"},
+     * @Route("/event/{eid}/gallery/{iid}/detail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *     defaults={"hash": "0"}, name="gallery_image_detail")
      *
      * @param Request       $request      Request used to ensure that user has visited overview page before

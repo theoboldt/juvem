@@ -422,7 +422,7 @@ $(function () {
             e.preventDefault();
             titleEl.val(el.data('title'));
             modalEl.modal('show');
-            imageEl.html('<img src="/../event/' + el.data('eid') + '/gallery/' + iid + '/detail" class="img-responsive">');
+            imageEl.html('<img src="' + el.attr('href') + '" class="img-responsive">');
             deleteEl.data('iid', iid);
         };
         $('#dropzone-gallery a').on('click', handleImageClick);
