@@ -26,7 +26,7 @@
     {% block head %}
     {% endblock %}
 </head>
-<body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}">
+<body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %}>
 <div id="page">
     <header id="page-navigation">
         {% include 'navigation.html.twig' %}

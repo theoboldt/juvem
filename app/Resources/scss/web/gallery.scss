@@ -1,3 +1,22 @@
+body.dark {
+  background: #333;
+  color: white;
+  #page {
+    background: #333;
+    color: white;
+  }
+
+  .page-header {
+    border-color: #777;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    small {
+      color: #ddd;
+    }
+  }
+}
+
 #gallery {
   .gallery-image-wrap {
     overflow: hidden;
