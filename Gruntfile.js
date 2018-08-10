@@ -179,7 +179,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
 
-    grunt.registerTask('default', ['watch']);
+    grunt.registerTask('default', ['deploy', 'watch']);
     grunt.registerTask(
         'deploy',
         [
