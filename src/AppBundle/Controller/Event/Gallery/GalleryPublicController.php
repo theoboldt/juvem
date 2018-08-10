@@ -38,15 +38,67 @@ class GalleryPublicController extends BaseGalleryController
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
-
+    
         $lastModified = $event->getModifiedAt();
         $eTag         = $lastModified->format('U');
+        $galleries    = [];
+    
         foreach ($images as $image) {
             $imageModified = $image->getModifiedAt();
             $eTag          .= $image->getIid() . $imageModified->format('U');
             if ($imageModified > $lastModified) {
                 $lastModified = $imageModified;
             }
+            $recordedDate = $image->getRecordedAt();
+            if ($recordedDate instanceof \DateTimeInterface && $recordedDate->format('Y') > 2000) {
+                switch((int)$recordedDate->format('m')) {
+                    case 1:
+                        $month = 'Januar';
+                        break;
+                    case 2:
+                        $month = 'Februar';
+                        break;
+                    case 3:
+                        $month = 'März';
+                        break;
+                    case 4:
+                        $month = 'April';
+                        break;
+                    case 5:
+                        $month = 'Mai';
+                        break;
+                    case 6:
+                        $month = 'Juni';
+                        break;
+                    case 7:
+                        $month = 'Juli';
+                        break;
+                    case 8:
+                        $month = 'August';
+                        break;
+                    case 9:
+                        $month = 'September';
+                        break;
+                    case 10:
+                        $month = 'Oktober';
+                        break;
+                    case 11:
+                        $month = 'November';
+                        break;
+                    case 12:
+                        $month = 'Dezember';
+                        break;
+                    default:
+                        throw new \InvalidArgumentException();
+                }
+                $key = $recordedDate->format('d').'. '.$month.' '.$recordedDate->format('Y');
+            } else {
+                $key = '';
+            }
+            if (!isset($galleries[$key])) {
+                $galleries[$key] = [];
+            }
+            $galleries[$key][] = $image;
         }
         $eTag = sha1($eTag);
 
@@ -64,7 +116,7 @@ class GalleryPublicController extends BaseGalleryController
             [
                 'event'       => $event,
                 'galleryHash' => $galleryHash,
-                'images'      => $images
+                'galleries'   => $galleries,
             ]
         );
         $response->setLastModified($lastModified)

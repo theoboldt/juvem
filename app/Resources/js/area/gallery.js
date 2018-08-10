@@ -49,9 +49,9 @@ jQuery(document).ready(function () {
                     gallery.images,
                     {
                         containerPadding: {
-                            top: 15,
+                            top: 0,
                             right: 0,
-                            bottom: 15,
+                            bottom: 20,
                             left: 0
                         }, targetRowHeight: 240,
                         containerWidth: containerEl.width()

@@ -17,12 +17,18 @@
                 {% endblock %}
             {% endembed %}
             <div class="container">
-                <div class="row">
-                    <div class="col-xs-12">
-                        {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': true, 'galleryId': 1} %}
-                        {% endembed %}
+                {% for title,images in galleries %}
+                    {% if title != 'unknown' %}
+                        <h2>{{ title }}</h2>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': true, 'galleryId': 1} %}
+                            {% endembed %}
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
+
             </div>
         </article>
     </section>
