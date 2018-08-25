@@ -365,6 +365,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                         });
                         $column->setWidth(4);
                         $column->setConverter($converter);
+                        $this->addColumn($column);
                     }
                 }
                 break;
@@ -373,9 +374,9 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 $column = new $class(
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
+                $this->addColumn($column);
                 break;
         }
-        $this->addColumn($column);
     }
 
     /**
