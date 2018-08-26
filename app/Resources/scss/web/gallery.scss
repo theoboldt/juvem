@@ -18,7 +18,7 @@ body.dark {
 }
 
 .gallery {
-  height:300px;
+  height: 300px;
 
   .gallery-image-wrap {
     overflow: hidden;
@@ -60,4 +60,11 @@ body.dark {
   -ms-transition: all 0.1s;
   -o-transition: all 0.1s;
   transition: all 0.1s;
+}
+
+.ekko-lightbox .modal-dialog {
+  @media (min-width: $screen-sm) {
+    width: auto;
+  }
+  width: auto;
 }
