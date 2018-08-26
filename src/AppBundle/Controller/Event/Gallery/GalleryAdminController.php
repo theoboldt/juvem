@@ -130,11 +130,23 @@ class GalleryAdminController extends BaseGalleryController
             );
 
             unset($galleryImage);
-        });
+        }
+        );
 
+        $template = $this->container->get('twig')->render(
+            'event/public/embed-gallery-image.html.twig',
+            [
+                'eid'       => $event->getEid(),
+                'hash'      => $this->galleryHash($event),
+                'galleryId' => 0,
+                'image'     => $galleryImage,
+                'lightbox'  => false,
+            ]
+        );
 
-
-        return new JsonResponse(['eid' => $event->getEid(), 'iid' => $iid]);
+        return new JsonResponse(
+            ['eid' => $event->getEid(), 'iid' => $iid, 'template' => $template]
+        );
     }
 
     /**

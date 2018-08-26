@@ -1,107 +1,109 @@
-jQuery(document).ready(function () {
+/**
+ * Renders boxes for defined gallery
+ *
+ * @param gallery
+ */
+var galleryRender = function (gallery) {
+        var containerEl = gallery.galleryEl,
+            layoutGeometry = require('justified-layout')(
+                gallery.images,
+                {
+                    containerPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 20,
+                        left: 0
+                    }, targetRowHeight: 240,
+                    containerWidth: containerEl.width()
+                }
+            );
+        containerEl.height(layoutGeometry.containerHeight);
+        containerEl.data('width', containerEl.width());
+
+        jQuery.each(gallery.images, function (index) {
+            var image = gallery.images[index],
+                wrapEl = image.wrapEl,
+                imageDivEl = wrapEl.find('.gallery-image'),
+                imageEl = wrapEl.find('img'),
+                box = layoutGeometry.boxes[index];
+
+            wrapEl.height(box.height);
+            wrapEl.width(box.width);
+
+            imageDivEl.height(box.height);
+            imageDivEl.width(box.width);
+
+            if (imageEl) {
+                imageEl.height(box.height);
+                imageEl.width(box.width);
+            }
+
+            var transformDefinition = 'translate(' + box.left + 'px, ' + box.top + 'px)';
+            wrapEl.css({
+                '-webkit-transform': transformDefinition,
+                '-moz-transform': transformDefinition,
+                '-ms-transform': transformDefinition,
+                '-o-transform': transformDefinition,
+                transform: transformDefinition
+            });
+        });
+    },
+    galleryRenderAll = function () {
+        jQuery.each(galleryLoadGalleries(), function () {
+            if (this.galleryEl.data('width') !== this.galleryEl.width()) {
+                galleryRender(this);
+            }
+        });
+    },
     /**
      * Loads galleries
      *
      * @returns {Array}
      */
-    var loadGalleries = function () {
-            var galleries = [];
+    galleryLoadGalleries = function () {
+        var galleries = [];
 
-            jQuery('.gallery').each(function () {
-                var galleryEl = jQuery(this),
-                    image,
-                    images = [];
-                galleryEl.find('.gallery-image-wrap').each(function () {
-                    var el = jQuery(this);
-                    if (el.data('image-id')) {
-                        image = {
-                            srcThumbnail: el.data('src-thumbnail'),
-                            srcPreview: el.data('src-preview'),
-                            srcOriginal: el.data('src-original'),
-                            height: el.data('height'),
-                            width: el.data('width'),
-                            wrapEl: el,
-                            thumbnailRequested: false,
-                            thumbnailLoad: false,
-                            previewRequested: false,
-                            previewLoad: false
-                        };
-                        images.push(image);
-                    }
-                });
-
-                galleries.push({
-                    galleryEl: galleryEl,
-                    images: images
-                });
-            });
-
-            return galleries;
-        },
-        /**
-         * Renders boxes for defined gallery
-         *
-         * @param gallery
-         */
-        renderGallery = function (gallery) {
-            var containerEl = gallery.galleryEl,
-                layoutGeometry = require('justified-layout')(
-                    gallery.images,
-                    {
-                        containerPadding: {
-                            top: 0,
-                            right: 0,
-                            bottom: 20,
-                            left: 0
-                        }, targetRowHeight: 240,
-                        containerWidth: containerEl.width()
-                    }
-                );
-            containerEl.height(layoutGeometry.containerHeight);
-            containerEl.data('width', containerEl.width());
-
-            jQuery.each(gallery.images, function (index) {
-                var image = gallery.images[index],
-                    wrapEl = image.wrapEl,
-                    imageDivEl = wrapEl.find('.gallery-image'),
-                    imageEl = wrapEl.find('img'),
-                    box = layoutGeometry.boxes[index];
-
-                wrapEl.height(box.height);
-                wrapEl.width(box.width);
-
-                imageDivEl.height(box.height);
-                imageDivEl.width(box.width);
-
-                if (imageEl) {
-                    imageEl.height(box.height);
-                    imageEl.width(box.width);
-                }
-
-                var transformDefinition = 'translate(' + box.left + 'px, ' + box.top + 'px)';
-                wrapEl.css({
-                    '-webkit-transform': transformDefinition,
-                    '-moz-transform': transformDefinition,
-                    '-ms-transform': transformDefinition,
-                    '-o-transform': transformDefinition,
-                    transform: transformDefinition
-                });
-            });
-        },
-        renderAllGalleries = function () {
-            jQuery.each(galleries, function () {
-                if (this.galleryEl.data('width') !== this.galleryEl.width()) {
-                    renderGallery(this);
+        jQuery('.gallery').each(function () {
+            var galleryEl = jQuery(this),
+                image,
+                images = [];
+            galleryEl.find('.gallery-image-wrap').each(function () {
+                var el = jQuery(this);
+                if (el.data('image-id')) {
+                    image = {
+                        srcThumbnail: el.data('src-thumbnail'),
+                        srcPreview: el.data('src-preview'),
+                        srcOriginal: el.data('src-original'),
+                        height: el.data('height'),
+                        width: el.data('width'),
+                        wrapEl: el,
+                        thumbnailRequested: false,
+                        thumbnailLoad: false,
+                        previewRequested: false,
+                        previewLoad: false
+                    };
+                    images.push(image);
                 }
             });
-        },
-        /**
-         * Renders one single image
-         * @param wrapEl
-         * @param galleryImagesrc
-         * @param blur
-         */
-        renderImage = function (wrapEl, galleryImagesrc, blur) {
+
+            galleries.push({
+                galleryEl: galleryEl,
+                images: images
+            });
+        });
+
+        return galleries;
+    }
+;
+
+jQuery(document).ready(function () {
+    /**
+     * Renders one single image
+     * @param wrapEl
+     * @param galleryImagesrc
+     * @param blur
+     */
+    var renderImage = function (wrapEl, galleryImagesrc, blur) {
             var aEl = wrapEl.find('a');
             aEl.empty();
 
@@ -206,8 +208,8 @@ jQuery(document).ready(function () {
         };
 
     //init
-    var galleries = loadGalleries(); //load all galleries
-    renderAllGalleries(); //render boxes for all galleries the first time
+    var galleries = galleryLoadGalleries(); //load all galleries
+    galleryRenderAll(); //render boxes for all galleries the first time
 
     //request all images for visible boxes
     jQuery.each(galleries, function () {
@@ -220,7 +222,7 @@ jQuery(document).ready(function () {
 
     //listen
     jQuery(window).on("resize", function () {
-        renderAllGalleries();
+        galleryRenderAll();
     });
 
     var listenOnload = function () {

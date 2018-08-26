@@ -315,8 +315,12 @@ $(function () {
         });
     });
 
+    /**
+     * EVENT Gallery upload
+     */
     var dropzoneEl = $('#dropzone'),
-        progressEl = $('#upload-progress .row');
+        progressEl = $('#upload-progress .row'),
+        galleryId = $('.dropzone-gallery .gallery').data('gallery-id-prefix');
     if (dropzoneEl) {
         var speedEl = $('#galleryUploadSpeed');
         dropzoneEl.filedrop({
@@ -370,18 +374,13 @@ $(function () {
             maxfilesize: 10,
             uploadFinished: function (i, file, response, time) {
                 progressEl.find('#file-upload-progress-' + i).remove();
-                if (response.iid) {
-                    var html = '<div class="image col-xs-6 col-sm-4 col-md-3 col-lg-2" id="galleryImage-' + response.iid + '">' +
-                        ' <div class="gallery-image-wrap">' +
-                        '  <a href="/../event/' + response.eid + '/gallery/' + response.iid + '/original" data-eid="' + response.eid + '" data-iid="' + response.iid + '" >' +
-                        '  <img src="/../event/' + response.eid + '/gallery/' + response.iid + '/thumbnail" class="img-responsive" />' +
-                        '  <span><i>' + eHtml(file.name) + '</i></span></a>' +
-                        ' </div>' +
-                        '</div>';
-                    $('#dropzone-gallery').append(html);
-                    $('#galleryImage-' + response.iid + ' a').on('click', handleImageClick);
+                if (response.template) {
+                    $('#dropzone-gallery .gallery').append(response.template);
+                    $('#gallery-image-wrap-0-' + response.iid + ' a').on('click', handleImageClick);
+                    galleryRenderAll();
                 }
             },
+
             uploadStarted: function (i, file, len) {
                 progressEl.append(
                     '<div class="col-xs-2" id="file-upload-progress-' + i + '">' +
