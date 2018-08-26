@@ -33,9 +33,11 @@
                                 {%- if is_granted('participants_edit', event) -%}
                                 <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
                                 {%- endif %}
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
-                                <li><a href="{{ path('event_participants_print', {'eid': event.eid }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe drucken</a></li>
                                 <li role="separator" class="divider"></li>
+                                <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken</a></li>
+                                <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
                                 <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer exportieren</a></li>
                                 <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren</a></li>
                                 <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Für Serienbrief exportieren</a></li>

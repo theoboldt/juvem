@@ -27,6 +27,7 @@
 <body id="print-page">
 {% for participant in participants %}
     <div class="container">
+        {% if type == 'print' %}
         <div class="row participant-title">
             <div class="col-xs-12">
                 <div class="horizontal">
@@ -54,6 +55,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">

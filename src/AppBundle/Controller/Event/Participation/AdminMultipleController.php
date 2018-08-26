@@ -417,10 +417,10 @@ class AdminMultipleController extends Controller
      * Page for list of participants of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants/print", requirements={"eid": "\d+"}, name="event_participants_print")
+     * @Route("/admin/event/{eid}/participants/{type}", requirements={"eid": "\d+", "type": "(print|printdataonly)"}, name="event_participants_print")
      * @Security("is_granted('participants_read', event)")
      */
-    public function printParticipantsAction(Event $event)
+    public function printParticipantsAction(Event $event, $eid, $type)
     {
         $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
         $participants            = $participationRepository->participantsList($event);
@@ -431,7 +431,8 @@ class AdminMultipleController extends Controller
                 'event'           => $event,
                 'participants'    => $participants,
                 'commentManager'  => $this->container->get('app.comment_manager'),
-                'statusFormatter' => ParticipantStatus::formatter()
+                'type'            => $type,
+                'statusFormatter' => ParticipantStatus::formatter(),
             ]
         );
     }
