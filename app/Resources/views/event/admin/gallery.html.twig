@@ -16,6 +16,29 @@
             {% endembed %}
             <div class="container">
                 <div class="row">
+                    <div class="modal fade" id="dialogModalTruncate" tabindex="-1" role="dialog"
+                         aria-labelledby="dialogModalTruncateLabel">
+                        <div class="modal-dialog" role="document">
+                            {{ form_start(form) }}
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="dialogModalTruncateLabel">Galerie leeren</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Wird die Galerie geleert, werden alle Bilder gelöscht.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                                    </button>
+                                    <input type="submit" class="btn btn-primary" value="Galerie leeren"/>
+                                </div>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+
                     <div class="modal fade" id="galleryImageDetails" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-md" role="document">
                             <div class="modal-content">
@@ -54,17 +77,21 @@
                     <div class="col-xs-12">
                         <div class="btn-toolbar" role="toolbar" aria-label="Bildergalerie bearbeiten">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <button type="button" class="btn btn-default" data-element="activebutton"
-                                            data-entity="Event"
-                                            data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
-                                            data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
-                                            data-button-enable-label="Teilen via Link aktivieren"
-                                            data-button-enable-glyph="link"
-                                            data-button-disable-label="Teilen via Link deaktivieren"
-                                            data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
-                                </div>
-                                <div class="col-xs-1" id="galleryUploadSpeed">
+                                <div class="col-xs-4">
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                                data-target="#dialogModalTruncate" title="Alle Bilder löschen">
+                                            {{ 'remove'|glyph }}<span class="hidden-xs"> Leeren…</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default" data-element="activebutton"
+                                                data-entity="Event"
+                                                data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
+                                                data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
+                                                data-button-enable-label="Teilen via Link aktivieren"
+                                                data-button-enable-glyph="link"
+                                                data-button-disable-label="Teilen via Link deaktivieren"
+                                                data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                                    </div>
                                 </div>
                                 <div class="col-xs-8">
                                     <input type="text" class="form-control"
@@ -73,14 +100,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12" id="upload-progress">
+                    <div class="col-xs-1" id="galleryUploadSpeed">
+                    </div>
+                    <div class="col-xs-11" id="upload-progress">
                         <div class="row"></div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12" id="dropzone-gallery">
-                            {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': false, 'galleryId': 1} %}
-                            {% endembed %}
-                        </div>
+                    <div class="col-xs-12" id="dropzone-gallery">
+                        {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': false, 'galleryId': 1} %}
+                        {% endembed %}
                     </div>
                 </div>
             </div>

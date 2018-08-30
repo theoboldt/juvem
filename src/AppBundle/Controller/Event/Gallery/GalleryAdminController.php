@@ -16,6 +16,7 @@ use AppBundle\Entity\GalleryImage;
 use AppBundle\InvalidTokenHttpException;
 use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -46,6 +47,20 @@ class GalleryAdminController extends BaseGalleryController
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
 
+        $form = $this->createFormBuilder()
+                     ->add('action', HiddenType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            foreach ($images as $image) {
+                $em->remove($image);
+            }
+            $em->flush();
+            $images = [];
+        }
+
         $grantedGalleries = $request->getSession()->get('grantedGalleries', []);
         $request->getSession()->set(
             'grantedGalleries', array_unique(array_merge($grantedGalleries, [$event->getEid()]))
@@ -54,9 +69,10 @@ class GalleryAdminController extends BaseGalleryController
         return $this->render(
             'event/admin/gallery.html.twig',
             [
+                'form'        => $form->createView(),
                 'event'       => $event,
                 'galleryHash' => $galleryHash,
-                'images'      => $images
+                'images'      => $images,
             ]
         );
     }
