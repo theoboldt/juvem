@@ -3,7 +3,7 @@
  *
  * @param gallery
  */
-var galleryRender = function (gallery) {
+const galleryRender = function (gallery) {
         var containerEl = gallery.galleryEl,
             layoutGeometry = require('justified-layout')(
                 gallery.images,
@@ -103,7 +103,7 @@ jQuery(document).ready(function () {
      * @param galleryImagesrc
      * @param blur
      */
-    var renderImage = function (wrapEl, galleryImagesrc, blur) {
+    const renderImage = function (wrapEl, galleryImagesrc, blur) {
             var aEl = wrapEl.find('a');
             aEl.empty();
 
