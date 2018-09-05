@@ -38,11 +38,11 @@ class GalleryPublicController extends BaseGalleryController
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
-    
+
         $lastModified = $event->getModifiedAt();
-        $eTag         = $lastModified->format('U');
+        $eTag         = $lastModified ? $lastModified->format('U') : $event->getCreatedAt()->format('U');
         $galleries    = [];
-    
+
         foreach ($images as $image) {
             $imageModified = $image->getModifiedAt();
             $eTag          .= $image->getIid() . $imageModified->format('U');
