@@ -189,8 +189,8 @@ var galleryCacheApiLoader = {
                         keys.forEach(function (request, index, array) {
                             cache.delete(request);
                         });
-                        loader.updateSizeButton();
                     });
+                    buttonEl = wrapEl.find('button').text('Cache leeren');
                 });
             });
         }
