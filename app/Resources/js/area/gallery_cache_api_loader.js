@@ -174,6 +174,7 @@ var galleryCacheApiLoader = {
 
     updateSizeButton: function () {
         var loader = this,
+            size = 0,
             wrapEl = jQuery('#gallery-cache-clear-btn-wrap'),
             buttonEl;
         if (!wrapEl.length) {
@@ -199,16 +200,18 @@ var galleryCacheApiLoader = {
             cache.keys().then(function (keys) {
                 keys.forEach(function (request, index, array) {
                     cache.match(request).then(function (response) {
+                        if (!response) {
+                            return;
+                        }
+
                         if (response.headers && response.headers.has('content-length')) {
                             var contentLength = parseInt(response.headers.get('content-length'));
-                            buttonEl.data('size', buttonEl.data('size') + (isNaN(contentLength) ? 0 : contentLength));
+                            size = size + (isNaN(contentLength) ? 0 : contentLength);
                         } else {
                             var blobSize = response.clone().blob().size;
-                            if (isNaN(blobSize)) {
-                                buttonEl.data('size', buttonEl.data('size') + blobSize);
-                            }
+                            size = size + (isNaN(blobSize) ? 0 : blobSize);
                         }
-                        buttonEl.text('Cache leeren (~' + Math.round((buttonEl.data('size') / 1024 / 1024 / 1024)) + ' MB)')
+                        buttonEl.text('Cache leeren (~' + Math.round((size / 1024 / 1024)) + ' MB)')
                     });
                 });
             });
