@@ -19,7 +19,7 @@ var galleryCacheApiLoader = {
                             image.previewRequested = true;
                             image.previewLoad = new Date();
                             galleryRenderer.renderImage(image.wrapEl, cachedResponse.clone(), false);
-                            cache.devare(new Request(image.srcThumbnail));
+                            cache.delete(new Request(image.srcThumbnail));
                         } else {
                             imgSrcRequest = new Request(image.srcThumbnail);
                             cache.match(imgSrcRequest).then(function (cachedResponse) {
@@ -119,7 +119,8 @@ var galleryCacheApiLoader = {
     },
 
     improveImage: function (image, allowPreview) {
-        var imgSrcRequest,
+        var loader = this,
+            imgSrcRequest,
             blur,
             requestThumbnail = false,
             requestPreview = false;
@@ -145,7 +146,7 @@ var galleryCacheApiLoader = {
                     return fetch(imgSrcRequest, {credentials: 'same-origin'}).then(function (response) {
                         if (requestPreview) {
                             image.previewLoad = new Date();
-                            cache.devare(new Request(image.srcThumbnail));
+                            cache.delete(new Request(image.srcThumbnail));
                         }
                         if (requestThumbnail) {
                             image.thumbnailLoad = new Date();
@@ -185,7 +186,7 @@ var galleryCacheApiLoader = {
                 caches.open(loader.cacheName).then(function (cache) {
                     cache.keys().then(function (keys) {
                         keys.forEach(function (request, index, array) {
-                            cache.devare(request);
+                            cache.delete(request);
                         });
                         loader.updateSizeButton();
                     });
