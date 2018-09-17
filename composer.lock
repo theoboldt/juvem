@@ -1483,16 +1483,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.9.12",
+            "version": "8.9.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "b906325b1bcf99309bc10bff7cbdc1ed8fbcf774"
+                "reference": "cb4e0cf25f742a838b9d53ed6a7088c4f24086f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/b906325b1bcf99309bc10bff7cbdc1ed8fbcf774",
-                "reference": "b906325b1bcf99309bc10bff7cbdc1ed8fbcf774",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/cb4e0cf25f742a838b9d53ed6a7088c4f24086f3",
+                "reference": "cb4e0cf25f742a838b9d53ed6a7088c4f24086f3",
                 "shasum": ""
             },
             "require": {
@@ -1547,7 +1547,7 @@
                 "phonenumber",
                 "validation"
             ],
-            "time": "2018-08-23T10:23:25+00:00"
+            "time": "2018-09-10T15:26:43+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2689,7 +2689,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-05-05 00:10:25"
+            "time": "2015-05-05T00:10:25+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -5008,16 +5008,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.5.12",
+            "version": "6.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "24da433d7384824d65ea93fbb462e2f31bbb494e"
+                "reference": "0973426fb012359b2f18d3bd1e90ef1172839693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/24da433d7384824d65ea93fbb462e2f31bbb494e",
-                "reference": "24da433d7384824d65ea93fbb462e2f31bbb494e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0973426fb012359b2f18d3bd1e90ef1172839693",
+                "reference": "0973426fb012359b2f18d3bd1e90ef1172839693",
                 "shasum": ""
             },
             "require": {
@@ -5088,7 +5088,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-08-22T06:32:48+00:00"
+            "time": "2018-09-08T15:10:43+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
