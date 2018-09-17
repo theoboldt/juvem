@@ -44,7 +44,7 @@ class AdminController extends Controller
      */
     public function listAction()
     {
-        $repository      = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository      = $this->getDoctrine()->getRepository(Event::class);
         $eventListFuture = $repository->findEidListFutureEvents();
         $eventListPast   = $repository->findEidListPastEvents();
 
@@ -66,7 +66,7 @@ class AdminController extends Controller
      */
     public function listDataAction(Request $request)
     {
-        $repository      = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository      = $this->getDoctrine()->getRepository(Event::class);
         $eventEntityList = $repository->findAllWithCounts(
             true, true, !$this->isGranted('ROLE_ADMIN_EVENT_GLOBAL') ? $this->getUser() : null
         );
@@ -198,7 +198,7 @@ class AdminController extends Controller
     public function detailEventAction(Request $request, Event $event)
     {
         $this->denyAccessUnlessGranted('read', $event);
-        $repository         = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository         = $this->getDoctrine()->getRepository(Event::class);
         $ageDistribution    = $repository->participantsAgeDistribution($event);
         $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
         $genderDistribution = $repository->participantsGenderDistribution($event);
@@ -357,7 +357,7 @@ class AdminController extends Controller
         if ($token != $csrf->getToken('Eventsubscribe' . $eid)) {
             throw new InvalidTokenHttpException();
         }
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository(Event::class);
         $event      = $repository->findOneBy(['eid' => $eid]);
         $this->denyAccessUnlessGranted('read', $event);
         if (!$event) {

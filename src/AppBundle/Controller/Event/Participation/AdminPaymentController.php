@@ -187,7 +187,7 @@ class AdminPaymentController extends Controller
     private function extractParticipantsFromAid(array $aidList, string $requiredPermission)
     {
         $participants = [];
-        $repository   = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $repository   = $this->getDoctrine()->getRepository(Participant::class);
         foreach ($aidList as $aid) {
             /** @var Participant $participant */
             $participant = $repository->findOneBy(['aid' => $aid]);

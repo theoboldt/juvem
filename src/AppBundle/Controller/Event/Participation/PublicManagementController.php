@@ -51,7 +51,7 @@ class PublicManagementController extends Controller
     {
         $statusFormatter   = ParticipantStatus::formatter();
 
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
 
         $user = $this->getUser();
 

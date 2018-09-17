@@ -102,7 +102,7 @@ class PublicController extends Controller
      */
     public function listActiveEventsAction()
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository(Event::class);
         $eventList  = $repository->findAllWithCounts();
 
         return $this->render(
@@ -121,7 +121,7 @@ class PublicController extends Controller
      */
     public function listActiveEventLinksAction()
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository = $this->getDoctrine()->getRepository(Event::class);
         $eventList  = $repository->findAllWithCounts();
 
         return $this->render(

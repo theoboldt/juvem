@@ -10,7 +10,7 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -62,9 +62,9 @@ class AcquisitionType extends AbstractType
             [
                 'label'    => 'Typ',
                 'choices'  => [
-                    AcquisitionAttribute::LABEL_FIELD_TEXT     => TextType::class,
-                    AcquisitionAttribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
-                    AcquisitionAttribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
+                    Attribute::LABEL_FIELD_TEXT     => TextType::class,
+                    Attribute::LABEL_FIELD_TEXTAREA => TextareaType::class,
+                    Attribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
                 ],
                 'required' => true,
                 'attr'     => ['aria-describedby' => 'help-type'],
@@ -129,7 +129,7 @@ class AcquisitionType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'AppBundle\Entity\AcquisitionAttribute',
+                'data_class' => Attribute::class,
             ]
         );
     }

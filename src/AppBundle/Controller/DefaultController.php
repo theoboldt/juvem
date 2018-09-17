@@ -27,7 +27,7 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $repositoryFlash = $this->getDoctrine()->getRepository('AppBundle:Flash');
+        $repositoryFlash = $this->getDoctrine()->getRepository(Flash::class);
         $flashList       = $repositoryFlash->findValid();
         /** @var Flash $flash */
         foreach ($flashList as $flash) {
@@ -37,7 +37,7 @@ class DefaultController extends Controller
             );
         }
 
-        $repositoryEvent = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repositoryEvent = $this->getDoctrine()->getRepository(Event::class);
         $eventList       = $repositoryEvent->findAllWithCounts();
 
         $user           = $this->getUser();
@@ -192,7 +192,7 @@ class DefaultController extends Controller
         $router      = $this->get('router');
         $pageFactory = new PageFactory($router);
 
-        $eventRepository   = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventRepository   = $this->getDoctrine()->getRepository(Event::class);
         $eventLastModified = $eventRepository->lastModified();
 
         $pages = [

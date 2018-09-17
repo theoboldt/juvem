@@ -42,7 +42,7 @@ class AdminSingleController extends Controller
      */
     public function participationDetailAction(Request $request)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
 
         $participation = $participationRepository->findDetailed($request->get('pid'));
         if (!$participation) {
@@ -162,7 +162,7 @@ class AdminSingleController extends Controller
             throw new InvalidTokenHttpException();
         }
 
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
 
         $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
         if (!$participation) {
@@ -190,7 +190,7 @@ class AdminSingleController extends Controller
      */
     public function editParticipationAction(Request $request)
     {
-        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $repository    = $this->getDoctrine()->getRepository(Participation::class);
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
         $this->denyAccessUnlessGranted('participants_edit', $event);
@@ -240,7 +240,7 @@ class AdminSingleController extends Controller
      */
     public function editPhoneNumbersAction(Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $repository = $this->getDoctrine()->getRepository(Participation::class);
         /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
@@ -298,7 +298,7 @@ class AdminSingleController extends Controller
      */
     public function editParticipantAction($eid, $pid, $aid, Request $request)
     {
-        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $repository    = $this->getDoctrine()->getRepository(Participant::class);
         /** @var Participant $participation */
         $participant   = $repository->findOneBy(array('aid' => $aid));
         $participation = $participant->getParticipation();
@@ -356,7 +356,7 @@ class AdminSingleController extends Controller
      */
     public function addParticipantAction($eid, $pid, Request $request)
     {
-        $repository    = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $repository    = $this->getDoctrine()->getRepository(Participation::class);
         /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $pid));
         $participant   = new Participant();

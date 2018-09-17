@@ -12,6 +12,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ParticipantComment;
@@ -28,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participant implements EventRelatedEntity
 {
-    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, SoftDeleteTrait;
+    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait;
 
     const TYPE_GENDER_MALE   = 1;
     const TYPE_GENDER_FEMALE = 2;
@@ -108,7 +109,7 @@ class Participant implements EventRelatedEntity
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participant")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participant")
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $acquisitionAttributeFillouts;

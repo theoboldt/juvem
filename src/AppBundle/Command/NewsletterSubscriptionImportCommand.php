@@ -105,7 +105,7 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
      */
     protected function givenEmailList()
     {
-        $repository    = $this->getContainer()->get('doctrine')->getRepository('AppBundle:NewsletterSubscription');
+        $repository    = $this->getContainer()->get('doctrine')->getRepository(NewsletterSubscription::class);
         $subscriptions = $repository->findAll();
         $emailList     = [];
         foreach ($subscriptions as $subscription) {

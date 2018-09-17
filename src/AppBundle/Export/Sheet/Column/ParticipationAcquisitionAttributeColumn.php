@@ -12,8 +12,8 @@
 namespace AppBundle\Export\Sheet\Column;
 
 
-use AppBundle\Entity\AcquisitionAttribute;
-use AppBundle\Entity\AcquisitionAttributeFilloutTrait;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Participant;
 
 class ParticipationAcquisitionAttributeColumn extends AcquisitionAttributeColumn

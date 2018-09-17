@@ -11,9 +11,9 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\AcquisitionAttributeFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\Customized\Configuration;
 use AppBundle\Export\Customized\CustomizedExport;
@@ -59,7 +59,7 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
@@ -119,7 +119,7 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             );
-            /** @var AcquisitionAttributeFillout $fillout */
+            /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->__toString();
@@ -144,7 +144,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsAction(Event $event)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
 
         $export = new ParticipantsExport(
@@ -179,7 +179,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipationsAction(Event $event)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationsList      = $participationRepository->participationsList($event);
 
         $export = new ParticipationsExport(
@@ -213,7 +213,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsBirthdayAddressAction(Event $event)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
 
         $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
@@ -245,7 +245,7 @@ class AdminMultipleController extends Controller
      */
     public function exportParticipantsMailAction(Event $event)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
         $participationsList      = $participationRepository->participationsList($event);
 
@@ -289,8 +289,8 @@ class AdminMultipleController extends Controller
             throw new InvalidTokenHttpException();
         }
 
-        $eventRepository         = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $eventRepository         = $this->getDoctrine()->getRepository(Event::class);
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $event                   = $eventRepository->findOneBy(['eid' => $eid]);
         $this->denyAccessUnlessGranted('participants_edit', $event);
         if (!$event) {
@@ -363,7 +363,7 @@ class AdminMultipleController extends Controller
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
         $config          = $request->get('config');
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
@@ -386,7 +386,7 @@ class AdminMultipleController extends Controller
             $processedConfiguration['title'] = 'Teilnehmer';
         }
 
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
 
             $export = new CustomizedExport(
@@ -422,7 +422,7 @@ class AdminMultipleController extends Controller
      */
     public function printParticipantsAction(Event $event, $eid, $type)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
 
         return $this->render(

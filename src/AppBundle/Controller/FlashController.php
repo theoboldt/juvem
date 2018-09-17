@@ -38,7 +38,7 @@ class FlashController extends Controller
      */
     public function listDataAction(Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Flash');
+        $repository = $this->getDoctrine()->getRepository(Flash::class);
         $list       = $repository->findAll();
 
         $result = [];
@@ -100,7 +100,7 @@ class FlashController extends Controller
      */
     public function editAction($fid, Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Flash');
+        $repository = $this->getDoctrine()->getRepository(Flash::class);
         $flash      = $repository->findOneBy(['fid' => $fid]);
 
         $form = $this->createForm(FlashType::class, $flash);

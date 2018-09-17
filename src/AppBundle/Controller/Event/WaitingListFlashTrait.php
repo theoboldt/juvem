@@ -24,7 +24,7 @@ trait WaitingListFlashTrait
      */
     protected function addParticipantsCountToCache(Event $event)
     {
-        $repository        = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $repository        = $this->getDoctrine()->getRepository(Event::class);
         $participantsCount = $repository->participantsCount($event);
         $event->setParticipantsCounts($participantsCount);
     }

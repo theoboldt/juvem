@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -164,7 +165,7 @@ class Event
     /**
      * Contains the acquisition attributes assigned to this event
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute", inversedBy="events")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="events")
      * @ORM\JoinTable(name="event_acquisition_attribute",
      *      joinColumns={@ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="bid", referencedColumnName="bid",
@@ -744,11 +745,11 @@ class Event
     /**
      * Add an acquisition attribute assignment to this event
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
+     * @param AcquisitionAttribute\Attribute $acquisitionAttribute
      *
      * @return Event
      */
-    public function addAcquisitionAttribute(\AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute)
+    public function addAcquisitionAttribute(AcquisitionAttribute\Attribute $acquisitionAttribute)
     {
         $this->acquisitionAttributes[] = $acquisitionAttribute;
 
@@ -758,9 +759,9 @@ class Event
     /**
      * Remove an acquisition attribute assignment from this event
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute
+     * @param \AppBundle\Entity\AcquisitionAttribute\Attribute $acquisitionAttribute
      */
-    public function removeAcquisitionAttribute(\AppBundle\Entity\AcquisitionAttribute $acquisitionAttribute)
+    public function removeAcquisitionAttribute(AcquisitionAttribute\Attribute $acquisitionAttribute)
     {
         $this->acquisitionAttributes->removeElement($acquisitionAttribute);
     }
@@ -785,7 +786,7 @@ class Event
         }
         $acquisitionAttributes = [];
 
-        /** @var AcquisitionAttribute $acquisitionAttribute */
+        /** @var Attribute $acquisitionAttribute */
         foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
             if (
                 (
@@ -808,12 +809,12 @@ class Event
      * Get acquisition attribute with given bid assigned to this event
      *
      * @param int $bid The id of the field
-     * @return AcquisitionAttribute             The field
+     * @return Attribute             The field
      * @throws  \OutOfBoundsException           If Requested field was not found
      */
     public function getAcquisitionAttribute($bid)
     {
-        /** @var AcquisitionAttribute $acquisitionAttribute */
+        /** @var Attribute $acquisitionAttribute */
         foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
             if ($acquisitionAttribute->getBid() == $bid) {
                 return $acquisitionAttribute;

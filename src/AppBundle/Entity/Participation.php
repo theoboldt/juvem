@@ -11,6 +11,9 @@
 namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -27,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participation implements EventRelatedEntity
 {
-    use HumanTrait, AcquisitionAttributeFilloutTrait, CreatedModifiedTrait, AddressTrait;
+    use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait;
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
@@ -88,7 +91,7 @@ class Participation implements EventRelatedEntity
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AcquisitionAttributeFillout", cascade={"all"}, mappedBy="participation")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participation")
      */
     protected $acquisitionAttributeFillouts;
 
@@ -566,14 +569,14 @@ class Participation implements EventRelatedEntity
             $participation->addPhoneNumber($number);
         }
 
-        /** @var AcquisitionAttribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
             try {
                 $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
             } catch (\OutOfBoundsException $e) {
                 continue;
             }
-            $fillout = new AcquisitionAttributeFillout();
+            $fillout = new Fillout();
             $fillout->setParticipation($participation);
             $fillout->setAttribute($attribute);
             $fillout->setValue($filloutPrevious->getValue());
@@ -591,7 +594,7 @@ class Participation implements EventRelatedEntity
             $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
             $participant->setInfoMedical($participantPrevious->getInfoMedical());
 
-            /** @var AcquisitionAttribute $attribute */
+            /** @var Attribute $attribute */
             foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
                 try {
                     $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
@@ -600,7 +603,7 @@ class Participation implements EventRelatedEntity
                 } catch (\OutOfBoundsException $e) {
                     continue;
                 }
-                $fillout = new AcquisitionAttributeFillout();
+                $fillout = new Fillout();
                 $fillout->setParticipant($participant);
                 $fillout->setAttribute($attribute);
                 $fillout->setValue($filloutPrevious->getValue());

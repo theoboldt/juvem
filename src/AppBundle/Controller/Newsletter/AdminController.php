@@ -67,7 +67,7 @@ class AdminController extends AbstractController
     public function listSubscriptionsDataAction()
     {
         $this->dieIfNewsletterNotEnabled();
-        $repository             = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $repository             = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
         $subscriptionEntityList = $repository->findAll();
         $subscriptionList       = array();
 
@@ -132,7 +132,7 @@ class AdminController extends AbstractController
     public function listNewsletterDataAction(Request $request)
     {
         $this->dieIfNewsletterNotEnabled();
-        $repository           = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
+        $repository           = $this->getDoctrine()->getRepository(Newsletter::class);
         $newsletterEntityList = $repository->findAll();
         $newsletterList       = array();
 
@@ -244,7 +244,7 @@ class AdminController extends AbstractController
             throw new InvalidTokenHttpException();
         }
 
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $repository = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
         $count      = count(
             $repository->qualifiedNewsletterSubscriptionIdList($ageRangeBegin, $ageRangeEnd, $similarEventIdList)
         );
@@ -278,7 +278,7 @@ class AdminController extends AbstractController
             throw new InvalidTokenHttpException();
         }
 
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $repository = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
         $recipients = $repository->qualifiedNewsletterSubscriptionList(
             $ageRangeBegin, $ageRangeEnd, $similarEventIdList, $lid
         );
@@ -310,7 +310,7 @@ class AdminController extends AbstractController
             throw new InvalidTokenHttpException();
         }
 
-        $repository = $this->getDoctrine()->getRepository('AppBundle:Newsletter');
+        $repository = $this->getDoctrine()->getRepository(Newsletter::class);
         $newsletter = $repository->findOneBy(['lid' => $lid]);
 
         if (!$newsletter) {
@@ -321,7 +321,7 @@ class AdminController extends AbstractController
         foreach ($newsletter->getEvents() as $event) {
             $eventIds[] = $event->getEid();
         }
-        $recipients = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription')
+        $recipients = $this->getDoctrine()->getRepository(NewsletterSubscription::class)
                            ->qualifiedNewsletterSubscriptionList(
                                $newsletter->getAgeRangeBegin(), $newsletter->getAgeRangeEnd(), $eventIds,
                                $newsletter->getLid()

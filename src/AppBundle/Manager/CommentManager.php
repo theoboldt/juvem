@@ -66,7 +66,7 @@ class CommentManager
 			$this->user = $tokenStorage->getToken()->getUser();
 		}
 
-		$this->repository = $this->doctrine->getRepository('AppBundle:ParticipantComment');
+		$this->repository = $this->doctrine->getRepository(ParticipantComment::class);
 	}
 
     /**

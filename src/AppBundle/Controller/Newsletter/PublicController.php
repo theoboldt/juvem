@@ -40,7 +40,7 @@ class PublicController extends AbstractController
             if ($subscription) {
                 $subscriptionAvailable = true;
             } else {
-                $repository   = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+                $repository   = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
                 $subscription = $repository->findOneByEmail($user->getEmail());
                 if ($subscription) {
                     $subscription->setAssignedUser($user);
@@ -102,7 +102,7 @@ class PublicController extends AbstractController
     {
         $this->dieIfNewsletterNotEnabled();
         $token      = $request->get('token');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $repository = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
 
         /** @var NewsletterSubscription $subscription */
         $subscription = $repository->findOneByToken($token);
@@ -151,7 +151,7 @@ class PublicController extends AbstractController
     {
         $this->dieIfNewsletterNotEnabled();
         $token      = $request->get('token');
-        $repository = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+        $repository = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
         /** @var NewsletterSubscription $subscription */
         $subscription = $repository->findOneByToken($token);
 

@@ -10,7 +10,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Form\AcquisitionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,11 +42,11 @@ class AcquisitionController extends Controller
     public function listDataAction(Request $request)
     {
         $repository          = $this->getDoctrine()
-                                    ->getRepository('AppBundle:AcquisitionAttribute');
+                                    ->getRepository(Attribute::class);
         $attributeEntityList = $repository->findBy(array('deletedAt' => null));
 
         $attributeList = array();
-        /** @var AcquisitionAttribute $attribute */
+        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($attributeEntityList as $attribute) {
 
             $attributeList[] = array(
@@ -66,11 +66,11 @@ class AcquisitionController extends Controller
     /**
      * Detail page for a acquisition attribute
      *
-     * @ParamConverter("attribute", class="AppBundle:AcquisitionAttribute", options={"id" = "bid"})
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function detailEventAction(Request $request, AcquisitionAttribute $attribute)
+    public function detailEventAction(Request $request, Attribute $attribute)
     {
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
@@ -107,11 +107,11 @@ class AcquisitionController extends Controller
     /**
      * Edit page for one single attribute
      *
-     * @ParamConverter("attribute", class="AppBundle:AcquisitionAttribute", options={"id" = "bid"})
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit", requirements={"bid": "\d+"}, name="acquisition_edit")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function editAction(Request $request, AcquisitionAttribute $attribute)
+    public function editAction(Request $request, Attribute $attribute)
     {
         $form = $this->createForm(AcquisitionType::class, $attribute);
 
@@ -126,13 +126,14 @@ class AcquisitionController extends Controller
 
             return $this->redirectToRoute('acquisition_detail', array('bid' => $attribute->getBid()));
         }
-
+    
         return $this->render(
-            'acquisition/edit.html.twig', array(
-                                            'acquisition'       => $attribute,
-                                            'showChoiceOptions' => ($attribute->getFieldType() == ChoiceType::class),
-                                            'form'              => $form->createView(),
-                                        )
+            'acquisition/edit.html.twig',
+            [
+                'acquisition'       => $attribute,
+                'showChoiceOptions' => ($attribute->getFieldType() == ChoiceType::class),
+                'form'              => $form->createView(),
+            ]
         );
     }
 
@@ -144,7 +145,7 @@ class AcquisitionController extends Controller
      */
     public function newAction(Request $request)
     {
-        $attribute = new AcquisitionAttribute();
+        $attribute = new Attribute();
 
         $form = $this->createForm(AcquisitionType::class, $attribute);
 
@@ -161,9 +162,10 @@ class AcquisitionController extends Controller
         }
 
         return $this->render(
-            'acquisition/new.html.twig', array(
-                                           'form' => $form->createView(),
-                                       )
+            'acquisition/new.html.twig',
+            [
+                'form' => $form->createView(),
+            ]
         );
     }
 }

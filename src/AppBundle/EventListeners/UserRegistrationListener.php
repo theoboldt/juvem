@@ -10,6 +10,7 @@
 
 namespace AppBundle\EventListeners;
 
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
@@ -61,7 +62,7 @@ class UserRegistrationListener implements EventSubscriberInterface
             $participationList       = $event->getRequest()
                                              ->getSession()
                                              ->get('participationList');
-            $participationRepository = $this->doctrine->getRepository('AppBundle:Participation');
+            $participationRepository = $this->doctrine->getRepository(Participation::class);
 
             foreach ($participationList as $pid) {
                 $participation = $participationRepository->findOneBy(array('pid' => $pid));

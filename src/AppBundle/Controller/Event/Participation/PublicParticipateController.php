@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Controller\Event\WaitingListFlashTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\ParticipationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -125,7 +126,7 @@ class PublicParticipateController extends Controller
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
 
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationPrevious   = $participationRepository->findOneBy(
             ['pid' => $pid, 'assignedUser' => $user->getUid()]
         );
@@ -199,7 +200,7 @@ class PublicParticipateController extends Controller
                     $this->container->get('router')->generate('fos_user_registration_register')
                 );
             }
-            $repositoryNewsletter = $this->getDoctrine()->getRepository('AppBundle:NewsletterSubscription');
+            $repositoryNewsletter = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
             if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
                 $message .= sprintf(
                     '<p>Sie können jetzt den <a href="%s">Newsletter abonnieren</a>, um auch in Zukunft von unseren Aktionen erfahren.</p>',

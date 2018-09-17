@@ -12,14 +12,13 @@
 namespace AppBundle\Export\Sheet\Column;
 
 
-use AppBundle\Entity\AcquisitionAttribute;
-use AppBundle\Entity\AcquisitionAttributeFilloutTrait;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 
 class AcquisitionAttributeColumn extends EntityColumn
 {
 
     /**
-     * @see AcquisitionAttribute
+     * @see \AppBundle\Entity\AcquisitionAttribute\Attribute
      */
     protected $attribute;
 
@@ -28,9 +27,9 @@ class AcquisitionAttributeColumn extends EntityColumn
      *
      * @param string               $identifier Identifier for document
      * @param string               $title      Title text for column
-     * @param AcquisitionAttribute $attribute  Attribute object
+     * @param \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute  Attribute object
      */
-    public function __construct($identifier, $title, AcquisitionAttribute $attribute)
+    public function __construct($identifier, $title, Attribute $attribute)
     {
         $this->attribute = $attribute;
         parent::__construct($identifier, $title);
@@ -41,7 +40,7 @@ class AcquisitionAttributeColumn extends EntityColumn
     /**
      * Get value by identifier of this column for transmitted entity
      *
-     * @param   AcquisitionAttributeFilloutTrait $entity Entity
+     * @param   \AppBundle\Entity\AcquisitionAttribute\FilloutTrait $entity Entity
      * @return  mixed
      */
     public function getData($entity)

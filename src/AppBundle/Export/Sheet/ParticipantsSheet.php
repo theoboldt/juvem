@@ -12,7 +12,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\BitMask\ParticipantFood;
-use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -104,7 +104,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setWidth(35);
         $this->addColumn($column);
 
-        /** @var AcquisitionAttribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
             $this->addColumn(new EntityColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
         }

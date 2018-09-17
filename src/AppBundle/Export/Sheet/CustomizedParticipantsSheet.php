@@ -12,8 +12,8 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\BitMask\ParticipantFood;
-use AppBundle\Entity\AcquisitionAttribute;
-use AppBundle\Entity\AcquisitionAttributeFillout;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -287,7 +287,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
      */
     private function appendParticipantAcquisitionColumns(Event $event, array $config)
     {
-        /** @var AcquisitionAttribute $attribute */
+        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
             $this->appendAcquisitionColumn('participant', $attribute, $config);
         }
@@ -301,7 +301,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
      */
     private function appendParticipationAcquisitionColumns(Event $event, array $config)
     {
-        /** @var AcquisitionAttribute $attribute */
+        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
             $this->appendAcquisitionColumn('participation', $attribute, $config);
         }
@@ -311,12 +311,12 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
      * Append transmitted acquisition attribute column
      *
      * @param string               $group     Either participant or participation
-     * @param AcquisitionAttribute $attribute Related attribute entity
+     * @param \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute Related attribute entity
      * @param array                $config    Column config
      */
     private function appendAcquisitionColumn(
         string $group,
-        AcquisitionAttribute $attribute,
+        Attribute $attribute,
         array $config
     ) {
         $bid = 'acq_field_' . $attribute->getBid();
@@ -343,7 +343,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
                     $options = $attribute->getFieldTypeChoiceOptions(true);
                     foreach ($options as $optionLabel => $optionKey) {
-                        $converter = function (AcquisitionAttributeFillout $fillout) use ($optionKey) {
+                        $converter = function (Fillout $fillout) use ($optionKey) {
                             $selectedOptions = $fillout->getValue();
                             if ((is_array($selectedOptions) && in_array($optionKey, $selectedOptions))
                                 || $selectedOptions === $optionKey

@@ -86,7 +86,7 @@ class PaymentManager
         if ($tokenStorage && $tokenStorage->getToken()) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
-        $this->repository = $this->em->getRepository('AppBundle:ParticipantPaymentEvent');
+        $this->repository = $this->em->getRepository(ParticipantPaymentEvent::class);
     }
 
     /**

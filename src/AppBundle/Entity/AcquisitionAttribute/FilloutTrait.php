@@ -8,25 +8,29 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AcquisitionAttribute;
 
 
-trait AcquisitionAttributeFilloutTrait
+use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
+
+trait FilloutTrait
 {
 
     /**
      * Contains the participants assigned to this participation
      *
-     * @var AcquisitionAttributeFillout[]|array
+     * @var Fillout[]|array
      */
     protected $acquisitionAttributeFillouts;
 
     /**
      * Remove fillout
      *
-     * @param AcquisitionAttributeFillout $fillout
+     * @param Fillout $fillout
      */
-    public function removeFillout(AcquisitionAttributeFillout $fillout)
+    public function removeFillout(Fillout $fillout)
     {
         $this->fillouts->removeElement($fillout);
     }
@@ -34,11 +38,11 @@ trait AcquisitionAttributeFilloutTrait
     /**
      * Add acquisitionAttributeFillout
      *
-     * @param AcquisitionAttributeFillout $acquisitionAttributeFillout
+     * @param Fillout $acquisitionAttributeFillout
      *
-     * @return Participation|Participant|AcquisitionAttributeFilloutTrait
+     * @return Participation|Participant|FilloutTrait
      */
-    public function addAcquisitionAttributeFillout(AcquisitionAttributeFillout $acquisitionAttributeFillout
+    public function addAcquisitionAttributeFillout(Fillout $acquisitionAttributeFillout
     )
     {
         $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
@@ -49,9 +53,9 @@ trait AcquisitionAttributeFilloutTrait
     /**
      * Remove acquisitionAttributeFillout
      *
-     * @param AcquisitionAttributeFillout $acquisitionAttributeFillout
+     * @param Fillout $acquisitionAttributeFillout
      */
-    public function removeAcquisitionAttributeFillout(AcquisitionAttributeFillout $acquisitionAttributeFillout
+    public function removeAcquisitionAttributeFillout(Fillout $acquisitionAttributeFillout
     )
     {
         $this->acquisitionAttributeFillouts->removeElement($acquisitionAttributeFillout);
@@ -60,7 +64,7 @@ trait AcquisitionAttributeFilloutTrait
     /**
      * Get acquisitionAttributeFillouts
      *
-     * @return \Doctrine\Common\Collections\Collection|AcquisitionAttributeFillout[]
+     * @return \Doctrine\Common\Collections\Collection|Fillout[]
      */
     public function getAcquisitionAttributeFillouts()
     {
@@ -72,11 +76,11 @@ trait AcquisitionAttributeFilloutTrait
      *
      * @param int  $bid The id of the field
      * @param bool $createIfNotFound    Set to true to create a new fillout entry or this entity and attribute
-     * @return AcquisitionAttributeFillout The field
+     * @return Fillout The field
      */
     public function getAcquisitionAttributeFillout($bid, $createIfNotFound = false)
     {
-        /** @var AcquisitionAttributeFillout $acquisitionAttribute */
+        /** @var Fillout $acquisitionAttribute */
         foreach ($this->getAcquisitionAttributeFillouts() as $fillout) {
                 if ($fillout->getBid() == $bid) {
                 return $fillout;
@@ -89,7 +93,7 @@ trait AcquisitionAttributeFilloutTrait
                 throw new \InvalidArgumentException('Can not create fillout if no related event is configured');
             }
 
-            $fillout = new AcquisitionAttributeFillout();
+            $fillout = new Fillout();
             if ($this instanceof Participation) {
                 $fillout->setParticipation($this);
                 $attributes = $event->getAcquisitionAttributes(true, false, true, true);
@@ -99,7 +103,7 @@ trait AcquisitionAttributeFilloutTrait
             } else {
                 throw new \InvalidArgumentException('This acquisition attribute fillout trait is used at unknown class');
             }
-            /** @var AcquisitionAttribute $attribute */
+            /** @var Attribute $attribute */
             foreach ($attributes as $attribute) {
                 if ((int)$attribute->getBid() === (int)$bid) {
                     $fillout->setAttribute($attribute);
@@ -120,7 +124,7 @@ trait AcquisitionAttributeFilloutTrait
      * Getter for acquisition attribute mapping
      *
      * @param   string  $key                Key containing name of fillout attribute
-     * @return AcquisitionAttributeFillout
+     * @return Fillout
      */
     public function __get($key) {
         if (preg_match('/acq_field_(\d+)/', $key, $bidData)) {
@@ -134,7 +138,7 @@ trait AcquisitionAttributeFilloutTrait
      *
      * @param   string  $key    Key containing name of fillout attribute
      * @param   mixed   $value  New value for this fillout
-     * @return AcquisitionAttributeFilloutTrait
+     * @return FilloutTrait
      */
     public function __set($key, $value) {
         if (preg_match('/acq_field_(\d+)/', $key, $bidData)) {

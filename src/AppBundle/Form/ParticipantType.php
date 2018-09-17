@@ -11,7 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\BitMask\ParticipantFood;
-use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
@@ -121,7 +121,7 @@ class ParticipantType extends AbstractType
         );
         $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
-        /** @var AcquisitionAttribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($attributes as $attribute) {
             $bid = $attribute->getBid();
 

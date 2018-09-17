@@ -10,7 +10,7 @@
 
 namespace AppBundle\Export\Customized;
 
-use AppBundle\Entity\AcquisitionAttribute;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use Symfony\Component\Config\Definition\Builder\BooleanNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -137,7 +137,7 @@ class Configuration implements ConfigurationInterface
                               ->info('Felder');
         $children = $node->children();
 
-        /** @var AcquisitionAttribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($attributes as $attribute) {
             $attributeChildren = $children
                 ->arrayNode('acq_field_' . $attribute->getBid())

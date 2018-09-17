@@ -15,6 +15,7 @@ use AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -46,7 +47,7 @@ class AdminAttendanceListController extends Controller
      */
     public function listAttendanceListsDataAction(Event $event)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
+        $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
         $eid        = $event->getEid();
 
         $result = $repository->findBy(['event' => $eid]);
@@ -110,7 +111,7 @@ class AdminAttendanceListController extends Controller
      */
     public function editAction(Event $event, $tid, Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
+        $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
 
         $list = $repository->findOneBy(['tid' => $tid]);
         if (!$list) {
@@ -162,9 +163,9 @@ class AdminAttendanceListController extends Controller
      */
     public function listParticipationsAction(Event $event, $tid, Request $request)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
-        $filloutRepository       = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
+        $filloutRepository       = $this->getDoctrine()->getRepository(AttendanceListFillout::class);
         $filloutList             = [];
         foreach ($filloutRepository->findBy(['attendanceList' => $tid]) as $fillout) {
             $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
@@ -223,12 +224,12 @@ class AdminAttendanceListController extends Controller
             throw new InvalidTokenHttpException();
         }
 
-        $repositoryParticipant = $this->getDoctrine()->getRepository('AppBundle:Participant');
+        $repositoryParticipant = $this->getDoctrine()->getRepository(Participant::class);
         $participant           = $repositoryParticipant->findOneBy(['aid' => $aid]);
-        $repositoryList        = $this->getDoctrine()->getRepository('AppBundle:AttendanceList');
+        $repositoryList        = $this->getDoctrine()->getRepository(AttendanceList::class);
         $list                  = $repositoryList->findOneBy(['tid' => $tid]);
         $event                 = $list->getEvent();
-        $repositoryFillout     = $this->getDoctrine()->getRepository('AppBundle:AttendanceListFillout');
+        $repositoryFillout     = $this->getDoctrine()->getRepository(AttendanceListFillout::class);
 
         $this->denyAccessUnlessGranted('participants_edit', $event);
 

@@ -8,8 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
@@ -19,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="acquisition_attribute_fillout")
  */
-class AcquisitionAttributeFillout
+class Fillout
 {
     /**
      * @ORM\Column(type="integer", name="oid")
@@ -29,19 +31,19 @@ class AcquisitionAttributeFillout
     protected $oid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute", inversedBy="fillouts")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="fillouts")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
      */
     protected $attribute;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Participation", inversedBy="acquisitionAttributeFillouts")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participation", inversedBy="acquisitionAttributeFillouts")
      * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade", nullable=true)
      */
     protected $participation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="acquisitionAttributeFillouts")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="acquisitionAttributeFillouts")
      * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade", nullable=true)
      */
     protected $participant;
@@ -64,11 +66,11 @@ class AcquisitionAttributeFillout
     /**
      * Set attribute this fillout is related to
      *
-     * @param AcquisitionAttribute $attribute
+     * @param Attribute $attribute
      *
-     * @return AcquisitionAttributeFillout
+     * @return Fillout
      */
-    public function setAttribute(AcquisitionAttribute $attribute = null)
+    public function setAttribute(Attribute $attribute = null)
     {
         $this->attribute = $attribute;
 
@@ -78,7 +80,7 @@ class AcquisitionAttributeFillout
     /**
      * Get attribute this fillout is related to
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function getAttribute()
     {
@@ -103,7 +105,7 @@ class AcquisitionAttributeFillout
      *
      * @param Participation $participation
      *
-     * @return AcquisitionAttributeFillout
+     * @return Fillout
      */
     public function setParticipation(Participation $participation = null)
     {
@@ -115,7 +117,7 @@ class AcquisitionAttributeFillout
     /**
      * Get participation this fillout is related to
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function getParticipation()
     {
@@ -131,7 +133,7 @@ class AcquisitionAttributeFillout
      *
      * @param Participant $participant
      *
-     * @return AcquisitionAttributeFillout
+     * @return Fillout
      */
     public function setParticipant(Participant $participant = null)
     {
@@ -155,7 +157,7 @@ class AcquisitionAttributeFillout
      *
      * @param string|array $value
      *
-     * @return AcquisitionAttributeFillout
+     * @return Fillout
      */
     public function setValue($value)
     {

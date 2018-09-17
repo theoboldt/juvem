@@ -10,14 +10,14 @@
 
 namespace AppBundle\Form\Transformer;
 
-use AppBundle\Entity\AcquisitionAttributeFillout;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class AcquisitionAttributeFilloutTransformer implements DataTransformerInterface
 {
     public function transform($fillout)
     {
-        if ($fillout instanceof AcquisitionAttributeFillout) {
+        if ($fillout instanceof Fillout) {
             return $fillout->getValue();
         }
         return $fillout;

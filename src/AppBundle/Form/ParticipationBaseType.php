@@ -10,8 +10,8 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AcquisitionAttribute;
-use AppBundle\Entity\AcquisitionAttributeFillout;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
@@ -95,7 +95,7 @@ class ParticipationBaseType extends AbstractType
         );
         $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
-        /** @var AcquisitionAttribute $attribute */
+        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($attributes as $attribute) {
             $bid              = $attribute->getBid();
 
@@ -106,7 +106,7 @@ class ParticipationBaseType extends AbstractType
 
             try {
                 if (isset($options['data']) && $options['data'] instanceof Participation) {
-                    /** @var AcquisitionAttributeFillout $fillout */
+                    /** @var Fillout $fillout */
                     $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
                     $attributeOptions['data'] = $fillout->getValue();
                 }

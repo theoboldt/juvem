@@ -75,7 +75,7 @@ class NewsletterSubscriptionReminderCommand extends ContainerAwareCommand
      */
     protected function unconfirmedSubscriptionList()
     {
-        $repository    = $this->getContainer()->get('doctrine')->getRepository('AppBundle:NewsletterSubscription');
+        $repository    = $this->getContainer()->get('doctrine')->getRepository(NewsletterSubscription::class);
         $subscriptions = $repository->findBy(['isConfirmed' => false]);
 
         return $subscriptions;

@@ -10,6 +10,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -22,7 +23,7 @@ class EventAcquisitionType extends AbstractType
     {
         $builder->add(
             'acquisitionAttributes', EntityType::class, array(
-                                       'class'        => 'AppBundle\Entity\AcquisitionAttribute',
+                                       'class'        => Attribute::class,
                     'query_builder' => function (EntityRepository $er) {
                         return $er->createQueryBuilder('a')
                                   ->where('a.deletedAt IS NULL')

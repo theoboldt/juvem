@@ -13,6 +13,7 @@ namespace AppBundle\Command;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -114,8 +115,8 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
     protected function executeParticipantParse(OutputInterface $output)
     {
         $last                    = $this->getLastTaskRun();
-        $eventRepository         = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Event');
-        $participationRepository = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Participation');
+        $eventRepository         = $this->getContainer()->get('doctrine')->getRepository(Event::class);
+        $participationRepository = $this->getContainer()->get('doctrine')->getRepository(Participation::class);
         $eventList               = $eventRepository->findWithSubscriptions();
 
         $progress = new ProgressBar($output, count($eventList));
@@ -162,7 +163,7 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
     protected function getTask()
     {
         if (!$this->task) {
-            $repository = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Task');
+            $repository = $this->getContainer()->get('doctrine')->getRepository(Task::class);
             $this->task = $repository->findOneBy(['command' => $this->getName()]);
             if (!$this->task) {
                 $this->task = new Task();

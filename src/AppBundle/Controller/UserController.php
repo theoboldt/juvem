@@ -11,6 +11,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserRoleAssignmentType;
 use AppBundle\Twig\Extension\BootstrapGlyph;
@@ -128,7 +129,7 @@ class UserController extends Controller
      */
     public function listParticipantsDataAction(Request $request, User $user)
     {
-        $participationRepository = $this->getDoctrine()->getRepository('AppBundle:Participation');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationList       = $participationRepository->findBy(
             ['assignedUser' => $user->getUid(), 'deletedAt' => null]
         );

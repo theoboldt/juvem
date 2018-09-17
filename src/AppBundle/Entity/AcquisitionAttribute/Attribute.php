@@ -8,10 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AcquisitionAttribute;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  * @ORM\HasLifecycleCallbacks()
  */
-class AcquisitionAttribute
+class Attribute
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 
@@ -106,7 +107,7 @@ class AcquisitionAttribute
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttributeFillout", cascade={"all"},
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"},
      *                                                                             mappedBy="attribute")
      */
     protected $fillouts;
@@ -152,7 +153,7 @@ class AcquisitionAttribute
      *
      * @param string $managementTitle
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setManagementTitle($managementTitle)
     {
@@ -176,7 +177,7 @@ class AcquisitionAttribute
      *
      * @param string $managementDescription
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setManagementDescription($managementDescription)
     {
@@ -200,7 +201,7 @@ class AcquisitionAttribute
      *
      * @param string $formTitle
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFormTitle($formTitle)
     {
@@ -224,7 +225,7 @@ class AcquisitionAttribute
      *
      * @param string $formDescription
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFormDescription($formDescription)
     {
@@ -270,7 +271,7 @@ class AcquisitionAttribute
      *
      * @param string $fieldType
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFieldType($fieldType)
     {
@@ -315,7 +316,7 @@ class AcquisitionAttribute
      *
      * @param array $fieldOptions
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFieldOptions($fieldOptions)
     {
@@ -354,7 +355,7 @@ class AcquisitionAttribute
      *
      * @param boolean $multiple
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFieldTypeChoiceType($multiple)
     {
@@ -389,7 +390,7 @@ class AcquisitionAttribute
      *
      * @param array $choices
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setFieldTypeChoiceOptions($choices)
     {
@@ -444,7 +445,7 @@ class AcquisitionAttribute
      *
      * @param boolean $useAtParticipation
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setUseAtParticipation($useAtParticipation = true)
     {
@@ -468,7 +469,7 @@ class AcquisitionAttribute
      *
      * @param boolean $useAtParticipant
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setUseAtParticipant($useAtParticipant = true)
     {
@@ -492,7 +493,7 @@ class AcquisitionAttribute
      *
      * @param boolean $isRequired
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setIsRequired($isRequired = true)
     {
@@ -525,7 +526,7 @@ class AcquisitionAttribute
      * Set if attribute is public (and included in form or not)
      *
      * @param bool $isPublic
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function setIsPublic(bool $isPublic): self
     {
@@ -538,7 +539,7 @@ class AcquisitionAttribute
      *
      * @param Event $event
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
     public function addEvent(Event $event)
     {
@@ -570,11 +571,11 @@ class AcquisitionAttribute
     /**
      * Add fillout
      *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     * @param \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout
      *
-     * @return AcquisitionAttribute
+     * @return Attribute
      */
-    public function addFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    public function addFillout(\AppBundle\Entity\AcquisitionAttribute\Fillout $fillout)
     {
         $this->fillouts[] = $fillout;
 
@@ -584,9 +585,9 @@ class AcquisitionAttribute
     /**
      * Remove fillout
      *
-     * @param \AppBundle\Entity\AcquisitionAttributeFillout $fillout
+     * @param \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout
      */
-    public function removeFillout(\AppBundle\Entity\AcquisitionAttributeFillout $fillout)
+    public function removeFillout(\AppBundle\Entity\AcquisitionAttribute\Fillout $fillout)
     {
         $this->fillouts->removeElement($fillout);
     }
