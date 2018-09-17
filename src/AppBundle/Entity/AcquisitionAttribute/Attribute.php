@@ -13,6 +13,7 @@ namespace AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Form\AcquisitionChoiceOptionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -119,6 +120,15 @@ class Attribute
      */
     protected $isPublic = true;
 
+    /**
+     * Contains the choice options the user can use
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"}, mappedBy="attribute")
+     * @Assert\Valid()
+     * @var \Doctrine\Common\Collections\Collection|array|AttributeChoiceOption[]
+     */
+    protected $choiceOptions;
+    
     /**
      * Constructor
      */
@@ -602,4 +612,37 @@ class Attribute
         return $this->fillouts;
     }
 
+    /**
+     * Add choiceOption
+     *
+     * @param AttributeChoiceOption$choiceOption
+     *
+     * @return Attribute
+     */
+    public function addChoiceOption(AttributeChoiceOption $choiceOption)
+    {
+        $this->choiceOptions[] = $choiceOption;
+
+        return $this;
+    }
+
+    /**
+     * Remove choiceOption
+     *
+     * @param AttributeChoiceOption $choiceOption
+     */
+    public function removeChoiceOption(AttributeChoiceOption $choiceOption)
+    {
+        $this->choiceOptions->removeElement($choiceOption);
+    }
+
+    /**
+     * Get choiceOptions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChoiceOptions()
+    {
+        return $this->choiceOptions;
+    }
 }

@@ -14,6 +14,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -122,6 +123,18 @@ class AcquisitionType extends AbstractType
                 'required'   => false
 
             ]
+        )->add(
+            'choiceOptions',
+            CollectionType::class,
+            [
+                'label'        => 'Optionen der Auswahl',
+                'entry_type'   => AcquisitionChoiceOptionType::class,
+                'allow_add'    => true,
+                'allow_delete' => true,
+                'attr'         => ['aria-describedby' => 'help-choice-options'],
+                'required'     => true
+            ]
+
         );
     }
 
