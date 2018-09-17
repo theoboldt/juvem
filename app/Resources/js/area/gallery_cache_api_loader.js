@@ -163,6 +163,10 @@ var galleryCacheApiLoader = {
         }).then(
             function (response) {
                 loader.updateSizeButton();
+                if (requestThumbnail && image.previewLoad) {
+                    //do not render thumbnail if preview already load
+                    return;
+                }
                 galleryRenderer.renderImage(image.wrapEl, response, blur);
             }, function (error) {
                 galleryRenderer.removeFaultyImageAndReRender(image.wrapEl.find('img'));

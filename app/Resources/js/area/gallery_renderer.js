@@ -118,7 +118,7 @@ var galleryRenderer = {
 
             return this.galleries;
         },
-        galleryRenderAll: function () {
+        renderAllGalleries: function () {
             var renderer = this;
             jQuery.each(this.getGalleries(), function () {
                 if (this.galleryEl.data('width') !== this.galleryEl.width()) {
@@ -153,9 +153,9 @@ var galleryRenderer = {
             });
             if (!gallery) {
                 throw new Error('No related gallery found');
+            } else {
+                return gallery;
             }
-
-            return gallery;
         },
 
         /**
@@ -252,11 +252,11 @@ var galleryRenderer = {
 
 jQuery(document).ready(function () {
 
-    galleryRenderer.galleryRenderAll(); ////render boxes for all galleries the first time
+    galleryRenderer.renderAllGalleries(); ////render boxes for all galleries the first time
 
     //listen
     jQuery(window).on("resize", function () {
-        galleryRenderer.galleryRenderAll();
+        galleryRenderer.renderAllGalleries();
     });
 
 });

@@ -377,7 +377,7 @@ $(function () {
                 if (response.template) {
                     $('#dropzone-gallery .gallery').append(response.template);
                     $('#gallery-image-wrap-0-' + response.iid + ' a').on('click', handleImageClick);
-                    galleryRenderAll();
+                    galleryRenderer.renderAllGalleries();
                 }
             },
 
