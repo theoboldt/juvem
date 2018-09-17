@@ -33,4 +33,6 @@
 !web/js/.gitkeep
 /uploads/*
 !/uploads/.gitkeep
+/tmp/*
+!/tmp/.gitkeep
 .DS_Store
