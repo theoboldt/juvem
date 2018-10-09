@@ -98,11 +98,12 @@ class NewsletterSubscriptionRepository extends EntityRepository
                       ( :ageRangeBegin <= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_end + %1$s) ELSE s.age_range_end END)
                         AND :ageRangeEnd >= (CASE WHEN (s.base_age IS NOT NULL) THEN (s.age_range_begin + %1$s) ELSE s.age_range_begin END)
                       ) OR es.rid IS NOT NULL
-                      '.$queryAgeOver18rangeAddition.'
+                      %3$s
                     )
               ',
             $queryAgeRangeClearance,
-            implode($similarEventIdList, ',')
+            implode($similarEventIdList, ','),
+            $queryAgeOver18rangeAddition
         );
         $stmt  = $this->getEntityManager()->getConnection()->prepare($query);
         $stmt->execute(array('ageRangeBegin' => $ageRangeBegin, 'ageRangeEnd' => $ageRangeEnd));
