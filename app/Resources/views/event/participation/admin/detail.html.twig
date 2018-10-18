@@ -420,7 +420,7 @@
                                     {% endif %}
                                     {{ fillout.attribute.formTitle }}
                                 </dt>
-                                <dd>{{ fillout }}</dd>
+                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
                             {% endfor %}
                             <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
@@ -537,7 +537,7 @@
                                             {% if participantFood.getValue() %}
                                                 {{ ' '|bitmask(participantFood) }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         <dt>Medizinische Hinweise</dt>
@@ -545,7 +545,7 @@
                                             {% if participant.infoMedical %}
                                                 {{ participant.infoMedical }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         <dt>Allgemeine Hinweise</dt>
@@ -553,7 +553,7 @@
                                             {% if participant.infoGeneral %}
                                                 {{ participant.infoGeneral }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         {% if event.price %}
@@ -598,7 +598,7 @@
                                                 {% endif %}
                                                 {{ fillout.attribute.formTitle }}
                                             </dt>
-                                            <dd>{{ fillout }}</dd>
+                                            <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
                                         {% endfor %}
                                         <dt>Weitere Teilnahmen</dt>
                                         <dd>

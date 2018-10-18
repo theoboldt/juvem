@@ -13,6 +13,11 @@
 
 .help-block {
   margin-top: 0;
+
+  span {
+    font-weight: bold;
+    font-style: italic;
+  }
 }
 
 .help-block-input {
@@ -68,7 +73,7 @@ textarea {
   }
   .panel-footer {
     .checkbox, .radio {
-      margin:0;
+      margin: 0;
     }
   }
 }
@@ -81,4 +86,21 @@ textarea {
   .btn-inline-save {
     margin-top: 24px;
   }
+}
+
+dd ul,
+.form-group ul.form-control-static {
+  padding-left: 20px;
+
+  li {
+    padding-bottom: 3px;
+  }
+
+  li span.deleted {
+    text-decoration: line-through;
+  }
+}
+
+.help-block ul.list-unstyled {
+  color: $state-danger-text;
 }

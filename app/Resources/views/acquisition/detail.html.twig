@@ -97,7 +97,8 @@
                         <label class="col-sm-4 control-label">Beschreibung (Formular)</label>
 
                         <div class="col-sm-8">
-                            <p class="form-control-static" style="white-space: pre-line;">{{ acquisition.formDescription }}</p>
+                            <p class="form-control-static"
+                               style="white-space: pre-line;">{{ acquisition.formDescription }}</p>
 
                         </div>
                     </div>
@@ -109,6 +110,42 @@
 
                         </div>
                     </div>
+                    {% if acquisition.fieldType == 'Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType' %}
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Optionen</label>
+                            <div class="col-sm-8">
+                                <ul class="form-control-static">
+                                    {% for choice in acquisition.choiceOptions %}
+                                        <li>
+                                            <b>Kürzel:</b>
+                                            <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
+                                            {% if choice.deletedAt is not null %}
+                                                {{ 'trash'|glyph('Diese Option wurde gelöscht und kann nicht mehr ausgewählt werden.') }}
+                                            {% endif %}
+                                            <br>
+                                            <b>Interner Titel:</b>
+                                            <span{% if choice.deletedAt %} class="deleted"{% endif %}>
+                                                    {% if choice.managementTitle %}
+                                                        {{ choice.managementTitle }}
+                                                    {% else %}
+                                                        <i class="empty value-null"><span></span></i>
+                                                    {% endif %}
+                                                </span>
+                                            <br>
+                                            <b>Titel im Formular:</b>
+                                            <span{% if choice.deletedAt %} class="deleted"{% endif %}>
+                                                    {% if choice.formTitle %}
+                                                        {{ choice.formTitle }}
+                                                    {% else %}
+                                                        <i class="empty value-null"><span></span></i>
+                                                    {% endif %}
+                                                </span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Sichtbarkeit</label>
 
@@ -192,16 +229,16 @@
 
 {% block javascriptCustom %}
     {% cspscript %}
-    <script type='text/javascript'>
-        jQuery(document).ready(function () {
-            $('#dialogModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget),
+        <script type='text/javascript'>
+            jQuery(document).ready(function () {
+                $('#dialogModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget),
                         action = button.data('action'),
                         modal = $(this);
 
-                modal.find('input[name="form[action]"]').val(action);
+                    modal.find('input[name="form[action]"]').val(action);
+                });
             });
-        });
-    </script>
+        </script>
     {% endcspscript %}
 {% endblock %}

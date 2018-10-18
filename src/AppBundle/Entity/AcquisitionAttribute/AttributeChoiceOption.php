@@ -3,9 +3,9 @@
  * AttributeChoiceOption
  *
  * @author       Erik Theoboldt <theoboldt@teqneers.de>
- * @package    DDS
- * @subpackage AppBundle\Entity\AcquisitionAttribute
- * @copyright  Copyright (C) 2003-2017 TEQneers GmbH & Co. KG. All rights reserved.
+ * @package      DDS
+ * @subpackage   AppBundle\Entity\AcquisitionAttribute
+ * @copyright    Copyright (C) 2003-2017 TEQneers GmbH & Co. KG. All rights reserved.
  */
 
 /**
@@ -17,6 +17,7 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,85 +27,172 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="acquisition_attribute_choice_option")
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  */
-class AttributeChoiceOption {
-    
+class AttributeChoiceOption
+{
+
+    use SoftDeleteTrait;
+
     /**
      * @ORM\Column(type="integer", name="id")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    
+
     /**
      * @ORM\Column(type="string", length=255, name="form_title")
      * @Assert\NotBlank()
      */
     protected $formTitle;
-    
+
     /**
-     * @ORM\Column(type="string", length=255, name="management_title")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=255, name="management_title", nullable=true)
      */
-    protected $managementTitle;
-    
+    protected $managementTitle = null;
+
     /**
      * @ORM\Column(type="string", length=255, name="short_title", nullable=true)
      */
     protected $shortTitle = null;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="choiceOptions")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
      */
     protected $attribute;
-    
+
     /**
-     * @ORM\Column(name="hide_in_form", type="smallint", options={"unsigned":true,"default":0})
-     *
-     * @var boolean
+     * @return mixed
      */
-    protected $hideInForm = false;
-    
-    /**
-     * @return int
-     */
-    public function getId(): int {
+    public function getId()
+    {
         return $this->id;
     }
-    
+
     /**
-     * @return string
+     * @param mixed $id
+     * @return AttributeChoiceOption
      */
-    public function getFormTitle() {
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFormTitle()
+    {
         return $this->formTitle;
     }
-    
+
     /**
-     * @return string
+     * @param mixed $formTitle
+     * @return AttributeChoiceOption
      */
-    public function getManagementTitle() {
-        return $this->managementTitle;
+    public function setFormTitle($formTitle)
+    {
+        $this->formTitle = $formTitle;
+        return $this;
     }
-    
+
     /**
-     * @return string|null
-     */
-    public function getShortTitle() {
-        return $this->shortTitle;
-    }
-    
-    /**
-     * @return Attribute
-     */
-    public function getAttribute() {
-        return $this->attribute;
-    }
-    
-    /**
+     * Determine if management title is set
+     *
      * @return bool
      */
-    public function isHideInForm(): bool {
-        return $this->hideInForm;
+    public function hasManagementTitle()
+    {
+        return $this->managementTitle !== null;
     }
-    
+
+    /**
+     * Get internal title
+     *
+     * @param bool $fallback If set to true and no internal title is set, form title is used
+     * @return string|null
+     */
+    public function getManagementTitle($fallback = false)
+    {
+        if ($this->managementTitle === null && $fallback) {
+            return $this->formTitle;
+        }
+        return $this->managementTitle;
+    }
+
+    /**
+     * @param mixed $managementTitle
+     * @return AttributeChoiceOption
+     */
+    public function setManagementTitle($managementTitle)
+    {
+        $this->managementTitle = $managementTitle;
+        return $this;
+    }
+
+    /**
+     * Get shortened title
+     *
+     * @param bool $fallback If set to true, short title is automatically generated
+     * @return string|null
+     */
+    public function getShortTitle($fallback = false)
+    {
+        if ($this->shortTitle === null && $fallback) {
+            $words = explode(' ', $this->getManagementTitle(true));
+            $title = '';
+            foreach ($words as $w) {
+                $title .= mb_strtoupper($w[0]);
+            }
+            return $title;
+        }
+
+        return $this->shortTitle;
+    }
+
+    /**
+     * @param string $shortTitle
+     * @return AttributeChoiceOption
+     */
+    public function setShortTitle($shortTitle)
+    {
+        $this->shortTitle = $shortTitle;
+        return $this;
+    }
+
+    /**
+     * Get related @see Attribute
+     *
+     * @return Attribute
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
+    }
+
+    /**
+     * Set related attribute
+     *
+     * @param Attribute $attribute
+     * @return AttributeChoiceOption
+     */
+    public function setAttribute($attribute)
+    {
+        $this->attribute = $attribute;
+        if (!$attribute->getChoiceOptions()->contains($this)) {
+            $attribute->addChoiceOption($this);
+        }
+        return $this;
+    }
+
+    /**
+     * Transform option to text
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getFormTitle();
+    }
 }

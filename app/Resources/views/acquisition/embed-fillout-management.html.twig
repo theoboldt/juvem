@@ -1,0 +1,20 @@
+{% if fillout.attribute.isMultipleChoiceType %}
+    {% if fillout.getSelectedChoices|length %}
+        <ul>
+            {% for choice in fillout.getSelectedChoices %}
+                <li {% if choice.deletedAt %}class="deleted"{% endif %}>
+                    <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
+                    <span{% if choice.getManagementTitle(false) %} title="{{ choice.formTitle }}" data-toggle="tooltip" data-placement="top"{% endif %}>{{ choice.getManagementTitle(true) }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <i class="empty no-selection"><span></span></i>
+    {% endif %}
+{% else %}
+    {% if fillout is empty %}
+        <i class="empty value-null"><span></span></i>
+    {% else %}
+        {{ fillout }}
+    {% endif %}
+{% endif %}

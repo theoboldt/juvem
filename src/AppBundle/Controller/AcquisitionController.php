@@ -11,6 +11,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Form\AcquisitionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,7 +56,7 @@ class AcquisitionController extends Controller
                 'management_description' => $attribute->getManagementDescription(),
                 'type'                   => $attribute->getFieldType(true),
                 'form_title'             => $attribute->getFormTitle(),
-                'form_description'       => $attribute->getFormDescription()
+                'form_description'       => $attribute->getFormDescription(),
             );
         }
 
@@ -98,7 +99,7 @@ class AcquisitionController extends Controller
             [
                 'form'        => $form->createView(),
                 'acquisition' => $attribute,
-                'events'      => $attribute->getEvents()
+                'events'      => $attribute->getEvents(),
             ]
         );
     }
@@ -120,13 +121,17 @@ class AcquisitionController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
+            /** @var AttributeChoiceOption $option */
+            foreach ($attribute->getChoiceOptions() as $option) {
+                $option->setAttribute($attribute);
+            }
 
             $em->persist($attribute);
             $em->flush();
 
             return $this->redirectToRoute('acquisition_detail', array('bid' => $attribute->getBid()));
         }
-    
+
         return $this->render(
             'acquisition/edit.html.twig',
             [

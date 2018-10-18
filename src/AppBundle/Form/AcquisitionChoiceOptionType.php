@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AcquisitionChoiceOptionType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
-        
+
         $builder
             ->add(
                 'formTitle',
@@ -45,17 +45,9 @@ class AcquisitionChoiceOptionType extends AbstractType {
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-info-choice-option-short']
                 ]
-            )->add(
-                'hideInForm',
-                CheckboxType::class,
-                [
-                    'label'    => 'Im Formular verstecken',
-                    'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-info-choice-hide-in-form']
-                ]
             );
     }
-    
+
     public function configureOptions(OptionsResolver $resolver) {
         $resolver->setDefaults(
             [

@@ -33,23 +33,27 @@ class Fillout
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="fillouts")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
+     * @var Attribute
      */
     protected $attribute;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participation", inversedBy="acquisitionAttributeFillouts")
      * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade", nullable=true)
+     * @var Participation
      */
     protected $participation;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="acquisitionAttributeFillouts")
      * @ORM\JoinColumn(name="aid", referencedColumnName="aid", onDelete="cascade", nullable=true)
+     * @var Participant
      */
     protected $participant;
 
     /**
      * @ORM\Column(type="string", length=255, name="value", nullable=true)
+     * @var string
      */
     protected $value;
 
@@ -117,7 +121,7 @@ class Fillout
     /**
      * Get participation this fillout is related to
      *
-     * @return Attribute
+     * @return Participation
      */
     public function getParticipation()
     {
@@ -180,13 +184,39 @@ class Fillout
         $attribute = $this->getAttribute();
         if ($attribute->getFieldTypeChoiceType()) {
             if ($value) {
-                $value = json_decode($value);
+                $value = json_decode($value, true);
             } else {
                 $value = [];
             }
         }
 
         return $value;
+    }
+
+    /**
+     * Get list of @see AttributeChoiceOption which are selected
+     *
+     * @return array|AttributeChoiceOption[]
+     */
+    public function getSelectedChoices(): array
+    {
+        if (!$this->attribute->getFieldType() == FormChoiceType::class) {
+            throw new \InvalidArgumentException('This is not a fillout related field type');
+        }
+        $choicesAvailable = $this->attribute->getChoiceOptions();
+        $choicesSelected  = $this->getValue();
+        $selected         = [];
+        if (!is_array($choicesSelected)) {
+            $choicesSelected = [$choicesSelected];
+        }
+
+        /** @var AttributeChoiceOption $choice */
+        foreach ($choicesAvailable as $choice) {
+            if (in_array($choice->getId(), $choicesSelected)) {
+                $selected[$choice->getId()] = $choice;
+            }
+        }
+        return $selected;
     }
 
     /**

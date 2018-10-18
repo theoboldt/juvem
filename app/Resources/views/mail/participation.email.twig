@@ -86,7 +86,7 @@ Mit besten Grüßen,
                 {% if fillout.attribute.public %}
                     <tr>
                         <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                        <td>{{ fillout }}</td>
+                        <td>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</td>
                     </tr>
                 {% endif %}
             {% endfor %}
@@ -149,7 +149,7 @@ Mit besten Grüßen,
                     {% if fillout.attribute.public %}
                         <tr>
                             <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                            <td>{{ fillout }}</td>
+                            <td>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</td>
                         </tr>
                     {% endif -%}
                 {% endfor %}
@@ -160,7 +160,7 @@ Mit besten Grüßen,
                         {% if participantFood.getValue() %}
                             {{ participantFood.getActiveList(true)|join(', ') }}
                         {% else %}
-                            <i>(keine Besonderheiten)</i>
+                            <i class="empty no-special"><span></span></i>
                         {% endif %}
                     </td>
                 </tr>
@@ -170,7 +170,7 @@ Mit besten Grüßen,
                         {% if participant.infoMedical %}
                             {{ participant.infoMedical }}
                         {% else %}
-                            <i>(keine Besonderheiten)</i>
+                            <i class="empty no-special"><span></span></i>
                         {% endif %}
                     </td>
                 </tr>
@@ -180,7 +180,7 @@ Mit besten Grüßen,
                         {% if participant.infoGeneral %}
                             {{ participant.infoGeneral }}
                         {% else %}
-                            <i>(keine Besonderheiten)</i>
+                            <i class="empty no-special"><span></span></i>
                         {% endif %}
                     </td>
                 </tr>

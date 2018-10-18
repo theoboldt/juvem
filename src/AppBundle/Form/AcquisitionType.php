@@ -113,22 +113,12 @@ class AcquisitionType extends AbstractType
                 'required'   => false
             ]
         )->add(
-            'fieldTypeChoiceOptions',
-            TextType::class,
-            [
-                'label'      => 'Optionen der Auswahl',
-                'label_attr' => ['class' => 'control-label required'],
-                'attr'       => ['aria-describedby' => 'help-options'],
-                'mapped'     => true,
-                'required'   => false
-
-            ]
-        )->add(
             'choiceOptions',
             CollectionType::class,
             [
                 'label'        => 'Optionen der Auswahl',
                 'entry_type'   => AcquisitionChoiceOptionType::class,
+                'by_reference' => false,
                 'allow_add'    => true,
                 'allow_delete' => true,
                 'attr'         => ['aria-describedby' => 'help-choice-options'],

@@ -1,0 +1,19 @@
+{% if fillout.attribute.isMultipleChoiceType %}
+    {% if fillout.getSelectedChoices|length %}
+        <ul>
+            {% for choice in fillout.getSelectedChoices %}
+                <li {% if choice.deletedAt %}class="deleted"{% endif %}>
+                    {{ choice.formTitle }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <i class="empty no-selection"><span></span></i>
+    {% endif %}
+{% else %}
+    {% if fillout is empty %}
+        <i class="empty value-null"><span></span></i>
+    {% else %}
+        {{ fillout }}
+    {% endif %}
+{% endif %}

@@ -71,7 +71,7 @@ $(function () {
                 if (elementTarget.is('.prototype-remove')) {
                     e.preventDefault();
                     var formElement = elementTarget.parent().parent().parent().parent(),
-                        formGroup = formElement.parent().parent(),
+                        formGroup = formElement.closest('.prototype-container'),
                         formElementCount = formGroup.find('.prototype-element').length;
 
                     formElement.remove();

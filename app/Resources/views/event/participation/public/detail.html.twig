@@ -70,7 +70,7 @@
                                 {% if fillout.attribute.public %}
                                     <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
                                         data-placement="right">{{ fillout.attribute.formTitle }}</dt>
-                                    <dd>{{ fillout }}</dd>
+                                    <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
                                 {% endif %}
                             {% endfor %}
                             <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
@@ -139,7 +139,7 @@
                                             {% if participantFood.getValue() %}
                                                 {{ ' '|bitmask(participantFood) }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         <dt>Medizinische Hinweise</dt>
@@ -147,7 +147,7 @@
                                             {% if participant.infoMedical %}
                                                 {{ participant.infoMedical }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         <dd>
@@ -156,14 +156,14 @@
                                             {% if participant.infoGeneral %}
                                                 {{ participant.infoGeneral }}
                                             {% else %}
-                                                <i>(keine Besonderheiten)</i>
+                                                <i class="empty no-special"><span></span></i>
                                             {% endif %}
                                         </dd>
                                         {% for fillout in participant.acquisitionAttributeFillouts %}
                                             {% if fillout.attribute.public %}
                                                 <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
                                                     data-placement="right">{{ fillout.attribute.formTitle }}</dt>
-                                                <dd>{{ fillout }}</dd>
+                                                <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
                                             {% endif %}
                                         {% endfor %}
                                     </dl>

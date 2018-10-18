@@ -34,7 +34,8 @@
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group">
                     <label class="control-label">Erfassung</label>
-                    <p class="help-block">Die Eingabe des Feldes kann gleichzeitig je Anmeldung und je Teilnehmer erfasst werden. </p>
+                    <p class="help-block">Die Eingabe des Feldes kann gleichzeitig je Anmeldung und je Teilnehmer
+                        erfasst werden. </p>
                     {{ form_row(form.useAtParticipation) }}
                     {{ form_row(form.useAtParticipant) }}
                 </div>
@@ -69,120 +70,133 @@
                     {{ form_row(form.fieldTypeChoiceType) }}
                 </div>
             </div>
-            {{ form_label(form.fieldTypeChoiceOptions) }}
-            {{ form_widget(form.fieldTypeChoiceOptions) }}
-            {{ form_errors(form.fieldTypeChoiceOptions) }}
-            <p class="help-block" id="help-options">Einzelne Optionen durch Semikolon <code>;</code> trennen. Wenn die
-                Optionen nachträglich geändert werden, können bereits erfasste Daten ihre Zuordnung verlieren.
-                <br><span id="form-choice-option-list"></span>
-            </p>
-            {% macro prototypeChoice(formElement) %}
-                <div class="panel panel-default prototype-element">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-10 col-sm-8">
-                                <h3 class="panel-title">
-                                    <!--<a role="button" data-toggle="collapse">-->
-                                    Option
-                                    <!--</a>-->
-                                </h3>
-                            </div>
-                            <div class="col-xs-2 col-sm-4 text-right">
-                                <a href="#" class="btn btn-danger btn-xs prototype-remove"
-                                   title="Option entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Option entfernen</span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                {{ form_errors(formElement) }}
-                                <div class="form-group {% if not formElement.formTitle.vars.valid %}has-error{% endif %}">
-                                    {{ form_label(formElement.formTitle) }}
-                                    <div class="input-group">
-                                        {{ form_widget(formElement.formTitle) }}
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default" data-toggle="popover"
-                                                    data-content="So wie hier angegeben wird die Option im öffentlichen Formular angeboten.">
-                                                <span class="glyphicon glyphicon-question-sign"></span>
-                                            </button>
-                                        </span>
-                                    </div>
-                                    {{ form_errors(formElement.formTitle) }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-9">
-                                {{ form_label(formElement.managementTitle) }}
-                                <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
-                                    {{ form_widget(formElement.managementTitle) }}
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" data-toggle="popover"
-                                                data-content="Dies ist der interne Titel der Option. Er kann etwas kürzer sein, als der Text der im Formular präsentiert wird.">
-                                            <span class="glyphicon glyphicon-question-sign"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                                {{ form_errors(formElement.managementTitle) }}
-                            </div>
-                            <div class="col-xs-12 col-sm-3">
-                                {{ form_label(formElement.shortTitle) }}
-                                <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
-                                    {{ form_widget(formElement.shortTitle) }}
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" data-toggle="popover"
-                                                data-content="Hier kann eine sehr kompakte Form, ein Kürzel für die Option angegeben werden, deren Verwendung beim Export der internen Listen in schmalen Spalten sinnvoll ist.">
-                                            <span class="glyphicon glyphicon-question-sign"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                                {{ form_errors(formElement.shortTitle) }}
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <label class="control-label required control-label">Optionen der Auswahl</label>
+                    <div class="choice-options prototype-container"
+                         data-prototype="{{ m.prototypeChoice(form.choiceOptions.vars.prototype, false)|e('html_attr') }}">
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="form-group" style="margin-top:10px;">
-                                    <label class="control-label">Im Formular verstecken</label>
-                                    {{ form_row(formElement.hideInForm, {'label': 'Ist diese Option aktiviert, wird diese Option im Formular für neue Anmeldungen nicht angeboten. Nutzen Sie dieses Feld für Optionen, die bei neuen Anmeldungen nicht mehr ausgewählt werden sollen, die es aber bei alten Anmeldungen noch geben kann.'}) }}
+                                <div id='help-choice-options' class='help-block'>
+                                    <p>Hier werden die Optionen der Auswahl gepflegt.</p>
+                                    <p id="help-choice-options-public-title">
+                                        Im Auswahlfeld im öffentlichen Formular wird der Wert für <span>Titel im Formular</span>
+                                        angzeigt. Er sollte möglichst aussagekräftig sein und die Option auch für
+                                        aussenstehende verständlich machen. Er muss allgemein und neutral formuliert
+                                        sein. Für eine Schwimmanfänger-Option könnte der Text bspw. „<i>Teilnehmer hat
+                                            schwimmen gelernt, ist jedoch noch nicht sicher dabei und sollte keine
+                                            längeren Strecken schwimmen müsssen</i>“ lauten.
+                                    </p>
+                                    <p id="help-choice-options-internal-title">
+                                        Der <span>Interne Titel</span> darf kompakter und direkter beschreiben, was die
+                                        Option intern bedeutet. Wird für dieses Feld nichts eingegeben, wird auch intern
+                                        der Text von <i>Titel im Formular</i> verwendet. Für eine Schwimmanfänger-Option
+                                        könnte der Wert bspw. „<i>Schwimmanfänger</i>“ lauten.</p>
+                                    <p id="help-choice-options-internal-short">Für Excel-Exports oder andere Listen kann
+                                        ein Code als <span>Internes Kürzel</span> angegebene werden. Im Normalfall
+                                        besteht er nur aus Buchstaben. Für eine Schwimmanfänger-Option könnte der Wert
+                                        bspw. „<i>SA</i>“ lauten.</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            {% endmacro %}
-            <div class="col-xs-12 choice-options prototype-container"
-                 data-prototype="{{ m.prototypeChoice(form.choiceOptions.vars.prototype, false)|e('html_attr') }}">
-                <div class="prototype-elements">
-                    <div class="form-group">
-                        <span id='help-choice-options' class='help-block'>
-                            Optionen
-                        </span>
-                        {{ form_errors(form.choiceOptions) }}
-                        {% for choiceOption in form.choiceOptions %}
-                            {{ m.prototypeChoice(choiceOption) }}
-                        {% endfor %}
-                        {% if form.choiceOptions|length == 0 %}
-                            {{ form_row(form.choiceOptions) }}
-                        {% endif %}
-                        <div class="prototype-missing-message"{% if form.choiceOptions|length > 0 %} style="display: none;"{% endif %}>
-                            <div class="alert alert-danger">
-                                <ul class="list-unstyled">
-                                    <li><span class="glyphicon glyphicon-exclamation-sign"></span> Bei einer Auswahl mindestens eine Option.</li>
-                                </ul>
+                        <div class="prototype-elements">
+                            {{ form_errors(form.choiceOptions) }}
+                            {% for choiceOption in form.choiceOptions %}
+                                {{ m.prototypeChoice(choiceOption) }}
+                            {% endfor %}
+                            {% if form.choiceOptions|length == 0 %}
+                                {{ form_row(form.choiceOptions) }}
+                            {% endif %}
+                            <div class="prototype-missing-message"{% if form.choiceOptions|length > 0 %} style="display: none;"{% endif %}>
+                                <div class="alert alert-danger">
+                                    <ul class="list-unstyled">
+                                        <li><span class="glyphicon glyphicon-exclamation-sign"></span> Ein Feld vom Typ „Auswahl“ benötigt mindestens eine Option.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 15px;">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }}
+                                    Weitere Option hinzufügen
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }}
-                    Weitere Option hinzufügen
-                </button>
             </div>
-
-
-
         </div>
-        <input type="submit" value="{{ submitTitle }}" class="btn btn-primary"/>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <input type="submit" value="{{ submitTitle }}" class="btn btn-primary navbar-btn"/>
+            </div>
+        </nav>
     </div>
 </div>
+{% macro prototypeChoice(formElement) %}
+    <div class="row" {% if formElement.vars.value and formElement.vars.value.deletedAt is not null %}style="display:none;"{% endif %}>
+        <div class="col-xs-12">
+            <div class="panel panel-default prototype-element">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-10 col-sm-8">
+                            <h3 class="panel-title">Option</h3>
+                        </div>
+                        <div class="col-xs-2 col-sm-4 text-right">
+                            <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                               title="Option entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Option entfernen</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_errors(formElement) }}
+                            <div class="form-group {% if not formElement.formTitle.vars.valid %}has-error{% endif %}">
+                                {{ form_label(formElement.formTitle) }}
+                                <div class="input-group">
+                                    {{ form_widget(formElement.formTitle) }}
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default" href="#help-choice-options-public-title">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </a>
+                                    </span>
+                                </div>
+                                {{ form_errors(formElement.formTitle) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-9">
+                            {{ form_label(formElement.managementTitle) }}
+                            <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
+                                {{ form_widget(formElement.managementTitle) }}
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" href="#help-choice-options-internal-title">
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </a>
+                                </span>
+                            </div>
+                            {{ form_errors(formElement.managementTitle) }}
+                        </div>
+                        <div class="col-xs-12 col-sm-3">
+                            {{ form_label(formElement.shortTitle) }}
+                            <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
+                                {{ form_widget(formElement.shortTitle) }}
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" href="#help-choice-options-internal-short">
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </a>
+                                </span>
+                            </div>
+                            {{ form_errors(formElement.shortTitle) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
 {{ form_end(form) }}

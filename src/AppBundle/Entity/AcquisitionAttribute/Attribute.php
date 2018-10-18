@@ -75,7 +75,7 @@ class Attribute
     /**
      * @ORM\Column(type="json_array", length=16777215, name="field_options", nullable=true)
      */
-    protected $fieldOptions = array();
+    protected $fieldOptions = [];
 
     /**
      * @ORM\Column(name="use_at_participation", type="smallint", options={"unsigned":true,"default":0})
@@ -123,19 +123,21 @@ class Attribute
     /**
      * Contains the choice options the user can use
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"}, mappedBy="attribute")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"},
+     *                                                                                            mappedBy="attribute")
      * @Assert\Valid()
      * @var \Doctrine\Common\Collections\Collection|array|AttributeChoiceOption[]
      */
     protected $choiceOptions;
-    
+
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->events   = new ArrayCollection();
-        $this->fillouts = new ArrayCollection();
+        $this->events        = new ArrayCollection();
+        $this->fillouts      = new ArrayCollection();
+        $this->choiceOptions = new ArrayCollection();
     }
 
     /**
@@ -292,7 +294,7 @@ class Attribute
             $options['expanded'] = true;
             $this->setFieldOptions($options);
         } else {
-            $this->setFieldOptions(array());
+            $this->setFieldOptions([]);
         }
 
         return $this;
@@ -331,7 +333,7 @@ class Attribute
     public function setFieldOptions($fieldOptions)
     {
         if ($fieldOptions === null) {
-            $fieldOptions = array();
+            $fieldOptions = [];
         }
         $this->fieldOptions = $fieldOptions;
 
@@ -355,6 +357,13 @@ class Attribute
 
         if ($this->getFieldType() == FormChoiceType::class) {
             $options['placeholder'] = 'keine Option gewählt';
+            $options['choices']     = [];
+            /** @var AttributeChoiceOption $choice */
+            foreach ($this->choiceOptions as $choice) {
+                if ($choice->getDeletedAt() === null) {
+                    $options['choices'][$choice->getFormTitle()] = $choice->getId();
+                }
+            }
         }
 
         return $options;
@@ -367,7 +376,7 @@ class Attribute
      *
      * @return Attribute
      */
-    public function setFieldTypeChoiceType($multiple)
+    public function setFieldTypeChoiceType(bool $multiple)
     {
         if ($this->getFieldType() == FormChoiceType::class) {
             $options             = $this->getFieldOptions();
@@ -394,35 +403,16 @@ class Attribute
         return false;
     }
 
-
     /**
-     * Set field choices if this is a choice attribute
+     * Returns true if this is a choice field and provides multiple options
      *
-     * @param array $choices
-     *
-     * @return Attribute
+     * @return bool
      */
-    public function setFieldTypeChoiceOptions($choices)
+    public function isMultipleChoiceType()
     {
-        if ($choices === null) {
-            $choices = array();
-        } elseif (!is_array($choices)) {
-            $choicesString = $choices;
-            $choices       = array();
-
-            foreach (explode(';', $choicesString) as $choice) {
-                $choices[$choice] = sha1($choice);
-            }
-        }
-
-        if ($this->getFieldType() == FormChoiceType::class) {
-            $options            = $this->getFieldOptions();
-            $options['choices'] = $choices;
-            $this->setFieldOptions($options);
-        }
-
-        return $this;
+        return $this->getFieldTypeChoiceType();
     }
+
 
     /**
      * Get field choices if this is a choice attribute
@@ -444,7 +434,7 @@ class Attribute
         }
 
         if ($asArray) {
-            return array();
+            return [];
         }
 
         return '';
@@ -615,13 +605,16 @@ class Attribute
     /**
      * Add choiceOption
      *
-     * @param AttributeChoiceOption$choiceOption
+     * @param AttributeChoiceOption $choiceOption
      *
      * @return Attribute
      */
     public function addChoiceOption(AttributeChoiceOption $choiceOption)
     {
-        $this->choiceOptions[] = $choiceOption;
+        if (!$this->choiceOptions->contains($choiceOption)) {
+            $this->choiceOptions->add($choiceOption);
+        }
+        $choiceOption->setAttribute($this);
 
         return $this;
     }
@@ -633,7 +626,9 @@ class Attribute
      */
     public function removeChoiceOption(AttributeChoiceOption $choiceOption)
     {
-        $this->choiceOptions->removeElement($choiceOption);
+        if (!$choiceOption->getDeletedAt()) {
+            $choiceOption->setDeletedAt(new \DateTime());
+        }
     }
 
     /**

@@ -117,7 +117,7 @@
                                         {% if participant.infoMedical %}
                                             {{ participant.infoMedical }}
                                         {% else %}
-                                            <i>(keine Besonderheiten)</i>
+                                            <i class="empty no-special">(keine Besonderheiten)</i>
                                         {% endif %}
                                     </dd>
                                 </dl>
@@ -131,7 +131,7 @@
                                         {% if participant.infoGeneral %}
                                             {{ participant.infoGeneral }}
                                         {% else %}
-                                            <i>(keine Besonderheiten)</i>
+                                            <i class="empty no-special">(keine Besonderheiten)</i>
                                         {% endif %}
                                     </dd>
                                 </dl>
@@ -146,7 +146,7 @@
                                         {% if participantFood.getValue() %}
                                             {{ ' '|bitmask(participantFood) }}
                                         {% else %}
-                                            <i>(keine Besonderheiten)</i>
+                                            <i class="empty no-special">(keine Besonderheiten)</i>
                                         {% endif %}
                                     </dd>
                                 </dl>
@@ -161,11 +161,7 @@
                                         <div class="description">{{ fillout.attribute.managementDescription }}</div>
                                         </dt>
                                         <dd>
-                                            {% if fillout is empty %}
-                                                <i>(keine Angabe)</i>
-                                            {% else %}
-                                                {{ fillout }}
-                                            {% endif %}
+                                            {% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}
                                         </dd>
                                     </dl>
                                 </div>
@@ -223,11 +219,7 @@
                                             <div class="description">{{ fillout.attribute.managementDescription }}</div>
                                         </dt>
                                         <dd>
-                                            {% if fillout is empty %}
-                                                <i>(keine Angabe)</i>
-                                            {% else %}
-                                                {{ fillout }}
-                                            {% endif %}
+                                            {% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}
                                         </dd>
                                     </dl>
                                 </div>
