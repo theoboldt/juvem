@@ -12,7 +12,6 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Sheet\Column\CallableAccessingColumn;

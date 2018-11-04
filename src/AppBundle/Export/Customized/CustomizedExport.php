@@ -92,7 +92,8 @@ class CustomizedExport extends Export
         $participantsSheet->process();
 
 
-        if ($participantsSheet instanceof SheetRequiringExplanationInterface) {
+        if ($participantsSheet instanceof SheetRequiringExplanationInterface
+            && count($participantsSheet->getExplanations())) {
             $worksheet        = $this->addSheet();
             $explanationSheet = new ExplanationSheet(
                 $worksheet, $this->event->getTitle(), $participantsSheet->getExplanations()
