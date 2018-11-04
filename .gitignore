@@ -13,7 +13,7 @@
 /bin/
 /build/
 /composer.phar
-/vendor/
+#/vendor/
 /web/bundles/
 /app/bootstrap.php.cache
 /app/cache/*
@@ -36,3 +36,4 @@
 /tmp/*
 !/tmp/.gitkeep
 .DS_Store
+/backup/
