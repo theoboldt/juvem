@@ -187,11 +187,24 @@ abstract class AbstractSheet
     }
 
     /**
+     * Provide footer text
+     *
+     * @param string|null $title    Title
+     * @param string|null $subtitle Sub title
+     * @return string
+     */
+    protected function provideFooterText(string $title = null, string $subtitle = null) {
+        return sprintf('&L %s - &B %s &"-,Regular"(&A) &R &P/&N', $title, $subtitle);
+    }
+
+    /**
      * Set the header of this sheet
      *
+     * @param string|null $title    Title
+     * @param string|null $subtitle Sub title
      * @return $this
      */
-    public function setHeader($title = null, $subtitle = null)
+    public function setHeader(string $title = null, string $subtitle = null)
     {
         $sheet = $this->sheet;
 
@@ -217,7 +230,8 @@ abstract class AbstractSheet
         );
         $headerFooter->setFirstHeader($firstHeaderText);
 
-        $footerText = sprintf('&L %s - &B %s &"-,Regular"(&A) &R &P/&N', $title, $subtitle);
+        $footerText = $this->provideFooterText($title, $subtitle);
+
         $headerFooter->setFirstFooter($footerText);
         $headerFooter->setOddFooter($footerText);
 

@@ -34,6 +34,9 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
     protected $participants;
 
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct(Worksheet $sheet, Event $event, array $participants)
     {
         $this->event        = $event;
@@ -69,7 +72,10 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         $this->addColumn($column);
     }
 
-    public function setHeader($title = null, $subtitle = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeader(string $title = null, string $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Teilnehmer');
         $this->row = $this->row - 1; //reset row index by 1
@@ -78,9 +84,11 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         $this->sheet->getRowDimension($this->row(null, false) - 1)->setRowHeight(-1);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setBody()
     {
-
         /** @var Participant $participant */
         foreach ($this->participants as $participant) {
             $row = $this->row();

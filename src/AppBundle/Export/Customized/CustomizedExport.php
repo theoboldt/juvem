@@ -15,6 +15,8 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\Export\Export;
 use AppBundle\Export\Sheet\CustomizedParticipantsSheet;
+use AppBundle\Export\Sheet\ExplanationSheet;
+use AppBundle\Export\Sheet\SheetRequiringExplanationInterface;
 use AppBundle\Twig\GlobalCustomization;
 
 class CustomizedExport extends Export
@@ -61,6 +63,9 @@ class CustomizedExport extends Export
         parent::__construct($globalCustomization, $modifier);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setMetadata()
     {
         parent::setMetadata();
@@ -73,19 +78,31 @@ class CustomizedExport extends Export
                        ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function process()
     {
-        $sheet = $this->addSheet();
+        $worksheet = $this->addSheet();
+        $worksheet->setTitle($this->configuration['title']);
 
         $participantsSheet = new CustomizedParticipantsSheet(
-            $sheet, $this->event, $this->participants, $this->configuration
+            $worksheet, $this->event, $this->participants, $this->configuration
         );
         $participantsSheet->process();
 
-        $sheet->setTitle($this->configuration['title']);
+
+        if ($participantsSheet instanceof SheetRequiringExplanationInterface) {
+            $worksheet        = $this->addSheet();
+            $explanationSheet = new ExplanationSheet(
+                $worksheet, $this->event->getTitle(), $participantsSheet->getExplanations()
+            );
+            $explanationSheet->process();
+        }
+
+        $this->document->setActiveSheetIndex(0);
 
         parent::process();
     }
-
 
 }

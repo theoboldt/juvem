@@ -32,8 +32,10 @@ abstract class ParticipantsSheetBase extends AbstractSheet
      */
     protected $participants;
 
-
-    public function setHeader($title = null, $subtitle = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeader(string $title = null, string $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Teilnehmer');
         parent::setColumnHeaders();
@@ -41,9 +43,11 @@ abstract class ParticipantsSheetBase extends AbstractSheet
         $this->sheet->getRowDimension($this->row(null, false) - 1)->setRowHeight(-1);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setBody()
     {
-
         /** @var Participant $participant */
         foreach ($this->participants as $participant) {
             $row = $this->row();

@@ -24,6 +24,10 @@ class Configuration implements ConfigurationInterface
 
     const OPTION_SEPARATE_COLUMNS = 'separateColumns';
 
+    const OPTION_VALUE_FORM = 'formTitle';
+    const OPTION_VALUE_MANAGEMENT = 'managementTitle';
+    const OPTION_VALUE_SHORT = 'shortTitle';
+
     /**
      * Event this export is configurated for
      *
@@ -147,20 +151,29 @@ class Configuration implements ConfigurationInterface
 
             if (ChoiceType::class == $attribute->getFieldType()) {
                 if ($attribute->getFieldTypeChoiceType()) {
-                    $optionList = [
+                    $displayList = [
                         'Antworten kommasepariert auflisten' => 'commaSeparated'
                     ];
                 } else {
-                    $optionList = [
+                    $displayList = [
                         'Gewählte Antwort anzeigen' => 'selectedAnswer'
                     ];
                 }
-                $optionList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen'] = self::OPTION_SEPARATE_COLUMNS;
+                $displayList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen'] = self::OPTION_SEPARATE_COLUMNS;
+
+                $optionValueList = [
+                    'Kürzel'            => self::OPTION_VALUE_SHORT,
+                    'Titel im Formular' => self::OPTION_VALUE_FORM,
+                    'Interner Titel'    => self::OPTION_VALUE_MANAGEMENT,
+                ];
 
                 $attributeChildren
                         ->append($this->booleanNodeCreator('enabled', 'Feld anzeigen'))
                         ->enumNode('display')
-                            ->values($optionList)
+                            ->values($displayList)
+                        ->end()
+                        ->enumNode('optionValue')
+                            ->values($optionValueList)
                         ->end()
                     ->end()
                 ->end();

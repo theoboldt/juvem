@@ -13,18 +13,28 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Export\AttributeOptionExplanation;
+use AppBundle\Export\Customized\Configuration;
 use AppBundle\Export\Sheet\Column\AcquisitionAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CustomizedParticipantsSheet extends ParticipantsSheetBase
+class CustomizedParticipantsSheet extends ParticipantsSheetBase implements SheetRequiringExplanationInterface
 {
+    /**
+     * Registered explanations
+     *
+     * @var array|AttributeOptionExplanation[]
+     */
+    private $explanations = [];
+
     /**
      * CustomizedParticipantsSheet constructor.
      *
@@ -334,24 +344,41 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 throw new \InvalidArgumentException('Unknown acquisition field appended');
         }
 
-        if (!isset($config[$bid]['display'])) {
-            $config[$bid]['display'] = \AppBundle\Export\Customized\Configuration::OPTION_DEFAULT;
+        $configDisplay     = $config[$bid]['display'];
+        $configOptionValue = $config[$bid]['optionValue'];
+        if (!isset($configDisplay)) {
+            $configDisplay = Configuration::OPTION_DEFAULT;
+        }
+        if (!isset($configOptionValue)) {
+            $configOptionValue = Configuration::OPTION_VALUE_SHORT;
+        }
+        if ($configOptionValue === Configuration::OPTION_VALUE_SHORT) {
+            $explanation          = new AttributeOptionExplanation($attribute);
+            $this->explanations[] = $explanation;
+        } else {
+            $explanation = null;
         }
 
-        switch ($config[$bid]['display']) {
-            case \AppBundle\Export\Customized\Configuration::OPTION_SEPARATE_COLUMNS:
+        switch ($configDisplay) {
+            case Configuration::OPTION_SEPARATE_COLUMNS:
                 if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
-                    $options = $attribute->getFieldTypeChoiceOptions(true);
-                    foreach ($options as $optionLabel => $optionKey) {
-                        $converter = function (Fillout $fillout) use ($optionKey) {
-                            $selectedOptions = $fillout->getValue();
-                            if ((is_array($selectedOptions) && in_array($optionKey, $selectedOptions))
-                                || $selectedOptions === $optionKey
-                            ) {
-                                return 'x';
-                            } else {
-                                return '';
+                    $choices = $attribute->getChoiceOptions();
+                    /** @var AttributeChoiceOption $choice */
+                    foreach ($choices as $choice) {
+                        $optionKey = $choice->getId();
+
+                        $optionLabel = $this->fetchChoiceOptionLabel($choice, $configOptionValue);
+                        $converter   = function (Fillout $fillout) use ($choice, $configOptionValue, $explanation) {
+                            foreach ($fillout->getSelectedChoices() as $selectedChoice) {
+                                if ($choice->getId() === $selectedChoice->getId()) {
+                                    if ($explanation) {
+                                        $explanation->register($choice);
+                                    }
+
+                                    return 'x';
+                                }
                             }
+                            return '';
                         };
                         /** @var AcquisitionAttributeColumn $column */
                         $column = new $class(
@@ -359,12 +386,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                             $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
                             $attribute
                         );
-                        $column->addHeaderStyleCallback(function($style){
-                            /** @var \PHPExcel_Style $style */
-                            $style->getAlignment()->setTextRotation(45);
-                        });
-                        $column->setWidth(4);
-                        $column->setConverter($converter);
+                        $this->rotadedColumnHeader($column, 4, $converter);
                         $this->addColumn($column);
                     }
                 }
@@ -374,8 +396,81 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
                 $column = new $class(
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
+
+                $optionValue = $configOptionValue;
+                $converter = function (Fillout $fillout) use ($optionValue, $explanation) {
+                    $selectedOptions = [];
+
+                    foreach ($fillout->getSelectedChoices() as $choice) {
+                        if ($explanation) {
+                            $explanation->register($choice);
+                        }
+                        switch ($optionValue) {
+                            case Configuration::OPTION_VALUE_FORM:
+                                $selectedOptions[] = $choice->getFormTitle();
+                                break;
+                            case Configuration::OPTION_VALUE_MANAGEMENT:
+                                $selectedOptions[] = $choice->getManagementTitle(true);
+                                break;
+                            case Configuration::OPTION_VALUE_SHORT:
+                            default:
+                                $selectedOptions[] = $choice->getShortTitle(true);
+                                break;
+                        }
+                    }
+
+                    return implode(', ', $selectedOptions);
+                };
+                $column->setConverter($converter);
                 $this->addColumn($column);
                 break;
+        }
+    }
+
+    /**
+     * Rotate column, update width accordingly, possibly configure converter
+     *
+     * @param AcquisitionAttributeColumn $column Column to modify
+     * @param int|null                   $width If not null, transmitted width will be set
+     * @param callable|null              $converter Converter function if should be set
+     */
+    private function rotadedColumnHeader(
+        AcquisitionAttributeColumn $column,
+        int $width = null,
+        callable $converter = null
+    ) {
+        $column->addHeaderStyleCallback(
+            function ($style) {
+                /** @var \PHPExcel_Style $style */
+                $style->getAlignment()->setTextRotation(45);
+            }
+        );
+        if ($width !== null) {
+            $column->setWidth($width);
+
+        }
+        if ($converter) {
+            $column->setConverter($converter);
+        }
+    }
+
+    /**
+     * Fetch choice option label for choice depending on configuration
+     *
+     * @param AttributeChoiceOption $choice      Choice
+     * @param string                $optionValue Selection for which label to use
+     * @return string Label
+     */
+    private function fetchChoiceOptionLabel(AttributeChoiceOption $choice, string $optionValue)
+    {
+        switch ($optionValue) {
+            case Configuration::OPTION_VALUE_FORM:
+                return $choice->getFormTitle();
+            case Configuration::OPTION_VALUE_MANAGEMENT:
+                return $choice->getManagementTitle(true);
+            case Configuration::OPTION_VALUE_SHORT:
+            default:
+                return $choice->getShortTitle(true);
         }
     }
 
@@ -389,6 +484,17 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase
     protected static function issetAndTrue(array $config, $property)
     {
         return (isset($config[$property]) && $config[$property]);
+    }
+
+
+    /**
+     * Get  list of all attached @see AttributeOptionExplanation
+     *
+     * @return AttributeOptionExplanation[]|array
+     */
+    public function getExplanations(): array
+    {
+        return $this->explanations;
     }
 
 }

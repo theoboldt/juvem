@@ -93,15 +93,20 @@ class ParticipationsSheet extends AbstractSheet
 
     }
 
-    public function setHeader($title = null, $subtitle = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeader(string $title = null, string $subtitle = null)
     {
         parent::setHeader($this->event->getTitle(), 'Anmeldungen');
         parent::setColumnHeaders();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setBody()
     {
-
         /** @var Participation $participation */
         foreach ($this->participations as $participation) {
             $row = $this->row();
