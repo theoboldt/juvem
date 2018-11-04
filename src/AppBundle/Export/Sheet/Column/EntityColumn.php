@@ -30,7 +30,7 @@ class EntityColumn extends AbstractColumn
      *
      * @var PropertyAccessor
      */
-	private $accessor;
+	private static $accessor;
 
     /**
      * Create a new small column and apply some styles
@@ -115,10 +115,10 @@ class EntityColumn extends AbstractColumn
      */
 	public function getData($entity)
 	{
-	    if (!$this->accessor) {
-    	    $this->accessor = PropertyAccess::createPropertyAccessor();
+	    if (!self::$accessor) {
+    	    self::$accessor = PropertyAccess::createPropertyAccessor();
         }
-        return $this->accessor->getValue($entity, $this->dataAttribute);
+        return self::$accessor->getValue($entity, $this->dataAttribute);
 	}
 
 	/**
