@@ -13,7 +13,7 @@
 /bin/
 /build/
 /composer.phar
-#/vendor/
+/vendor/
 /web/bundles/
 /app/bootstrap.php.cache
 /app/cache/*
