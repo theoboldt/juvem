@@ -346,13 +346,14 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                 throw new \InvalidArgumentException('Unknown acquisition field appended');
         }
 
-        $configDisplay     = $config[$bid]['display'];
-        $configOptionValue = $config[$bid]['optionValue'];
-        if (!isset($configDisplay)) {
-            $configDisplay = Configuration::OPTION_DEFAULT;
+        $configDisplay = Configuration::OPTION_DEFAULT;
+        if (isset($config[$bid]['display'])) {
+            $configDisplay = $config[$bid]['display'];
         }
-        if (!isset($configOptionValue)) {
-            $configOptionValue = Configuration::OPTION_VALUE_SHORT;
+
+        $configOptionValue = Configuration::OPTION_VALUE_SHORT;
+        if (isset($config[$bid]['optionValue'])) {
+            $configOptionValue = $config[$bid]['optionValue'];
         }
         if ($configOptionValue === Configuration::OPTION_VALUE_SHORT) {
             $explanation          = new AttributeOptionExplanation($attribute);
