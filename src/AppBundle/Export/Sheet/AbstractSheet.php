@@ -12,6 +12,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Export\Sheet\Column\AbstractColumn;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -282,7 +283,7 @@ abstract class AbstractSheet
             $columnStyles = $dataColumn->getHeaderStyleCallbacks();
 
             $cellStyle = $sheet->getStyleByColumnAndRow($column, $row);
-            $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_DOUBLE);
+            $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_DOUBLE);
 
             if (count($columnStyles)) {
                 foreach ($columnStyles as $columnStyle) {

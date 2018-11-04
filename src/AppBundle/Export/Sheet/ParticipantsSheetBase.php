@@ -14,6 +14,8 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 abstract class ParticipantsSheetBase extends AbstractSheet
 {
@@ -64,9 +66,9 @@ abstract class ParticipantsSheetBase extends AbstractSheet
                     $cellStyle->setConditionalStyles($columnDataConditional);
                 }
                 $cellStyle->getAlignment()->setVertical(
-                    \PHPExcel_Style_Alignment::VERTICAL_TOP
+                    Alignment::VERTICAL_TOP
                 );
-                $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+                $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
 
                 $columnStyles = $column->getDataStyleCallbacks();
                 if (count($columnStyles)) {

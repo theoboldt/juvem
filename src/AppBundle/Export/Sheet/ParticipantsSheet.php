@@ -17,6 +17,8 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipantsSheet extends ParticipantsSheetBase
@@ -36,7 +38,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
             function (\DateTime $value, $entity) {
-                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                     $value->format('Y'), $value->format('m'), $value->format('d')
                 );
             }
@@ -87,7 +89,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column = new EntityColumn('infoMedical', 'Medizinische Hinweise');
         $column->addDataStyleCalback(
             function ($style) {
-                /** @var \PHPExcel_Style $style */
+                /** @var Style $style */
                 $style->getAlignment()->setWrapText(true);
             }
         );
@@ -97,7 +99,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column = new EntityColumn('infoGeneral', 'Allgemeine Hinweise');
         $column->addDataStyleCalback(
             function ($style) {
-                /** @var \PHPExcel_Style $style */
+                /** @var Style $style */
                 $style->getAlignment()->setWrapText(true);
             }
         );
@@ -126,7 +128,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setNumberFormat('dd.mm.yyyy hh:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
-                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                     $value->format('Y'), $value->format('m'), $value->format('d'),
                     $value->format('H'), $value->format('i')
                 );

@@ -15,6 +15,9 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipationsSheet extends AbstractSheet
@@ -60,7 +63,7 @@ class ParticipationsSheet extends AbstractSheet
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
-                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                     $value->format('Y'), $value->format('m'), $value->format('d'),
                     $value->format('H'), $value->format('i')
                 );
@@ -123,9 +126,9 @@ class ParticipationsSheet extends AbstractSheet
                     $cellStyle->setConditionalStyles($columnDataConditional);
                 }
                 $cellStyle->getAlignment()->setVertical(
-                    \PHPExcel_Style_Alignment::VERTICAL_TOP
+                    Alignment::VERTICAL_TOP
                 );
-                $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+                $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
 
                 $columnStyles = $column->getDataStyleCallbacks();
                 if (count($columnStyles)) {

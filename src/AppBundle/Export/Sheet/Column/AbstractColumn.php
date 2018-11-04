@@ -12,6 +12,7 @@ namespace AppBundle\Export\Sheet\Column;
 
 
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 abstract class AbstractColumn
 {
@@ -32,9 +33,9 @@ abstract class AbstractColumn
 	/**
 	 * Contains the number formatter which will be applied to each value column
 	 *
-	 * @var	string|\PHPExcel_Style_NumberFormat::FORMAT_TEXT
+	 * @var	string
 	 */
-	protected $numberFormat = \PHPExcel_Style_NumberFormat::FORMAT_TEXT;
+	protected $numberFormat = NumberFormat::FORMAT_TEXT;
 
 	/**
 	 * May contain a converter for given value

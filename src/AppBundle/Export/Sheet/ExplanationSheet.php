@@ -17,6 +17,7 @@ use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Sheet\Column\CallableAccessingColumn;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExplanationSheet extends AbstractSheet
@@ -118,7 +119,7 @@ class ExplanationSheet extends AbstractSheet
                         }
                     }
                     if ($previousBid !== null && $choice->getAttribute()->getBid() !== $previousBid) {
-                        $cellStyle->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+                        $cellStyle->getBorders()->getTop()->setBorderStyle(Border::BORDER_THIN);
                     }
                 }
 

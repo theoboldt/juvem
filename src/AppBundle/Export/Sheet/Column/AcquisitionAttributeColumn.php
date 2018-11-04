@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet\Column;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class AcquisitionAttributeColumn extends EntityColumn
 {
@@ -33,7 +34,7 @@ class AcquisitionAttributeColumn extends EntityColumn
     {
         $this->attribute = $attribute;
         parent::__construct($identifier, $title);
-        $this->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        $this->setNumberFormat(NumberFormat::FORMAT_TEXT);
     }
 
 

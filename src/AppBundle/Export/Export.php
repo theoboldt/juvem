@@ -13,8 +13,9 @@ namespace AppBundle\Export;
 
 use AppBundle\Entity\User;
 use AppBundle\Twig\GlobalCustomization;
+use PhpOffice\PhpSpreadsheet\Document\Properties;
 use \PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PHPExcel_Worksheet_PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
 abstract class Export
 {
@@ -84,7 +85,7 @@ abstract class Export
                        ->setCreator($this->customization->organizationName())
                        ->setCompany($this->customization->organizationName())
                        ->setCategory('Juvem')
-                       ->setCustomProperty('generationDuration', $this->generationDuration(), \PHPExcel_DocumentProperties::PROPERTY_TYPE_INTEGER);
+                       ->setCustomProperty('generationDuration', $this->generationDuration(), Properties::PROPERTY_TYPE_INTEGER);
 
         if ($this->modifier) {
             $name = $this->modifier->fullname();
@@ -108,7 +109,6 @@ abstract class Export
      * Add a new sheet to the excel file and return it
      *
      * @return \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
-     * @throws \PHPExcel_Exception
      */
     public function addSheet()
     {
@@ -121,7 +121,7 @@ abstract class Export
 
         $this->document->setActiveSheetIndex($this->sheetIndex);
         $this->sheet = $this->document->getActiveSheet();
-        $this->sheet->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+        $this->sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
 
         return $this->sheet;
     }
@@ -137,7 +137,7 @@ abstract class Export
     /**
      * Get phpexcel document
      *
-     * @return PHPExcel
+     * @return Spreadsheet
      */
     public function getDocument()
     {

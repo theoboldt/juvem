@@ -12,6 +12,8 @@ namespace AppBundle\Export\Sheet\Column;
 
 
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -68,9 +70,9 @@ class EntityColumn extends AbstractColumn
 	public static function createSmallColumn($identifier, $title, $dataAttribute = null)
     {
         $column = new self($identifier, $title, $dataAttribute);
-        $column->setNumberFormat(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        $column->setNumberFormat(NumberFormat::FORMAT_TEXT);
         $column->addHeaderStyleCallback(function($style){
-            /** @var \PHPExcel_Style $style */
+            /** @var Style $style */
             $style->getAlignment()->setTextRotation(45);
         });
         $column->setWidth(4);

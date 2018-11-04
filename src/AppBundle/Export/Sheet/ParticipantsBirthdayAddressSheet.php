@@ -14,6 +14,9 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ParticipantsBirthdayAddressSheet extends AbstractSheet
@@ -51,7 +54,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
             function (\DateTime $value, $entity) {
-                return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                     $value->format('Y'), $value->format('m'), $value->format('d')
                 );
             }
@@ -101,9 +104,9 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
                 $column->process($this->sheet, $row, $participant);
 
                 $cellStyle->getAlignment()->setVertical(
-                    \PHPExcel_Style_Alignment::VERTICAL_TOP
+                    Alignment::VERTICAL_TOP
                 );
-                $cellStyle->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+                $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
             }
         }
     }

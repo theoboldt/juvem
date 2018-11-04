@@ -24,6 +24,8 @@ use AppBundle\Export\Sheet\Column\AcquisitionAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CustomizedParticipantsSheet extends ParticipantsSheetBase implements SheetRequiringExplanationInterface
@@ -82,7 +84,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $column->setNumberFormat('dd.mm.yyyy');
             $column->setConverter(
                 function (\DateTime $value, $entity) {
-                    return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                         $value->format('Y'), $value->format('m'), $value->format('d')
                     );
                 }
@@ -160,7 +162,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $column = new EntityColumn('infoMedical', 'Medizinische Hinweise');
             $column->addDataStyleCalback(
                 function ($style) {
-                    /** @var \PHPExcel_Style $style */
+                    /** @var Style $style */
                     $style->getAlignment()->setWrapText(true);
                 }
             );
@@ -172,7 +174,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $column = new EntityColumn('infoGeneral', 'Allgemeine Hinweise');
             $column->addDataStyleCalback(
                 function ($style) {
-                    /** @var \PHPExcel_Style $style */
+                    /** @var Style $style */
                     $style->getAlignment()->setWrapText(true);
                 }
             );
@@ -197,7 +199,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $column->setNumberFormat('dd.mm.yyyy hh:mm');
             $column->setConverter(
                 function (\DateTime $value, $entity) {
-                    return \PHPExcel_Shared_Date::FormattedPHPToExcel(
+                return Date::FormattedPHPToExcel(
                         $value->format('Y'), $value->format('m'), $value->format('d'),
                         $value->format('H'), $value->format('i')
                     );
@@ -441,7 +443,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     ) {
         $column->addHeaderStyleCallback(
             function ($style) {
-                /** @var \PHPExcel_Style $style */
+                /** @var Style $style */
                 $style->getAlignment()->setTextRotation(45);
             }
         );
