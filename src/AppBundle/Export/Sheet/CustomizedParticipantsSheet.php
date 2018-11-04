@@ -27,6 +27,7 @@ use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CustomizedParticipantsSheet extends ParticipantsSheetBase implements SheetRequiringExplanationInterface
 {
@@ -335,7 +336,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         if (!isset($config[$bid]) || !self::issetAndTrue($config[$bid], 'enabled')) {
             return;
         }
-        switch($group) {
+        switch ($group) {
             case 'participant':
                 $class = AcquisitionAttributeColumn::class;
                 break;
@@ -351,7 +352,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $configDisplay = $config[$bid]['display'];
         }
 
-        $configOptionValue = Configuration::OPTION_VALUE_SHORT;
+        if ($attribute->getFieldType() === ChoiceType::class) {
+            $configOptionValue = Configuration::OPTION_VALUE_SHORT;
+        } else {
+            $configOptionValue = Configuration::OPTION_VALUE_MANAGEMENT;
+        }
         if (isset($config[$bid]['optionValue'])) {
             $configOptionValue = $config[$bid]['optionValue'];
         }
@@ -364,7 +369,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
         switch ($configDisplay) {
             case Configuration::OPTION_SEPARATE_COLUMNS:
-                if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class) {
+                if ($attribute->getFieldType() === ChoiceType::class) {
                     $choices = $attribute->getChoiceOptions();
                     /** @var AttributeChoiceOption $choice */
                     foreach ($choices as $choice) {
@@ -400,31 +405,33 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
 
-                $optionValue = $configOptionValue;
-                $converter = function (Fillout $fillout) use ($optionValue, $explanation) {
-                    $selectedOptions = [];
+                if ($attribute->getFieldType() === ChoiceType::class) {
+                    $optionValue = $configOptionValue;
+                    $converter   = function (Fillout $fillout) use ($optionValue, $explanation) {
+                        $selectedOptions = [];
 
-                    foreach ($fillout->getSelectedChoices() as $choice) {
-                        if ($explanation) {
-                            $explanation->register($choice);
+                        foreach ($fillout->getSelectedChoices() as $choice) {
+                            if ($explanation) {
+                                $explanation->register($choice);
+                            }
+                            switch ($optionValue) {
+                                case Configuration::OPTION_VALUE_FORM:
+                                    $selectedOptions[] = $choice->getFormTitle();
+                                    break;
+                                case Configuration::OPTION_VALUE_MANAGEMENT:
+                                    $selectedOptions[] = $choice->getManagementTitle(true);
+                                    break;
+                                case Configuration::OPTION_VALUE_SHORT:
+                                default:
+                                    $selectedOptions[] = $choice->getShortTitle(true);
+                                    break;
+                            }
                         }
-                        switch ($optionValue) {
-                            case Configuration::OPTION_VALUE_FORM:
-                                $selectedOptions[] = $choice->getFormTitle();
-                                break;
-                            case Configuration::OPTION_VALUE_MANAGEMENT:
-                                $selectedOptions[] = $choice->getManagementTitle(true);
-                                break;
-                            case Configuration::OPTION_VALUE_SHORT:
-                            default:
-                                $selectedOptions[] = $choice->getShortTitle(true);
-                                break;
-                        }
-                    }
 
-                    return implode(', ', $selectedOptions);
-                };
-                $column->setConverter($converter);
+                        return implode(', ', $selectedOptions);
+                    };
+                    $column->setConverter($converter);
+                }
                 $this->addColumn($column);
                 break;
         }
