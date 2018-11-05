@@ -11,7 +11,7 @@
             <li class="active">Exportieren</li>
         {% endblock %}
     {% endembed %}
-    <form class="container" action="{{ path('event_export_generator_process') }}" target="export-generator-frame" method="post">
+    <form class="container form-file-download" action="{{ path('event_export_generator_process') }}" target="export-generator-frame" method="post">
         <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}" />
         <input type="hidden" name="eid" value="{{ event.eid }}" />
         <div class="row">
@@ -101,7 +101,7 @@
                                 <label for="config[title]">Titel</label>
                                 <input type="text" class="form-control" id="config[title]" name="config[title]" placeholder="Teilnehmer">
                             </div>
-                            <button class="btn btn-primary" data-action="export-generator-create">Export erstellen
+                            <button class="btn btn-primary export-generator-create">Export erstellen
                             </button>
                         </div>
                     </div>
@@ -109,5 +109,4 @@
             </div>
         </div>
     </form>
-    <iframe name="export-generator-frame"></iframe>
 {% endblock %}

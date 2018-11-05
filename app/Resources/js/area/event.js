@@ -293,25 +293,46 @@ $(function () {
     /**
      * GLOBAL: Export configurator download
      */
-    $('.export-generator-create').on('click', function (e) {
-        e.preventDefault();
+    $(".form-file-download").submit(function (event) {
+        event.preventDefault();
+        var form = $(this),
+            button = form.find('button');
 
-        var button = $(this);
-        button.prop('disabled', true);
+        if (button.hasClass('disabled')) {
+            return;
+        }
+        button.toggleClass('disabled', true);
 
-        var eid = button.data('eid'),
-            url = this.getAttribute('href'),
-            iframe = $("<iframe/>").attr({
-                src: url,
-                style: "display:none"
+        $.ajax({
+            url: form.attr('action'),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            dataType: 'binary',
+            data: form.serialize(),
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function (data, status, jqXHR) {
+                var disposition = jqXHR.getResponseHeader('Content-Disposition'),
+                    regex = /filename="(.*)"/,
+                    a = document.createElement('a'),
+                    url = window.URL.createObjectURL(data);
 
-            }).appendTo(button);
+                a.href = url;
+                a.download = regex.exec(disposition)[1];
 
-        iframe.on('load', function () {
-            button.prop('disabled', false);
-            setTimeout(function () {
-                iframe.remove();
-            }, 1000)
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+            complete: function (response, status) {
+                button.toggleClass('disabled', false);
+
+                if (status !== 'success') {
+                    $(document).trigger('add-alerts', {
+                        message: 'Der Download konnte nicht erstellt werden',
+                        priority: 'error'
+                    });
+                }
+            }
         });
     });
 
