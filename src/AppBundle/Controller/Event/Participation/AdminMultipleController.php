@@ -403,10 +403,15 @@ class AdminMultipleController extends Controller
                 $export->write('php://output');
             }
         );
+    
+        //filter name
+        $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
+        $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
+        
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - '.$processedConfiguration['title'].'.xlsx'
+            $filename
         );
         $response->headers->set('Content-Disposition', $d);
 
