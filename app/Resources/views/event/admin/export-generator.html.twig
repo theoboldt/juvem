@@ -16,22 +16,26 @@
         <input type="hidden" name="eid" value="{{ event.eid }}" />
         <div class="row">
             <div class="col-sm-12">
-                <div class="btn-toolbar" role="toolbar" aria-label="Exportvorlagen">
+                <div class="btn-toolbar templates" role="toolbar" aria-label="Exportvorlagen">
                     <div class="btn-group" role="group">
-                        <a class="btn btn-default" href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer</a>
+                        <button class="btn btn-default" type="button" data-template="reset">{{ 'unchecked'|glyph }} Leer</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default btn-generator" type="button" data-template="participants">{{ 'user'|glyph }} Standardliste</button>
+                        <button class="btn btn-default btn-generator" type="button" data-template="letter">{{ 'envelope'|glyph }} Serienbrief</button>
+                        <button class="btn btn-default btn-generator" type="button" data-template="phone_list">{{ 'phone-alt'|glyph }} Telefonliste</button>
+                        <button class="btn btn-default btn-generator" type="button" data-template="food">{{ 'cutlery'|glyph }} Ernährung</button>
+                    </div>
+                    <div class="btn-group" role="group">
                         <a class="btn btn-default"
-                           href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen</a>
+                           href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Zuschussantrag (alt) {{ 'new-window'|glyph }}</a>
                         <a class="btn btn-default"
-                           href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">
-                            für Serienbrief</a>
-                        <a class="btn btn-default"
-                           href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">
-                            für Zuschussanträge</a>
+                           href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen {{ 'new-window'|glyph }}</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-top:20px;">
+        <div class="row column-configuration">
             {% for group in config %}
                 {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                 <div class="col-xs-12 col-sm-6">
@@ -101,7 +105,7 @@
                                 <label for="config[title]">Titel</label>
                                 <input type="text" class="form-control" id="config[title]" name="config[title]" placeholder="Teilnehmer">
                             </div>
-                            <button class="btn btn-primary export-generator-create">Export erstellen
+                            <button class="btn btn-primary export-generator-create btn-generator">Export erstellen
                             </button>
                         </div>
                     </div>

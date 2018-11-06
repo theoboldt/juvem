@@ -12,10 +12,13 @@ namespace AppBundle\Export\Customized;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 use AppBundle\Export\Export;
 use AppBundle\Export\Sheet\CustomizedParticipantsSheet;
 use AppBundle\Export\Sheet\ExplanationSheet;
+use AppBundle\Export\Sheet\ParticipantsBirthdayAddressSheet;
+use AppBundle\Export\Sheet\ParticipationsSheet;
 use AppBundle\Export\Sheet\SheetRequiringExplanationInterface;
 use AppBundle\Twig\GlobalCustomization;
 
@@ -77,7 +80,45 @@ class CustomizedExport extends Export
         $this->document->getProperties()
                        ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
     }
+    
+    /**
+     * Attach additional participation sheet to this export
+     *
+     * @throws \Exception
+     */
+    private function processParticipationSheet() {
+        $participations = [];
+        /** @var Participant $participant */
+        foreach ($this->participants as $participant) {
+            $participation = $participant->getParticipation();
+            $pid = $participation->getPid();
+            if (!isset($participations[$pid])) {
+                $participations[$pid] = $participation;
+            }
+        }
+        
+        if (!count($participations)) {
+            return;
+        }
+        $sheet = $this->addSheet();
+        $participantsSheet = new ParticipationsSheet($sheet, $this->event, $participations);
+        $participantsSheet->process();
+        $sheet->setTitle('Anmeldungen');
+    }
+    
+    /**
+     * Add additional sheet containing participants list with address
+     *
+     * @throws \Exception
+     */
+    private function processSubventionRequestSheet() {
+        $sheet = $this->addSheet();
+        $participantsSheet = new ParticipantsBirthdayAddressSheet($sheet, $this->event, $this->participants);
+        $participantsSheet->process();
 
+        $sheet->setTitle('Teilnehmer - Zuschussantrag');
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -90,7 +131,21 @@ class CustomizedExport extends Export
             $worksheet, $this->event, $this->participants, $this->configuration
         );
         $participantsSheet->process();
-
+    
+        if ($this->configuration['additional_sheet']) {
+            foreach ($this->configuration['additional_sheet'] as $sheetKey => $sheetEnabled) {
+                if ($sheetEnabled) {
+                    switch ($sheetKey) {
+                        case 'participation';
+                            $this->processParticipationSheet();
+                            break;
+                        case 'subvention_request':
+                            $this->processSubventionRequestSheet();
+                            break;
+                    }
+                }
+            }
+        }
 
         if ($participantsSheet instanceof SheetRequiringExplanationInterface
             && count($participantsSheet->getExplanations())) {
