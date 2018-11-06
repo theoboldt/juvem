@@ -111,12 +111,22 @@ class Configuration implements ConfigurationInterface
                                          'Nicht exportieren'                 => 'none',
                                          'Kommasepariert, ohne Beschreibung' => 'comma',
                                          'Kommasepariert, mit Beschreibung'  => 'comma_description',
+                                         'Kommasepariert, ohne Beschreibung, umbrechend' => 'comma_wrap',
+                                         'Kommasepariert, mit Beschreibung, umbrechend'  => 'comma_description_wrap',
                             ])
                         ->end()
                         ->append($this->booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
                         ->append($this->booleanNodeCreator('addressZip', 'PLZ (Anschrift'))
                         ->append($this->addAcquisitionAttributesNode(true, false))
+                    ->end()
+                ->end()
+                ->arrayNode('additional_sheet')
+                    ->addDefaultsIfNotSet()
+                    ->info('Zusätzliche Mappen')
+                    ->children()
+                        ->append($this->booleanNodeCreator('participation', 'Anmeldungen aller enthaltener Teilnehmer'))
+                        ->append($this->booleanNodeCreator('subvention_request', 'Teilnehmerliste für Zuschussantrag (Geburtsdatum und Anschrift)'))
                     ->end()
                 ->end()
             ->end()

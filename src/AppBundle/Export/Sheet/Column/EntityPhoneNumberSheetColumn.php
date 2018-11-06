@@ -14,10 +14,11 @@ namespace AppBundle\Export\Sheet\Column;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 
 class EntityPhoneNumberSheetColumn extends EntityColumn
 {
-
+    
     /**
      * Create a new comma-separated phone number list
      *
@@ -26,42 +27,58 @@ class EntityPhoneNumberSheetColumn extends EntityColumn
      * @param string|null $dataAttribute      Name of attribute from witch the data has to be fetched if
      *                                        differing from $identifier
      * @param bool        $includeDescription Set to true to include phone number description in export
+     * @param bool        $wrap               If set to true, wrap text is activated and each entity ended by new line
      * @return EntityPhoneNumberSheetColumn
      */
-    public static function createCommaSeparated($identifier, $title, $dataAttribute = null, $includeDescription = false)
-    {
+    public static function createCommaSeparated(
+        $identifier,
+        $title,
+        $dataAttribute = null,
+        bool $includeDescription = false,
+        bool $wrap = false
+    ) {
         $column          = new self($identifier, $title, $dataAttribute);
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $column->setConverter(
-            function ($value, $entity) use ($phoneNumberUtil, $includeDescription) {
+            function ($value, $entity) use ($phoneNumberUtil, $includeDescription, $wrap) {
                 if ($entity instanceof Participant) {
                     $entity = $entity->getParticipation();
                 }
                 $value = $entity->getPhoneNumbers();
-
-                $numberText  = '';
+                
+                $numberTexts  = [];
                 $numberCount = count($value);
                 $i           = 1;
-
+                
                 /** @var PhoneNumber $number */
                 foreach ($value as $number) {
-                    $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
-                    if ($includeDescription && $number->getDescription()) {
+                    $numberText = $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
+                    if ($includeDescription
+                        && $number->getDescription()
+                        && $number->getDescription() !== preg_replace('/\s+/', '', $numberText)
+                    ) {
                         $numberText .= ' (';
                         $numberText .= $number->getDescription();
                         $numberText .= ')';
                     }
-
-                    if ($i++ < $numberCount) {
-                        $numberText .= ', ';
-                    }
+                    $numberTexts[] = $numberText;
                 }
-
-                return $numberText;
+                
+                $glue = $wrap ? ", \n" : ', ';
+                
+                return implode($glue, $numberTexts);
             }
         );
         $column->setWidth(13.5);
-
+        if ($wrap) {
+            $column->addDataStyleCalback(
+                function ($style) {
+                    /** @var Style $style */
+                    $style->getAlignment()->setWrapText(true);
+                }
+            );
+        }
+        
         return $column;
     }
 

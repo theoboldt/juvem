@@ -278,15 +278,41 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             );
             $this->addColumn($column);
         }
-
+    
         if ($configParticipation['phoneNumber'] != 'none') {
-            $this->addColumn(
-                EntityPhoneNumberSheetColumn::createCommaSeparated(
-                    'phoneNumbers',
-                    'Telefonnummern',
-                    'participation',
-                    $configParticipation['phoneNumber'] == 'comma_description' ? true : null)
+            switch ($configParticipation['phoneNumber']) {
+                case 'comma_description';
+                case 'comma_description_wrap';
+                    $phoneNumberIncludeDescription = true;
+                    break;
+                default:
+                    $phoneNumberIncludeDescription = false;
+                    break;
+            }
+            switch ($configParticipation['phoneNumber']) {
+                case 'comma_wrap';
+                case 'comma_description_wrap';
+                    $wrapNumbers = true;
+                    break;
+                default:
+                    $wrapNumbers = false;
+                    break;
+            }
+        
+            $column = EntityPhoneNumberSheetColumn::createCommaSeparated(
+                'phoneNumbers',
+                'Telefonnummern',
+                'participation',
+                $phoneNumberIncludeDescription,
+                $wrapNumbers
             );
+        
+            if ($wrapNumbers) {
+                $column->setWidth(50);
+            } else {
+                $column->setWidth(13.5);
+            }
+            $this->addColumn($column);
         }
 
         $this->appendParticipationAcquisitionColumns($event, $configParticipation['acquisitionFields']);
