@@ -38,10 +38,11 @@
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
-                                <li><a href="{{ path('event_participants_export', {'eid': event.eid }) }}">Teilnehmer exportieren</a></li>
-                                <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren</a></li>
-                                <li><a href="{{ path('event_participants_mail_export', {'eid': event.eid }) }}">Für Serienbrief exportieren</a></li>
-                                <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussanträge exportieren</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer exportieren...</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren...</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren...</a></li>
+                                <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussantrag exportieren (alt) {{ 'new-window'|glyph }}</a></li>
+                                <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren {{ 'new-window'|glyph }}</a></li>
                             </ul>
                         </div>
                     {%- endif %}
