@@ -96,7 +96,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
         if ($configParticipant['ageAtEvent'] != 'none') {
             $column = new EntityColumn('ageAtEvent', 'Alter');
-            $column->setWidth(4);
+            $column->setWidth(5);
             switch ($configParticipant['ageAtEvent']) {
                 case 'round':
                     $column->setNumberFormat('0');
@@ -278,7 +278,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             );
             $this->addColumn($column);
         }
-    
+
         if ($configParticipation['phoneNumber'] != 'none') {
             switch ($configParticipation['phoneNumber']) {
                 case 'comma_description';
@@ -298,7 +298,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     $wrapNumbers = false;
                     break;
             }
-        
+
             $column = EntityPhoneNumberSheetColumn::createCommaSeparated(
                 'phoneNumbers',
                 'Telefonnummern',
@@ -306,7 +306,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                 $phoneNumberIncludeDescription,
                 $wrapNumbers
             );
-        
+
             if ($wrapNumbers) {
                 $column->setWidth(50);
             } else {
