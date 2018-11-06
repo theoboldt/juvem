@@ -229,25 +229,42 @@ class Fillout
      */
     public function __toString()
     {
+        return $this->getTextualValue();
+    }
+
+    /**
+     * Transform fillout to string; Useful for textual display in ui
+     *
+     * Transform fillout to string; Useful for textual display in ui. Will return label of selected item if
+     * this fillout belongs to a choice field
+     *
+     * @param string $choicePresentation Configuration for selected choice option presentation, @see AttributeChoiceOption
+     * @return string
+     */
+    public function getTextualValue(string $choicePresentation = AttributeChoiceOption::PRESENTATION_FORM_TITLE) {
         $value = $this->getValue();
         if ($value === null) {
             return '';
         }
         $attribute = $this->getAttribute();
         if ($attribute->getFieldType() == FormChoiceType::class) {
-            $options = array_flip($attribute->getFieldTypeChoiceOptions(true));
-            if (is_array($value)) {
-                //multiple option, multiple values
-                foreach ($value as &$option) {
-                    $option = $options[$option];
+            $choices = $this->getSelectedChoices();
+            $values  = [];
+            foreach ($choices as $choice) {
+                switch ($choicePresentation) {
+                    case AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE:
+                        $values[] = $choice->getManagementTitle(true);
+                        break;
+                    case AttributeChoiceOption::PRESENTATION_SHORT_TITLE:
+                        $values[] = $choice->getShortTitle(true);
+                        break;
+                    default:
+                    case AttributeChoiceOption::PRESENTATION_FORM_TITLE:
+                        $values[] = $choice->getFormTitle();
+                        break;
                 }
-            } elseif (isset($options[$value])) {
-                //multiple option, single value
-                $value = [$options[$value]];
-            } else {
-                return (string)$value;
             }
-            return implode(', ', $value);
+            return implode(', ', $values);
         }
         return (string)$value;
     }

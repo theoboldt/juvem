@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -122,11 +123,11 @@ class AdminMultipleController extends Controller
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->__toString();
+                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
             foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
-                $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()] = $fillout->__toString(
-                );
+                $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
+                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
 
             $participantList[] = $participantEntry;
@@ -403,11 +404,11 @@ class AdminMultipleController extends Controller
                 $export->write('php://output');
             }
         );
-    
+
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
-        
+
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
