@@ -1,4 +1,16 @@
 $(function () {
+    var metaKeyPressed = null;
+
+    document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+            metaKeyPressed = event.keyCode;
+        }
+    });
+    document.addEventListener("keyup", function (event) {
+        if (event.keyCode === metaKeyPressed || event.metaKey || event.ctrlKey) {
+            metaKeyPressed = null;
+        }
+    });
 
     /**
      * GLOBAL: Open transmitted url in main window or in new tab if meta key is pressed
@@ -6,7 +18,7 @@ $(function () {
      * @param url   Url to visit
      */
     var openInNewTabOnMetaKey = function (url) {
-        if (window.event && (window.event.metaKey || window.event.ctrlKey)) {
+        if (metaKeyPressed !== null || (window.event && (window.event.metaKey || window.event.ctrlKey))) {
             window.open(url, '_blank');
         } else {
             location.href = url;
