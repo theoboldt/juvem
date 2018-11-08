@@ -20,7 +20,7 @@
     "jquery-storage-api": "^1.9",
     "merge": ">=1.2.1",
     "justified-layout": "^2.1",
-    "masonry-layout": "^4.2.2",
+    "masonry-layout": "^4.2.2"
   },
   "dependencies": {
     "imagesloaded": "^4.1.4",
