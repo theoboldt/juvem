@@ -50,7 +50,9 @@ $link-hover-color: lighten($link-color, 20%);
 
 $icon-font-path: '../font/';
 @import 'bootstrap';
+@import '../shared/bootstrap-corrections';
 @import '../shared/print';
+@import '../shared/participation';
 
 html, body {
   background-color: $brandPrimaryDark;

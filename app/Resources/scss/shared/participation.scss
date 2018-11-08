@@ -1,0 +1,17 @@
+i.empty.no-special,
+i.empty.value-null,
+i.empty.no-selection {
+  color: #333;
+}
+
+i.empty.no-special span:after {
+  content: '(Keine Besonderheiten)';
+}
+
+i.empty.value-null span:after {
+  content: '(Keine Eingabe)';
+}
+
+i.empty.no-selection span:after {
+  content: '(Keine Auswahl)';
+}
