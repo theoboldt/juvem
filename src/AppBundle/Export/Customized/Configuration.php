@@ -144,7 +144,7 @@ class Configuration implements ConfigurationInterface
      */
     public function addAcquisitionAttributesNode($participation, $participant)
     {
-        $attributes = $this->event->getAcquisitionAttributes($participation, $participant);
+        $attributes = $this->event->getAcquisitionAttributes($participation, $participant, true, true);
         $builder    = new TreeBuilder();
         $node       = $builder->root('acquisitionFields')
                               ->addDefaultsIfNotSet()

@@ -242,7 +242,7 @@ class PublicManagementController extends Controller
                 'adminView'         => false,
                 'form'              => $form->createView(),
                 'participation'     => $participation,
-                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, true, false),
                 'event'             => $event
             )
         );
@@ -304,7 +304,7 @@ class PublicManagementController extends Controller
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, true, false),
             )
         );
     }
@@ -423,7 +423,7 @@ class PublicManagementController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, false),
             )
         );
     }

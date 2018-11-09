@@ -107,7 +107,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $this->addColumn($column);
 
         /** @var Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(false, true, true, true) as $attribute) {
             $this->addColumn(new EntityColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
         }
         //TODO subject to change

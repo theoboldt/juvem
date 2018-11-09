@@ -284,7 +284,7 @@ class AdminSingleController extends Controller
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(true, false),
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, true, true),
             )
         );
     }

@@ -779,7 +779,7 @@ class Event
         bool $includeParticipationFields = true,
         bool $includeParticipantFields = true,
         bool $includePublic = true,
-        bool $includePrivate = false
+        bool $includePrivate = true
     ) {
         if ($includeParticipationFields && $includeParticipantFields && $includePublic && $includePrivate) {
             return $this->acquisitionAttributes;
