@@ -22,27 +22,29 @@ class EventAcquisitionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add(
-            'acquisitionAttributes', EntityType::class, array(
-                                       'class'        => Attribute::class,
-                    'query_builder' => function (EntityRepository $er) {
-                        return $er->createQueryBuilder('a')
-                                  ->where('a.deletedAt IS NULL')
-                                  ->orderBy('a.managementTitle', 'ASC');
-                    },
-                                       'choice_label' => 'managementTitle',
-                                       'multiple'     => true,
-                                       'expanded'     => true,
-                                       'label'        => 'Bei Anmeldungen zu erfassende Felder'
-                                   )
+            'acquisitionAttributes',
+            EntityType::class,
+            [
+                'class'         => Attribute::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('a')
+                              ->where('a.deletedAt IS NULL')
+                              ->orderBy('a.managementTitle', 'ASC');
+                },
+                'choice_label'  => 'managementTitle',
+                'multiple'      => true,
+                'expanded'      => true,
+                'label'         => 'Bei Anmeldungen zu erfassende Felder',
+            ]
         );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => 'AppBundle\Entity\Event',
-            )
+            ]
         );
     }
 }
