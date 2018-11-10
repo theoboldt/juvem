@@ -12,6 +12,7 @@ namespace AppBundle\Entity\AcquisitionAttribute;
 
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\BankAccountType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
@@ -176,26 +177,24 @@ class Fillout
     /**
      * Get value of this fillout
      *
-     * @return string|array
+     * @return FilloutValue
      */
     public function getValue()
     {
-        $value     = $this->value;
-        $attribute = $this->getAttribute();
-        if ($attribute->getFieldTypeChoiceType()) {
-            if ($value) {
-                $value = json_decode($value, true);
-            } else {
-                $value = [];
-            }
+        switch ($this->attribute->getFieldType()) {
+            case FormChoiceType::class:
+                return new ChoiceFilloutValue($this->attribute, $this->value);
+            case BankAccountType::class:
+                return new BankAccountFilloutValue($this->attribute, $this->value);
+            default:
+                return new FilloutValue($this->attribute, $this->value);
         }
-
-        return $value;
     }
 
     /**
      * Get list of @see AttributeChoiceOption which are selected
      *
+     * @deprecated
      * @return array|AttributeChoiceOption[]
      */
     public function getSelectedChoices(): array
@@ -203,20 +202,10 @@ class Fillout
         if (!$this->attribute->getFieldType() == FormChoiceType::class) {
             throw new \InvalidArgumentException('This is not a fillout related field type');
         }
-        $choicesAvailable = $this->attribute->getChoiceOptions();
-        $choicesSelected  = $this->getValue();
-        $selected         = [];
-        if (!is_array($choicesSelected)) {
-            $choicesSelected = [$choicesSelected];
-        }
 
-        /** @var AttributeChoiceOption $choice */
-        foreach ($choicesAvailable as $choice) {
-            if (in_array($choice->getId(), $choicesSelected)) {
-                $selected[$choice->getId()] = $choice;
-            }
-        }
-        return $selected;
+        /** @var ChoiceFilloutValue $value */
+        $value = $this->getValue();
+        return $value->getSelectedChoices();
     }
 
     /**
@@ -229,7 +218,7 @@ class Fillout
      */
     public function __toString()
     {
-        return $this->getTextualValue();
+        return (string)$this->getValue()->getTextualValue();
     }
 
     /**
@@ -238,37 +227,17 @@ class Fillout
      * Transform fillout to string; Useful for textual display in ui. Will return label of selected item if
      * this fillout belongs to a choice field
      *
+     * @deprecated
      * @param string $choicePresentation Configuration for selected choice option presentation, @see AttributeChoiceOption
      * @return string
      */
     public function getTextualValue(string $choicePresentation = AttributeChoiceOption::PRESENTATION_FORM_TITLE) {
         $value = $this->getValue();
-        if ($value === null) {
-            return '';
-        }
-        $attribute = $this->getAttribute();
-        switch ($attribute->getFieldType()) {
-            case FormChoiceType::class:
-                $choices = $this->getSelectedChoices();
-                $values  = [];
-                foreach ($choices as $choice) {
-                    switch ($choicePresentation) {
-                        case AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE:
-                            $values[] = $choice->getManagementTitle(true);
-                            break;
-                        case AttributeChoiceOption::PRESENTATION_SHORT_TITLE:
-                            $values[] = $choice->getShortTitle(true);
-                            break;
-                        default:
-                        case AttributeChoiceOption::PRESENTATION_FORM_TITLE:
-                            $values[] = $choice->getFormTitle();
-                            break;
-                    }
-                }
-                return implode(', ', $values);
+        if ($value instanceof ChoiceFilloutValue) {
+        return $value->getTextualValue($choicePresentation);
 
-            default:
-                return (string)$value;
+        } else {
+            return $value->getTextualValue();
         }
     }
 }

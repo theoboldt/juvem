@@ -1,0 +1,10 @@
+<div class="form-group acquisition-attribute field-{{ acquisitionField.fieldType|replace({"\\": '-'})|lower }}">
+    {{ form_label(formField) }}
+    {% if not acquisitionField.isPublic %}
+        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+    {%- endif -%}
+    {%- if acquisitionField.formDescription -%}
+        <p class="help-block">{{ acquisitionField.formDescription }}</p>
+    {%- endif -%}
+    {{ form_widget(formField) }}
+</div>

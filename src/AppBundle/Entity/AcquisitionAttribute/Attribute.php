@@ -13,7 +13,6 @@ namespace AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
-use AppBundle\Form\AcquisitionChoiceOptionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -35,6 +34,7 @@ class Attribute
     const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
     const LABEL_FIELD_CHOICE   = 'Auswahl';
+    const LABEL_FIELD_BANK     = 'Bankverbindung';
 
     /**
      * @ORM\Column(type="integer", name="bid")
@@ -317,6 +317,8 @@ class Attribute
                     return self::LABEL_FIELD_TEXTAREA;
                 case FormChoiceType::class;
                     return self::LABEL_FIELD_CHOICE;
+                case \AppBundle\Form\BankAccountType::class;
+                    return self::LABEL_FIELD_BANK;
             }
         }
 
@@ -571,11 +573,11 @@ class Attribute
     /**
      * Add fillout
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout
+     * @param Fillout $fillout
      *
      * @return Attribute
      */
-    public function addFillout(\AppBundle\Entity\AcquisitionAttribute\Fillout $fillout)
+    public function addFillout(Fillout $fillout)
     {
         $this->fillouts[] = $fillout;
 
@@ -585,9 +587,9 @@ class Attribute
     /**
      * Remove fillout
      *
-     * @param \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout
+     * @param Fillout $fillout
      */
-    public function removeFillout(\AppBundle\Entity\AcquisitionAttribute\Fillout $fillout)
+    public function removeFillout(Fillout $fillout)
     {
         $this->fillouts->removeElement($fillout);
     }

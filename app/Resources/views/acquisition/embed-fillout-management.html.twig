@@ -15,6 +15,6 @@
     {% if fillout is empty %}
         <i class="empty value-null"><span></span></i>
     {% else %}
-        {{ fillout }}
+        {{ fillout.getTextualValue() }}
     {% endif %}
 {% endif %}

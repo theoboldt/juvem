@@ -83,17 +83,7 @@
                     {% if fieldName starts with 'acq_field_' %}
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="form-group acquisition-attribute">
-                                    {{ form_label(formField) }}
-                                    {%- set acquisitionField = acquisitionFieldsParticipation[fieldName] -%}
-                                    {% if not acquisitionField.isPublic %}
-                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-                                    {%- endif -%}
-                                    {%- if acquisitionField.formDescription -%}
-                                        <p class="help-block">{{ acquisitionField.formDescription }}</p>
-                                    {%- endif -%}
-                                    {{ form_widget(formField) }}
-                                </div>
+                                {% include 'event/participation/public/embed-acquisition-field-public.html.twig' with {'acquisitionField': acquisitionFieldsParticipation[fieldName], 'formField': formField} %}
                             </div>
                         </div>
                     {% endif %}
@@ -283,17 +273,7 @@
                                     {% for fieldName,formField in formElement %}
                                         {% if fieldName starts with 'acq_field_' %}
                                             <div class="col-xs-12">
-                                                <div class="form-group acquisition-attribute">
-                                                    {{ form_label(formField) }}
-                                                    {%- set acquisitionField = acquisitionFieldsParticipant[fieldName] -%}
-                                                    {% if not acquisitionField.isPublic %}
-                                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-                                                    {%- endif -%}
-                                                    {% if acquisitionField.formDescription %}
-                                                        <p class="help-block">{{ acquisitionField.formDescription }}</p>
-                                                        {{ form_widget(formField) }}
-                                                    {% endif %}
-                                                </div>
+                                                {% include 'event/participation/public/embed-acquisition-field-public.html.twig' with {'acquisitionField': acquisitionFieldsParticipant[fieldName], 'formField': formField} %}
                                             </div>
                                         {% endif %}
                                     {% endfor %}

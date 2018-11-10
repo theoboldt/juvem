@@ -38,3 +38,17 @@ iframe[name=export-generator-frame] {
 .row.column-configuration {
   margin-top: 20px;
 }
+
+.acquisition-attribute.field-appbundle-form-bankaccounttype > div {
+  @include make-row();
+}
+
+.acquisition-attribute.field-appbundle-form-bankaccounttype > div > div {
+  @include make-xs-column(4);
+}
+
+.acquisition-attribute > div > div {
+    @include make-xs-column(12);
+}
+
+
