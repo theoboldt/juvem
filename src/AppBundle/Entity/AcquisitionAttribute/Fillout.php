@@ -247,25 +247,28 @@ class Fillout
             return '';
         }
         $attribute = $this->getAttribute();
-        if ($attribute->getFieldType() == FormChoiceType::class) {
-            $choices = $this->getSelectedChoices();
-            $values  = [];
-            foreach ($choices as $choice) {
-                switch ($choicePresentation) {
-                    case AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE:
-                        $values[] = $choice->getManagementTitle(true);
-                        break;
-                    case AttributeChoiceOption::PRESENTATION_SHORT_TITLE:
-                        $values[] = $choice->getShortTitle(true);
-                        break;
-                    default:
-                    case AttributeChoiceOption::PRESENTATION_FORM_TITLE:
-                        $values[] = $choice->getFormTitle();
-                        break;
+        switch ($attribute->getFieldType()) {
+            case FormChoiceType::class:
+                $choices = $this->getSelectedChoices();
+                $values  = [];
+                foreach ($choices as $choice) {
+                    switch ($choicePresentation) {
+                        case AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE:
+                            $values[] = $choice->getManagementTitle(true);
+                            break;
+                        case AttributeChoiceOption::PRESENTATION_SHORT_TITLE:
+                            $values[] = $choice->getShortTitle(true);
+                            break;
+                        default:
+                        case AttributeChoiceOption::PRESENTATION_FORM_TITLE:
+                            $values[] = $choice->getFormTitle();
+                            break;
+                    }
                 }
-            }
-            return implode(', ', $values);
+                return implode(', ', $values);
+
+            default:
+                return (string)$value;
         }
-        return (string)$value;
     }
 }
