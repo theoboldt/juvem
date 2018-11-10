@@ -570,7 +570,7 @@ class Participation implements EventRelatedEntity
         }
 
         /** @var Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(true, false, true, false) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(true, false, false, false, true) as $attribute) {
             try {
                 $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
             } catch (\OutOfBoundsException $e) {
@@ -595,7 +595,7 @@ class Participation implements EventRelatedEntity
             $participant->setInfoMedical($participantPrevious->getInfoMedical());
 
             /** @var Attribute $attribute */
-            foreach ($event->getAcquisitionAttributes(false, true, true, false) as $attribute) {
+            foreach ($event->getAcquisitionAttributes(false, true, false, false, true) as $attribute) {
                 try {
                     $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
                         $attribute->getBid(), false

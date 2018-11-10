@@ -86,6 +86,13 @@ class AcquisitionType extends AbstractType
                 'required' => false
             ]
         )->add(
+            'useAtEmployee',
+            CheckboxType::class,
+            [
+                'label'    => 'Bei Mitarbeitern erfassen',
+                'required' => false
+            ]
+        )->add(
             'isRequired',
             CheckboxType::class,
             [

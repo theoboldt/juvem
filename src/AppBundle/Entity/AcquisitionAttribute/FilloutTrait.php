@@ -96,10 +96,10 @@ trait FilloutTrait
             $fillout = new Fillout();
             if ($this instanceof Participation) {
                 $fillout->setParticipation($this);
-                $attributes = $event->getAcquisitionAttributes(true, false, true, true);
+                $attributes = $event->getAcquisitionAttributes(true, false, false, true, true);
             } elseif($this instanceof Participant) {
                 $fillout->setParticipant($this);
-                $attributes = $event->getAcquisitionAttributes(false, true, true, true);
+                $attributes = $event->getAcquisitionAttributes(false, true, false, true, true);
             } else {
                 throw new \InvalidArgumentException('This acquisition attribute fillout trait is used at unknown class');
             }

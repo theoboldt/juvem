@@ -91,7 +91,7 @@ class ParticipationBaseType extends AbstractType
 
         $event                = $participation->getEvent();
         $attributes           = $event->getAcquisitionAttributes(
-            true, false, $options[self::ACQUISITION_FIELD_PUBLIC], $options[self::ACQUISITION_FIELD_PRIVATE]
+            true, false, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
         );
         $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 

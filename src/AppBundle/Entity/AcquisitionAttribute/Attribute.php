@@ -92,6 +92,13 @@ class Attribute
     protected $useAtParticipant = false;
 
     /**
+     * @ORM\Column(name="use_at_employee", type="smallint", options={"unsigned":true,"default":0})
+     *
+     * @var boolean
+     */
+    protected $useAtEmployee = false;
+
+    /**
      * @ORM\Column(name="is_required", type="smallint", options={"unsigned":true,"default":0})
      *
      * @var boolean
@@ -488,6 +495,32 @@ class Attribute
     public function getUseAtParticipant()
     {
         return (bool)$this->useAtParticipant;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseAtEmployee(): bool
+    {
+        return $this->isUseAtEmployee();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseAtEmployee(): bool
+    {
+        return $this->useAtEmployee;
+    }
+
+    /**
+     * @param bool $useAtEmployee
+     * @return Attribute
+     */
+    public function setUseAtEmployee(bool $useAtEmployee): Attribute
+    {
+        $this->useAtEmployee = $useAtEmployee;
+        return $this;
     }
 
     /**

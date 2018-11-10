@@ -284,7 +284,7 @@ class AdminSingleController extends Controller
                 'form'              => $form->createView(),
                 'participation'     => $participation,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, true, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(true, false, false, true, true),
             )
         );
     }
@@ -342,7 +342,7 @@ class AdminSingleController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, false, true, true),
             )
         );
     }
@@ -400,7 +400,7 @@ class AdminSingleController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, true, true),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, false, true, true),
             )
         );
     }

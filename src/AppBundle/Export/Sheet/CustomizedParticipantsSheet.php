@@ -327,7 +327,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     private function appendParticipantAcquisitionColumns(Event $event, array $config)
     {
         /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(false, true, true, true) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(false, true, false, true, true) as $attribute) {
             $this->appendAcquisitionColumn('participant', $attribute, $config);
         }
     }
@@ -341,7 +341,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     private function appendParticipationAcquisitionColumns(Event $event, array $config)
     {
         /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(true, false, true, true) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(true, false, false, true, true) as $attribute) {
             $this->appendAcquisitionColumn('participation', $attribute, $config);
         }
     }

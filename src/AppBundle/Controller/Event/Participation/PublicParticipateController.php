@@ -97,9 +97,9 @@ class PublicParticipateController extends Controller
             'event/participation/public/begin.html.twig',
             [
                 'event'                          => $event,
-                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, true, false),
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, false, false, true),
                 'participations'                 => $participations,
-                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, true, false),
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, false, false, true),
                 'form'                           => $form->createView(),
             ]
         );

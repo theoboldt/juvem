@@ -771,15 +771,17 @@ class Event
      *
      * @param bool $includeParticipationFields If acquisition fields related to participations should be included
      * @param bool $includeParticipantFields   If acquisition fields related to participant should be included
-     * @param bool $includePublic              If public fields should be included
+     * @param bool $includeEmployeeFields
      * @param bool $includePrivate             If non-public fields should be included
+     * @param bool $includePublic              If public fields should be included
      * @return ArrayCollection|array Result
      */
     public function getAcquisitionAttributes(
         bool $includeParticipationFields = true,
         bool $includeParticipantFields = true,
-        bool $includePublic = true,
-        bool $includePrivate = true
+        bool $includeEmployeeFields = true,
+        bool $includePrivate = true,
+        bool $includePublic = true
     ) {
         if ($includeParticipationFields && $includeParticipantFields && $includePublic && $includePrivate) {
             return $this->acquisitionAttributes;
@@ -791,7 +793,8 @@ class Event
             if (
                 (
                     ($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
-                    ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant())
+                    ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant()) ||
+                    ($includeEmployeeFields && $acquisitionAttribute->getUseAtEmployee())
                 )
                 && (
                     ($includePublic && $acquisitionAttribute->isPublic()) ||
