@@ -15,7 +15,6 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
-use AppBundle\Entity\ParticipantComment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -29,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participant implements EventRelatedEntity
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait;
+    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait;
 
     const TYPE_GENDER_MALE   = 1;
     const TYPE_GENDER_FEMALE = 2;
@@ -614,30 +613,6 @@ class Participant implements EventRelatedEntity
     }
 
     /**
-     * Add comment
-     *
-     * @param ParticipantComment $comment
-     *
-     * @return Participant
-     */
-    public function addComment(ParticipantComment $comment)
-    {
-        $this->comments[] = $comment;
-
-        return $this;
-    }
-
-    /**
-     * Remove comment
-     *
-     * @param ParticipantComment $comment
-     */
-    public function removeComment(ParticipantComment $comment)
-    {
-        $this->comments->removeElement($comment);
-    }
-
-    /**
      * Add payment
      *
      * @param ParticipantPaymentEvent $event
@@ -653,7 +628,7 @@ class Participant implements EventRelatedEntity
     }
 
     /**
-     * Remove comment
+     * Remove payment event
      *
      * @param ParticipantPaymentEvent $event
      * @return self
@@ -663,17 +638,6 @@ class Participant implements EventRelatedEntity
         $this->paymentEvents->removeElement($event);
         return $this;
     }
-
-    /**
-     * Get comments
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getComments()
-    {
-        return $this->comments;
-    }
-
 
     /**
      * Determine if the value of an info field is considered as empty

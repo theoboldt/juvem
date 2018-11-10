@@ -30,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participation implements EventRelatedEntity
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait;
+    use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
@@ -96,7 +96,7 @@ class Participation implements EventRelatedEntity
     protected $acquisitionAttributeFillouts;
 
     /**
-     * Contains the comments assigned
+     * {@inheritdoc}
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipationComment", cascade={"all"}, mappedBy="participation")
      */
@@ -570,7 +570,7 @@ class Participation implements EventRelatedEntity
         }
 
         /** @var Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(true, false) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(true, false, true, false) as $attribute) {
             try {
                 $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
             } catch (\OutOfBoundsException $e) {
@@ -595,7 +595,7 @@ class Participation implements EventRelatedEntity
             $participant->setInfoMedical($participantPrevious->getInfoMedical());
 
             /** @var Attribute $attribute */
-            foreach ($event->getAcquisitionAttributes(false, true) as $attribute) {
+            foreach ($event->getAcquisitionAttributes(false, true, true, false) as $attribute) {
                 try {
                     $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
                         $attribute->getBid(), false
@@ -613,39 +613,5 @@ class Participation implements EventRelatedEntity
         }
 
         return $participation;
-    }
-
-    /**
-     * Add comment
-     *
-     * @param \AppBundle\Entity\ParticipationComment $comment
-     *
-     * @return Participation
-     */
-    public function addComment(\AppBundle\Entity\ParticipationComment $comment)
-    {
-        $this->comments[] = $comment;
-
-        return $this;
-    }
-
-    /**
-     * Remove comment
-     *
-     * @param \AppBundle\Entity\ParticipationComment $comment
-     */
-    public function removeComment(\AppBundle\Entity\ParticipationComment $comment)
-    {
-        $this->comments->removeElement($comment);
-    }
-
-    /**
-     * Get comments
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getComments()
-    {
-        return $this->comments;
     }
 }
