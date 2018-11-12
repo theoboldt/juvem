@@ -410,7 +410,7 @@ class EventRepository extends EntityRepository
      * @param  bool|null $precision If you want the result to be rounded with round(), specify precision here
      * @return float                Age in years
      */
-    public static function age(\DateTime $birthday, \DateTime $deadline, $precision = null)
+    public static function age(\DateTime $birthday, \DateTime $deadline, $precision = null): float
     {
         $ageInDays  = $deadline->diff($birthday)
                                ->format('%a');
@@ -429,11 +429,11 @@ class EventRepository extends EntityRepository
      * @param \DateTime $deadline The date where the calculation is desired
      * @return int                Years of life in years
      */
-    public static function yearsOfLife(\DateTime $birthday, \DateTime $deadline)
+    public static function yearsOfLife(\DateTime $birthday, \DateTime $deadline): int
     {
         $ageInYears = $deadline->diff($birthday)
                                ->format('%y');
-        return $ageInYears;
+        return (int)$ageInYears;
     }
 
     /**
@@ -441,15 +441,21 @@ class EventRepository extends EntityRepository
      *
      * @param \DateTime      $birthday The birthday of the person which age should be calculated
      * @param \DateTime      $start    Begin of timespan in which the birthday may happen
-     * @param \DateTime|null $start    End of timespan in which the birthday may happen. May be null if start and end
+     * @param \DateTime|null $end      End of timespan in which the birthday may happen. May be null if start and end
      *                                 is same
      * @return bool True if so
      */
     public static function hasBirthdayInTimespan(\DateTime $birthday, \DateTime $start, \DateTime $end = null)
     {
+        $start = clone $start;
+        $start->setTime(0, 0, 0);
+
         if (!$end) {
             $end = $start;
         }
+        $end = clone $end;
+        $end->setTime(23, 59, 59);
+
         $birthdayInStartYear = new \DateTime();
         $birthdayInStartYear->setDate(
             (int)$start->format('Y'), (int)$birthday->format('m'), (int)$birthday->format('d')

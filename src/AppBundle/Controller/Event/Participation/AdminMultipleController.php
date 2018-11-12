@@ -85,31 +85,31 @@ class AdminMultipleController extends Controller
 
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
-            $participantEntry = [
-                'aid'       => $participant->getAid(),
-                'pid'       => $participant->getParticipation()->getPid(),
-                'nameFirst' => $participant->getNameFirst(),
-                'nameLast'  => $participant->getNameLast(),
-                'birthday'  => $participant->getBirthday()->format('d.m.Y'),
-                'gender'    => $participant->getGender(true),
-            ];
 
             $yearsOfLife = EventRepository::yearsOfLife($participant->getBirthday(), $event->getSpecificDate());
             if ($yearsOfLife < $event->getSpecificAge()) {
                 continue;
             }
 
-            $age = number_format(
-                EventRepository::age($participant->getBirthday(), $event->getSpecificDate()),
-                1, ',', '.'
-            );
+            $age = $yearsOfLife;
+            $age .= ' <span class="rounded-age">('
+                    . number_format(EventRepository::age($participant->getBirthday(), $event->getSpecificDate()), 1, ',', '.')
+                    . ')</span>';
 
-            $participantEntry['age'] = floor($yearsOfLife) . ' (' . $age . ')';
-
+            $birthday = $participant->getBirthday()->format('d.m.Y');
             if (EventRepository::hasBirthdayInTimespan($participant->getBirthday(), $event->getSpecificDate())) {
-                $glyph                   = new BootstrapGlyph();
-                $participantEntry['age'] .= ' ' . $glyph->bootstrapGlyph('gift');
+                $glyph    = new BootstrapGlyph();
+                $birthday .= ' ' . $glyph->bootstrapGlyph('gift', 'Hat am Stichtag Geburtstag');
             }
+            $participantEntry = [
+                'aid'       => $participant->getAid(),
+                'pid'       => $participant->getParticipation()->getPid(),
+                'nameFirst' => $participant->getNameFirst(),
+                'nameLast'  => $participant->getNameLast(),
+                'age'       => $age,
+                'birthday'  => $birthday,
+                'gender'    => $participant->getGender(true),
+            ];
 
             $participantList[] = $participantEntry;
         }
@@ -151,7 +151,8 @@ class AdminMultipleController extends Controller
 
             $participantStatus = $participant->getStatus(true);
 
-            $age = number_format($participant->getAgeAtEvent(), 1, ',', '.');
+            $age = $participant->getYearsOfLifeAtEvent();
+            $age .= ' <span class="rounded-age">(' . number_format($participant->getAgeAtEvent(), 1, ',', '.') . ')</span>';
             if ($participant->hasBirthdayAtEvent()) {
                 $glyph = new BootstrapGlyph();
                 $age .= ' ' . $glyph->bootstrapGlyph('gift');

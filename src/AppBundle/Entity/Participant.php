@@ -266,10 +266,21 @@ class Participant implements EventRelatedEntity
      * @param int|null $precision If you want the result to be rounded with round(), specify precision here
      * @return float              Age in years
      */
-    public function getAgeAtEvent($precision = null)
+    public function getAgeAtEvent($precision = null): float
     {
         $event = $this->getEvent();
         return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
+    }
+
+    /**
+     * Get age of participant at the related event
+     *
+     * @return int Amount of years of life at event
+     */
+    public function getYearsOfLifeAtEvent(): int
+    {
+        $event = $this->getEvent();
+        return EventRepository::yearsOfLife($this->getBirthday(), $event->getStartDate());
     }
 
     /**
