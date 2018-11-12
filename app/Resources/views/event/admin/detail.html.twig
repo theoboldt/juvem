@@ -29,6 +29,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer verwalten</a></li>
+                                <li><a href="{{ path('event_participants_list_specific_age', {'eid': event.eid }) }}">{{ 'calendar'|glyph }} Stichtagsliste erstellen</a></li>
                                 <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten</a></li>
                                 {%- if is_granted('participants_edit', event) -%}
                                 <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>

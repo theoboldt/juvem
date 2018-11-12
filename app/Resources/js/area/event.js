@@ -459,4 +459,43 @@ $(function () {
             $(this).ekkoLightbox();
         });
     }
+
+    $('#specificFilterRefresh').on('click', function (e) {
+        var specificAgeValue = $('#specificAge').val(),
+            specificDateValue = $('#specificDate').val(),
+            tableRefreshButton = $('[name=refresh]'),
+            button = $(this),
+            token = button.data('token'),
+            eid = parseInt(button.data('eid'));
+
+        if (button.hasClass('disabled')) {
+            return;
+        }
+        button.toggleClass('disabled', true);
+        tableRefreshButton.toggleClass('disabled', true);
+
+        $.ajax({
+            url: '/admin/event/' + eid + '/update-specific-age',
+            data: {
+                _token: token,
+                specificAge: specificAgeValue,
+                specificDate: specificDateValue
+            },
+            success: function () {
+                $('#participantsSpecificAgeListTable').bootstrapTable('refresh');
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Die Angaben für die Liste konnten nicht verarbeitet werden',
+                    priority: 'error'
+                });
+            },
+            complete: function () {
+                button.toggleClass('disabled', false);
+                tableRefreshButton.toggleClass('disabled', false);
+            }
+        });
+    });
+
+
 });

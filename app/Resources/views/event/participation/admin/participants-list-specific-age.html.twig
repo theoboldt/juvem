@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Teilnehmer verwalten ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'mit Alter zu einem Stichtag'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li class="active">Teilnehmer</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="bootstrap-table-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <label for="specificAge" class="control-label">Alter:</label>
+                        <input type="number" id="specificAge" name="specificAge" class="form-control"
+                               value="{{ event.specificAge }}">
+                        <label for="specificDate" class="control-label">Stichtag:</label>
+                        <input type="date" id="specificDate" name="specificDate" class="form-control"
+                               value="{% if event.specificDate %}{{ event.getSpecificDate.format('Y-m-d') }}{% endif %}">
+                        <button id="specificFilterRefresh" class="btn btn-primary"
+                                data-token="{{ csrf_token('filter-specific-age-' ~ event.eid) }}"
+                                data-eid="{{ event.eid }}">Aktualisieren
+                        </button>
+                    </div>
+                </div>
+                <table id="participantsSpecificAgeListTable" class="table table-striped table-remote-content"
+                       data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+                       data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
+                       data-url="{{ path('event_participants_list_specific_age_data', {eid: event.eid}) }}"
+                       data-sort-name="nameLast" data-sort-order="asc">
+                    <thead>
+                    <tr>
+                        <th data-field="aid" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs
+                            <wbr>
+                            nummer
+                        </th>
+                        <th data-field="nameFirst" data-sortable="true">Vorname</th>
+                        <th data-field="nameLast" data-sortable="true">Nachname</th>
+                        <th data-field="age" data-sortable="true" data-sorter="germanNumberFormatSorter"
+                            class="text-right" data-class="text-right">
+                            <abbr title="Alter des Teilnehmers zum Stichtag">Alter</abbr>
+                        </th>
+                        <th data-field="birthday" data-sortable="true" data-sorter="germanDateTimeSorter">Geburtsdatum
+                        </th>
+                        <th data-field="gender" data-sortable="true" data-visible="false">Geschlecht</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="col-md-12">
+            </div>
+        </div>
+    </div>
+{% endblock %}

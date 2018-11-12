@@ -423,6 +423,20 @@ class EventRepository extends EntityRepository
     }
 
     /**
+     * Calculate amount of (completed) years of life at specific date
+     *
+     * @param \DateTime $birthday The birthday of the person which age should be calculated
+     * @param \DateTime $deadline The date where the calculation is desired
+     * @return int                Years of life in years
+     */
+    public static function yearsOfLife(\DateTime $birthday, \DateTime $deadline)
+    {
+        $ageInYears = $deadline->diff($birthday)
+                               ->format('%y');
+        return $ageInYears;
+    }
+
+    /**
      * Check if a birthday is celebrated in a given time span
      *
      * @param \DateTime      $birthday The birthday of the person which age should be calculated

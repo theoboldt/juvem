@@ -240,6 +240,23 @@ class Event
     protected $waitingListThreshold = null;
 
     /**
+     * Configuration for specific age filter, defines specific age
+     *
+     * @var int|null
+     * @ORM\Column(type="integer", name="specific_age", options={"unsigned":true}, nullable=true)
+     */
+    protected $specificAge = null;
+
+    /**
+     * Configuration for specific age at date filter, defines specific date
+     *
+     * @var \DateTime|null
+     * @ORM\Column(type="date", name="specific_date", nullable=true)
+     * @Assert\Type("\DateTime")
+     */
+    protected $specificDate = null;
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -1118,5 +1135,47 @@ class Event
         return $this;
     }
 
+    /**
+     * Get configuration for specific age filter, defines specific age
+     *
+     * @return int|null
+     */
+    public function getSpecificAge(): ?int
+    {
+        return $this->specificAge;
+    }
+
+    /**
+     * Set configuration for specific age filter, defines specific age
+     *
+     * @param int|null $specificAge
+     * @return Event
+     */
+    public function setSpecificAge(?int $specificAge): Event
+    {
+        $this->specificAge = $specificAge;
+        return $this;
+    }
+
+    /**
+     * Get configuration for specific age at date filter, defines specific date
+     *
+     * @return \DateTime|null
+     */
+    public function getSpecificDate(): ?\DateTime
+    {
+        return $this->specificDate;
+    }
+
+    /** Set configuration for specific age at date filter, defines specific date
+     *
+     * @param \DateTime|null $specificDate
+     * @return Event
+     */
+    public function setSpecificDate(?\DateTime $specificDate): Event
+    {
+        $this->specificDate = $specificDate;
+        return $this;
+    }
 
 }
