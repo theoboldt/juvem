@@ -266,13 +266,13 @@ class EventRepository extends EntityRepository
     }
 
     /**
-     * Get a list of ages of the participants who are not deleted or whose participation is withdrawn or rejected
+     * Get a list of years of life of the participants who are not deleted or whose participation is withdrawn or rejected
      *
      * @param Event $event
-     * @return array
+     * @return array|int[]
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function participantsAgeList(Event $event)
+    public function participantsYearsOfLifeList(Event $event)
     {
         $eid = $event->getEid();
         /** @var \DateTime $start */
@@ -299,7 +299,7 @@ class EventRepository extends EntityRepository
 
         $ageList = array();
         foreach ($birthdayList as $participant) {
-            $ageList[] = self::age(new \DateTime($participant['birthday']), $start);
+            $ageList[] = self::yearsOfLife(new \DateTime($participant['birthday']), $start);
         }
 
         return $ageList;
@@ -313,12 +313,10 @@ class EventRepository extends EntityRepository
      */
     public function participantsAgeDistribution(Event $event)
     {
-        $ageList = $this->participantsAgeList($event);
+        $ageList = $this->participantsYearsOfLifeList($event);
 
         $ageDistribution = array();
         foreach ($ageList as $age) {
-            $age = round($age);
-
             if (!isset($ageDistribution[$age])) {
                 $ageDistribution[$age] = 0;
             }

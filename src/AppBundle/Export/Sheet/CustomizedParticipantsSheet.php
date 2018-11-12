@@ -101,13 +101,14 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                 case 'round':
                     $column->setNumberFormat('0');
                     break;
-                case 'ceil':
+                case 'completed':
                     $column->setConverter(
-                        function ($value, $entity) {
-                            return ceil($value);
+                        function ($value, Participant $entity) {
+                            return $entity->getYearsOfLifeAtEvent();
                         }
                     );
                     $column->setNumberFormat('0');
+                    $column->setWidth(4);
                     break;
                 case 'decimalplace':
                     $column->setNumberFormat('#,##0.0');

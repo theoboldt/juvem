@@ -46,9 +46,9 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setWidth(10);
         $this->addColumn($column);
 
-        $column = new EntityColumn('ageAtEvent', 'Alter');
-        $column->setNumberFormat('#,##0.0');
-        $column->setWidth(5);
+        $column = new EntityColumn('yearsOfLifeAtEvent', 'Alter');
+        $column->setNumberFormat('0');
+        $column->setWidth(4);
         $this->addColumn($column);
 
         $column = EntityColumn::createSmallColumn('gender', 'Geschlecht');

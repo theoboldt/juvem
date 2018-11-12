@@ -80,8 +80,8 @@ class Configuration implements ConfigurationInterface
                             ->info('Alter (bei Beginn der Veranstaltung)')
                             ->values([
                                          'Nicht exportieren'         => 'none',
+                                         'Vollendete Lebensjahre'    => 'completed',
                                          'Auf Jahre gerundet'        => 'round',
-                                         'Abgerundet'                => 'ceil',
                                          'Mit einer Nachkommastelle' => 'decimalplace'
                             ])
                         ->end()

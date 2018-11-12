@@ -41,7 +41,7 @@ $(function () {
                     'config[participant][price]',
                     'config[participation][pid]'
                 ];
-                selectAge.val('decimalplace');
+                selectAge.val('completed');
                 selectPhone.val('comma');
                 includeAcquisitionFields.participant.display = 'selectedAnswer';
                 includeAcquisitionFields.participant.optionValue = 'managementTitle';
@@ -94,7 +94,7 @@ $(function () {
                     'config[participation][addressZip]',
                     'config[additional_sheet][participation]'
                 ];
-                selectAge.val('ceil');
+                selectAge.val('completed');
                 selectPhone.val('comma_description');
                 includeAcquisitionFields.participant.display = 'separateColumns';
                 includeAcquisitionFields.participant.optionValue = 'managementTitle';

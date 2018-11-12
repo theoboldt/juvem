@@ -223,16 +223,15 @@
                             {% for age, count in ageDistribution %}
                                 <div class="row">
                                     <div class="col-xs-2 col-sm-3 text-right">
-                                        {{ age }} <abbr title="Jahre (gerundet)">J.</abbr>
+                                        {{ age }} <abbr title="vollendete Lebensjahre">J.</abbr>
                                     </div>
                                     <div class="col-xs-10 col-sm-9">
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
                                                  aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
-                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer sind im Alter von rund {{ age }} Jahren"
+                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer haben zu Beginn der Veranstaltung das {{ age }}.&nbsp;Lebensjahr vollendet"
                                                  style="width: {{ ((count/ageDistributionMax)*100) }}%;">
-                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer im Alter von rund {{ age }}
-                                                    Jahren</span>
+                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer haben zu Beginn der Veranstaltung das {{ age }}. Lebensjahr vollendet</span>
                                                 <span title="Anzahl">
                                                     <abbr title="Teilnehmer">{{ count }}</abbr>
                                                 </span>
