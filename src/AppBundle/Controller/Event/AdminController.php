@@ -455,4 +455,38 @@ class AdminController extends Controller
             ]
         );
     }
+
+    /**
+     * Update specific age and date of an event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
+     * @Route("/admin/event/{eid}/update-specific-age", requirements={"eid": "\d+"}, name="event_admin_update_specific_age")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @param Event   $event
+     * @return JsonResponse
+     */
+    public function updateSpecificAgeAction(Request $request, Event $event)
+    {
+        $token = $request->get('_token');
+
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('filter-specific-age-' . $event->getEid())) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $em = $this->getDoctrine()->getManager();
+
+        $specificAge = (int)$request->get('specificAge');
+        $specificDate = new \DateTime($request->get('specificDate'));
+        $specificDate->setTime(10, 0, 0);
+
+        $event->setSpecificAge($specificAge);
+        $event->setSpecificDate($specificDate);
+        $em->persist($event);
+        $em->flush();
+
+        return new JsonResponse(['']);
+    }
 }

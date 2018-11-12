@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
@@ -49,6 +50,71 @@ class AdminMultipleController extends Controller
     public function listParticipantsAction(Event $event)
     {
         return $this->render('event/participation/admin/participants-list.html.twig', array('event' => $event));
+    }
+
+    /**
+     * Page for list of participants of an event having a provided age at a specific date
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participants-age", requirements={"eid": "\d+"}, name="event_participants_list_specific_age")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function listParticipantsWithSpecificAgeAction(Event $event)
+    {
+        return $this->render(
+            'event/participation/admin/participants-list-specific-age.html.twig', ['event' => $event]
+        );
+    }
+    /**
+     * Data provider for events participants list grid having specific age at specific date
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participants-specific-age.json", requirements={"eid": "\d+"}, name="event_participants_list_specific_age_data")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function listParticipantsWithSpecificAgeDataAction(Event $event, Request $request)
+    {
+        if (!$event->getSpecificDate()) {
+            return new JsonResponse([]);
+        }
+
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
+
+        $participantList = [];
+
+        /** @var Participant $participant */
+        foreach ($participantEntityList as $participant) {
+            $participantEntry = [
+                'aid'       => $participant->getAid(),
+                'pid'       => $participant->getParticipation()->getPid(),
+                'nameFirst' => $participant->getNameFirst(),
+                'nameLast'  => $participant->getNameLast(),
+                'birthday'  => $participant->getBirthday()->format('d.m.Y'),
+                'gender'    => $participant->getGender(true),
+            ];
+
+            $yearsOfLife = EventRepository::yearsOfLife($participant->getBirthday(), $event->getSpecificDate());
+            if ($yearsOfLife < $event->getSpecificAge()) {
+                continue;
+            }
+
+            $age = number_format(
+                EventRepository::age($participant->getBirthday(), $event->getSpecificDate()),
+                1, ',', '.'
+            );
+
+            $participantEntry['age'] = floor($yearsOfLife) . ' (' . $age . ')';
+
+            if (EventRepository::hasBirthdayInTimespan($participant->getBirthday(), $event->getSpecificDate())) {
+                $glyph                   = new BootstrapGlyph();
+                $participantEntry['age'] .= ' ' . $glyph->bootstrapGlyph('gift');
+            }
+
+            $participantList[] = $participantEntry;
+        }
+
+        return new JsonResponse($participantList);
     }
 
     /**
@@ -125,6 +191,7 @@ class AdminMultipleController extends Controller
                 $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
+
             foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
                 $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
