@@ -24,7 +24,7 @@
       }
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
@@ -78,9 +78,6 @@
         ]
     },
     "config": {
-        "platform": {
-            "php": "7.1"
-        },
         "optimize-autoloader": true,
         "bin-dir": "bin"
     },
