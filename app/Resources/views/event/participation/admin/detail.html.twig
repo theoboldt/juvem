@@ -524,12 +524,11 @@
                                         <dd>
                                             {{ participant.getBirthday|date("d.m.Y") }}
                                             {% if (participant.hasBirthdayAtEvent) %}
-                                                {{ 'gift'|glyph }}
+                                                {{ 'gift'|glyph(participant.nameFirst ~ ' hat während der Veranstaltung Geburtstag') }}
                                             {% endif %}
                                         </dd>
                                         <dt>Alter</dt>
-                                        <dd>{{ participant.getAgeAtEvent|number_format(1) }} Jahre bei der
-                                            Veranstaltung
+                                        <dd><span data-toggle="tooltip" title="{{ participant.nameFirst }} hat zu Beginn der Veranstaltung das {{ participant.yearsOfLifeAtEvent }}.&nbsp;Lebensjahr erreicht">{{ participant.yearsOfLifeAtEvent }} Jahre</span> (rund {{ participant.getAgeAtEvent|number_format(1) }} Jahre)
                                         </dd>
                                         <dt>Ernährung</dt>
                                         <dd>

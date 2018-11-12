@@ -99,9 +99,9 @@
                         <dl>
                             <dt>Geburtsdatum</dt>
                             <dd>
-                                {{ participant.getBirthday|date("d.m.Y") }}{% if (participant.hasBirthdayAtEvent) %}{{ 'gift'|glyph }}{% endif %}
+                                {{ participant.getBirthday|date("d.m.Y") }}{% if (participant.hasBirthdayAtEvent) %} {{ 'gift'|glyph }}{% endif %}
                                 &bull;
-                                {{ participant.getAgeAtEvent|number_format(1) }} Jahre
+                                {{ participant.yearsOfLifeAtEvent }} Jahre <small>(~{{ participant.getAgeAtEvent|number_format(1) }})</small>
                             </dd>
                         </dl>
                     </div>
