@@ -189,11 +189,17 @@ class AdminMultipleController extends Controller
             );
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
+                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
+                    continue;
+                }
                 $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
 
             foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
+                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
+                    continue;
+                }
                 $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
