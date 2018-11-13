@@ -819,7 +819,7 @@ class Event
                 (
                     ($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
                     ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant()) ||
-                    ($includeEmployeeFields && $acquisitionAttribute->getUseAtEmployee())
+                    ($includeEmployeeFields && $acquisitionAttribute->isUseAtEmployee())
                 )
                 && (
                     ($includePublic && $acquisitionAttribute->isPublic()) ||
@@ -1185,8 +1185,8 @@ class Event
         $this->specificDate = $specificDate;
         return $this;
     }
-    
-    
+
+
     /**
      * Add employee
      *
@@ -1197,10 +1197,10 @@ class Event
     public function addEmployee(Employee $employee)
     {
         $this->employees[] = $employee;
-        
+
         return $this;
     }
-    
+
     /**
      * Remove employee
      *
@@ -1210,7 +1210,7 @@ class Event
     {
         $this->employees->removeElement($employee);
     }
-    
+
     /**
      * Get employees
      *

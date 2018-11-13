@@ -52,7 +52,7 @@ class Fillout
      * @var Participant
      */
     protected $participant;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Employee", inversedBy="acquisitionAttributeFillouts")
      * @ORM\JoinColumn(name="gid", referencedColumnName="gid", onDelete="cascade", nullable=true)
@@ -174,7 +174,7 @@ class Fillout
     {
         return $this->employee;
     }
-    
+
     /**
      * Set employee this fillout is related to
      *
@@ -209,6 +209,15 @@ class Fillout
         $this->value = $value;
 
         return $this;
+    }
+
+    /**
+     *
+     * Get textual raw value
+     * @return string
+     */
+    public function getRawValue() {
+        return $this->value;
     }
 
     /**

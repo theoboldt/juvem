@@ -18,7 +18,7 @@ class AcquisitionAttributeFilloutTransformer implements DataTransformerInterface
     public function transform($fillout)
     {
         if ($fillout instanceof Fillout) {
-            return $fillout->getValue();
+            return $fillout->getRawValue();
         }
         return $fillout;
     }
