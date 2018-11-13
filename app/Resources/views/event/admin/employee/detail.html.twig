@@ -1,0 +1,231 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mitarbeiter ({{ event.title }}){% endblock %}
+
+{% block body %}
+    {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
+    <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalCommentLabel">Anmerkungen</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" id="modalCommentToken" value="{{ csrf_token('Comment') }}" />
+                        <textarea class="form-control" id="modalCommentContent"></textarea>
+                    </div>
+                    <p class="meta"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="dialogModalCommentButton">Bestätigen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif -%}
+    <div class="container participation-panels collapse-breadcrumb-header">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
+                    <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                    <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                    <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter</a></li>
+                    <li class="active">{{ employee.fullname }}</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-header">
+                    <h1>Mitarbeiter <small>{{ employee.fullname }}</small></h1>
+                </div>
+            </div>
+            <div class="col-xs-12 hidden-print">
+                {% if is_granted('employees_edit', event) -%}
+                {#
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group" role="group">
+                        {% if employee.deletedAt %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="restore">
+                                {{ 'repeat'|glyph }} wiederherstellen…
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModal" data-action="delete">
+                                {{ 'trash'|glyph }} in Papierkorb…
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                #}
+                {% endif -%}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'common/header/page-global-messages.html.twig' %}
+            </div>
+        </div>
+        <div class="row print-col-sm-6">
+            <div class="col-xs-12 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-7">
+                                <h3 class="panel-title">Daten</h3>
+                            </div>
+                            {#
+                            <div class="col-xs-5 text-right hidden-print">
+                                {% if is_granted('employees_edit', event) -%}
+                                <a href="{{ path('admin_employee_edit_phonenumbers', {'eid': event.eid, 'gid': employee.gid}) }}"
+                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten"
+                                   data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
+                                <a href="{{ path('admin_employee_edit', {'eid': event.eid, 'gid': employee.gid}) }}"
+                                   class="btn btn-default btn-xs" title="Daten bearbeiten"
+                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                {% endif -%}
+                                {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
+                                <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs"
+                                        type="button" data-toggle="collapse"
+                                        data-target="#comment-footer-gid-{{ employee.gid }}" aria-expanded="false"
+                                        aria-controls="comment-footer-gid-{{ employee.gid }}">
+                                    <span class="comment-count"
+                                          data-comment-class="AppBundle\Entity\EmployeeComment"
+                                          data-related-id="{{ employee.gid }}">{{ commentManager.countForEmployee(employee) }}
+                                    </span> {{ 'comment'|glyph }}
+                                </button>
+                                {% endif -%}
+                            </div>
+                            #}
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <dl class="dl-horizontal">
+                            <dt>Anrede</dt>
+                            <dd>{{ employee.salutation }}</dd>
+                            <dt>Vorname</dt>
+                            <dd>{{ employee.nameFirst }}</dd>
+                            <dt>Nachname</dt>
+                            <dd>{{ employee.nameLast }}</dd>
+                            <dt>Telefon</dt>
+                            <dd class="phone-container">
+                            {% for phoneNumber in employee.phoneNumbers %}
+                                <div>
+                                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}">{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
+                                    {% if phoneNumber.description %}
+                                    <br>
+                                    <i>{{ phoneNumber.description }}</i>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+
+                            </dd>
+                            <dt>Anschrift</dt>
+                            <dd class="address-container">
+                                <address>
+                                    <strong>{{ employee.fullname() }}</strong><br>
+                                    {{ employee.addressStreet }}<br>
+                                    {{ employee.addressZip }} {{ employee.addressCity }}
+                                </address>
+                            </dd>
+                            <dt>E-Mail Adresse</dt>
+                            <dd class="address-container">
+                                <address>
+                                    {{ employee.email }}
+                                </address>
+                            </dd>
+                            {% for fillout in employee.acquisitionAttributeFillouts %}
+                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                                    data-placement="right">
+                                    {%- if not fillout.attribute.isPublic -%}
+                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                                    {% endif %}
+                                    {{ fillout.attribute.formTitle }}
+                                </dt>
+                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
+                            {% endfor %}
+                            <dt title="Ist der Mitarbeiter mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
+                                data-toggle="tooltip" data-placement="right">
+                                Benutzerkonto
+                            </dt>
+                            <dd>
+                                {% if employee.assignedUser %}<a href="{{ path('user_detail', {'uid': employee.assignedUser.uid}) }}">
+                                    {{ employee.assignedUser|fullname }}</a>
+                                {% else %}
+                                    <i>(keines)</i>
+                                {% endif %}
+                                {% if is_granted('employees_edit', event) -%}
+                                <button data-toggle="modal" data-target="#dialogModalAssignUser"
+                                        class="btn btn-default btn-xs"
+                                        title="Benutzerkonto verknüpfen">{{ 'pencil'|glyph }}</button>
+                                {% endif -%}
+                            </dd>
+
+                        </dl>
+                    </div>
+                    {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
+                    <div class="panel-footer panel-comments collapse{% if commentManager.countForEmployee(employee) %} in{% endif %}" id="comment-footer-gid-{{ employee.gid }}">
+                        {% if is_granted('comment_add', event) -%}
+                            <div class="comment-add">
+                                <button title="Neue Anmerkung hinzufügen" class="btn btn-xs btn-default btn-add-comment"
+                                        data-toggle="modal" data-target="#dialogModalComment"
+                                        data-comment-class="AppBundle\Entity\EmployeeComment"
+                                        data-related-id="{{ employee.gid }}">{{ 'plus'|glyph }}</button>
+                            </div>
+                        {% endif -%}
+                            <div class="comments" data-comment-class="AppBundle\Entity\EmployeeComment"
+                                 data-related-id="{{ employee.gid }}">
+                            {% if is_granted('comment_read', event) -%}
+                                {% if not commentManager.countForEmployee(employee) %}
+                                    <p class="empty">Keine Anmerkungen gespeichert.</p>
+                                {% endif %}
+                                {% for comment in commentManager.forEmployee(employee) %}
+                                    {{ include('common/comment-content.html.twig', {comment: comment}) }}
+                                {% endfor %}
+                            {% else %}
+                                <p>&nbsp;</p>
+                            {% endif -%}
+                        </div>
+                    </div>
+                    {% endif -%}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascriptCustom %}
+    {% cspscript %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                        action = button.data('action'),
+                        modal = $(this),
+                        title,
+                        question;
+
+                switch (action) {
+                    case 'delete':
+                        title = 'Anmeldung in Papierkorb verschieben';
+                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                        break;
+                    case 'restore':
+                        title = 'Anmeldung aus Papierkorb nehmen';
+                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                        break;
+                }
+                modal.find('.modal-title').text(title);
+                modal.find('.modal-body > p').text(question);
+                modal.find('input[name="form[action]"]').val(action);
+            });
+        });
+    </script>
+    {% endcspscript %}
+{% endblock %}

@@ -182,6 +182,13 @@ class Event
     protected $participations;
 
     /**
+     * Contains the employees
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Employee", mappedBy="event", cascade={"remove"})
+     */
+    protected $employees;
+
+    /**
      * Contains the gallery images assigned to this event
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\GalleryImage", mappedBy="event", cascade={"remove"})
@@ -261,6 +268,7 @@ class Event
      */
     public function __construct()
     {
+        $this->employees             = new ArrayCollection();
         $this->participations        = new ArrayCollection();
         $this->galleryImages         = new ArrayCollection();
         $this->acquisitionAttributes = new ArrayCollection();
@@ -1177,5 +1185,39 @@ class Event
         $this->specificDate = $specificDate;
         return $this;
     }
-
+    
+    
+    /**
+     * Add employee
+     *
+     * @param Employee $employee
+     *
+     * @return Event
+     */
+    public function addEmployee(Employee $employee)
+    {
+        $this->employees[] = $employee;
+        
+        return $this;
+    }
+    
+    /**
+     * Remove employee
+     *
+     * @param Employee $employee
+     */
+    public function removeEmployee(Employee $employee)
+    {
+        $this->employees->removeElement($employee);
+    }
+    
+    /**
+     * Get employees
+     *
+     * @return array|Employee[]
+     */
+    public function getEmployees(): array
+    {
+        return $this->employees->toArray();
+    }
 }

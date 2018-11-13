@@ -15,6 +15,25 @@ use Doctrine\ORM\QueryBuilder;
 
 abstract class CommentRepositoryBase extends EntityRepository
 {
+
+    /**
+     * Fetch list of all @see CommentBase for transmitted @see Employee
+     *
+     * @param Employee $employee Related employee
+     * @return EmployeeComment[]
+     */
+    public function findForEmployee(Employee $employee)
+    {
+        $qb = $this->createCommentQueryBuilder('AppBundle:EmployeeComment');
+        
+        $qb->innerJoin('c.employee', 'r')
+           ->andWhere('c.employee = :r');
+        $qb->setParameter('r', $employee);
+        
+        return $qb->getQuery()->execute();
+    }
+
+	
 	/**
 	 * Fetch list of all @see CommentBase for transmitted @see Participation
 	 *

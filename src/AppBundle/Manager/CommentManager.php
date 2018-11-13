@@ -12,6 +12,8 @@ namespace AppBundle\Manager;
 
 use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\CommentRepositoryBase;
+use AppBundle\Entity\Employee;
+use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\Participation;
@@ -171,7 +173,33 @@ class CommentManager
         }
         return $this->doctrine->getRepository($property)->findOneBy(['cid' => $cid]);
     }
-
+    
+    /**
+     * Fetch amount of comments for transmitted @see Employee
+     *
+     * @param Employee $employee Related employee
+     * @return integer
+     */
+    public function countForEmployee(Employee $employee)
+    {
+        return count($this->forEmployee($employee));
+    }
+    
+    /**
+     * Fetch list of all @see CommentBase for transmitted @see Employee
+     *
+     * @param Employee $employee Related employee
+     * @return EmployeeComment[]
+     */
+    public function forEmployee(Employee $employee)
+    {
+        $pid = $employee->getGid();
+        if (!isset($this->cache['employee'][$pid]) || !isset($this->cache['employee'][$pid]['comments'])) {
+            $this->cache['employee'][$pid]['comments'] = $this->repository->findForEmployee($employee);
+        }
+        return $this->cache['employee'][$pid]['comments'];
+    }
+	
 	/**
 	 * Fetch amount of comments for transmitted @see Participation
 	 *
@@ -192,10 +220,10 @@ class CommentManager
 	public function forParticipation(Participation $participation)
 	{
 		$pid = $participation->getPid();
-		if (!isset($this->cache[$pid]) || !isset($this->cache[$pid]['comments'])) {
-			$this->cache[$pid]['comments'] = $this->repository->findForParticipation($participation);
+		if (!isset($this->cache['participation'][$pid]) || !isset($this->cache['participation'][$pid]['comments'])) {
+			$this->cache['participation'][$pid]['comments'] = $this->repository->findForParticipation($participation);
 		}
-		return $this->cache[$pid]['comments'];
+		return $this->cache['participation'][$pid]['comments'];
 	}
 
 	/**
@@ -221,11 +249,11 @@ class CommentManager
 		$pid           = $participation->getPid();
 		$aid           = $participant->getAid();
 
-		if (!isset($this->cache[$pid]) || !isset($this->cache[$pid]['participants'])) {
-			$this->cache[$pid]['participants'] = $this->repository->findForParticipantsOfParticipation($participation);
+		if (!isset($this->cache['participation'][$pid]) || !isset($this->cache['participation'][$pid]['participants'])) {
+			$this->cache['participation'][$pid]['participants'] = $this->repository->findForParticipantsOfParticipation($participation);
 		}
-		if (isset($this->cache[$pid]['participants'][$aid])) {
-			return $this->cache[$pid]['participants'][$aid];
+		if (isset($this->cache['participation'][$pid]['participants'][$aid])) {
+			return $this->cache['participation'][$pid]['participants'][$aid];
 		} else {
 			return [];
 		}
@@ -265,29 +293,37 @@ class CommentManager
                 break;
         }
     }
-
+    
     /**
      * Invalidate caches
      *
      * @param int|null $pid Related pid to clear. If not transmitted, complete cache is deleted
      * @param int|null $aid Related aid to clear. If not transmitted, comments of related $pid deleted
+     * @param int|null $gid Related gid to clear. If not transmitted
      */
-    public function invalidCache($pid = null, $aid = null)
+    public function invalidCache($pid = null, $aid = null, int $gid = null)
     {
+        if ($gid && isset($this->cache['employee'][$gid])) {
+            unset($this->cache['employee'][$gid]);
+            return;
+        }
         if ($pid) {
             if ($aid) {
-                if (isset($this->cache[$pid]) && isset($this->cache[$pid]['participants']) &&
-                    isset($this->cache[$pid]['participants'][$aid])
+                if (isset($this->cache['participation'][$pid]) &&
+                    isset($this->cache['participation'][$pid]['participants']) &&
+                    isset($this->cache['participation'][$pid]['participants'][$aid])
                 ) {
-                    unset($this->cache[$pid]['participants'][$aid]);
+                    unset($this->cache['participation'][$pid]['participants'][$aid]);
+                    return;
                 }
             } else {
-                if (isset($this->cache[$aid]) && isset($this->cache[$aid]['comments'])) {
-                    unset($this->cache[$aid]['comments']);
+                if (isset($this->cache['participation'][$aid]) &&
+                    isset($this->cache['participation'][$aid]['comments'])) {
+                    unset($this->cache['participation'][$aid]['comments']);
+                    return;
                 }
             }
-        } else {
-	        unset($this->cache);
         }
+        unset($this->cache);
     }
 }
