@@ -2,7 +2,7 @@
 
 {% block body_text %}
 {% autoescape false %}
-{% if participation.salution == 'Herr' %}
+{% if participation.salutation == 'Herr' %}
 Hallo Herr {{ participation.nameLast }}!
 {% else %}
 Hallo Frau  {{ participation.nameLast }}!
@@ -17,7 +17,7 @@ Ihre Anmeldung für die Veranstaltung "{{ event.title }}" ist eingegangen und wu
 Wir haben die von Ihnen angegebenen Anmeldedaten im Anschluss noch einmal aufgeführt. Sollte Ihnen noch ein Fehler auffallen, oder muss eine Korrektur vorgenommen werden, unterrichten Sie uns einfach darüber. Wir können die Daten dann anpassen.
 
 DATEN DER ELTERN:
-  Anrede: {{ participation.salution }}
+  Anrede: {{ participation.salutation }}
   Vorname: {{ participation.nameFirst }}
   Nachname: {{ participation.nameLast }}
   Telefonnummern: {% for phoneNumber in participation.phoneNumbers %}
@@ -60,7 +60,7 @@ Mit besten Grüßen,
 
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
-    {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
+    {% block title %}{% if participation.salutation == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
     {% block lead %}Ihre Anmeldung für die Veranstaltung <i>{{ event.title }}</i> ist eingegangen und wurde automatisch bestätigt.{% endblock %}
     {% block content %}{% if event.hasConfirmationMessage %}<p>{{ event.confirmationMessage }}</p>{% endif %}
 
@@ -76,7 +76,7 @@ Mit besten Grüßen,
             <tbody>
             <tr>
                 <td class="thead" style="padding-top: 4px;">Anrede</td>
-                <td style="padding-top: 4px;">{{ participation.salution }}</td>
+                <td style="padding-top: 4px;">{{ participation.salutation }}</td>
             </tr>
             <tr>
                 <td class="thead">Vorname</td>

@@ -51,10 +51,12 @@ class Participation implements EventRelatedEntity
     protected $event;
 
     /**
+     * Person Salutation - keeping incorrect name in order to not require rename of column
+     *
      * @ORM\Column(type="string", length=64, name="salution")
      * @Assert\NotBlank()
      */
-    protected $salution;
+    protected $salutation;
 
     /**
      * @ORM\Column(type="string", length=128, name="email")
@@ -188,27 +190,27 @@ class Participation implements EventRelatedEntity
     }
 
     /**
-     * Set salution
+     * Set salutation
      *
-     * @param string $parentSalution Salution
+     * @param string $parentSalutation Salutation
      *
      * @return Participation
      */
-    public function setSalution($parentSalution)
+    public function setSalutation($parentSalutation)
     {
-        $this->salution = $parentSalution;
+        $this->salutation = $parentSalutation;
 
         return $this;
     }
 
     /**
-     * Get salution
+     * Get salutation
      *
      * @return string
      */
-    public function getSalution()
+    public function getSalutation()
     {
-        return $this->salution;
+        return $this->salutation;
     }
 
     /**
@@ -558,7 +560,7 @@ class Participation implements EventRelatedEntity
         $participation->setAddressStreet($participationPrevious->getAddressStreet());
         $participation->setAddressZip($participationPrevious->getAddressZip());
         $participation->setEmail($participationPrevious->getEmail());
-        $participation->setSalution($participationPrevious->getSalution());
+        $participation->setSalutation($participationPrevious->getSalutation());
 
         /** @var PhoneNumber $numberPrevious */
         foreach ($participationPrevious->getPhoneNumbers() as $numberPrevious) {

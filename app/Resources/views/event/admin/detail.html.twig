@@ -48,6 +48,8 @@
                         </div>
                     {%- endif %}
                     {%- if is_granted('edit', event) -%}
+                        <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
+                            class="btn btn-default" title="Mitarbeiter verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">Mitarbeiter</span></a>
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_edit', {'eid': event.eid }) }}"
                                class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>

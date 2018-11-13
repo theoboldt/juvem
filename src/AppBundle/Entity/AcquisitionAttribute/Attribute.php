@@ -13,6 +13,7 @@ namespace AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -498,19 +499,32 @@ class Attribute
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function getUseAtEmployee(): bool
     {
         return $this->isUseAtEmployee();
     }
-
+    
     /**
+     * Determine if this field is used for @see Employee
+     *
      * @return bool
      */
     public function isUseAtEmployee(): bool
     {
         return $this->useAtEmployee;
+    }
+    
+    /**
+     * Determine if this field is used at @see Participation or @see Participant
+     *
+     * @return bool
+     */
+    public function isUseForParticipationsOrParticipants(): bool
+    {
+        return $this->getUseAtParticipation() || $this->getUseAtParticipant();
     }
 
     /**

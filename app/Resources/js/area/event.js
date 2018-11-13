@@ -127,7 +127,7 @@ $(function () {
                 content: $("#event_mail_content").val()
             },
             preview = $('*#mail-template iframe').contents(),
-            exampleSalution = 'Frau',
+            exampleSalutation = 'Frau',
             exampleLastName = 'Müller',
             exampleEventTitle = $('#mail-form').data('event-title');
 
@@ -135,7 +135,7 @@ $(function () {
             if (!value) {
                 return '';
             }
-            value = value.replace(/\{PARTICIPATION_SALUTION\}/g, exampleSalution);
+            value = value.replace(/\{PARTICIPATION_SALUTATION\}/g, exampleSalutation);
             value = value.replace(/\{PARTICIPATION_NAME_LAST\}/g, exampleLastName);
             value = value.replace(/\{EVENT_TITLE\}/g, exampleEventTitle);
 

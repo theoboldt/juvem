@@ -30,20 +30,22 @@ class EventRelatedVoter extends AbstractDecisionManagerAwareVoter
             [
                 EventVoter::PARTICIPANTS_READ,
                 EventVoter::PARTICIPANTS_EDIT,
+                EventVoter::EMPLOYEES_READ,
+                EventVoter::EMPLOYEES_EDIT,
             ]
         )) {
             return false;
         }
-
+        
         if (!$subject instanceof EventRelatedEntity
             || !$subject->getEvent()
         ) {
             return false;
         }
-
+        
         return true;
     }
-
+    
     /**
      * {@inheritdoc}
      */

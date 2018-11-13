@@ -23,6 +23,8 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
     const EDIT              = 'edit';
     const PARTICIPANTS_READ = 'participants_read';
     const PARTICIPANTS_EDIT = 'participants_edit';
+    const EMPLOYEES_READ    = 'employees_read';
+    const EMPLOYEES_EDIT    = 'employees_edit';
     const COMMENT_READ      = 'comment_read';
     const COMMENT_ADD       = 'comment_add';
 
@@ -38,6 +40,8 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
                 self::EDIT,
                 self::PARTICIPANTS_READ,
                 self::PARTICIPANTS_EDIT,
+                self::EMPLOYEES_READ,
+                self::EMPLOYEES_EDIT,
                 self::COMMENT_READ,
                 self::COMMENT_ADD,
             ]
@@ -90,8 +94,10 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
         switch ($attribute) {
             case self::READ:
             case self::PARTICIPANTS_READ:
+            case self::EMPLOYEES_READ:
                 return true;
             case self::EDIT:
+            case self::EMPLOYEES_EDIT:
                 return $userAssignment->isAllowedToEdit();
             case self::PARTICIPANTS_EDIT:
                 return $userAssignment->isAllowedToManageParticipants();

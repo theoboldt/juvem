@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\BankAccountType;
@@ -51,6 +52,13 @@ class Fillout
      * @var Participant
      */
     protected $participant;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Employee", inversedBy="acquisitionAttributeFillouts")
+     * @ORM\JoinColumn(name="gid", referencedColumnName="gid", onDelete="cascade", nullable=true)
+     * @var Employee
+     */
+    protected $employee;
 
     /**
      * @ORM\Column(type="string", length=255, name="value", nullable=true)
@@ -156,6 +164,35 @@ class Fillout
     {
         return $this->participant;
     }
+
+    /**
+     * Get employee this fillout is related to
+     *
+     * @return Employee
+     */
+    public function getEmployee()
+    {
+        return $this->employee;
+    }
+    
+    /**
+     * Set employee this fillout is related to
+     *
+     * Set employee this fillout is related to. Normally a fillout is only related to either a
+     * employee or an employee, not both
+     *
+     *
+     * @param Employee $employee
+     *
+     * @return Fillout
+     */
+    public function setEmployee(Employee $employee = null)
+    {
+        $this->employee = $employee;
+
+        return $this;
+    }
+
 
     /**
      * Set value of this fillout

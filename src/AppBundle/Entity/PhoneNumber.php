@@ -42,9 +42,15 @@ class PhoneNumber
 
     /**
      * @ORM\ManyToOne(targetEntity="Participation", inversedBy="phoneNumbers")
-     * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade", nullable=true)
      */
-    protected $participation;
+    protected $participation = null;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Employee", inversedBy="phoneNumbers")
+     * @ORM\JoinColumn(name="gid", referencedColumnName="gid", onDelete="cascade", nullable=true)
+     */
+    protected $employee = null;
 
     /**
      * Get number id
@@ -133,5 +139,38 @@ class PhoneNumber
     public function getParticipation()
     {
         return $this->participation;
+    }
+    
+    /**
+     * Set employee
+     *
+     * @param Employee $employee
+     *
+     * @return PhoneNumber
+     */
+    public function setEmployee(Employee $employee = null)
+    {
+        $this->employee = $employee;
+        $found          = false;
+        foreach ($employee->getPhoneNumbers() as $phoneNumber) {
+            if ($phoneNumber === $this) {
+                $found = true;
+            }
+        }
+        if (!$found) {
+            $employee->addPhoneNumber($this);
+        }
+        
+        return $this;
+    }
+
+    /**
+     * Get employee
+     *
+     * @return Employee
+     */
+    public function getEmployee()
+    {
+        return $this->employee;
     }
 }
