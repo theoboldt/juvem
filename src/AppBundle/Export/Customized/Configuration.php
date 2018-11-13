@@ -101,7 +101,7 @@ class Configuration implements ConfigurationInterface
                     ->info('Anmeldungsdaten')
                     ->children()
                         ->append($this->booleanNodeCreator('pid', 'PID (Eindeutige Anmeldungsnummer)'))
-                        ->append($this->booleanNodeCreator('salution', 'Anrede'))
+                        ->append($this->booleanNodeCreator('salutation', 'Anrede'))
                         ->append($this->booleanNodeCreator('nameFirst', 'Vorname (Eltern)'))
                         ->append($this->booleanNodeCreator('nameLast', 'Nachname (Eltern)'))
                         ->append($this->booleanNodeCreator('email', 'E-Mail Adresse'))

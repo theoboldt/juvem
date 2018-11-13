@@ -2,7 +2,7 @@
 
 {% block body_text %}
 {% autoescape false %}
-{% if participation.salution == 'Herr' %}
+{% if participation.salutation == 'Herr' %}
 Hallo Herr {{ participation.nameLast }}!
 {% else %}
 Hallo Frau  {{ participation.nameLast }}!
@@ -21,7 +21,7 @@ Mit besten Grüßen,
 
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
-    {% block title %}{% if participation.salution == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
+    {% block title %}{% if participation.salutation == 'Herr' %}Hallo Herr{% else %}Hallo Frau{% endif %} {{ participation.nameLast }}!{% endblock %}
     {% block content %}<p>Die Anmeldung von {{ participation|participantsgrouped() }} bei der Veranstaltung <i>{{ event.title }}</i> wurde soeben bestätigt. Wir freuen uns schon auf den {{ event.getStartDate()|date('d.m.Y') }}!</p>{% if event.hasConfirmationMessage %}<p>{{ event.confirmationMessage }}</p>{% endif %}
 {% endblock %}
 {% endembed %}

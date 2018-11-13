@@ -216,11 +216,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
         $configParticipation = $config['participation'];
 
-        if (self::issetAndTrue($configParticipation, 'salution')) {
-            $column = new EntityColumn('participation_salution', 'Anrede (Eltern)', 'participation');
+        if (self::issetAndTrue($configParticipation, 'salutation')) {
+            $column = new EntityColumn('participation_salutation', 'Anrede (Eltern)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
-                    return $value->getSalution();
+                    return $value->getSalutation();
                 }
             );
             $this->addColumn($column);

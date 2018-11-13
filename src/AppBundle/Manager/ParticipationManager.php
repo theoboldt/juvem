@@ -156,7 +156,7 @@ class ParticipationManager extends AbstractMailerAwareManager
             foreach ($dataBoth as $type => &$contentList) {
                 $content = null;
                 foreach ($contentList as $area => &$content) {
-                    $content = str_replace('{PARTICIPATION_SALUTION}', $participation->getSalution(), $content);
+                    $content = str_replace('{PARTICIPATION_SALUTATION}', $participation->getSalutation(), $content);
                     $content = str_replace('{PARTICIPATION_NAME_LAST}', $participation->getNameLast(), $content);
                 }
                 unset($content);

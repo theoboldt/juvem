@@ -45,7 +45,7 @@ class ParticipationBaseType extends AbstractType
 
         $builder
             ->add(
-                'salution',
+                'salutation',
                 ChoiceType::class,
                 [
                     'label'    => 'Anrede',
