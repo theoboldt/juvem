@@ -110,5 +110,17 @@ class BankAccountFilloutValue extends FilloutValue
         return sprintf('BIC: %s, IBAN: %s, Kontoinhaber: %s', $this->bic, $this->getIban(true), $this->owner);
     }
 
-
+    /**
+     * Get json decoded value as array
+     *
+     * @return array
+     */
+    public function getValueAsArray(): array
+    {
+        return [
+            'bankAccountBic'   => $this->bic,
+            'bankAccountIban'  => $this->iban,
+            'bankAccountOwner' => $this->owner,
+        ];
+    }
 }

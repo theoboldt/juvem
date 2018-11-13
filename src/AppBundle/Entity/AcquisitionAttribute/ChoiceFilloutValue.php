@@ -12,7 +12,7 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
-class ChoiceFilloutValue extends FilloutValue
+class ChoiceFilloutValue extends FilloutValue implements JsonStoredValueInterface
 {
     /**
      * Selected choices
@@ -93,4 +93,13 @@ class ChoiceFilloutValue extends FilloutValue
     }
 
 
+    /**
+     * Get json decoded value as array
+     *
+     * @return array
+     */
+    public function getValueAsArray(): array
+    {
+        return $this->value;
+    }
 }
