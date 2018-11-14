@@ -108,7 +108,7 @@ class ParticipationBaseType extends AbstractType
                 if (isset($options['data']) && $options['data'] instanceof Participation) {
                     /** @var Fillout $fillout */
                     $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
-                    $attributeOptions['data'] = $fillout->getValue();
+                    $attributeOptions['data'] = $fillout->getValue()->getFormValue();
                 }
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
