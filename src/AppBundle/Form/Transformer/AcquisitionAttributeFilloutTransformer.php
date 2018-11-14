@@ -11,7 +11,7 @@
 namespace AppBundle\Form\Transformer;
 
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\JsonStoredValueInterface;
+use AppBundle\Entity\AcquisitionAttribute\FilloutValue;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class AcquisitionAttributeFilloutTransformer implements DataTransformerInterface
@@ -20,6 +20,9 @@ class AcquisitionAttributeFilloutTransformer implements DataTransformerInterface
     {
         if ($fillout instanceof Fillout) {
             return $fillout->getValue()->getFormValue();
+        }
+        if ($fillout instanceof FilloutValue) {
+            return $fillout->getFormValue();
         }
         return $fillout;
     }

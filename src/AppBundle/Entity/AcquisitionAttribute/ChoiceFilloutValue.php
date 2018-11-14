@@ -104,7 +104,12 @@ class ChoiceFilloutValue extends FilloutValue
      */
     public function getFormValue()
     {
-       return $this->value;
+        if (!$this->attribute->getFieldTypeChoiceType() && is_array($this->value)) {
+            //this is a single selection, but multi selection is stored
+            return reset($this->value);
+
+        }
+        return $this->value;
     }
 
 }
