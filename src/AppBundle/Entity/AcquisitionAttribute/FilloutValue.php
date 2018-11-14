@@ -86,4 +86,14 @@ class FilloutValue
         return (string)$this->rawValue;
     }
 
+    /**
+     * Get value in form representation
+     *
+     * @return null|string
+     */
+    public function getFormValue()
+    {
+        return $this->rawValue;
+    }
+
 }

@@ -12,6 +12,7 @@ namespace AppBundle\Form;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
@@ -132,6 +133,7 @@ class ParticipantType extends AbstractType
 
             try {
                 if (isset($options['data']) && $options['data'] instanceof Participant) {
+                    /** @var Fillout $fillout */
                     $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
                     $attributeOptions['data'] = $fillout->getValue();
                 }

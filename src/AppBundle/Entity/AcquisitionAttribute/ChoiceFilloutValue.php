@@ -12,14 +12,14 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
-class ChoiceFilloutValue extends FilloutValue implements JsonStoredValueInterface
+class ChoiceFilloutValue extends FilloutValue
 {
     /**
      * Selected choices
      *
-     * @var array|int[]
+     * @var array|int[]|int
      */
-    private $value = [];
+    private $value;
 
     /**
      * FilloutValue constructor.
@@ -29,8 +29,13 @@ class ChoiceFilloutValue extends FilloutValue implements JsonStoredValueInterfac
      */
     public function __construct(Attribute $attribute, string $rawValue = null)
     {
-        if ($attribute->getFieldTypeChoiceType() && $rawValue) {
-            $this->value = json_decode($rawValue, true);
+        if ($attribute->getFieldTypeChoiceType()) {
+            $this->value = [];
+            if ($rawValue) {
+                $this->value = json_decode($rawValue, true);
+            }
+        } else {
+            $this->value = $rawValue;
         }
 
         parent::__construct($attribute, $rawValue);
@@ -92,14 +97,14 @@ class ChoiceFilloutValue extends FilloutValue implements JsonStoredValueInterfac
         return implode(', ', $values);
     }
 
-
     /**
-     * Get json decoded value as array
+     * Get value in form representation
      *
-     * @return array
+     * @return null|string
      */
-    public function getValueAsArray(): array
+    public function getFormValue()
     {
-        return $this->value;
+       return $this->value;
     }
+
 }

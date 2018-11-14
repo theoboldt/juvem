@@ -369,7 +369,7 @@ class Attribute
             $options['placeholder'] = 'keine Option gewählt';
             $options['choices']     = [];
             /** @var AttributeChoiceOption $choice */
-            foreach ($this->choiceOptions as $choice) {
+            foreach ($this->choiceOptions->getIterator() as $choice) {
                 if ($choice->getDeletedAt() === null) {
                     $options['choices'][$choice->getFormTitle()] = $choice->getId();
                 }
@@ -506,7 +506,7 @@ class Attribute
     {
         return $this->isUseAtEmployee();
     }
-    
+
     /**
      * Determine if this field is used for @see Employee
      *
@@ -516,7 +516,7 @@ class Attribute
     {
         return $this->useAtEmployee;
     }
-    
+
     /**
      * Determine if this field is used at @see Participation or @see Participant
      *

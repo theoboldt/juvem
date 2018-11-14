@@ -19,12 +19,7 @@ class AcquisitionAttributeFilloutTransformer implements DataTransformerInterface
     public function transform($fillout)
     {
         if ($fillout instanceof Fillout) {
-            $value = $fillout->getValue();
-            if ($value instanceof JsonStoredValueInterface) {
-                return $value->getValueAsArray();
-            } else {
-                return $fillout->getValue()->getTextualValue();
-            }
+            return $fillout->getValue()->getFormValue();
         }
         return $fillout;
     }

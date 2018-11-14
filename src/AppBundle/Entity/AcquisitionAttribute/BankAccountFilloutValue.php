@@ -115,7 +115,7 @@ class BankAccountFilloutValue extends FilloutValue
      *
      * @return array
      */
-    public function getValueAsArray(): array
+    public function getFormValue(): array
     {
         return [
             'bankAccountBic'   => $this->bic,
