@@ -95,6 +95,13 @@ class AdminSingleController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($participation);
             $em->flush();
+            return $this->redirectToRoute(
+                'event_participation_detail',
+                [
+                    'eid' => $event->getEid(),
+                    'pid' => $participation->getPid()
+                ]
+            );
         }
 
         $statusFormatter = ParticipantStatus::formatter();
