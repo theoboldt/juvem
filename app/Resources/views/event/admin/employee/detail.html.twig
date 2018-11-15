@@ -1,7 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mitarbeiter ({{ event.title }}){% endblock %}
-
+{% block title -%}
+    {%- if employee.salutation == 'Herr' -%}
+        Mitarbeiter
+    {%- elseif employee.salutation == 'Frau' -%}
+        Mitarbeiterin
+    {%- else -%}
+        Mitarbeiter/In
+    {%- endif %} ({{ event.title }})
+{% endblock %}
 {% block body %}
     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
     <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
@@ -27,6 +34,56 @@
         </div>
     </div>
     {% endif -%}
+    <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel">
+        <div class="modal-dialog" role="document">
+            {{ form_start(formAction) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                </div>
+            </div>
+            {{ form_end(formAction) }}
+        </div>
+    </div>
+    <div class="modal fade" id="dialogModalAssignUser" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabelAssignUser">
+        <div class="modal-dialog" role="document">
+            {{ form_start(formAssignUser) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalLabelAssignUser">Benutzerkonto verknüpfen</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_widget(formAssignUser.assignedUser) }}
+                            <p class="help-block">Wenn der Mitarbeiter über ein Benutzerkonto verfügt, kann es hier
+                                verknüpft verden. Es können nur Benutzer verknüpft werden, die die Rolle
+                                <i>{{ constant('AppBundle\\Entity\\User::ROLE_EMPLOYEE_LABEL') }}</i> zugewiesen haben.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
+                    </button>
+                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                </div>
+            </div>
+            {{ form_end(formAssignUser) }}
+        </div>
+    </div>
     <div class="container participation-panels collapse-breadcrumb-header">
         <div class="row">
             <div class="col-xs-12">
@@ -47,7 +104,6 @@
             </div>
             <div class="col-xs-12 hidden-print">
                 {% if is_granted('employees_edit', event) -%}
-                {#
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
                         {% if employee.deletedAt %}
@@ -63,7 +119,6 @@
                         {% endif %}
                     </div>
                 </div>
-                #}
                 {% endif -%}
             </div>
         </div>
@@ -80,7 +135,6 @@
                             <div class="col-xs-7">
                                 <h3 class="panel-title">Daten</h3>
                             </div>
-                            {#
                             <div class="col-xs-5 text-right hidden-print">
                                 {% if is_granted('employees_edit', event) -%}
                                 <a href="{{ path('admin_employee_edit_phonenumbers', {'eid': event.eid, 'gid': employee.gid}) }}"
@@ -102,7 +156,6 @@
                                 </button>
                                 {% endif -%}
                             </div>
-                            #}
                         </div>
                     </div>
                     <div class="panel-body">
@@ -144,7 +197,7 @@
                                 <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
                                     data-placement="right">
                                     {%- if not fillout.attribute.isPublic -%}
-                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Datenerfassung angezeigt') }}
                                     {% endif %}
                                     {{ fillout.attribute.formTitle }}
                                 </dt>
@@ -166,7 +219,19 @@
                                         title="Benutzerkonto verknüpfen">{{ 'pencil'|glyph }}</button>
                                 {% endif -%}
                             </dd>
-
+                            <dt title="Mitarbeit bei anderen Veranstaltungen" data-toggle="tooltip"
+                                data-placement="right">Andere Veranstaltungen
+                            </dt>
+                            <dd>
+                                {% if similarEmployees|length == 0 %}
+                                    <i>(keine Mitarbeit bei anderen Veranstaltungen)</i>
+                                {% endif %}
+                                {% for similarEmployee in similarEmployees %}
+                                    <a data-toggle="tooltip"
+                                       title="Veranstaltung: {{ similarEmployee.event.startDate|date("d.m.Y") }}"
+                                       href="{{ path('admin_employee_detail', {eid: similarEmployee.event.eid, gid: similarEmployee.gid}) }}">{{ similarEmployee.event.title }} ({{ similarEmployee.event.startDate|date("Y") }})</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
+                                {% endfor %}
+                            </dd>
                         </dl>
                     </div>
                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}

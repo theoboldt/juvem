@@ -15,9 +15,12 @@ use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\JsonResponse;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -99,7 +102,6 @@ class EmployeeController extends Controller
         return new JsonResponse($result);
     }
     
-    
     /**
      * Page for list of employees of a single event
      *
@@ -108,16 +110,64 @@ class EmployeeController extends Controller
      * @ParamConverter("employee", class="AppBundle:Employee", options={"id" = "gid"})
      * @Security("is_granted('employees_read', event)")
      */
-    public function detailAction(Event $event, Employee $employee)
+    public function detailAction(Event $event, Employee $employee, Request $request)
     {
         $commentManager = $this->container->get('app.comment_manager');
+        
+        $formAction = $this->createFormBuilder()
+                           ->add('action', HiddenType::class)
+                           ->getForm();
+        $formUser   = $this->createForm(EmployeeAssignUserType::class, $employee);
+        
+        $employeeChanged = false;
+        $formAction->handleRequest($request);
+        if ($formAction->isSubmitted() && $formAction->isValid()) {
+            $action = $formAction->get('action')->getData();
+            switch ($action) {
+                case 'delete':
+                    $employee->setDeletedAt(new \DateTime());
+                    break;
+                case 'restore':
+                    $employee->setDeletedAt(null);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown action transmitted');
+            }
+            $employeeChanged = true;
+        } else {
+            $formUser->handleRequest($request);
+            if ($formUser->isSubmitted() && $formUser->isValid()) {
+                $employeeChanged = true;
+                
+            }
+        }
+        
+        if ($employeeChanged) {
+            $this->denyAccessUnlessGranted('employees_edit', $event);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($employee);
+            $em->flush();
+            return $this->redirectToRoute(
+                'admin_employee_detail',
+                [
+                    'eid' => $event->getEid(),
+                    'gid' => $employee->getGid()
+                ]
+            );
+        }
+        
+        $employeeRepository = $this->getDoctrine()->getRepository(Employee::class);
+        $similarEmployees   = $employeeRepository->relatedEmployees($employee);
         
         return $this->render(
             'event/admin/employee/detail.html.twig',
             [
-                'commentManager' => $commentManager,
-                'employee'       => $employee,
-                'event'          => $event,
+                'commentManager'   => $commentManager,
+                'employee'         => $employee,
+                'event'            => $event,
+                'similarEmployees' => $similarEmployees,
+                'formAction'       => $formAction->createView(),
+                'formAssignUser'   => $formUser->createView()
             ]
         );
     }
@@ -132,11 +182,13 @@ class EmployeeController extends Controller
      */
     public function editAction(Event $event, Employee $employee)
     {
+        
         return $this->render(
-            'event/admin/employee/detail.html.twig',
+            'event/admin/employee/edit.html.twig',
             [
+                'form'     => null,
                 'employee' => $employee,
-                'event'    => $event,
+                'event'    => $event
             ]
         );
     }

@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Daten von {{ employee.fullname }} bearbeiten ({{ event.title }})
+{% endblock %}
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Anmeldungsdaten bearbeiten'} %}
+        {% block breadcrumb %}
+                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter</a></li>
+                <li><a href="{{ path('admin_employee_detail', {'eid': event.eid, 'gid': employee.gid }) }}">{{ employee.fullname }}</a></li>
+                <li class="active">Daten bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        {{ form_row(form.salutation) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.nameFirst) }}
+                    </div>
+                    <div class="col-xs-12">
+                        {{ form_row(form.nameLast) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.addressStreet) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3">
+                        {{ form_row(form.addressZip) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-9">
+                        {{ form_row(form.addressCity) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for fieldName,formField in form %}
+                {% if fieldName starts with 'acq_field_' %}
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group acquisition-attribute">
+                            {{ form_label(formField) }}
+                            {%- set acquisitionField = acquisitionFields[fieldName] -%}
+                            {% if not acquisitionField.isPublic %}
+                                {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Datenerfassung angezeigt') }}
+                            {%- endif -%}
+                            {% if acquisitionField.formDescription %}
+                                <button type="button" class="btn btn-default btn-xs btn-round"
+                                        data-toggle="popover"
+                                        data-content="{{ acquisitionField.formDescription }}">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </button>
+                            {% endif %}
+                            {{ form_widget(formField) }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <input type="submit" class="btn btn-primary navbar-btn" value="Änderungen speichern"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}

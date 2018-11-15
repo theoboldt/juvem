@@ -49,4 +49,37 @@ class EmployeeRepository extends EntityRepository
         
     }
     
+    /**
+     * Find related participants by comparing birthday (exact) and name (fuzzy)
+     *
+     * @param Employee $baseEmployee Employee for compare
+     * @return array|Employee[]         Related participants
+     */
+    public function relatedEmployees(Employee $baseEmployee)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('e', 'g')
+           ->from(Employee::class, 'g')
+           ->innerJoin('g.event', 'e')
+           ->orderBy('e.startDate', 'DESC');
+        $query = $qb->getQuery();
+        
+        $gid       = $baseEmployee->getGid();
+        $firstName = trim($baseEmployee->getNameFirst());
+        $lastName  = trim($baseEmployee->getNameLast());
+        
+        $result = [];
+        
+        /** @var Employee $participant */
+        foreach ($query->execute() as $participant) {
+            if ($gid != $participant->getGid()
+                && levenshtein($firstName, trim($participant->getNameFirst())) < 5
+                && levenshtein($lastName, trim($participant->getNameLast())) < 5
+            ) {
+                $result[] = $participant;
+            }
+        }
+        
+        return $result;
+    }
 }
