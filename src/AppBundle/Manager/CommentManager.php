@@ -102,6 +102,16 @@ class CommentManager
                 $comment = new ParticipantComment();
                 $comment->setParticipant($relatedEntity);
                 break;
+            case EmployeeComment::class:
+                $relatedEntity = $this->doctrine->getRepository(Employee::class)->findOneBy(
+                    ['gid' => $relatedId]
+                );
+                if (!$relatedEntity) {
+                    throw new \InvalidArgumentException('Related participant was not found');
+                }
+                $comment = new EmployeeComment();
+                $comment->setEmployee($relatedEntity);
+                break;
             default:
                 throw new \InvalidArgumentException('Unknown property class transmitted');
                 break;
@@ -287,6 +297,10 @@ class CommentManager
             case ParticipantComment::class:
                 /** @var Participant $relatedEntity */
                 $this->invalidCache($relatedEntity->getParticipation()->getPid(), $relatedEntity->getAid());
+                break;
+            case EmployeeComment::class:
+                /** @var Employee $relatedEntity */
+                $this->invalidCache(null, null, $relatedEntity->getGid());
                 break;
             default:
                 throw new \InvalidArgumentException('Unknown property class transmitted');

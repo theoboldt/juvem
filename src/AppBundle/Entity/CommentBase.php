@@ -95,13 +95,17 @@ abstract class CommentBase
     /**
      * Get related object
      *
-     * @return string
+     * @return object
      */
     public function getRelated()
     {
         if (preg_match('/(?:\\\\)*([^\\\\]+)Comment$/', $this->getBaseClassName(), $classData)) {
             $relatedAcessor = 'get'.$classData[1];
-            $comment      = new \ReflectionClass(get_class($this));
+            try {
+                $comment = new \ReflectionClass(get_class($this));
+            } catch (\ReflectionException $e) {
+                throw new \InvalidArgumentException('Unexpected class occurred');
+            }
             if ($comment->hasMethod($relatedAcessor)) {
                 return $this->$relatedAcessor();
             } else {

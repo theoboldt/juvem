@@ -10,6 +10,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\CommentBase;
+use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\ParticipationComment;
 use AppBundle\InvalidTokenHttpException;
@@ -49,6 +51,7 @@ class CommentController extends Controller
         $comment = null;
 
         if ($cid) {
+            /** @var CommentBase $comment */
             $comment = $manager->findByCidAndType($cid, $property);
             if (!$comment) {
                 throw new NotFoundHttpException('Comment with related data not found');
@@ -71,6 +74,9 @@ class CommentController extends Controller
                 break;
             case ParticipantComment::class:
                 $list = $manager->forParticipant($relatedEntity);
+                break;
+            case EmployeeComment::class:
+                $list = $manager->forEmployee($relatedEntity);
                 break;
             default:
                 throw new \InvalidArgumentException('Unknown property class transmitted');
