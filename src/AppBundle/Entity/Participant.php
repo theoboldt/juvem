@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Participant implements EventRelatedEntity
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait;
+    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 
     const TYPE_GENDER_MALE   = 1;
     const TYPE_GENDER_FEMALE = 2;
@@ -234,66 +234,6 @@ class Participant implements EventRelatedEntity
         }
 
         return $this->food;
-    }
-
-    /**
-     * Set birthday
-     *
-     * @param \DateTime $birthday
-     *
-     * @return Participant
-     */
-    public function setBirthday($birthday)
-    {
-        $this->birthday = $birthday;
-
-        return $this;
-    }
-
-    /**
-     * Get birthday
-     *
-     * @return \DateTime
-     */
-    public function getBirthday()
-    {
-        return $this->birthday;
-    }
-
-    /**
-     * Get age of participant at the related event
-     *
-     * @param int|null $precision If you want the result to be rounded with round(), specify precision here
-     * @return float              Age in years
-     */
-    public function getAgeAtEvent($precision = null): float
-    {
-        $event = $this->getEvent();
-        return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
-    }
-
-    /**
-     * Get age of participant at the related event
-     *
-     * @return int Amount of years of life at event
-     */
-    public function getYearsOfLifeAtEvent(): int
-    {
-        $event = $this->getEvent();
-        return EventRepository::yearsOfLife($this->getBirthday(), $event->getStartDate());
-    }
-
-    /**
-     * Check if participant has birthday at related event
-     *
-     * @return bool True if so
-     */
-    public function hasBirthdayAtEvent()
-    {
-        $event = $this->getEvent();
-        return EventRepository::hasBirthdayInTimespan(
-            $this->getBirthday(), $event->getStartDate(), $event->getEndDate()
-        );
     }
 
     /**
