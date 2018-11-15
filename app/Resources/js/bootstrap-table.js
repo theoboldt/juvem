@@ -161,4 +161,10 @@ $(function () {
         openInNewTabOnMetaKey('attendance/' + row.tid);
     });
 
+    /**
+     * EMPLOYEE: A event's employee table
+     */
+    $('#employeeListTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.gid);
+    });
 });
