@@ -41,6 +41,8 @@ class User extends BaseUser
     const ROLE_ADMIN_NEWSLETTER       = 'ROLE_ADMIN_NEWSLETTER';
     const ROLE_ADMIN_NEWSLETTER_LABEL = 'Newsletterverwaltung';
 
+    const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE_LABEL';
+    const ROLE_EMPLOYEE_LABEL = 'Mitarbeiter';
 
     /**
      * @ORM\Id

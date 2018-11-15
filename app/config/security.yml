@@ -12,6 +12,7 @@ security:
         ROLE_ADMIN_EVENT_GLOBAL: ROLE_ADMIN_EVENT
         ROLE_ADMIN_USER: ~
         ROLE_ADMIN_NEWSLETTER: ~
+        ROLE_EMPLOYEE: ~
 
     providers:
         fos_userbundle:
