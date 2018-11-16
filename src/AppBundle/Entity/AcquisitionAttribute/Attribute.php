@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -36,7 +37,8 @@ class Attribute
     const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
     const LABEL_FIELD_CHOICE   = 'Auswahl';
     const LABEL_FIELD_BANK     = 'Bankverbindung';
-
+    const LABEL_FIELD_NUMBER   = 'Eingabefeld (Ganzzahl)';
+    
     /**
      * @ORM\Column(type="integer", name="bid")
      * @ORM\Id
@@ -325,6 +327,8 @@ class Attribute
                     return self::LABEL_FIELD_TEXTAREA;
                 case FormChoiceType::class;
                     return self::LABEL_FIELD_CHOICE;
+                case FormNumberType::class;
+                    return self::LABEL_FIELD_NUMBER;
                 case \AppBundle\Form\BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
             }
