@@ -17,6 +17,8 @@ use AppBundle\Form\BankAccountType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -205,9 +207,16 @@ class Fillout
     {
         if (is_array($value)) {
             $value = json_encode($value);
+        } elseif ($value instanceof \DateTimeInterface) {
+            if ($this->attribute->getFieldType() === DateType::class) {
+                $format = 'Y-m-d';
+            } else {
+                $format = 'Y-m-d h:i:s';
+            }
+            $value = $value->format($format);
         }
         $this->value = $value;
-
+    
         return $this;
     }
 
@@ -232,6 +241,8 @@ class Fillout
                 return new ChoiceFilloutValue($this->attribute, $this->value);
             case BankAccountType::class:
                 return new BankAccountFilloutValue($this->attribute, $this->value);
+            case DateType::class:
+                return new DateFilloutValue($this->attribute, $this->value);
             default:
                 return new FilloutValue($this->attribute, $this->value);
         }
@@ -280,7 +291,7 @@ class Fillout
     public function getTextualValue(string $choicePresentation = AttributeChoiceOption::PRESENTATION_FORM_TITLE) {
         $value = $this->getValue();
         if ($value instanceof ChoiceFilloutValue) {
-        return $value->getTextualValue($choicePresentation);
+            return $value->getTextualValue($choicePresentation);
 
         } else {
             return $value->getTextualValue();

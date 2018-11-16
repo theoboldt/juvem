@@ -20,6 +20,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -36,6 +38,8 @@ class Attribute
     const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
     const LABEL_FIELD_CHOICE   = 'Auswahl';
+    const LABEL_FIELD_DATE     = 'Datum';
+    const LABEL_FIELD_DATE_TIME     = 'Datum und Uhrzeit';
     const LABEL_FIELD_BANK     = 'Bankverbindung';
     const LABEL_FIELD_NUMBER   = 'Eingabefeld (Ganzzahl)';
     
@@ -329,6 +333,10 @@ class Attribute
                     return self::LABEL_FIELD_CHOICE;
                 case FormNumberType::class;
                     return self::LABEL_FIELD_NUMBER;
+                case FormDateType::class:
+                    return self::LABEL_FIELD_DATE;
+                case FormDateTimeType::class:
+                    return self::LABEL_FIELD_DATE_TIME;
                 case \AppBundle\Form\BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
             }
@@ -368,7 +376,7 @@ class Attribute
         $options['label']    = $this->getFormTitle();
         $options['required'] = $this->isRequired();
         $options['mapped']   = true;
-
+    
         if ($this->getFieldType() == FormChoiceType::class) {
             $options['placeholder'] = 'keine Option gewählt';
             $options['choices']     = [];
@@ -378,6 +386,9 @@ class Attribute
                     $options['choices'][$choice->getFormTitle()] = $choice->getId();
                 }
             }
+        } elseif ($this->getFieldType() === FormDateType::class) {
+            $options['years']  = range(Date('Y') - 100, Date('Y') + 1);
+            $options['format'] = 'dd.MM.yyyy';
         }
 
         return $options;
