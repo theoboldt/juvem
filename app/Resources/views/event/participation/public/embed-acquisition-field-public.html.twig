@@ -1,19 +1,11 @@
-{% if acquisitionField.fieldType == 'Symfony\\Component\\Form\\Extension\\Core\\Type\\NumberType' %}
-<div class="row">
-    <div class="col-xs-12 col-sm-4 col-md-3">
-{% endif %}
-        <div class="form-group acquisition-attribute {% if formField.vars.errors|length %}has-error{% endif %} field-{{ acquisitionField.fieldType|replace({"\\": '-'})|lower }}">
-            {{ form_label(formField) }}
-            {% if not acquisitionField.isPublic %}
-                {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-            {%- endif -%}
-            {%- if acquisitionField.formDescription -%}
-                <p class="help-block">{{ acquisitionField.formDescription }}</p>
-            {%- endif -%}
-            {{ form_widget(formField) }}
-            {{ form_errors(formField) }}
-        </div>
-{% if acquisitionField.fieldType == 'Symfony\\Component\\Form\\Extension\\Core\\Type\\NumberType' %}
-    </div>
+<div class="form-group acquisition-attribute {% if formField.vars.errors|length %}has-error{% endif %} field-{{ acquisitionField.fieldType|replace({"\\": '-'})|lower }}">
+    {{ form_label(formField) }}
+    {% if not acquisitionField.isPublic %}
+        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+    {%- endif -%}
+    {%- if acquisitionField.formDescription -%}
+        <p class="help-block">{{ acquisitionField.formDescription }}</p>
+    {%- endif -%}
+    {{ form_widget(formField) }}
+    {{ form_errors(formField) }}
 </div>
-{% endif %}
