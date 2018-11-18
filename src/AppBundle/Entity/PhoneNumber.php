@@ -45,7 +45,7 @@ class PhoneNumber
      * @ORM\JoinColumn(name="pid", referencedColumnName="pid", onDelete="cascade", nullable=true)
      */
     protected $participation = null;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Employee", inversedBy="phoneNumbers")
      * @ORM\JoinColumn(name="gid", referencedColumnName="gid", onDelete="cascade", nullable=true)
@@ -140,7 +140,7 @@ class PhoneNumber
     {
         return $this->participation;
     }
-    
+
     /**
      * Set employee
      *
@@ -160,7 +160,7 @@ class PhoneNumber
         if (!$found) {
             $employee->addPhoneNumber($this);
         }
-        
+
         return $this;
     }
 

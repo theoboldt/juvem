@@ -11,11 +11,8 @@
 namespace AppBundle\Form;
 
 use AppBundle\BitMask\ParticipantFood;
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use AppBundle\Form\Transformer\FoodTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -28,6 +25,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantType extends AbstractType
 {
+   use AcquisitionAttributeIncludingTypeTrait;
+
     const PARTICIPATION_FIELD = 'participation';
 
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
@@ -120,33 +119,12 @@ class ParticipantType extends AbstractType
         $attributes           = $event->getAcquisitionAttributes(
             false, true, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
         );
-        $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
-        /** @var Attribute $attribute */
-        foreach ($attributes as $attribute) {
-            $bid = $attribute->getBid();
-
-            $attributeOptions = $attribute->getFieldOptions();
-            if ($attribute->getFieldTypeChoiceType()) {
-                $attributeOptions['empty_data'] = [];
-            }
-
-            try {
-                if (isset($options['data']) && $options['data'] instanceof Participant) {
-                    /** @var Fillout $fillout */
-                    $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
-                    $attributeOptions['data'] = $fillout->getValue()->getFormValue();
-                }
-            } catch (\OutOfBoundsException $e) {
-                //intentionally left empty
-            }
-            $builder->add(
-                $attribute->getName(),
-                $attribute->getFieldType(),
-                array_merge($attributeOptions, $attribute->getFieldOptions())
-            );
-            $builder->get($attribute->getName())->addModelTransformer($attributeTransformer);
-        }
+        $this->addAcquisitionAttributesToBuilder(
+            $builder,
+            $attributes,
+            isset($options['data']) ? $options['data'] : null
+        );
 
         $builder->get('food')->addModelTransformer(new FoodTransformer());
     }

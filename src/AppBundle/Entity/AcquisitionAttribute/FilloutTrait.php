@@ -21,7 +21,7 @@ trait FilloutTrait
     /**
      * Contains the participants assigned to this participation
      *
-     * @var Fillout[]|array
+     * @var \Doctrine\Common\Collections\Collection|Fillout[]
      */
     protected $acquisitionAttributeFillouts;
 
@@ -32,7 +32,7 @@ trait FilloutTrait
      */
     public function removeFillout(Fillout $fillout)
     {
-        $this->fillouts->removeElement($fillout);
+        $this->acquisitionAttributeFillouts->removeElement($fillout);
     }
 
     /**
@@ -42,8 +42,7 @@ trait FilloutTrait
      *
      * @return Participation|Participant|FilloutTrait
      */
-    public function addAcquisitionAttributeFillout(Fillout $acquisitionAttributeFillout
-    )
+    public function addAcquisitionAttributeFillout(Fillout $acquisitionAttributeFillout)
     {
         $this->acquisitionAttributeFillouts[] = $acquisitionAttributeFillout;
 

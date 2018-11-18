@@ -10,10 +10,7 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -24,6 +21,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipationBaseType extends AbstractType
 {
+    use AcquisitionAttributeIncludingTypeTrait;
 
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
@@ -93,35 +91,12 @@ class ParticipationBaseType extends AbstractType
         $attributes           = $event->getAcquisitionAttributes(
             true, false, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
         );
-        $attributeTransformer = new AcquisitionAttributeFilloutTransformer();
 
-        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
-        foreach ($attributes as $attribute) {
-            $bid              = $attribute->getBid();
-
-            $attributeOptions = $attribute->getFieldOptions();
-            if ($attribute->getFieldTypeChoiceType()) {
-                $attributeOptions['empty_data'] = [];
-            }
-
-            try {
-                if (isset($options['data']) && $options['data'] instanceof Participation) {
-                    /** @var Fillout $fillout */
-                    $fillout                  = $options['data']->getAcquisitionAttributeFillout($bid);
-                    $attributeOptions['data'] = $fillout->getValue()->getFormValue();
-                }
-            } catch (\OutOfBoundsException $e) {
-                //intentionally left empty
-            }
-
-            $builder->add(
-                $attribute->getName(),
-                $attribute->getFieldType(),
-                array_merge($attributeOptions, $attribute->getFieldOptions())
-            );
-            $builder->get($attribute->getName())->addModelTransformer($attributeTransformer);
-        }
-
+        $this->addAcquisitionAttributesToBuilder(
+            $builder,
+            $attributes,
+            isset($options['data']) ? $options['data'] : null
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)
