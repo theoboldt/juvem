@@ -33,14 +33,14 @@ class Employee implements EventRelatedEntity
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
-    
+
     /**
      * @ORM\Column(type="integer", name="gid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $gid;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="employees", cascade={"all"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
@@ -48,33 +48,33 @@ class Employee implements EventRelatedEntity
      * @var Event
      */
     protected $event;
-    
+
     /**
      * @ORM\Column(type="string", length=64, name="salutation")
      * @Assert\NotBlank()
      */
     protected $salutation;
-    
+
     /**
      * @ORM\Column(type="string", length=128, name="email")
      * @Assert\NotBlank()
      */
     protected $email;
-    
+
     /**
      * Contains the phone numbers assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"all"}, mappedBy="employee")
      */
     protected $phoneNumbers;
-    
+
     /**
      * Contains the comments assigned
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\EmployeeComment", cascade={"all"}, mappedBy="employee")
      */
     protected $comments;
-    
+
     /**
      * Contains the participants assigned to this participation
      *
@@ -82,26 +82,29 @@ class Employee implements EventRelatedEntity
      *     cascade={"all"}, mappedBy="employee")
      */
     protected $acquisitionAttributeFillouts;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedParticipations")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
      */
     protected $assignedUser;
-    
+
     /**
      * Employee constructor.
+     *
+     * @param Event|null $event Related event
      */
-    public function __construct()
+    public function __construct(Event $event = null)
     {
         $this->acquisitionAttributeFillouts = new ArrayCollection();
-        
+
         $this->phoneNumbers = new ArrayCollection();
         $this->comments     = new ArrayCollection();
         $this->modifiedAt   = new \DateTime();
         $this->createdAt    = new \DateTime();
+        $this->event        = $event;
     }
-    
+
     /**
      * Get employee id
      *
@@ -111,7 +114,7 @@ class Employee implements EventRelatedEntity
     {
         return $this->gid;
     }
-    
+
     /**
      * @return mixed
      */
@@ -119,7 +122,7 @@ class Employee implements EventRelatedEntity
     {
         return $this->salutation;
     }
-    
+
     /**
      * @param mixed $salutation
      */
@@ -127,7 +130,7 @@ class Employee implements EventRelatedEntity
     {
         $this->salutation = $salutation;
     }
-    
+
     /**
      * @return string
      */
@@ -135,7 +138,17 @@ class Employee implements EventRelatedEntity
     {
         return $this->email;
     }
-    
+
+    /**
+     * @param mixed $email
+     * @return Employee
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
     /**
      * Get phone Numbers
      *
@@ -145,7 +158,7 @@ class Employee implements EventRelatedEntity
     {
         return $this->phoneNumbers->toArray();
     }
-    
+
     /**
      * Add phoneNumber
      *
@@ -156,11 +169,11 @@ class Employee implements EventRelatedEntity
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
         $this->phoneNumbers[] = $phoneNumber;
-        $phoneNumber->setParticipation($this);
-        
+        $phoneNumber->setEmployee($this);
+
         return $this;
     }
-    
+
     /**
      * Remove phoneNumber
      *
@@ -172,7 +185,7 @@ class Employee implements EventRelatedEntity
         $this->phoneNumbers->removeElement($phoneNumber);
         return $this;
     }
-    
+
     /**
      * Get related event
      *
@@ -182,8 +195,8 @@ class Employee implements EventRelatedEntity
     {
         return $this->event;
     }
-    
-    
+
+
     /**
      * Set assignedUser
      *
@@ -194,10 +207,10 @@ class Employee implements EventRelatedEntity
     public function setAssignedUser(User $assignedUser = null)
     {
         $this->assignedUser = $assignedUser;
-        
+
         return $this;
     }
-    
+
     /**
      * Get assignedUser
      *
@@ -207,5 +220,5 @@ class Employee implements EventRelatedEntity
     {
         return $this->assignedUser;
     }
-    
+
 }

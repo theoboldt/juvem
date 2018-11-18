@@ -1,0 +1,72 @@
+{% import _self as m %}
+{% macro prototypePhone(formElement) %}
+    <div class="panel panel-default prototype-element">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-10 col-sm-8">
+                    <h4 class="panel-title">Telefonnummer</h4>
+                </div>
+                <div class="col-xs-2 col-sm-4 text-right">
+                    <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                       title="Telefonnummer entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Telefonnummer entfernen</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12 col-sm-5">
+                    <div class="form-group">
+                        {{ form_label(formElement.number) }}
+                        <div class="input-group">
+                            <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
+                            {{ form_widget(formElement.number) }}
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default" data-toggle="popover"
+                                        data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-7">
+                    {{ form_label(formElement.description) }}
+                    <div class="input-group">
+                        {{ form_widget(formElement.description) }}
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" data-toggle="popover"
+                                    data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+<div class="phone-numbers prototype-container"
+     data-prototype="{{ m.prototypePhone(formPhoneNumbers.vars.prototype, false)|e('html_attr') }}">
+    <div class="row">
+        <div class="col-xs-12">
+            {{ form_label(formPhoneNumbers) }}
+        </div>
+        <div class="col-xs-12">
+            <div class="prototype-elements">
+                <div class="form-group">
+                    {{ form_errors(formPhoneNumbers) }}
+                    {% for phoneNumber in formPhoneNumbers %}
+                        {{ m.prototypePhone(phoneNumber) }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere Telefonnummer
+                hinzufügen
+            </button>
+        </div>
+    </div>
+</div>

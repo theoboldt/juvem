@@ -16,6 +16,7 @@ use AppBundle\Entity\Event;
 
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EmployeeAssignUserType;
+use AppBundle\Form\EmployeeType;
 use AppBundle\JsonResponse;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -44,11 +45,12 @@ class EmployeeController extends Controller
             ]
         );
     }
-    
+
     /**
      * Page for list of employees of a single event
      *
-     * @Route("/admin/event/{eid}/employee-list.json", requirements={"eid": "\d+"}, name="admin_event_employee_list_data")
+     * @Route("/admin/event/{eid}/employee-list.json", requirements={"eid": "\d+"},
+     *                                                 name="admin_event_employee_list_data")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('edit', event)")
      */
@@ -57,20 +59,20 @@ class EmployeeController extends Controller
         $repository       = $this->getDoctrine()->getRepository(Employee::class);
         $employeeEntities = $repository->findForEvent($event);
         $result           = [];
-        
+
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
-        
+
         /** @var Employee $employee */
         foreach ($employeeEntities as $employee) {
             $employeePhoneList = [];
-            
+
             /** @var PhoneNumber $phoneNumberEntity */
             foreach ($employee->getPhoneNumbers() as $phoneNumberEntity) {
                 /** @var \libphonenumber\PhoneNumber $phoneNumber */
                 $phoneNumber         = $phoneNumberEntity->getNumber();
                 $employeePhoneList[] = $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE');
             }
-            
+
             $participantEntry = [
                 'gid'       => $employee->getGid(),
                 'nameFirst' => $employee->getNameFirst(),
@@ -83,11 +85,11 @@ class EmployeeController extends Controller
                 if (!$fillout->getAttribute()->isUseAtEmployee()) {
                     continue;
                 }
-                
+
                 $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
-            
+
             foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
                 if (!$fillout->getAttribute()->isUseAtEmployee()) {
                     continue;
@@ -95,17 +97,18 @@ class EmployeeController extends Controller
                 $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
                     = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
             }
-            
+
             $result[] = $participantEntry;
         }
-        
+
         return new JsonResponse($result);
     }
-    
+
     /**
      * Page for list of employees of a single event
      *
-     * @Route("/admin/event/{eid}/employee/{gid}", requirements={"eid": "\d+", "gid": "\d+"}, name="admin_employee_detail")
+     * @Route("/admin/event/{eid}/employee/{gid}", requirements={"eid": "\d+", "gid": "\d+"},
+     *                                             name="admin_employee_detail")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("employee", class="AppBundle:Employee", options={"id" = "gid"})
      * @Security("is_granted('employees_read', event)")
@@ -113,12 +116,12 @@ class EmployeeController extends Controller
     public function detailAction(Event $event, Employee $employee, Request $request)
     {
         $commentManager = $this->container->get('app.comment_manager');
-        
+
         $formAction = $this->createFormBuilder()
                            ->add('action', HiddenType::class)
                            ->getForm();
         $formUser   = $this->createForm(EmployeeAssignUserType::class, $employee);
-        
+
         $employeeChanged = false;
         $formAction->handleRequest($request);
         if ($formAction->isSubmitted() && $formAction->isValid()) {
@@ -138,10 +141,10 @@ class EmployeeController extends Controller
             $formUser->handleRequest($request);
             if ($formUser->isSubmitted() && $formUser->isValid()) {
                 $employeeChanged = true;
-                
+
             }
         }
-        
+
         if ($employeeChanged) {
             $this->denyAccessUnlessGranted('employees_edit', $event);
             $em = $this->getDoctrine()->getManager();
@@ -151,14 +154,14 @@ class EmployeeController extends Controller
                 'admin_employee_detail',
                 [
                     'eid' => $event->getEid(),
-                    'gid' => $employee->getGid()
+                    'gid' => $employee->getGid(),
                 ]
             );
         }
-        
+
         $employeeRepository = $this->getDoctrine()->getRepository(Employee::class);
         $similarEmployees   = $employeeRepository->relatedEmployees($employee);
-        
+
         return $this->render(
             'event/admin/employee/detail.html.twig',
             [
@@ -167,50 +170,97 @@ class EmployeeController extends Controller
                 'event'            => $event,
                 'similarEmployees' => $similarEmployees,
                 'formAction'       => $formAction->createView(),
-                'formAssignUser'   => $formUser->createView()
+                'formAssignUser'   => $formUser->createView(),
             ]
         );
     }
-    
+
     /**
      * Page for editing employee
      *
-     * @Route("/admin/event/{eid}/employee/{gid}/edit", requirements={"eid": "\d+", "gid": "\d+"}, name="admin_employee_edit")
+     * @Route("/admin/event/{eid}/employee/{gid}/edit", requirements={"eid": "\d+", "gid": "\d+"},
+     *                                                  name="admin_employee_edit")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("employee", class="AppBundle:Employee", options={"id" = "gid"})
      * @Security("is_granted('employees_read', event)")
      */
-    public function editAction(Event $event, Employee $employee)
+    public function editAction(Event $event, Employee $employee, Request $request)
     {
-        
+
+        $form = $this->createForm(
+            EmployeeType::class,
+            $employee,
+            [
+                EmployeeType::ACQUISITION_FIELD_PUBLIC  => true,
+                EmployeeType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
+        );
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($employee);
+            $em->flush();
+
+            return $this->redirectToRoute(
+                'admin_employee_detail',
+                [
+                    'eid' => $event->getEid(),
+                    'gid' => $employee->getGid(),
+                ]
+            );
+        }
+
         return $this->render(
             'event/admin/employee/edit.html.twig',
             [
-                'form'     => null,
-                'employee' => $employee,
-                'event'    => $event
-            ]
-        );
-    }
-    
-    /**
-     * Page for editing employees phone numbers
-     *
-     * @Route("/admin/event/{eid}/employee/{gid}/edit-phone", requirements={"eid": "\d+", "gid": "\d+"}, name="admin_employee_edit_phonenumbers")
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("employee", class="AppBundle:Employee", options={"id" = "gid"})
-     * @Security("is_granted('employees_read', event)")
-     */
-    public function editPhoneNumbersAction(Event $event, Employee $employee)
-    {
-        return $this->render(
-            'event/admin/employee/detail.html.twig',
-            [
+                'form'     => $form->createView(),
                 'employee' => $employee,
                 'event'    => $event,
             ]
         );
     }
-    
-    
+
+    /**
+     * Page for editing employee
+     *
+     * @Route("/admin/event/{eid}/employee/create", requirements={"eid": "\d+"}, name="admin_employee_create")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('employees_read', event)")
+     */
+    public function createAction(Event $event, Request $request)
+    {
+        $employee = new Employee($event);
+
+        $form = $this->createForm(
+            EmployeeType::class,
+            $employee,
+            [
+                EmployeeType::ACQUISITION_FIELD_PUBLIC  => true,
+                EmployeeType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
+        );
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($employee);
+            $em->flush();
+
+            return $this->redirectToRoute(
+                'admin_employee_detail',
+                [
+                    'eid' => $event->getEid(),
+                    'gid' => $employee->getGid(),
+                ]
+            );
+        }
+
+        return $this->render(
+            'event/admin/employee/new.html.twig',
+            [
+                'form'  => $form->createView(),
+                'event' => $event,
+            ]
+        );
+    }
 }
