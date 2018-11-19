@@ -107,10 +107,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="grid">
-                        {#<div class="grid-sizer col-xs-4"></div>#}
-                        <div class="grid-item col-xs-4">
-                            <div class="grid-item-content">
+                    <div class="grid-deactivated">
+                        {#<div class="grid-deactivated-sizer col-xs-4"></div>#}
+                        <div class="grid-deactivated-item col-xs-4">
+                            <div class="grid-deactivated-item-content">
                                 <dl>
                                     <dt>Medizinische Hinweise</dt>
                                     <dd>
@@ -123,8 +123,8 @@
                                 </dl>
                             </div>
                         </div>
-                        <div class="grid-item col-xs-4">
-                            <div class="grid-item-content">
+                        <div class="grid-deactivated-item col-xs-4">
+                            <div class="grid-deactivated-item-content">
                                 <dl>
                                     <dt>Allgemeine Hinweise</dt>
                                     <dd>
@@ -137,8 +137,8 @@
                                 </dl>
                             </div>
                         </div>
-                        <div class="grid-item col-xs-4">
-                            <div class="grid-item-content">
+                        <div class="grid-deactivated-item col-xs-4">
+                            <div class="grid-deactivated-item-content">
                                 <dl class="food">
                                     <dt>Ernährung</dt>
                                     <dd>
@@ -153,8 +153,8 @@
                             </div>
                         </div>
                         {% for fillout in participant.acquisitionAttributeFillouts %}
-                            <div class="grid-item col-xs-4">
-                                <div class="grid-item-content">
+                            <div class="grid-deactivated-item col-xs-4">
+                                <div class="grid-deactivated-item-content">
                                     <dl>
                                         <dt>
                                         <div class="title">{{ fillout.attribute.formTitle }}</div>
@@ -208,11 +208,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="grid">
-                        {#<div class="grid-sizer col-xs-4"></div>#}
+                    <div class="grid-deactivated">
+                        {#<div class="grid-deactivated-sizer col-xs-4"></div>#}
                             {% for fillout in participant.participation.acquisitionAttributeFillouts %}
-                            <div class="grid-item col-xs-4">
-                                <div class="grid-item-content">
+                            <div class="grid-deactivated-item col-xs-4">
+                                <div class="grid-deactivated-item-content">
                                     <dl>
                                         <dt>
                                             <div class="title">{{ fillout.attribute.formTitle }}</div>
@@ -259,11 +259,11 @@
                                     <p class="empty">Keine Anmerkungen gespeichert.</p>
                                 </div>
                             {% endif %}
-                            <div class="grid">
-                                {#<div class="grid-sizer col-xs-6"></div>#}
+                            <div class="grid-deactivated">
+                                {#<div class="grid-deactivated-sizer col-xs-6"></div>#}
                                 {% for comment in commentManager.forParticipation(participant.participation) %}
-                                <div class="grid-item col-xs-6">
-                                    <div class="grid-item-content">
+                                <div class="grid-deactivated-item col-xs-6">
+                                    <div class="grid-deactivated-item-content">
                                     <div class="content">
                                         {{ comment.content|markdown }}
                                     </div>
@@ -281,8 +281,8 @@
                                 </div>
                                 {% endfor %}
                                 {% for comment in commentManager.forParticipant(participant) %}
-                                <div class="grid-item col-xs-6">
-                                    <div class="grid-item-content">
+                                <div class="grid-deactivated-item col-xs-6">
+                                    <div class="grid-deactivated-item-content">
                                     <div class="content">
                                         {{ comment.content|markdown }}
                                     </div>
@@ -311,11 +311,13 @@
 {% endfor %}
 
 {% block javascriptMain %}
+{#
     {% if app.environment == 'dev' %}
         <script src="{{ asset('js/all.js', 'js') }}"></script>
     {% else %}
         <script src="{{ asset('js/all.min.js', 'js') }}" integrity="sha256-{{ assetJsIntegrity }}"></script>
     {% endif %}
+#}
 {% endblock %}
     {% cspscript %}
     <script type='text/javascript'>
@@ -326,9 +328,7 @@
             percentPosition: true
         });
         #}
-        $(document).ready(function () {
-            window.print();
-        });
+        window.print();
     </script>
     {% endcspscript %}
 </body>

@@ -4,113 +4,128 @@
 
 {% block body %}
     <section>
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': customization.organizationName} %}
-        {% block breadcrumbfull %}
-            <ol class="breadcrumb">
-                <li class="active"><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
-            </ol>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        <div class="row">
-            {% if events|length == 0 %}
+        {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': customization.organizationName} %}
+            {% block breadcrumbfull %}
+                <ol class="breadcrumb">
+                    <li class="active"><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
+                </ol>
+            {% endblock %}
+        {% endembed %}
+        <div class="container">
+            <div class="row">
+                {% if events|length == 0 %}
                 <div class="col-xs-12">
                     <div class="alert alert-info" role="alert">
                         Im Moment scheint leider keine Veranstaltung zur Anmeldung freigegeben zu sein.
                     </div>
                 </div>
-            {% endif %}
-            {% for event in events %}
-                <article class="col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ (loop.length == 4 or loop.length > 2) ? 4 : 6 }}">
-                    <div class="thumbnail">
-                        {% if event.imageFilename %}
-                            <div class="lazy-load-image"
-                                  data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
-                                  data-src="{{ path('event_image',  {'eid': event.eid, 'width': 545, 'height': 545 }) }}">
-                            </div>
-                        {% endif %}
-                        <div class="caption">
-                            <header>
-                                <h2>{{ event.title }}</h2>
-                            </header>
-                            <p>
-                                {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
-                                {% if event.hasStartTime %}
-                                    {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                                {% endif %}
-                                {% if event.hasEndDate or event.hasEndTime %}
-                                    -
-                                    {% if event.hasEndDate %}
-                                        {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                {% else %}
+                <div class="grid">
+                    <div class="grid-sizer col-sm-6 {{ events|length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ (events|length == 4 or events|length > 2) ? 4 : 6 }}"></div>
+                    {% for event in events %}
+                    <div class="grid-item col-sm-6 {{ loop.length == 1 ? 'col-sm-offset-3 ' : '' }} col-md-{{ (loop.length == 4 or loop.length > 2) ? 4 : 6 }}">
+                        <div class="grid-item-content">
+                            <article>
+
+                                <div class="thumbnail">
+                                    {% if event.imageFilename %}
+                                        <div class="lazy-load-image"
+                                             data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
+                                             data-src="{{ path('event_image',  {'eid': event.eid, 'width': 545, 'height': 545 }) }}">
+                                        </div>
                                     {% endif %}
-                                    {% if event.hasEndTime %}
-                                        {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
-                                    {% endif %}
-                                {% endif %}
-                            </p>
+                                    <div class="caption">
+                                        <header>
+                                            <h2>{{ event.title }}</h2>
+                                        </header>
+                                        <p>
+                                            {{ 'calendar'|glyph }} {{ event.getStartDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                                            {% if event.hasStartTime %}
+                                                {{ event.getStartTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                                            {% endif %}
+                                            {% if event.hasEndDate or event.hasEndTime %}
+                                                -
+                                                {% if event.hasEndDate %}
+                                                    {{ event.getEndDate.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}
+                                                {% endif %}
+                                                {% if event.hasEndTime %}
+                                                    {{ event.getEndTime.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_TIME')) }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </p>
 
-                            {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
-                            <p>{{ 'user'|glyph }}
-                                <b>{{ event.participantsConfirmedCount }}</b>
-                                bestätigte{% if event.participantsConfirmedCount == 1 %}r{% endif %},
-                                <b>{{ event.participantsUnconfirmedCount }}</b>
-                                unbestätigte{% if event.participantsUnconfirmedCount == 1 %}r{% endif %},
-                                insgesamt <b>{{ event.participantsCount }}</b> Teilnehmer</p>
-                            {% endif %}
+                                        {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                                            <p>{{ 'user'|glyph }}
+                                                <b>{{ event.participantsConfirmedCount }}</b>
+                                                bestätigte{% if event.participantsConfirmedCount == 1 %}r{% endif %},
+                                                <b>{{ event.participantsUnconfirmedCount }}</b>
+                                                unbestätigte{% if event.participantsUnconfirmedCount == 1 %}r{% endif %}
+                                                ,
+                                                insgesamt <b>{{ event.participantsCount }}</b> Teilnehmer</p>
+                                        {% endif %}
 
-                            <p>{{ event.descriptionMeta(true)|e }}</p>
+                                        <p>{{ event.descriptionMeta(true)|e }}</p>
 
-                            <div class="btn-toolbar" role="toolbar">
-                                {% if event.isActive %}
-                                {% if app.user is not null %}
-                                {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
+                                        <div class="btn-toolbar" role="toolbar">
+                                            {% if event.isActive %}
+                                                {% if app.user is not null %}
+                                                    {% include 'event/participation/public/embed-prefill-modal.html.twig' with {'event': event, 'participations': participations} %}
 
-                            <div class="btn-group">
-                                <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                                   class="btn btn-primary">Teilnehmen
-                                    {% if event.hasWaitingListThreshold() -%}
-                                        {%- if event.participantsCount >= event.waitingListThreshold -%}
-                                            (Warteliste)
-                                        {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
-                                            (wenig Plätze frei)
-                                        {%- endif -%}
-                                    {%- endif -%}
-                                </a>
-                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Menü erweitern</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere
-                                            Anmeldung ausfüllen</a></li>
-                                    <li{% if not participations|length %} class="disabled"{% endif %}>
-                                        <a href="#" role="button"
-                                                {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}>Anmeldung
-                                            mit früheren Daten vorausfüllen
-                                        </a></li>
-                                </ul>
-                            </div>
-                            {% else %}
-                                <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                                   class="btn btn-primary">Teilnehmen</a>
-                            {% endif %}
-                            {% endif %}
-                            {% if is_granted('read', event) %}
-                                <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
-                                   class="btn btn-default">Verwalten{% if event.participantsUnconfirmedCount %}
-                                    <span class="badge">{{ event.participantsUnconfirmedCount }}</span>{% endif %}
-                                </a>
-                            {% endif %}
-                            <a role="button" href="{{ path('event_public_detail', {'eid': event.eid }) }}"
-                               class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
-                            </div>
+                                                    <div class="btn-group">
+                                                        <a role="button"
+                                                           href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                                                           class="btn btn-primary">Teilnehmen
+                                                            {% if event.hasWaitingListThreshold() -%}
+                                                                {%- if event.participantsCount >= event.waitingListThreshold -%}
+                                                                    (Warteliste)
+                                                                {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
+                                                                    (wenig Plätze frei)
+                                                                {%- endif -%}
+                                                            {%- endif -%}
+                                                        </a>
+                                                        <button type="button" class="btn btn-primary dropdown-toggle"
+                                                                data-toggle="dropdown"
+                                                                aria-haspopup="true" aria-expanded="false">
+                                                            <span class="caret"></span>
+                                                            <span class="sr-only">Menü erweitern</span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere
+                                                                    Anmeldung ausfüllen</a></li>
+                                                            <li{% if not participations|length %} class="disabled"{% endif %}>
+                                                                <a href="#" role="button"
+                                                                        {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}>Anmeldung
+                                                                    mit früheren Daten vorausfüllen
+                                                                </a></li>
+                                                        </ul>
+                                                    </div>
+                                                {% else %}
+                                                    <a role="button"
+                                                       href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                                                       class="btn btn-primary">Teilnehmen</a>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if is_granted('read', event) %}
+                                                <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
+                                                   class="btn btn-default">Verwalten{% if event.participantsUnconfirmedCount %}
+                                                    <span class="badge">{{ event.participantsUnconfirmedCount }}</span>{% endif %}
+                                                </a>
+                                            {% endif %}
+                                            <a role="button"
+                                               href="{{ path('event_public_detail', {'eid': event.eid }) }}"
+                                               class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
                         </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                </article>
-            {% endfor %}
-        </div>
-    </div>
+                    {% endif %}
+                </div>
+            </div>
     </section>
 {% endblock %}
 
