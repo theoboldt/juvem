@@ -51,7 +51,7 @@ class PublicParticipateController extends Controller
                                      ->get('participation-' . $eid);
             $sessionEvent  = $participation->getEvent();
             if ($sessionEvent->getEid() == $eid) {
-                $event = $sessionEvent;
+                $participation->setEvent($event); //TODO improve solution
             } else {
                 return $this->render(
                     'event/public/miss.html.twig', ['eid' => $eid],
@@ -137,7 +137,6 @@ class PublicParticipateController extends Controller
             );
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
-        $this->addWaitingListFlashIfRequired($event);
 
         $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
         $participation->setAssignedUser($user);
