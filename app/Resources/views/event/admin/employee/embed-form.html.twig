@@ -41,8 +41,8 @@
         </div>
     </div>
 </div>
-{% embed 'event/admin/employee/embed-form-phone-numbers.html.twig' with {'formPhoneNumbers': form.phoneNumbers} %}{% endembed %}
-<div class="row">
+{% embed 'event/admin/employee/embed-form-phone-numbers.html.twig' with {'formPhoneNumbers': form.phoneNumbers, 'labelAddNumber': 'Telefonnummer hinzufügen'} %}{% endembed %}
+<div class="row" style="margin-top:15px;">
     {% for fieldName,formField in form %}
         {% if fieldName starts with 'acq_field_' %}
             <div class="col-xs-12 col-sm-6">
@@ -69,4 +69,5 @@
         <input type="submit" class="btn btn-primary navbar-btn" value="{% block submit %}{% endblock %}"/>
     </div>
 </div>
+
 {{ form_end(form) }}

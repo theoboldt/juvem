@@ -35,7 +35,7 @@
                         {{ form_widget(formElement.description) }}
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default" data-toggle="popover"
-                                    data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                    data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss handelt.">
                                 <span class="glyphicon glyphicon-question-sign"></span>
                             </button>
                         </div>
@@ -49,24 +49,20 @@
      data-prototype="{{ m.prototypePhone(formPhoneNumbers.vars.prototype, false)|e('html_attr') }}">
     <div class="row">
         <div class="col-xs-12">
-            {{ form_label(formPhoneNumbers) }}
-        </div>
-        <div class="col-xs-12">
-            <div class="prototype-elements">
-                <div class="form-group">
+            <div class="form-group">
+                <div class="prototype-elements">
+                    {{ form_label(formPhoneNumbers) }}
+                    <label class="control-label required">Telefonnummern</label>
                     {{ form_errors(formPhoneNumbers) }}
                     {% for phoneNumber in formPhoneNumbers %}
                         {{ m.prototypePhone(phoneNumber) }}
                     {% endfor %}
+                    {% if formPhoneNumbers|length == 0 %}
+                        {{ form_row(formPhoneNumbers) }}
+                    {% endif %}
                 </div>
+            <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} {{ labelAddNumber }}</button>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere Telefonnummer
-                hinzufügen
-            </button>
         </div>
     </div>
 </div>
