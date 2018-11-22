@@ -210,13 +210,14 @@ class EmployeeController extends Controller
                 ]
             );
         }
-
+    
         return $this->render(
             'event/admin/employee/edit.html.twig',
             [
-                'form'     => $form->createView(),
-                'employee' => $employee,
-                'event'    => $event,
+                'form'              => $form->createView(),
+                'employee'          => $employee,
+                'event'             => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, false, true, true, true),
             ]
         );
     }
@@ -260,6 +261,7 @@ class EmployeeController extends Controller
             [
                 'form'  => $form->createView(),
                 'event' => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, false, true, true, true),
             ]
         );
     }

@@ -11,6 +11,7 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -99,6 +100,9 @@ trait FilloutTrait
             } elseif($this instanceof Participant) {
                 $fillout->setParticipant($this);
                 $attributes = $event->getAcquisitionAttributes(false, true, false, true, true);
+            } elseif($this instanceof Employee) {
+                $fillout->setEmployee($this);
+                $attributes = $event->getAcquisitionAttributes(false, false, true, true, true);
             } else {
                 throw new \InvalidArgumentException('This acquisition attribute fillout trait is used at unknown class');
             }
