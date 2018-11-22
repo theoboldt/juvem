@@ -67,7 +67,7 @@ class EmployeeType extends AbstractType
                 'phoneNumbers',
                 CollectionType::class,
                 [
-                    'label'        => 'Telefonnummern',
+                    'label'        => false,
                     'entry_type'   => PhoneNumberType::class,
                     'allow_add'    => true,
                     'allow_delete' => true,
