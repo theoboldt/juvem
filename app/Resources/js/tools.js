@@ -94,6 +94,15 @@ $(function () {
         }, 600000);
     }();
 
+    var $grid = $('.grid').masonry({
+        itemSelector: '.grid-item',
+        columnWidth: '.grid-sizer',
+        percentPosition: true
+    });
+    $grid.imagesLoaded().progress( function() {
+      $grid.masonry('layout');
+    });
+
     /**
      * GLOBAL: Lazy load images
      */
@@ -126,17 +135,16 @@ $(function () {
                     var timeEndLoad = new Date().getTime();
                     if (timeEndLoad - timeBeginLoad < 800) {
                         el.addClass('load-direct');
+                        $grid.masonry('layout');
                     } else {
                         el.addClass('load');
+                        $grid.masonry('layout');
+                        setTimeout(function () {
+                            $grid.masonry('layout');
+                        }, 650);
                     }
                 });
         });
-    });
-
-    $('.grid').masonry({
-        itemSelector: '.grid-item',
-        columnWidth: '.grid-sizer',
-        percentPosition: true
     });
 });
 
