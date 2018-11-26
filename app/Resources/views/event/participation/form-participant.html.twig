@@ -4,84 +4,82 @@
     </div>
 </div>
 <div class="row">
-    <div class="row">
-        <div class="col-xs-12 col-sm-6">
-            {{ form_row(form.nameFirst) }}
-        </div>
-        <div class="col-xs-12 col-sm-6">
-            {{ form_row(form.nameLast) }}
+    <div class="col-xs-12 col-sm-6">
+        {{ form_row(form.nameFirst) }}
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        {{ form_row(form.nameLast) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-6 ">
+        <div class="form-group">
+            {{ form_label(form.food) }}
+            <button type="button" class="btn btn-default btn-xs btn-round"
+                    data-toggle="popover"
+                    data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
+                {{ 'question-sign'|glyph }}
+            </button>
+            {{ form_widget(form.food) }}
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-6 ">
-            <div class="form-group">
-                {{ form_label(form.food) }}
-                <button type="button" class="btn btn-default btn-xs btn-round"
-                        data-toggle="popover"
-                        data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
-                    {{ 'question-sign'|glyph }}
-                </button>
-                {{ form_widget(form.food) }}
+    <div class="col-xs-12 col-sm-6">
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_row(form.gender) }}
             </div>
         </div>
-        <div class="col-xs-12 col-sm-6">
-            <div class="row">
-                <div class="col-xs-12">
-                    {{ form_row(form.gender) }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ form_row(form.birthday) }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <div class="form-group">
+            {{ form_label(form.infoMedical) }}
+            <button type="button" class="btn btn-default btn-xs btn-round"
+                    data-toggle="popover"
+                    data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir ohne schriftliche Anweisungen Teilnehmern keine Medikamente verabreichen dürfen.)">
+                {{ 'question-sign'|glyph }}
+            </button>
+            {{ form_widget(form.infoMedical) }}
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <div class="form-group">
+            {{ form_label(form.infoGeneral) }}
+            <button type="button" class="btn btn-default btn-xs btn-round"
+                    data-toggle="popover"
+                    data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
+                {{ 'question-sign'|glyph }}
+            </button>
+            {{ form_widget(form.infoGeneral) }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for fieldName,formField in form %}
+        {% if fieldName starts with 'acq_field_' %}
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group acquisition-attribute">
+                    {{ form_label(formField) }}
+                    {%- set acquisitionField = acquisitionFields[fieldName] -%}
+                    {% if not acquisitionField.isPublic %}
+                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                    {%- endif -%}
+                    {% if acquisitionField.formDescription %}
+                        <button type="button" class="btn btn-default btn-xs btn-round"
+                                data-toggle="popover"
+                                data-content="{{ acquisitionField.formDescription }}">
+                            {{ 'question-sign'|glyph }}
+                        </button>
+                    {% endif %}
+                    {{ form_widget(formField) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    {{ form_row(form.birthday) }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-6">
-            <div class="form-group">
-                {{ form_label(form.infoMedical) }}
-                <button type="button" class="btn btn-default btn-xs btn-round"
-                        data-toggle="popover"
-                        data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir ohne schriftliche Anweisungen Teilnehmern keine Medikamente verabreichen dürfen.)">
-                    {{ 'question-sign'|glyph }}
-                </button>
-                {{ form_widget(form.infoMedical) }}
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6">
-            <div class="form-group">
-                {{ form_label(form.infoGeneral) }}
-                <button type="button" class="btn btn-default btn-xs btn-round"
-                        data-toggle="popover"
-                        data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
-                    {{ 'question-sign'|glyph }}
-                </button>
-                {{ form_widget(form.infoGeneral) }}
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        {% for fieldName,formField in form %}
-            {% if fieldName starts with 'acq_field_' %}
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group acquisition-attribute">
-                        {{ form_label(formField) }}
-                        {%- set acquisitionField = acquisitionFields[fieldName] -%}
-                        {% if not acquisitionField.isPublic %}
-                            {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-                        {%- endif -%}
-                        {% if acquisitionField.formDescription %}
-                            <button type="button" class="btn btn-default btn-xs btn-round"
-                                    data-toggle="popover"
-                                    data-content="{{ acquisitionField.formDescription }}">
-                                {{ 'question-sign'|glyph }}
-                            </button>
-                        {% endif %}
-                        {{ form_widget(formField) }}
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% endfor %}
 </div>

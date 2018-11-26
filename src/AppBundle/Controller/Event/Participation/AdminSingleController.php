@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
@@ -19,10 +20,13 @@ use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
+use AppBundle\Form\ParticipationType;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PaymentSuggestionManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -187,6 +191,63 @@ class AdminSingleController extends Controller
             )
         );
     }
+    
+    /**
+     * Create new participation by admin
+     *
+     * @Route("/admin/event/{eid}/participation/create", requirements={"eid": "\d+"}, name="admin_participation_create")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('participants_edit', event)")
+     * @param Event $event
+     * @param Request $request
+     * @return Response
+     */
+    public function createParticipationAction(Event $event, Request $request) {
+        $participation = new Participation($event);
+    
+        $form = $this->createForm(
+            ParticipationBaseType::class,
+            $participation,
+            [
+                ParticipationBaseType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipationBaseType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
+        );
+    
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \AppBundle\Entity\User $user */
+            $user = $this->getUser();
+
+            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
+                $participation, $user
+            );
+
+            //$participationManager = $this->get('app.participation_manager');
+            //$participationManager->mailParticipationRequested($participation, $event); //no mails
+    
+            return $this->redirectToRoute(
+                'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $managedParticipation->getPid()]
+            );
+        }
+    
+        $user           = $this->getUser();
+        $participations = [];
+        if ($user) {
+            $participations = $user->getAssignedParticipations();
+        }
+    
+        return $this->render(
+            'event/participation/admin/add-participation.html.twig',
+            [
+                'event'                          => $event,
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, false, true, true),
+                'participations'                 => $participations,
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, false, true, true),
+                'form'                           => $form->createView(),
+            ]
+        );
+    }
 
     /**
      * Page edit an participation
@@ -198,6 +259,7 @@ class AdminSingleController extends Controller
     public function editParticipationAction(Request $request)
     {
         $repository    = $this->getDoctrine()->getRepository(Participation::class);
+        /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $request->get('pid')));
         $event         = $participation->getEvent();
         $this->denyAccessUnlessGranted('participants_edit', $event);
