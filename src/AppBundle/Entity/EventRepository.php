@@ -266,6 +266,30 @@ class EventRepository extends EntityRepository
     }
 
     /**
+     * Get the total amount of an @see Employee related to transmitted @see Event
+     *
+     * @param Event $event
+     * @return bool|string
+     */
+    public function employeeCount(Event $event)
+    {
+        $eid = $event->getEid();
+        /** @var \DateTime $start */
+        $query
+            = 'SELECT COUNT(*)
+               FROM employee e
+              WHERE e.eid = ?
+                AND e.deleted_at IS NULL';
+
+        $stmt = $this->getEntityManager()
+                     ->getConnection()
+                     ->prepare($query);
+        $stmt->execute([$eid]);
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
      * Get a list of years of life of the participants who are not deleted or whose participation is withdrawn or rejected
      *
      * @param Event $event

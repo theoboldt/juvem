@@ -203,6 +203,7 @@ class AdminController extends Controller
         $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
         $genderDistribution = $repository->participantsGenderDistribution($event);
         $participantsCount  = $repository->participantsCount($event);
+        $employeeCount      = $repository->employeeCount($event);
 
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
@@ -254,6 +255,7 @@ class AdminController extends Controller
                 'ageDistributionMax'        => $ageDistributionMax,
                 'genderDistribution'        => $genderDistribution,
                 'participantsCount'         => $participantsCount,
+                'employeeCount'             => $employeeCount,
                 'form'                      => $form->createView(),
                 'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
             ]
