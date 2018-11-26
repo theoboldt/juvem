@@ -434,9 +434,13 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
                 if ($attribute->getFieldType() === ChoiceType::class) {
                     $optionValue = $configOptionValue;
-                    $converter   = function (Fillout $fillout) use ($optionValue, $explanation) {
+                    $converter   = function (Fillout $fillout = null) use ($optionValue, $explanation) {
                         $selectedOptions = [];
 
+                        if ($fillout === null) {
+                            return '';
+                        }
+                        
                         foreach ($fillout->getSelectedChoices() as $choice) {
                             if ($explanation) {
                                 $explanation->register($choice);
