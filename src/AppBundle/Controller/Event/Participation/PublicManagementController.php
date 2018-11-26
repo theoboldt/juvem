@@ -361,7 +361,7 @@ class PublicManagementController extends Controller
                 'participation'     => $participation,
                 'participant'       => $participant,
                 'event'             => $event,
-                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, false, true, false),
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, true, false, false, true),
             )
         );
     }
