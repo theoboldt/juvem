@@ -71,6 +71,7 @@ class AcquisitionType extends AbstractType
                     Attribute::LABEL_FIELD_CHOICE   => ChoiceType::class,
                     Attribute::LABEL_FIELD_DATE     => DateType::class,
                     Attribute::LABEL_FIELD_BANK     => BankAccountType::class,
+                    Attribute::LABEL_FIELD_GROUP    => GroupType::class,
                 ],
                 'required' => true,
                 'attr'     => ['aria-describedby' => 'help-type'],

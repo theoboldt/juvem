@@ -13,6 +13,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Form\AcquisitionType;
+use AppBundle\Form\GroupType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -131,13 +132,16 @@ class AcquisitionController extends Controller
 
             return $this->redirectToRoute('acquisition_detail', array('bid' => $attribute->getBid()));
         }
-
+    
+        $fieldType = $attribute->getFieldType();
+        
         return $this->render(
             'acquisition/edit.html.twig',
             [
-                'acquisition'       => $attribute,
-                'showChoiceOptions' => ($attribute->getFieldType() == ChoiceType::class),
-                'form'              => $form->createView(),
+                'acquisition'               => $attribute,
+                'showChoiceOptions'         => ($fieldType == ChoiceType::class || $fieldType == GroupType::class),
+                'showChoiceMultipleOptions' => ($fieldType == ChoiceType::class),
+                'form'                      => $form->createView(),
             ]
         );
     }
