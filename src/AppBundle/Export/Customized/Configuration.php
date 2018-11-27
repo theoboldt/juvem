@@ -159,8 +159,8 @@ class Configuration implements ConfigurationInterface
                     ->info($attribute->getManagementTitle())
                     ->children();
 
-            if (ChoiceType::class == $attribute->getFieldType()) {
-                if ($attribute->getFieldTypeChoiceType()) {
+            if ($attribute->isChoiceType()) {
+                if ($attribute->isMultipleChoiceType()) {
                     $displayList = [
                         'Antworten kommasepariert auflisten' => 'commaSeparated'
                     ];

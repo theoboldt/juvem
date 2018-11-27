@@ -110,7 +110,7 @@
 
                         </div>
                     </div>
-                    {% if acquisition.fieldType == 'Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType' %}
+                    {% if acquisition.isChoiceType %}
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Optionen</label>
                             <div class="col-sm-8">

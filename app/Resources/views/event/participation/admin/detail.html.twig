@@ -420,7 +420,7 @@
                                     {% endif %}
                                     {{ fillout.attribute.formTitle }}
                                 </dt>
-                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
+                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
                             {% endfor %}
                             <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
@@ -597,7 +597,7 @@
                                                 {% endif %}
                                                 {{ fillout.attribute.formTitle }}
                                             </dt>
-                                            <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
+                                            <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
                                         {% endfor %}
                                         <dt>Weitere Teilnahmen</dt>
                                         <dd>

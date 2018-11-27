@@ -14,6 +14,7 @@ use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\GroupType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -43,7 +44,7 @@ class Attribute
     const LABEL_FIELD_BANK     = 'Bankverbindung';
     const LABEL_FIELD_NUMBER   = 'Eingabefeld (Ganzzahl)';
     const LABEL_FIELD_GROUP    = 'Gruppeneinteilung';
-    
+
     /**
      * @ORM\Column(type="integer", name="bid")
      * @ORM\Id
@@ -340,6 +341,8 @@ class Attribute
                     return self::LABEL_FIELD_DATE_TIME;
                 case \AppBundle\Form\BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
+                case \AppBundle\Form\GroupType::class;
+                    return self::LABEL_FIELD_GROUP;
             }
         }
 
@@ -377,8 +380,8 @@ class Attribute
         $options['label']    = $this->getFormTitle();
         $options['required'] = $this->isRequired();
         $options['mapped']   = true;
-    
-        if ($this->getFieldType() == FormChoiceType::class) {
+
+        if ($this->isChoiceType()) {
             $options['placeholder'] = 'keine Option gewählt';
             $options['choices']     = [];
             /** @var AttributeChoiceOption $choice */
@@ -396,15 +399,26 @@ class Attribute
     }
 
     /**
+     * Determine if this attribute provides choice options
+     *
+     * @return bool
+     */
+    public function isChoiceType(): bool
+    {
+        $type = $this->getFieldType();
+        return $type === FormChoiceType::class || $type === GroupType::class;
+    }
+
+    /**
      * Set field choices if this is a choice attribute
      *
      * @param boolean $multiple
      *
      * @return Attribute
      */
-    public function setFieldTypeChoiceType(bool $multiple)
+    public function setIsMultipleChoiceType(bool $multiple)
     {
-        if ($this->getFieldType() == FormChoiceType::class) {
+        if ($this->isChoiceType()) {
             $options             = $this->getFieldOptions();
             $options['multiple'] = (bool)$multiple;
             $this->setFieldOptions($options);
@@ -414,31 +428,20 @@ class Attribute
     }
 
     /**
-     * Get field choices if this is a choice attribute
+     * Returns true if this is a choice field and provides multiple options
      *
      * @return bool
      */
-    public function getFieldTypeChoiceType()
+    public function isMultipleChoiceType(): bool
     {
         $options = $this->getFieldOptions();
 
-        if ($this->getFieldType() == FormChoiceType::class && isset($options['multiple'])) {
+        if ($this->isChoiceType() && isset($options['multiple'])) {
             return $options['multiple'];
         }
 
         return false;
     }
-
-    /**
-     * Returns true if this is a choice field and provides multiple options
-     *
-     * @return bool
-     */
-    public function isMultipleChoiceType()
-    {
-        return $this->getFieldTypeChoiceType();
-    }
-
 
     /**
      * Get field choices if this is a choice attribute

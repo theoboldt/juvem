@@ -11,6 +11,15 @@
     {% else %}
         <i class="empty no-selection"><span></span></i>
     {% endif %}
+{% elseif fillout.attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+    {% set filloutValue = fillout.value %}
+    {% if filloutValue.groupId %}
+        <a href="{{ path('admin_event_group_detail', {eid: event.eid, cid: filloutValue.groupId}) }}">
+            {{ fillout.getTextualValue(constant('AppBundle\\Entity\\AcquisitionAttribute\\AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE')) }}
+        </a>
+    {% else %}
+        <i class="empty value-null"><span></span></i>
+    {% endif %}
 {% else %}
     {% if fillout is empty %}
         <i class="empty value-null"><span></span></i>

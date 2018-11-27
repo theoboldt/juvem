@@ -14,6 +14,7 @@ use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\BankAccountType;
+use AppBundle\Form\GroupType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
@@ -216,7 +217,7 @@ class Fillout
             $value = $value->format($format);
         }
         $this->value = $value;
-    
+
         return $this;
     }
 
@@ -237,6 +238,8 @@ class Fillout
     public function getValue()
     {
         switch ($this->attribute->getFieldType()) {
+            case GroupType::class:
+                return new GroupFilloutValue($this->attribute, $this->value);
             case FormChoiceType::class:
                 return new ChoiceFilloutValue($this->attribute, $this->value);
             case BankAccountType::class:

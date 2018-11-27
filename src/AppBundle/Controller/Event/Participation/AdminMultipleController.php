@@ -65,6 +65,7 @@ class AdminMultipleController extends Controller
             'event/participation/admin/participants-list-specific-age.html.twig', ['event' => $event]
         );
     }
+
     /**
      * Data provider for events participants list grid having specific age at specific date
      *

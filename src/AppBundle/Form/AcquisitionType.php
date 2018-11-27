@@ -112,7 +112,7 @@ class AcquisitionType extends AbstractType
                 'required' => false
             ]
         )->add(
-            'fieldTypeChoiceType',
+            'isMultipleChoiceType',
             ChoiceType::class,
             [
                 'label'      => 'Typ der Auswahl',

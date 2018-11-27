@@ -19,7 +19,7 @@ class ChoiceFilloutValue extends FilloutValue
      *
      * @var array|int[]|int
      */
-    private $value;
+    protected $value;
 
     /**
      * FilloutValue constructor.
@@ -29,7 +29,7 @@ class ChoiceFilloutValue extends FilloutValue
      */
     public function __construct(Attribute $attribute, string $rawValue = null)
     {
-        if ($attribute->getFieldTypeChoiceType()) {
+        if ($attribute->isMultipleChoiceType()) {
             $this->value = [];
             if ($rawValue) {
                 $this->value = json_decode($rawValue, true);
@@ -104,7 +104,7 @@ class ChoiceFilloutValue extends FilloutValue
      */
     public function getFormValue()
     {
-        if (!$this->attribute->getFieldTypeChoiceType() && is_array($this->value)) {
+        if (!$this->attribute->isMultipleChoiceType() && is_array($this->value)) {
             //this is a single selection, but multi selection is stored
             return reset($this->value);
 

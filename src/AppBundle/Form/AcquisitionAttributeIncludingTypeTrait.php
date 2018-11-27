@@ -38,7 +38,7 @@ trait AcquisitionAttributeIncludingTypeTrait
             $bid = $attribute->getBid();
 
             $attributeOptions = $attribute->getFieldOptions();
-            if ($attribute->getFieldTypeChoiceType()) {
+            if ($attribute->isMultipleChoiceType()) {
                 $attributeOptions['empty_data'] = [];
             }
 

@@ -198,7 +198,7 @@
                                     {% endif %}
                                     {{ fillout.attribute.formTitle }}
                                 </dt>
-                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout} %}</dd>
+                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
                             {% endfor %}
                             <dt title="Ist der Mitarbeiter mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
                                 data-toggle="tooltip" data-placement="right">
