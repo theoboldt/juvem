@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ attribute.managementTitle }} (Gruppeneinteilungen, {{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': attribute.managementTitle, 'subtitle': event.title} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Gruppeneinteilungen</a></li>
+            <li class="active">{{ attribute.managementTitle }}</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {{ attribute.managementDescription }}
+            </div>
+            <div class="col-md-12">
+                <div id="bootstrap-table-toolbar" class="form-inline">
+                </div>
+                <table id="eventGroupChoicesTable" class="table table-striped table-remote-content"
+                       data-id-field="id" data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+                       data-show-filter="true" data-search="true" data-page-size="25"
+                       data-sub-id="e{{ event.eid }}-b{{ attribute.bid }}"
+                       data-url="{{ path('event_admin_group_overview_data', {eid: event.eid, bid: attribute.bid}) }}"
+                       data-sort-name="managementTitle" data-sort-order="asc">
+                    <thead>
+                    <tr>
+                        <th data-field="bid" data-sortable="true" data-visible="false">#Feld</th>
+                        <th data-field="id" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="managementTitle" data-sortable="true">Titel (Intern)</th>
+                        <th data-field="formTitle" data-sortable="true" data-visible="false">Titel (Formular)</th>
+                        <th data-field="shortTitle" data-sortable="true">Kürzel</th>
+
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

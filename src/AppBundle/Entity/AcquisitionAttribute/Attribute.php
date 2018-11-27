@@ -27,7 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeRepository")
  * @ORM\Table(name="acquisition_attribute")
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  * @ORM\HasLifecycleCallbacks()

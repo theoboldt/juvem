@@ -25,7 +25,7 @@ class EventRepository extends EntityRepository
     const DAYS_OF_YEAR = 365;
 
     /**
-     * Find one single events having participations joined
+     * Find one single events having acquisition attributes joined
      *
      * @param int $eid Id of desired event
      * @return Event|null
@@ -33,8 +33,9 @@ class EventRepository extends EntityRepository
     public function findWithAcquisitionAttributes(int $eid)
     {
         $qb = $this->createQueryBuilder('e');
-        $qb->select('e', 'a')
+        $qb->select('e', 'a', 'o')
            ->leftJoin('e.acquisitionAttributes', 'a')
+           ->leftJoin('a.choiceOptions', 'o')
            ->andWhere($qb->expr()->eq('e.eid', ':eid'))
            ->setParameter('eid', $eid);
         $result = $qb->getQuery()->execute();
@@ -44,6 +45,7 @@ class EventRepository extends EntityRepository
         }
         return null;
     }
+
     /**
      * Find one single events having participations joined
      *

@@ -3,31 +3,20 @@
 {% block title %}Gruppe x ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'X', 'subtitle': 'Gruppe verwalten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': choiceOption.getManagementTitle(true), 'subtitle': choiceOption.attribute.managementTitle} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li class="active">Gruppe</li>
+            <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Gruppeneinteilungen</a></li>
+            <li><a href="{{ path('event_admin_group_overview_data', {'eid': event.eid, 'bid': choiceOption.attribute.bid }) }}">{{ choiceOption.attribute.managementTitle }}</a></li>
+            <li class="active">{{ choiceOption.getManagementTitle(true) }}</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
         <div class="row">
+            {#
             <div class="col-md-12">
-                {#
                 <div id="bootstrap-table-toolbar" class="form-inline">
-                    <div class="form-group">
-                        <a class="btn btn-primary" href="{{ path('admin_participation_create', {'eid': event.eid }) }}">{{ 'plus'|glyph }} Neu</a>
-                    </div>
-                    <div class="btn-group" role="group">
-                        {{ 'is_confirmed'|tableFilterButtonTri(2, 'nur bestätigte', 'ohne bestätigte', 'inkl. bestätigte', true) }}
-                        {{ 'is_withdrawn_or_rejected'|tableFilterButtonTri(1, 'nur zurückgezogene/abgelehnte', 'ohne zurückgezogene/abgelehnte', 'inkl. zurückgezogen/abgelehnte') }}
-                        {{ 'is_paid'|tableFilterButtonTri(2, 'nur bezahlte', 'ohne bezahlte', 'inkl. bezahlt') }}
-                        {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'inkl. gelöschte') }}
-                        <a href="{{ path('event_participants_export', {eid: event.eid}) }}"
-                           class="btn btn-default btn-xs btn-download">
-                            {{ 'export'|glyph }}
-                        </a>
-                    </div>
                 </div>
                 <table id="participantsListTable" class="table table-striped table-remote-content"
                        data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
@@ -78,8 +67,8 @@
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="paid">Zahlungseingang vermerken…</button>
                 </div>
                 {% endif %}
-                #}
             </div>
+        #}
         </div>
     </div>
 {% endblock %}

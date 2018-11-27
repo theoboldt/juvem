@@ -167,4 +167,19 @@ $(function () {
     $('#employeeListTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey(row.gid);
     });
+
+    /**
+     * GROUP: List of an event's groups
+     */
+    $('#eventGroupsTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('groups/' + row.bid);
+    });
+
+    /**
+     * GROUP: List of choices of an event's group
+     */
+    $('#eventGroupChoicesTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.bid+'/group/' + row.id);
+    });
+
 });
