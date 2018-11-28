@@ -30,7 +30,7 @@ module.exports = function (grunt) {
         concat: {
             options: {
                 sourceMap: true,
-                separator: ';'
+                separator: ''
             },
             distWebJs: {
                 src: [
@@ -78,8 +78,8 @@ module.exports = function (grunt) {
             },
             distCssWeb: {
                 src: [
-                    'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'app/cache/dep/all-sass.css',
+                    'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
                     'node_modules/bootstrap-table/src/bootstrap-table.css'
                 ],
