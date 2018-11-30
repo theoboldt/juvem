@@ -14,7 +14,7 @@
 {% elseif fillout.attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
     {% set filloutValue = fillout.value %}
     {% if filloutValue.groupId %}
-        <a href="{{ path('admin_event_group_detail', {eid: event.eid, cid: filloutValue.groupId}) }}">
+        <a href="{{ path('admin_event_group_detail', {eid: event.eid, bid: filloutValue.attribute.bid, cid: filloutValue.groupId}) }}">
             {{ fillout.getTextualValue(constant('AppBundle\\Entity\\AcquisitionAttribute\\AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE')) }}
         </a>
     {% else %}

@@ -182,4 +182,24 @@ $(function () {
         openInNewTabOnMetaKey(row.bid+'/group/' + row.id);
     });
 
+    /**
+     * GROUP EMPLOYEE: List of employees assigned to a group option
+     */
+    $('#groupEmployeesTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('../../../employee/'+row.gid);
+    });
+
+    /**
+     * GROUP PARTICIPATION: List of participations assigned to a group option
+     */
+    $('#groupParticipationsTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('../../../participation/' + row.pid);
+    });
+
+    /**
+     * GROUP PARTICIPANT: List of participants assigned to a group option
+     */
+    $('#groupParticipantsTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('../../../participation/' + row.pid);
+    });
 });

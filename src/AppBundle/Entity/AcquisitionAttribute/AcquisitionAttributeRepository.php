@@ -12,6 +12,8 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
+use AppBundle\Entity\Event;
+use AppBundle\Group\ChoiceOptionUsage;
 use Doctrine\ORM\EntityRepository;
 
 class AcquisitionAttributeRepository extends EntityRepository
@@ -35,5 +37,17 @@ class AcquisitionAttributeRepository extends EntityRepository
             return $result;
         }
         return null;
+    }
+
+    /**
+     * Fetch amount of occurrence of @see ChoiceFilloutValue
+     *
+     * @param Event                 $event
+     * @param AttributeChoiceOption $choiceOption
+     * @return ChoiceOptionUsage
+     */
+    public function fetchAttributeChoiceUsage(Event $event, AttributeChoiceOption $choiceOption): ChoiceOptionUsage
+    {
+        return new ChoiceOptionUsage($this->getEntityManager(), $event, $choiceOption);
     }
 }

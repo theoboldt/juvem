@@ -52,15 +52,20 @@ class ParticipationRepository extends EntityRepository
     /**
      * Get a list of participations of an event
      *
-     * @param   Event $event                    The event
-     * @param   bool  $includeDeleted           Set to true to include deleted participations
-     * @param   bool  $includeWithdrawnRejected Set to true to include participations who have only
-     *                                          withdrawn participants assigned
+     * @param   Event      $event                    The event
+     * @param   bool       $includeDeleted           Set to true to include deleted participations
+     * @param   bool       $includeWithdrawnRejected Set to true to include participations who have only
+     *                                               withdrawn participants assigned
+     * @param   null|array $filter                   Transmit a list of aids to filter out participants
+     *                                               not included in list
      * @return  array|Participation[]
-     * @throws  \Doctrine\DBAL\DBALException
      */
-    public function participationsList(Event $event, $includeDeleted = false, $includeWithdrawnRejected = false)
-    {
+    public function participationsList(
+        Event $event,
+        $includeDeleted = false,
+        $includeWithdrawnRejected = false,
+        array $filter = null
+    ) {
         $eid = $event->getEid();
 
         $qb = $this->createQueryBuilder('p')
@@ -86,11 +91,15 @@ class ParticipationRepository extends EntityRepository
 
         $qb->setParameter('eid', $eid);
 
+        if ($filter !== null) {
+            $qb->andWhere("p.pid IN(:participationList)")
+               ->setParameter('participationList', $filter);
+        }
+
         $query = $qb->getQuery();
 
         return $query->execute();
     }
-
 
     /**
      * Get a list of participants of an event

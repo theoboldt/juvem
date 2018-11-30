@@ -207,6 +207,13 @@ class Fillout
     public function setValue($value)
     {
         if (is_array($value)) {
+            $item = null;
+            foreach ($value as &$item) {
+                if (is_int($item)) {
+                    $item = (string)$item;
+                }
+            }
+            unset($item);
             $value = json_encode($value);
         } elseif ($value instanceof \DateTimeInterface) {
             if ($this->attribute->getFieldType() === DateType::class) {
