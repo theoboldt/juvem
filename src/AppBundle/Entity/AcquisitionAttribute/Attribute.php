@@ -43,7 +43,7 @@ class Attribute
     const LABEL_FIELD_DATE_TIME     = 'Datum und Uhrzeit';
     const LABEL_FIELD_BANK     = 'Bankverbindung';
     const LABEL_FIELD_NUMBER   = 'Eingabefeld (Ganzzahl)';
-    const LABEL_FIELD_GROUP    = 'Gruppeneinteilung';
+    const LABEL_FIELD_GROUP    = 'Einteilungsfeld';
 
     /**
      * @ORM\Column(type="integer", name="bid")

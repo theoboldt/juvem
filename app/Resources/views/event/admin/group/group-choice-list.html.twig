@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ attribute.managementTitle }} (Gruppeneinteilungen, {{ event.title }}){% endblock %}
+{% block title %}{{ attribute.managementTitle }} (Einteilungsfelder, {{ event.title }}){% endblock %}
 
 {% block body %}
     {% embed 'common/header/base-page-header.html.twig' with {'title': attribute.managementTitle, 'subtitle': event.title} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Gruppeneinteilungen</a></li>
+            <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Einteilungsfelder</a></li>
             <li class="active">{{ attribute.managementTitle }}</li>
         {% endblock %}
     {% endembed %}
