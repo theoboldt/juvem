@@ -4,7 +4,7 @@
             {% for choice in fillout.getSelectedChoices %}
                 <li {% if choice.deletedAt %}class="deleted"{% endif %}>
                     <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
-                    <span{% if choice.getManagementTitle(false) %} title="{{ choice.formTitle }}" data-toggle="tooltip" data-placement="top"{% endif %}>{{ choice.getManagementTitle(true) }}</span>
+                    <span{% if choice.getManagementTitle(false) %} title="{{ choice.formTitle|e('html_attr') }}" data-toggle="tooltip" data-placement="top"{% endif %}>{{ choice.getManagementTitle(true) }}</span>
                 </li>
             {% endfor %}
         </ul>
@@ -25,12 +25,22 @@
     <span class="fillout-participant-detecting" data-oid="{{ fillout.oid }}"
           data-aid="{{ filloutValue.selectedParticipantId }}">
         {% if filloutValue.selectedParticipantId %}
-            <a href="{{ path('event_participation_detail', {eid: event.eid, aid: 0}) }}">
-                {{ filloutValue.getTextualValue() }}
-            </a>
+            <a href="{{ path('admin_participant_detail', {eid: event.eid, aid: filloutValue.selectedParticipantId}) }}" title="Original: {{ filloutValue.getTextualValue()|e('html_attr') }}">
+                {{ filloutValue.selectedParticipantFirstName }} {{ filloutValue.selectedParticipantLastName -}}
+            </a> {{ 'link'|glyph('verknüpft') }}
         {% else %}
             {{ filloutValue.getTextualValue() }}
         {% endif %}
+        {% if is_granted('participants_edit', event) -%}
+            <button data-toggle="modal" data-target="#dialogModalRelateParticipant"
+                    data-title="{{ fillout.attribute.formTitle|e('html_attr') }}"
+                    data-description="{{ fillout.attribute.formDescription|e('html_attr') }}"
+                    data-first-name="{{ filloutValue.relatedFirstName }}"
+                    data-last-name="{{ filloutValue.relatedLastName }}"
+                    data-oid="{{ fillout.oid }}"
+                    class="btn btn-default btn-xs"
+                    title="Teilnehmerverknüpfung verwalten">{{ 'pencil'|glyph }}</button>
+        {%- endif %}
     </span>
 {% else %}
     {% if fillout is empty %}

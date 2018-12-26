@@ -135,13 +135,13 @@
   }
 }
 
-#dialogPriceConfiguration.loading {
-
-  tbody td, tfoot td, .btn-payment-full {
-    @include transition(color 0.2s);
-    color: #454546;
-    animation: pulse 3s infinite;
-  }
+#dialogModalRelateParticipant tbody td.loading,
+#dialogPriceConfiguration.loading tbody td,
+#dialogPriceConfiguration.loading tfoot td,
+#dialogPriceConfiguration.loading .btn-payment-full {
+  @include transition(color 0.2s);
+  color: #454546;
+  animation: pulse 3s infinite;
 }
 
 @keyframes pulse {

@@ -128,6 +128,22 @@ services:
         arguments:
             - "@logger"
 
+    AppBundle\EventListeners\RelatedParticipantResetListener:
+        arguments:
+            - "%kernel.root_dir%/../tmp"
+        tags:
+            - { name: doctrine.orm.entity_listener }
+            -
+                name: doctrine.orm.entity_listener
+                event: preUpdate
+                entity: AppBundle\Entity\Participant
+
+    app.related_participants_finder:
+        class: AppBundle\Manager\RelatedParticipantsFinder
+        arguments:
+            - "%kernel.root_dir%/../tmp"
+            - '@doctrine.orm.entity_manager'
+
     app.converter.event:
         class: AppBundle\Controller\ParamConverter\EventParamConverter
         arguments: ['@app.repository.event']

@@ -53,7 +53,7 @@ iframe[name=export-generator-frame] {
 }
 
 .acquisition-attribute > div > div {
-    @include make-xs-column(12);
+  @include make-xs-column(12);
 }
 
 #specificAge {
@@ -68,4 +68,12 @@ iframe[name=export-generator-frame] {
 
 .event-showcase .thumbnail {
   background: white;
+}
+
+.related-participants-proposal-list {
+  margin-top: 10px;
+
+  > label {
+    margin: 0;
+  }
 }

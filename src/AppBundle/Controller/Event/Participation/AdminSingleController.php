@@ -20,6 +20,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
+use AppBundle\Form\ParticipationAssignRelatedParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
@@ -96,19 +97,38 @@ class AdminSingleController extends Controller
             $formUser->handleRequest($request);
             if ($formUser->isSubmitted() && $formUser->isValid()) {
                 $participationChanged = true;
-
             }
         }
+        $em = $this->getDoctrine()->getManager();
+
+        $formRelated = $this->createForm(ParticipationAssignRelatedParticipantType::class, null, ['eid' => $event->getEid()]);
+        $formRelated->handleRequest($request);
+        if ($formRelated->isSubmitted() && $formRelated->isValid()) {
+            $oid         = $formRelated->get('oid')->getData();
+            $participant = $formRelated->get('related')->getData();
+            /** @var Fillout $fillout */
+            foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
+                $filloutValue = $fillout->getValue();
+                if ($fillout->getOid() === (int)$oid && $filloutValue instanceof ParticipantFilloutValue) {
+                    $this->denyAccessUnlessGranted('participants_edit', $event);
+                    $filloutValue = $filloutValue->createWithParticipantSelected($participant);
+                    $fillout->setValue($filloutValue->getRawValue());
+                    $em->persist($fillout);
+                    $participationChanged = true;
+                    break;
+                }
+            }
+        }
+
         if ($participationChanged) {
             $this->denyAccessUnlessGranted('participants_edit', $event);
-            $em = $this->getDoctrine()->getManager();
             $em->persist($participation);
             $em->flush();
             return $this->redirectToRoute(
                 'event_participation_detail',
                 [
                     'eid' => $event->getEid(),
-                    'pid' => $participation->getPid()
+                    'pid' => $participation->getPid(),
                 ]
             );
         }
@@ -157,6 +177,7 @@ class AdminSingleController extends Controller
                 'phoneNumberList'     => $phoneNumberList,
                 'formAction'          => $formAction->createView(),
                 'formAssignUser'      => $formUser->createView(),
+                'formRelated'         => $formRelated->createView(),
             ]
         );
     }
@@ -480,6 +501,22 @@ class AdminSingleController extends Controller
     }
 
     /**
+     * Participant detail page
+     *
+     * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"},
+     *                                                name="admin_participant_detail")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("fillout", class="AppBundle:Participant", options={"id" = "aid"})
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function participantDetailAction(Event $event, Participant $participant)
+    {
+        return $this->redirectToRoute(
+            'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participant->getParticipation()->getPid()]
+        );
+    }
+
+    /**
      * Get proposal
      *
      * @Route("/admin/event/{eid}/participant_proposal/{oid}", requirements={"eid": "\d+", "oid": "\d+"},
@@ -498,7 +535,17 @@ class AdminSingleController extends Controller
         $finder = $this->get('app.related_participants_finder');
         $participants = $finder->proposedParticipants($fillout);
 
-        return new JsonResponse($participants);
+        $result = [];
+        foreach ($participants as $participant) {
+            $result[] = [
+                'aid'       => $participant->getAid(),
+                'firstName' => $participant->getNameFirst(),
+                'lastName'  => $participant->getNameLast(),
+                'age'       => $participant->getYearsOfLifeAtEvent(),
+            ];
+        }
+
+        return new JsonResponse(['rows' => $result, 'success' => true]);
     }
 
 }

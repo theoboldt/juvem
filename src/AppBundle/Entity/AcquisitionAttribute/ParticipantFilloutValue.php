@@ -18,6 +18,8 @@ use AppBundle\Form\ParticipantDetectingType;
 class ParticipantFilloutValue extends FilloutValue
 {
 
+    const KEY_PROPOSED_IDS = 'proposed_aids';
+
     /**
      * True if @see $rawValue is processed
      *
@@ -47,11 +49,18 @@ class ParticipantFilloutValue extends FilloutValue
     private $participantAid = null;
 
     /**
-     * List of @see Participant ids which were deselected for this user
+     * First name of @see Participant
      *
-     * @var array|int[]
+     * @var null|string
      */
-    private $deselectedParticipants = [];
+    private $participantFirstName = null;
+
+    /**
+     * Last name of @see Participant
+     *
+     * @var null|string
+     */
+    private $participantLastName = null;
 
     /**
      * List of @see Participant ids which are proposed to be related to this user
@@ -61,6 +70,24 @@ class ParticipantFilloutValue extends FilloutValue
      * @var array|int[]|null
      */
     private $proposedParticipants = null;
+
+    /**
+     * Create duplicate, having transmitted participant selected
+     *
+     * @param Participant $participant Participant to select
+     * @return ParticipantFilloutValue New instance
+     */
+    public function createWithParticipantSelected(Participant $participant)
+    {
+        $value = json_decode($this->getRawValue(), true);
+        if (!is_array($value)) {
+            $value = [];
+        }
+        $value['participant_selected']            = $participant->getAid();
+        $value['participant_selected_first_name'] = $participant->getNameFirst();
+        $value['participant_selected_last_name']  = $participant->getNameLast();
+        return new self($this->getAttribute(), json_encode($value));
+    }
 
     /**
      * Transform fillout to string; Useful for textual display in ui
@@ -77,6 +104,29 @@ class ParticipantFilloutValue extends FilloutValue
     }
 
     /**
+     * Get related @see Participant first name
+     *
+     * @return string|null
+     */
+    public function getRelatedFirstName(): ?string
+    {
+        $this->ensureProcessed();
+        return $this->relatedFirstName;
+    }
+
+    /**
+     * Get related @see Participant last name
+     *
+     * @return string|null
+     */
+    public function getRelatedLastName(): ?string
+    {
+        $this->ensureProcessed();
+        return $this->relatedLastName;
+    }
+
+
+    /**
      * Get selected @see Participant id
      *
      * @return int|null
@@ -88,6 +138,26 @@ class ParticipantFilloutValue extends FilloutValue
     }
 
     /**
+     * Get selected @see Participant first name
+     *
+     * @return string|null
+     */
+    public function getSelectedParticipantFirstName() {
+        $this->ensureProcessed();
+        return $this->participantFirstName;
+    }
+
+    /**
+     * Get selected @see Participant last name
+     *
+     * @return string|null
+     */
+    public function getSelectedParticipantLastName() {
+        $this->ensureProcessed();
+        return $this->participantLastName;
+    }
+
+    /**
      * Get proposed @see Participant ids
      *
      * @return array|int[]
@@ -95,7 +165,7 @@ class ParticipantFilloutValue extends FilloutValue
     public function getProposedParticipantIds(): array
     {
         $this->ensureProcessed();
-        if (is_array($this->proposedParticipants)) {
+        if (!is_array($this->proposedParticipants)) {
             throw new \InvalidArgumentException('No proposals available');
         }
         return $this->proposedParticipants;
@@ -110,17 +180,6 @@ class ParticipantFilloutValue extends FilloutValue
     {
         $this->ensureProcessed();
         return is_array($this->proposedParticipants);
-    }
-
-    /**
-     * Get deselected @see Participant
-     *
-     * @return array|int[]
-     */
-    public function getDeselectedParticipantIds(): array
-    {
-        $this->ensureProcessed();
-        return $this->deselectedParticipants;
     }
 
     /**
@@ -140,20 +199,23 @@ class ParticipantFilloutValue extends FilloutValue
         }
         $value = json_decode($this->rawValue, true);
         if (is_array($value)) {
-            if (isset($this->rawValue[ParticipantDetectingType::FIELD_NAME_FIRST_NAME])) {
-                $this->relatedFirstName = $this->rawValue[ParticipantDetectingType::FIELD_NAME_FIRST_NAME];
+            if (isset($value[ParticipantDetectingType::FIELD_NAME_FIRST_NAME])) {
+                $this->relatedFirstName = $value[ParticipantDetectingType::FIELD_NAME_FIRST_NAME];
             }
-            if (isset($this->rawValue[ParticipantDetectingType::FIELD_NAME_LAST_NAME])) {
-                $this->relatedLastName = $this->rawValue[ParticipantDetectingType::FIELD_NAME_LAST_NAME];
+            if (isset($value[ParticipantDetectingType::FIELD_NAME_LAST_NAME])) {
+                $this->relatedLastName = $value[ParticipantDetectingType::FIELD_NAME_LAST_NAME];
             }
-            if (isset($this->rawValue['participant_selected'])) {
-                $this->participantAid = $this->rawValue['participant_selected'];
+            if (isset($value['participant_selected'])) {
+                $this->participantAid = $value['participant_selected'];
             }
-            if (isset($this->rawValue['not_aids'])) {
-                $this->deselectedParticipants = $this->rawValue['participant_deselected'];
+            if (isset($value['participant_selected_first_name'])) {
+                $this->participantFirstName = $value['participant_selected_first_name'];
             }
-            if (isset($this->rawValue['proposed_aids'])) {
-                $this->proposedParticipants = $this->rawValue['proposed_aids'];
+            if (isset($value['participant_selected_last_name'])) {
+                $this->participantLastName  = $value['participant_selected_last_name'];
+            }
+            if (isset($value[self::KEY_PROPOSED_IDS])) {
+                $this->proposedParticipants = $value[self::KEY_PROPOSED_IDS];
             }
         } else {
             $this->relatedFirstName = $this->rawValue;
