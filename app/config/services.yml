@@ -4,11 +4,6 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
-
-services:
     app.twig_extension_glyph:
         class: AppBundle\Twig\Extension\BootstrapGlyph
         public: false
