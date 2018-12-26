@@ -12,9 +12,12 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
@@ -24,9 +27,11 @@ use AppBundle\Form\ParticipationType;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PaymentSuggestionManager;
+use AppBundle\Manager\RelatedParticipantsFinder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -44,7 +49,7 @@ class AdminSingleController extends Controller
      *                                                  name="event_participation_detail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function participationDetailAction(Request $request)
+        public function participationDetailAction(Request $request)
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
 
@@ -191,7 +196,7 @@ class AdminSingleController extends Controller
             )
         );
     }
-    
+
     /**
      * Create new participation by admin
      *
@@ -204,7 +209,7 @@ class AdminSingleController extends Controller
      */
     public function createParticipationAction(Event $event, Request $request) {
         $participation = new Participation($event);
-    
+
         $form = $this->createForm(
             ParticipationBaseType::class,
             $participation,
@@ -213,7 +218,7 @@ class AdminSingleController extends Controller
                 ParticipationBaseType::ACQUISITION_FIELD_PRIVATE => true,
             ]
         );
-    
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var \AppBundle\Entity\User $user */
@@ -225,18 +230,18 @@ class AdminSingleController extends Controller
 
             //$participationManager = $this->get('app.participation_manager');
             //$participationManager->mailParticipationRequested($participation, $event); //no mails
-    
+
             return $this->redirectToRoute(
                 'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $managedParticipation->getPid()]
             );
         }
-    
+
         $user           = $this->getUser();
         $participations = [];
         if ($user) {
             $participations = $user->getAssignedParticipations();
         }
-    
+
         return $this->render(
             'event/participation/admin/add-participation.html.twig',
             [
@@ -473,4 +478,27 @@ class AdminSingleController extends Controller
             )
         );
     }
+
+    /**
+     * Get proposal
+     *
+     * @Route("/admin/event/{eid}/participant_proposal/{oid}", requirements={"eid": "\d+", "oid": "\d+"},
+     *                                                                  name="admin_event_participant_proposal")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("fillout", class="AppBundle\Entity\AcquisitionAttribute\Fillout", options={"id" = "oid"})
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function relatedParticipantProposalAction(Event $event, Fillout $fillout) {
+        $filloutValue = $fillout->getValue();
+        if (!$filloutValue instanceof ParticipantFilloutValue) {
+            throw new NotFoundHttpException('Provided fillout is not a participant fillout type');
+        }
+
+        /** @var RelatedParticipantsFinder $repository */
+        $finder = $this->get('app.related_participants_finder');
+        $participants = $finder->proposedParticipants($fillout);
+
+        return new JsonResponse($participants);
+    }
+
 }

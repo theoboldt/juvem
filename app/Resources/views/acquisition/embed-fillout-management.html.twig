@@ -18,8 +18,20 @@
             {{ fillout.getTextualValue(constant('AppBundle\\Entity\\AcquisitionAttribute\\AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE')) }}
         </a>
     {% else %}
-        <i class="empty value-null"><span></span></i>
+        <i class="empty no-selection"><span></span></i>
     {% endif %}
+{% elseif fillout.attribute.fieldType == 'AppBundle\\Form\\ParticipantDetectingType' %}
+    {% set filloutValue = fillout.value %}
+    <span class="fillout-participant-detecting" data-oid="{{ fillout.oid }}"
+          data-aid="{{ filloutValue.selectedParticipantId }}">
+        {% if filloutValue.selectedParticipantId %}
+            <a href="{{ path('event_participation_detail', {eid: event.eid, aid: 0}) }}">
+                {{ filloutValue.getTextualValue() }}
+            </a>
+        {% else %}
+            {{ filloutValue.getTextualValue() }}
+        {% endif %}
+    </span>
 {% else %}
     {% if fillout is empty %}
         <i class="empty value-null"><span></span></i>

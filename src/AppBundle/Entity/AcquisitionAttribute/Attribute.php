@@ -15,6 +15,7 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\GroupType;
+use AppBundle\Form\ParticipantDetectingType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -36,14 +37,15 @@ class Attribute
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 
-    const LABEL_FIELD_TEXT     = 'Textfeld (Einzeilig)';
-    const LABEL_FIELD_TEXTAREA = 'Textfeld (Mehrzeilig)';
-    const LABEL_FIELD_CHOICE   = 'Auswahl';
-    const LABEL_FIELD_DATE     = 'Datum';
-    const LABEL_FIELD_DATE_TIME     = 'Datum und Uhrzeit';
-    const LABEL_FIELD_BANK     = 'Bankverbindung';
-    const LABEL_FIELD_NUMBER   = 'Eingabefeld (Ganzzahl)';
-    const LABEL_FIELD_GROUP    = 'Einteilungsfeld';
+    const LABEL_FIELD_TEXT        = 'Textfeld (Einzeilig)';
+    const LABEL_FIELD_TEXTAREA    = 'Textfeld (Mehrzeilig)';
+    const LABEL_FIELD_CHOICE      = 'Auswahl';
+    const LABEL_FIELD_DATE        = 'Datum';
+    const LABEL_FIELD_DATE_TIME   = 'Datum und Uhrzeit';
+    const LABEL_FIELD_BANK        = 'Bankverbindung';
+    const LABEL_FIELD_NUMBER      = 'Eingabefeld (Ganzzahl)';
+    const LABEL_FIELD_GROUP       = 'Einteilungsfeld';
+    const LABEL_FIELD_PARTICIPANT = 'Teilnehmerfeld';
 
     /**
      * @ORM\Column(type="integer", name="bid")
@@ -341,8 +343,10 @@ class Attribute
                     return self::LABEL_FIELD_DATE_TIME;
                 case \AppBundle\Form\BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
-                case \AppBundle\Form\GroupType::class;
+                case GroupType::class;
                     return self::LABEL_FIELD_GROUP;
+                case ParticipantDetectingType::class:
+                    return self::LABEL_FIELD_PARTICIPANT;
             }
         }
 

@@ -39,8 +39,13 @@ iframe[name=export-generator-frame] {
   margin-top: 20px;
 }
 
+.acquisition-attribute.field-appbundle-form-participantdetectingtype > div,
 .acquisition-attribute.field-appbundle-form-bankaccounttype > div {
   @include make-row();
+}
+
+.acquisition-attribute.field-appbundle-form-participantdetectingtype > div > div {
+  @include make-sm-column(6);
 }
 
 .acquisition-attribute.field-appbundle-form-bankaccounttype > div > div {

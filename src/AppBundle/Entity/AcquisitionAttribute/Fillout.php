@@ -11,14 +11,15 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 use AppBundle\Entity\Employee;
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\BankAccountType;
 use AppBundle\Form\GroupType;
+use AppBundle\Form\ParticipantDetectingType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -196,6 +197,25 @@ class Fillout
         return $this;
     }
 
+    /**
+     * Get event related to this @see Fillout
+     *
+     * @return Event
+     */
+    public function getEvent(): Event
+    {
+        if ($this->getParticipation()) {
+            return $this->getParticipation()->getEvent();
+        }
+        if ($this->getParticipant()) {
+            return $this->getParticipant()->getEvent();
+        }
+        if ($this->getEmployee()) {
+            return $this->getEmployee()->getEvent();
+        }
+        throw new \RuntimeException('No event related');
+    }
+
 
     /**
      * Set value of this fillout
@@ -231,9 +251,11 @@ class Fillout
     /**
      *
      * Get textual raw value
+     *
      * @return string
      */
-    public function getRawValue() {
+    public function getRawValue()
+    {
         return $this->value;
     }
 
@@ -253,6 +275,8 @@ class Fillout
                 return new BankAccountFilloutValue($this->attribute, $this->value);
             case DateType::class:
                 return new DateFilloutValue($this->attribute, $this->value);
+            case ParticipantDetectingType::class:
+                return new ParticipantFilloutValue($this->attribute, $this->value);
             default:
                 return new FilloutValue($this->attribute, $this->value);
         }
@@ -295,10 +319,12 @@ class Fillout
      * this fillout belongs to a choice field
      *
      * @deprecated
-     * @param string $choicePresentation Configuration for selected choice option presentation, @see AttributeChoiceOption
+     * @param string $choicePresentation Configuration for selected choice option presentation, @see
+     *                                   AttributeChoiceOption
      * @return string
      */
-    public function getTextualValue(string $choicePresentation = AttributeChoiceOption::PRESENTATION_FORM_TITLE) {
+    public function getTextualValue(string $choicePresentation = AttributeChoiceOption::PRESENTATION_FORM_TITLE)
+    {
         $value = $this->getValue();
         if ($value instanceof ChoiceFilloutValue) {
             return $value->getTextualValue($choicePresentation);
