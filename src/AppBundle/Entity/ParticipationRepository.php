@@ -32,9 +32,10 @@ class ParticipationRepository extends EntityRepository
     public function findDetailed(int $pid)
     {
         $qb = $this->createQueryBuilder('p');
-        $qb->select('p', 'e', 's', 'a', 'n')
+        $qb->select('p', 'e', 's', 'a', 'n', 'c')
            ->innerJoin('p.event', 'e')
            ->leftJoin('e.acquisitionAttributes', 's')
+           ->leftJoin('s.choiceOptions', 'c')
            ->leftJoin('p.participants', 'a')
            ->leftJoin('p.phoneNumbers', 'n')
            ->addOrderBy('p.nameLast')
