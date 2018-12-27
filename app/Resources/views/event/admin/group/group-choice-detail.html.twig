@@ -15,61 +15,60 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
+        {% if not usage.hasEmployees and not usage.hasParticipants and not usage.hasParticipations %}
+            <div class="row">
+                <div class="col-xs-12" style="margin-top: 15px;">
+                    <div class="alert alert-info" role="alert">Niemand ist für
+                        <i>{{ choiceOption.attribute.managementTitle }}</i> in
+                        <i>{{ choiceOption.getManagementTitle(true) }}</i> eingeteilt.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row">
             <div class="col-xs-12">
             <div>
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="{% if usage.hasEmployees() %} active{% else %}disabled{% endif %}">
+                    {% if attribute.useAtEmployee %}
+                    <li role="presentation" class="active">
                         <a href="#employees" aria-controls="employees" role="tab"
                            data-toggle="tab">{{ usage.employeeCount }} Mitarbeiter</a>
                     </li>
-                    <li role="presentation"
-                        class="{% if not usage.hasEmployees() and usage.hasParticipants() %}active{% endif %}{% if not usage.hasParticipations() %} disabled{% endif %}">
+                    {% endif %}
+                    {% if attribute.useAtParticipant %}
+                    <li role="presentation">
                         <a href="#participants" aria-controls="participants" role="tab"
                            data-toggle="tab">{{ usage.participantsCount }} Teilnehmer</a>
                     </li>
-                    <li role="presentation"
-                        class="{% if not usage.hasEmployees() and not usage.participants and usage.hasParticipations() %}active{% endif %}{% if not usage.hasParticipations() %} disabled{% endif %}">
+                    {% endif %}
+                    {% if attribute.useAtParticipation %}
+                    <li role="presentation">
                         <a href="#participations" aria-controls="participations" role="tab"
                            data-toggle="tab">{{ usage.participationCount }}
                             Anmeldung{% if usage.participationCount > 1 %}en{% endif %}</a>
                     </li>
+                    {% endif %}
                 </ul>
                 <div class="tab-content">
-                    {% if usage.hasEmployees() %}
-                        <div role="tabpanel" class="tab-pane {% if usage.hasEmployees() %}active{% endif %}"
-                             id="employees">
+                    {% if attribute.useAtEmployee %}
+                        <div role="tabpanel" class="tab-pane active" id="employees">
                             {% embed 'event/admin/group/embed-group-table-employees.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
                         </div>
                     {% endif %}
-                    {% if usage.hasParticipants() %}
-                        <div role="tabpanel" class="tab-pane {% if not usage.hasEmployees() %}active{% endif %}"
-                             id="participants">
+                    {% if attribute.useAtParticipant %}
+                        <div role="tabpanel" class="tab-pane" id="participants">
                             {% embed 'event/admin/group/embed-group-table-participants.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
                         </div>
                     {% endif %}
-                    {% if usage.hasParticipations() %}
-                        <div role="tabpanel"
-                             class="tab-pane {% if not usage.hasEmployees() and not usage.hasParticipations() and usage.hasParticipations() %}active{% endif %}"
-                             id="participations">
-
+                    {% if attribute.useAtParticipation %}
+                        <div role="tabpanel" class="tab-pane" id="participations">
                             {% embed 'event/admin/group/embed-group-table-participations.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
                         </div>
                     {% endif %}
                 </div>
             </div>
-        </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12" style="margin-top: 15px;">
-                {% if not usage.multipleAssignments %}
-                    <div class="alert alert-info" role="alert">Niemand ist für
-                        <i>{{ choiceOption.attribute.managementTitle }}</i> in
-                        <i>{{ choiceOption.getManagementTitle(true) }}</i> eingeteilt.
-                    </div>
-                {% endif %}
             </div>
         </div>
-
     </div>
 {% endblock %}
