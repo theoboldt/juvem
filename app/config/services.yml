@@ -128,7 +128,7 @@ services:
         arguments:
             - "@logger"
 
-    AppBundle\EventListeners\RelatedParticipantResetListener:
+    AppBundle\EventListeners\ParticipantRelatedParticipantResetListener:
         arguments:
             - "%kernel.root_dir%/../tmp"
         tags:
@@ -137,6 +137,20 @@ services:
                 name: doctrine.orm.entity_listener
                 event: preUpdate
                 entity: AppBundle\Entity\Participant
+            -
+                name: doctrine.orm.entity_listener
+                event: prePersist
+                entity: AppBundle\Entity\Participant
+
+    AppBundle\EventListeners\ParticipationRelatedParticipantResetListener:
+        arguments:
+            - "%kernel.root_dir%/../tmp"
+        tags:
+            - { name: doctrine.orm.entity_listener }
+            -
+                name: doctrine.orm.entity_listener
+                event: preUpdate
+                entity: AppBundle\Entity\Participation
 
     app.related_participants_finder:
         class: AppBundle\Manager\RelatedParticipantsFinder
