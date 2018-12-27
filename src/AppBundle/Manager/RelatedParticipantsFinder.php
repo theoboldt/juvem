@@ -71,6 +71,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
         }
         $result = [];
+        $filloutValue = $fillout->getValue(); //refetch
         foreach ($filloutValue->getProposedParticipantIds() as $aid) {
             $result[] = $this->getParticipant($aid);
         }
@@ -89,7 +90,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             /** @var Participant[] $participants */
-            $participants = $this->repository->participantsList($event, null, false, true);
+            $participants = $this->repository->participantsList($event, null, true, true);
 
             /** @var Participant $participant */
             foreach ($participants as $participant) {
@@ -110,7 +111,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             $this->em->flush();
             $this->release($event, $lockHandle);
         } else {
-            fclose($lockHandle);
+            $this->closeLockHandle($lockHandle);
             sleep(2);
             $this->calculateProposedParticipantsForEvent($event, $attribute);
         }
@@ -126,7 +127,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             $result = $this->em->getConnection()->executeQuery(
-                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value 
+                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value
                    FROM acquisition_attribute_fillout
              INNER JOIN acquisition_attribute ON (acquisition_attribute_fillout.bid = acquisition_attribute.bid)
              INNER JOIN event_acquisition_attribute ON (event_acquisition_attribute.bid = acquisition_attribute.bid)
@@ -151,7 +152,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             }
             $this->em->getConnection()->commit();
         } else {
-            fclose($lockHandle);
+            $this->closeLockHandle($lockHandle);
             sleep(2);
             $this->resetProposedParticipantsForEvent($event);
         }

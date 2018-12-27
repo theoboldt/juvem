@@ -59,6 +59,7 @@ $(function () {
                             '<td>' + row.firstName + '</td>' +
                             '<td>' + row.lastName + '</td>' +
                             '<td>' + row.age + '</td>' +
+                            '<td>' + row.status + '</td>' +
                             '<td class="text-right"><div data-aid="' + row.aid + '" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> verknüpfen</div></td>' +
                             '</tr>';
                     });
@@ -72,12 +73,12 @@ $(function () {
                         $('#dialogModalRelateParticipant form').submit();
                     });
                 } else {
-                    tbodyEl.html('<td colspan="4" class="text-center">(Keine passenden Teilnehmer gefunden)</td>');
+                    tbodyEl.html('<td colspan="5" class="text-center">(Keine passenden Teilnehmer gefunden)</td>');
                 }
 
             },
             error: function () {
-                tbodyEl.html('<td colspan="4" class="text-center">(Fehler beim laden der Vorschläge)</td>');
+                tbodyEl.html('<td colspan="5" class="text-center">(Fehler beim laden der Vorschläge)</td>');
             },
         });
     })

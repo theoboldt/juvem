@@ -545,18 +545,26 @@ class AdminSingleController extends Controller
         if (!$filloutValue instanceof ParticipantFilloutValue) {
             throw new NotFoundHttpException('Provided fillout is not a participant fillout type');
         }
-
+        $statusFormatter = ParticipantStatus::formatter();
+    
         /** @var RelatedParticipantsFinder $repository */
-        $finder = $this->get('app.related_participants_finder');
+        $finder       = $this->get('app.related_participants_finder');
         $participants = $finder->proposedParticipants($fillout);
-
+    
+    
         $result = [];
         foreach ($participants as $participant) {
+            $participantStatusText = $statusFormatter->formatMask($participant->getStatus(true));
+            if ($participant->getDeletedAt()) {
+                $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
+            }
+        
             $result[] = [
                 'aid'       => $participant->getAid(),
                 'firstName' => $participant->getNameFirst(),
                 'lastName'  => $participant->getNameLast(),
                 'age'       => $participant->getYearsOfLifeAtEvent(),
+                'status'    => $participantStatusText
             ];
         }
 
