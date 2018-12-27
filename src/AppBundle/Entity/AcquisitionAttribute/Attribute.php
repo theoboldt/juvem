@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Attribute
 {
-    use CreatedModifiedTrait, SoftDeleteTrait;
+    use CreatedModifiedTrait, SoftDeleteTrait, PriceFormulaTrait;
 
     const LABEL_FIELD_TEXT        = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA    = 'Textfeld (Mehrzeilig)';
@@ -147,6 +147,13 @@ class Attribute
      * @var \Doctrine\Common\Collections\Collection|array|AttributeChoiceOption[]
      */
     protected $choiceOptions;
+    
+    /**
+     * @ORM\Column(name="is_price_formula_enabled", type="smallint", options={"unsigned":true,"default":0})
+     *
+     * @var boolean
+     */
+    protected $isPriceFormulaEnabled = false;
 
     /**
      * Constructor
@@ -712,4 +719,28 @@ class Attribute
     {
         return $this->choiceOptions;
     }
+
+    /**
+     * Determine if price formula handling is enabled or not
+     *
+     * @return bool Result
+     */
+    public function isPriceFormulaEnabled(): bool
+    {
+        return $this->isPriceFormulaEnabled;
+    }
+    
+    /**
+     * Set if  price formula handling is enabled or not
+     *
+     * @param bool $isPriceFormulaEnabled New Option
+     * @return self Self
+     */
+    public function setIsPriceFormulaEnabled(bool $isPriceFormulaEnabled): PriceFormulaTrait
+    {
+        $this->isPriceFormulaEnabled = $isPriceFormulaEnabled;
+        return $this;
+    }
+    
+    
 }

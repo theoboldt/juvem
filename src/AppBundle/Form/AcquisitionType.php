@@ -138,7 +138,21 @@ class AcquisitionType extends AbstractType
                 'attr'         => ['aria-describedby' => 'help-choice-options'],
                 'required'     => true
             ]
-
+        )->add(
+            'isPriceFormulaEnabled',
+            CheckboxType::class,
+            [
+                'label'    => 'Auswirkung auf Preis/Aufwandsentschädigung',
+                'required' => false
+            ]
+        )->add(
+            'priceFormula',
+            TextType::class,
+            [
+                'label'    => 'Formel',
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-form-formula'],
+            ]
         );
     }
 

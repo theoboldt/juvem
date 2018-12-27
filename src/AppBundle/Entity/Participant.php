@@ -163,7 +163,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface
     /**
      * Get aid
      *
-     * @return integer
+     * @return int|null
      */
     public function getAid()
     {

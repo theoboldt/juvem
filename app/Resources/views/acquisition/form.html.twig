@@ -58,6 +58,18 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label">Auswirkung auf Preis/Aufwandsentschädigung</label>
+                    {{ form_row(form.isPriceFormulaEnabled, {'label': 'Felder können einen Einfluss auf den Preis für die Teilnehmer bzw. auf die Aufwandsentschädigung für die Mitarbeiter haben. Dazu kann hier eine Formel konfiguriert werden.'}) }}
+                </div>
+            </div>
+            <div class="col-xs-12">
+                {{ form_label(form.priceFormula) }}
+                {{ form_widget(form.priceFormula) }}
+                {{ form_errors(form.priceFormula) }}
+                <p class="help-block" id="help-management-title">{# TODO #}</p>
+            </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-4 col-md-4">
