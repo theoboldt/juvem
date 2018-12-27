@@ -100,22 +100,37 @@ class AdminSingleController extends Controller
             }
         }
         $em = $this->getDoctrine()->getManager();
-
-        $formRelated = $this->createForm(ParticipationAssignRelatedParticipantType::class, null, ['eid' => $event->getEid()]);
+    
+        $formRelated = $this->createForm(
+            ParticipationAssignRelatedParticipantType::class, null, ['eid' => $event->getEid()]
+        );
         $formRelated->handleRequest($request);
         if ($formRelated->isSubmitted() && $formRelated->isValid()) {
-            $oid         = $formRelated->get('oid')->getData();
-            $participant = $formRelated->get('related')->getData();
-            /** @var Fillout $fillout */
-            foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
-                $filloutValue = $fillout->getValue();
-                if ($fillout->getOid() === (int)$oid && $filloutValue instanceof ParticipantFilloutValue) {
-                    $this->denyAccessUnlessGranted('participants_edit', $event);
-                    $filloutValue = $filloutValue->createWithParticipantSelected($participant);
-                    $fillout->setValue($filloutValue->getRawValue());
-                    $em->persist($fillout);
-                    $participationChanged = true;
-                    break;
+            $oid = (int)$formRelated->get('oid')->getData();
+            $relatedParticipant = $formRelated->get('related')->getData();
+        
+            $formRelatedUpdateFillout = function (\Traversable $fillouts) use (
+                $oid, $em, $event, $relatedParticipant, &$participationChanged
+            ) {
+                /** @var Fillout $fillout */
+                foreach ($fillouts as $fillout) {
+                    $filloutValue = $fillout->getValue();
+                    if ($fillout->getOid() === $oid && $filloutValue instanceof ParticipantFilloutValue) {
+                        $this->denyAccessUnlessGranted('participants_edit', $event);
+                        $filloutValue = $filloutValue->createWithParticipantSelected($relatedParticipant);
+                        $fillout->setValue($filloutValue->getRawValue());
+                        $em->persist($fillout);
+                        $participationChanged = true;
+                        return true;
+                    }
+                }
+                return false;
+            };
+            if (!$formRelatedUpdateFillout($participation->getAcquisitionAttributeFillouts())) {
+                foreach ($participation->getParticipants() as $participant) {
+                    if ($formRelatedUpdateFillout($participant->getAcquisitionAttributeFillouts())) {
+                        break;
+                    }
                 }
             }
         }

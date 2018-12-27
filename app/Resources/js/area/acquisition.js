@@ -37,17 +37,16 @@ $(function () {
             description = buttonEl.data('description'),
             firstName = buttonEl.data('first-name'),
             lastName = buttonEl.data('last-name'),
-            tbodyEl = modalEl.find('table tbody')
-        ;
+            tbodyEl = modalEl.find('table tbody');
 
         modalEl.find('.modal-title span').text(title);
         modalEl.find('.modal-body p.description').text(description);
         modalEl.find('.modal-body .first-name').text(firstName);
         modalEl.find('.modal-body .last-name').text(lastName);
         modalEl.find('#participation_assign_related_participant_oid').val(buttonEl.data('oid'));
+        modalEl.find('#participation_assign_related_participant_related').val(buttonEl.data('aid'));
 
         tbodyEl.html('<tr><td colspan="4" class="text-center loading">(Wird geladen)</td></tr>');
-
 
         $.get({
             url: '../participant_proposal/' + buttonEl.data('oid'),
