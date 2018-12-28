@@ -143,7 +143,8 @@ class AcquisitionType extends AbstractType
             CheckboxType::class,
             [
                 'label'    => 'Auswirkung auf Preis/Aufwandsentschädigung',
-                'required' => false
+                'required' => false,
+                'attr'     => ['aria-describedby' => 'help-form-formula-enabled'],
             ]
         )->add(
             'priceFormula',

@@ -61,14 +61,25 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="control-label">Auswirkung auf Preis/Aufwandsentschädigung</label>
-                    {{ form_row(form.isPriceFormulaEnabled, {'label': 'Felder können einen Einfluss auf den Preis für die Teilnehmer bzw. auf die Aufwandsentschädigung für die Mitarbeiter haben. Dazu kann hier eine Formel konfiguriert werden.'}) }}
+                    <p class="help-block" id="help-formula-enabled">Felder können einen Einfluss auf den Preis für die Teilnehmer bzw. auf die Aufwandsentschädigung für die Mitarbeiter haben. Dazu kann hier eine Formel konfiguriert werden.</p>
+                    {{ form_row(form.isPriceFormulaEnabled, {'label': 'Auswirkung auf Preis/Aufwandsentschädigung aktivieren, Formel konfigurieren'}) }}
                 </div>
             </div>
             <div class="col-xs-12">
                 {{ form_label(form.priceFormula) }}
                 {{ form_widget(form.priceFormula) }}
                 {{ form_errors(form.priceFormula) }}
-                <p class="help-block" id="help-management-title">{# TODO #}</p>
+                <div id="help-management-title" class="help-block">
+                    <p>Die Formel kann aus Zahlen und den Grundrechenarten Addition <code>+</code>, Subtraktion <code>-</code>,
+                        Multiplikation <code>*</code>, Division <code>/</code> bestehen. Weiterhin können Klammern <code>()</code>
+                        gesetzt werden.
+                    </p>
+                    <p>
+                        Das Ergebnis der berechenten Formel wird zum Preis/zu der Aufwandsentschädigung <u>addiert</u>.
+                        Wenn ein Betrag vom Preis subtrahiert werden soll, multiplizieren sie ihre Formel mit <code>-1</code>.
+                    </p>
+                    <p>In der Formel für <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_NUMBER') }}</i> kann mit der Variable <code>{value}</code> auf den eingegebenen Wert zugegriffen werden.</p>
+                </div>
             </div>
         </div>
         <div class="row">
