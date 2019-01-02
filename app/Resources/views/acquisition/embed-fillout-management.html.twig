@@ -22,10 +22,9 @@
     {% endif %}
 {% elseif fillout.attribute.fieldType == 'AppBundle\\Form\\ParticipantDetectingType' %}
     {% set filloutValue = fillout.value %}
-    <span class="fillout-participant-detecting" data-oid="{{ fillout.oid }}"
-          data-aid="{{ filloutValue.selectedParticipantId }}">
+    <span class="fillout-participant-detecting">
         {% if filloutValue.selectedParticipantId %}
-            <a href="{{ path('admin_participant_detail', {eid: event.eid, aid: filloutValue.selectedParticipantId}) }}" title="Original: {{ filloutValue.getTextualValue()|e('html_attr') }}">
+            <a href="{{ path('admin_participant_detail', {eid: event.eid, aid: filloutValue.selectedParticipantId}) }}" data-toggle="tooltip" title="Original: {{ filloutValue.getTextualValue()|e('html_attr') }}">
                 {{ filloutValue.selectedParticipantFirstName }} {{ filloutValue.selectedParticipantLastName -}}
             </a> {{ 'link'|glyph('verknüpft') }}
         {% else %}
@@ -35,9 +34,10 @@
             <button data-toggle="modal" data-target="#dialogModalRelateParticipant"
                     data-title="{{ fillout.attribute.formTitle|e('html_attr') }}"
                     data-description="{{ fillout.attribute.formDescription|e('html_attr') }}"
-                    data-first-name="{{ filloutValue.relatedFirstName }}"
-                    data-last-name="{{ filloutValue.relatedLastName }}"
+                    data-first-name="{{ filloutValue.relatedFirstName|e('html_attr') }}"
+                    data-last-name="{{ filloutValue.relatedLastName|e('html_attr') }}"
                     data-oid="{{ fillout.oid }}"
+                    data-aid="{{ filloutValue.selectedParticipantId }}"
                     class="btn btn-default btn-xs"
                     title="Teilnehmerverknüpfung verwalten">{{ 'pencil'|glyph }}</button>
         {%- endif %}

@@ -46,18 +46,32 @@ abstract class RelatedParticipantsLocker
         touch($this->lockPath($event));
         return fopen($this->lockPath($event), 'r+');
     }
-
+    
     /**
      * Release lock and delete file
      *
-     * @param Event     $event  Related event
-     * @param  resource $handle Related handle
+     * @param Event $event Related event
+     * @param resource|bool $handle Related handle
      */
     protected function release(Event $event, $handle)
     {
-        flock($handle, LOCK_UN);
-        fclose($handle);
+        if (is_resource($handle)) {
+            flock($handle, LOCK_UN);
+        }
+        $this->closeLockHandle($handle);
         unlink($this->lockPath($event));
+    }
+    
+    /**
+     * Close lock handle if resource
+     *
+     * @param resource|bool $handle Handle or false
+     */
+    protected function closeLockHandle($handle)
+    {
+        if (is_resource($handle)) {
+            fclose($handle);
+        }
     }
 
     /**

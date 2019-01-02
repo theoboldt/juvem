@@ -74,18 +74,23 @@ class ParticipantFilloutValue extends FilloutValue
     /**
      * Create duplicate, having transmitted participant selected
      *
-     * @param Participant $participant Participant to select
+     * @param Participant|null $participant Participant to select
      * @return ParticipantFilloutValue New instance
      */
-    public function createWithParticipantSelected(Participant $participant)
+    public function createWithParticipantSelected(Participant $participant = null)
     {
         $value = json_decode($this->getRawValue(), true);
         if (!is_array($value)) {
             $value = [];
         }
-        $value['participant_selected']            = $participant->getAid();
-        $value['participant_selected_first_name'] = $participant->getNameFirst();
-        $value['participant_selected_last_name']  = $participant->getNameLast();
+        
+        $participantId = $participant ? $participant->getAid() : null;
+        $participantFirstName = $participant ? $participant->getNameFirst() : null;
+        $participantLastName = $participant ? $participant->getNameLast() : null;
+        
+        $value['participant_selected']            = $participantId;
+        $value['participant_selected_first_name'] = $participantFirstName;
+        $value['participant_selected_last_name']  = $participantLastName;
         return new self($this->getAttribute(), json_encode($value));
     }
 

@@ -8,61 +8,34 @@
  * file that was distributed with this source code.
  */
 
-
 namespace AppBundle\EventListeners;
 
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
+
 use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participant;
 use AppBundle\Form\ParticipantDetectingType;
 use AppBundle\Manager\RelatedParticipantsLocker;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 
-class RelatedParticipantResetListener extends RelatedParticipantsLocker
+abstract class AbstractRelatedParticipantResetListener extends RelatedParticipantsLocker
 {
-
-    /**
-     * Update participant
-     *
-     * @param Participant        $participant Related entity
-     * @param PreUpdateEventArgs $event       Doctrine information
-     */
-    public function preUpdate(Participant $participant, PreUpdateEventArgs $event)
-    {
-        if ($event->hasChangedField('nameLast') || $event->hasChangedField('nameFirst')) {
-            $this->resetProposedParticipantsForEvent(
-                $event->getEntityManager(), $participant->getParticipation()->getEvent()
-            );
-        }
-    }
-
-    /**
-     * Persist participant
-     *
-     * @param Participant        $participant Related entity
-     * @param LifecycleEventArgs $event       Doctrine information
-     */
-    public function prePersist(Participant $participant, LifecycleEventArgs $event)
-    {
-        //todo
-    }
-
+    
     /**
      * Reset proposed participants for an complete event
      *
-     * @param EntityManager $em    Entity manage
-     * @param Event         $event Related event
+     * @param EntityManager $em Entity manage
+     * @param Event $event Related event
+     * @param int $maxWait If defined, specifies maximum time to wait for lock
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function resetProposedParticipantsForEvent(EntityManager $em, Event $event)
+    protected function resetProposedParticipantsForEvent(EntityManager $em, Event $event, int $maxWait = 30)
     {
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             $em->getConnection()->beginTransaction();
             $result = $em->getConnection()->executeQuery(
-                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value 
+                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value
                    FROM acquisition_attribute_fillout
              INNER JOIN acquisition_attribute ON (acquisition_attribute_fillout.bid = acquisition_attribute.bid)
              INNER JOIN event_acquisition_attribute ON (event_acquisition_attribute.bid = acquisition_attribute.bid)
@@ -87,9 +60,15 @@ class RelatedParticipantResetListener extends RelatedParticipantsLocker
             $em->getConnection()->commit();
             $this->release($event, $lockHandle);
         } else {
-            fclose($lockHandle);
-            sleep(2);
-            $this->resetProposedParticipantsForEvent($em, $event);
+            
+            $this->closeLockHandle($lockHandle);
+            $sleep = 2;
+            sleep($sleep);
+            $maxWait -= $sleep;
+            if ($maxWait <= 0) {
+                throw new \RuntimeException('Failed to get lock');
+            }
+            $this->resetProposedParticipantsForEvent($em, $event, $maxWait);
         }
     }
 }
