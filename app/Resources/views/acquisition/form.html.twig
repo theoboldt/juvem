@@ -65,7 +65,7 @@
                     {{ form_row(form.isPriceFormulaEnabled, {'label': 'Auswirkung auf Preis/Aufwandsentschädigung aktivieren, Formel konfigurieren'}) }}
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12 form-input-formula" id="help-topic-formula">
                 {{ form_label(form.priceFormula) }}
                 {{ form_widget(form.priceFormula) }}
                 {{ form_errors(form.priceFormula) }}
@@ -141,7 +141,7 @@
                         </div>
                         <div class="row" style="margin-bottom: 15px;">
                             <div class="col-xs-12">
-                                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }}
+                                <button class="btn btn-success prototype-add form-acquisition-option-add">{{ 'plus-sign'|glyph }}
                                     Weitere Option hinzufügen
                                 </button>
                             </div>
@@ -190,7 +190,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row form-group">
                         <div class="col-xs-12 col-sm-9">
                             {{ form_label(formElement.managementTitle) }}
                             <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
@@ -214,6 +214,23 @@
                                 </span>
                             </div>
                             {{ form_errors(formElement.shortTitle) }}
+                        </div>
+                    </div>
+                    <div class="row form-input-formula">
+                        <div class="col-xs-12">
+                            {{ form_errors(formElement.priceFormula) }}
+                            <div class="form-group {% if not formElement.priceFormula.vars.valid %}has-error{% endif %}">
+                                {{ form_label(formElement.priceFormula) }}
+                                <div class="input-group">
+                                    {{ form_widget(formElement.priceFormula) }}
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default" href="#help-topic-formula">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </a>
+                                    </span>
+                                </div>
+                                {{ form_errors(formElement.priceFormula) }}
+                            </div>
                         </div>
                     </div>
                 </div>

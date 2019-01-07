@@ -29,6 +29,24 @@ $(function () {
     updateType();
     $(elementType).change(updateType);
 
+    /**
+     * ACQUISITION: Price formula enable/disable
+     */
+    var isPriceFormulaEnabledEl = $('#acquisition_isPriceFormulaEnabled'),
+        updateFormulaInputDisplay = function () {
+            var checked = isPriceFormulaEnabledEl.prop('checked');
+            if (checked) {
+                $('.form-input-formula').css('display', 'block');
+            } else {
+                $('.form-input-formula').css('display', 'none');
+            }
+        };
+    updateFormulaInputDisplay();
+    isPriceFormulaEnabledEl.change(updateFormulaInputDisplay);
+    $('.form-acquisition-option-add').on('click', function () {
+        console.log(1);
+        updateFormulaInputDisplay();
+    });
 
     $('#dialogModalRelateParticipant').on('show.bs.modal', function (event) {
         var buttonEl = $(event.relatedTarget),

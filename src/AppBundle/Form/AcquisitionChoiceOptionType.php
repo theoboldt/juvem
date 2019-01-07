@@ -45,6 +45,14 @@ class AcquisitionChoiceOptionType extends AbstractType {
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-info-choice-option-short']
                 ]
+            )->add(
+                'priceFormula',
+                TextType::class,
+                [
+                    'label'    => 'Formel',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-form-formula'],
+                ]
             );
     }
 
