@@ -11,8 +11,8 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Form\Transformer\AcquistionFormulaTransformer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -49,11 +49,14 @@ class AcquisitionChoiceOptionType extends AbstractType {
                 'priceFormula',
                 TextType::class,
                 [
-                    'label'    => 'Formel',
+                    'label'    => 'Formel, wenn diese Option ausgewählt ist',
+                    'mapped'   => true,
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-form-formula'],
                 ]
             );
+            
+        $builder->get('priceFormula')->addModelTransformer(new AcquistionFormulaTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver) {

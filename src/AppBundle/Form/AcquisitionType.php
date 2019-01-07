@@ -11,6 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Form\Transformer\AcquistionFormulaTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -143,6 +144,7 @@ class AcquisitionType extends AbstractType
             CheckboxType::class,
             [
                 'label'    => 'Auswirkung auf Preis/Aufwandsentschädigung',
+                'mapped'   => true,
                 'required' => false,
                 'attr'     => ['aria-describedby' => 'help-form-formula-enabled'],
             ]
@@ -151,10 +153,12 @@ class AcquisitionType extends AbstractType
             TextType::class,
             [
                 'label'    => 'Formel',
+                'mapped'   => true,
                 'required' => false,
                 'attr'     => ['aria-describedby' => 'help-form-formula'],
             ]
         );
+        $builder->get('priceFormula')->addModelTransformer(new AcquistionFormulaTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver)

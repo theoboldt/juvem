@@ -25,9 +25,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
+use \AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormulaValueUsage as AssertValidFormulaValueUsage;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @AssertValidFormulaValueUsage()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeRepository")
  * @ORM\Table(name="acquisition_attribute")
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)

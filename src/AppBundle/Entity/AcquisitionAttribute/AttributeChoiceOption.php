@@ -20,9 +20,11 @@ namespace AppBundle\Entity\AcquisitionAttribute;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use \AppBundle\Entity\AcquisitionAttribute\Formula\OnlyNumericManagementDescriptionsUsed as AssertOnlyNumericManagementDescriptionsUsed;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @AssertOnlyNumericManagementDescriptionsUsed()
  * @ORM\Entity
  * @ORM\Table(name="acquisition_attribute_choice_option")
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)

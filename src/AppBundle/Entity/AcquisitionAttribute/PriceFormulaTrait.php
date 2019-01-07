@@ -10,16 +10,20 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormula as AssertValidFormula;
 
 trait PriceFormulaTrait
 {
     /**
      * If set, contains a formula which has an effect on the price
      *
+     * @AssertValidFormula
+     *
      * @ORM\Column(type="string", length=255, name="price_formula", nullable=true)
      */
     protected $priceFormula = null;
-
+    
     /**
      * Get price formula if set
      *
@@ -29,7 +33,7 @@ trait PriceFormulaTrait
     {
         return $this->priceFormula;
     }
-
+    
     /**
      * Set new price formula
      *

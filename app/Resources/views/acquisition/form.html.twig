@@ -75,10 +75,21 @@
                         gesetzt werden.
                     </p>
                     <p>
-                        Das Ergebnis der berechenten Formel wird zum Preis/zu der Aufwandsentschädigung <u>addiert</u>.
+                        Das Ergebnis der berechneten Formel wird zum Preis/zu der Aufwandsentschädigung <u>addiert</u>.
                         Wenn ein Betrag vom Preis subtrahiert werden soll, multiplizieren sie ihre Formel mit <code>-1</code>.
                     </p>
-                    <p>In der Formel für <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_NUMBER') }}</i> kann mit der Variable <code>{value}</code> auf den eingegebenen Wert zugegriffen werden.</p>
+                    <ul>
+                        <li>
+                            In der Formel für Felder vom Typ <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_NUMBER') }}</i> kann mit der Variable <code>value</code> auf den eingegebenen Wert zugegriffen werden.
+                        </li>
+                        <li>
+                            Ist das Feld vom Typ <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_CHOICE') }}</i> und
+                            <ul>
+                                <li>kann nur eine Option gewählt werden, kann mit der Variable <code>value</code> auf den Inhalt von <i>Interner Titel</i> der Gewählten Option zugegriffen werden. Die Werte für <i>Interner Titel</i> aller Optionen müssen dann nummerisch sein;</li>
+                                <li>können dagegen mehrere Optionen ausgewählt werden, kann in der globalen Formel <code>value</code> nicht verwendet werden. Die Ergebnisse der berechneten Formeln aller gewählten Optionen werden zum Preis addiert.</li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
