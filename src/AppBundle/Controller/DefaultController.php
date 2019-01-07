@@ -155,7 +155,7 @@ class DefaultController extends Controller
         return new JsonResponse(
             [
                 'name'        => 'Juvem',
-                'description' => 'Juvem is a symfony based web application to manage events and newsletters',
+                'description' => 'A symfony based web application to manage events, participants, employees and newsletters',
                 'repository'  => [
                     'url'     => 'https://github.com/theoboldt/juvem.git',
                     'license' => 'MIT'
