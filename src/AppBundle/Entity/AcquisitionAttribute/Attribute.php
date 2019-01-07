@@ -147,7 +147,7 @@ class Attribute
      * @var \Doctrine\Common\Collections\Collection|array|AttributeChoiceOption[]
      */
     protected $choiceOptions;
-    
+
     /**
      * @ORM\Column(name="is_price_formula_enabled", type="smallint", options={"unsigned":true,"default":0})
      *
@@ -729,18 +729,18 @@ class Attribute
     {
         return $this->isPriceFormulaEnabled;
     }
-    
+
     /**
      * Set if  price formula handling is enabled or not
      *
      * @param bool $isPriceFormulaEnabled New Option
      * @return self Self
      */
-    public function setIsPriceFormulaEnabled(bool $isPriceFormulaEnabled): PriceFormulaTrait
+    public function setIsPriceFormulaEnabled(bool $isPriceFormulaEnabled)
     {
         $this->isPriceFormulaEnabled = $isPriceFormulaEnabled;
         return $this;
     }
-    
-    
+
+
 }

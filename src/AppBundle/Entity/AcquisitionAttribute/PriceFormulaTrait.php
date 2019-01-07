@@ -19,7 +19,7 @@ trait PriceFormulaTrait
      * @ORM\Column(type="string", length=255, name="price_formula", nullable=true)
      */
     protected $priceFormula = null;
-    
+
     /**
      * Get price formula if set
      *
@@ -29,7 +29,7 @@ trait PriceFormulaTrait
     {
         return $this->priceFormula;
     }
-    
+
     /**
      * Set new price formula
      *
@@ -41,6 +41,4 @@ trait PriceFormulaTrait
         $this->priceFormula = $priceFormula;
         return $this;
     }
-    
-    
 }
