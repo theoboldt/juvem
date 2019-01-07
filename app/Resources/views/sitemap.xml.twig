@@ -5,11 +5,13 @@
   <priority>1.0</priority>
   <lastmod>{{ lastModHomePage.format('Y-m-d') }}</lastmod>
 </url>
-<url>
-  <loc>{{ url('newsletter_subscription') }}</loc>
-  <priority>0.5</priority>
-  <lastmod>2017-01-01</lastmod>
-</url>
+{% if featureNewsletter %}
+    <url>
+        <loc>{{ url('newsletter_subscription') }}</loc>
+        <priority>0.5</priority>
+        <lastmod>2019-01-01</lastmod>
+    </url>
+{% endif %}
 <url>
   <loc>{{ url('fos_user_security_login') }}</loc>
   <priority>0.1</priority>
