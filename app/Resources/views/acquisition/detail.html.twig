@@ -110,6 +110,24 @@
 
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Formel</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if acquisition.priceFormulaEnabled %}
+                                    aktiviert
+                                {%- else -%}
+                                    deaktiviert
+                                {%- endif -%}
+                                {% if acquisition.priceFormula  is not empty -%}
+                                    , <code>{{ acquisition.priceFormula|e }}</code>
+                                {%- else -%}
+                                    , keine globale Formel konfiguriert
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
                     {% if acquisition.isChoiceType %}
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Optionen</label>
@@ -140,6 +158,18 @@
                                                         <i class="empty value-null"><span></span></i>
                                                     {% endif %}
                                                 </span>
+                                            {% if choice.priceFormula or acquisition.priceFormulaEnabled%}
+                                            <br>
+                                            <b>Formel: </b>
+                                                {% if choice.priceFormula is not empty %}
+                                                    <code>{{ choice.priceFormula }}</code>
+                                                    {% if not acquisition.priceFormulaEnabled %}
+                                                        (deaktiviert)
+                                                    {% endif %}
+                                                {% else %}
+                                                    <i class="empty value-null"><span></span></i>
+                                                {% endif %}
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>
