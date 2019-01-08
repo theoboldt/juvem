@@ -96,6 +96,7 @@ class PaymentManager
      * @param int|float $value        New price (euro cent)
      * @param string    $description  Description for change
      * @return array|ParticipantPaymentEvent[]
+     * @throws \Throwable
      */
     public function setPrice(array $participants, $value, string $description)
     {
@@ -219,6 +220,7 @@ class PaymentManager
      *                                             the value which still needs to be payed
      * @param string        $description           Info text for payment event
      * @return ParticipantPaymentEvent[]           New created payment event
+     * @throws \Throwable
      */
     public function paymentForParticipants(array $participantsUnordered, $value, string $description)
     {
@@ -316,6 +318,7 @@ class PaymentManager
      *                                 booking, which results in increase of the value which still needs to be payed
      * @param string      $description Info text for payment event
      * @return ParticipantPaymentEvent New created payment event
+     * @throws \Throwable
      */
     public function paymentForParticipant(Participant $participant, $value, string $description)
     {
@@ -438,6 +441,7 @@ class PaymentManager
      * Add or remove paid status depending on if there is still something which needs to be paid
      *
      * @param Participation $participation Target participation to check
+     * @throws \Throwable
      */
     private function updatePaidStatus(Participation $participation)
     {
