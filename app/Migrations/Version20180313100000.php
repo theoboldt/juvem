@@ -3,8 +3,10 @@
 namespace Application\Migrations;
 
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantPaymentEvent;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -38,7 +40,7 @@ class Version20180313100000 extends AbstractMigration implements ContainerAwareI
         /** @var Participant $participant */
         foreach ($result as $participant) {
             $changed = false;
-            $price   = $pm->getPriceForParticipant($participant);
+            $price   = $this->getPriceForParticipant($em, $participant);
             if ($participant->getPrice() !== $price) {
                 $changed = true;
                 $participant->setPrice($price);
@@ -62,4 +64,31 @@ class Version20180313100000 extends AbstractMigration implements ContainerAwareI
     {
         $this->addSql('ALTER TABLE participant DROP to_pay');
     }
+    
+    /**
+     * Get current price for transmitted @see Participant
+     *
+     * @param EntityManager $em Entity manager
+     * @param Participant $participant Desired participant
+     * @return int
+     */
+    private function getPriceForParticipant(EntityManager $em, Participant $participant)
+    {
+        $qb = $em->createQueryBuilder();
+        $qb->select('e.value')
+           ->from(ParticipantPaymentEvent::class, 'e')
+           ->innerJoin('e.participant', 'a')
+           ->andWhere($qb->expr()->eq('a.aid', ':aid'))
+            ->andWhere('e.isPriceSet = 1')
+           ->orderBy('e.createdAt', 'DESC')
+           ->setMaxResults(1);
+
+        $result = $qb->getQuery()->execute(['aid' => $participant->getAid()]);
+        if (is_array($result) && isset($result[0]) && isset($result[0]['value'])) {
+            return $result[0]['value'];
+        } else {
+            return null;
+        }
+    }
+
 }
