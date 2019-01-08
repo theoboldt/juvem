@@ -106,8 +106,11 @@ class BankAccountFilloutValue extends FilloutValue
         if ($this->rawValue === null) {
             return '';
         }
-
-        return sprintf('BIC: %s, IBAN: %s, Kontoinhaber: %s', $this->bic, $this->getIban(true), $this->owner);
+        if ($this->bic && $this->getIban(true) && $this->owner) {
+            return sprintf('BIC: %s, IBAN: %s, Kontoinhaber: %s', $this->bic, $this->getIban(true), $this->owner);
+        } else {
+            return '';
+        }
     }
 
     /**
