@@ -37,7 +37,7 @@ class Fillout
     protected $oid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="fillouts")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="fillouts", fetch="EAGER")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
      * @var Attribute
      */
