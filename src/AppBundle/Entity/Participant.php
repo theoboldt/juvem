@@ -16,6 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Manager\Payment\PriceSummand\PriceTaggableEntityInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -27,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  */
-class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface
+class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, PriceTaggableEntityInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 
@@ -168,6 +169,13 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface
     public function getAid()
     {
         return $this->aid;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId() {
+        return $this->getAid();
     }
 
     /**

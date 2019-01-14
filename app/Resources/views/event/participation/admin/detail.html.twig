@@ -97,7 +97,7 @@
                     <div>
                       <ul class="nav nav-tabs" role="tablist" id="paymentManagementTabs">
                           <li role="presentation" class="active"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
-                          <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis festlegen</a></li>
+                          <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis</a></li>
                           <li role="presentation"><a href="#priceHistory" id="priceHistoryLink" aria-controls="priceHistory" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
                       </ul>
                         <div class="tab-content">
@@ -194,10 +194,10 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="form-group">
-                                        <label for="newPrice">Preis je <abbr title="Teilnehmer">TN</abbr></label>
+                                        <label for="newPrice">Grundpreis je <abbr title="Teilnehmer">TN</abbr></label>
                                         <div class="input-group">
                                             <div class="input-group-addon">€</div>
-                                            <input type="text" class="form-control" id="newPriceValue" placeholder="Preis">
+                                            <input type="text" class="form-control" id="newPriceValue" placeholder="Grundpreis">
                                         </div>
                                     </div>
                                 </div>
@@ -206,16 +206,36 @@
                                         <div class="col-xs-12 col-sm-10">
                                             <div class="form-group">
                                                 <label for="newPriceDescription">Anmerkung</label>
-                                                <input type="text" class="form-control" id="newPriceDescription" placeholder="Grund dieser Festlegung oder Art des Preises">
+                                                <input type="text" class="form-control" id="newPriceDescription" placeholder="Grund dieser Festlegung oder Art des Grundpreises">
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-2">
-                                            <button class="btn btn-primary btn-inline-save" title="Preis festlegen"
+                                            <button class="btn btn-primary btn-inline-save" title="Grundpreis festlegen"
                                                     data-action="{{ constant('AppBundle\\Controller\\Event\\Participation\\AdminPaymentController::ACTION_PRICE_SET') }}">{{ 'floppy-disk'|glyph }}
-                                                <span class="visible-xs-inline">Geänderten Preis speichern</span>
+                                                <span class="visible-xs-inline">Geänderten Grundpreis speichern</span>
                                             </button>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <td></td>
+                                            <td>Teilnehmer</td>
+                                            <td>Wert</td>
+                                            <td>Art</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="4" class="text-center">(Wird geladen)</td>
+                                        </tr>
+                                        </tbody>
+                                        <tfoot></tfoot>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -645,7 +665,7 @@
                                                             data-aids="{{ participant.aid }}"
                                                             data-title="{{ participant|fullname }}"
                                                             class="btn btn-default btn-xs"
-                                                            title="Preis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
+                                                            title="Grundpreis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
                                                 {% if toPay is defined %}
                                                     {% if toPay < 0 %}

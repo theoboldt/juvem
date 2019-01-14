@@ -6,6 +6,8 @@ $(function () {
     var paymentManagementModal = $('#dialogPriceConfiguration'),
         toPayTableEl = $('#dialogPriceConfiguration #payment tbody'),
         toPayFooterTableEl = $('#dialogPriceConfiguration #payment tfoot'),
+        priceTagTableEl = $('#dialogPriceConfiguration #price tbody'),
+        priceTagFooterTableEl = $('#dialogPriceConfiguration #price tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
         displayToPayInfo = function (data) {
             var rawRow,
@@ -101,13 +103,65 @@ $(function () {
             }
 
             toPayFooterTableEl.html(
-                '<tr>' +
+                '<tr class="total">' +
                 '    <td class="value text-right"><b>' + valueText + '</b></td>' +
                 '    <td class="participant">' +
-                '       <b>Summe</b>'+ (multiple ? '' : ' (für alle Teilnehmer)') +
+                '       <b>Summe</b>'+ (multiple ? ' (für alle Teilnehmer)': '') +
                 '   </td>' +
                 '</tr>'
             );
+        },
+        displayPriceTag = function (rows, multiple, price_tag_sum) {
+            if (rows.length) {
+                var htmlRows = [];
+                jQuery.each(rows, function (key, rowData) {
+                    var description = '',
+                        symbolTitle = '?',
+                        glyph = 'check';
+
+                    switch (rowData.type) {
+                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\BasePriceSummand':
+                            glyph = 'tag';
+                            description = 'Grundpreis';
+                            break;
+                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand':
+                            description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>';
+                            break;
+                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutChoiceSummand':
+                            description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>, ' + '<i>' + rowData.choice_name + '</i>';
+                            break;
+                    }
+
+                    htmlRows.push(
+                        '<tr>' +
+                        '    <td class="symbol" title="' + symbolTitle + '">' +
+                        '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
+                        '   </td>' +
+                        '    <td class="participant">' + rowData.participant_name + '</td>' +
+                        '    <td class="value">' + rowData.value + '&nbsp;€</td>' +
+                        '    <td class="description">' + description + '</td>' +
+                        '</tr>'
+                    );
+                });
+                priceTagTableEl.html(htmlRows.join(''));
+                priceTagFooterTableEl.html(
+                    '<tr class="total">' +
+                    '    <td class="symbol" title="Gesamtpreis">' +
+                    '   </td>' +
+                    '    <td class="participant"></td>' +
+                    '    <td class="value">' + price_tag_sum + '&nbsp;€</td>' +
+                    '    <td class="description">' +
+                    '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
+                    '</td>' +
+                    '</tr>'
+                );
+            } else {
+                priceTagTableEl.html(
+                    '<tr>' +
+                    '<td colspan="4" class="text-center">(Keine Preisinformationen erfasst)</td>' +
+                    '</tr>'
+                );
+            }
         };
     $('#dialogPriceConfiguration').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
@@ -130,6 +184,7 @@ $(function () {
                 aids: aids
             },
             success: function (data) {
+                var multiple = (aids.toString().split(';').length > 1);
                 if (data.payment_history) {
                     displayPriceHistory(data.payment_history);
                 }
@@ -137,7 +192,10 @@ $(function () {
                     displayToPayInfo(data.to_pay);
                 }
                 if (data.to_pay_all) {
-                    displayPaymentFullValue(data.to_pay_all, (aids.toString().split(';').length > 1));
+                    displayPaymentFullValue(data.to_pay_all, multiple);
+                }
+                if (data.price_tags) {
+                    displayPriceTag(data.price_tags, multiple, data.price_tag_sum);
                 }
             },
             error: function () {

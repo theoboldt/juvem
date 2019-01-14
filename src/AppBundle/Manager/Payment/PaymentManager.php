@@ -10,13 +10,26 @@
 
 namespace AppBundle\Manager\Payment;
 
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\CommentRepositoryBase;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
+use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
+use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
+use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
+use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
+use AppBundle\Manager\Payment\PriceSummand\PriceTaggableEntityInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
@@ -49,6 +62,27 @@ class PaymentManager
     protected $user = null;
 
     /**
+     * Cache dir path for @see ExpressionLanguage cache
+     *
+     * @var string
+     */
+    private $expressionLanguageCachePath;
+
+    /**
+     * Lazy initialized @see ExpressionLanguage
+     *
+     * @var null|ExpressionLanguage
+     */
+    protected $expressionLanguage = null;
+
+    /**
+     * Price tag cache
+     *
+     * @var array
+     */
+    private $priceTagCache = [];
+
+    /**
      * Convert value in euro to value in euro cents
      *
      * @param   string|float|int $priceInEuro Value in euros, separated by comma
@@ -78,11 +112,16 @@ class PaymentManager
      * CommentManager constructor.
      *
      * @param EntityManagerInterface $em
+     * @param string                 $expressionLanguageCachePath
      * @param TokenStorage           $tokenStorage
      */
-    public function __construct(EntityManagerInterface $em, TokenStorage $tokenStorage = null)
-    {
-        $this->em = $em;
+    public function __construct(
+        EntityManagerInterface $em,
+        string $expressionLanguageCachePath,
+        TokenStorage $tokenStorage = null
+    ) {
+        $this->em                          = $em;
+        $this->expressionLanguageCachePath = $expressionLanguageCachePath;
         if ($tokenStorage && $tokenStorage->getToken()) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
@@ -170,14 +209,14 @@ class PaymentManager
      * @param Participant $participant Desired participant
      * @return int
      */
-    public function getPriceForParticipant(Participant $participant)
+    public function getMostRecentBasePriceForParticipant(Participant $participant)
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('e.value')
            ->from(ParticipantPaymentEvent::class, 'e')
            ->innerJoin('e.participant', 'a')
            ->andWhere($qb->expr()->eq('a.aid', ':aid'))
-            ->andWhere('e.isPriceSet = 1')
+           ->andWhere('e.isPriceSet = 1')
            ->orderBy('e.createdAt', 'DESC')
            ->setMaxResults(1);
 
@@ -187,6 +226,94 @@ class PaymentManager
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get summands for calculating price of participant
+     *
+     * @param PriceTaggableEntityInterface $entity Either @see Participant, or @see Employee
+     * @return EntityPriceTag
+     */
+    public function getEntityPriceTag(PriceTaggableEntityInterface $entity)
+    {
+        if (!isset($this->priceTagCache[get_class($entity)])
+            || !isset($this->priceTagCache[get_class($entity)][$entity->getId()])) {
+
+            $expressionLanguage = $this->expressionLanguage();
+
+            $summands = [];
+            if ($entity instanceof Participant) {
+                $price = $this->getMostRecentBasePriceForParticipant($entity);
+                if ($price !== null) {
+                    $summands[] = new BasePriceSummand($entity);
+                }
+            }
+
+            if ($entity instanceof EntityHavingFilloutsInterface) {
+                /** @var Fillout $fillout */
+                foreach ($entity->getAcquisitionAttributeFillouts() as $fillout) {
+                    $attribute = $fillout->getAttribute();
+                    if (!$attribute->isPriceFormulaEnabled()) {
+                        continue;
+                    }
+                    $value = $fillout->getValue();
+                    if ($attribute->getFieldType() === ChoiceType::class) {
+                        if (!$value instanceof ChoiceFilloutValue) {
+                            throw new \UnexpectedValueException(
+                                'Expecting ChoiceFilloutValue when attribute is ChoiceType'
+                            );
+                        }
+                        $choices = $value->getSelectedChoices();
+                        /** @var AttributeChoiceOption $choice */
+                        foreach ($choices as $choice) {
+                            if ($attribute->getPriceFormula()) {
+                                $formula = $choice->getPriceFormula();
+                                if ($formula) {
+                                    $summands = new FilloutChoiceSummand(
+                                        $entity,
+                                        $fillout,
+                                        $expressionLanguage->evaluate(
+                                            $formula, ['value' => $choice->getManagementTitle(true)]
+                                        ),
+                                        $choice
+                                    );
+                                }
+                            } else {
+                                $formula = $choice->getPriceFormula();
+                                if ($formula) {
+                                    $summands[] = new FilloutChoiceSummand(
+                                        $entity, $fillout, $expressionLanguage->evaluate($formula), $choice
+                                    );
+                                }
+                            }
+                        }
+                    } elseif ($attribute->getPriceFormula()) {
+                        $values = [];
+                        if ($attribute->getFieldType() === NumberType::class) {
+                            $values['value'] = $value->getTextualValue();
+                        }
+                        $formula = $attribute->getPriceFormula();
+                        if ($formula) {
+                            $summands[] = new FilloutSummand(
+                                $entity,
+                                $fillout,
+                                $expressionLanguage->evaluate($formula, $values)
+                            );
+                        }
+                    }
+
+                }
+            }
+            $this->priceTagCache[get_class($entity)][$entity->getId()] = new EntityPriceTag($entity, $summands);
+        }
+        return $this->priceTagCache[get_class($entity)][$entity->getId()];
+    }
+
+    public function getParticipantPriceInformation(Participant $participant)
+    {
+        $payments      = $this->paymentHistoryForParticipant($participant);
+        $priceSummands = $this->getEntityPriceTag($participant);
+
     }
 
     /**
@@ -375,12 +502,15 @@ class PaymentManager
             }
         }
         $allPricesNull = true;
-        foreach ($currentPrices as $currentPrice) {
+        $currentPrice = null;
+        foreach ($currentPrices as &$currentPrice) {
             if ($currentPrice !== null) {
+                $currentPrice  = $this->getEntityPriceTag($participant)->getPrice();
                 $allPricesNull = false;
                 break;
             }
         }
+        unset($currentPrice);
         if ($allPricesNull) {
             return 0;
         }
@@ -424,6 +554,8 @@ class PaymentManager
             //no price set event for current participant present, default price of event is not used
             return null;
         }
+        $priceInformation = $this->getEntityPriceTag($participant);
+        $currentPrice     = $priceInformation->getPrice();
 
         /** @var ParticipantPaymentEvent $payment */
         foreach ($payments as $payment) {
@@ -452,6 +584,15 @@ class PaymentManager
             $participation->setIsPaid($isPaidExpected);
             $this->em->persist($participation);
         }
+    }
+
+    private function expressionLanguage()
+    {
+        if (!$this->expressionLanguage) {
+            $cache                    = new FilesystemAdapter('', 0, $this->expressionLanguageCachePath);
+            $this->expressionLanguage = new ExpressionLanguage($cache);
+        }
+        return $this->expressionLanguage;
     }
 
 }

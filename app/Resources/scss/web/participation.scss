@@ -163,7 +163,7 @@
   }
 }
 
-#priceHistory table {
+#payment table, #price table, #priceHistory table {
   thead td {
     font-weight: bold;
   }
@@ -172,12 +172,20 @@
     border-top: 1px solid #aaa;
     border-bottom: 2px solid #bbb;
   }
-  tbody td.value {
+  td.value {
     text-align: right;
 
     i {
       color: #6d6d6d;
     }
+  }
+
+  tfoot tr.value {
+    font-weight: bold;
+  }
+
+  tfoot tr.total {
+    border-top: 2px #aaa solid;
   }
 }
 

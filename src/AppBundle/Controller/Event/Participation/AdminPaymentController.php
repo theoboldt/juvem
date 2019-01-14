@@ -14,6 +14,10 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\ParticipantPaymentEvent;
+use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
+use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
+use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
+use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
 use AppBundle\InvalidTokenHttpException;
@@ -84,6 +88,7 @@ class AdminPaymentController extends Controller
                 'success'         => true,
                 'payment_history' => $this->paymentHistory($participants),
                 'to_pay'          => $this->toPay($participants),
+                'price_tags'      => $this->priceTags($participants),
                 'to_pay_all'      => number_format($toPayReadable, 2, ',', '.'),
             ]
         );
@@ -108,10 +113,19 @@ class AdminPaymentController extends Controller
                 $toPayTotal += $payValue;
             }
         }
+        $paymentManager = $this->get('app.payment_manager');
+        $priceTags      = $this->priceTags($participants);
+        $priceSum = 0;
+        foreach ($priceTags as $summand) {
+            $priceSum += $summand['value_raw'];
+        }
+
 
         return new JsonResponse(
             [
                 'payment_history' => $this->paymentHistory($participants),
+                'price_tags'      => $priceTags,
+                'price_tag_sum'   => $priceSum === null ? null : number_format(($priceSum/100), 2, ',', '.'),
                 'to_pay'          => $toPayList,
                 'to_pay_all'      => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
             ]
@@ -136,7 +150,7 @@ class AdminPaymentController extends Controller
             $user         = $paymentEvent->getCreatedBy();
             $participant  = $paymentEvent->getParticipant();
             $flatEvents[] = [
-                'created_by_name'  => $user === null ? 'System': $user->userFullname(),
+                'created_by_name'  => $user === null ? 'System' : $user->userFullname(),
                 'created_by_uid'   => $user === null ? null : $user->getUid(),
                 'created_at'       => $paymentEvent->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
                 'participant_name' => $participant->fullname(),
@@ -148,6 +162,46 @@ class AdminPaymentController extends Controller
             ];
         }
         return $flatEvents;
+    }
+
+    /**
+     * Get price tags for data
+     *
+     * @param array $participants
+     * @return array
+     */
+    private function priceTags(array $participants)
+    {
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        /** @var Participant $participant */
+
+        $result = [];
+
+        foreach ($participants as $participant) {
+            $priceTag = $paymentManager->getEntityPriceTag($participant);
+
+            /** @var SummandInterface $summand */
+            foreach ($priceTag->getSummands() as $summand) {
+                $attributeName = ($summand instanceof AttributeAwareInterface)
+                    ? $summand->getAttribute()->getManagementTitle() : null;
+
+                $choiceName = ($summand instanceof FilloutChoiceSummand)
+                    ? $summand->getChoice() : null;
+
+                $result[] = [
+                    'participant_name' => $participant->fullname(),
+                    'participant_aid'  => $participant->getId(),
+                    'value'            => number_format($summand->getValue() / 100, 2, ',', '.'),
+                    'value_raw'        => $summand->getValue(),
+                    'type'             => get_class($summand),
+                    'attribute_name'   => $attributeName,
+                    'choice_name'      => $choiceName,
+                ];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -170,7 +224,7 @@ class AdminPaymentController extends Controller
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
                 'value'            => number_format($value, 2, ',', '.'),
-                'value_raw'        => $value
+                'value_raw'        => $value,
             ];
         }
 
