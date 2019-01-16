@@ -187,12 +187,12 @@ class AdminPaymentController extends Controller
                     ? $summand->getAttribute()->getManagementTitle() : null;
 
                 $choiceName = ($summand instanceof FilloutChoiceSummand)
-                    ? $summand->getChoice() : null;
+                    ? $summand->getChoice()->getShortTitle(true) : null;
 
                 $result[] = [
                     'participant_name' => $participant->fullname(),
                     'participant_aid'  => $participant->getId(),
-                    'value'            => number_format($summand->getValue() / 100, 2, ',', '.'),
+                    'value'            => number_format($summand->getValue()/100, 2, ',', '.'),
                     'value_raw'        => $summand->getValue(),
                     'type'             => get_class($summand),
                     'attribute_name'   => $attributeName,
