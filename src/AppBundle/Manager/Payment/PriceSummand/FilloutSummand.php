@@ -32,15 +32,15 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
      * @var float|int
      */
     protected $value;
-
+    
     /**
      * FilloutSummand constructor.
      *
-     * @param Participant $entity
-     * @param Fillout     $fillout
-     * @param float|int   $value
+     * @param PriceTaggableEntityInterface $entity
+     * @param Fillout $fillout
+     * @param float|int $value
      */
-    public function __construct(Participant $entity, Fillout $fillout, $value)
+    public function __construct(PriceTaggableEntityInterface $entity, Fillout $fillout, $value)
     {
         $this->fillout = $fillout;
         $this->value   = $value;

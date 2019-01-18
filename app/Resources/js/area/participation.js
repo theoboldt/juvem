@@ -128,7 +128,7 @@ $(function () {
                             description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>';
                             break;
                         case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutChoiceSummand':
-                            description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>, ' + '<span class="label label-primary">' + rowData.choice_name + '</span>';
+                            description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>,<br> Option ' + '<i>' + eHtml(rowData.choice_name) + '</i>';
                             break;
                     }
 

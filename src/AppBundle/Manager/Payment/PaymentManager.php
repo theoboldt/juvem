@@ -239,8 +239,6 @@ class PaymentManager
         if (!isset($this->priceTagCache[get_class($entity)])
             || !isset($this->priceTagCache[get_class($entity)][$entity->getId()])) {
 
-            $expressionLanguage = $this->expressionLanguage();
-
             $summands = [];
             if ($entity instanceof Participant) {
                 $price = $this->getMostRecentBasePriceForParticipant($entity);
@@ -267,47 +265,100 @@ class PaymentManager
                         /** @var AttributeChoiceOption $choice */
                         foreach ($choices as $choice) {
                             if ($attribute->getPriceFormula()) {
-                                $formula = $choice->getPriceFormula();
-                                if ($formula) {
-                                    $summands = new FilloutChoiceSummand(
-                                        $entity,
-                                        $fillout,
-                                        $expressionLanguage->evaluate(
-                                            $formula, ['value' => $choice->getManagementTitle(true)]
-                                        ),
-                                        $choice
-                                    );
-                                }
+                                $summand = $this->filloutChoiceSummandAttributeFormula($entity, $fillout, $choice);
                             } else {
-                                $formula = $choice->getPriceFormula();
-                                if ($formula) {
-                                    $summands[] = new FilloutChoiceSummand(
-                                        $entity, $fillout, $expressionLanguage->evaluate($formula), $choice
-                                    );
-                                }
+                                $summand = $this->filloutChoiceSummandChoiceFormula($entity, $fillout, $choice);
+                            }
+                            if ($summand) {
+                                $summands[] = $summand;
                             }
                         }
                     } elseif ($attribute->getPriceFormula()) {
-                        $values = [];
-                        if ($attribute->getFieldType() === NumberType::class) {
-                            $values['value'] = $value->getTextualValue();
-                        }
-                        $formula = $attribute->getPriceFormula();
-                        if ($formula) {
-                            $summands[] = new FilloutSummand(
-                                $entity,
-                                $fillout,
-                                $expressionLanguage->evaluate($formula, $values)
-                            );
+                        $summand = $this->filloutSummand($entity, $fillout);
+                        if ($summand) {
+                            $summands[] = $summand;
                         }
                     }
-
                 }
             }
             $this->priceTagCache[get_class($entity)][$entity->getId()] = new EntityPriceTag($entity, $summands);
         }
         return $this->priceTagCache[get_class($entity)][$entity->getId()];
     }
+    
+    /**
+     * Generate fillout summand for transmitted @see Fillout
+     *
+     * @param PriceTaggableEntityInterface $entity
+     * @param Fillout $fillout
+     * @return FilloutSummand|null
+     */
+    private function filloutSummand(
+        PriceTaggableEntityInterface $entity, Fillout $fillout
+    )
+    {
+        $attribute = $fillout->getAttribute();
+        $formula   = $attribute->getPriceFormula();
+        $value     = $fillout->getValue();
+        if (!$formula) {
+            return null;
+        }
+        $values = [];
+        if ($attribute->getFieldType() === NumberType::class) {
+            $values['value'] = $value->getTextualValue();
+        }
+        
+        return new FilloutSummand(
+            $entity,
+            $fillout,
+            (100 * $this->expressionLanguage()->evaluate($formula, $values))
+        );
+    }
+    
+    /**
+     * Generate choice summand for @see AttributeChoiceOption having formula at @see Attribute level
+     *
+     * @param PriceTaggableEntityInterface $entity
+     * @param Fillout $fillout
+     * @param AttributeChoiceOption $choice
+     * @return FilloutChoiceSummand|null
+     */
+    private function filloutChoiceSummandAttributeFormula(
+        PriceTaggableEntityInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+    ) {
+        $formula = $fillout->getAttribute()->getPriceFormula();
+        if (!$formula) {
+            return null;
+        }
+        return new FilloutChoiceSummand(
+            $entity,
+            $fillout,
+            (100*$this->expressionLanguage()->evaluate($formula, ['value' => $choice->getManagementTitle(true)])),
+            $choice
+        );
+    }
+    
+    /**
+     * Generate choice summand for @see AttributeChoiceOption having formula at @see AttributeChoiceOption level
+     *
+     * @param PriceTaggableEntityInterface $entity
+     * @param Fillout $fillout
+     * @param AttributeChoiceOption $choice
+     * @return FilloutChoiceSummand|null
+     */
+    private function filloutChoiceSummandChoiceFormula(
+        PriceTaggableEntityInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+    )
+    {
+        $formula = $choice->getPriceFormula();
+        if (!$formula) {
+            return null;
+        }
+        return new FilloutChoiceSummand(
+            $entity, $fillout, (100 * $this->expressionLanguage()->evaluate($formula)), $choice
+        );
+    }
+ 
 
     public function getParticipantPriceInformation(Participant $participant)
     {
