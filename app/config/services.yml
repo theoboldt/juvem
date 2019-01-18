@@ -113,8 +113,14 @@ services:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
             - '@doctrine.orm.entity_manager'
-            - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
+            - '@app.price_manager'
             - '@security.token_storage'
+        public: true
+    app.price_manager:
+        class: AppBundle\Manager\Payment\PriceManager
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
         public: true
     app.payment_suggestion_manager:
         class: AppBundle\Manager\Payment\PaymentSuggestionManager
