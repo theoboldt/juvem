@@ -127,6 +127,7 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
+        $paymentManager          = $this->get('app.payment_manager');
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
@@ -166,7 +167,7 @@ class AdminMultipleController extends Controller
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
             $price = $participant->getPrice(true);
-            $toPay = $participant->getToPay(true);
+            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
 
             $participantEntry = array(
                 'aid'                      => $participant->getAid(),

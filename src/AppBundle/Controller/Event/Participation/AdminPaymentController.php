@@ -114,13 +114,11 @@ class AdminPaymentController extends Controller
                 $toPayTotal += $payValue;
             }
         }
-        $paymentManager = $this->get('app.payment_manager');
-        $priceTags      = $this->priceTags($participants);
-        $priceSum = 0;
+        $priceTags = $this->priceTags($participants);
+        $priceSum  = 0;
         foreach ($priceTags as $summand) {
             $priceSum += $summand['value_raw'];
         }
-
 
         return new JsonResponse(
             [

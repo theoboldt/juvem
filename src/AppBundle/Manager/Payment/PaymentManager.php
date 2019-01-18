@@ -156,8 +156,6 @@ class PaymentManager
                     $em->persist($event);
                     $em->flush($event); //ensure events are on db before fetching for to pay cache
 
-                    $participantToPay = $this->toPayValueForParticipant($participant);
-                    $participant->setToPay($participantToPay);
                     $em->persist($participant);
                     $events[] = $event;
                 }
@@ -380,14 +378,7 @@ class PaymentManager
         );
     }
  
-
-    public function getParticipantPriceInformation(Participant $participant)
-    {
-        $payments      = $this->paymentHistoryForParticipant($participant);
-        $priceSummands = $this->getEntityPriceTag($participant);
-    }
-
-    /**
+     /**
      * Get all payment events for transmitted @see Participants
      *
      * @param array|Participant[] $participants List of Participants
@@ -492,9 +483,6 @@ class PaymentManager
                     $this->em->persist($payment);
                     $this->em->flush($payment); //ensure payment event is stored
 
-                    $participantToPay = $this->toPayValueForParticipant($participant);
-                    $participant->setToPay($participantToPay);
-
                     $this->em->persist($participant);
                     $payments[] = $payment;
                 }
@@ -528,10 +516,6 @@ class PaymentManager
                 $this->em->persist($payment);
                 $this->em->flush($payment);
 
-                $participantToPay = $this->toPayValueForParticipant($participant);
-                $participant->setToPay($participantToPay);
-
-
                 $participation = $participant->getParticipation();
                 $this->updatePaidStatus($participation);
 
@@ -542,7 +526,7 @@ class PaymentManager
     }
 
     /**
-     * Get amount of money which still needs to be paid for a single @see Participant
+     * Get amount of money which still needs to be paid for a complete @see Participation
      *
      * @param Participation $participation Target participation
      * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
@@ -550,54 +534,18 @@ class PaymentManager
      */
     public function toPayValueForParticipation(Participation $participation, $inEuro = false)
     {
-        $fullHistory   = $this->paymentHistoryForParticipation($participation);
-        $currentPrices = [];
-        $payments      = [];
-        /** @var Participant $participant */
+        $allNull     = true;
+        $toPayValues = [];
         foreach ($participation->getParticipants() as $participant) {
-            $currentPrices[$participant->getAid()] = null;
+            $toPayValue    = $this->toPayValueForParticipant($participant, $inEuro);
+            $toPayValues[] = $toPayValue;
+            $allNull       = $allNull && $toPayValue === null;
         }
-        /** @var ParticipantPaymentEvent $event */
-        foreach ($fullHistory as $event) {
-            $aid = $event->getParticipant()->getAid();
-            if ($event->isPricePaymentEvent()) {
-                $payments[] = $event;
-            } elseif ($event->isPriceSetEvent() && $currentPrices[$aid] === null) {
-                $currentPrices[$aid] = $event->getValue();
-            }
+        if ($allNull) {
+            return null;
         }
-        foreach ($currentPrices as $aid => $currentPrice) {
-            if ($currentPrices === null) {
-                //no price set event for current participant present, so default price of event is used
-                $currentPrices[$aid] = $participant->getEvent()->getPrice();
-            }
-        }
-        $allPricesNull = true;
-        $currentPrice = null;
-        foreach ($currentPrices as &$currentPrice) {
-            if ($currentPrice !== null) {
-                $currentPrice  = $this->getEntityPriceTag($participant)->getPrice();
-                $allPricesNull = false;
-                break;
-            }
-        }
-        unset($currentPrice);
-        if ($allPricesNull) {
-            return 0;
-        }
-
-        $currentTotalPrice = array_sum($currentPrices);
-
-        /** @var ParticipantPaymentEvent $payment */
-        foreach ($payments as $payment) {
-            $currentTotalPrice += $payment->getValue();
-        }
-
-        if ($inEuro) {
-            $currentTotalPrice /= 100;
-        }
-
-        return $currentTotalPrice;
+    
+        return array_sum($toPayValues);
     }
 
     /**
@@ -618,7 +566,7 @@ class PaymentManager
             if ($event->isPricePaymentEvent()) {
                 $payments[] = $event;
             } elseif ($event->isPriceSetEvent() && $currentPrice === null) {
-                $currentPrice = $event->getValue();
+                $currentPrice = $event->getValue($inEuro);
             }
         }
         if ($currentPrice === null) {
@@ -626,15 +574,11 @@ class PaymentManager
             return null;
         }
         $priceInformation = $this->getEntityPriceTag($participant);
-        $currentPrice     = $priceInformation->getPrice();
+        $currentPrice     = $priceInformation->getPrice($inEuro);
 
         /** @var ParticipantPaymentEvent $payment */
         foreach ($payments as $payment) {
-            $currentPrice += $payment->getValue();
-        }
-
-        if ($inEuro) {
-            $currentPrice /= 100;
+            $currentPrice += $payment->getValue($inEuro);
         }
 
         return $currentPrice;
