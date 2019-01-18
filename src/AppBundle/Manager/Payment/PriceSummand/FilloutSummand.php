@@ -27,7 +27,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     protected $fillout;
 
     /**
-     * Get price in euro cent
+     * Get price in euro
      *
      * @var float|int
      */
@@ -38,7 +38,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
      *
      * @param SummandImpactedInterface $impacted
      * @param Fillout $fillout
-     * @param float|int $value
+     * @param float|int $value Numeric summand value in euro
      */
     public function __construct(SummandImpactedInterface $impacted, Fillout $fillout, $value)
     {
@@ -61,11 +61,11 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     /**
      * {@inheritdoc}
      */
-    public function getValue()
+    public function getValue($inEuro = false)
     {
-        return $this->value;
+        return $inEuro ? $this->value : (100*$this->value);
     }
-
+    
     /**
      * Get related attribute
      *

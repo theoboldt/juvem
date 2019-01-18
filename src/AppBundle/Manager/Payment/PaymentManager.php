@@ -305,9 +305,7 @@ class PaymentManager
      * @param SummandImpactedInterface $impactedEntity Either @see Participant, or @see Employee
      * @return EntityPriceTag
      */
-    public function getEntityPriceTag(
-        SummandImpactedInterface $impactedEntity
-    )
+    public function getEntityPriceTag(SummandImpactedInterface $impactedEntity)
     {
         return new EntityPriceTag($impactedEntity, $this->getEntitySummands($impactedEntity));
     }
@@ -319,9 +317,7 @@ class PaymentManager
      * @param Fillout $fillout
      * @return FilloutSummand|null
      */
-    private function filloutSummand(
-        SummandImpactedInterface $entity, Fillout $fillout
-    )
+    private function filloutSummand(SummandImpactedInterface $entity, Fillout $fillout)
     {
         $attribute = $fillout->getAttribute();
         $formula   = $attribute->getPriceFormula();
@@ -337,7 +333,7 @@ class PaymentManager
         return new FilloutSummand(
             $entity,
             $fillout,
-            (100 * $this->expressionLanguage()->evaluate($formula, $values))
+            $this->expressionLanguage()->evaluate($formula, $values)
         );
     }
     
@@ -359,7 +355,7 @@ class PaymentManager
         return new FilloutChoiceSummand(
             $entity,
             $fillout,
-            (100*$this->expressionLanguage()->evaluate($formula, ['value' => $choice->getManagementTitle(true)])),
+            $this->expressionLanguage()->evaluate($formula, ['value' => $choice->getManagementTitle(true)]),
             $choice
         );
     }
@@ -374,14 +370,13 @@ class PaymentManager
      */
     private function filloutChoiceSummandChoiceFormula(
         SummandImpactedInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
-    )
-    {
+    ) {
         $formula = $choice->getPriceFormula();
         if (!$formula) {
             return null;
         }
         return new FilloutChoiceSummand(
-            $entity, $fillout, (100 * $this->expressionLanguage()->evaluate($formula)), $choice
+            $entity, $fillout, $this->expressionLanguage()->evaluate($formula), $choice
         );
     }
  
@@ -390,7 +385,6 @@ class PaymentManager
     {
         $payments      = $this->paymentHistoryForParticipant($participant);
         $priceSummands = $this->getEntityPriceTag($participant);
-
     }
 
     /**

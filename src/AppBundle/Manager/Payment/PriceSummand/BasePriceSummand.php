@@ -35,13 +35,14 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
     }
     
     /**
-     * Get price in euro cent
+     * Get price
      *
+     * @param bool $inEuro If set to true, value is returned in euro
      * @return float|int
      */
-    public function getValue()
+    public function getValue($inEuro = false)
     {
-        $price = $this->impacted->getPrice();
+        $price = $this->impacted->getPrice($inEuro);
         if ($price === null) {
             throw new \InvalidArgumentException('Base price is null');
         }

@@ -14,13 +14,14 @@ namespace AppBundle\Manager\Payment\PriceSummand;
 
 interface SummandInterface
 {
-
+    
     /**
      * Get price in euro cent
      *
+     * @param bool $inEuro If set to true, value is returned in euro
      * @return float|int
      */
-    public function getValue();
+    public function getValue($inEuro = false);
 
     /**
      * Get related entity

@@ -64,15 +64,16 @@ class EntityPriceTag
     /**
      * Get price tag
      *
+     * @param bool $inEuro If set to true, value is returned in euro
      * @return float|int|null
      */
-    public function getPrice() {
+    public function getPrice($inEuro = false) {
         if (!count($this->summands)) {
             return null;
         }
         $price = 0;
         foreach ($this->summands as $summand) {
-            $price += $summand->getValue();
+            $price += $summand->getValue($inEuro);
         }
         return $price;
     }

@@ -30,7 +30,7 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
      *
      * @param SummandImpactedInterface $impacted
      * @param Fillout $fillout
-     * @param float|int $value
+     * @param float|int $value Numeric summand value in euro
      * @param AttributeChoiceOption $choice
      */
     public function __construct(
@@ -39,16 +39,6 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
     {
         $this->choice = $choice;
         parent::__construct($impacted, $fillout, $value);
-    }
-    
-    /**
-     * Get price in euro cent
-     *
-     * @return float|int
-     */
-    public function getValue()
-    {
-        return $this->value;
     }
     
     /**
