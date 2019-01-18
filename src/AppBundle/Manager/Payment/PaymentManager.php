@@ -13,7 +13,6 @@ namespace AppBundle\Manager\Payment;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\CommentRepositoryBase;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
@@ -47,13 +46,6 @@ class PaymentManager
      * @var EntityManager
      */
     protected $em;
-
-    /**
-     * Price event repository
-     *
-     * @var CommentRepositoryBase
-     */
-    protected $repository;
 
     /**
      * The user currently logged in
@@ -126,7 +118,6 @@ class PaymentManager
         if ($tokenStorage && $tokenStorage->getToken()) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
-        $this->repository = $this->em->getRepository(ParticipantPaymentEvent::class);
     }
 
     /**
@@ -226,7 +217,7 @@ class PaymentManager
             return null;
         }
     }
-    
+
     /**
      * Get summands for calculating price of participant
      *
@@ -241,7 +232,7 @@ class PaymentManager
         if (!$causingEntity) {
             $causingEntity = $impactedEntity;
         }
-        
+
         if (!isset($this->summandCache[get_class($impactedEntity)])
             || !isset($this->summandCache[get_class($impactedEntity)][$impactedEntity->getId()])) {
 
@@ -296,7 +287,7 @@ class PaymentManager
         }
         return $this->summandCache[get_class($causingEntity)][$causingEntity->getId()];
     }
-    
+
     /**
      * Get summands for calculating price of participant
      *
@@ -307,7 +298,7 @@ class PaymentManager
     {
         return new EntityPriceTag($impactedEntity, $this->getEntitySummands($impactedEntity));
     }
-    
+
     /**
      * Generate fillout summand for transmitted @see Fillout
      *
@@ -327,14 +318,14 @@ class PaymentManager
         if ($attribute->getFieldType() === NumberType::class) {
             $values['value'] = $value->getTextualValue();
         }
-        
+
         return new FilloutSummand(
             $entity,
             $fillout,
             $this->expressionLanguage()->evaluate($formula, $values)
         );
     }
-    
+
     /**
      * Generate choice summand for @see AttributeChoiceOption having formula at @see Attribute level
      *
@@ -357,7 +348,7 @@ class PaymentManager
             $choice
         );
     }
-    
+
     /**
      * Generate choice summand for @see AttributeChoiceOption having formula at @see AttributeChoiceOption level
      *
@@ -377,7 +368,7 @@ class PaymentManager
             $entity, $fillout, $this->expressionLanguage()->evaluate($formula), $choice
         );
     }
- 
+
      /**
      * Get all payment events for transmitted @see Participants
      *
@@ -544,7 +535,7 @@ class PaymentManager
         if ($allNull) {
             return null;
         }
-    
+
         return array_sum($toPayValues);
     }
 
@@ -573,7 +564,7 @@ class PaymentManager
 
         return $topPay;
     }
-    
+
     /**
      * Get price for transmitted participation
      *
@@ -596,7 +587,7 @@ class PaymentManager
         }
         return array_sum($prices);
     }
-    
+
     /**
      * Get price for transmitted participant
      *
