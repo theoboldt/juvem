@@ -134,7 +134,7 @@ class Fillout
     /**
      * Get participation this fillout is related to
      *
-     * @return Participation
+     * @return Participation|null
      */
     public function getParticipation()
     {
@@ -162,7 +162,7 @@ class Fillout
     /**
      * Get participant this fillout is related to
      *
-     * @return Participant
+     * @return Participant|null
      */
     public function getParticipant()
     {
@@ -172,7 +172,7 @@ class Fillout
     /**
      * Get employee this fillout is related to
      *
-     * @return Employee
+     * @return Employee|null
      */
     public function getEmployee()
     {

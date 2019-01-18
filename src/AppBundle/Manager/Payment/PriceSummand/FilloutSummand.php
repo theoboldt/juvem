@@ -44,7 +44,18 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     {
         $this->fillout = $fillout;
         $this->value   = $value;
-        parent::__construct($entity);
+    
+        if ($this->fillout->getParticipation()) {
+            $cause = $this->fillout->getParticipation();
+        } elseif ($this->fillout->getParticipant()) {
+            $cause = $this->fillout->getParticipant();
+        } elseif ($this->fillout->getEmployee()) {
+            $cause = $this->fillout->getEmployee();
+        } else {
+            throw new \InvalidArgumentException('Unknown cause for summand');
+        }
+        
+        parent::__construct($entity, $cause);
     }
 
     /**

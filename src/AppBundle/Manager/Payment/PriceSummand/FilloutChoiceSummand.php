@@ -24,7 +24,7 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
      * @var AttributeChoiceOption
      */
     private $choice;
-
+    
     /**
      * FilloutSummand constructor.
      *

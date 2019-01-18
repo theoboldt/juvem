@@ -8,31 +8,25 @@
  * file that was distributed with this source code.
  */
 
-
 namespace AppBundle\Manager\Payment\PriceSummand;
 
 
-interface PriceTaggableEntityInterface extends SummandCausableInterface
+use AppBundle\Entity\Event;
+
+interface SummandCausableInterface
 {
-
+    
     /**
-     * Get nameFirst
+     * Get entity id related to entities namespace
      *
-     * @return string
+     * @return int
      */
-    public function getNameFirst();
-
+    public function getId();
+    
     /**
-     * Get nameLast
+     * Get related event
      *
-     * @return string
+     * @return Event|null
      */
-    public function getNameLast();
-
-    /**
-     * Get fullname
-     *
-     * @return string
-     */
-    public function fullname();
+    public function getEvent();
 }

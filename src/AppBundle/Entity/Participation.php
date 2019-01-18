@@ -16,6 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -28,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation implements EventRelatedEntity
+class Participation implements EventRelatedEntity, SummandCausableInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {
@@ -187,6 +188,13 @@ class Participation implements EventRelatedEntity
     public function getPid()
     {
         return $this->pid;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getId() {
+        return $this->getPid();
     }
 
     /**

@@ -16,24 +16,24 @@ use AppBundle\Entity\Participant;
 
 class BasePriceSummand extends BaseSummand implements SummandInterface
 {
-
+    
     /**
      * Related participant (not available for employees)
      *
      * @var Participant
      */
     protected $entity;
-
+    
     /**
      * BaseSummand constructor.
      *
-     * @param Participant $entity
+     * @param Participant $entity Entity for which this summand is valuable
      */
     public function __construct(Participant $entity)
     {
-        parent::__construct($entity);
+        parent::__construct($entity, null);
     }
-
+    
     /**
      * Get price in euro cent
      *
@@ -47,4 +47,5 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
         }
         return $price;
     }
+    
 }

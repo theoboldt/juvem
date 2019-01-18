@@ -226,12 +226,12 @@
                                             <td></td>
                                             <td>Teilnehmer</td>
                                             <td>Wert</td>
-                                            <td>Art</td>
+                                            <td colspan="2">Art</td>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr>
-                                            <td colspan="4" class="text-center">(Wird geladen)</td>
+                                            <td colspan="5" class="text-center">(Wird geladen)</td>
                                         </tr>
                                         </tbody>
                                         <tfoot></tfoot>
@@ -429,7 +429,7 @@
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-xs-7">
-                                <h3 class="panel-title">Anmeldung</h3>
+                                <h3 class="panel-title">{{ 'file'|glyph }} Anmeldung</h3>
                             </div>
                             <div class="col-xs-5 text-right hidden-print">
                                 {% if is_granted('participants_edit', event) -%}
@@ -557,8 +557,7 @@
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-6">
-                                    <h3 class="panel-title"><span
-                                                class="hidden-xs">Teilnehmer </span>{{ participant.nameFirst }}</h3>
+                                    <h3 class="panel-title">{{ 'user'|glyph }} <span class="hidden-xs"> Teilnehmer </span>{{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-6 text-right hidden-print">
                                     {% if is_granted('participants_edit', event) -%}

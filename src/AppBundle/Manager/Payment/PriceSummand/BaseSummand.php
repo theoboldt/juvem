@@ -13,24 +13,38 @@ namespace AppBundle\Manager\Payment\PriceSummand;
 
 abstract class BaseSummand
 {
-
+    
     /**
      * Related participant
      *
      * @var PriceTaggableEntityInterface
      */
     protected $entity;
-
+    
+    /**
+     * Reason for this summand
+     *
+     * @var SummandCausableInterface|null
+     */
+    protected $cause;
+    
     /**
      * BaseSummand constructor.
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param PriceTaggableEntityInterface $entity Entity for which this summand is valuable
+     * @param SummandCausableInterface|null $cause Reason for this summand if it's not the same as $entity
      */
-    public function __construct(PriceTaggableEntityInterface $entity)
+    public function __construct(PriceTaggableEntityInterface $entity, SummandCausableInterface $cause = null)
     {
         $this->entity = $entity;
+        if (!$cause && !$this->entity instanceof SummandCausableInterface) {
+            throw new \InvalidArgumentException(
+                'When not passing cause, entity must implement SummandCausableInterface'
+            );
+        }
+        $this->cause = $cause;
     }
-
+    
     /**
      * Get related participant
      *
@@ -40,5 +54,16 @@ abstract class BaseSummand
     {
         return $this->entity;
     }
-
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getCause(): SummandCausableInterface
+    {
+        if ($this->cause) {
+            return $this->cause;
+        } else {
+            return $this->entity;
+        }
+    }
 }

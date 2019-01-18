@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\ParticipantPaymentEvent;
+use AppBundle\Entity\Participation;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
@@ -188,15 +189,16 @@ class AdminPaymentController extends Controller
 
                 $choiceName = ($summand instanceof FilloutChoiceSummand)
                     ? $summand->getChoice()->getManagementTitle(true) : null;
-
+    
                 $result[] = [
-                    'participant_name' => $participant->fullname(),
-                    'participant_aid'  => $participant->getId(),
-                    'value'            => number_format($summand->getValue()/100, 2, ',', '.'),
-                    'value_raw'        => $summand->getValue(),
-                    'type'             => get_class($summand),
-                    'attribute_name'   => $attributeName,
-                    'choice_name'      => $choiceName,
+                    'participant_name'         => $participant->fullname(),
+                    'participant_aid'          => $participant->getId(),
+                    'is_participation_summand' => ($summand->getCause() instanceof Participation),
+                    'value'                    => number_format($summand->getValue() / 100, 2, ',', '.'),
+                    'value_raw'                => $summand->getValue(),
+                    'type'                     => get_class($summand),
+                    'attribute_name'           => $attributeName,
+                    'choice_name'              => $choiceName,
                 ];
             }
         }

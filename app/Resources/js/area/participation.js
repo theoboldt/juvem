@@ -117,19 +117,32 @@ $(function () {
                 jQuery.each(rows, function (key, rowData) {
                     var description = '',
                         symbolTitle = '?',
+                        glyphParticipant,
+                        glyphParticipantTitle,
                         glyph = 'check';
 
                     switch (rowData.type) {
                         case 'AppBundle\\Manager\\Payment\\PriceSummand\\BasePriceSummand':
                             glyph = 'tag';
+                            symbolTitle = 'Grundpreis';
                             description = 'Grundpreis';
                             break;
                         case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand':
+                            glyph = 'edit';
+                            symbolTitle = 'Formel mit Eingabewert';
                             description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>';
                             break;
                         case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutChoiceSummand':
+                            symbolTitle = 'Formel durch Auswahl';
                             description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>,<br> Option ' + '<i>' + eHtml(rowData.choice_name) + '</i>';
                             break;
+                    }
+                    if (rowData.is_participation_summand) {
+                         glyphParticipant = 'file';
+                         glyphParticipantTitle = 'Summand durch Anmeldung';
+                    } else {
+                        glyphParticipant= 'user';
+                         glyphParticipantTitle = 'Summand durch Teilnehmer';
                     }
 
                     htmlRows.push(
@@ -139,6 +152,9 @@ $(function () {
                         '   </td>' +
                         '    <td class="participant">' + rowData.participant_name + '</td>' +
                         '    <td class="value">' + rowData.value + '&nbsp;€</td>' +
+                        '    <td>' +
+                        '<span class="glyphicon glyphicon-' + glyphParticipant + '" aria-hidden="true" title="' + glyphParticipantTitle + '"></span> ' +
+                        '</td>',
                         '    <td class="description">' + description + '</td>' +
                         '</tr>'
                     );
@@ -150,6 +166,7 @@ $(function () {
                     '   </td>' +
                     '    <td class="participant"></td>' +
                     '    <td class="value">' + price_tag_sum + '&nbsp;€</td>' +
+                    '    <td></td>' +
                     '    <td class="description">' +
                     '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
                     '</td>' +
@@ -158,7 +175,7 @@ $(function () {
             } else {
                 priceTagTableEl.html(
                     '<tr>' +
-                    '<td colspan="4" class="text-center">(Keine Preisinformationen erfasst)</td>' +
+                    '<td colspan="5" class="text-center">(Keine Preisinformationen erfasst)</td>' +
                     '</tr>'
                 );
             }

@@ -28,4 +28,14 @@ interface SummandInterface
      * @return PriceTaggableEntityInterface
      */
     public function getEntity(): PriceTaggableEntityInterface;
+    
+    /**
+     * Get cause for this summand, which might differ from value of @see getEntity()
+     *
+     * Get cause for this summand, which might differ from value of @see getEntity(), for example if this is an
+     * @see Participant and the cause for this summand is because of a @see Participation fillout
+     *
+     * @return SummandCausableInterface
+     */
+    public function getCause(): SummandCausableInterface;
 }
