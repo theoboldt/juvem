@@ -24,6 +24,7 @@ use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\PriceTaggableEntityInterface;
+use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -80,7 +81,7 @@ class PaymentManager
      *
      * @var array
      */
-    private $priceTagCache = [];
+    private $summandCache = [];
 
     /**
      * Convert value in euro to value in euro cents
@@ -227,29 +228,41 @@ class PaymentManager
             return null;
         }
     }
-
+    
     /**
      * Get summands for calculating price of participant
      *
-     * @param PriceTaggableEntityInterface $entity Either @see Participant, or @see Employee
-     * @return EntityPriceTag
+     * @param PriceTaggableEntityInterface $impactedEntity Either @see Participant, or @see Employee
+     * @param SummandCausableInterface|null $causingEntity Either @see Participant, @see Participation or @see Employee
+     * @return array
      */
-    public function getEntityPriceTag(PriceTaggableEntityInterface $entity)
+    private function getEntitySummands(
+        PriceTaggableEntityInterface $impactedEntity, SummandCausableInterface $causingEntity = null
+    ): array
     {
-        if (!isset($this->priceTagCache[get_class($entity)])
-            || !isset($this->priceTagCache[get_class($entity)][$entity->getId()])) {
+        if (!$causingEntity) {
+            $causingEntity = $impactedEntity;
+        }
+        
+        if (!isset($this->summandCache[get_class($impactedEntity)])
+            || !isset($this->summandCache[get_class($impactedEntity)][$impactedEntity->getId()])) {
 
             $summands = [];
-            if ($entity instanceof Participant) {
-                $price = $this->getMostRecentBasePriceForParticipant($entity);
+            if ($causingEntity instanceof Participant) {
+                $price = $this->getMostRecentBasePriceForParticipant($causingEntity);
                 if ($price !== null) {
-                    $summands[] = new BasePriceSummand($entity);
+                    $summands[] = new BasePriceSummand($causingEntity);
                 }
+                $participation = $causingEntity->getParticipation();
+                $participation->getId();
+                $summands = array_merge(
+                    $summands, $this->getEntitySummands($impactedEntity, $participation)
+                );
             }
 
-            if ($entity instanceof EntityHavingFilloutsInterface) {
+            if ($causingEntity instanceof EntityHavingFilloutsInterface) {
                 /** @var Fillout $fillout */
-                foreach ($entity->getAcquisitionAttributeFillouts() as $fillout) {
+                foreach ($causingEntity->getAcquisitionAttributeFillouts() as $fillout) {
                     $attribute = $fillout->getAttribute();
                     if (!$attribute->isPriceFormulaEnabled()) {
                         continue;
@@ -265,25 +278,38 @@ class PaymentManager
                         /** @var AttributeChoiceOption $choice */
                         foreach ($choices as $choice) {
                             if ($attribute->getPriceFormula()) {
-                                $summand = $this->filloutChoiceSummandAttributeFormula($entity, $fillout, $choice);
+                                $summand = $this->filloutChoiceSummandAttributeFormula($impactedEntity, $fillout, $choice);
                             } else {
-                                $summand = $this->filloutChoiceSummandChoiceFormula($entity, $fillout, $choice);
+                                $summand = $this->filloutChoiceSummandChoiceFormula($impactedEntity, $fillout, $choice);
                             }
                             if ($summand) {
                                 $summands[] = $summand;
                             }
                         }
                     } elseif ($attribute->getPriceFormula()) {
-                        $summand = $this->filloutSummand($entity, $fillout);
+                        $summand = $this->filloutSummand($impactedEntity, $fillout);
                         if ($summand) {
                             $summands[] = $summand;
                         }
                     }
                 }
             }
-            $this->priceTagCache[get_class($entity)][$entity->getId()] = new EntityPriceTag($entity, $summands);
+            $this->summandCache[get_class($causingEntity)][$causingEntity->getId()] = $summands;
         }
-        return $this->priceTagCache[get_class($entity)][$entity->getId()];
+        return $this->summandCache[get_class($causingEntity)][$causingEntity->getId()];
+    }
+    
+    /**
+     * Get summands for calculating price of participant
+     *
+     * @param PriceTaggableEntityInterface $impactedEntity Either @see Participant, or @see Employee
+     * @return EntityPriceTag
+     */
+    public function getEntityPriceTag(
+        PriceTaggableEntityInterface $impactedEntity
+    )
+    {
+        return new EntityPriceTag($impactedEntity, $this->getEntitySummands($impactedEntity));
     }
     
     /**
