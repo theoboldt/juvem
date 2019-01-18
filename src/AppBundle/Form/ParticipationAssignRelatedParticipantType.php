@@ -10,6 +10,8 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityRepository;
@@ -24,7 +26,9 @@ class ParticipationAssignRelatedParticipantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $eid = $options['eid'];
+        /** @var Event $event */
+        $event = $options['event'];
+        $eid   = $event->getEid();
         $builder
             ->add(
                 'oid',
@@ -45,18 +49,22 @@ class ParticipationAssignRelatedParticipantType extends AbstractType
                                  ->addOrderBy('a.nameLast', 'ASC')
                                  ->addOrderBy('a.nameFirst', 'ASC');
                     },
-                    'choice_label'  => function(Participant $participant) {
-                        return sprintf('%s (%d)', $participant->fullname(), $participant->getYearsOfLifeAtEvent());
+                    'choice_label'  => function (Participant $participant) use ($event) {
+                        return sprintf(
+                            '%s (%d)',
+                            $participant->fullname(),
+                            EventRepository::yearsOfLife($participant->getBirthday(), $event->getStartDate())
+                        );
                     },
                     'multiple'      => false,
-                    'required'      => false
+                    'required'      => false,
                 ]
             );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired('eid');
-        $resolver->setAllowedTypes('eid', 'int');
+        $resolver->setRequired('event');
+        $resolver->setAllowedTypes('event', Event::class);
     }
 }
