@@ -98,16 +98,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     protected $price = null;
 
     /**
-     * Contains the amount of money still needs to be payed for this participant, in EURO CENT (instead of euro)
-     *
-     * Contains the amount of money still needs to be payed for this participant, in EURO CENT (instead of euro).
-     * Will contain a negative value when overpaid
-     *
-     * @ORM\Column(type="integer", options={"unsigned":false}, nullable=true, name="to_pay")
-     */
-    protected $toPay = null;
-
-    /**
      * Contains the participants assigned to this participation
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participant")
@@ -373,40 +363,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             return null;
         } else {
             return $inEuro ? $this->price / 100 : $this->price;
-        }
-    }
-
-    /**
-     * Set amount of money still to pay by participant
-     *
-     * @param int|double|null $value  Amount of money still to pay by participant
-     * @param bool            $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
-     *
-     * @return Participant
-     */
-    public function setToPay($value, $inEuro = false)
-    {
-        if ($inEuro) {
-            $value = $value / 100;
-        }
-
-        $this->toPay = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get amount of money still to pay by participant
-     *
-     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
-     * @return int|double|null
-     */
-    public function getToPay($inEuro = false)
-    {
-        if ($this->toPay === null) {
-            return null;
-        } else {
-            return $inEuro ? $this->toPay / 100 : $this->toPay;
         }
     }
 

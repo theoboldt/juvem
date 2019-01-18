@@ -557,31 +557,57 @@ class PaymentManager
      */
     public function toPayValueForParticipant(Participant $participant, $inEuro = false)
     {
+        $topPay = $this->getPriceForParticipant($participant, $inEuro);
+        if ($topPay === null) {
+            //no price set event for current participant present, default price of event is not used
+            return null;
+        }
         $fullHistory  = $this->paymentHistoryForParticipant($participant);
-        $currentPrice = null;
-        $payments     = [];
 
         /** @var ParticipantPaymentEvent $event */
         foreach ($fullHistory as $event) {
             if ($event->isPricePaymentEvent()) {
-                $payments[] = $event;
-            } elseif ($event->isPriceSetEvent() && $currentPrice === null) {
-                $currentPrice = $event->getValue($inEuro);
+                $topPay += $event->getValue($inEuro);
             }
         }
-        if ($currentPrice === null) {
-            //no price set event for current participant present, default price of event is not used
+
+        return $topPay;
+    }
+    
+    /**
+     * Get price for transmitted participation
+     *
+     * @param Participation $participation Target Participation
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return float|int|null
+     */
+    public function getPriceForParticipation(Participation $participation, $inEuro = false)
+    {
+        $allNull = true;
+        $prices  = [];
+        foreach ($participation->getParticipants() as $participant) {
+            $priceTag = $this->getEntityPriceTag($participant);
+            $price    = $priceTag->getPrice($inEuro);
+            $prices[] = $prices;
+            $allNull  = $allNull && $price === null;
+        }
+        if ($allNull) {
             return null;
         }
-        $priceInformation = $this->getEntityPriceTag($participant);
-        $currentPrice     = $priceInformation->getPrice($inEuro);
-
-        /** @var ParticipantPaymentEvent $payment */
-        foreach ($payments as $payment) {
-            $currentPrice += $payment->getValue($inEuro);
-        }
-
-        return $currentPrice;
+        return array_sum($prices);
+    }
+    
+    /**
+     * Get price for transmitted participant
+     *
+     * @param Participant $participant Target Participant
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return float|int|null
+     */
+    public function getPriceForParticipant(Participant $participant, $inEuro = false)
+    {
+        $priceTag = $this->getEntityPriceTag($participant);
+        return $priceTag->getPrice($inEuro);
     }
 
     /**

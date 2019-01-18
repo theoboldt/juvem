@@ -644,15 +644,16 @@
                                         {% if event.price %}
                                             <dt>Preis</dt>
                                             <dd>
-                                                {% set toPay = null %}
-                                                {% if participant.price %}
-                                                    {{ participant.price(true)|number_format(2) }} €
-                                                    {% set toPay = paymentManager.toPayValueForParticipant(participant, true) %}
-                                                    {% if toPay > 0 %}
-                                                        (noch zu zahlen: {{ toPay|number_format(2) }} €)
-                                                    {% elseif toPay < 0 %}
-                                                        (zu viel bezahlt: {{ (toPay*-1)|number_format(2) }} €)
-                                                    {% elseif toPay is same as( 0 ) %}
+                                                {% set participantToPay = null %}
+                                                {% set participantPrice = paymentManager.priceForParticipant(participant) %}
+                                                {% if participantPrice %}
+                                                    {{ paymentManager.priceForParticipant(participant, true)|number_format(2) }} €
+                                                    {% set participantToPay = paymentManager.toPayValueForParticipant(participant, true) %}
+                                                    {% if participantToPay > 0 %}
+                                                        (noch zu zahlen: {{ participantToPay|number_format(2) }} €)
+                                                    {% elseif participantToPay < 0 %}
+                                                        (zu viel bezahlt: {{ (participantToPay*-1)|number_format(2) }} €)
+                                                    {% elseif participantToPay is same as( 0 ) %}
                                                         (bezahlt)
                                                     {% endif %}
                                                 {% else %}
@@ -666,10 +667,10 @@
                                                             class="btn btn-default btn-xs"
                                                             title="Grundpreis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
-                                                {% if toPay is defined %}
-                                                    {% if toPay < 0 %}
+                                                {% if participantToPay is defined %}
+                                                    {% if participantToPay < 0 %}
                                                         <span class="label label-info option-2">überzahlt</span>
-                                                    {% elseif toPay is same as( 0 ) %}
+                                                    {% elseif participantToPay is same as( 0 ) %}
                                                         <span class="label label-info option-2">bezahlt</span>
                                                     {% endif %}
                                                 {% endif %}
