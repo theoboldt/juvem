@@ -28,17 +28,17 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
     /**
      * FilloutSummand constructor.
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param SummandImpactedInterface $impacted
      * @param Fillout $fillout
      * @param float|int $value
      * @param AttributeChoiceOption $choice
      */
     public function __construct(
-        PriceTaggableEntityInterface $entity, Fillout $fillout, $value, AttributeChoiceOption $choice
+        SummandImpactedInterface $impacted, Fillout $fillout, $value, AttributeChoiceOption $choice
     )
     {
         $this->choice = $choice;
-        parent::__construct($entity, $fillout, $value);
+        parent::__construct($impacted, $fillout, $value);
     }
     
     /**

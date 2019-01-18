@@ -36,11 +36,11 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     /**
      * FilloutSummand constructor.
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param SummandImpactedInterface $impacted
      * @param Fillout $fillout
      * @param float|int $value
      */
-    public function __construct(PriceTaggableEntityInterface $entity, Fillout $fillout, $value)
+    public function __construct(SummandImpactedInterface $impacted, Fillout $fillout, $value)
     {
         $this->fillout = $fillout;
         $this->value   = $value;
@@ -55,7 +55,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
             throw new \InvalidArgumentException('Unknown cause for summand');
         }
         
-        parent::__construct($entity, $cause);
+        parent::__construct($impacted, $cause);
     }
 
     /**

@@ -25,14 +25,15 @@ interface SummandInterface
     /**
      * Get related entity
      *
-     * @return PriceTaggableEntityInterface
+     * @return SummandImpactedInterface
      */
-    public function getEntity(): PriceTaggableEntityInterface;
+    public function getImpacted(): SummandImpactedInterface;
     
     /**
-     * Get cause for this summand, which might differ from value of @see getEntity()
+     * Get cause for this summand, which might differ from value of @see getImpacted()
      *
-     * Get cause for this summand, which might differ from value of @see getEntity(), for example if this is an
+     * Get cause for this summand, which might differ from value of @see getImpacted(), for example if this is an
+     *
      * @see Participant and the cause for this summand is because of a @see Participation fillout
      *
      * @return SummandCausableInterface

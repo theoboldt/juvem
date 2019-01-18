@@ -18,9 +18,9 @@ class EntityPriceTag
     /**
      * Related participant
      *
-     * @var PriceTaggableEntityInterface
+     * @var SummandImpactedInterface
      */
-    protected $entity;
+    protected $impacted;
 
     /**
      * Attached summands
@@ -32,23 +32,23 @@ class EntityPriceTag
     /**
      * BaseSummand constructor.
      *
-     * @param PriceTaggableEntityInterface $entity   Related entity
+     * @param SummandImpactedInterface $impacted   Related entity
      * @param array|SummandInterface[]     $summands Summands
      */
-    public function __construct(PriceTaggableEntityInterface $entity, array $summands)
+    public function __construct(SummandImpactedInterface $impacted, array $summands)
     {
-        $this->entity   = $entity;
+        $this->impacted = $impacted;
         $this->summands = $summands;
     }
 
     /**
      * Get related participant
      *
-     * @return PriceTaggableEntityInterface
+     * @return SummandImpactedInterface
      */
-    public function getEntity(): PriceTaggableEntityInterface
+    public function getImpacted(): SummandImpactedInterface
     {
-        return $this->entity;
+        return $this->impacted;
     }
 
     /**

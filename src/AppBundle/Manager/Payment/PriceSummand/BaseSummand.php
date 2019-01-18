@@ -17,9 +17,9 @@ abstract class BaseSummand
     /**
      * Related participant
      *
-     * @var PriceTaggableEntityInterface
+     * @var SummandImpactedInterface
      */
-    protected $entity;
+    protected $impacted;
     
     /**
      * Reason for this summand
@@ -31,13 +31,13 @@ abstract class BaseSummand
     /**
      * BaseSummand constructor.
      *
-     * @param PriceTaggableEntityInterface $entity Entity for which this summand is valuable
+     * @param SummandImpactedInterface $impacted Entity for which this summand is valuable
      * @param SummandCausableInterface|null $cause Reason for this summand if it's not the same as $entity
      */
-    public function __construct(PriceTaggableEntityInterface $entity, SummandCausableInterface $cause = null)
+    public function __construct(SummandImpactedInterface $impacted, SummandCausableInterface $cause = null)
     {
-        $this->entity = $entity;
-        if (!$cause && !$this->entity instanceof SummandCausableInterface) {
+        $this->impacted = $impacted;
+        if (!$cause && !$this->impacted instanceof SummandCausableInterface) {
             throw new \InvalidArgumentException(
                 'When not passing cause, entity must implement SummandCausableInterface'
             );
@@ -48,11 +48,11 @@ abstract class BaseSummand
     /**
      * Get related participant
      *
-     * @return PriceTaggableEntityInterface
+     * @return SummandImpactedInterface
      */
-    public function getEntity(): PriceTaggableEntityInterface
+    public function getImpacted(): SummandImpactedInterface
     {
-        return $this->entity;
+        return $this->impacted;
     }
     
     /**
@@ -63,7 +63,7 @@ abstract class BaseSummand
         if ($this->cause) {
             return $this->cause;
         } else {
-            return $this->entity;
+            return $this->impacted;
         }
     }
 }

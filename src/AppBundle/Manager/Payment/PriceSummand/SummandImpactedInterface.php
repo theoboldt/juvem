@@ -12,7 +12,7 @@
 namespace AppBundle\Manager\Payment\PriceSummand;
 
 
-interface PriceTaggableEntityInterface extends SummandCausableInterface
+interface SummandImpactedInterface extends SummandCausableInterface
 {
 
     /**

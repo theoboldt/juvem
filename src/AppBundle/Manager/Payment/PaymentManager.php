@@ -23,7 +23,7 @@ use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
-use AppBundle\Manager\Payment\PriceSummand\PriceTaggableEntityInterface;
+use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -232,12 +232,12 @@ class PaymentManager
     /**
      * Get summands for calculating price of participant
      *
-     * @param PriceTaggableEntityInterface $impactedEntity Either @see Participant, or @see Employee
+     * @param SummandImpactedInterface $impactedEntity Either @see Participant, or @see Employee
      * @param SummandCausableInterface|null $causingEntity Either @see Participant, @see Participation or @see Employee
      * @return array
      */
     private function getEntitySummands(
-        PriceTaggableEntityInterface $impactedEntity, SummandCausableInterface $causingEntity = null
+        SummandImpactedInterface $impactedEntity, SummandCausableInterface $causingEntity = null
     ): array
     {
         if (!$causingEntity) {
@@ -302,11 +302,11 @@ class PaymentManager
     /**
      * Get summands for calculating price of participant
      *
-     * @param PriceTaggableEntityInterface $impactedEntity Either @see Participant, or @see Employee
+     * @param SummandImpactedInterface $impactedEntity Either @see Participant, or @see Employee
      * @return EntityPriceTag
      */
     public function getEntityPriceTag(
-        PriceTaggableEntityInterface $impactedEntity
+        SummandImpactedInterface $impactedEntity
     )
     {
         return new EntityPriceTag($impactedEntity, $this->getEntitySummands($impactedEntity));
@@ -315,12 +315,12 @@ class PaymentManager
     /**
      * Generate fillout summand for transmitted @see Fillout
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param SummandImpactedInterface $entity
      * @param Fillout $fillout
      * @return FilloutSummand|null
      */
     private function filloutSummand(
-        PriceTaggableEntityInterface $entity, Fillout $fillout
+        SummandImpactedInterface $entity, Fillout $fillout
     )
     {
         $attribute = $fillout->getAttribute();
@@ -344,13 +344,13 @@ class PaymentManager
     /**
      * Generate choice summand for @see AttributeChoiceOption having formula at @see Attribute level
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param SummandImpactedInterface $entity
      * @param Fillout $fillout
      * @param AttributeChoiceOption $choice
      * @return FilloutChoiceSummand|null
      */
     private function filloutChoiceSummandAttributeFormula(
-        PriceTaggableEntityInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+        SummandImpactedInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
     ) {
         $formula = $fillout->getAttribute()->getPriceFormula();
         if (!$formula) {
@@ -367,13 +367,13 @@ class PaymentManager
     /**
      * Generate choice summand for @see AttributeChoiceOption having formula at @see AttributeChoiceOption level
      *
-     * @param PriceTaggableEntityInterface $entity
+     * @param SummandImpactedInterface $entity
      * @param Fillout $fillout
      * @param AttributeChoiceOption $choice
      * @return FilloutChoiceSummand|null
      */
     private function filloutChoiceSummandChoiceFormula(
-        PriceTaggableEntityInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+        SummandImpactedInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
     )
     {
         $formula = $choice->getPriceFormula();

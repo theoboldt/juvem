@@ -22,16 +22,16 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
      *
      * @var Participant
      */
-    protected $entity;
+    protected $impacted;
     
     /**
      * BaseSummand constructor.
      *
-     * @param Participant $entity Entity for which this summand is valuable
+     * @param Participant $impacted Entity for which this summand is valuable
      */
-    public function __construct(Participant $entity)
+    public function __construct(Participant $impacted)
     {
-        parent::__construct($entity, null);
+        parent::__construct($impacted, null);
     }
     
     /**
@@ -41,7 +41,7 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
      */
     public function getValue()
     {
-        $price = $this->entity->getPrice();
+        $price = $this->impacted->getPrice();
         if ($price === null) {
             throw new \InvalidArgumentException('Base price is null');
         }
