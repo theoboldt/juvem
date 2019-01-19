@@ -64,7 +64,7 @@ class AdminPaymentController extends Controller
 
         switch ($action) {
             case self::ACTION_PRICE_SET:
-                $paymentManager->setPrice($participants, $price, $description);
+                $paymentManager->setBasePrice($participants, $price, $description);
                 break;
             case self::ACTION_PAYMENT_RECEIVED:
                 $price = $price * -1; //flip the sign of value
@@ -187,7 +187,7 @@ class AdminPaymentController extends Controller
 
                 $choiceName = ($summand instanceof FilloutChoiceSummand)
                     ? $summand->getChoice()->getManagementTitle(true) : null;
-    
+
                 $result[] = [
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),

@@ -10,6 +10,8 @@
 
 namespace AppBundle\Manager\Payment;
 
+use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
@@ -48,6 +50,13 @@ class PaymentManager
      * @var PriceManager
      */
     private $priceManager;
+
+    /**
+     * Cache for all payments
+     *
+     * @var array
+     */
+    private $paymentCache = [];
 
     /**
      * Convert value in euro to value in euro cents
@@ -103,7 +112,7 @@ class PaymentManager
      * @return array|ParticipantPaymentEvent[]
      * @throws \Throwable
      */
-    public function setPrice(array $participants, $value, string $description)
+    public function setBasePrice(array $participants, $value, string $description)
     {
         $em = $this->em;
         /** @var Participant $participant */
@@ -130,23 +139,29 @@ class PaymentManager
         );
     }
 
-    /**
-     * Get all payment events for transmitted @see Participation
-     *
-     * @param Participation $participation Desired participation
-     * @return array|ParticipantPaymentEvent[]
-     */
-    public function paymentHistoryForParticipation(Participation $participation)
-    {
+    private function fetchPaymentHistoryForEvent(Event $event) {
+        $eid = $event->getEid();
+        /** @var EventRepository $eventRepository */
+        $eventRepository          = $this->em->getRepository(Event::class);
+        $participants             = $eventRepository->participantAidsForEvent($event);
+        $this->paymentCache[$eid] = array_fill_keys($participants, []);
+
         $qb = $this->em->createQueryBuilder();
         $qb->select('e')
            ->from(ParticipantPaymentEvent::class, 'e')
            ->innerJoin('e.participant', 'a')
            ->innerJoin('a.participation', 'p')
-           ->andWhere($qb->expr()->eq('p.pid', ':pid'))
+           ->andWhere($qb->expr()->eq('p.event', ':eid'))
            ->orderBy('e.createdAt', 'DESC');
-        $result = $qb->getQuery()->execute(['pid' => $participation->getPid()]);
-        return $result;
+        $result = $qb->getQuery()->execute(['eid' => $eid]);
+        /** @var ParticipantPaymentEvent $paymentEvent */
+        foreach ($result as $paymentEvent) {
+            $aid = $paymentEvent->getParticipant()->getAid();
+            if (!isset($this->paymentCache[$eid][$aid])) {
+                $this->paymentCache[$eid][$aid] = [];
+            }
+            $this->paymentCache[$eid][$aid][] = $paymentEvent;
+        }
     }
 
     /**
@@ -157,14 +172,12 @@ class PaymentManager
      */
     public function paymentHistoryForParticipant(Participant $participant)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('e')
-           ->from(ParticipantPaymentEvent::class, 'e')
-           ->innerJoin('e.participant', 'a')
-           ->andWhere($qb->expr()->eq('a.aid', ':aid'))
-           ->orderBy('e.createdAt', 'DESC');
-        $result = $qb->getQuery()->execute(['aid' => $participant->getAid()]);
-        return $result;
+        $event = $participant->getEvent();
+        $eid   = $event->getEid();
+        if (!isset($this->paymentCache[$eid]) || !isset($this->paymentCache[$eid][$participant->getAid()])) {
+            $this->fetchPaymentHistoryForEvent($participant->getEvent());
+        }
+        return $this->paymentCache[$eid][$participant->getAid()];
     }
 
     /**
@@ -186,17 +199,18 @@ class PaymentManager
      */
     public function paymentHistoryForParticipantList(array $participants)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('e')
-           ->from(ParticipantPaymentEvent::class, 'e')
-           ->innerJoin('e.participant', 'a')
-           ->orderBy('e.createdAt', 'DESC');
-        /** @var Participant $participant */
+        $paymentEvents = [];
         foreach ($participants as $participant) {
-            $qb->orWhere($qb->expr()->eq('e.participant', $participant->getAid()));
+            $paymentEvents = array_merge($paymentEvents, $this->paymentHistoryForParticipant($participant));
         }
-        $result = $qb->getQuery()->execute();
-        return $result;
+        uasort($paymentEvents, function(ParticipantPaymentEvent $a, ParticipantPaymentEvent $b) {
+            if ($a->getCreatedAt()->format('U') === $b->getCreatedAt()->format('U')) {
+                return 0;
+            }
+            return ($a > $b) ? -1 : 1;
+        });
+
+        return $paymentEvents;
     }
 
     /**

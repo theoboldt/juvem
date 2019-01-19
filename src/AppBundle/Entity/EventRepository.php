@@ -20,6 +20,13 @@ use PDO;
 class EventRepository extends EntityRepository
 {
     /**
+     * Cache for all @see Participant ids per @see Event
+     *
+     * @var array|int[]
+     */
+    private $participantsCache = [];
+
+    /**
      * Amount of days per year
      */
     const DAYS_OF_YEAR = 365;
@@ -424,6 +431,37 @@ class EventRepository extends EntityRepository
         }
 
         return new \DateTime($lastModified);
+    }
+
+    /**
+     * Fetch all @see Participant ids related to transmitted @see Event
+     *
+     * @param Event $event Related @see Event
+     * @return array|int[] List of related @see Participant ids
+     */
+    public function participantAidsForEvent(Event $event): array
+    {
+        $eid = $event->getEid();
+        if (!isset($this->participantsCache[$eid])) {
+            $this->participantsCache[$eid] = [];
+
+            $query  = 'SELECT participant.aid
+                     FROM participation
+               INNER JOIN participant  ON participation.pid = participant.pid
+                    WHERE participation.eid = :eid';
+            $result = $this->getEntityManager()->getConnection()->executeQuery(
+                $query, ['eid' => $eid]
+            );
+
+            $participants = [];
+
+            while ($row = $result->fetchColumn()) {
+                $participants[] = (int)$row;
+            }
+            $this->participantsCache[$eid] = $participants;
+        }
+
+        return $this->participantsCache[$eid];
     }
 
     /**

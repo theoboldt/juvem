@@ -16,6 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\EntityHavingFilloutsInterface;
@@ -34,12 +35,6 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class PriceManager
 {
-    /**
-     * EntityManager
-     *
-     * @var EntityManager
-     */
-    protected $em;
 
     /**
      * Cache dir path for @see ExpressionLanguage cache
@@ -92,18 +87,10 @@ class PriceManager
     private function fetchMostRecentPricesForEvent(Event $event): void
     {
         $eid = $event->getEid();
-
-        $query = 'SELECT participant.aid
-                      FROM participation
-                INNER JOIN participant  ON participation.pid = participant.pid
-                    WHERE participation.eid = :eid';
-        $result = $this->em->getConnection()->executeQuery($query, ['eid' => $eid]);
-        while ($row = $result->fetchColumn()) {
-            if (!isset($this->basePriceCache[$eid])) {
-                $this->basePriceCache[$eid] = [];
-            }
-            $this->basePriceCache[$eid][(int)$row] = null;
-        }
+        /** @var EventRepository $eventRepository */
+        $eventRepository            = $this->em->getRepository(Event::class);
+        $participants               = $eventRepository->participantAidsForEvent($event);
+        $this->basePriceCache[$eid] = array_fill_keys($participants, null);
 
         /** @var \DateTime $start */
         $query = 'SELECT event.aid, event.price_value
@@ -117,8 +104,8 @@ class PriceManager
                         GROUP BY event_inner.aid
                        ) latestdata
                       ON (event.aid = latestdata.aid
-                          AND event.created_at = latestdata.most_recent)
-';
+                          AND event.created_at = latestdata.most_recent)';
+
         $result = $this->em->getConnection()->executeQuery($query, ['eid' => $eid]);
 
         while ($row = $result->fetch()) {
