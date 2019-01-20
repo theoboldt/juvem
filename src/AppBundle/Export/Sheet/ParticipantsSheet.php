@@ -112,13 +112,13 @@ class ParticipantsSheet extends ParticipantsSheetBase
         }
         //TODO subject to change
 
-        if ($event->getPrice()) {
+        if ($this->paymentManager && $event->getPrice()) {
             $column = new EntityColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
                 function ($value, Participant $entity) {
-                    return $entity->getPrice(true);
+                    return $this->paymentManager->getPriceForParticipant($entity, true);
                 }
             );
             $this->addColumn($column);

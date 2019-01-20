@@ -15,6 +15,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -37,11 +38,33 @@ class ParticipationsSheet extends AbstractSheet
      */
     protected $participations;
 
+    /**
+     * Payment manager
+     *
+     * @var PaymentManager|null
+     */
+    protected $paymentManager;
 
-    public function __construct(Worksheet $sheet, Event $event, array $participations)
+    /**
+     * Stores a list of Participant entities
+     *
+     * @var array
+     */
+    protected $participants;
+
+    /**
+     * ParticipationsSheet constructor.
+     *
+     * @param Worksheet           $sheet
+     * @param Event               $event
+     * @param array               $participations
+     * @param PaymentManager|null $paymentManager
+     */
+    public function __construct(Worksheet $sheet, Event $event, array $participations, PaymentManager $paymentManager = null)
     {
         $this->event          = $event;
         $this->participations = $participations;
+        $this->paymentManager = $paymentManager;
 
         parent::__construct($sheet);
 
@@ -80,13 +103,13 @@ class ParticipationsSheet extends AbstractSheet
         );
         $this->addColumn($column);
 
-        if ($event->getPrice()) {
+        if ($this->paymentManager && $event->getPrice()) {
             $column = new EntityColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
                 function ($value, Participation $participation) {
-                    return $participation->getPrice(true);
+                    return $this->paymentManager->getPriceForParticipation($participation, true);
                 }
             );
             $this->addColumn($column);

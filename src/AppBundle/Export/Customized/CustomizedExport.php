@@ -20,6 +20,7 @@ use AppBundle\Export\Sheet\ExplanationSheet;
 use AppBundle\Export\Sheet\ParticipantsBirthdayAddressSheet;
 use AppBundle\Export\Sheet\ParticipationsSheet;
 use AppBundle\Export\Sheet\SheetRequiringExplanationInterface;
+use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Twig\GlobalCustomization;
 
 class CustomizedExport extends Export
@@ -46,9 +47,17 @@ class CustomizedExport extends Export
     protected $participants;
 
     /**
+     * Payment manager
+     *
+     * @var PaymentManager
+     */
+    protected $paymentManager;
+
+    /**
      * ParticipationsExport constructor.
      *
      * @param GlobalCustomization $globalCustomization Customization provider in order to eg. add company information
+     * @param PaymentManager      $paymentManager
      * @param Event               $event               Event to export
      * @param array               $participants        List of participants qualified for export
      * @param User|null           $modifier            Modifier/creator of export
@@ -56,12 +65,17 @@ class CustomizedExport extends Export
      *                                                 validated via @see Configuration
      */
     public function __construct(
-        $globalCustomization, Event $event, array $participants, User $modifier, array $configuration
-    )
-    {
-        $this->event         = $event;
-        $this->participants  = $participants;
-        $this->configuration = $configuration;
+        $globalCustomization,
+        PaymentManager $paymentManager,
+        Event $event,
+        array $participants,
+        User $modifier,
+        array $configuration
+    ) {
+        $this->paymentManager = $paymentManager;
+        $this->event          = $event;
+        $this->participants   = $participants;
+        $this->configuration  = $configuration;
 
         parent::__construct($globalCustomization, $modifier);
     }
@@ -80,7 +94,7 @@ class CustomizedExport extends Export
         $this->document->getProperties()
                        ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
     }
-    
+
     /**
      * Attach additional participation sheet to this export
      *
@@ -96,16 +110,16 @@ class CustomizedExport extends Export
                 $participations[$pid] = $participation;
             }
         }
-        
+
         if (!count($participations)) {
             return;
         }
         $sheet = $this->addSheet();
-        $participantsSheet = new ParticipationsSheet($sheet, $this->event, $participations);
+        $participantsSheet = new ParticipationsSheet($sheet, $this->event, $participations, $this->paymentManager);
         $participantsSheet->process();
         $sheet->setTitle('Anmeldungen');
     }
-    
+
     /**
      * Add additional sheet containing participants list with address
      *
@@ -118,7 +132,7 @@ class CustomizedExport extends Export
 
         $sheet->setTitle('Teilnehmer - Zuschussantrag');
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -128,10 +142,10 @@ class CustomizedExport extends Export
         $worksheet->setTitle($this->configuration['title']);
 
         $participantsSheet = new CustomizedParticipantsSheet(
-            $worksheet, $this->event, $this->participants, $this->configuration
+            $worksheet, $this->event, $this->participants, $this->configuration, $this->paymentManager
         );
         $participantsSheet->process();
-    
+
         if ($this->configuration['additional_sheet']) {
             foreach ($this->configuration['additional_sheet'] as $sheetKey => $sheetEnabled) {
                 if ($sheetEnabled) {

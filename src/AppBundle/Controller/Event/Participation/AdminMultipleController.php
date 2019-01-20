@@ -448,6 +448,7 @@ class AdminMultipleController extends Controller
             throw new InvalidTokenHttpException();
         }
 
+        /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event || !is_array($config)) {
             throw new NotFoundHttpException('Transmitted event was not found');
@@ -466,9 +467,11 @@ class AdminMultipleController extends Controller
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
 
-            $export = new CustomizedExport(
+        $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),
-            $event, $participantList,
+            $this->get('app.payment_manager'),
+            $event,
+            $participantList,
             $this->getUser(),
             $processedConfiguration
         );

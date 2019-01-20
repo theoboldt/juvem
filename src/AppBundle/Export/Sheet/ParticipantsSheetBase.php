@@ -14,11 +14,20 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 abstract class ParticipantsSheetBase extends AbstractSheet
 {
+
+    /**
+     * Payment manager
+     *
+     * @var PaymentManager|null
+     */
+    protected $paymentManager;
 
     /**
      * The event this participant export belongs to
@@ -33,6 +42,18 @@ abstract class ParticipantsSheetBase extends AbstractSheet
      * @var array
      */
     protected $participants;
+
+    /**
+     * AbstractSheet constructor.
+     *
+     * @param Worksheet           $sheet Related @see PHPExcel worksheet
+     * @param PaymentManager|null $paymentManager
+     */
+    public function __construct(Worksheet $sheet, PaymentManager $paymentManager = null)
+    {
+        $this->paymentManager = $paymentManager;
+        parent::__construct($sheet);
+    }
 
     /**
      * {@inheritdoc}

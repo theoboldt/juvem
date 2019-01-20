@@ -24,6 +24,7 @@ use AppBundle\Export\Sheet\Column\AcquisitionAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
+use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -41,18 +42,19 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     /**
      * CustomizedParticipantsSheet constructor.
      *
-     * @param Worksheet $sheet        The excel workbook to use
+     * @param Worksheet           $sheet        The excel workbook to use
      * @param Event               $event        Event to export
      * @param array               $participants List of participants qualified for export
      * @param array               $config       Configuration definition for export, validated
      *                                          via @see \AppBundle\Export\Customized\Configuration
+     * @param PaymentManager|null $paymentManager
      */
-    public function __construct(Worksheet $sheet, Event $event, array $participants, array $config)
+    public function __construct(Worksheet $sheet, Event $event, array $participants, array $config, PaymentManager $paymentManager = null)
     {
         $this->event        = $event;
         $this->participants = $participants;
 
-        parent::__construct($sheet);
+        parent::__construct($sheet, $paymentManager);
 
         $configParticipant = $config['participant'];
 
@@ -184,13 +186,13 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
 
-        if (self::issetAndTrue($configParticipant, 'price') && $event->getPrice()) {
+        if ($this->paymentManager && self::issetAndTrue($configParticipant, 'price') && $event->getPrice()) {
             $column = new EntityColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
                 function ($value, Participant $entity) {
-                    return $entity->getPrice(true);
+                    return $this->paymentManager->getPriceForParticipant($entity, true);
                 }
             );
             $this->addColumn($column);
@@ -440,7 +442,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                         if ($fillout === null) {
                             return '';
                         }
-                        
+
                         foreach ($fillout->getSelectedChoices() as $choice) {
                             if ($explanation) {
                                 $explanation->register($choice);
