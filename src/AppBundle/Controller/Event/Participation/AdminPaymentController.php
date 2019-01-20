@@ -83,6 +83,21 @@ class AdminPaymentController extends Controller
     }
 
     /**
+     *
+     * @Route("/admin/event/participant/price/history", methods={"POST"}, name="admin_participation_price_history")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function participantsPaymentHistory(Request $request)
+    {
+        $aids         = explode(';', $request->get('aids'));
+        $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
+
+        return new JsonResponse($this->getPaymentResponseData($participants));
+    }
+
+    /**
      * Generate payment info data for transmitted participants
      *
      * @param array|Participant[] $participants List of @see Participant
@@ -98,7 +113,7 @@ class AdminPaymentController extends Controller
                 $toPayTotal += $payValue;
             }
         }
-        $priceTags = $this->priceTags($participants);
+        $priceTags = $this->getParticipantsPriceTagList($participants);
         $priceSum  = 0;
         foreach ($priceTags as $summand) {
             $priceSum += $summand['value_raw'];
@@ -107,24 +122,9 @@ class AdminPaymentController extends Controller
             'payment_history'         => $this->paymentHistory($participants),
             'price_tag_list'          => $priceTags,
             'price_tag_sum_formatted' => $priceSum === null ? null : number_format(($priceSum / 100), 2, ',', '.'),
-            'to_pay_list'                  => $toPayList,
+            'to_pay_list'             => $toPayList,
             'to_pay_sum_formatted'    => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
         ];
-    }
-
-    /**
-     *
-     * @Route("/admin/event/participant/price/history", methods={"POST"}, name="admin_participation_price_history")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function participantsPaymentHistory(Request $request)
-    {
-        $aids         = explode(';', $request->get('aids'));
-        $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
-
-        return new JsonResponse($this->getPaymentResponseData($participants));
     }
 
     /**
@@ -165,7 +165,7 @@ class AdminPaymentController extends Controller
      * @param array $participants
      * @return array
      */
-    private function priceTags(array $participants)
+    private function getParticipantsPriceTagList(array $participants)
     {
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
@@ -219,7 +219,7 @@ class AdminPaymentController extends Controller
             $detailedValues[] = [
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
-                'value_formatted'            => number_format($value, 2, ',', '.'),
+                'value_formatted'  => number_format($value, 2, ',', '.'),
                 'value_raw'        => $value,
             ];
         }
