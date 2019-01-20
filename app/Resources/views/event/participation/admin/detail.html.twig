@@ -660,6 +660,13 @@
                                                     {% else %}
                                                         <i>(keiner festgelegt)</i>
                                                     {% endif %}
+                                                    {% if participantToPay is defined %}
+                                                        {% if participantToPay < 0 %}
+                                                            <span class="label label-info">überzahlt</span>
+                                                        {% elseif participantToPay is same as( 0 ) %}
+                                                            <span class="label label-info">bezahlt</span>
+                                                        {% endif %}
+                                                    {% endif %}
                                                     </span>
                                                 {% if is_granted('participants_edit', event) -%}
                                                     <button data-toggle="modal"
@@ -669,13 +676,6 @@
                                                             class="btn btn-default btn-xs"
                                                             title="Grundpreis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
                                                 {% endif -%}
-                                                {% if participantToPay is defined %}
-                                                    {% if participantToPay < 0 %}
-                                                        <span class="label label-info option-2">überzahlt</span>
-                                                    {% elseif participantToPay is same as( 0 ) %}
-                                                        <span class="label label-info option-2">bezahlt</span>
-                                                    {% endif %}
-                                                {% endif %}
                                             </dd>
                                         {% endif -%}
                                         <dt>Weitere Teilnahmen</dt>

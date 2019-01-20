@@ -9,11 +9,11 @@ $(function () {
         priceTagTableEl = $('#dialogPriceConfiguration #price tbody'),
         priceTagFooterTableEl = $('#dialogPriceConfiguration #price tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
-        formatCurrencyNumber = function(value) {
+        formatCurrencyNumber = function (value) {
             if (value === null) {
                 return '';
             }
-            return jQuery.number( value, 2, ',', '.') + '&nbsp;€ ';
+            return jQuery.number(value, 2, ',', '.') + '&nbsp;€ ';
         },
         handlePaymentControllerResponse = function (result, aids) {
             var multiple = (aids.toString().split(';').length > 1);
@@ -35,7 +35,7 @@ $(function () {
                 rawRows = '',
                 createInfoRow = function (toPayValue, priceValue, participantAid, participantName) {
                     var cellValue,
-                        participantPriceHtml = '';
+                        participantPriceHtml;
                     if (toPayValue === null) {
                         cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
                         participantPriceHtml = '<i>(keiner festgelegt)</i>';
@@ -46,9 +46,9 @@ $(function () {
                         if (toPayValue > 0) {
                             participantPriceHtml += '(noch zu zahlen: ' + formatCurrencyNumber(toPayValue);
                         } else if (toPayValue < 0) {
-                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1);
+                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1) + ' <span class="label label-info">überzahlt</span>';
                         } else {
-                            participantPriceHtml += '(bezahlt)';
+                            participantPriceHtml += '(bezahlt) <span class="label label-info">bezahlt</span>';
                         }
                     }
                     $('#participant-price-' + participantAid.toString()).html(participantPriceHtml);
@@ -60,8 +60,8 @@ $(function () {
                 };
             jQuery.each(data, function (key, rowData) {
                 rawRow = createInfoRow(
-                    rowData.to_pay_value_raw,
-                    rowData.price_value_raw,
+                    rowData.to_pay_value,
+                    rowData.price_value,
                     parseInt(rowData.participant_aid),
                     eHtml(rowData.participant_name)
                 );
@@ -97,7 +97,7 @@ $(function () {
                     '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
                     '   </td>' +
                     '    <td class="participant">' + participant + '</td>' +
-                    '    <td class="value">' + formatCurrencyNumber(value) + '/td>' +
+                    '    <td class="value">' + formatCurrencyNumber(value) + '</td>' +
                     '    <td class="description">' + description + '</td>' +
                     '    <td class="small"><span class="created">' + date + '</span>, ' + creatorHtml + '</td>' +
                     '</tr>';
@@ -200,7 +200,7 @@ $(function () {
                     '    <td class="symbol" title="Gesamtpreis">' +
                     '   </td>' +
                     '    <td class="participant"></td>' +
-                    '    <td class="value">' + formatCurrencyNumber(price_tag_sum)+'</td>' +
+                    '    <td class="value">' + formatCurrencyNumber(price_tag_sum) + '</td>' +
                     '    <td></td>' +
                     '    <td class="description">' +
                     '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +

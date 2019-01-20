@@ -121,7 +121,7 @@ class AdminPaymentController extends Controller
         return [
             'payment_history' => $this->paymentHistory($participants),
             'price_tag_list'  => $priceTags,
-            'price_tag_sum'   => $priceSum === null ? null : ($priceSum / 100),
+            'price_tag_sum'   => $priceSum,
             'to_pay_list'     => $toPayList,
             'to_pay_sum'      => $toPayTotal,
         ];
@@ -188,7 +188,7 @@ class AdminPaymentController extends Controller
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),
                     'is_participation_summand' => ($summand->getCause() instanceof Participation),
-                    'value'                    => $summand->getValue(false),
+                    'value'                    => $summand->getValue(true),
                     'type'                     => get_class($summand),
                     'attribute_name'           => $attributeName,
                     'choice_name'              => $choiceName,
