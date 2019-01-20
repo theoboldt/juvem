@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "bootstrap-sass": "^3.4.0",
-    "bootstrap-table": "^1.13.2",
+    "bootstrap-table": "<=1.12",
     "ekko-lightbox": "^5.3.0",
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "^2.0.0",
