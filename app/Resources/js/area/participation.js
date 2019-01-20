@@ -44,9 +44,9 @@ $(function () {
                         participantPriceHtml = formatCurrencyNumber(priceValue);
 
                         if (toPayValue > 0) {
-                            participantPriceHtml += '(noch zu zahlen: ' + formatCurrencyNumber(toPayValue);
+                            participantPriceHtml += '(noch zu zahlen: ' + formatCurrencyNumber(toPayValue)+')';
                         } else if (toPayValue < 0) {
-                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1) + ' <span class="label label-info">überzahlt</span>';
+                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1) + ') <span class="label label-info">überzahlt</span>';
                         } else {
                             participantPriceHtml += '(bezahlt) <span class="label label-info">bezahlt</span>';
                         }
