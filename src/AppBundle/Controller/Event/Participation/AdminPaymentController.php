@@ -79,20 +79,37 @@ class AdminPaymentController extends Controller
             default:
                 throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
+        return new JsonResponse(array_merge(['success' => true], $this->getPaymentResponseData($participants)));
+    }
 
-        $participant   = reset($participants);
-        $toPayReadable = $paymentManager->toPayValueForParticipation($participant->getParticipation(), true);
-
-
-        return new JsonResponse(
-            [
-                'success'         => true,
-                'payment_history' => $this->paymentHistory($participants),
-                'to_pay'          => $this->toPay($participants),
-                'price_tags'      => $this->priceTags($participants),
-                'to_pay_all'      => number_format($toPayReadable, 2, ',', '.'),
-            ]
-        );
+    /**
+     * Generate payment info data for transmitted participants
+     *
+     * @param array|Participant[] $participants List of @see Participant
+     * @return array
+     */
+    private function getPaymentResponseData(array $participants): array
+    {
+        $toPayList  = $this->getParticipantsToPayList($participants);
+        $toPayTotal = null;
+        foreach ($toPayList as $payItem) {
+            $payValue = $payItem['value_raw'];
+            if (is_numeric($payValue)) {
+                $toPayTotal += $payValue;
+            }
+        }
+        $priceTags = $this->priceTags($participants);
+        $priceSum  = 0;
+        foreach ($priceTags as $summand) {
+            $priceSum += $summand['value_raw'];
+        }
+        return [
+            'payment_history'         => $this->paymentHistory($participants),
+            'price_tag_list'          => $priceTags,
+            'price_tag_sum_formatted' => $priceSum === null ? null : number_format(($priceSum / 100), 2, ',', '.'),
+            'to_pay_list'                  => $toPayList,
+            'to_pay_sum_formatted'    => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
+        ];
     }
 
     /**
@@ -106,29 +123,8 @@ class AdminPaymentController extends Controller
     {
         $aids         = explode(';', $request->get('aids'));
         $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
-        $toPayList    = $this->toPay($participants);
-        $toPayTotal   = null;
-        foreach ($toPayList as $payItem) {
-            $payValue = $payItem['value_raw'];
-            if (is_numeric($payValue)) {
-                $toPayTotal += $payValue;
-            }
-        }
-        $priceTags = $this->priceTags($participants);
-        $priceSum  = 0;
-        foreach ($priceTags as $summand) {
-            $priceSum += $summand['value_raw'];
-        }
 
-        return new JsonResponse(
-            [
-                'payment_history' => $this->paymentHistory($participants),
-                'price_tags'      => $priceTags,
-                'price_tag_sum'   => $priceSum === null ? null : number_format(($priceSum/100), 2, ',', '.'),
-                'to_pay'          => $toPayList,
-                'to_pay_all'      => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
-            ]
-        );
+        return new JsonResponse($this->getPaymentResponseData($participants));
     }
 
     /**
@@ -210,7 +206,7 @@ class AdminPaymentController extends Controller
      * @param array $participants List of @see Participant
      * @return array
      */
-    private function toPay(array $participants)
+    private function getParticipantsToPayList(array $participants)
     {
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
@@ -223,7 +219,7 @@ class AdminPaymentController extends Controller
             $detailedValues[] = [
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
-                'value'            => number_format($value, 2, ',', '.'),
+                'value_formatted'            => number_format($value, 2, ',', '.'),
                 'value_raw'        => $value,
             ];
         }

@@ -9,14 +9,29 @@ $(function () {
         priceTagTableEl = $('#dialogPriceConfiguration #price tbody'),
         priceTagFooterTableEl = $('#dialogPriceConfiguration #price tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+        handlePaymentControllerResponse = function (result, aids) {
+            var multiple = (aids.toString().split(';').length > 1);
+            if (result.payment_history) {
+                displayPriceHistory(result.payment_history);
+            }
+            if (result.to_pay_list) {
+                displayToPayInfo(result.to_pay_list);
+            }
+            if (result.to_pay_sum_formatted) {
+                displayPaymentFullValue(result.to_pay_sum_formatted, multiple);
+            }
+            if (result.price_tag_list) {
+                displayPriceTag(result.price_tag_list, multiple, result.price_tag_sum_formatted);
+            }
+        },
         displayToPayInfo = function (data) {
             var rawRow,
                 rawRows = '',
-                createInfoRow = function (value, valueRaw, participantName) {
+                createInfoRow = function (value_formatted, valueRaw, participantName) {
                     if (valueRaw === null) {
                         cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
                     } else {
-                        cellValue = value+'&nbsp;€';
+                        cellValue = value_formatted + '&nbsp;€';
                     }
 
                     return '<tr>' +
@@ -26,7 +41,7 @@ $(function () {
                 };
             jQuery.each(data, function (key, rowData) {
                 rawRow = createInfoRow(
-                    rowData.value,
+                    rowData.value_formatted,
                     rowData.value_raw,
                     eHtml(rowData.participant_name)
                 );
@@ -58,13 +73,13 @@ $(function () {
                 }
 
                 return '<tr class="' + type + '">' +
-                    '    <td class="symbol" title="'+symbolTitle+'">' +
+                    '    <td class="symbol" title="' + symbolTitle + '">' +
                     '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
                     '   </td>' +
                     '    <td class="participant">' + participant + '</td>' +
                     '    <td class="value">' + value + '&nbsp;€</td>' +
                     '    <td class="description">' + description + '</td>' +
-                    '    <td class="small"><span class="created">' + date + '</span>, '+creatorHtml+'</td>' +
+                    '    <td class="small"><span class="created">' + date + '</span>, ' + creatorHtml + '</td>' +
                     '</tr>';
             };
 
@@ -106,12 +121,12 @@ $(function () {
                 '<tr class="total">' +
                 '    <td class="value text-right"><b>' + valueText + '</b></td>' +
                 '    <td class="participant">' +
-                '       <b>Summe</b>'+ (multiple ? ' (für alle Teilnehmer)': '') +
+                '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
                 '   </td>' +
                 '</tr>'
             );
         },
-        displayPriceTag = function (rows, multiple, price_tag_sum) {
+        displayPriceTag = function (rows, multiple, price_tag_sum_formatted) {
             if (rows.length) {
                 var htmlRows = [];
                 jQuery.each(rows, function (key, rowData) {
@@ -138,11 +153,11 @@ $(function () {
                             break;
                     }
                     if (rowData.is_participation_summand) {
-                         glyphParticipant = 'file';
-                         glyphParticipantTitle = 'Summand durch Anmeldung';
+                        glyphParticipant = 'file';
+                        glyphParticipantTitle = 'Summand durch Anmeldung';
                     } else {
-                        glyphParticipant= 'user';
-                         glyphParticipantTitle = 'Summand durch Teilnehmer';
+                        glyphParticipant = 'user';
+                        glyphParticipantTitle = 'Summand durch Teilnehmer';
                     }
 
                     htmlRows.push(
@@ -165,7 +180,7 @@ $(function () {
                     '    <td class="symbol" title="Gesamtpreis">' +
                     '   </td>' +
                     '    <td class="participant"></td>' +
-                    '    <td class="value">' + price_tag_sum + '&nbsp;€</td>' +
+                    '    <td class="value">' + price_tag_sum_formatted + '&nbsp;€</td>' +
                     '    <td></td>' +
                     '    <td class="description">' +
                     '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
@@ -200,20 +215,8 @@ $(function () {
             data: {
                 aids: aids
             },
-            success: function (data) {
-                var multiple = (aids.toString().split(';').length > 1);
-                if (data.payment_history) {
-                    displayPriceHistory(data.payment_history);
-                }
-                if (data.to_pay) {
-                    displayToPayInfo(data.to_pay);
-                }
-                if (data.to_pay_all) {
-                    displayPaymentFullValue(data.to_pay_all, multiple);
-                }
-                if (data.price_tags) {
-                    displayPriceTag(data.price_tags, multiple, data.price_tag_sum);
-                }
+            success: function (result) {
+                handlePaymentControllerResponse(result, aids);
             },
             error: function () {
                 $(document).trigger('add-alerts', {
@@ -281,15 +284,7 @@ $(function () {
             },
             success: function (result) {
                 if (result) {
-                    if (result.payment_history) {
-                        displayPriceHistory(result.payment_history);
-                    }
-                    if (result.to_pay) {
-                        displayToPayInfo(result.to_pay);
-                    }
-                    if (result.to_pay_all) {
-                        displayPaymentFullValue(result.to_pay_all, (aids.toString().split(';').length > 1));
-                    }
+                    handlePaymentControllerResponse(result, aids);
                     $('#priceHistoryLink').tab('show');
                 }
             },
