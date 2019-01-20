@@ -108,7 +108,7 @@ class AdminPaymentController extends Controller
         $toPayList  = $this->getParticipantsToPayList($participants);
         $toPayTotal = null;
         foreach ($toPayList as $payItem) {
-            $payValue = $payItem['value_raw'];
+            $payValue = $payItem['to_pay_value'];
             if (is_numeric($payValue)) {
                 $toPayTotal += $payValue;
             }
@@ -116,14 +116,14 @@ class AdminPaymentController extends Controller
         $priceTags = $this->getParticipantsPriceTagList($participants);
         $priceSum  = 0;
         foreach ($priceTags as $summand) {
-            $priceSum += $summand['value_raw'];
+            $priceSum += $summand['value'];
         }
         return [
-            'payment_history'         => $this->paymentHistory($participants),
-            'price_tag_list'          => $priceTags,
-            'price_tag_sum_formatted' => $priceSum === null ? null : number_format(($priceSum / 100), 2, ',', '.'),
-            'to_pay_list'             => $toPayList,
-            'to_pay_sum_formatted'    => $toPayTotal === null ? null : number_format($toPayTotal, 2, ',', '.'),
+            'payment_history' => $this->paymentHistory($participants),
+            'price_tag_list'  => $priceTags,
+            'price_tag_sum'   => $priceSum === null ? null : ($priceSum / 100),
+            'to_pay_list'     => $toPayList,
+            'to_pay_sum'      => $toPayTotal,
         ];
     }
 
@@ -150,7 +150,7 @@ class AdminPaymentController extends Controller
                 'created_at'       => $paymentEvent->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
-                'value'            => number_format($paymentEvent->getValue(true), 2, ',', '.'),
+                'value'            => $paymentEvent->getValue(true),
                 'description'      => $paymentEvent->getDescription(),
                 'type'             => $paymentEvent->getEventType(),
                 'type_label'       => $paymentEvent->getEventTypeLabeled(),
@@ -188,8 +188,7 @@ class AdminPaymentController extends Controller
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),
                     'is_participation_summand' => ($summand->getCause() instanceof Participation),
-                    'value'                    => number_format($summand->getValue(true), 2, ',', '.'),
-                    'value_raw'                => $summand->getValue(false),
+                    'value'                    => $summand->getValue(false),
                     'type'                     => get_class($summand),
                     'attribute_name'           => $attributeName,
                     'choice_name'              => $choiceName,
@@ -215,12 +214,13 @@ class AdminPaymentController extends Controller
         $detailedValues = [];
 
         foreach ($participants as $participant) {
-            $value            = $paymentManager->toPayValueForParticipant($participant, true);
+            $toPayValue       = $paymentManager->toPayValueForParticipant($participant, true);
+            $priceValue       = $paymentManager->getPriceForParticipant($participant, true);
             $detailedValues[] = [
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
-                'value_formatted'  => number_format($value, 2, ',', '.'),
-                'value_raw'        => $value,
+                'to_pay_value'     => $toPayValue,
+                'price_value'      => $priceValue,
             ];
         }
 

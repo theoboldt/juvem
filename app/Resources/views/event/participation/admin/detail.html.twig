@@ -644,21 +644,23 @@
                                         {% if event.price %}
                                             <dt>Preis</dt>
                                             <dd>
+                                                <span id="participant-price-{{ participant.aid }}">
                                                 {% set participantToPay = null %}
-                                                {% set participantPrice = paymentManager.priceForParticipant(participant) %}
-                                                {% if participantPrice %}
-                                                    {{ paymentManager.priceForParticipant(participant, true)|number_format(2) }} €
-                                                    {% set participantToPay = paymentManager.toPayValueForParticipant(participant, true) %}
-                                                    {% if participantToPay > 0 %}
-                                                        (noch zu zahlen: {{ participantToPay|number_format(2) }} €)
-                                                    {% elseif participantToPay < 0 %}
-                                                        (zu viel bezahlt: {{ (participantToPay*-1)|number_format(2) }} €)
-                                                    {% elseif participantToPay is same as( 0 ) %}
-                                                        (bezahlt)
+                                                    {% set participantPrice = paymentManager.priceForParticipant(participant, true) %}
+                                                    {% if participantPrice %}
+                                                        {{ participantPrice|number_format(2) }} €
+                                                        {% set participantToPay = paymentManager.toPayValueForParticipant(participant, true) %}
+                                                        {% if participantToPay > 0 %}
+                                                            (noch zu zahlen: {{ participantToPay|number_format(2) }} €)
+                                                        {% elseif participantToPay < 0 %}
+                                                            (zu viel bezahlt: {{ (participantToPay*-1)|number_format(2) }} €)
+                                                        {% elseif participantToPay is same as( 0 ) %}
+                                                            (bezahlt)
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <i>(keiner festgelegt)</i>
                                                     {% endif %}
-                                                {% else %}
-                                                    <i>(keiner festgelegt)</i>
-                                                {% endif %}
+                                                    </span>
                                                 {% if is_granted('participants_edit', event) -%}
                                                     <button data-toggle="modal"
                                                             data-target="#dialogPriceConfiguration"

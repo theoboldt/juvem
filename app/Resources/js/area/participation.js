@@ -9,6 +9,12 @@ $(function () {
         priceTagTableEl = $('#dialogPriceConfiguration #price tbody'),
         priceTagFooterTableEl = $('#dialogPriceConfiguration #price tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+        formatCurrencyNumber = function(value) {
+            if (value === null) {
+                return '';
+            }
+            return jQuery.number( value, 2, ',', '.') + '&nbsp;€ ';
+        },
         handlePaymentControllerResponse = function (result, aids) {
             var multiple = (aids.toString().split(';').length > 1);
             if (result.payment_history) {
@@ -17,22 +23,35 @@ $(function () {
             if (result.to_pay_list) {
                 displayToPayInfo(result.to_pay_list);
             }
-            if (result.to_pay_sum_formatted) {
-                displayPaymentFullValue(result.to_pay_sum_formatted, multiple);
+            if (result.to_pay_sum) {
+                displayPaymentFullValue(result.to_pay_sum, multiple);
             }
             if (result.price_tag_list) {
-                displayPriceTag(result.price_tag_list, multiple, result.price_tag_sum_formatted);
+                displayPriceTag(result.price_tag_list, multiple, result.price_tag_sum);
             }
         },
         displayToPayInfo = function (data) {
             var rawRow,
                 rawRows = '',
-                createInfoRow = function (value_formatted, valueRaw, participantName) {
-                    if (valueRaw === null) {
+                createInfoRow = function (toPayValue, priceValue, participantAid, participantName) {
+                    var cellValue,
+                        participantPriceHtml = '';
+                    if (toPayValue === null) {
                         cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
+                        participantPriceHtml = '<i>(keiner festgelegt)</i>';
                     } else {
-                        cellValue = value_formatted + '&nbsp;€';
+                        cellValue = formatCurrencyNumber(toPayValue);
+                        participantPriceHtml = formatCurrencyNumber(priceValue);
+
+                        if (toPayValue > 0) {
+                            participantPriceHtml += '(noch zu zahlen: ' + formatCurrencyNumber(toPayValue);
+                        } else if (toPayValue < 0) {
+                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1);
+                        } else {
+                            participantPriceHtml += '(bezahlt)';
+                        }
                     }
+                    $('#participant-price-' + participantAid.toString()).html(participantPriceHtml);
 
                     return '<tr>' +
                         '    <td class="value text-right">' + cellValue + '</td>' +
@@ -41,8 +60,9 @@ $(function () {
                 };
             jQuery.each(data, function (key, rowData) {
                 rawRow = createInfoRow(
-                    rowData.value_formatted,
-                    rowData.value_raw,
+                    rowData.to_pay_value_raw,
+                    rowData.price_value_raw,
+                    parseInt(rowData.participant_aid),
                     eHtml(rowData.participant_name)
                 );
                 rawRows += rawRow;
@@ -62,7 +82,7 @@ $(function () {
                         break;
                     case 'price_set':
                         glyph = 'pencil';
-                        symbolTitle = 'Preis festgelegt';
+                        symbolTitle = 'Grundpreis festgelegt';
                         break;
                 }
 
@@ -77,7 +97,7 @@ $(function () {
                     '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
                     '   </td>' +
                     '    <td class="participant">' + participant + '</td>' +
-                    '    <td class="value">' + value + '&nbsp;€</td>' +
+                    '    <td class="value">' + formatCurrencyNumber(value) + '/td>' +
                     '    <td class="description">' + description + '</td>' +
                     '    <td class="small"><span class="created">' + date + '</span>, ' + creatorHtml + '</td>' +
                     '</tr>';
@@ -111,7 +131,7 @@ $(function () {
                 valueText = '<i title="Kein Preis festgelegt">keiner</i>';
                 btn.css('display', 'none');
             } else {
-                valueText = value + '&nbsp;€';
+                valueText = formatCurrencyNumber(value);
                 btn.data('value', value);
                 btn.html('<b>' + valueText + '</b> Komplett');
                 btn.css('display', 'block');
@@ -126,7 +146,7 @@ $(function () {
                 '</tr>'
             );
         },
-        displayPriceTag = function (rows, multiple, price_tag_sum_formatted) {
+        displayPriceTag = function (rows, multiple, price_tag_sum) {
             if (rows.length) {
                 var htmlRows = [];
                 jQuery.each(rows, function (key, rowData) {
@@ -166,7 +186,7 @@ $(function () {
                         '       <span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span>' +
                         '   </td>' +
                         '    <td class="participant">' + rowData.participant_name + '</td>' +
-                        '    <td class="value">' + rowData.value + '&nbsp;€</td>' +
+                        '    <td class="value">' + formatCurrencyNumber(rowData.value) + '</td>' +
                         '    <td>' +
                         '<span class="glyphicon glyphicon-' + glyphParticipant + '" aria-hidden="true" title="' + glyphParticipantTitle + '"></span> ' +
                         '</td>',
@@ -180,7 +200,7 @@ $(function () {
                     '    <td class="symbol" title="Gesamtpreis">' +
                     '   </td>' +
                     '    <td class="participant"></td>' +
-                    '    <td class="value">' + price_tag_sum_formatted + '&nbsp;€</td>' +
+                    '    <td class="value">' + formatCurrencyNumber(price_tag_sum)+'</td>' +
                     '    <td></td>' +
                     '    <td class="description">' +
                     '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
