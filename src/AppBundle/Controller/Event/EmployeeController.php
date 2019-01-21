@@ -18,6 +18,7 @@ use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
 use AppBundle\JsonResponse;
+use AppBundle\Manager\Payment\PaymentManager;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -162,11 +163,18 @@ class EmployeeController extends Controller
         $employeeRepository = $this->getDoctrine()->getRepository(Employee::class);
         $similarEmployees   = $employeeRepository->relatedEmployees($employee);
 
+        /** @var PaymentManager $paymentManager */
+        $paymentManager = $this->get('app.payment_manager');
+        $priceTag       = $paymentManager->getEntityPriceTag($employee);
+        $summands       = $priceTag->getSummands();
+
         return $this->render(
             'event/admin/employee/detail.html.twig',
             [
                 'commentManager'   => $commentManager,
                 'employee'         => $employee,
+                'summands'         => $summands,
+                'summandsTotal'    => $priceTag->getPrice(true),
                 'event'            => $event,
                 'similarEmployees' => $similarEmployees,
                 'formAction'       => $formAction->createView(),
@@ -210,7 +218,7 @@ class EmployeeController extends Controller
                 ]
             );
         }
-    
+
         return $this->render(
             'event/admin/employee/edit.html.twig',
             [
