@@ -14,7 +14,7 @@ namespace AppBundle\Manager\Payment\PriceSummand;
 
 interface SummandInterface
 {
-    
+
     /**
      * Get price in euro cent
      *
@@ -24,12 +24,19 @@ interface SummandInterface
     public function getValue($inEuro = false);
 
     /**
+     * Get short textual description of this summand's kind
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
      * Get related entity
      *
      * @return SummandImpactedInterface
      */
     public function getImpacted(): SummandImpactedInterface;
-    
+
     /**
      * Get cause for this summand, which might differ from value of @see getImpacted()
      *

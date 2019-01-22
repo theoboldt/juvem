@@ -32,7 +32,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
      * @var float|int
      */
     protected $value;
-    
+
     /**
      * FilloutSummand constructor.
      *
@@ -44,7 +44,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     {
         $this->fillout = $fillout;
         $this->value   = $value;
-    
+
         if ($this->fillout->getParticipation()) {
             $cause = $this->fillout->getParticipation();
         } elseif ($this->fillout->getParticipant()) {
@@ -54,8 +54,16 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
         } else {
             throw new \InvalidArgumentException('Unknown cause for summand');
         }
-        
+
         parent::__construct($impacted, $cause);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): string
+    {
+        return 'Feld';
     }
 
     /**
@@ -65,7 +73,7 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
     {
         return $inEuro ? $this->value : (100*$this->value);
     }
-    
+
     /**
      * Get related attribute
      *

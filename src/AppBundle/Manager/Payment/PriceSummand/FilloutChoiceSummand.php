@@ -24,7 +24,7 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
      * @var AttributeChoiceOption
      */
     private $choice;
-    
+
     /**
      * FilloutSummand constructor.
      *
@@ -40,7 +40,15 @@ class FilloutChoiceSummand extends FilloutSummand implements SummandInterface, A
         $this->choice = $choice;
         parent::__construct($impacted, $fillout, $value);
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): string
+    {
+        return 'Auswahlfeld';
+    }
+
     /**
      * Get selected choice
      *

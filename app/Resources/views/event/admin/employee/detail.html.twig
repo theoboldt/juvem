@@ -114,7 +114,7 @@
                                         {% elseif summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
                                             <td colspan="2">{{ summand.attribute.managementTitle }}</td>
                                         {% else %}
-                                            <td colspan="2"><code>{{ dump(summand) }}</code></td>
+                                            <td colspan="2"><code>{{ summand.type }}</code></td>
                                         {% endif %}
                                     </tr>
                                 {% endfor %}

@@ -16,14 +16,14 @@ use AppBundle\Entity\Participant;
 
 class BasePriceSummand extends BaseSummand implements SummandInterface
 {
-    
+
     /**
      * Related participant (not available for employees)
      *
      * @var Participant
      */
     protected $impacted;
-    
+
     /**
      * BaseSummand constructor.
      *
@@ -33,7 +33,15 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
     {
         parent::__construct($impacted, null);
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): string
+    {
+        return 'Grundpreis';
+    }
+
     /**
      * Get price
      *
@@ -48,5 +56,4 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
         }
         return $price;
     }
-    
 }
