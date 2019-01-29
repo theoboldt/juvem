@@ -26,7 +26,6 @@ use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -131,14 +130,14 @@ class PriceManager
     /**
      * Get summands for calculating price of participant
      *
-     * @param SummandImpactedInterface $impactedEntity Either @see Participant, or @see Employee
-     * @param SummandCausableInterface|null $causingEntity Either @see Participant, @see Participation or @see Employee
+     * @param SummandImpactedInterface      $impactedEntity Either @see Participant, or @see Employee
+     * @param SummandCausableInterface|null $causingEntity  Either @see Participant, @see Participation or @see Employee
      * @return array
      */
     private function getEntitySummands(
-        SummandImpactedInterface $impactedEntity, SummandCausableInterface $causingEntity = null
-    ): array
-    {
+        SummandImpactedInterface $impactedEntity,
+        SummandCausableInterface $causingEntity = null
+    ): array {
         if (!$causingEntity) {
             $causingEntity = $impactedEntity;
         }
@@ -177,7 +176,9 @@ class PriceManager
                         /** @var AttributeChoiceOption $choice */
                         foreach ($choices as $choice) {
                             if ($attribute->getPriceFormula()) {
-                                $summand = $this->filloutChoiceSummandAttributeFormula($impactedEntity, $fillout, $choice);
+                                $summand = $this->filloutChoiceSummandAttributeFormula(
+                                    $impactedEntity, $fillout, $choice
+                                );
                             } else {
                                 $summand = $this->filloutChoiceSummandChoiceFormula($impactedEntity, $fillout, $choice);
                             }
@@ -214,7 +215,7 @@ class PriceManager
      * Generate fillout summand for transmitted @see Fillout
      *
      * @param SummandImpactedInterface $entity
-     * @param Fillout $fillout
+     * @param Fillout                  $fillout
      * @return FilloutSummand|null
      */
     private function filloutSummand(SummandImpactedInterface $entity, Fillout $fillout)
@@ -241,21 +242,26 @@ class PriceManager
      * Generate choice summand for @see AttributeChoiceOption having formula at @see Attribute level
      *
      * @param SummandImpactedInterface $entity
-     * @param Fillout $fillout
-     * @param AttributeChoiceOption $choice
+     * @param Fillout                  $fillout
+     * @param AttributeChoiceOption    $choice
      * @return FilloutChoiceSummand|null
      */
     private function filloutChoiceSummandAttributeFormula(
-        SummandImpactedInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+        SummandImpactedInterface $entity,
+        Fillout $fillout,
+        AttributeChoiceOption $choice
     ) {
         $formula = $fillout->getAttribute()->getPriceFormula();
         if (!$formula) {
             return null;
         }
+        $values          = [];
+        $values['value'] = $choice->getManagementTitle(true);
+
         return new FilloutChoiceSummand(
             $entity,
             $fillout,
-            $this->expressionLanguage()->evaluate($formula, ['value' => $choice->getManagementTitle(true)]),
+            $this->expressionLanguage()->evaluate($formula, $values),
             $choice
         );
     }
@@ -264,19 +270,23 @@ class PriceManager
      * Generate choice summand for @see AttributeChoiceOption having formula at @see AttributeChoiceOption level
      *
      * @param SummandImpactedInterface $entity
-     * @param Fillout $fillout
-     * @param AttributeChoiceOption $choice
+     * @param Fillout                  $fillout
+     * @param AttributeChoiceOption    $choice
      * @return FilloutChoiceSummand|null
      */
     private function filloutChoiceSummandChoiceFormula(
-        SummandImpactedInterface $entity, Fillout $fillout, AttributeChoiceOption $choice
+        SummandImpactedInterface $entity,
+        Fillout $fillout,
+        AttributeChoiceOption $choice
     ) {
         $formula = $choice->getPriceFormula();
         if (!$formula) {
             return null;
         }
+        $values = [];
+
         return new FilloutChoiceSummand(
-            $entity, $fillout, $this->expressionLanguage()->evaluate($formula), $choice
+            $entity, $fillout, $this->expressionLanguage()->evaluate($formula, $values), $choice
         );
     }
 
@@ -284,7 +294,7 @@ class PriceManager
      * Get price for transmitted participation
      *
      * @param Participation $participation Target Participation
-     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return float|int|null
      */
     public function getPriceForParticipation(Participation $participation, $inEuro = false)
@@ -307,7 +317,7 @@ class PriceManager
      * Get price for transmitted participant
      *
      * @param Participant $participant Target Participant
-     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @param bool        $inEuro      If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return float|int|null
      */
     public function getPriceForParticipant(Participant $participant, $inEuro = false)
@@ -317,7 +327,12 @@ class PriceManager
     }
 
 
-    private function expressionLanguage()
+    /**
+     * Get cached @see ExpressionLanguage
+     *
+     * @return ExpressionLanguage
+     */
+    private function expressionLanguage(): ExpressionLanguage
     {
         if (!$this->expressionLanguage) {
             $cache                    = new FilesystemAdapter('', 0, $this->expressionLanguageCachePath);
