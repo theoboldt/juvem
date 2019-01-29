@@ -50,6 +50,13 @@ class PriceManager
     protected $expressionLanguage = null;
 
     /**
+     * Entity manager
+     *
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * Price tag cache
      *
      * @var array
@@ -76,6 +83,43 @@ class PriceManager
         $this->em                          = $em;
         $this->expressionLanguageCachePath = $expressionLanguageCachePath;
     }
+
+    /**
+     * Get price for transmitted participation
+     *
+     * @param Participation $participation Target Participation
+     * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return float|int|null
+     */
+    public function getPriceForParticipation(Participation $participation, $inEuro = false)
+    {
+        $allNull = true;
+        $prices  = [];
+        foreach ($participation->getParticipants() as $participant) {
+            $priceTag = $this->getEntityPriceTag($participant);
+            $price    = $priceTag->getPrice($inEuro);
+            $prices[] = $prices;
+            $allNull  = $allNull && $price === null;
+        }
+        if ($allNull) {
+            return null;
+        }
+        return array_sum($prices);
+    }
+
+    /**
+     * Get price for transmitted participant
+     *
+     * @param Participant $participant Target Participant
+     * @param bool        $inEuro      If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return float|int|null
+     */
+    public function getPriceForParticipant(Participant $participant, $inEuro = false)
+    {
+        $priceTag = $this->getEntityPriceTag($participant);
+        return $priceTag->getPrice($inEuro);
+    }
+
 
     /**
      * Fetch all current base prices for all @see Participant of transmitted @see Event
@@ -289,43 +333,6 @@ class PriceManager
             $entity, $fillout, $this->expressionLanguage()->evaluate($formula, $values), $choice
         );
     }
-
-    /**
-     * Get price for transmitted participation
-     *
-     * @param Participation $participation Target Participation
-     * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
-     * @return float|int|null
-     */
-    public function getPriceForParticipation(Participation $participation, $inEuro = false)
-    {
-        $allNull = true;
-        $prices  = [];
-        foreach ($participation->getParticipants() as $participant) {
-            $priceTag = $this->getEntityPriceTag($participant);
-            $price    = $priceTag->getPrice($inEuro);
-            $prices[] = $prices;
-            $allNull  = $allNull && $price === null;
-        }
-        if ($allNull) {
-            return null;
-        }
-        return array_sum($prices);
-    }
-
-    /**
-     * Get price for transmitted participant
-     *
-     * @param Participant $participant Target Participant
-     * @param bool        $inEuro      If set to true, resulting price is returned in EURO instead of EURO CENT
-     * @return float|int|null
-     */
-    public function getPriceForParticipant(Participant $participant, $inEuro = false)
-    {
-        $priceTag = $this->getEntityPriceTag($participant);
-        return $priceTag->getPrice($inEuro);
-    }
-
 
     /**
      * Get cached @see ExpressionLanguage
