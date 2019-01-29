@@ -129,12 +129,12 @@ $(function () {
 
             if (value === null) {
                 valueText = '<i title="Kein Preis festgelegt">keiner</i>';
-                btn.css('display', 'none');
+                btn.css('visibility', 'hidden');
             } else {
                 valueText = formatCurrencyNumber(value);
                 btn.data('value', value);
                 btn.html('<b>' + valueText + '</b> Komplett');
-                btn.css('display', 'block');
+                btn.css('visibility', 'visible');
             }
 
             toPayFooterTableEl.html(

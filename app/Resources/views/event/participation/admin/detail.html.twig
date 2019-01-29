@@ -104,31 +104,30 @@
                         <div role="tabpanel" class="tab-pane active" id="payment">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <div class="btn-group btn-group-justified" role="group">
+                                    <div class="btn-group btn-group-justified" role="group" aria-label="Zahlungsvorschläge">
                                         {% set paymentParticipation = paymentManager.toPayValueForParticipation(participation, true) %}
-                                        <button type="button" class="btn btn-default btn-predefined btn-payment-full" data-value="{{ paymentParticipation|number_format(2) }}" data-description="Komplett"><b>{{ paymentParticipation|number_format(2) }} €</b> Komplett</button>
+                                            <span class="btn btn-default btn-predefined btn-payment-full" data-value="{{ paymentParticipation|number_format(2) }}" role="button" data-description="Komplett"><b>{{ paymentParticipation|number_format(2) }} €</b> Komplett</span>
                                         {% for suggestion in paymentSuggestions %}
                                             {% if loop.length > 2 and loop.index == 2 %}
-                                            <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-default dropdown-toggle"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <span class="caret"></span>
-                                                </button>
+                                              <div class="btn-group" role="group">
+                                                <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                                  Mehr <span class="caret"></span>
+                                                </span>
                                                 <ul class="dropdown-menu">
                                             {% endif %}
                                             {% if loop.length > 2 and loop.index >= 2 %}
                                                 <li>
                                             {% endif %}
-                                                <button type="button" class="btn btn-default btn-predefined"
-                                                        data-value="{{ suggestion.value(true)|number_format(2) }}"
-                                                        data-description="{{ suggestion.description }}">
+                                            <a href="#" class="{% if loop.index < 2 %}btn btn-default{% endif %} btn-predefined" role="button"
+                                                  data-value="{{ suggestion.value(true)|number_format(2) }}"
+                                                  data-description="{{ suggestion.description }}">
                                                     <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
-                                                </button>
-                                            {% if loop.length > 2 and loop.index >= 2 %}
+                                            </a>
+                                           {% if loop.length > 2 and loop.index >= 2 %}
                                                 </li>
                                             {% endif %}
-                                            {% if loop.length > 2 and loop.index == 2 %}
-                                                2</ul>
+                                            {% if loop.length > 2 and loop.last %}
+                                                </ul>
                                             </div>
                                             {% endif %}
                                         {% endfor %}
@@ -188,16 +187,29 @@
                         <div role="tabpanel" class="tab-pane" id="price">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <div class="btn-group btn-group-justified" role="group">
+                                    <div class="btn-group btn-group-justified" role="group" aria-label="Preisvorschläge">
                                         {% for suggestion in priceSuggestions %}
-                                            {% if loop.index <= 3 %}
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-default btn-predefined"
-                                                            data-value="{{ suggestion.value(true)|number_format(2) }}"
-                                                            data-description="{{ suggestion.description }}">
-                                                        <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
-                                                    </button>
-                                                </div>
+                                            {% if loop.length > 3 and loop.index == 3 %}
+                                              <div class="btn-group" role="group">
+                                                <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                                  Mehr <span class="caret"></span>
+                                                </span>
+                                                <ul class="dropdown-menu">
+                                            {% endif %}
+                                            {% if loop.length > 3 and loop.index >= 3 %}
+                                                <li>
+                                            {% endif %}
+                                                <a href="#" role="button" class="{% if loop.length <= 3 or loop.index < 3 %}btn btn-default{% endif %} btn-predefined"
+                                                        data-value="{{ suggestion.value(true)|number_format(2) }}"
+                                                        data-description="{{ suggestion.description }}">
+                                                    <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
+                                                </a>
+                                           {% if loop.length > 3 and loop.index >= 3 %}
+                                                </li>
+                                            {% endif %}
+                                            {% if loop.length > 3 and loop.last %}
+                                                </ul>
+                                            </div>
                                             {% endif %}
                                         {% endfor %}
                                     </div>
