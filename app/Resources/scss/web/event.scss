@@ -85,3 +85,19 @@ div.help-block {
 div.help-block > p {
   margin: 0 0 5px;
 }
+
+input.input-formula, .btn-formula-variable span {
+  font-family: monospace;
+}
+
+input.input-formula {
+  margin-bottom: 5px;
+}
+
+.btn-formula-variable {
+  color: #333;
+}
+
+#help-form-formula {
+  margin-top: 10px;
+}

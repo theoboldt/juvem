@@ -12,6 +12,7 @@
 namespace AppBundle\Manager\Payment;
 
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
@@ -29,6 +30,8 @@ use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\Node\NameNode;
+use Symfony\Component\ExpressionLanguage\Node\Node;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
@@ -193,7 +196,7 @@ class PriceManager
             if ($causingEntity instanceof Participant) {
                 $price = $this->getMostRecentBasePriceForParticipant($causingEntity);
                 if ($price !== null) {
-                    $summands[] = new BasePriceSummand($causingEntity);
+                    $summands[0] = new BasePriceSummand($causingEntity);
                 }
                 $participation = $causingEntity->getParticipation();
                 $participation->getId();
@@ -206,6 +209,7 @@ class PriceManager
                 /** @var Fillout $fillout */
                 foreach ($causingEntity->getAcquisitionAttributeFillouts() as $fillout) {
                     $attribute = $fillout->getAttribute();
+                    $bid = $attribute->getBid();
                     if (!$attribute->isPriceFormulaEnabled()) {
                         continue;
                     }
@@ -227,13 +231,13 @@ class PriceManager
                                 $summand = $this->filloutChoiceSummandChoiceFormula($impactedEntity, $fillout, $choice);
                             }
                             if ($summand) {
-                                $summands[] = $summand;
+                                $summands[$bid] = $summand;
                             }
                         }
                     } elseif ($attribute->getPriceFormula()) {
                         $summand = $this->filloutSummand($impactedEntity, $fillout);
                         if ($summand) {
-                            $summands[] = $summand;
+                            $summands[$bid] = $summand;
                         }
                     }
                 }
@@ -274,12 +278,41 @@ class PriceManager
         if ($attribute->getFieldType() === NumberType::class) {
             $values['value'] = $value->getTextualValue();
         }
+        /*
+        $formula .= '*(field1+value)';
+        $formula = '('.$formula.')/field2';
+        $values['field1'] = 1;
+        $values['field2'] = 1;
 
+
+        $parsed = $this->expressionLanguage()->parse($formula, array_keys($values));
+
+        $this->parseNodeDependencies($parsed->getNodes(), $attribute->getBid());
+        dump($this->dependencies);
+       */
         return new FilloutSummand(
             $entity,
             $fillout,
             $this->expressionLanguage()->evaluate($formula, $values)
         );
+    }
+
+    private $dependencies = [];
+    private function parseNodeDependencies(Node $node, $originalBid) {
+        foreach ($node->nodes as $node) {
+            if ($node instanceof NameNode) {
+                foreach ($node->attributes as $nodeAttribute) {
+                    if (preg_match(
+                        '/' . Attribute::FORMULA_VARIABLE_PREFIX . '(?P<bid>\d+)/', $nodeAttribute, $fieldInfo
+                    )) {
+                        $bid = (int)$fieldInfo['bid'];
+                        $this->dependencies[$originalBid][$bid] = $bid;
+                    }
+                }
+            }
+            $this->parseNodeDependencies($node, $originalBid);
+
+        }
     }
 
     /**
@@ -299,8 +332,13 @@ class PriceManager
         if (!$formula) {
             return null;
         }
-        $values          = [];
-        $values['value'] = $choice->getManagementTitle(true);
+
+        /** @var ChoiceFilloutValue $filloutValue */
+        $filloutValue = $fillout->getValue();
+
+        $values                         = [];
+        $values['value']                = $choice->getManagementTitle(true);
+        $values['choicesSelectedCount'] = count($filloutValue->getSelectedChoices());
 
         return new FilloutChoiceSummand(
             $entity,

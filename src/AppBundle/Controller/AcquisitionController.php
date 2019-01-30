@@ -12,9 +12,11 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Form\AcquisitionFormulaType;
 use AppBundle\Form\AcquisitionType;
 use AppBundle\Form\GroupType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -72,16 +74,16 @@ class AcquisitionController extends Controller
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function detailEventAction(Request $request, Attribute $attribute)
+    public function detailAction(Request $request, Attribute $attribute)
     {
-        $form = $this->createFormBuilder()
-                     ->add('action', HiddenType::class)
-                     ->getForm();
+        $formAction = $this->createFormBuilder()
+                           ->add('action', HiddenType::class)
+                           ->getForm();
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $action = $form->get('action')
-                           ->getData();
+        $formAction->handleRequest($request);
+        if ($formAction->isSubmitted() && $formAction->isValid()) {
+            $action = $formAction->get('action')
+                                 ->getData();
             switch ($action) {
                 case 'delete':
                     $attribute->setDeletedAt(new \DateTime());
@@ -93,14 +95,51 @@ class AcquisitionController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($attribute);
             $em->flush();
+            return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
 
         return $this->render(
             'acquisition/detail.html.twig',
             [
-                'form'        => $form->createView(),
+                'form'        => $formAction->createView(),
                 'acquisition' => $attribute,
                 'events'      => $attribute->getEvents(),
+            ]
+        );
+    }
+
+    /**
+     * Edit page for formula
+     *
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/acquisition/{bid}/edit/formula", requirements={"bid": "\d+"}, name="acquisition_edit_formula")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function editFormulaAction(Request $request, Attribute $attribute)
+    {
+        $form = $this->createForm(AcquisitionFormulaType::class, $attribute);
+        $repository        = $this->getDoctrine()->getRepository(Attribute::class);
+        $attributesFormula = $repository->findWithFormulaNotDependantOnField($attribute);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($attribute);
+            $em->flush();
+
+            return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
+        }
+        $fieldType = $attribute->getFieldType();
+
+        return $this->render(
+            'acquisition/edit-formula.html.twig',
+            [
+                'attributesFormula'   => $attributesFormula,
+                'form'                => $form->createView(),
+                'acquisition'         => $attribute,
+                'showChoiceVariables' => ($fieldType == ChoiceType::class || $fieldType == GroupType::class),
+                'showNumberVariables' => ($fieldType == NumberType::class),
             ]
         );
     }
@@ -115,7 +154,7 @@ class AcquisitionController extends Controller
      */
     public function editAction(Request $request, Attribute $attribute)
     {
-        $form = $this->createForm(AcquisitionType::class, $attribute);
+        $form              = $this->createForm(AcquisitionType::class, $attribute);
 
         $form->handleRequest($request);
 
@@ -130,11 +169,11 @@ class AcquisitionController extends Controller
             $em->persist($attribute);
             $em->flush();
 
-            return $this->redirectToRoute('acquisition_detail', array('bid' => $attribute->getBid()));
+            return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
-    
+
         $fieldType = $attribute->getFieldType();
-        
+
         return $this->render(
             'acquisition/edit.html.twig',
             [
@@ -156,7 +195,9 @@ class AcquisitionController extends Controller
     {
         $attribute = new Attribute();
 
-        $form = $this->createForm(AcquisitionType::class, $attribute);
+        $form              = $this->createForm(AcquisitionType::class, $attribute);
+        $repository        = $this->getDoctrine()->getRepository(Attribute::class);
+        $attributesFormula = $repository->findWithFormulaNotDependantOnField(null);
 
         $form->handleRequest($request);
 
@@ -173,7 +214,8 @@ class AcquisitionController extends Controller
         return $this->render(
             'acquisition/new.html.twig',
             [
-                'form' => $form->createView(),
+                'attributesFormula' => $attributesFormula,
+                'form'              => $form->createView(),
             ]
         );
     }

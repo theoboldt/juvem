@@ -99,6 +99,19 @@ $(function () {
                 tbodyEl.html('<td colspan="5" class="text-center">(Fehler beim laden der Vorschläge)</td>');
             },
         });
-    })
+    });
 
+
+    /**
+     * ACQUISITION: Formula editor
+     */
+    var inputFormulaEl = $('.input-formula');
+    $('.btn-formula-variable').on('click', function () {
+        var cursorPos = inputFormulaEl.prop('selectionStart'),
+            v = inputFormulaEl.val(),
+            textBefore = v.substring(0, cursorPos),
+            textAfter = v.substring(cursorPos, v.length);
+
+        inputFormulaEl.val(textBefore + $(this).data('variable') + textAfter);
+    });
 });

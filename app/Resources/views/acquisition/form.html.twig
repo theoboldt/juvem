@@ -65,33 +65,6 @@
                     {{ form_row(form.isPriceFormulaEnabled, {'label': 'Auswirkung auf Preis/Aufwandsentschädigung aktivieren, Formel konfigurieren'}) }}
                 </div>
             </div>
-            <div class="col-xs-12 form-input-formula" id="help-topic-formula">
-                {{ form_label(form.priceFormula) }}
-                {{ form_widget(form.priceFormula) }}
-                {{ form_errors(form.priceFormula) }}
-                <div id="help-management-title" class="help-block">
-                    <p>Die Formel kann aus Zahlen und den Grundrechenarten Addition <code>+</code>, Subtraktion <code>-</code>,
-                        Multiplikation <code>*</code>, Division <code>/</code> bestehen. Weiterhin können Klammern <code>()</code>
-                        gesetzt werden.
-                    </p>
-                    <p>
-                        Das Ergebnis der berechneten Formel wird zum Preis/zu der Aufwandsentschädigung <u>addiert</u>.
-                        Wenn ein Betrag vom Preis subtrahiert werden soll, multiplizieren sie ihre Formel mit <code>-1</code>.
-                    </p>
-                    <ul>
-                        <li>
-                            In der Formel für Felder vom Typ <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_NUMBER') }}</i> kann mit der Variable <code>value</code> auf den eingegebenen Wert zugegriffen werden.
-                        </li>
-                        <li>
-                            Ist das Feld vom Typ <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_CHOICE') }}</i> und
-                            <ul>
-                                <li>kann nur eine Option gewählt werden, kann mit der Variable <code>value</code> auf den Inhalt von <i>Interner Titel</i> der Gewählten Option zugegriffen werden. Die Werte für <i>Interner Titel</i> aller Optionen müssen dann nummerisch sein;</li>
-                                <li>können dagegen mehrere Optionen ausgewählt werden, kann in der globalen Formel <code>value</code> nicht verwendet werden. Die Ergebnisse der berechneten Formeln aller gewählten Optionen werden zum Preis addiert.</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-4 col-md-4">
@@ -225,23 +198,6 @@
                                 </span>
                             </div>
                             {{ form_errors(formElement.shortTitle) }}
-                        </div>
-                    </div>
-                    <div class="row form-input-formula">
-                        <div class="col-xs-12">
-                            {{ form_errors(formElement.priceFormula) }}
-                            <div class="form-group {% if not formElement.priceFormula.vars.valid %}has-error{% endif %}">
-                                {{ form_label(formElement.priceFormula) }}
-                                <div class="input-group">
-                                    {{ form_widget(formElement.priceFormula) }}
-                                    <span class="input-group-btn">
-                                        <a class="btn btn-default" href="#help-topic-formula">
-                                            <span class="glyphicon glyphicon-question-sign"></span>
-                                        </a>
-                                    </span>
-                                </div>
-                                {{ form_errors(formElement.priceFormula) }}
-                            </div>
                         </div>
                     </div>
                 </div>

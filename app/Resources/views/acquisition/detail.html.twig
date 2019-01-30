@@ -126,6 +126,7 @@
                                     , keine globale Formel konfiguriert
                                 {% endif %}
                             </p>
+                            <a href="{{ path('acquisition_edit_formula', {bid: acquisition.bid}) }}" class="btn btn-default">Formeleditor</a>
                         </div>
                     </div>
                     {% if acquisition.isChoiceType %}
@@ -158,18 +159,6 @@
                                                         <i class="empty value-null"><span></span></i>
                                                     {% endif %}
                                                 </span>
-                                            {% if choice.priceFormula or acquisition.priceFormulaEnabled%}
-                                            <br>
-                                            <b>Formel: </b>
-                                                {% if choice.priceFormula is not empty %}
-                                                    <code>{{ choice.priceFormula }}</code>
-                                                    {% if not acquisition.priceFormulaEnabled %}
-                                                        (deaktiviert)
-                                                    {% endif %}
-                                                {% else %}
-                                                    <i class="empty value-null"><span></span></i>
-                                                {% endif %}
-                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>

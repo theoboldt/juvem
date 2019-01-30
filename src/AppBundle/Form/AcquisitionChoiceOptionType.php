@@ -45,18 +45,7 @@ class AcquisitionChoiceOptionType extends AbstractType {
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-info-choice-option-short']
                 ]
-            )->add(
-                'priceFormula',
-                TextType::class,
-                [
-                    'label'    => 'Formel, wenn diese Option ausgewählt ist',
-                    'mapped'   => true,
-                    'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-form-formula'],
-                ]
             );
-            
-        $builder->get('priceFormula')->addModelTransformer(new AcquistionFormulaTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver) {

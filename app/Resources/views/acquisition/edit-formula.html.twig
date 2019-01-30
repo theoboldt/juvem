@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Formel bearbeiten ({{ acquisition.managementTitle }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Formel', 'subtitle': 'bearbeiten'} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+            <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
+            </li>
+            <li class="active">Formel bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+
+        {{ form_start(form) }}
+        <div class="row ">
+            <div class="col-xs-12">
+                {{ form_errors(form) }}
+            </div>
+
+            <div class="col-xs-12">
+                <p>
+                    {{ form_widget(form.priceFormula) }}
+                    {{ form_errors(form.priceFormula) }}
+                </p>
+            </div>
+            <div class="col-xs-12">
+                <p>
+                    {% for attributeFormula in attributesFormula %}
+                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
+                                data-variable="{{ attributeFormula.formulaVariable }}">
+                            <span>{{ attributeFormula.formulaVariable }}</span> {{ attributeFormula.managementTitle }}
+                            (Zahl)
+                        </button>
+                    {% endfor %}
+                </p>
+                {% if showNumberVariables %}
+                    <p>
+                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
+                                data-variable="value">
+                            <span>value</span> Eingegebene Zahl
+                        </button>
+                    </p>
+                {% endif %}
+                {% if showChoiceVariables %}
+                    <p>
+                        {% set choiceOptionIdFirst = 1 %}
+                        {% for choiceOption in acquisition.choiceOptions %}
+                            {% if loop.first %}
+                                {% set choiceOptionIdFirst = choiceOption.id %}
+                            {% endif %}
+                            <button type="button" class="btn btn-default btn-xs btn-formula-variable"
+                                    data-variable="choice{{ choiceOption.id }}selected">
+                                <span>choice{{ choiceOption.id }}selected</span> {{ choiceOption.getManagementTitle(true) }}
+                                (Wahrheitswert)
+                            </button>
+                        {% endfor %}
+                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
+                                data-variable="choicesSelectedCount">
+                            <span>choicesSelectedCount</span> Anzahl der ausgewählten Optionen (Zahl)
+                        </button>
+                    </p>
+                {% endif %}
+            </div>
+            <div class="col-xs-12">
+                <div class="help-block" id="help-formula">
+                    <p>Die Formel kann aus Zahlen und den Grundrechenarten Addition <code>+</code>, Subtraktion
+                        <code>-</code>,
+                        Multiplikation <code>*</code>, Division <code>/</code> bestehen. Weiterhin können
+                        Klammern
+                        <code>()</code>
+                        gesetzt werden.
+                    </p>
+                    <p>
+                        Das Ergebnis der berechneten Formel wird zum Preis/zu der Aufwandsentschädigung <u>addiert</u>.
+                        Wenn ein Betrag vom Preis subtrahiert werden soll, muss die Formel mit <code>-1</code>
+                        multipliziert werden.
+                    </p>
+                    <ul>
+                        {% if showNumberVariables %}
+                            <li>
+                                In der Formel für Felder vom Typ
+                                <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_NUMBER') }}</i>
+                                kann mit der Variable <code>value</code> auf den eingegebenen Wert zugegriffen
+                                werden.
+                            </li>
+                        {% endif %}
+                        {% if showChoiceVariables %}
+                            <li>
+                                Ist das Feld vom Typ
+                                <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_CHOICE') }}</i>
+                                <ul>
+                                    <li>werden in Variablen nach dem Schema <code>choice{{ choiceOptionIdFirst }}selected</code>
+                                        gespeichert, ob die Option (in diesem Fall die Option mit der ID
+                                        <code>{{ choiceOptionIdFirst }}</code>) ausgewählt wurde.
+                                    </li>
+                                    <li>In der Variable <code>choicesSelectedCount</code> wird die Anzahl der
+                                        gewählten Optionen gespeichert.
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <input type="submit" value="Änderungen speichern" class="btn btn-primary navbar-btn"/>
+                    </div>
+                </nav>
+            </div>
+
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

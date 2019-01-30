@@ -49,6 +49,8 @@ class Attribute
     const LABEL_FIELD_GROUP       = 'Einteilungsfeld';
     const LABEL_FIELD_PARTICIPANT = 'Teilnehmerfeld';
 
+    const FORMULA_VARIABLE_PREFIX = 'field';
+
     /**
      * @ORM\Column(type="integer", name="bid")
      * @ORM\Id
@@ -744,5 +746,12 @@ class Attribute
         return $this;
     }
 
-
+    /**
+     * Get formula variable name
+     *
+     * @return string
+     */
+    public function getFormulaVariable() {
+        return self::FORMULA_VARIABLE_PREFIX.$this->getBid();
+    }
 }
