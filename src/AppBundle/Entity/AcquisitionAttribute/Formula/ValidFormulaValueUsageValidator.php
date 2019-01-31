@@ -16,6 +16,10 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 
 
 class ValidFormulaValueUsageValidator extends ConstraintValidator
@@ -25,7 +29,7 @@ class ValidFormulaValueUsageValidator extends ConstraintValidator
         if (!$constraint instanceof ValidFormulaValueUsage) {
             throw new UnexpectedTypeException($constraint, ValidFormulaValueUsage::class);
         }
-        
+
         // custom constraints should ignore null and empty values to allow
         // other constraints (NotBlank, NotNull, etc.) take care of that
         if (null === $value
@@ -36,11 +40,15 @@ class ValidFormulaValueUsageValidator extends ConstraintValidator
         ) {
             return;
         }
-        
+
         $formula       = $value->getPriceFormula();
         $containsValue = $value->getPriceFormula() !== null && strpos($formula, 'value') !== false;
-        
+
         switch ($value->getFieldType()) {
+            case FormTextType::class;
+            case FormTextareaType::class;
+            case FormDateType::class;
+            case FormDateTimeType::class;
             case FormNumberType::class;
                 //intentionally left empty
                 break;
@@ -56,10 +64,9 @@ class ValidFormulaValueUsageValidator extends ConstraintValidator
                 $this->buildViolation($formula, $constraint, $value->getFieldType(true));
                 break;
         }
-        
+
     }
-    
-    
+
     /**
      * Build violation
      *
@@ -75,5 +82,4 @@ class ValidFormulaValueUsageValidator extends ConstraintValidator
                       ->setParameter('{{ type }}', $type)
                       ->addViolation();
     }
-    
 }
