@@ -90,12 +90,13 @@ input.input-formula, .btn-formula-variable span {
   font-family: monospace;
 }
 
-input.input-formula {
-  margin-bottom: 5px;
+input.input-formula, textarea.input-formula {
+  margin-bottom: 2px;
 }
 
 .btn-formula-variable {
   color: #333;
+  margin: 2px 0;
 }
 
 #help-form-formula {

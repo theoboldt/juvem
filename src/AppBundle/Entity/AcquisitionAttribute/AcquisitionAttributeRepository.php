@@ -38,7 +38,26 @@ class AcquisitionAttributeRepository extends EntityRepository
         }
         return null;
     }
-
+    
+    /**
+     * Find all @see Attributes with their options having formula enabled not deleted
+     *
+     * @return array|Attribute[]
+     * @throws \Doctrine\ORM\Query\QueryException
+     */
+    public function findAllWithFormulaAndOptions(): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('a', 'o')
+           ->indexBy('a', 'a.bid')
+           ->leftJoin('a.choiceOptions', 'o')
+           ->andWhere('a.isPriceFormulaEnabled = 1')
+           ->andWhere('a.deletedAt IS NULL');
+        
+        $result = $qb->getQuery()->execute();
+        return $result;
+    }
+    
     /**
      * Find all @see Attribute entities having formula enabled
      *
@@ -51,7 +70,7 @@ class AcquisitionAttributeRepository extends EntityRepository
         $qb->select('a')
            ->andWhere('a.isPriceFormulaEnabled = 1')
            ->orderBy('a.managementTitle');
-
+        
         if ($attribute) {
             $qb->addSelect('o')
                ->leftJoin('a.choiceOptions', 'o')
@@ -65,9 +84,9 @@ class AcquisitionAttributeRepository extends EntityRepository
                ->andWhere($qb->expr()->neq('a.bid', ':excludedBid'))
                ->setParameter('excludedBid', $attribute->getBid());
         }
-
+        
         $result = $qb->getQuery()->execute();
-
+        
         /** @var Attribute $resultAttribute */
         foreach ($result as $key => $resultAttribute) {
             /** @var AttributeChoiceOption $choice */
@@ -79,14 +98,14 @@ class AcquisitionAttributeRepository extends EntityRepository
                 }
             }
         }
-
+        
         return array_values($result);
     }
-
+    
     /**
      * Fetch amount of occurrence of @see ChoiceFilloutValue
      *
-     * @param Event                 $event
+     * @param Event $event
      * @param AttributeChoiceOption $choiceOption
      * @return ChoiceOptionUsage
      */

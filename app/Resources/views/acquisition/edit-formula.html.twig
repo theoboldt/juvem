@@ -20,48 +20,17 @@
             </div>
 
             <div class="col-xs-12">
-                <p>
-                    {{ form_widget(form.priceFormula) }}
-                    {{ form_errors(form.priceFormula) }}
-                </p>
+                {{ form_widget(form.priceFormula) }}
+                {{ form_errors(form.priceFormula) }}
             </div>
             <div class="col-xs-12">
-                <p>
-                    {% for attributeFormula in attributesFormula %}
-                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
-                                data-variable="{{ attributeFormula.formulaVariable }}">
-                            <span>{{ attributeFormula.formulaVariable }}</span> {{ attributeFormula.managementTitle }}
-                            (Zahl)
-                        </button>
-                    {% endfor %}
-                </p>
-                {% if showNumberVariables %}
-                    <p>
-                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
-                                data-variable="value">
-                            <span>value</span> Eingegebene Zahl
-                        </button>
-                    </p>
-                {% endif %}
-                {% if showChoiceVariables %}
-                    <p>
-                        {% set choiceOptionIdFirst = 1 %}
-                        {% for choiceOption in acquisition.choiceOptions %}
-                            {% if loop.first %}
-                                {% set choiceOptionIdFirst = choiceOption.id %}
-                            {% endif %}
-                            <button type="button" class="btn btn-default btn-xs btn-formula-variable"
-                                    data-variable="choice{{ choiceOption.id }}selected">
-                                <span>choice{{ choiceOption.id }}selected</span> {{ choiceOption.getManagementTitle(true) }}
-                                (Wahrheitswert)
-                            </button>
-                        {% endfor %}
-                        <button type="button" class="btn btn-default btn-xs btn-formula-variable"
-                                data-variable="choicesSelectedCount">
-                            <span>choicesSelectedCount</span> Anzahl der ausgewählten Optionen (Zahl)
-                        </button>
-                    </p>
-                {% endif %}
+                {% for variable in variables %}
+                    <button type="button" class="btn btn-default btn-xs btn-formula-variable"
+                            data-variable="{{ variable.name }}">
+                        <span>{{ variable.name }}</span> {{ variable.description }}
+                        ({% if variable.nummeric %}Zahl{% elseif variable.boolean %}Wahrheitswert{% endif %})
+                    </button>
+                {% endfor %}
             </div>
             <div class="col-xs-12">
                 <div class="help-block" id="help-formula">
@@ -91,9 +60,9 @@
                                 Ist das Feld vom Typ
                                 <i>{{ constant('AppBundle\\Entity\\AcquisitionAttribute\\Attribute::LABEL_FIELD_CHOICE') }}</i>
                                 <ul>
-                                    <li>werden in Variablen nach dem Schema <code>choice{{ choiceOptionIdFirst }}selected</code>
+                                    <li>werden in Variablen nach dem Schema <code>choice1selected</code>
                                         gespeichert, ob die Option (in diesem Fall die Option mit der ID
-                                        <code>{{ choiceOptionIdFirst }}</code>) ausgewählt wurde.
+                                        <code>1</code>) ausgewählt wurde.
                                     </li>
                                     <li>In der Variable <code>choicesSelectedCount</code> wird die Anzahl der
                                         gewählten Optionen gespeichert.

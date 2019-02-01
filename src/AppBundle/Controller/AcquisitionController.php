@@ -117,27 +117,26 @@ class AcquisitionController extends Controller
      */
     public function editFormulaAction(Request $request, Attribute $attribute)
     {
-        $form = $this->createForm(AcquisitionFormulaType::class, $attribute);
-        $repository        = $this->getDoctrine()->getRepository(Attribute::class);
-        $attributesFormula = $repository->findWithFormulaNotDependantOnField($attribute);
-
+        $form             = $this->createForm(AcquisitionFormulaType::class, $attribute);
+        $variableProvider = $this->get('app.price.formula_variable_provider');
+    
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($attribute);
             $em->flush();
-
+        
             return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
         $fieldType = $attribute->getFieldType();
-
+    
         return $this->render(
             'acquisition/edit-formula.html.twig',
             [
-                'attributesFormula'   => $attributesFormula,
                 'form'                => $form->createView(),
                 'acquisition'         => $attribute,
+                'variables'           => $variableProvider->provideForAttribute($attribute),
                 'showChoiceVariables' => ($fieldType == ChoiceType::class || $fieldType == GroupType::class),
                 'showNumberVariables' => ($fieldType == NumberType::class),
             ]

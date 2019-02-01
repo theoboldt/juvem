@@ -30,7 +30,7 @@ class AcquisitionFormulaType extends AbstractType
 
         $builder->add(
             'priceFormula',
-            TextType::class,
+            TextareaType::class,
             [
                 'label'    => 'Formel',
                 'mapped'   => true,

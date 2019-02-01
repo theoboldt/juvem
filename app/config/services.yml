@@ -122,6 +122,11 @@ services:
             - '@doctrine.orm.entity_manager'
             - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
         public: true
+    app.price.formula_variable_provider:
+        class: AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        public: true
     app.payment_suggestion_manager:
         class: AppBundle\Manager\Payment\PaymentSuggestionManager
         arguments: ['@doctrine.orm.entity_manager']
