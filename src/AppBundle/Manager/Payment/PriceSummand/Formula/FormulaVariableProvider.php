@@ -11,42 +11,42 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class FormulaVariableProvider
 {
-    
+
     /**
      * em
      *
      * @var EntityManagerInterface
      */
     private $em;
-    
+
     /**
      * All @see Attribute entities with their related options
      *
      * @var null|array|Attribute[]
      */
     private $attributes = null;
-    
+
     /**
      * Caches all variables which can be used in related field
      *
      * @var array
      */
     private $fieldVariablesCache = [];
-    
+
     /**
      * attributeVariableCache
      *
      * @var array|FormulaVariableInterface[]
      */
     private $attributeVariableCache = [];
-    
+
     /**
      * choiceVariableCache
      *
      * @var array|FormulaVariableInterface[]
      */
     private $choiceVariableCache = [];
-    
+
     /**
      * FormulaVariableProvider constructor.
      *
@@ -56,7 +56,7 @@ class FormulaVariableProvider
     {
         $this->em = $em;
     }
-    
+
     /**
      * Get all attributes suitable for evaluation
      *
@@ -69,7 +69,7 @@ class FormulaVariableProvider
         }
         return $this->attributes;
     }
-    
+
     /**
      * Get all variables for other fields except transmitted one
      *
@@ -90,7 +90,7 @@ class FormulaVariableProvider
         }
         return $variables;
     }
-    
+
     /**
      * Get all variables for all choices of transmitted attribute
      *
@@ -110,7 +110,23 @@ class FormulaVariableProvider
         }
         return $variables;
     }
-    
+
+    /**
+     * Adds variable to cache for bids @see Attribute, throws exception if already defined
+     *
+     *
+     * @param FormulaVariableInterface $variable Variable to add
+     * @param int                      $bid      Related @see Attribute id
+     */
+    private function addFieldVariableToCache(FormulaVariableInterface $variable, int $bid)
+    {
+        $name = $variable->getName();
+        if (isset($this->fieldVariablesCache[$bid][$name])) {
+            throw new \RuntimeException('Provided variable name is already used');
+        }
+        $this->fieldVariablesCache[$bid][$name] = $variable;
+    }
+
     /**
      * Provide all variables usable for transmitted attribute
      *
@@ -121,25 +137,31 @@ class FormulaVariableProvider
     {
         $bid = $attribute->getBid();
         if (!isset($this->fieldVariablesCache[$bid])) {
-            $variables = $this->getAttributeVariableNames($attribute);
-            
+            $this->fieldVariablesCache[$bid] = [];
+            foreach ($this->getAttributeVariableNames($attribute) as $variable) {
+                $this->addFieldVariableToCache($variable, $bid);
+            }
+
             switch ($attribute->getFieldType()) {
                 case ChoiceType::class:
-                    $variables   = array_merge($variables, $this->getAttributeChoiceVariables($attribute));
-                    $variables[] = new FormulaVariable(
-                        '$choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false
+                    foreach ($this->getAttributeChoiceVariables($attribute) as $variable) {
+                        $this->addFieldVariableToCache($variable, $bid);
+                    }
+                    $this->addFieldVariableToCache(
+                        new FormulaVariable('$choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
+                        $bid
                     );
                     break;
                 case NumberType::class:
-                    $variables[] = new FormulaVariable('$value', 'Eingegebener Wert', true, false);
+                    $this->addFieldVariableToCache(
+                        new FormulaVariable('$value', 'Eingegebener Wert', true, false), $bid
+                    );
                     break;
             }
-            
-            $this->fieldVariablesCache[$bid] = $variables;
         }
-        
+
         return $this->fieldVariablesCache[$bid];
     }
-    
-    
+
+
 }
