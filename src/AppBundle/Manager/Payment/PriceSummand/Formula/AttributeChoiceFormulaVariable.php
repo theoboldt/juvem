@@ -7,24 +7,24 @@ use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 
 class AttributeChoiceFormulaVariable implements FormulaVariableInterface
 {
-    
+
     /**
      * Variable name prefix
      */
-    const SELECTED_PREFIX = '$choice';
-    
+    const SELECTED_PREFIX = 'choice';
+
     /**
      * Variable name suffix
      */
     const SELECTED_SUFFIX = 'selected';
-    
+
     /**
      * choice
      *
      * @var AttributeChoiceOption
      */
     private $choice;
-    
+
     /**
      * AttributeChoiceFormulaVariable constructor.
      *
@@ -34,7 +34,7 @@ class AttributeChoiceFormulaVariable implements FormulaVariableInterface
     {
         $this->choice = $choice;
     }
-    
+
     /**
      * Get variable name for usage in formula
      *
@@ -44,7 +44,7 @@ class AttributeChoiceFormulaVariable implements FormulaVariableInterface
     {
         return self::SELECTED_PREFIX . $this->choice->getId() . self::SELECTED_SUFFIX;
     }
-    
+
     /**
      * Description
      *
@@ -54,7 +54,7 @@ class AttributeChoiceFormulaVariable implements FormulaVariableInterface
     {
         return $this->choice->getManagementTitle(true);
     }
-    
+
     /**
      * Determine if variable provides numeric
      *
@@ -64,7 +64,7 @@ class AttributeChoiceFormulaVariable implements FormulaVariableInterface
     {
         return false;
     }
-    
+
     /**
      * Determine if variable provides boolean
      *

@@ -116,12 +116,21 @@ services:
             - '@app.price_manager'
             - '@security.token_storage'
         public: true
+    app.payment.expression_language_provider:
+        class: AppBundle\Manager\Payment\ExpressionLanguageProvider
+        arguments:
+            - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
     app.price_manager:
         class: AppBundle\Manager\Payment\PriceManager
         arguments:
             - '@doctrine.orm.entity_manager'
-            - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
+            - '@app.payment.expression_language_provider'
         public: true
+    app.payment.formula_resolver:
+        class: AppBundle\Manager\Payment\PriceSummand\Formula\FormulaResolver
+        arguments:
+            - '@app.price.formula_variable_provider'
+            - '@app.payment.expression_language_provider'
     app.price.formula_variable_provider:
         class: AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider
         arguments:

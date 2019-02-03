@@ -5,6 +5,7 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Manager\Payment\PriceSummand\AttributeWithFormulaNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -68,6 +69,24 @@ class FormulaVariableProvider
             $this->attributes = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
         }
         return $this->attributes;
+    }
+
+    /**
+     * Get @see Attribute by id
+     *
+     * @param int $bid Bid
+     * @return Attribute Attribute with formula
+     * @throws AttributeWithFormulaNotFoundException
+     */
+    public function getAttributeByBid(int $bid): Attribute
+    {
+        $attributes = $this->getAttributes();
+        foreach ($attributes as $attribute) {
+            if ($attribute->getBid() === $bid) {
+                return $attribute;
+            }
+        }
+        throw new AttributeWithFormulaNotFoundException('No attribute found having bid ' . $bid);
     }
 
     /**
@@ -148,13 +167,13 @@ class FormulaVariableProvider
                         $this->addFieldVariableToCache($variable, $bid);
                     }
                     $this->addFieldVariableToCache(
-                        new FormulaVariable('$choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
+                        new FormulaVariable('choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
                         $bid
                     );
                     break;
                 case NumberType::class:
                     $this->addFieldVariableToCache(
-                        new FormulaVariable('$value', 'Eingegebener Wert', true, false), $bid
+                        new FormulaVariable('value', 'Eingegebener Wert', true, false), $bid
                     );
                     break;
             }

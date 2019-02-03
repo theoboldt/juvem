@@ -49,7 +49,7 @@ class Attribute
     const LABEL_FIELD_GROUP       = 'Einteilungsfeld';
     const LABEL_FIELD_PARTICIPANT = 'Teilnehmerfeld';
 
-    const FORMULA_VARIABLE_PREFIX = '$field';
+    const FORMULA_VARIABLE_PREFIX = 'field';
 
     /**
      * @ORM\Column(type="integer", name="bid")
