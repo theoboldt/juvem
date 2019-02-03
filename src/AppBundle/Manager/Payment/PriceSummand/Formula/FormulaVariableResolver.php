@@ -17,9 +17,19 @@ use AppBundle\Manager\Payment\ExpressionLanguageProvider;
 use Symfony\Component\ExpressionLanguage\Node\NameNode;
 use Symfony\Component\ExpressionLanguage\Node\Node;
 
-class FormulaResolver
+class FormulaVariableResolver
 {
+
     /**
+     * All @see Attribute entities with their related options
+     *
+     * @var array|Attribute[]
+     */
+    private $attributes;
+
+    /**
+     * Variable provider
+     *
      * @var FormulaVariableProvider
      */
     private $variableProvider;
@@ -39,16 +49,17 @@ class FormulaResolver
     private $fieldDependencies = [];
 
     /**
-     * FormulaResolver constructor.
+     * FormulaVariableResolver constructor.
      *
-     * @param FormulaVariableProvider    $variableProvider
      * @param ExpressionLanguageProvider $expressionLanguageProvider
+     * @param array|Attribute[]          $attributes Attributes
      */
     public function __construct(
-        FormulaVariableProvider $variableProvider,
-        ExpressionLanguageProvider $expressionLanguageProvider
+        ExpressionLanguageProvider $expressionLanguageProvider,
+        array $attributes
     ) {
-        $this->variableProvider           = $variableProvider;
+        $this->attributes                 = $attributes;
+        $this->variableProvider           = new FormulaVariableProvider($attributes);
         $this->expressionLanguageProvider = $expressionLanguageProvider;
     }
 
@@ -60,11 +71,21 @@ class FormulaResolver
      */
     private function getUsedFieldVariables(Attribute $attribute)
     {
-        $available = $this->variableProvider->provideForAttribute($attribute);
+        $available = $this->variableProvider->variables($attribute);
         $formula   = $attribute->getPriceFormula();
         $parsed    = $this->expressionLanguage()->parse($formula === null ? '0' : $formula, array_keys($available));
 
         return $this->getUsedVariableNames($parsed->getNodes());
+    }
+
+    /**
+     * Provides expression language
+     *
+     * @return \Symfony\Component\ExpressionLanguage\ExpressionLanguage
+     */
+    public function expressionLanguage()
+    {
+        return $this->expressionLanguageProvider->provide();
     }
 
     /**
@@ -118,8 +139,7 @@ class FormulaResolver
                     $this->fieldDependencies[$bid][$dependOnBid] = $dependOnBid;
                     if (!$this->dependenciesForAttributeCalculated($dependOnBid)) {
                         //dependencies of dependant field are also required
-                        $dependOnAttribute = $this->variableProvider->getAttributeByBid($dependOnBid);
-                        $this->calculateDependenciesForAttribute($dependOnAttribute);
+                        $this->calculateDependenciesForAttribute($this->attributes[$dependOnBid]);
                     }
                 }
             }
@@ -142,7 +162,7 @@ class FormulaResolver
 
         $attributes = [];
         foreach ($this->fieldDependencies[$bid] as $dependantBid) {
-            $attributes[] = $this->variableProvider->getAttributeByBid($dependantBid);
+            $attributes[] = $this->attributes[$dependantBid];
         }
 
         return $attributes;
@@ -198,13 +218,4 @@ class FormulaResolver
         return $change;
     }
 
-    /**
-     * Provides expression language
-     *
-     * @return \Symfony\Component\ExpressionLanguage\ExpressionLanguage
-     */
-    public function expressionLanguage()
-    {
-        return $this->expressionLanguageProvider->provide();
-    }
 }

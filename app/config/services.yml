@@ -126,13 +126,8 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@app.payment.expression_language_provider'
         public: true
-    app.payment.formula_resolver:
-        class: AppBundle\Manager\Payment\PriceSummand\Formula\FormulaResolver
-        arguments:
-            - '@app.price.formula_variable_provider'
-            - '@app.payment.expression_language_provider'
     app.price.formula_variable_provider:
-        class: AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider
+        class: AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider
         arguments:
             - '@doctrine.orm.entity_manager'
         public: true

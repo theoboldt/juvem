@@ -5,27 +5,18 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Manager\Payment\PriceSummand\AttributeWithFormulaNotFoundException;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
-class FormulaVariableProvider
+class FormulaVariableProvider implements FormulaVariableProviderInterface
 {
-
-    /**
-     * em
-     *
-     * @var EntityManagerInterface
-     */
-    private $em;
 
     /**
      * All @see Attribute entities with their related options
      *
-     * @var null|array|Attribute[]
+     * @var array|Attribute[]
      */
-    private $attributes = null;
+    private $attributes;
 
     /**
      * Caches all variables which can be used in related field
@@ -51,44 +42,48 @@ class FormulaVariableProvider
     /**
      * FormulaVariableProvider constructor.
      *
-     * @param EntityManagerInterface $em
+     * @param array|Attribute[] $attributes Related attributes
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(array $attributes)
     {
-        $this->em = $em;
+        $this->attributes = $attributes;
     }
 
     /**
-     * Get all attributes suitable for evaluation
+     * Provide all variables usable for transmitted attribute
      *
-     * @return Attribute[]|array
+     * @param Attribute $attribute
+     * @return array|FormulaVariableInterface[] List of variables
      */
-    private function getAttributes(): array
+    public function variables(Attribute $attribute): array
     {
-        if ($this->attributes === null) {
-            $this->attributes = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
-        }
-        return $this->attributes;
-    }
+        $bid = $attribute->getBid();
+        if (!isset($this->fieldVariablesCache[$bid])) {
+            $this->fieldVariablesCache[$bid] = [];
+            foreach ($this->getAttributeVariableNames($attribute) as $variable) {
+                $this->addFieldVariableToCache($variable, $bid);
+            }
 
-    /**
-     * Get @see Attribute by id
-     *
-     * @param int $bid Bid
-     * @return Attribute Attribute with formula
-     * @throws AttributeWithFormulaNotFoundException
-     */
-    public function getAttributeByBid(int $bid): Attribute
-    {
-        $attributes = $this->getAttributes();
-        foreach ($attributes as $attribute) {
-            if ($attribute->getBid() === $bid) {
-                return $attribute;
+            switch ($attribute->getFieldType()) {
+                case ChoiceType::class:
+                    foreach ($this->getAttributeChoiceVariables($attribute) as $variable) {
+                        $this->addFieldVariableToCache($variable, $bid);
+                    }
+                    $this->addFieldVariableToCache(
+                        new FormulaVariable('choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
+                        $bid
+                    );
+                    break;
+                case NumberType::class:
+                    $this->addFieldVariableToCache(
+                        new FormulaVariable('value', 'Eingegebener Wert', true, false), $bid
+                    );
+                    break;
             }
         }
-        throw new AttributeWithFormulaNotFoundException('No attribute found having bid ' . $bid);
-    }
 
+        return $this->fieldVariablesCache[$bid];
+    }
     /**
      * Get all variables for other fields except transmitted one
      *
@@ -98,7 +93,7 @@ class FormulaVariableProvider
     private function getAttributeVariableNames(Attribute $excludeAttribute): array
     {
         $variables = [];
-        foreach ($this->getAttributes() as $attribute) {
+        foreach ($this->attributes as $attribute) {
             $bid = $attribute->getBid();
             if ($attribute->getBid() !== $excludeAttribute->getBid()) {
                 if (!isset($this->attributeVariableCache[$bid])) {
@@ -145,42 +140,5 @@ class FormulaVariableProvider
         }
         $this->fieldVariablesCache[$bid][$name] = $variable;
     }
-
-    /**
-     * Provide all variables usable for transmitted attribute
-     *
-     * @param Attribute $attribute
-     * @return array|FormulaVariableInterface[] List of variables
-     */
-    public function provideForAttribute(Attribute $attribute): array
-    {
-        $bid = $attribute->getBid();
-        if (!isset($this->fieldVariablesCache[$bid])) {
-            $this->fieldVariablesCache[$bid] = [];
-            foreach ($this->getAttributeVariableNames($attribute) as $variable) {
-                $this->addFieldVariableToCache($variable, $bid);
-            }
-
-            switch ($attribute->getFieldType()) {
-                case ChoiceType::class:
-                    foreach ($this->getAttributeChoiceVariables($attribute) as $variable) {
-                        $this->addFieldVariableToCache($variable, $bid);
-                    }
-                    $this->addFieldVariableToCache(
-                        new FormulaVariable('choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
-                        $bid
-                    );
-                    break;
-                case NumberType::class:
-                    $this->addFieldVariableToCache(
-                        new FormulaVariable('value', 'Eingegebener Wert', true, false), $bid
-                    );
-                    break;
-            }
-        }
-
-        return $this->fieldVariablesCache[$bid];
-    }
-
 
 }
