@@ -119,24 +119,26 @@ class AcquisitionController extends Controller
     {
         $form             = $this->createForm(AcquisitionFormulaType::class, $attribute);
         $variableProvider = $this->get('app.price.formula_variable_provider');
-    
+
+        #$resolver = $this->get('app.payment.formula_resolver');
+    #$dependencies = $resolver->getDependenciesFor($attribute);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($attribute);
             $em->flush();
-        
+
             return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
         $fieldType = $attribute->getFieldType();
-    
+
         return $this->render(
             'acquisition/edit-formula.html.twig',
             [
                 'form'                => $form->createView(),
                 'acquisition'         => $attribute,
-                'variables'           => $variableProvider->provideForAttribute($attribute),
+                'variables'           => $variableProvider->variables($attribute),
                 'showChoiceVariables' => ($fieldType == ChoiceType::class || $fieldType == GroupType::class),
                 'showNumberVariables' => ($fieldType == NumberType::class),
             ]

@@ -18,6 +18,13 @@ use Symfony\Component\Validator\Constraint;
 class ValidFormula extends Constraint
 {
     public $message = 'Die Formel "{{ formula }}" ist fehlerhaft: {{ error }}';
-    
+
+    /**
+     * @return array|string
+     */
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }
 

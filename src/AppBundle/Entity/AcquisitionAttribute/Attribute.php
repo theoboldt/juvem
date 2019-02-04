@@ -25,11 +25,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
-use \AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormulaValueUsage as AssertValidFormulaValueUsage;
+use AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormula as AssertValidFormula;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @AssertValidFormulaValueUsage()
+ * @AssertValidFormula()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeRepository")
  * @ORM\Table(name="acquisition_attribute")
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Attribute
 {
-    use CreatedModifiedTrait, SoftDeleteTrait, PriceFormulaTrait;
+    use CreatedModifiedTrait, SoftDeleteTrait;
 
     const LABEL_FIELD_TEXT        = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA    = 'Textfeld (Mehrzeilig)';
@@ -158,6 +158,13 @@ class Attribute
      * @var boolean
      */
     protected $isPriceFormulaEnabled = false;
+
+    /**
+     * If set, contains a formula which has an effect on the price
+     *
+     * @ORM\Column(type="string", length=255, name="price_formula", nullable=true)
+     */
+    protected $priceFormula = null;
 
     /**
      * Constructor
@@ -743,6 +750,28 @@ class Attribute
     public function setIsPriceFormulaEnabled(bool $isPriceFormulaEnabled)
     {
         $this->isPriceFormulaEnabled = $isPriceFormulaEnabled;
+        return $this;
+    }
+
+    /**
+     * Get price formula if set
+     *
+     * @return string|null
+     */
+    public function getPriceFormula(): ?string
+    {
+        return $this->priceFormula;
+    }
+
+    /**
+     * Set new price formula
+     *
+     * @param string|null $priceFormula Textual formula
+     * @return $this
+     */
+    public function setPriceFormula(string $priceFormula = null)
+    {
+        $this->priceFormula = $priceFormula;
         return $this;
     }
 

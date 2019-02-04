@@ -31,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AttributeChoiceOption
 {
-    use SoftDeleteTrait, PriceFormulaTrait;
+    use SoftDeleteTrait;
 
     const PRESENTATION_FORM_TITLE = 'form_title';
     const PRESENTATION_MANAGEMENT_TITLE = 'management_title';

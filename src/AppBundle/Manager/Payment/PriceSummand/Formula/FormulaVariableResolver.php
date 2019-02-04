@@ -97,6 +97,9 @@ class FormulaVariableResolver
     private function getUsedVariableNames(Node $node)
     {
         $used = [];
+        foreach ($node->attributes as $nodeAttribute) {
+            $used[] = $nodeAttribute;
+        }
         foreach ($node->nodes as $node) {
             if ($node instanceof NameNode) {
                 foreach ($node->attributes as $nodeAttribute) {
@@ -152,7 +155,7 @@ class FormulaVariableResolver
      * @param Attribute $target Target attribute
      * @return array|Attribute[] List of attributes the transmitted one is dependant on
      */
-    public function getAttributesDependantOn(Attribute $target): array
+    public function getDependenciesFor(Attribute $target): array
     {
         $bid = $target->getBid();
         if (!$this->dependenciesForAttributeCalculated($bid)) {
@@ -166,6 +169,63 @@ class FormulaVariableResolver
         }
 
         return $attributes;
+    }
+
+    /**
+     * Get list of all @see Attribute entities which are depending on transmitted @see Attribute
+     *
+     * @param Attribute $target Attribute for dependency check
+     * @return array|Attribute[] List of attributes depending on transmitted one
+     */
+    public function getAllDependingOn(Attribute $target): array
+    {
+        $targetBid = $target->getBid();
+
+        $attributes = [];
+        /** @var Attribute $attribute */
+        foreach ($this->attributes as $attribute) {
+            /** @var Attribute $dependency */
+            foreach ($this->getDependenciesFor($attribute) as $dependency) {
+                $dependencyBid = $dependency->getBid();
+                if ($dependencyBid === $targetBid) {
+                    $attributes[$dependencyBid] = $dependency;
+                    break;
+                }
+            }
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Get list of all @see FormulaVariableInterface, which can be used for transmitted @see Attribute independently
+     *
+     * @param Attribute $target Target entity
+     * @return array|FormulaVariableInterface[]
+     */
+    public function getUsableVariablesFor(Attribute $target): array
+    {
+        $variables  = $this->variableProvider->variables($target);
+        $dependants = $this->getAllDependingOn($target);
+        /** @var Attribute $dependant */
+        foreach ($dependants as $dependant) {
+            if (isset($variables[$dependant->getFormulaVariable()])) {
+                unset($variables[$dependant->getFormulaVariable()]);
+            }
+        }
+
+        return $variables;
+    }
+
+    /**
+     * Get variables array having test values assigned
+     *
+     * @param array|FormulaVariableInterface[] Variables to provide test data for
+     * @return array|mixed[] Result
+     */
+    public function getTestVariableValues(array $variables): array
+    {
+        return $this->variableProvider->getTestVariableValues($variables);
     }
 
     /**

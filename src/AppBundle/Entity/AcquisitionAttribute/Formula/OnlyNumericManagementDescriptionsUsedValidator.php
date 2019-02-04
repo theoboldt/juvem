@@ -22,7 +22,7 @@ class OnlyNumericManagementDescriptionsUsedValidator extends ConstraintValidator
         if (!$constraint instanceof OnlyNumericManagementDescriptionsUsed) {
             throw new UnexpectedTypeException($constraint, OnlyNumericManagementDescriptionsUsed::class);
         }
-        
+
         // custom constraints should ignore null and empty values to allow
         // other constraints (NotBlank, NotNull, etc.) take care of that
         if (null === $value
@@ -31,7 +31,6 @@ class OnlyNumericManagementDescriptionsUsedValidator extends ConstraintValidator
             || !$value->getAttribute()
             || !$value->getAttribute()->isPriceFormulaEnabled()
             || $value->getAttribute()->getPriceFormula() === null
-            || !empty($value->getPriceFormula())
             || strpos($value->getAttribute()->getPriceFormula(), 'value') === false
         ) {
             return;

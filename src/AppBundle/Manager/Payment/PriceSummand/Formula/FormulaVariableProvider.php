@@ -84,6 +84,29 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
 
         return $this->fieldVariablesCache[$bid];
     }
+
+    /**
+     * Get variables array having test values assigned
+     *
+     * @param array|FormulaVariableInterface[] Variables to provide test data for
+     * @return array|mixed[] Result
+     */
+    public function getTestVariableValues(array $variables): array
+    {
+        $result = [];
+        foreach ($variables as $variable) {
+            $value = null;
+            if ($variable->isBoolean()) {
+                $value = true;
+            }
+            if ($variable->isNummeric()) {
+                $value = 1;
+            }
+            $result[$variable->getName()] = $value;
+        }
+        return $result;
+    }
+
     /**
      * Get all variables for other fields except transmitted one
      *

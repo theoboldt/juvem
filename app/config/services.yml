@@ -131,6 +131,12 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
         public: true
+    AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormulaValidator:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@app.payment.expression_language_provider'
+        tags:
+          - { name: validator.constraint_validator }
     app.payment_suggestion_manager:
         class: AppBundle\Manager\Payment\PaymentSuggestionManager
         arguments: ['@doctrine.orm.entity_manager']
