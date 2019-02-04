@@ -12,8 +12,6 @@
 namespace AppBundle\Manager\Payment;
 
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
@@ -23,15 +21,11 @@ use AppBundle\Entity\Participation;
 use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
-use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\ExpressionLanguage\Node\NameNode;
-use Symfony\Component\ExpressionLanguage\Node\Node;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
@@ -39,18 +33,11 @@ class PriceManager
 {
 
     /**
-     * Cache dir path for @see ExpressionLanguage cache
+     * Lazy initializer @see ExpressionLanguage
      *
-     * @var string
+     * @var ExpressionLanguageProvider
      */
-    private $expressionLanguageCachePath;
-
-    /**
-     * Lazy initialized @see ExpressionLanguage
-     *
-     * @var null|ExpressionLanguage
-     */
-    protected $expressionLanguage = null;
+    protected $expressionLanguageProvider;
 
     /**
      * Entity manager
@@ -76,15 +63,15 @@ class PriceManager
     /**
      * CommentManager constructor.
      *
-     * @param EntityManagerInterface $em
-     * @param string                 $expressionLanguageCachePath
+     * @param EntityManagerInterface     $em
+     * @param ExpressionLanguageProvider $expressionLanguageProvider
      */
     public function __construct(
         EntityManagerInterface $em,
-        string $expressionLanguageCachePath
+        ExpressionLanguageProvider $expressionLanguageProvider
     ) {
-        $this->em                          = $em;
-        $this->expressionLanguageCachePath = $expressionLanguageCachePath;
+        $this->em                         = $em;
+        $this->expressionLanguageProvider = $expressionLanguageProvider;
     }
 
     /**
@@ -209,7 +196,7 @@ class PriceManager
                 /** @var Fillout $fillout */
                 foreach ($causingEntity->getAcquisitionAttributeFillouts() as $fillout) {
                     $attribute = $fillout->getAttribute();
-                    $bid = $attribute->getBid();
+                    $bid       = $attribute->getBid();
                     if (!$attribute->isPriceFormulaEnabled()) {
                         continue;
                     }
@@ -219,20 +206,6 @@ class PriceManager
                             throw new \UnexpectedValueException(
                                 'Expecting ChoiceFilloutValue when attribute is ChoiceType'
                             );
-                        }
-                        $choices = $value->getSelectedChoices();
-                        /** @var AttributeChoiceOption $choice */
-                        foreach ($choices as $choice) {
-                            if ($attribute->getPriceFormula()) {
-                                $summand = $this->filloutChoiceSummandAttributeFormula(
-                                    $impactedEntity, $fillout, $choice
-                                );
-                            } else {
-                                $summand = $this->filloutChoiceSummandChoiceFormula($impactedEntity, $fillout, $choice);
-                            }
-                            if ($summand) {
-                                $summands[$bid] = $summand;
-                            }
                         }
                     } elseif ($attribute->getPriceFormula()) {
                         $summand = $this->filloutSummand($impactedEntity, $fillout);
@@ -278,97 +251,11 @@ class PriceManager
         if ($attribute->getFieldType() === NumberType::class) {
             $values['value'] = $value->getTextualValue();
         }
-        /*
-        $formula .= '*(field1+value)';
-        $formula = '('.$formula.')/field2';
-        $values['field1'] = 1;
-        $values['field2'] = 1;
 
-
-        $parsed = $this->expressionLanguage()->parse($formula, array_keys($values));
-
-        $this->parseNodeDependencies($parsed->getNodes(), $attribute->getBid());
-        dump($this->dependencies);
-       */
         return new FilloutSummand(
             $entity,
             $fillout,
-            $this->expressionLanguage()->evaluate($formula, $values)
-        );
-    }
-
-    private $dependencies = [];
-    private function parseNodeDependencies(Node $node, $originalBid) {
-        foreach ($node->nodes as $node) {
-            if ($node instanceof NameNode) {
-                foreach ($node->attributes as $nodeAttribute) {
-                    if (preg_match(
-                        '/' . Attribute::FORMULA_VARIABLE_PREFIX . '(?P<bid>\d+)/', $nodeAttribute, $fieldInfo
-                    )) {
-                        $bid = (int)$fieldInfo['bid'];
-                        $this->dependencies[$originalBid][$bid] = $bid;
-                    }
-                }
-            }
-            $this->parseNodeDependencies($node, $originalBid);
-
-        }
-    }
-
-    /**
-     * Generate choice summand for @see AttributeChoiceOption having formula at @see Attribute level
-     *
-     * @param SummandImpactedInterface $entity
-     * @param Fillout                  $fillout
-     * @param AttributeChoiceOption    $choice
-     * @return FilloutChoiceSummand|null
-     */
-    private function filloutChoiceSummandAttributeFormula(
-        SummandImpactedInterface $entity,
-        Fillout $fillout,
-        AttributeChoiceOption $choice
-    ) {
-        $formula = $fillout->getAttribute()->getPriceFormula();
-        if (!$formula) {
-            return null;
-        }
-
-        /** @var ChoiceFilloutValue $filloutValue */
-        $filloutValue = $fillout->getValue();
-
-        $values                         = [];
-        $values['value']                = $choice->getManagementTitle(true);
-        $values['choicesSelectedCount'] = count($filloutValue->getSelectedChoices());
-
-        return new FilloutChoiceSummand(
-            $entity,
-            $fillout,
-            $this->expressionLanguage()->evaluate($formula, $values),
-            $choice
-        );
-    }
-
-    /**
-     * Generate choice summand for @see AttributeChoiceOption having formula at @see AttributeChoiceOption level
-     *
-     * @param SummandImpactedInterface $entity
-     * @param Fillout                  $fillout
-     * @param AttributeChoiceOption    $choice
-     * @return FilloutChoiceSummand|null
-     */
-    private function filloutChoiceSummandChoiceFormula(
-        SummandImpactedInterface $entity,
-        Fillout $fillout,
-        AttributeChoiceOption $choice
-    ) {
-        $formula = $choice->getPriceFormula();
-        if (!$formula) {
-            return null;
-        }
-        $values = [];
-
-        return new FilloutChoiceSummand(
-            $entity, $fillout, $this->expressionLanguage()->evaluate($formula, $values), $choice
+            0 //$this->expressionLanguage()->evaluate($formula, $values) TODO
         );
     }
 
@@ -379,11 +266,7 @@ class PriceManager
      */
     private function expressionLanguage(): ExpressionLanguage
     {
-        if (!$this->expressionLanguage) {
-            $cache                    = new FilesystemAdapter('', 0, $this->expressionLanguageCachePath);
-            $this->expressionLanguage = new ExpressionLanguage($cache);
-        }
-        return $this->expressionLanguage;
+        return $this->expressionLanguageProvider->provide();
     }
 
 }

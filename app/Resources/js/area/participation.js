@@ -167,10 +167,6 @@ $(function () {
                             symbolTitle = 'Formel mit Eingabewert';
                             description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>';
                             break;
-                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutChoiceSummand':
-                            symbolTitle = 'Formel durch Auswahl';
-                            description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>,<br> Option ' + '<i>' + eHtml(rowData.choice_name) + '</i>';
-                            break;
                     }
                     if (rowData.is_participation_summand) {
                         glyphParticipant = 'file';

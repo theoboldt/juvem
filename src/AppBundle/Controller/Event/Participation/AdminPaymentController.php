@@ -16,8 +16,6 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
-use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
-use AppBundle\Manager\Payment\PriceSummand\FilloutChoiceSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
@@ -181,9 +179,6 @@ class AdminPaymentController extends Controller
                 $attributeName = ($summand instanceof AttributeAwareInterface)
                     ? $summand->getAttribute()->getManagementTitle() : null;
 
-                $choiceName = ($summand instanceof FilloutChoiceSummand)
-                    ? $summand->getChoice()->getManagementTitle(true) : null;
-
                 $result[] = [
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),
@@ -191,7 +186,6 @@ class AdminPaymentController extends Controller
                     'value'                    => $summand->getValue(true),
                     'type'                     => get_class($summand),
                     'attribute_name'           => $attributeName,
-                    'choice_name'              => $choiceName,
                 ];
             }
         }
