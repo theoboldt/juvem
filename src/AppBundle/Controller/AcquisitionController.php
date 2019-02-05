@@ -45,22 +45,23 @@ class AcquisitionController extends Controller
      */
     public function listDataAction(Request $request)
     {
-        $repository          = $this->getDoctrine()
-                                    ->getRepository(Attribute::class);
-        $attributeEntityList = $repository->findBy(array('deletedAt' => null));
+        $repository          = $this->getDoctrine()->getRepository(Attribute::class);
+        $attributeEntityList = $repository->findBy(['deletedAt' => null]);
 
-        $attributeList = array();
+        $attributeList = [];
         /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($attributeEntityList as $attribute) {
 
-            $attributeList[] = array(
+            $attributeList[] = [
                 'bid'                    => $attribute->getBid(),
                 'management_title'       => $attribute->getManagementTitle(),
                 'management_description' => $attribute->getManagementDescription(),
                 'type'                   => $attribute->getFieldType(true),
                 'form_title'             => $attribute->getFormTitle(),
                 'form_description'       => $attribute->getFormDescription(),
-            );
+                'formula_enabled'        => $attribute->isPriceFormulaEnabled() ? 'ja' : 'nein',
+                'formula'                => $attribute->getPriceFormula(),
+            ];
         }
 
 
