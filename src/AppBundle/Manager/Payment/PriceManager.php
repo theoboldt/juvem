@@ -12,8 +12,10 @@
 namespace AppBundle\Manager\Payment;
 
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
@@ -22,6 +24,10 @@ use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
+use AppBundle\Manager\Payment\PriceSummand\Formula\AttributeFormulaVariable;
+use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableInterface;
+use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider;
+use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableResolver;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -208,7 +214,7 @@ class PriceManager
                             );
                         }
                     } elseif ($attribute->getPriceFormula()) {
-                        $summand = $this->filloutSummand($impactedEntity, $fillout);
+                        $summand = $this->filloutSummand($fillout, $impactedEntity);
                         if ($summand) {
                             $summands[$bid] = $summand;
                         }
@@ -231,31 +237,115 @@ class PriceManager
         return new EntityPriceTag($impactedEntity, $this->getEntitySummands($impactedEntity));
     }
 
+    /**
+     * Resolve transmitted variable for fillout and impacted entity
+     *
+     * @param FormulaVariableInterface $variable Variable to resolve
+     * @param Fillout                  $fillout Current fillout having validity for field requiring the variable
+     * @param SummandImpactedInterface $impactedEntity Related impacted entity
+     * @return int|float
+     */
+    private function resolveVariable(
+        FormulaVariableInterface $variable,
+        Fillout $fillout,
+        SummandImpactedInterface $impactedEntity
+    ) {
+        $name             = $variable->getName();
+        $filloutValue     = $fillout->getValue();
+        if ($name === FormulaVariableProvider::VARIABLE_VALUE) {
+            return (float)$filloutValue->getTextualValue();
+        } elseif ($name === FormulaVariableProvider::VARIABLE_CHOICE_SELECTED_COUNT) {
+            if ($fillout->getAttribute()->getFieldType() !== ChoiceType::class ||
+                !$filloutValue instanceof ChoiceFilloutValue) {
+                throw new \InvalidArgumentException('Using choice count variable in non-choice attribute');
+            }
+            return count($filloutValue->getSelectedChoices());
+        } elseif ($variable instanceof AttributeFormulaVariable) {
+            $event            = $fillout->getEvent();
+            $relatedAttribute = $variable->getAttribute();
+            if (!$relatedAttribute->isPriceFormulaEnabled()) {
+                return 0; //related formula does not have formula enabled (no more)
+            }
+            foreach ($event->getAcquisitionAttributes(true, true, true, true, true) as $attribute) {
+                if ($relatedAttribute->getBid() === $attribute->getBid()) {
+                    //related attribute is also assigned to this event, so calculate
+
+                    if ($relatedAttribute->isUseAtEmployee() && $impactedEntity instanceof Employee) {
+                        foreach ($impactedEntity->getAcquisitionAttributeFillouts() as $relatedFillout) {
+                            if ($relatedFillout->getAttribute()->getBid() === $relatedAttribute->getBid()) {
+                                $summand = $this->filloutSummand($relatedFillout, $impactedEntity);
+                                return $summand->getValue(true);
+                            }
+                        }
+                    }
+                    if ($impactedEntity instanceof Participant && $relatedAttribute->getUseAtParticipant()) {
+                        foreach ($impactedEntity->getAcquisitionAttributeFillouts() as $relatedFillout) {
+                            if ($relatedFillout->getAttribute()->getBid() === $relatedAttribute->getBid()) {
+                                $summand = $this->filloutSummand($relatedFillout, $impactedEntity);
+                                return $summand->getValue(true);
+                            }
+                        }
+                    }
+                    if ($relatedAttribute->getUseAtParticipation()) {
+                        if ($impactedEntity instanceof Participation) {
+                            foreach ($impactedEntity->getAcquisitionAttributeFillouts() as $relatedFillout) {
+                                if ($relatedFillout->getAttribute()->getBid() === $relatedAttribute->getBid()) {
+                                    $summand = $this->filloutSummand($relatedFillout, $impactedEntity);
+                                    return $summand->getValue(true);
+                                }
+                            }
+                        } elseif ($impactedEntity instanceof Participant) {
+                            $relatedEntity = $impactedEntity->getParticipation();
+                            foreach ($relatedEntity->getAcquisitionAttributeFillouts() as $relatedFillout) {
+                                if ($relatedFillout->getAttribute()->getBid() === $relatedAttribute->getBid()) {
+                                    $summand = $this->filloutSummand($relatedFillout, $relatedEntity);
+                                    return $summand->getValue(true);
+                                }
+                            }
+                        }
+                    }
+                    return 0;
+                    //related formula is calculated at employee but fillout is related
+                    //to participant/participation or vice versa
+                }
+            }
+            return 0; //related attribute is not assigned to this @see Event
+        }
+    }
+
 
     /**
      * Generate fillout summand for transmitted @see Fillout
      *
-     * @param SummandImpactedInterface $entity
      * @param Fillout                  $fillout
+     * @param SummandImpactedInterface $impactedEntity
      * @return FilloutSummand|null
      */
-    private function filloutSummand(SummandImpactedInterface $entity, Fillout $fillout)
-    {
+    private function filloutSummand(
+        Fillout $fillout,
+        SummandImpactedInterface $impactedEntity
+    ) {
         $attribute = $fillout->getAttribute();
         $formula   = $attribute->getPriceFormula();
-        $value     = $fillout->getValue();
+
         if (!$formula) {
             return null;
         }
-        $values = [];
-        if ($attribute->getFieldType() === NumberType::class) {
-            $values['value'] = $value->getTextualValue();
+        $attributes = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
+
+        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $attributes);
+        $used     = $resolver->getUsedVariables($attribute);
+        $values   = [];
+        foreach ($used as $variable) {
+            $values[$variable->getName()] = $this->resolveVariable(
+                $variable, $fillout, $impactedEntity
+            );
         }
 
         return new FilloutSummand(
-            $entity,
+            $impactedEntity,
             $fillout,
-            0 //$this->expressionLanguage()->evaluate($formula, $values) TODO
+            $this->expressionLanguage()->evaluate($formula, $values)
         );
     }
 

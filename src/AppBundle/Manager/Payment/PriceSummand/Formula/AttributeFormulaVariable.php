@@ -7,14 +7,14 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 
 class AttributeFormulaVariable implements FormulaVariableInterface
 {
-    
+
     /**
      * Attribute
      *
      * @var Attribute
      */
     private $attribute;
-    
+
     /**
      * AttributeFormulaVariable constructor.
      *
@@ -24,7 +24,7 @@ class AttributeFormulaVariable implements FormulaVariableInterface
     {
         $this->attribute = $attribute;
     }
-    
+
     /**
      * Get variable name for usage in formula
      *
@@ -34,7 +34,7 @@ class AttributeFormulaVariable implements FormulaVariableInterface
     {
         return Attribute::FORMULA_VARIABLE_PREFIX . $this->attribute->getBid();
     }
-    
+
     /**
      * Description
      *
@@ -44,7 +44,7 @@ class AttributeFormulaVariable implements FormulaVariableInterface
     {
         return $this->attribute->getManagementTitle();
     }
-    
+
     /**
      * Determine if variable provides numeric
      *
@@ -54,7 +54,7 @@ class AttributeFormulaVariable implements FormulaVariableInterface
     {
         return true;
     }
-    
+
     /**
      * Determine if variable provides boolean
      *
@@ -63,5 +63,15 @@ class AttributeFormulaVariable implements FormulaVariableInterface
     public function isBoolean(): bool
     {
         return false;
+    }
+
+    /**
+     * Get related attribute
+     *
+     * @return Attribute
+     */
+    public function getAttribute(): Attribute
+    {
+        return $this->attribute;
     }
 }

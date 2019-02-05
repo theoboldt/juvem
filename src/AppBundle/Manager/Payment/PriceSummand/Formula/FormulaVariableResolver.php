@@ -79,6 +79,25 @@ class FormulaVariableResolver
     }
 
     /**
+     * Get used variables for @see Attribute
+     *
+     * @param Attribute $attribute
+     * @return array|FormulaVariableInterface[]
+     */
+    public function getUsedVariables(Attribute $attribute): array
+    {
+        $usedNames = $this->getUsedFieldVariables($attribute);
+        $variables = [];
+        /** @var FormulaVariableInterface $variable */
+        foreach ($this->getUsableVariablesFor($attribute) as $variable) {
+            if (in_array($variable->getName(), $usedNames)) {
+                $variables[] = $variable;
+            }
+        }
+        return $variables;
+    }
+
+    /**
      * Provides expression language
      *
      * @return \Symfony\Component\ExpressionLanguage\ExpressionLanguage
@@ -97,8 +116,10 @@ class FormulaVariableResolver
     private function getUsedVariableNames(Node $node)
     {
         $used = [];
-        foreach ($node->attributes as $nodeAttribute) {
-            $used[] = $nodeAttribute;
+        if ($node instanceof NameNode) {
+            foreach ($node->attributes as $nodeAttribute) {
+                $used[] = $nodeAttribute;
+            }
         }
         foreach ($node->nodes as $node) {
             if ($node instanceof NameNode) {

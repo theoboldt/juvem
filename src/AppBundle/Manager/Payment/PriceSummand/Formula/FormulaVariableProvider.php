@@ -11,6 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 class FormulaVariableProvider implements FormulaVariableProviderInterface
 {
 
+    const VARIABLE_CHOICE_SELECTED_COUNT = 'choicesSelectedCount';
+
+    const VARIABLE_VALUE = 'value';
+
     /**
      * All @see Attribute entities with their related options
      *
@@ -70,13 +74,13 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
                         $this->addFieldVariableToCache($variable, $bid);
                     }
                     $this->addFieldVariableToCache(
-                        new FormulaVariable('choicesSelectedCount', 'Anzahl der ausgewählten Optionen', true, false),
+                        new FormulaVariable(self::VARIABLE_CHOICE_SELECTED_COUNT, 'Anzahl der ausgewählten Optionen', true, false),
                         $bid
                     );
                     break;
                 case NumberType::class:
                     $this->addFieldVariableToCache(
-                        new FormulaVariable('value', 'Eingegebener Wert', true, false), $bid
+                        new FormulaVariable(self::VARIABLE_VALUE, 'Eingegebener Wert', true, false), $bid
                     );
                     break;
             }
