@@ -308,7 +308,7 @@ class PriceManager
      * @param Attribute    $relatedAttribute
      * @return float|int
      */
-    private function getValueFor(FilloutTrait $entity, Attribute $relatedAttribute)
+    private function getValueFor($entity, Attribute $relatedAttribute)
     {
         foreach ($entity->getAcquisitionAttributeFillouts() as $relatedFillout) {
             if ($relatedFillout->getAttribute()->getBid() === $relatedAttribute->getBid()) {
