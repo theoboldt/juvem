@@ -15,6 +15,7 @@ namespace AppBundle\Manager\Payment;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
@@ -206,11 +207,18 @@ class PriceManager
                 $participation = $causingEntity->getParticipation();
                 $participation->getId();
             }
-
+    
             if ($causingEntity instanceof EntityHavingFilloutsInterface) {
-                /** @var Fillout $fillout */
-                foreach ($causingEntity->getAcquisitionAttributeFillouts() as $fillout) {
-                    $attribute = $fillout->getAttribute();
+                $event = $causingEntity->getEvent();
+                /** @var Attribute $eventAttribute */
+                foreach ($event->getAcquisitionAttributes(
+                    $causingEntity instanceof Participation,
+                    $causingEntity instanceof Participant,
+                    $causingEntity instanceof Employee,
+                    true,
+                    true
+                ) as $attribute) {
+                    $fillout = $causingEntity->getAcquisitionAttributeFillout($attribute->getBid(), true);
                     if (!$attribute->isPriceFormulaEnabled()) {
                         continue;
                     }
