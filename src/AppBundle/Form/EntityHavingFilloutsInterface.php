@@ -20,6 +20,14 @@ use AppBundle\Entity\Participation;
 
 interface EntityHavingFilloutsInterface
 {
+    
+    /**
+     * Get entity id related to entities namespace
+     *
+     * @return int
+     */
+    public function getId();
+    
     /**
      * Remove fillout
      *
