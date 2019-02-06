@@ -68,16 +68,12 @@ class ValidFormulaValidator extends ConstraintValidator
 
         $expressionLanguage = $this->expressionLanguageProvider->provide();
         $resolver           = new FormulaVariableResolver($this->expressionLanguageProvider, $attributes);
+
+        $formula = $value->getPriceFormula();
         try {
             $usableVariables = $resolver->getUsableVariablesFor($value);
             $variables       = $resolver->getTestVariableValues($usableVariables);
-        } catch (CircularDependencyDetectedException $e) {
-            $this->buildViolation($value, $constraint, $e->getMessage());
-            return;
-        }
-        $formula = $value->getPriceFormula();
 
-        try {
             $result = $expressionLanguage->evaluate($formula, $variables);
             if (!is_numeric($result)) {
                 $this->buildViolation($formula, $constraint, 'Das Ergebnis der Formel ist keine Zahl');
@@ -99,6 +95,9 @@ class ValidFormulaValidator extends ConstraintValidator
 
         } catch (SyntaxError $e) {
             $this->buildViolation($formula, $constraint, $e->getMessage());
+        } catch (CircularDependencyDetectedException $e) {
+            $this->buildViolation($value, $constraint, $e->getMessage());
+            return;
         } catch (\Exception $e) {
             $message = $e->getMessage();
             if ($message === 'Warning: Division by zero') {
