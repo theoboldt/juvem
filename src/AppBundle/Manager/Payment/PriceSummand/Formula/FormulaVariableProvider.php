@@ -5,8 +5,12 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 
 class FormulaVariableProvider implements FormulaVariableProviderInterface
 {
@@ -14,6 +18,8 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
     const VARIABLE_CHOICE_SELECTED_COUNT = 'choicesSelectedCount';
 
     const VARIABLE_VALUE = 'value';
+
+    const VARIABLE_VALUE_NOT_EMPTY = 'valueNotEmpty';
 
     /**
      * All @see Attribute entities with their related options
@@ -67,9 +73,9 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
             foreach ($this->getAttributeVariableNames($attribute) as $variable) {
                 $this->addFieldVariableToCache($variable, $bid);
             }
-
+            
             switch ($attribute->getFieldType()) {
-                case ChoiceType::class:
+                case FormChoiceType::class:
                     foreach ($this->getAttributeChoiceVariables($attribute) as $variable) {
                         $this->addFieldVariableToCache($variable, $bid);
                     }
@@ -78,14 +84,19 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
                         $bid
                     );
                     break;
-                case NumberType::class:
+                case FormNumberType::class:
                     $this->addFieldVariableToCache(
                         new FormulaVariable(self::VARIABLE_VALUE, 'Eingegebener Wert', true, false), $bid
                     );
                     break;
             }
+            
+            if ($attribute->getFieldType() !== FormChoiceType::class && !$attribute->isRequired()) {
+                $this->addFieldVariableToCache(
+                    new FormulaVariable(self::VARIABLE_VALUE_NOT_EMPTY, 'Ist ein Wert eingegeben?', false, true), $bid
+                );
+            }
         }
-
         return $this->fieldVariablesCache[$bid];
     }
 

@@ -267,6 +267,8 @@ class PriceManager
         
         if ($name === FormulaVariableProvider::VARIABLE_VALUE) {
             return (float)$filloutValue->getTextualValue();
+        } elseif ($name === FormulaVariableProvider::VARIABLE_VALUE_NOT_EMPTY) {
+            return !empty($fillout->getValue()->getTextualValue());
         } elseif ($name === FormulaVariableProvider::VARIABLE_CHOICE_SELECTED_COUNT) {
             if ($fillout->getAttribute()->getFieldType() !== ChoiceType::class ||
                 !$filloutValue instanceof ChoiceFilloutValue) {
