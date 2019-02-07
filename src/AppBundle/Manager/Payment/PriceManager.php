@@ -194,9 +194,10 @@ class PriceManager
         if (!$causingEntity) {
             $causingEntity = $impactedEntity;
         }
+        $impactedEntityId = $impactedEntity->getId();
 
         if (!isset($this->summandCache[get_class($impactedEntity)])
-            || !isset($this->summandCache[get_class($impactedEntity)][$impactedEntity->getId()])) {
+            || !isset($this->summandCache[get_class($impactedEntity)][$impactedEntityId])) {
 
             $summands = [];
             if ($causingEntity instanceof Participant) {
@@ -205,7 +206,7 @@ class PriceManager
                     $summands[0] = new BasePriceSummand($causingEntity);
                 }
                 $participation = $causingEntity->getParticipation();
-                $participation->getId();
+                $summands = array_merge($summands, $this->getEntitySummands($impactedEntity, $participation));
             }
     
             if ($causingEntity instanceof EntityHavingFilloutsInterface) {
@@ -218,29 +219,20 @@ class PriceManager
                     true,
                     true
                 ) as $attribute) {
-                    $fillout = $causingEntity->getAcquisitionAttributeFillout($attribute->getBid(), true);
-                    if (!$attribute->isPriceFormulaEnabled()) {
+                    $bid     = $attribute->getBid();
+                    $fillout = $causingEntity->getAcquisitionAttributeFillout($bid, true);
+                    if (!$attribute->isPriceFormulaEnabled() && $attribute->getPriceFormula()) {
                         continue;
                     }
-                    $bid   = $attribute->getBid();
-                    $value = $fillout->getValue();
-                    if ($attribute->getFieldType() === ChoiceType::class) {
-                        if (!$value instanceof ChoiceFilloutValue) {
-                            throw new \UnexpectedValueException(
-                                'Expecting ChoiceFilloutValue when attribute is ChoiceType'
-                            );
-                        }
-                    } elseif ($attribute->getPriceFormula()) {
-                        $summand = $this->filloutSummand($fillout, $impactedEntity);
-                        if ($summand) {
-                            $summands[$bid] = $summand;
-                        }
+                    $summand = $this->filloutSummand($fillout, $impactedEntity);
+                    if ($summand) {
+                        $summands[$bid] = $summand;
                     }
                 }
             }
-            $this->summandCache[get_class($impactedEntity)][$impactedEntity->getId()] = $summands;
+            $this->summandCache[get_class($impactedEntity)][$impactedEntityId] = $summands;
         }
-        return $this->summandCache[get_class($impactedEntity)][$impactedEntity->getId()];
+        return $this->summandCache[get_class($impactedEntity)][$impactedEntityId];
     }
 
     /**
@@ -268,11 +260,6 @@ class PriceManager
         $name         = $variable->getName();
         $filloutValue = $fillout->getValue();
     
-        //only one if the three
-        $filloutEmployee      = $fillout->getEmployee();
-        $filloutParticipant   = $fillout->getParticipant();
-        $filloutParticipation = $fillout->getParticipation();
-        
         if ($name === FormulaVariableProvider::VARIABLE_VALUE) {
             return (float)$filloutValue->getTextualValue();
         } elseif ($name === FormulaVariableProvider::VARIABLE_VALUE_NOT_EMPTY) {
@@ -284,6 +271,11 @@ class PriceManager
             }
             return count($filloutValue->getSelectedChoices());
         } elseif ($variable instanceof AttributeFormulaVariable) {
+            //only one if the three
+            $filloutEmployee      = $fillout->getEmployee();
+            $filloutParticipant   = $fillout->getParticipant();
+            $filloutParticipation = $fillout->getParticipation();
+
             $event            = $fillout->getEvent();
             $relatedAttribute = $variable->getAttribute();
             if (!$relatedAttribute->isPriceFormulaEnabled()) {
@@ -351,6 +343,7 @@ class PriceManager
                         }
                         
                         $result = $this->expressionLanguage()->evaluate($formula, $values);
+                        break;
                     }
                 }
             }
