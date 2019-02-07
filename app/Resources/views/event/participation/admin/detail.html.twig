@@ -671,7 +671,7 @@
                                                 <span id="participant-price-{{ participant.aid }}">
                                                 {% set participantToPay = null %}
                                                     {% set participantPrice = paymentManager.priceForParticipant(participant, true) %}
-                                                    {% if participantPrice %}
+                                                    {% if participantPrice is not null %}
                                                         {{ participantPrice|number_format(2) }} €
                                                         {% set participantToPay = paymentManager.toPayValueForParticipant(participant, true) %}
                                                         {% if participantToPay > 0 %}
@@ -687,7 +687,7 @@
                                                     {% if participantToPay is defined %}
                                                         {% if participantToPay < 0 %}
                                                             <span class="label label-info">überzahlt</span>
-                                                        {% elseif participantToPay is same as( 0 ) %}
+                                                        {% elseif participantToPay is same as( 0.0 ) or participantToPay is same as( 0 ) %}
                                                             <span class="label label-info">bezahlt</span>
                                                         {% endif %}
                                                     {% endif %}
