@@ -41,9 +41,9 @@ class Version20180313100000 extends AbstractMigration implements ContainerAwareI
         foreach ($result as $participant) {
             $changed = false;
             $price   = $this->getPriceForParticipant($em, $participant);
-            if ($participant->getPrice() !== $price) {
+            if ($participant->getBasePrice() !== $price) {
                 $changed = true;
-                $participant->setPrice($price);
+                $participant->setBasePrice($price);
             }
             if ($price !== null) {
                 $changed = true;

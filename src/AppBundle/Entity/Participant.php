@@ -93,9 +93,9 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Contains the price for this participant, in EURO CENT (instead of euro)
      *
-     * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
+     * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true, name="price")
      */
-    protected $price = null;
+    protected $basePrice = null;
 
     /**
      * Contains the participants assigned to this participation
@@ -138,7 +138,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         if ($participation) {
             $this->setParticipation($participation);
             if ($participation->getEvent()) {
-                $this->setPrice($participation->getEvent()->getPrice());
+                $this->setBasePrice($participation->getEvent()->getPrice());
             }
         }
 
@@ -340,13 +340,13 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      *
      * @return Participant
      */
-    public function setPrice($price, $inEuro = false)
+    public function setBasePrice($price, $inEuro = false)
     {
         if ($inEuro) {
             $price = $price / 100;
         }
 
-        $this->price = $price;
+        $this->basePrice = $price;
 
         return $this;
     }
@@ -357,12 +357,12 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return int|double|null
      */
-    public function getPrice($inEuro = false)
+    public function getBasePrice($inEuro = false)
     {
-        if ($this->price === null) {
+        if ($this->basePrice === null) {
             return null;
         } else {
-            return $inEuro ? $this->price / 100 : $this->price;
+            return $inEuro ? $this->basePrice / 100 : $this->basePrice;
         }
     }
 

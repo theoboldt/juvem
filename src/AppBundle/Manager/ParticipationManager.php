@@ -234,7 +234,7 @@ class ParticipationManager extends AbstractMailerAwareManager
                     $paymentEvents = [];
                     /** @var Participant $participant */
                     foreach ($participation->getParticipants() as $participant) {
-                        $participant->setPrice($price);
+                        $participant->setBasePrice($price);
                         $em->persist($participant);
                         $payment = ParticipantPaymentEvent::createPriceSetEvent(
                             null, $price, 'Standard'

@@ -340,7 +340,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
 
         /** @var Participant $participant */
         foreach ($this->participants as $participant) {
-            $participantPrice = $participant->getPrice();
+            $participantPrice = $participant->getBasePrice();
             if ($participantPrice !== null) {
                 $price += $participantPrice;
             }

@@ -382,5 +382,39 @@ $(function () {
         });
     });
 
+    var priceDataRequested = false;
+    /**
+     * PARTICIPANT LIST: Unhide price/to pay column
+     */
+    $('#participantsListTable').on('column-switch.bs.table', function (e, dataIndex) {
+        if (priceDataRequested || (dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
+            return;
+        }
+        priceDataRequested = true;
 
+        $.ajax({
+            url: 'participants-payment-data.json',
+            success: function (result) {
+                if (!result) {
+                    return;
+                }
+                $.each(result, function (index, value) {
+                    console.log(value);
+                    var elPrice = $('#participant-price-' + value.aid),
+                        elToPay = $('#participant-to-pay-' + value.aid);
+                    elPrice.html(value.price);
+                    elPrice.removeClass('loading-text');
+                    elToPay.html(value.to_pay);
+                    elToPay.removeClass('loading-text');
+                });
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Die Informationen zu Preisen/Bezahlung konnten nicht verarbeitet werden',
+                    priority: 'error'
+                });
+            }
+        });
+
+    });
 });

@@ -126,7 +126,7 @@ class PaymentManager
                         $this->user, $value, $description
                     );
                     $participant->addPaymentEvent($event);
-                    $participant->setPrice($value);
+                    $participant->setBasePrice($value);
                     $em->persist($event);
                     $em->flush($event); //ensure events are on db before fetching for to pay cache
 

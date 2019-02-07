@@ -50,7 +50,7 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
      */
     public function getValue($inEuro = false)
     {
-        $price = $this->impacted->getPrice($inEuro);
+        $price = $this->impacted->getBasePrice($inEuro);
         if ($price === null) {
             throw new \InvalidArgumentException('Base price is null');
         }

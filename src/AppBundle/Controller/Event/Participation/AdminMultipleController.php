@@ -127,7 +127,6 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
-        $paymentManager          = $this->get('app.payment_manager');
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
@@ -166,10 +165,9 @@ class AdminMultipleController extends Controller
             $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
-            $price = $participant->getPrice(true);
-            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
-
-            $participantEntry = array(
+            $basePrice = $participant->getBasePrice(true);
+    
+            $participantEntry = [
                 'aid'                      => $participant->getAid(),
                 'pid'                      => $participant->getParticipation()->getPid(),
                 'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
@@ -178,8 +176,11 @@ class AdminMultipleController extends Controller
                 'is_rejected'              => (int)$participantStatusRejected,
                 'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
                 'is_confirmed'             => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
-                'payment_price'            => $price === null ? '<i>keiner</i>' : number_format($price, 2, ',', '.').'&nbsp;€',
-                'payment_to_pay'            => $toPay === null ? '<i>nichts</i>' : number_format($toPay, 2, ',', '.').'&nbsp;€',
+                'payment_base_price'       => $basePrice === null
+                    ? '<i>keiner</i>'
+                    : number_format($basePrice, 2, ',', '.') . '&nbsp;€',
+                'payment_price'            => '<span id="participant-price-' . $participant->getAid() . '" class="loading-text">…</span>',
+                'payment_to_pay'           => '<span id="participant-to-pay-' . $participant->getAid() . '" class="loading-text">…</span>',
                 'nameFirst'                => $participant->getNameFirst(),
                 'nameLast'                 => $participant->getNameLast(),
                 'age'                      => $age,
@@ -188,7 +189,7 @@ class AdminMultipleController extends Controller
                 'gender'                   => $participant->getGender(true),
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
-            );
+            ];
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
@@ -209,6 +210,34 @@ class AdminMultipleController extends Controller
             $participantList[] = $participantEntry;
         }
 
+        return new JsonResponse($participantList);
+    }
+
+    /**
+     * Data provider for payment/price information for list of participants
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participants-payment-data.json", requirements={"eid": "\d+"}, name="event_participants_payment_data")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function listParticipantsPriceDetailAction(Event $event)
+    {
+        $paymentManager          = $this->get('app.payment_manager');
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
+        $participantList         = [];
+        /** @var Participant $participant */
+        foreach ($participantEntityList as $participant) {
+        
+            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
+            $price = $paymentManager->getPriceForParticipant($participant, true);
+        
+            $participantList[] = [
+                'aid'    => $participant->getAid(),
+                'to_pay' => $toPay === null ? '<i>nichts</i>' : number_format($toPay, 2, ',', '.') . '&nbsp;€',
+                'price'  => $price === null ? '<i>keiner</i>' : number_format($price, 2, ',', '.') . '&nbsp;€',
+            ];
+        }
         return new JsonResponse($participantList);
     }
 
