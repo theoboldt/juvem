@@ -325,7 +325,7 @@ class PriceManager
         }
         if (!array_key_exists($id, $this->attributeFormulaResultCache[$bid])) {
             $result     = 0;
-            $attributes = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
+            
             
             foreach ($entity->getAcquisitionAttributeFillouts() as $relatedFillout) {
                 if ($relatedFillout->getAttribute()->getBid() === $bid) {
@@ -333,7 +333,7 @@ class PriceManager
                     
                     if ($formula) {
                         
-                        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $attributes);
+                        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $this->attributes());
                         $used     = $resolver->getUsedVariables($relatedAttribute);
                         $values   = [];
                         foreach ($used as $variable) {
