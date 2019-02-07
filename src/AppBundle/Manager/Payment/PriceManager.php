@@ -24,6 +24,7 @@ use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
+use AppBundle\Manager\Payment\PriceSummand\Formula\AttributeChoiceFormulaVariable;
 use AppBundle\Manager\Payment\PriceSummand\Formula\AttributeFormulaVariable;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableInterface;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider;
@@ -251,7 +252,7 @@ class PriceManager
      *
      * @param FormulaVariableInterface $variable       Variable to resolve
      * @param Fillout                  $fillout        Current fillout having validity for field requiring the variable
-     * @return int|float
+     * @return int|float|bool
      */
     private function resolveVariable(
         FormulaVariableInterface $variable,
@@ -270,6 +271,19 @@ class PriceManager
                 throw new \InvalidArgumentException('Using choice count variable in non-choice attribute');
             }
             return count($filloutValue->getSelectedChoices());
+        } elseif ($variable instanceof AttributeChoiceFormulaVariable) {
+            if ($fillout->getAttribute()->getFieldType() !== ChoiceType::class ||
+                !$filloutValue instanceof ChoiceFilloutValue) {
+                throw new \InvalidArgumentException('Using choice count variable in non-choice attribute');
+            }
+            $expectedChoiceId = $variable->getChoice()->getId();
+            
+            foreach ($filloutValue->getSelectedChoices() as $selectedChoice) {
+                if ($expectedChoiceId === $selectedChoice->getId()) {
+                    return true;
+                }
+            }
+            return false;
         } elseif ($variable instanceof AttributeFormulaVariable) {
             //only one if the three
             $filloutEmployee      = $fillout->getEmployee();
@@ -305,6 +319,7 @@ class PriceManager
             }
             return 0; //related attribute is not assigned to this @see Event
         }
+        throw new \InvalidArgumentException('Unknown variable type '.get_class($variable));
     }
     
     /**

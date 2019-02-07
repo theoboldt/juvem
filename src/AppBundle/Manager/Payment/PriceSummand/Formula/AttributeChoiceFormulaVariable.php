@@ -74,4 +74,14 @@ class AttributeChoiceFormulaVariable implements FormulaVariableInterface
     {
         return true;
     }
+    
+    /**
+     * Related choice option
+     *
+     * @return AttributeChoiceOption
+     */
+    public function getChoice(): AttributeChoiceOption
+    {
+        return $this->choice;
+    }
 }
