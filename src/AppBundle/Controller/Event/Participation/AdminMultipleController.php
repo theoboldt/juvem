@@ -179,8 +179,6 @@ class AdminMultipleController extends Controller
                 'payment_base_price'       => $basePrice === null
                     ? '<i>keiner</i>'
                     : number_format($basePrice, 2, ',', '.') . '&nbsp;€',
-                'payment_price'            => '<span id="participant-price-' . $participant->getAid() . '" class="loading-text">…</span>',
-                'payment_to_pay'           => '<span id="participant-to-pay-' . $participant->getAid() . '" class="loading-text">…</span>',
                 'nameFirst'                => $participant->getNameFirst(),
                 'nameLast'                 => $participant->getNameLast(),
                 'age'                      => $age,

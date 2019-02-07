@@ -386,7 +386,8 @@ $(function () {
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
      */
-    $('#participantsListTable').on('column-switch.bs.table', function (e, dataIndex) {
+    var participantsTable = $('#participantsListTable');
+    participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
         if (priceDataRequested || (dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
             return;
         }
@@ -399,13 +400,18 @@ $(function () {
                     return;
                 }
                 $.each(result, function (index, value) {
-                    console.log(value);
-                    var elPrice = $('#participant-price-' + value.aid),
-                        elToPay = $('#participant-to-pay-' + value.aid);
-                    elPrice.html(value.price);
-                    elPrice.removeClass('loading-text');
-                    elToPay.html(value.to_pay);
-                    elToPay.removeClass('loading-text');
+                    participantsTable.bootstrapTable('updateCellById', {
+                        id: value.aid,
+                        field: 'payment_price',
+                        value: value.price,
+                        reinit: false
+                    });
+                    participantsTable.bootstrapTable('updateCellById', {
+                        id: value.aid,
+                        field: 'payment_to_pay',
+                        value: value.to_pay,
+                        reinit: true
+                    });
                 });
             },
             error: function () {
@@ -415,6 +421,5 @@ $(function () {
                 });
             }
         });
-
     });
 });
