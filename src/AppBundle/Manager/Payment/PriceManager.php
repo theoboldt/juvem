@@ -220,11 +220,11 @@ class PriceManager
                     true,
                     true
                 ) as $attribute) {
-                    $bid     = $attribute->getBid();
-                    $fillout = $causingEntity->getAcquisitionAttributeFillout($bid, true);
-                    if (!$attribute->isPriceFormulaEnabled() && $attribute->getPriceFormula()) {
+                    if (!$attribute->isPriceFormulaEnabled() || !$attribute->getPriceFormula()) {
                         continue;
                     }
+                    $bid     = $attribute->getBid();
+                    $fillout = $causingEntity->getAcquisitionAttributeFillout($bid, true);
                     $summand = $this->filloutSummand($fillout, $impactedEntity);
                     if ($summand) {
                         $summands[$bid] = $summand;

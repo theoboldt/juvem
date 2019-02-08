@@ -127,8 +127,10 @@ class AdminMultipleController extends Controller
      */
     public function listParticipantsDataAction(Event $event, Request $request)
     {
+        $includePayment          = ($request->query->has('payment'));
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
+        $paymentManager          = $this->get('app.payment_manager');
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = ParticipantStatus::formatter();
@@ -188,6 +190,20 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];
+            
+            if ($includePayment) {
+            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
+            $price = $paymentManager->getPriceForParticipant($participant, true);
+            
+                $participantEntry['payment_to_pay'] = $toPay === null
+                    ? '<i>nichts</i>'
+                    : number_format($toPay, 2, ',', '.') . '&nbsp;€';
+                $participantEntry['payment_price'] = $price === null
+                    ? '<i>keiner</i>'
+                    : number_format($price, 2, ',', '.') . '&nbsp;€';
+                
+            }
+            
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
@@ -208,34 +224,6 @@ class AdminMultipleController extends Controller
             $participantList[] = $participantEntry;
         }
 
-        return new JsonResponse($participantList);
-    }
-
-    /**
-     * Data provider for payment/price information for list of participants
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants-payment-data.json", requirements={"eid": "\d+"}, name="event_participants_payment_data")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function listParticipantsPriceDetailAction(Event $event)
-    {
-        $paymentManager          = $this->get('app.payment_manager');
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
-        $participantList         = [];
-        /** @var Participant $participant */
-        foreach ($participantEntityList as $participant) {
-        
-            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
-            $price = $paymentManager->getPriceForParticipant($participant, true);
-        
-            $participantList[] = [
-                'aid'    => $participant->getAid(),
-                'to_pay' => $toPay === null ? '<i>nichts</i>' : number_format($toPay, 2, ',', '.') . '&nbsp;€',
-                'price'  => $price === null ? '<i>keiner</i>' : number_format($price, 2, ',', '.') . '&nbsp;€',
-            ];
-        }
         return new JsonResponse($participantList);
     }
 

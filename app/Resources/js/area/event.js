@@ -382,44 +382,24 @@ $(function () {
         });
     });
 
-    var priceDataRequested = false;
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
      */
     var participantsTable = $('#participantsListTable');
+    participantsTable.on('load-success.bs.table', function() {
+        //console.log(participantsTable.bootstrapTable('getVisibleColumns'));
+    });
     participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
         if (priceDataRequested || (dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
             return;
         }
-        priceDataRequested = true;
-
-        $.ajax({
-            url: 'participants-payment-data.json',
-            success: function (result) {
-                if (!result) {
-                    return;
+        var options = participantsTable.bootstrapTable('getOptions');
+        if (!options.queryParams || !options.queryParams.payment) {
+            participantsTable.bootstrapTable('refreshOptions', {
+                queryParams: {
+                    payment: 1
                 }
-                $.each(result, function (index, value) {
-                    participantsTable.bootstrapTable('updateCellById', {
-                        id: value.aid,
-                        field: 'payment_price',
-                        value: value.price,
-                        reinit: false
-                    });
-                    participantsTable.bootstrapTable('updateCellById', {
-                        id: value.aid,
-                        field: 'payment_to_pay',
-                        value: value.to_pay,
-                        reinit: true
-                    });
-                });
-            },
-            error: function () {
-                $(document).trigger('add-alerts', {
-                    message: 'Die Informationen zu Preisen/Bezahlung konnten nicht verarbeitet werden',
-                    priority: 'error'
-                });
-            }
-        });
+            });
+        }
     });
 });
