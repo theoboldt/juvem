@@ -13,7 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -75,7 +75,7 @@ abstract class ParticipantsSheetBase extends AbstractSheet
         foreach ($this->participants as $participant) {
             $row = $this->row();
 
-            /** @var EntityColumn $column */
+            /** @var EntityAttributeColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

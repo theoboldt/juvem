@@ -13,7 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
-use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -47,10 +47,10 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntityAttributeColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
 
-        $column = new EntityColumn('birthday', 'Geburtstag');
+        $column = new EntityAttributeColumn('birthday', 'Geburtstag');
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -61,7 +61,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         );
         $this->addColumn($column);
 
-        $column = new EntityColumn('status', 'Anschrift');
+        $column = new EntityAttributeColumn('status', 'Anschrift');
         $column->setConverter(
             function ($value, Participant $entity) {
                 return sprintf(
@@ -93,7 +93,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
         foreach ($this->participants as $participant) {
             $row = $this->row();
 
-            /** @var EntityColumn $column */
+            /** @var EntityAttributeColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

@@ -15,7 +15,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Sheet\Column\CallableAccessingColumn;
-use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -101,7 +101,7 @@ class ExplanationSheet extends AbstractSheet
             foreach ($explanation as $choice) {
                 $row = $this->row();
 
-                /** @var EntityColumn $column */
+                /** @var EntityAttributeColumn $column */
                 foreach ($this->columnList as $column) {
                     $columnIndex = $column->getColumnIndex();
                     $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);

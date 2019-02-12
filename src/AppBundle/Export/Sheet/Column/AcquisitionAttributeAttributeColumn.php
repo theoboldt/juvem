@@ -15,7 +15,7 @@ namespace AppBundle\Export\Sheet\Column;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class AcquisitionAttributeColumn extends EntityColumn
+class AcquisitionAttributeAttributeColumn extends EntityAttributeColumn
 {
 
     /**

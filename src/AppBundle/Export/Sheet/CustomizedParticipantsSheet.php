@@ -20,9 +20,9 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Customized\Configuration;
-use AppBundle\Export\Sheet\Column\AcquisitionAttributeColumn;
-use AppBundle\Export\Sheet\Column\EntityColumn;
-use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use AppBundle\Export\Sheet\Column\AcquisitionAttributeAttributeColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
+use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
 use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -59,13 +59,13 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         $configParticipant = $config['participant'];
 
         if (self::issetAndTrue($configParticipant, 'aid')) {
-            $column = new EntityColumn('aid', 'AID');
+            $column = new EntityAttributeColumn('aid', 'AID');
             $column->setWidth(4);
             $this->addColumn($column);
         }
 
         if (self::issetAndTrue($config['participation'], 'pid')) {
-            $column = new EntityColumn('participation', 'PID');
+            $column = new EntityAttributeColumn('participation', 'PID');
             $column->setConverter(
                 function (Participation $value) {
                     return $value->getPid();
@@ -76,14 +76,14 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'nameFirst')) {
-            $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
+            $this->addColumn(new EntityAttributeColumn('nameFirst', 'Vorname'));
         }
         if (self::issetAndTrue($configParticipant, 'nameLast')) {
-            $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
+            $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
         }
 
         if (self::issetAndTrue($configParticipant, 'birthday')) {
-            $column = new EntityColumn('birthday', 'Geburtstag');
+            $column = new EntityAttributeColumn('birthday', 'Geburtstag');
             $column->setNumberFormat('dd.mm.yyyy');
             $column->setConverter(
                 function (\DateTime $value, $entity) {
@@ -97,7 +97,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if ($configParticipant['ageAtEvent'] != 'none') {
-            $column = new EntityColumn('ageAtEvent', 'Alter');
+            $column = new EntityAttributeColumn('ageAtEvent', 'Alter');
             $column->setWidth(5);
             switch ($configParticipant['ageAtEvent']) {
                 case 'round':
@@ -120,7 +120,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'gender')) {
-            $column = EntityColumn::createSmallColumn('gender', 'Geschlecht');
+            $column = EntityAttributeColumn::createSmallColumn('gender', 'Geschlecht');
             $column->setConverter(
                 function ($value, Participant $entity) {
                     return substr($entity->getGender(true), 0, 1);
@@ -130,7 +130,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'foodVegetarian')) {
-            $column = EntityColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
+            $column = EntityAttributeColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
             $column->setConverter(
                 function ($value, Participant $entity) {
                     $mask = $entity->getFood(true);
@@ -141,7 +141,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'foodLactoseFree')) {
-            $column = EntityColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
+            $column = EntityAttributeColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
             $column->setConverter(
                 function ($value, Participant $entity) {
                     $mask = $entity->getFood(true);
@@ -152,7 +152,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'foodLactoseNoPork')) {
-            $column = EntityColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
+            $column = EntityAttributeColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
             $column->setConverter(
                 function ($value, Participant $entity) {
                     $mask = $entity->getFood(true);
@@ -163,7 +163,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'infoMedical')) {
-            $column = new EntityColumn('infoMedical', 'Medizinische Hinweise');
+            $column = new EntityAttributeColumn('infoMedical', 'Medizinische Hinweise');
             $column->addDataStyleCalback(
                 function ($style) {
                     /** @var Style $style */
@@ -175,7 +175,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'infoGeneral')) {
-            $column = new EntityColumn('infoGeneral', 'Allgemeine Hinweise');
+            $column = new EntityAttributeColumn('infoGeneral', 'Allgemeine Hinweise');
             $column->addDataStyleCalback(
                 function ($style) {
                     /** @var Style $style */
@@ -187,7 +187,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if ($this->paymentManager && self::issetAndTrue($configParticipant, 'price') && $event->getPrice()) {
-            $column = new EntityColumn('price', 'Preis');
+            $column = new EntityAttributeColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
@@ -199,7 +199,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
 
         if (self::issetAndTrue($configParticipant, 'createdAt')) {
-            $column = new EntityColumn('createdAt', 'Eingang Anmeldung');
+            $column = new EntityAttributeColumn('createdAt', 'Eingang Anmeldung');
             $column->setNumberFormat('dd.mm.yyyy hh:mm');
             $column->setConverter(
                 function (\DateTime $value, $entity) {
@@ -219,7 +219,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         $configParticipation = $config['participation'];
 
         if (self::issetAndTrue($configParticipation, 'salutation')) {
-            $column = new EntityColumn('participation_salutation', 'Anrede (Eltern)', 'participation');
+            $column = new EntityAttributeColumn('participation_salutation', 'Anrede (Eltern)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getSalutation();
@@ -228,7 +228,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'nameFirst')) {
-            $column = new EntityColumn('participation_nameFirst', 'Vorname (Eltern)', 'participation');
+            $column = new EntityAttributeColumn('participation_nameFirst', 'Vorname (Eltern)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getNameFirst();
@@ -237,7 +237,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'nameLast')) {
-            $column = new EntityColumn('participation_nameLast', 'Nachname (Eltern)', 'participation');
+            $column = new EntityAttributeColumn('participation_nameLast', 'Nachname (Eltern)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getNameLast();
@@ -246,7 +246,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'addressStreet')) {
-            $column = new EntityColumn('participation_addressStreet', 'Straße (Anschrift)', 'participation');
+            $column = new EntityAttributeColumn('participation_addressStreet', 'Straße (Anschrift)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getAddressStreet();
@@ -255,7 +255,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'addressCity')) {
-            $column = new EntityColumn('participation_addressCity', 'Stadt (Anschrift)', 'participation');
+            $column = new EntityAttributeColumn('participation_addressCity', 'Stadt (Anschrift)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getAddressCity();
@@ -264,7 +264,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'addressZip')) {
-            $column = new EntityColumn('participation_addressZip', 'PLZ (Anschrift)', 'participation');
+            $column = new EntityAttributeColumn('participation_addressZip', 'PLZ (Anschrift)', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getAddressZip();
@@ -273,7 +273,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
         if (self::issetAndTrue($configParticipation, 'email')) {
-            $column = new EntityColumn('participation_email', 'E-Mail', 'participation');
+            $column = new EntityAttributeColumn('participation_email', 'E-Mail', 'participation');
             $column->setConverter(
                 function (Participation $value, $entity) {
                     return $value->getEmail();
@@ -302,7 +302,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     break;
             }
 
-            $column = EntityPhoneNumberSheetColumn::createCommaSeparated(
+            $column = EntityPhoneNumberSheetAttributeColumn::createCommaSeparated(
                 'phoneNumbers',
                 'Telefonnummern',
                 'participation',
@@ -367,7 +367,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         }
         switch ($group) {
             case 'participant':
-                $class = AcquisitionAttributeColumn::class;
+                $class = AcquisitionAttributeAttributeColumn::class;
                 break;
             case 'participation':
                 $class = ParticipationAcquisitionAttributeColumn::class;
@@ -417,7 +417,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                             }
                             return '';
                         };
-                        /** @var AcquisitionAttributeColumn $column */
+                        /** @var AcquisitionAttributeAttributeColumn $column */
                         $column = new $class(
                             $group . '_' . $bid . '_' . $optionKey,
                             $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
@@ -429,7 +429,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                 }
                 break;
             default:
-                /** @var AcquisitionAttributeColumn $column */
+                /** @var AcquisitionAttributeAttributeColumn $column */
                 $column = new $class(
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
@@ -473,12 +473,12 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     /**
      * Rotate column, update width accordingly, possibly configure converter
      *
-     * @param AcquisitionAttributeColumn $column Column to modify
-     * @param int|null                   $width If not null, transmitted width will be set
-     * @param callable|null              $converter Converter function if should be set
+     * @param AcquisitionAttributeAttributeColumn $column Column to modify
+     * @param int|null                   $width           If not null, transmitted width will be set
+     * @param callable|null              $converter       Converter function if should be set
      */
     private function rotadedColumnHeader(
-        AcquisitionAttributeColumn $column,
+        AcquisitionAttributeAttributeColumn $column,
         int $width = null,
         callable $converter = null
     ) {

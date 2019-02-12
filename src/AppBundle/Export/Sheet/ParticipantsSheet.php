@@ -16,7 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Export\Sheet\Column\EntityColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -31,10 +31,10 @@ class ParticipantsSheet extends ParticipantsSheetBase
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntityAttributeColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
 
-        $column = new EntityColumn('birthday', 'Geburtstag');
+        $column = new EntityAttributeColumn('birthday', 'Geburtstag');
         $column->setNumberFormat('dd.mm.yyyy');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -46,12 +46,12 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setWidth(10);
         $this->addColumn($column);
 
-        $column = new EntityColumn('yearsOfLifeAtEvent', 'Alter');
+        $column = new EntityAttributeColumn('yearsOfLifeAtEvent', 'Alter');
         $column->setNumberFormat('0');
         $column->setWidth(4);
         $this->addColumn($column);
 
-        $column = EntityColumn::createSmallColumn('gender', 'Geschlecht');
+        $column = EntityAttributeColumn::createSmallColumn('gender', 'Geschlecht');
         $column->setConverter(
             function ($value, Participant $entity) {
                 return substr($entity->getGender(true), 0, 1);
@@ -59,7 +59,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         );
         $this->addColumn($column);
 
-        $column = EntityColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
+        $column = EntityAttributeColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
         $column->setConverter(
             function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
@@ -68,7 +68,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         );
         $this->addColumn($column);
 
-        $column = EntityColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
+        $column = EntityAttributeColumn::createYesNoColumn('food_lactose_free', 'Laktosefrei', 'food');
         $column->setConverter(
             function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
@@ -77,7 +77,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         );
         $this->addColumn($column);
 
-        $column = EntityColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
+        $column = EntityAttributeColumn::createYesNoColumn('food_lactose_no_pork', 'Ohne Schwein', 'food');
         $column->setConverter(
             function ($value, Participant $entity) {
                 $mask = $entity->getFood(true);
@@ -86,7 +86,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         );
         $this->addColumn($column);
 
-        $column = new EntityColumn('infoMedical', 'Medizinische Hinweise');
+        $column = new EntityAttributeColumn('infoMedical', 'Medizinische Hinweise');
         $column->addDataStyleCalback(
             function ($style) {
                 /** @var Style $style */
@@ -96,7 +96,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setWidth(35);
         $this->addColumn($column);
 
-        $column = new EntityColumn('infoGeneral', 'Allgemeine Hinweise');
+        $column = new EntityAttributeColumn('infoGeneral', 'Allgemeine Hinweise');
         $column->addDataStyleCalback(
             function ($style) {
                 /** @var Style $style */
@@ -108,12 +108,12 @@ class ParticipantsSheet extends ParticipantsSheetBase
 
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true, false, true, true) as $attribute) {
-            $this->addColumn(new EntityColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
+            $this->addColumn(new EntityAttributeColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
         }
         //TODO subject to change
 
         if ($this->paymentManager && $event->getPrice()) {
-            $column = new EntityColumn('price', 'Preis');
+            $column = new EntityAttributeColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
@@ -124,7 +124,7 @@ class ParticipantsSheet extends ParticipantsSheetBase
             $this->addColumn($column);
         }
 
-        $column = new EntityColumn('createdAt', 'Eingang Anmeldung');
+        $column = new EntityAttributeColumn('createdAt', 'Eingang Anmeldung');
         $column->setNumberFormat('dd.mm.yyyy hh:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -137,11 +137,11 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column->setWidth(15);
         $this->addColumn($column);
 
-        $column = new EntityColumn('aid', 'AID');
+        $column = new EntityAttributeColumn('aid', 'AID');
         $column->setWidth(4);
         $this->addColumn($column);
 
-        $column = new EntityColumn('participation', 'PID');
+        $column = new EntityAttributeColumn('participation', 'PID');
         $column->setConverter(
             function (Participation $value) {
                 return $value->getPid();

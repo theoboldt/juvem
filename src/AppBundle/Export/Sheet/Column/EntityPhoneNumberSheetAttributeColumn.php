@@ -16,7 +16,7 @@ use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 
-class EntityPhoneNumberSheetColumn extends EntityColumn
+class EntityPhoneNumberSheetAttributeColumn extends EntityAttributeColumn
 {
     
     /**
@@ -28,7 +28,7 @@ class EntityPhoneNumberSheetColumn extends EntityColumn
      *                                        differing from $identifier
      * @param bool        $includeDescription Set to true to include phone number description in export
      * @param bool        $wrap               If set to true, wrap text is activated and each entity ended by new line
-     * @return EntityPhoneNumberSheetColumn
+     * @return EntityPhoneNumberSheetAttributeColumn
      */
     public static function createCommaSeparated(
         $identifier,

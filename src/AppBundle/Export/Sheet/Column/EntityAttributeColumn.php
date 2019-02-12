@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Style\Style;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-class EntityColumn extends AbstractColumn
+class EntityAttributeColumn extends AbstractColumn
 {
 
 	/**

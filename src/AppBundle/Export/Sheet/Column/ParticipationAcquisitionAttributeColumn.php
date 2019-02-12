@@ -16,7 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Participant;
 
-class ParticipationAcquisitionAttributeColumn extends AcquisitionAttributeColumn
+class ParticipationAcquisitionAttributeColumn extends AcquisitionAttributeAttributeColumn
 {
     /**
      * Get value by identifier of this column for transmitted entity

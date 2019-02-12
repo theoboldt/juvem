@@ -13,8 +13,8 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
-use AppBundle\Export\Sheet\Column\EntityColumn;
-use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
+use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
 use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -68,21 +68,21 @@ class ParticipationsSheet extends AbstractSheet
 
         parent::__construct($sheet);
 
-        $this->addColumn(new EntityColumn('salutation', 'Anrede'));
-        $this->addColumn(new EntityColumn('nameFirst', 'Vorname'));
-        $this->addColumn(new EntityColumn('nameLast', 'Nachname'));
+        $this->addColumn(new EntityAttributeColumn('salutation', 'Anrede'));
+        $this->addColumn(new EntityAttributeColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
 
-        $this->addColumn(new EntityColumn('addressStreet', 'Straße (Anschrift)'));
-        $this->addColumn(new EntityColumn('addressCity', 'Stadt (Anschrift)'));
-        $this->addColumn(new EntityColumn('addressZip', 'PLZ (Anschrift)'));
+        $this->addColumn(new EntityAttributeColumn('addressStreet', 'Straße (Anschrift)'));
+        $this->addColumn(new EntityAttributeColumn('addressCity', 'Stadt (Anschrift)'));
+        $this->addColumn(new EntityAttributeColumn('addressZip', 'PLZ (Anschrift)'));
 
-        $this->addColumn(new EntityColumn('email', 'E-Mail'));
+        $this->addColumn(new EntityAttributeColumn('email', 'E-Mail'));
 
         $this->addColumn(
-            EntityPhoneNumberSheetColumn::createCommaSeparated('phoneNumbers', 'Telefonnummern', null, true)
+            EntityPhoneNumberSheetAttributeColumn::createCommaSeparated('phoneNumbers', 'Telefonnummern', null, true)
         );
 
-        $column = new EntityColumn('createdAt', 'Eingang');
+        $column = new EntityAttributeColumn('createdAt', 'Eingang');
         $column->setNumberFormat('dd.mm.yyyy h:mm');
         $column->setConverter(
             function (\DateTime $value, $entity) {
@@ -95,7 +95,7 @@ class ParticipationsSheet extends AbstractSheet
         $column->setWidth(15);
         $this->addColumn($column);
 
-        $column = new EntityColumn('participants', 'Teilnehmer');
+        $column = new EntityAttributeColumn('participants', 'Teilnehmer');
         $column->setConverter(
             function ($value, $entity) {
                 return count($value);
@@ -104,7 +104,7 @@ class ParticipationsSheet extends AbstractSheet
         $this->addColumn($column);
 
         if ($this->paymentManager && $event->getPrice()) {
-            $column = new EntityColumn('price', 'Preis');
+            $column = new EntityAttributeColumn('price', 'Preis');
             $column->setNumberFormat('#,##0.00 €');
             $column->setWidth(8);
             $column->setConverter(
@@ -115,7 +115,7 @@ class ParticipationsSheet extends AbstractSheet
             $this->addColumn($column);
         }
 
-        $this->addColumn(new EntityColumn('pid', 'PID'));
+        $this->addColumn(new EntityAttributeColumn('pid', 'PID'));
 
     }
 
@@ -137,7 +137,7 @@ class ParticipationsSheet extends AbstractSheet
         foreach ($this->participations as $participation) {
             $row = $this->row();
 
-            /** @var EntityColumn $column */
+            /** @var EntityAttributeColumn $column */
             foreach ($this->columnList as $column) {
                 $columnIndex = $column->getColumnIndex();
                 $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);
