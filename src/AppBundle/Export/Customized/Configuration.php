@@ -91,7 +91,9 @@ class Configuration implements ConfigurationInterface
                         ->append($this->booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)'))
                         ->append($this->booleanNodeCreator('infoMedical', 'Medizinische Hinweise'))
                         ->append($this->booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise'))
-                        ->append($this->booleanNodeCreator('price', 'Preis'))
+                        ->append($this->booleanNodeCreator('basePrice', 'Grundpreis'))
+                        ->append($this->booleanNodeCreator('price', 'Preis (inkl. Formeln)'))
+                        ->append($this->booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)'))
                         ->append($this->addAcquisitionAttributesNode(false, true))
                         //food
                     ->end()

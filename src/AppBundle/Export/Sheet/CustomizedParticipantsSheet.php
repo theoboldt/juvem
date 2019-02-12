@@ -21,6 +21,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Customized\Configuration;
 use AppBundle\Export\Sheet\Column\AcquisitionAttributeAttributeColumn;
+use AppBundle\Export\Sheet\Column\CallableAccessingColumn;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
@@ -186,16 +187,37 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
 
-        if ($this->paymentManager && self::issetAndTrue($configParticipant, 'price') && $event->getPrice()) {
-            $column = new EntityAttributeColumn('price', 'Preis');
-            $column->setNumberFormat('#,##0.00 €');
-            $column->setWidth(8);
+        if (self::issetAndTrue($configParticipant, 'basePrice') && $event->getPrice()) {
+            $column = new EntityAttributeColumn('basePrice', 'Grundpreis');
             $column->setConverter(
                 function ($value, Participant $entity) {
-                    return $this->paymentManager->getPriceForParticipant($entity, true);
+                    return $entity->getBasePrice(true);
                 }
             );
+            $column->setNumberFormat('#,##0.00 €');
+            $column->setWidth(8);
             $this->addColumn($column);
+        }
+    
+        if ($event->getPrice() && $this->paymentManager) {
+            if (self::issetAndTrue($configParticipant, 'price')) {
+                $column = new CallableAccessingColumn(
+                    'price', 'Preis', function (Participant $entity) {
+                    return $this->paymentManager->getPriceForParticipant($entity, true);
+                });
+                $column->setNumberFormat('#,##0.00 €');
+                $column->setWidth(8);
+                $this->addColumn($column);
+            }
+            if (self::issetAndTrue($configParticipant, 'toPay')) {
+                $column = new CallableAccessingColumn(
+                    'toPay', 'Zu zahlen', function (Participant $entity) {
+                    return $this->paymentManager->toPayValueForParticipant($entity, true);
+                });
+                $column->setNumberFormat('#,##0.00 €');
+                $column->setWidth(8);
+                $this->addColumn($column);
+            }
         }
 
         if (self::issetAndTrue($configParticipant, 'createdAt')) {
