@@ -199,7 +199,6 @@ class AcquisitionController extends Controller
 
         $form              = $this->createForm(AcquisitionType::class, $attribute);
         $repository        = $this->getDoctrine()->getRepository(Attribute::class);
-        $attributesFormula = $repository->findWithFormulaNotDependantOnField(null);
 
         $form->handleRequest($request);
 
@@ -212,12 +211,11 @@ class AcquisitionController extends Controller
 
             return $this->redirectToRoute('acquisition_list');
         }
-
+    
         return $this->render(
             'acquisition/new.html.twig',
             [
-                'attributesFormula' => $attributesFormula,
-                'form'              => $form->createView(),
+                'form' => $form->createView(),
             ]
         );
     }

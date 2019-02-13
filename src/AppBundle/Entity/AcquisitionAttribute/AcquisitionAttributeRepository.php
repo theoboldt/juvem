@@ -59,50 +59,6 @@ class AcquisitionAttributeRepository extends EntityRepository
     }
     
     /**
-     * Find all @see Attribute entities having formula enabled
-     *
-     * @param Attribute|null $attribute Attribute to exclude from query and result
-     * @return array|Attribute[]
-     */
-    public function findWithFormulaNotDependantOnField(Attribute $attribute = null): array
-    {
-        $qb = $this->createQueryBuilder('a');
-        $qb->select('a')
-           ->andWhere('a.isPriceFormulaEnabled = 1')
-           ->orderBy('a.managementTitle');
-        
-        if ($attribute) {
-            $qb->addSelect('o')
-               ->leftJoin('a.choiceOptions', 'o')
-               ->andWhere(
-                   $qb->expr()->orX(
-                       $qb->expr()->isNull('a.priceFormula'),
-                       $qb->expr()->notLike('a.priceFormula', ':excludedVariable')
-                   )
-               )
-               ->setParameter('excludedVariable', '%' . $attribute->getFormulaVariable() . '%')
-               ->andWhere($qb->expr()->neq('a.bid', ':excludedBid'))
-               ->setParameter('excludedBid', $attribute->getBid());
-        }
-        
-        $result = $qb->getQuery()->execute();
-        
-        /** @var Attribute $resultAttribute */
-        foreach ($result as $key => $resultAttribute) {
-            /** @var AttributeChoiceOption $choice */
-            foreach ($resultAttribute->getChoiceOptions() as $choice) {
-                $formula = $choice->getPriceFormula();
-                if ($formula && strpos($attribute->getFormulaVariable(), $formula) !== false) {
-                    unset($result[$key]);
-                    continue 2;
-                }
-            }
-        }
-        
-        return array_values($result);
-    }
-    
-    /**
      * Fetch amount of occurrence of @see ChoiceFilloutValue
      *
      * @param Event $event
