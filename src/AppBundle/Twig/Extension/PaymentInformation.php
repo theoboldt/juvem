@@ -82,10 +82,10 @@ class PaymentInformation extends \Twig_Extension
     {
         if ($paymentStatus->isOverPaid()) {
             return '<span class="label label-info option-payment option-overpaid">überbezahlt</span>';
-        } elseif ($paymentStatus->isFree()) {
-            return '<span class="label label-info option-payment option-price-zero">kostenlos</span>';
         } elseif (!$paymentStatus->hasPriceSet()) {
             return '<span class="label label-info option-payment option-no-price">kein Preis</span>';
+        } elseif ($paymentStatus->isFree()) {
+            return '<span class="label label-info option-payment option-price-zero">kostenlos</span>';
         } elseif ($paymentStatus->isPaid()) {
             return '<span class="label label-info option-payment option-paid">bezahlt</span>';
         }
@@ -108,7 +108,7 @@ class PaymentInformation extends \Twig_Extension
                 $result .= ' (zu viel bezahlt: '
                            . number_format(($paymentStatus->getToPayValue(true) * -1), 2, ',', "'")
                            . '&nbsp;€)';
-            } elseif ($paymentStatus->isPaid()) {
+            } elseif ($paymentStatus->hasPriceSet() && $paymentStatus->isPaid()) {
                 $result .= ' (bezahlt)';
             } elseif (!$paymentStatus->isPaid()) {
                 $result .= ' (noch zu zahlen: '
