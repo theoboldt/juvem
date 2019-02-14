@@ -110,7 +110,7 @@ class ParticipantPaymentStatus implements PaymentStatusInterface
      */
     public function isFree(): bool
     {
-        return $this->getPrice(false) === 0;
+        return (float)$this->getPrice(false) === (float)0;
     }
     
     /**
