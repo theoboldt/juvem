@@ -17,6 +17,7 @@ use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
+use AppBundle\Twig\Extension\PaymentInformation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
 use AppBundle\InvalidTokenHttpException;
@@ -206,7 +207,7 @@ class AdminPaymentController extends Controller
         /** @var Participant $participant */
 
         $detailedValues = [];
-
+    
         foreach ($participants as $participant) {
             $toPayValue       = $paymentManager->getToPayValueForParticipant($participant, true);
             $priceValue       = $paymentManager->getPriceForParticipant($participant, true);
@@ -214,6 +215,7 @@ class AdminPaymentController extends Controller
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
                 'to_pay_value'     => $toPayValue,
+                'price_html'       => PaymentInformation::provideInfo($paymentManager->getParticipantPaymentStatus($participant)),
                 'price_value'      => $priceValue,
             ];
         }

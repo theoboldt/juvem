@@ -19,7 +19,7 @@ use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
  *
  * @package AppBundle\Manager\Payment
  */
-class ParticipantPaymentStatus
+class ParticipantPaymentStatus implements PaymentStatusInterface
 {
     
     /**

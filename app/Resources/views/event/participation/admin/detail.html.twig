@@ -418,14 +418,6 @@
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
                             {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung</span>
                         </button>
-
-                        <button type="button" class="btn btn-default" data-element="activebutton"
-                                data-entity="Participation"
-                                data-property="isPaid" data-entity-id="{{ participation.pid }}"
-                                data-token="{{ csrf_token('Participation' ~ 'isPaid' ~ participation.pid ) }}"
-                                data-button-enable-label="hat bezahlt" data-button-enable-glyph="euro"
-                                data-button-disable-label="Bezahlung offen"
-                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                         {% if participation.deletedAt %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore">
@@ -669,28 +661,7 @@
                                             <dt>Preis</dt>
                                             <dd>
                                                 <span id="participant-price-{{ participant.aid }}">
-                                                {% set participantToPay = null %}
-                                                    {% set participantPrice = paymentManager.priceForParticipant(participant, true) %}
-                                                    {% if participantPrice is not null %}
-                                                        {{ participantPrice|number_format(2) }} €
-                                                        {% set participantToPay = paymentManager.toPayValueForParticipant(participant, true) %}
-                                                        {% if participantToPay > 0 %}
-                                                            (noch zu zahlen: {{ participantToPay|number_format(2) }} €)
-                                                        {% elseif participantToPay < 0 %}
-                                                            (zu viel bezahlt: {{ (participantToPay*-1)|number_format(2) }} €)
-                                                        {% elseif participantToPay is same as( 0 ) %}
-                                                            (bezahlt)
-                                                        {% endif %}
-                                                    {% else %}
-                                                        <i>(keiner festgelegt)</i>
-                                                    {% endif %}
-                                                    {% if participantToPay is defined %}
-                                                        {% if participantToPay < 0 %}
-                                                            <span class="label label-info">überzahlt</span>
-                                                        {% elseif participantToPay is same as( 0.0 ) or participantToPay is same as( 0 ) %}
-                                                            <span class="label label-info">bezahlt</span>
-                                                        {% endif %}
-                                                    {% endif %}
+                                                    {{ paymentManager.getParticipantPaymentStatus(participant)|paymentInfo }}
                                                     </span>
                                                 {% if is_granted('participants_edit', event) -%}
                                                     <button data-toggle="modal"
@@ -698,7 +669,7 @@
                                                             data-aids="{{ participant.aid }}"
                                                             data-title="{{ participant|fullname }}"
                                                             class="btn btn-default btn-xs"
-                                                            title="Grundpreis festlegen/Zahlung erfassen">{{ 'euro'|glyph }}</button>
+                                                            title="Grundpreis festlegen/Zahlung erfassen">{{ 'credit-card'|glyph }}</button>
                                                 {% endif -%}
                                             </dd>
                                         {% endif -%}
@@ -718,6 +689,7 @@
                             </div>
                             <div class="col-xs-12 status-label-list">
                                 {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+                                {{ paymentManager.getParticipantPaymentStatus(participant)|paymentLabel }}
                             </div>
                         </div>
                         {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
@@ -836,15 +808,6 @@
                                 $(button).removeClass('disabled');
                             }
                         });
-                    }
-                }
-            });
-            $('[data-property="isPaid"]').on('juvem.activeButton.success', function (event, button, response) {
-                if (response.value !== null) {
-                    if (response.value) {
-                        $('.status-label-list').append('<span class="label label-info option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}">{{ constant('AppBundle\\BitMask\\ParticipantStatus::LABEL_STATUS_PAID') }}</span>');
-                    } else {
-                        $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_PAID') }}').remove();
                     }
                 }
             });

@@ -33,23 +33,12 @@ $(function () {
         displayToPayInfo = function (data) {
             var rawRow,
                 rawRows = '',
-                createInfoRow = function (toPayValue, priceValue, participantAid, participantName) {
-                    var cellValue,
-                        participantPriceHtml;
+                createInfoRow = function (toPayValue, participantPriceHtml, participantAid, participantName) {
+                    var cellValue;
                     if (toPayValue === null) {
                         cellValue = '<i title="Kein Preis festgelegt">keiner</i>';
-                        participantPriceHtml = '<i>(keiner festgelegt)</i>';
                     } else {
                         cellValue = formatCurrencyNumber(toPayValue);
-                        participantPriceHtml = formatCurrencyNumber(priceValue);
-
-                        if (toPayValue > 0) {
-                            participantPriceHtml += '(noch zu zahlen: ' + formatCurrencyNumber(toPayValue)+')';
-                        } else if (toPayValue < 0) {
-                            participantPriceHtml += '(zu viel bezahlt: ' + formatCurrencyNumber(toPayValue * -1) + ') <span class="label label-info">überzahlt</span>';
-                        } else {
-                            participantPriceHtml += '(bezahlt) <span class="label label-info">bezahlt</span>';
-                        }
                     }
                     $('#participant-price-' + participantAid.toString()).html(participantPriceHtml);
 
@@ -61,7 +50,7 @@ $(function () {
             jQuery.each(data, function (key, rowData) {
                 rawRow = createInfoRow(
                     rowData.to_pay_value,
-                    rowData.price_value,
+                    rowData.price_html,
                     parseInt(rowData.participant_aid),
                     eHtml(rowData.participant_name)
                 );

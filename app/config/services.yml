@@ -44,6 +44,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_extension_payment:
+        class: AppBundle\Twig\Extension\PaymentInformation
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_global_customization:
         class: AppBundle\Twig\GlobalCustomization
         arguments:

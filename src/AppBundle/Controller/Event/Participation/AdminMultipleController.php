@@ -25,6 +25,7 @@ use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Twig\Extension\BootstrapGlyph;
+use AppBundle\Twig\Extension\PaymentInformation;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
@@ -171,15 +172,7 @@ class AdminMultipleController extends Controller
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
             if ($paymentStatus) {
-                if ($paymentStatus->isOverPaid()) {
-                    $participantStatusText .= ' <span class="label label-info option-payment option-overpaid">überbezahlt</span>';
-                } elseif ($paymentStatus->isPaid()) {
-                    $participantStatusText .= ' <span class="label label-info option-payment option-paid">bezahlt</span>';
-                } elseif (!$paymentStatus->hasPriceSet()) {
-                    $participantStatusText .= ' <span class="label label-info option-payment option-no-price">kein Preis</span>';
-                } elseif ($paymentStatus->isFree()) {
-                    $participantStatusText .= ' <span class="label label-info option-payment option-price-zero">kostenlos</span>';
-                }
+                $participantStatusText .= ' ' . PaymentInformation::provideLabel($paymentStatus);
             }
             $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
