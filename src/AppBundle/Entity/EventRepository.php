@@ -139,9 +139,9 @@ class EventRepository extends EntityRepository
         $qb->select(
             'e AS eventEntity',
             sprintf(
-                'SUM(CASE WHEN (a1.deletedAt IS NULL 
-                             AND BIT_AND(a1.status, %2$d) != %2$d 
-                             AND BIT_AND(a1.status, %3$d) != %3$d 
+                'SUM(CASE WHEN (a1.deletedAt IS NULL
+                             AND BIT_AND(a1.status, %2$d) != %2$d
+                             AND BIT_AND(a1.status, %3$d) != %3$d
                              AND BIT_AND(a1.status, %1$d) = %1$d) THEN 1 ELSE 0 END) AS participants_count_confirmed',
                 ParticipantStatus::TYPE_STATUS_CONFIRMED,
                 ParticipantStatus::TYPE_STATUS_WITHDRAWN,
@@ -149,7 +149,7 @@ class EventRepository extends EntityRepository
             ),
             sprintf(
                 'SUM(CASE WHEN (a1.deletedAt IS NULL
-                            AND BIT_AND(a1.status, %1$d) != %1$d 
+                            AND BIT_AND(a1.status, %1$d) != %1$d
                             AND BIT_AND(a1.status, %2$d) != %2$d) THEN 1 ELSE 0 END) AS participants_count',
                 ParticipantStatus::TYPE_STATUS_WITHDRAWN,
                 ParticipantStatus::TYPE_STATUS_REJECTED
@@ -202,7 +202,7 @@ class EventRepository extends EntityRepository
          }
         return $qb->getQuery()->execute();
     }
-
+    
     /**
      * Fetch all events ordered by title
      *
@@ -210,10 +210,15 @@ class EventRepository extends EntityRepository
      */
     public function findEidListFutureEvents()
     {
-        return $this->getEntityManager()
-                    ->getConnection()
-                    ->executeQuery('SELECT eid FROM event WHERE start_date >= NOW()')
-                    ->fetchAll(PDO::FETCH_COLUMN);
+        $eids   = [];
+        $result = $this->getEntityManager()
+                       ->getConnection()
+                       ->executeQuery('SELECT eid FROM event WHERE start_date >= NOW()');
+        
+        while ($row = $result->fetchColumn()) {
+            $eids[] = (int)$row;
+        }
+        return $eids;
     }
 
     /**
