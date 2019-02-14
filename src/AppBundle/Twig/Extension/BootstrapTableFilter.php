@@ -36,26 +36,35 @@ class BootstrapTableFilter extends \Twig_Extension
                       'is_safe'    => array('html')
                 )
             ),
+            new \Twig_SimpleFilter(
+                'tableFilterButtonTriParam',
+                [
+                    $this,
+                    'bootstrapTableFilterButtonTriRequiringQueryParameter'
+                ],
+                [
+                    'pre_escape' => 'html',
+                    'is_safe'    => ['html']
+                ]
+            ),
         );
     }
-    /*
-        public function initRuntime(\Twig_Environment $environment)
-        {
-            //$filters = $environment->getExtension('core')->getFilters();
-        }
-    */
-
+    
     /**
      * Create html for a bootstrap table filter button including multiple options to be selected as filter
      *
-     * @param   string  $property      The name of the filterable property
-     * @param   integer $defaultOption Index of default option
-     * @param   array   $options       List of options to select for filter
-     * @param   bool    $useGlyph      Set to true to add the filter glyph
-     * @return  string                 Html result
-     * @throws  \InvalidArgumentException   If default option is not available or transmitted value not numeric
+     * @param   string $property          The name of the filterable property
+     * @param   integer $defaultOption    Index of default option
+     * @param   array $options            List of options to select for filter
+     * @param   bool $useGlyph            Set to true to add the filter glyph
+     * @param   string $requireQueryParam If configured, the provided query param must be used when requesting data
+     *                                    for the used grid
+     * @return  string                    Html result
+     * @throws  \InvalidArgumentException If default option is not available or transmitted value not numeric
      */
-    public function bootstrapTableFilterButton($property, $defaultOption, array $options, $useGlyph = false)
+    public function bootstrapTableFilterButton(
+        $property, $defaultOption, array $options, $useGlyph = false, string $requireQueryParam = null
+    )
     {
         if (!is_numeric($defaultOption) || !isset($options[$defaultOption])) {
             throw new \InvalidArgumentException('Default option has to be index number of desired element');
@@ -67,17 +76,24 @@ class BootstrapTableFilter extends \Twig_Extension
 
         $optionString = '';
         foreach ($options as $option) {
+            $requireQueryParamString = '';
             if (is_array($option['value'])) {
-                $optionSelector = '[' . implode(', ', $option['value']) . ']';
+                $optionSelector = json_encode($option['value']);
             } else {
                 $optionSelector = $option['value'];
+                if ($requireQueryParam) {
+                    $requireQueryParamString = ' data-require-query-param="' . $requireQueryParam . '"';
+                }
             }
+
             $optionString .= sprintf(
-                "<li><a href=\"#\" data-filter=\"%s\">%s</a></li>\n",
+                "<li><a href=\"#\" data-filter='%s'%s>%s</a></li>\n",
                 $optionSelector,
+                $requireQueryParamString,
                 $option['title']
             );
         }
+       
 
         return sprintf(
             '
@@ -99,7 +115,6 @@ class BootstrapTableFilter extends \Twig_Extension
         );
     }
 
-
     /**
      * Shortcut to create a tri state filter button
      *
@@ -119,14 +134,44 @@ class BootstrapTableFilter extends \Twig_Extension
         $property, $defaultOption, $title1, $title0, $title0and1, $useGlyph = false
     )
     {
-        $options = array(
-            array('title' => $title1, 'value' => 1),
-            array('title' => $title0, 'value' => 0),
-            array('title' => $title0and1, 'value' => array(0, 1)),
+        return $this->bootstrapTableFilterButtonTriRequiringQueryParameter(
+            $property, $defaultOption, $title1, $title0, $title0and1, null, $useGlyph
         );
-        return $this->bootstrapTableFilterButton($property, $defaultOption, $options, $useGlyph);
     }
-
+    
+    /**
+     * Shortcut to create a tri state filter button requiring a query param if 1 or 0 is set
+     *
+     * Shortcut to create a tri state filter button, which first state is 1, second is 0 and third is
+     * both of them (0 and 1).
+     *
+     * @param   string $property               The name of the filterable property
+     * @param   integer $defaultOption         Index of default option
+     * @param   string $title1                 Title of first option for state 1
+     * @param   string $title0                 Title of second option for state 0
+     * @param   string $title0and1             Title third option for state 0 and 1 as well
+     * @param   string|null $requireQueryParam If configured, the provided query param must be used when requesting data
+     *                                         for the used grid
+     * @param   bool $useGlyph                 Set to true to add the filter glyph
+     * @return  string                 Html result
+     * @see bootstrapTableFilterButton()
+     */
+    public function bootstrapTableFilterButtonTriRequiringQueryParameter(
+        $property, $defaultOption, $title1, $title0, $title0and1, string $requireQueryParam = null, $useGlyph = false
+    )
+    {
+        $allOptions = [0, 1];
+        if ($requireQueryParam) {
+            $allOptions[] = null; //If using query parameter, transmit null if not yet fetched at call
+        }
+        $options = [
+            ['title' => $title1, 'value' => 1],
+            ['title' => $title0, 'value' => 0],
+            ['title' => $title0and1, 'value' => $allOptions],
+        ];
+        return $this->bootstrapTableFilterButton($property, $defaultOption, $options, $useGlyph, $requireQueryParam);
+    }
+    
     /**
      * {@inheritdoc}
      */

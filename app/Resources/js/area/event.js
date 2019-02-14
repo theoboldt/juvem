@@ -381,22 +381,4 @@ $(function () {
             }
         });
     });
-
-    /**
-     * PARTICIPANT LIST: Unhide price/to pay column
-     */
-    var participantsTable = $('#participantsListTable');
-    participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
-        if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
-            return;
-        }
-        var options = participantsTable.bootstrapTable('getOptions');
-        if (!options.queryParams || !options.queryParams.payment) {
-            participantsTable.bootstrapTable('refreshOptions', {
-                queryParams: {
-                    payment: 1
-                }
-            });
-        }
-    });
 });

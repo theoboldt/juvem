@@ -34,6 +34,7 @@ $(function () {
                 tableFilterList = {},
                 id = table.attr('id'),
                 subId = table.data('sub-id'),
+                queryParams = [],
                 tableSettingsIdentifier;
 
             if (subId) {
@@ -56,30 +57,39 @@ $(function () {
 
                 options.each(function (indexCurrent, option) {
                     if (indexCurrent == indexTarget) {
-                        var text = $(option).text(),
-                            filter = $(option).data('filter');
+                        var optionEl = $(option),
+                            text = optionEl.text(),
+                            filter = optionEl.data('filter'),
+                            requireParam = optionEl.data('require-query-param');
 
                         dropup.find('button .description').text(text);
                         tableFilterList[property] = filter;
+                        if (requireParam) {
+                            queryParams.push(requireParam);
+                        }
                     }
                 });
-
             });
 
             //apply filters
+            if (queryParams.length) {
+                tableEnableQueryParam(table, queryParams);
+            }
             table.bootstrapTable('filterBy', tableFilterList);
 
             //add filter handler
             $('#bootstrap-table-toolbar li a').on('click', function (e) {
                 e.preventDefault();
-                var option = $(this).get(0),
-                    dropup = $(this).parent().parent().parent(),
+                var optionEl = $(this),
+                    option = optionEl.get(0),
+                    dropup = optionEl.parent().parent().parent(),
+                    requireParam = optionEl.data('require-query-param'),
                     property = dropup.data('property'),
-                    filter = $(this).data('filter'),
-                    text = $(this).text(),
+                    filter = optionEl.data('filter'),
+                    text = optionEl.text(),
                     index;
 
-                $(this).parent().parent().find('li a').each(function (indexCurrent, optionCurrent) {
+                optionEl.parent().parent().find('li a').each(function (indexCurrent, optionCurrent) {
                     if (option === optionCurrent) {
                         index = indexCurrent;
                         return false;
@@ -87,6 +97,11 @@ $(function () {
                 });
                 if (index === undefined) {
                     return true;
+                }
+
+                //apply filters
+                if (requireParam) {
+                    tableEnableQueryParam(table, requireParam);
                 }
 
                 tableFilterList[property] = filter;
@@ -97,6 +112,39 @@ $(function () {
         });
     }();
 
+    var tableEnableQueryParam = function (table, params) {
+        var options = table.bootstrapTable('getOptions'),
+            changes = false,
+            newQueryParams = Object.keys(options.queryParams).length > 0 ? options.queryParams : {};
+
+        if (!$.isArray(params)) {
+            params = [params];
+        }
+
+        $.each(params, function (index, param) {
+            if (!newQueryParams[param]) {
+                newQueryParams[param] = 1;
+                changes = true;
+            }
+        });
+
+        if (changes) {
+            table.bootstrapTable('refreshOptions', {
+                queryParams: newQueryParams
+            });
+        }
+    };
+
+    /**
+     * PARTICIPANT LIST: Unhide price/to pay column
+     */
+    var participantsTable = $('#participantsListTable');
+    participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
+        if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
+            return;
+        }
+        tableEnableQueryParam(participantsTable, 'payment');
+    });
 
     /**
      * ACQUISITION: Admin acquisition list table

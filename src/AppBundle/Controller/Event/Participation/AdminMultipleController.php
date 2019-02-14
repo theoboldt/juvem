@@ -182,6 +182,7 @@ class AdminMultipleController extends Controller
             $participantEntry = [
                 'aid'                      => $participant->getAid(),
                 'pid'                      => $participant->getParticipation()->getPid(),
+                'is_paid'                  => null, //for tri state filter
                 'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
                 'is_withdrawn'             => (int)$participantStatusWithdrawn,
                 'is_rejected'              => (int)$participantStatusRejected,
@@ -210,7 +211,7 @@ class AdminMultipleController extends Controller
                 $participantEntry['payment_price']  = $price === null
                     ? '<i>keiner</i>'
                     : number_format($price, 2, ',', '.') . '&nbsp;€';
-                $participantEntry['is_paid']        = ($toPay === 0);
+                $participantEntry['is_paid']        = (int)($paymentStatus->isPaid());
             }
     
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
