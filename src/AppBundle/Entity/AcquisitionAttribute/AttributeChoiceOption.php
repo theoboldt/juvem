@@ -1,18 +1,11 @@
 <?php
 /**
- * AttributeChoiceOption
+ * This file is part of the Juvem package.
  *
- * @author       Erik Theoboldt <theoboldt@teqneers.de>
- * @package      DDS
- * @subpackage   AppBundle\Entity\AcquisitionAttribute
- * @copyright    Copyright (C) 2003-2017 TEQneers GmbH & Co. KG. All rights reserved.
- */
-
-/**
- * AttributeChoiceOption
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
  *
- * @package    DDS
- * @subpackage AppBundle\Entity\AcquisitionAttribute
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace AppBundle\Entity\AcquisitionAttribute;

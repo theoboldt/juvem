@@ -1,13 +1,12 @@
 <?php
 /**
- * ParticipantPaymentStatus
+ * This file is part of the Juvem package.
  *
- * @author       Erik Theoboldt <theoboldt@teqneers.de>
- * @package      DDS
- * @subpackage   AppBundle\Manager\Payment
- * @copyright    Copyright (C) 2003-2017 TEQneers GmbH & Co. KG. All rights reserved.
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-
 
 namespace AppBundle\Manager\Payment;
 
@@ -18,8 +17,7 @@ use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 /**
  * ParticipantPaymentStatus
  *
- * @package    DDS
- * @subpackage AppBundle\Manager\Payment
+ * @package AppBundle\Manager\Payment
  */
 class ParticipantPaymentStatus
 {
