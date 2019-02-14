@@ -386,11 +386,8 @@ $(function () {
      * PARTICIPANT LIST: Unhide price/to pay column
      */
     var participantsTable = $('#participantsListTable');
-    participantsTable.on('load-success.bs.table', function() {
-        //console.log(participantsTable.bootstrapTable('getVisibleColumns'));
-    });
     participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
-        if (priceDataRequested || (dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
+        if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
             return;
         }
         var options = participantsTable.bootstrapTable('getOptions');
