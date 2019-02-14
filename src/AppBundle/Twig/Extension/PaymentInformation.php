@@ -82,12 +82,12 @@ class PaymentInformation extends \Twig_Extension
     {
         if ($paymentStatus->isOverPaid()) {
             return '<span class="label label-info option-payment option-overpaid">überbezahlt</span>';
-        } elseif ($paymentStatus->isPaid()) {
-            return '<span class="label label-info option-payment option-paid">bezahlt</span>';
-        } elseif (!$paymentStatus->hasPriceSet()) {
-            return '<span class="label label-info option-payment option-no-price">kein Preis</span>';
         } elseif ($paymentStatus->isFree()) {
             return '<span class="label label-info option-payment option-price-zero">kostenlos</span>';
+        } elseif (!$paymentStatus->hasPriceSet()) {
+            return '<span class="label label-info option-payment option-no-price">kein Preis</span>';
+        } elseif ($paymentStatus->isPaid()) {
+            return '<span class="label label-info option-payment option-paid">bezahlt</span>';
         }
         
         return null;
