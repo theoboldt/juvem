@@ -206,9 +206,9 @@ class EventRepository extends EntityRepository
     /**
      * Fetch all events ordered by title
      *
-     * @return array
+     * @return array|int[]
      */
-    public function findEidListFutureEvents()
+    public function findEidListFutureEvents(): array
     {
         $eids   = [];
         $result = $this->getEntityManager()
@@ -220,18 +220,23 @@ class EventRepository extends EntityRepository
         }
         return $eids;
     }
-
+    
     /**
      * Fetch all events ordered by title
      *
-     * @return array
+     * @return array|int[]
      */
-    public function findEidListPastEvents()
+    public function findEidListPastEvents(): array
     {
-        return $this->getEntityManager()
-                    ->getConnection()
-                    ->executeQuery('SELECT eid FROM event WHERE start_date < NOW()')
-                    ->fetchAll(PDO::FETCH_COLUMN);
+        $eids   = [];
+        $result = $this->getEntityManager()
+                       ->getConnection()
+                       ->executeQuery('SELECT eid FROM event WHERE start_date < NOW()');
+        
+        while ($row = $result->fetchColumn()) {
+            $eids[] = (int)$row;
+        }
+        return $eids;
     }
 
     /**
