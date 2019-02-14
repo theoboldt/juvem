@@ -44,7 +44,7 @@
                     <div class="btn-group" role="group">
                         {{ 'is_confirmed'|tableFilterButtonTri(2, 'nur bestätigte', 'ohne bestätigte', 'inkl. bestätigte', true) }}
                         {{ 'is_withdrawn_or_rejected'|tableFilterButtonTri(1, 'nur zurückgezogene/abgelehnte', 'ohne zurückgezogene/abgelehnte', 'inkl. zurückgezogen/abgelehnte') }}
-                        {{ 'is_paid'|tableFilterButtonTri(2, 'nur bezahlte', 'ohne bezahlte', 'inkl. bezahlt') }}
+                        {#{{ 'is_paid'|tableFilterButtonTri(2, 'nur bezahlte', 'ohne bezahlte', 'inkl. bezahlt') }}#}
                         {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'inkl. gelöschte') }}
                         <a href="{{ path('event_participants_export', {eid: event.eid}) }}"
                            class="btn btn-default btn-xs btn-download">

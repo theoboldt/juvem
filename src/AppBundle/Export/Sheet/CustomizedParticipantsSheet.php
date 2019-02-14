@@ -212,7 +212,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             if (self::issetAndTrue($configParticipant, 'toPay')) {
                 $column = new CallableAccessingColumn(
                     'toPay', 'Zu zahlen', function (Participant $entity) {
-                    return $this->paymentManager->toPayValueForParticipant($entity, true);
+                    return $this->paymentManager->getToPayValueForParticipant($entity, true);
                 });
                 $column->setNumberFormat('#,##0.00 €');
                 $column->setWidth(8);

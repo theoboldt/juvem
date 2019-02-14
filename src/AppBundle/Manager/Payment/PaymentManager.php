@@ -102,6 +102,17 @@ class PaymentManager
             $this->user = $tokenStorage->getToken()->getUser();
         }
     }
+    
+    /**
+     * Provides participant payment status
+     *
+     * @param Participant $participant Participant
+     * @return ParticipantPaymentStatus Status
+     */
+    public function getParticipantPaymentStatus(Participant $participant): ParticipantPaymentStatus
+    {
+        return new ParticipantPaymentStatus($this, $participant);
+    }
 
     /**
      * Set price for multiple participants
@@ -138,7 +149,12 @@ class PaymentManager
             }
         );
     }
-
+    
+    /**
+     * Fetch all payment events for @see Event
+     *
+     * @param Event $event
+     */
     private function fetchPaymentHistoryForEvent(Event $event) {
         $eid = $event->getEid();
         /** @var EventRepository $eventRepository */
@@ -165,22 +181,6 @@ class PaymentManager
     }
 
     /**
-     * Get all payment events for transmitted @see Participant
-     *
-     * @param Participant $participant Desired participant
-     * @return array|ParticipantPaymentEvent[]
-     */
-    public function paymentHistoryForParticipant(Participant $participant)
-    {
-        $event = $participant->getEvent();
-        $eid   = $event->getEid();
-        if (!isset($this->paymentCache[$eid]) || !isset($this->paymentCache[$eid][$participant->getAid()])) {
-            $this->fetchPaymentHistoryForEvent($participant->getEvent());
-        }
-        return $this->paymentCache[$eid][$participant->getAid()];
-    }
-
-    /**
      * Get summands for calculating price of participant
      *
      * @param SummandImpactedInterface $impactedEntity Either @see Participant, or @see Employee
@@ -191,17 +191,33 @@ class PaymentManager
         return $this->priceManager->getEntityPriceTag($impactedEntity);
     }
 
+    /**
+     * Get all payment events for transmitted @see Participant
+     *
+     * @param Participant $participant Desired participant
+     * @return array|ParticipantPaymentEvent[]
+     */
+    public function getPaymentHistoryForParticipant(Participant $participant)
+    {
+        $event = $participant->getEvent();
+        $eid   = $event->getEid();
+        if (!isset($this->paymentCache[$eid]) || !isset($this->paymentCache[$eid][$participant->getAid()])) {
+            $this->fetchPaymentHistoryForEvent($participant->getEvent());
+        }
+        return $this->paymentCache[$eid][$participant->getAid()];
+    }
+
      /**
      * Get all payment events for transmitted @see Participants
      *
      * @param array|Participant[] $participants List of Participants
      * @return array|ParticipantPaymentEvent[]
      */
-    public function paymentHistoryForParticipantList(array $participants)
+    public function getPaymentHistoryForParticipantList(array $participants)
     {
         $paymentEvents = [];
         foreach ($participants as $participant) {
-            $paymentEvents = array_merge($paymentEvents, $this->paymentHistoryForParticipant($participant));
+            $paymentEvents = array_merge($paymentEvents, $this->getPaymentHistoryForParticipant($participant));
         }
         uasort($paymentEvents, function(ParticipantPaymentEvent $a, ParticipantPaymentEvent $b) {
             if ($a->getCreatedAt()->format('U') === $b->getCreatedAt()->format('U')) {
@@ -225,7 +241,7 @@ class PaymentManager
      * @return ParticipantPaymentEvent[]           New created payment event
      * @throws \Throwable
      */
-    public function paymentForParticipants(array $participantsUnordered, $value, string $description)
+    public function handlePaymentForParticipants(array $participantsUnordered, $value, string $description)
     {
         $participants = [];
         /** @var Participant $participant */
@@ -246,7 +262,7 @@ class PaymentManager
                 /** @var Participant $participant */
                 foreach ($participants as $participant) {
                     $aid   = $participant->getAid();
-                    $toPay = $this->toPayValueForParticipant($participant, false);
+                    $toPay = $this->getToPayValueForParticipant($participant, false);
                     if ($toPay === null) {
                         continue;
                     }
@@ -301,9 +317,6 @@ class PaymentManager
                     $payments[] = $payment;
                 }
                 $this->em->flush();
-                $this->updatePaidStatus($participation);
-
-                $this->em->flush();
                 return $payments;
             }
         );
@@ -320,7 +333,7 @@ class PaymentManager
      * @return ParticipantPaymentEvent New created payment event
      * @throws \Throwable
      */
-    public function paymentForParticipant(Participant $participant, $value, string $description)
+    public function handlePaymentForParticipant(Participant $participant, $value, string $description)
     {
         return $this->em->transactional(
             function () use ($participant, $value, $description) {
@@ -328,11 +341,6 @@ class PaymentManager
                 $participant->addPaymentEvent($payment);
 
                 $this->em->persist($payment);
-                $this->em->flush($payment);
-
-                $participation = $participant->getParticipation();
-                $this->updatePaidStatus($participation);
-
                 $this->em->flush();
                 return $payment;
             }
@@ -346,12 +354,12 @@ class PaymentManager
      * @param bool          $inEuro        If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return int|null                    Value needed to be payed
      */
-    public function toPayValueForParticipation(Participation $participation, $inEuro = false)
+    public function getToPayValueForParticipation(Participation $participation, $inEuro = false)
     {
         $allNull     = true;
         $toPayValues = [];
         foreach ($participation->getParticipants() as $participant) {
-            $toPayValue    = $this->toPayValueForParticipant($participant, $inEuro);
+            $toPayValue    = $this->getToPayValueForParticipant($participant, $inEuro);
             $toPayValues[] = $toPayValue;
             $allNull       = $allNull && $toPayValue === null;
         }
@@ -369,23 +377,82 @@ class PaymentManager
      * @param bool        $inEuro      If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return int|null                Value needed to be payed
      */
-    public function toPayValueForParticipant(Participant $participant, $inEuro = false)
+    public function getToPayValueForParticipant(Participant $participant, $inEuro = false)
     {
-        $topPay = $this->getPriceForParticipant($participant, $inEuro);
-        if ($topPay === null) {
+        $price = $this->getPriceForParticipant($participant, $inEuro);
+        if ($price === null) {
             //no price set event for current participant present, default price of event is not used
             return null;
         }
-        $fullHistory  = $this->paymentHistoryForParticipant($participant);
 
+        return $price + $this->getParticipantPaymentHistorySum($participant, $inEuro);
+    }
+    
+    /**
+     * Get sum of all transactions; Payments are less than zero
+     *
+     * @param Participant $participant Target participant
+     * @param bool $inEuro             If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|null                Sum of transactions, note that negative transactions mean payments
+     */
+    public function getParticipantPaymentHistorySum(Participant $participant, $inEuro = false)
+    {
+        $fullHistory = $this->getPaymentHistoryForParticipant($participant);
+        $topPay      = 0;
         /** @var ParticipantPaymentEvent $event */
         foreach ($fullHistory as $event) {
             if ($event->isPricePaymentEvent()) {
                 $topPay += $event->getValue($inEuro);
             }
         }
-
         return $topPay;
+    }
+    
+    /**
+     * Get sum of all transactions; Payments are less than zero
+     *
+     * @param Participation $participation Target participant
+     * @param bool $inEuro                 If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|null                    Sum of transactions, note that negative transactions mean payments
+     */
+    public function getParticipationPaymentHistorySum(Participation $participation, $inEuro = false)
+    {
+        $participants = $participation->getParticipants();
+        $topPay       = 0;
+        foreach ($participants as $participant) {
+            $topPay += $this->getParticipantPaymentHistorySum($participant, $inEuro);
+        }
+        
+        return $topPay;
+    }
+
+    /**
+     * Determine if (some) payment is still missing for transmitted @see Participation
+     *
+     * @param Participation $participation Related participation
+     * @return bool|null                   True if still missing, null if no price set, false if fully paid
+     */
+    public function isParticipationRequiringPayment(Participation $participation)
+    {
+        $toPay = $this->getToPayValueForParticipation($participation);
+        if ($toPay === null) {
+            return null;
+        }
+        return $toPay > 0;
+    }
+    
+    /**
+     * Determine if (some) payment is still missing for transmitted @see Participant
+     *
+     * @param Participant $participant Related participant
+     * @return bool|null               True if still missing, null if no price set, false if fully paid
+     */
+    public function isParticipantRequiringPayment(Participant $participant) {
+        $toPay = $this->getToPayValueForParticipant($participant);
+        if ($toPay === null) {
+            return null;
+        }
+        return $toPay > 0;
     }
 
     /**
@@ -411,22 +478,4 @@ class PaymentManager
     {
         return $this->priceManager->getPriceForParticipant($participant, $inEuro);
     }
-
-    /**
-     * Add or remove paid status depending on if there is still something which needs to be paid
-     *
-     * @param Participation $participation Target participation to check
-     * @throws \Throwable
-     */
-    private function updatePaidStatus(Participation $participation)
-    {
-        $isPaidExpected = ($this->toPayValueForParticipation($participation) <= 0);
-        $isPaidGiven    = $participation->isPaid();
-
-        if ($isPaidExpected !== $isPaidGiven) {
-            $participation->setIsPaid($isPaidExpected);
-            $this->em->persist($participation);
-        }
-    }
-
 }

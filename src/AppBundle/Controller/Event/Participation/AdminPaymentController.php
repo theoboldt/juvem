@@ -69,9 +69,9 @@ class AdminPaymentController extends Controller
 
                 if (count($participants) === 1) {
                     $participant = reset($participants);
-                    $paymentManager->paymentForParticipant($participant, $price, $description);
+                    $paymentManager->handlePaymentForParticipant($participant, $price, $description);
                 } else {
-                    $paymentManager->paymentForParticipants($participants, $price, $description);
+                    $paymentManager->handlePaymentForParticipants($participants, $price, $description);
                 }
                 break;
             default:
@@ -135,7 +135,7 @@ class AdminPaymentController extends Controller
     {
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
-        $paymentEvents  = $paymentManager->paymentHistoryForParticipantList($participants);
+        $paymentEvents  = $paymentManager->getPaymentHistoryForParticipantList($participants);
         $flatEvents     = [];
 
         /** @var ParticipantPaymentEvent $paymentEvent */
@@ -208,7 +208,7 @@ class AdminPaymentController extends Controller
         $detailedValues = [];
 
         foreach ($participants as $participant) {
-            $toPayValue       = $paymentManager->toPayValueForParticipant($participant, true);
+            $toPayValue       = $paymentManager->getToPayValueForParticipant($participant, true);
             $priceValue       = $paymentManager->getPriceForParticipant($participant, true);
             $detailedValues[] = [
                 'participant_name' => $participant->fullname(),

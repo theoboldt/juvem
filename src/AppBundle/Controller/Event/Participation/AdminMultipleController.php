@@ -150,6 +150,12 @@ class AdminMultipleController extends Controller
                 $participantPhoneList[] = $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE');
             }
 
+            if ($includePayment) {
+                $paymentStatus = $paymentManager->getParticipantPaymentStatus($participant);
+            } else {
+                $paymentStatus = null;
+            }
+            
             $participantAction = '';
 
             $participantStatus = $participant->getStatus(true);
@@ -164,6 +170,17 @@ class AdminMultipleController extends Controller
             if ($participant->getDeletedAt()) {
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
+            if ($paymentStatus) {
+                if ($paymentStatus->isOverPaid()) {
+                    $participantStatusText .= ' <span class="label label-info option-payment option-overpaid">überbezahlt</span>';
+                } elseif ($paymentStatus->isPaid()) {
+                    $participantStatusText .= ' <span class="label label-info option-payment option-paid">bezahlt</span>';
+                } elseif (!$paymentStatus->hasPriceSet()) {
+                    $participantStatusText .= ' <span class="label label-info option-payment option-no-price">kein Preis</span>';
+                } elseif ($paymentStatus->isFree()) {
+                    $participantStatusText .= ' <span class="label label-info option-payment option-price-zero">kostenlos</span>';
+                }
+            }
             $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
@@ -173,7 +190,6 @@ class AdminMultipleController extends Controller
                 'aid'                      => $participant->getAid(),
                 'pid'                      => $participant->getParticipation()->getPid(),
                 'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
-                'is_paid'                  => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_PAID),
                 'is_withdrawn'             => (int)$participantStatusWithdrawn,
                 'is_rejected'              => (int)$participantStatusRejected,
                 'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
@@ -190,20 +206,20 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];
-            
+    
             if ($includePayment) {
-            $toPay = $paymentManager->toPayValueForParticipant($participant, true);
-            $price = $paymentManager->getPriceForParticipant($participant, true);
-            
+                $toPay = $paymentStatus->getToPayValue(true);
+                $price = $paymentStatus->getPrice( true);
+        
                 $participantEntry['payment_to_pay'] = $toPay === null
                     ? '<i>nichts</i>'
                     : number_format($toPay, 2, ',', '.') . '&nbsp;€';
-                $participantEntry['payment_price'] = $price === null
+                $participantEntry['payment_price']  = $price === null
                     ? '<i>keiner</i>'
                     : number_format($price, 2, ',', '.') . '&nbsp;€';
-                
+                $participantEntry['is_paid']        = ($toPay === 0);
             }
-            
+    
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
@@ -410,9 +426,7 @@ class AdminMultipleController extends Controller
                     }
                     break;
                 case 'paid':
-                    if (!$participation->isPaid()) {
-                        $participation->setIsPaid(true);
-                    }
+                    //TODO
                     $changed = true;
                     break;
             }
