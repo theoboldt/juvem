@@ -118,7 +118,7 @@
                                             {% if loop.length > 2 and loop.index >= 2 %}
                                                 <li>
                                             {% endif %}
-                                            <a href="#" class="{% if loop.index < 2 %}btn btn-default{% endif %} btn-predefined" role="button"
+                                            <a href="#" class="{% if loop.length <= 2 or loop.index < 2 %}btn btn-default{% endif %} btn-predefined" role="button"
                                                   data-value="{{ suggestion.value(true)|number_format(2) }}"
                                                   data-description="{{ suggestion.description }}">
                                                     <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
