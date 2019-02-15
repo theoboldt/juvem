@@ -28,7 +28,7 @@ trait CreatedModifiedTrait
      * @var \DateTime|null
      * @ORM\Column(type="datetime", name="modified_at", nullable=true)
      * @Serialize\Expose
-     * @Serialize\Type("DateTime<'d.m.Y'>")
+     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
      */
     protected $modifiedAt = null;
 

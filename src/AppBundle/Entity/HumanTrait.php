@@ -12,16 +12,25 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ */
 trait HumanTrait
 {
 
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="string", length=128, name="name_first")
      */
     protected $nameFirst;
 
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="string", length=128, name="name_last")
      * @Assert\NotBlank()
      */
@@ -78,6 +87,10 @@ trait HumanTrait
     /**
      * Get fullname
      *
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("fullname")
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @return string
      */
     public function fullname() {

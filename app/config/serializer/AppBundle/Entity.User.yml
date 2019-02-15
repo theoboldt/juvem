@@ -1,0 +1,17 @@
+AppBundle\Entity\User:
+  exclusion_policy: ALL
+  properties:
+    nameLast:
+      expose: true
+      serialized_name: name_last
+      type: string
+    nameFirst:
+      expose: true
+      serialized_name: name_first
+      type: string
+  virtual_properties:
+    fullname:
+      expose: true
+      name: fullname
+      serialized_name: fullname
+      type: string

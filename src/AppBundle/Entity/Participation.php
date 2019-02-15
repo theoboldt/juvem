@@ -25,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
 
 /**
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
  * @ORM\Entity
  * @ORM\Table(name="participation")
  * @ORM\HasLifecycleCallbacks()

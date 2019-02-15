@@ -27,6 +27,7 @@ trait CreatorTrait
      * @ORM\JoinColumn(name="created_by", referencedColumnName="uid", onDelete="SET NULL")
      *
      * @Serialize\Expose
+     * @Serialize\MaxDepth(1)
      * @var User|null
      */
     protected $createdBy = null;

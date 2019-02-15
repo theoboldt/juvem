@@ -9,6 +9,18 @@ imports:
 parameters:
     locale: de
     app.upload_image_manager.path: "%kernel.root_dir%/cache/%kernel.environment%/upload_image"
+    app.data.root.path: "%kernel.root_dir%/../data"
+    app.data.invoice.path: "%app.data.root.path%/invoice"
+
+jms_serializer:
+    metadata:
+        directories:
+            FOSUserBundle:
+                namespace_prefix: FOS\UserBundle
+                path: "%kernel.root_dir%/config/serializer/FOSUserBundle"
+            AppBundle:
+                namespace_prefix: AppBundle
+                path: "%kernel.root_dir%/config/serializer/AppBundle"
 
 framework:
     assets:

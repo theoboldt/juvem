@@ -27,7 +27,7 @@ trait CreatedTrait
      * @var \DateTime
      * @ORM\Column(type="datetime", name="created_at")
      * @Serialize\Expose
-     * @Serialize\Type("DateTime<'d.m.Y'>")
+     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
      */
     protected $createdAt;
 
