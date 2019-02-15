@@ -9,6 +9,7 @@ imports:
 parameters:
     locale: de
     app.upload_image_manager.path: "%kernel.root_dir%/cache/%kernel.environment%/upload_image"
+    app.tmp.root.path: "%kernel.root_dir%/../tmp"
     app.data.root.path: "%kernel.root_dir%/../data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
 

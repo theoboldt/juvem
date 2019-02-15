@@ -100,10 +100,10 @@ services:
           - "%kernel.root_dir%/cache/%kernel.environment%/fc/gallery"
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['@app.file_cache.event', "%kernel.root_dir%/../tmp", '%vich_uploader.mappings%', 'event_image', '@?app.juvimg.service']
+        arguments: ['@app.file_cache.event', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'event_image', '@?app.juvimg.service']
     app.gallery_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['@app.file_cache.gallery', "%kernel.root_dir%/../tmp", '%vich_uploader.mappings%', 'gallery_image', '@?app.juvimg.service']
+        arguments: ['@app.file_cache.gallery', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'gallery_image', '@?app.juvimg.service']
         public: true
     app.user_registration.participation_listener:
         class: AppBundle\EventListeners\UserRegistrationListener
@@ -172,7 +172,7 @@ services:
 
     AppBundle\EventListeners\ParticipantRelatedParticipantResetListener:
         arguments:
-            - "%kernel.root_dir%/../tmp"
+            - "%app.tmp.root.path%"
         tags:
             - { name: doctrine.orm.entity_listener }
             -
@@ -186,7 +186,7 @@ services:
 
     AppBundle\EventListeners\ParticipationRelatedParticipantResetListener:
         arguments:
-            - "%kernel.root_dir%/../tmp"
+            - "%app.tmp.root.path%"
         tags:
             - { name: doctrine.orm.entity_listener }
             -
@@ -202,7 +202,7 @@ services:
     app.related_participants_finder:
         class: AppBundle\Manager\RelatedParticipantsFinder
         arguments:
-            - "%kernel.root_dir%/../tmp"
+            - "%app.tmp.root.path%"
             - '@doctrine.orm.entity_manager'
 
     app.converter.event:
