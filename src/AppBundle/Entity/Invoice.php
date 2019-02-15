@@ -61,17 +61,33 @@ class Invoice
     /**
      * Invoice constructor.
      *
-     * @param int $id
      * @param Participation $participation
      * @param int $sum
      */
-    public function __construct(int $id, Participation $participation, int $sum)
+    public function __construct(Participation $participation, int $sum)
     {
-        $this->id            = $id;
         $this->participation = $participation;
         $this->sum           = $sum;
     }
-   
+    
+    /**
+     * @return int|null
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    /**
+     * Get invoice creation year
+     *
+     * @return int
+     */
+    public function getInvoiceYear(): int
+    {
+        return (int)($this->createdAt ? $this->createdAt->format('y') : date('y'));
+    }
+    
     /**
      * Get textual invoice number
      *
@@ -83,9 +99,7 @@ class Invoice
      */
     public function getInvoiceNumber(): string
     {
-        $year = (int)($this->createdAt ? $this->createdAt->format('y') : date('y'));
-        
-        return sprintf('R-%1$02d%2$03d', $year, $this->id);
+        return sprintf('R-%1$02d%2$03d', $this->getInvoiceYear(), $this->id);
     }
     
     /**

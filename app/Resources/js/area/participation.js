@@ -67,11 +67,15 @@ $(function () {
                 rowHtml;
             if (data && data.length) {
                 jQuery.each(data, function (key, rowData) {
-                    var creatorName = '??';
-                    if (rowData.created_by && rowData.created_by.uid) {
-                        creatorHtml = '<a class="creator" href="/admin/user/' + rowData.created_by.uid + '">' + creatorName + '</a>';
+                    var creatorHtml,
+                        downloadBtnHtml = '';
+                    if (rowData.created_by && rowData.created_by.id) {
+                        creatorHtml = '<a class="creator" href="/admin/user/' + rowData.created_by.id + '">' + rowData.created_by.fullname + '</a>';
                     } else {
-                        creatorHtml = creatorName;
+                        creatorHtml = rowData.created_by.fullname;
+                    }
+                    if (rowData.download_url) {
+                        downloadBtnHtml = '<a href="' + rowData.download_url + '" target="_blank" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</a>';
                     }
 
                     rowHtml = '<tr>' +
@@ -81,7 +85,7 @@ $(function () {
                         '    <td class="value">' + formatCurrencyNumber((rowData.sum / 100)) + '</td>' +
                         '    <td>' + rowData.invoice_number + '</td>' +
                         '    <td class="small"><span class="created">' + rowData.created_at + '</span>, ' + creatorHtml + '</td>' +
-                        '    <td><button href="#" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</button></td>' +
+                        '    <td>'+downloadBtnHtml+'</td>' +
                         '</tr>';
 
                     rowsHtml += rowHtml;
@@ -347,6 +351,34 @@ $(function () {
             }
         });
 
+    });
+
+    $('#createInvoiceBtn').on('click', function (e) {
+        e.preventDefault();
+        var button = $(this);
+        button.toggleClass('disabled', true);
+
+        $.ajax({
+            url: '/admin/event/participant/invoice/create',
+            data: {
+                _token: button.data('token'),
+                pid: button.data('pid')
+            },
+            success: function (result) {
+                if (result) {
+                    console.log(result);
+                }
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Die Rechnung konnte nicht erstellt werden',
+                    priority: 'error'
+                });
+            },
+            complete: function () {
+                button.toggleClass('disabled', false);
+            }
+        });
     });
 
 });

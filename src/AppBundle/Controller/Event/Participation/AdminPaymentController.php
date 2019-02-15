@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Invoice;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Manager\Invoice\InvoiceManager;
@@ -20,10 +21,13 @@ use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\SerializeJsonResponse;
 use AppBundle\Twig\Extension\PaymentInformation;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Payment\PaymentManager;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,7 +45,7 @@ class AdminPaymentController extends Controller
     /**
      * Handle payment or price change
      *
-     * @Route("/admin/event/participant/price", name="admin_participation_price")
+     * @Route("/admin/event/participant/price", methods={"POST"}, name="admin_participation_price")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function participantPaymentAction(Request $request)
@@ -82,10 +86,75 @@ class AdminPaymentController extends Controller
         }
         return new SerializeJsonResponse(array_merge(['success' => true], $this->getPaymentResponseData($participants)));
     }
+    
+    /**
+     * Create invoice for selected @see Participation
+     *
+     * @Route("/admin/event/participation/invoice/create", methods={"POST"}, name="admin_invoice_create")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function createInvoiceAction(Request $request)
+    {
+        $token = $request->get('_token');
+        $pid   = $request->get('pid');
+        
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('ParticipationcreateInvoice' . $pid)) {
+            throw new InvalidTokenHttpException();
+        }
+        
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        
+        $participation = $participationRepository->findDetailed($request->get('pid'));
+        if (!$participation) {
+            throw new BadRequestHttpException('Requested participation event not found');
+        }
+        $event = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants_read', $event);
+        
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoice        = $invoiceManager->createInvoice($participation);
+        
+        return new SerializeJsonResponse(['success' => true, 'invoice' => $invoice]);
+    }
+    
+    /**
+     * Download created invoice
+     *
+     * @Route("/admin/event/{eid}/participation/invoice/{id}/{filename}", requirements={"eid": "\d+","id": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="admin_invoice_download")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("invoice", class="AppBundle:Invoice", options={"id" = "id"})
+     * @Security("is_granted('participants_read', event)")
+     * @return BinaryFileResponse
+     */
+    public function downloadInvoiceAction(Event $event, Invoice $invoice, string $filename)
+    {
+        if ($invoice->getParticipation()->getEvent()->getEid() !== $event->getEid()) {
+            throw new BadRequestHttpException('Incorrect invoice requested');
+        }
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+        
+        if (!$invoiceManager->hasFile($invoice)) {
+            throw new NotFoundHttpException('There is no file for transmitted invoice stored');
+        }
+        
+        $response = new BinaryFileResponse($invoiceManager->getInvoiceFilePath($invoice));
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $response->headers->set(
+            'Content-Disposition', $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename
+        )
+        );
+
+        return $response;
+    }
 
     /**
      *
-     * @Route("/admin/event/participant/price/history", methods={"POST"}, name="admin_participation_price_history")
+     * @Route("/admin/event/participant/price/history", name="admin_participation_price_history")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @return JsonResponse
