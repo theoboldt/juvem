@@ -85,7 +85,7 @@ $(function () {
                         '    <td class="value">' + formatCurrencyNumber((rowData.sum / 100)) + '</td>' +
                         '    <td>' + rowData.invoice_number + '</td>' +
                         '    <td class="small"><span class="created">' + rowData.created_at + '</span>, ' + creatorHtml + '</td>' +
-                        '    <td>' + downloadBtnHtml + '</td>' +
+                        '    <td class="text-right">' + downloadBtnHtml + '</td>' +
                         '</tr>';
 
                     rowsHtml += rowHtml;
