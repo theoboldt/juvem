@@ -235,7 +235,7 @@ class InvoiceManager
      *
      * @return string
      */
-    private function getInvoiceTemplatePath()
+    public function getInvoiceTemplatePath()
     {
         return $this->invoiceBasePath . '/template.docx';
     }

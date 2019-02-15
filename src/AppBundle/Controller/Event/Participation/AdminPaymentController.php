@@ -162,6 +162,32 @@ class AdminPaymentController extends Controller
     }
     
     /**
+     * Download invoice template
+     *
+     * @Route("/admin/invoice/template.docx", name="admin_invoice_template_download")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @return BinaryFileResponse
+     */
+    public function downloadInvoiceTemplateAction()
+    {
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+        if (!file_exists($invoiceManager->getInvoiceTemplatePath())) {
+            throw new NotFoundHttpException('There is no template present');
+        }
+        
+        $response = new BinaryFileResponse($invoiceManager->getInvoiceTemplatePath());
+        $response->headers->set(
+            'Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        );
+        $response->headers->set(
+            'Content-Disposition',
+            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'template.docx')
+        );
+        
+        return $response;
+    }
+    
+    /**
      *
      * @Route("/admin/event/participant/price/history", name="admin_participation_price_history")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
