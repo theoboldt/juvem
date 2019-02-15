@@ -11,7 +11,7 @@
             <li class="active">Exportieren</li>
         {% endblock %}
     {% endembed %}
-    <form class="container form-file-download" action="{{ path('event_export_generator_process') }}" target="export-generator-frame" method="post">
+    <form class="container form-file-download" action="{{ path('event_export_generator_process_legacy') }}" data-new-action="{{ path('event_export_generator_process', {eid: event.eid, filename: 'export.xlsx'}) }}" method="post">
         <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}" />
         <input type="hidden" name="eid" value="{{ event.eid }}" />
         <div class="row">
@@ -113,5 +113,4 @@
             </div>
         </div>
     </form>
-    <iframe name="export-generator-frame"></iframe>
 {% endblock %}

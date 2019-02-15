@@ -28,6 +28,9 @@ use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\Extension\PaymentInformation;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -38,6 +41,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AdminMultipleController extends Controller
 {
@@ -457,14 +461,91 @@ class AdminMultipleController extends Controller
 
         return $this->render('event/admin/export-generator.html.twig', array('event' => $event, 'config' => $tree->getChildren()));
     }
+    
+    /**
+     * Process transmitted configuration and provide download url
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/export/download/{filename}", requirements={"eid": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_process")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function exportGeneratorProcessDirectAction(Event $event, Request $request)
+    {
+        $result = $this->generateExport($request);
+        
+        $url = $this->get('router')->generate(
+            'event_export_generator_download',
+            [
+                'eid'      => $event->getEid(),
+                'tmpname'  => basename($result['path']),
+                'filename' => $result['name']
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        
+        return JsonResponse::create(['download_url' => $url]);
+    }
+    
+    /**
+     * Download created export
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/export/download/{tmpname}/{filename}", requirements={"eid": "\d+", "tmpname": "([a-zA-Z0-9\s_\\.\-\(\):])+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_download")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function exportGeneratedDownloadAction(Event $event, string $tmpname, string $filename, Request $request) {
+        $path = $this->getParameter('app.tmp.root.path').'/'.$tmpname;
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('Requested export '.$path.' not found');
+        }
+        $response = new BinaryFileResponse($path);
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $filename
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        //ensure file deleted after request
+        $this->get('event_dispatcher')->addListener(
+            KernelEvents::TERMINATE,
+            function (PostResponseEvent $event) use ($path) {
+                if (file_exists($path)) {
+                    usleep(100);
+                    unlink($path);
+                }
+            }
+        );
+        
+        return $response;
+    }
+
 
     /**
      * Page for list of participants of an event
      *
-     * @Route("/admin/event/export/process", name="event_export_generator_process")
+     * @deprecated
+     * @Route("/admin/event/export/process", name="event_export_generator_process_legacy")
+     * @Security("is_granted('participants_read', event)")
      */
-    public function exportGeneratorProcessAction(Request $request)
+    public function exportGeneratorProcessAction(Event $event, Request $request)
     {
+        $result = $this->generateExport($request);
+        
+        $response = new BinaryFileResponse($result['path']);
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $result['name']
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        return $response;
+    }
+    
+    private function generateExport(Request $request) {
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
         $config          = $request->get('config');
@@ -503,27 +584,22 @@ class AdminMultipleController extends Controller
             $this->getUser(),
             $processedConfiguration
         );
+        $tmpPath = tempnam($this->getParameter('app.tmp.root.path'), 'export_');
+        if (!$tmpPath) {
+            throw new \RuntimeException('Failed to create tmp file');
+        }
         $export->setMetadata();
         $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
+        $export->write($tmpPath);
 
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
 
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename
-        );
-        $response->headers->set('Content-Disposition', $d);
-
-        return $response;
+        return [
+            'path' => $tmpPath,
+            'name' => $filename
+        ];
     }
 
     /**

@@ -3,6 +3,7 @@ $(function () {
      * Do export
      *
      * @param button
+     * @param preventSubmit
      */
     var prefillAndExport = function (button, preventSubmit) {
         const template = button.data('template'),
@@ -207,35 +208,36 @@ $(function () {
     $(".form-file-download").submit(function (event) {
         event.preventDefault();
         var form = $(this),
+            buttonSubmit =$(".form-file-download .btn-generator"),
             button = form.find('button');
 
-        if (button.hasClass('disabled')) {
+        if (buttonSubmit.hasClass('disabled')) {
             return;
         }
-        $(".form-file-download .btn-generator").toggleClass('disabled', true);
+        button.toggleClass('disabled', true);
+        buttonSubmit.toggleClass('disabled', true);
 
         $.ajax({
-            url: form.attr('action'),
+            url: form.data('new-action'),
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            dataType: 'binary',
             data: form.serialize(),
-            xhrFields: {
-                responseType: 'blob'
-            },
-            success: function (data, status, jqXHR) {
-                var disposition = jqXHR.getResponseHeader('Content-Disposition'),
-                    regex = /filename="(.*)"/,
-                    a = document.createElement('a'),
-                    url = window.URL.createObjectURL(data);
+            success: function (result) {
+                var iframe = $("<iframe/>").attr({
+                        src: result.download_url,
+                        style: "display:none"
 
-                a.href = url;
-                a.download = regex.exec(disposition)[1];
+                    }).appendTo(form);
 
-                a.click();
-                window.URL.revokeObjectURL(url);
+                iframe.on('load', function () {
+                    setTimeout(function () {
+                        iframe.remove();
+                    }, 1000)
+                });
+
             },
             complete: function (response, status) {
-                $(".form-file-download .btn-generator").toggleClass('disabled', false);
+                button.prop('disabled', false);
+                buttonSubmit.toggleClass('disabled', false);
 
                 if (status !== 'success') {
                     $(document).trigger('add-alerts', {
