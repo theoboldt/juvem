@@ -25,10 +25,13 @@
     },
     "require": {
         "php": ">=7.2",
+        "ext-zip": "*",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
+        "ext-xmlwriter": "*",
+        "ext-xsl": "*",
         "symfony/symfony": "3.4.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
@@ -54,7 +57,9 @@
         "ocramius/proxy-manager": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "doctrine/doctrine-migrations-bundle": "^1.0",
-        "phpoffice/phpspreadsheet": "^1.5"
+        "phpoffice/phpword": "^0.16",
+        "phpoffice/phpspreadsheet": "^1.5",
+        "jms/serializer-bundle": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",

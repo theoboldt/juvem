@@ -14,10 +14,13 @@ use AppBundle\Entity\Audit\CreatedTrait;
 use AppBundle\Entity\Audit\CreatorTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="participant_payment_event")
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
  */
 class ParticipantPaymentEvent
 {

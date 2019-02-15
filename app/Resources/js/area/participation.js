@@ -9,6 +9,7 @@ $(function () {
         priceTagTableEl = $('#dialogPriceConfiguration #price tbody'),
         priceTagFooterTableEl = $('#dialogPriceConfiguration #price tfoot'),
         priceHistoryTableEl = $('#dialogPriceConfiguration #priceHistory tbody'),
+        invoiceTableEl = $('#dialogPriceConfiguration #invoiceList tbody'),
         formatCurrencyNumber = function (value) {
             if (value === null) {
                 return '';
@@ -28,6 +29,9 @@ $(function () {
             }
             if (result.price_tag_list) {
                 displayPriceTag(result.price_tag_list, multiple, result.price_tag_sum);
+            }
+            if (result.invoice_list) {
+                displayInvoiceList(result.invoice_list);
             }
         },
         displayToPayInfo = function (data) {
@@ -57,6 +61,35 @@ $(function () {
                 rawRows += rawRow;
             });
             toPayTableEl.html(rawRows);
+        },
+        displayInvoiceList = function (data) {
+            var rowsHtml = '',
+                rowHtml;
+            if (data && data.length) {
+                jQuery.each(data, function (key, rowData) {
+                    var creatorName = '??';
+                    if (rowData.created_by && rowData.created_by.uid) {
+                        creatorHtml = '<a class="creator" href="/admin/user/' + rowData.created_by.uid + '">' + creatorName + '</a>';
+                    } else {
+                        creatorHtml = creatorName;
+                    }
+
+                    rowHtml = '<tr>' +
+                        '    <td class="symbol" title="Rechnung">' +
+                        '       <span class="glyphicon glyphicon-page" aria-hidden="true"></span>' +
+                        '   </td>' +
+                        '    <td class="value">' + formatCurrencyNumber((rowData.sum / 100)) + '</td>' +
+                        '    <td>' + rowData.invoice_number + '</td>' +
+                        '    <td class="small"><span class="created">' + rowData.created_at + '</span>, ' + creatorHtml + '</td>' +
+                        '    <td><button href="#" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</button></td>' +
+                        '</tr>';
+
+                    rowsHtml += rowHtml;
+                });
+            } else {
+                rowsHtml = '<td colspan="5" class="text-center">(Keine Rechnungen vorhanden)</td>';
+            }
+            invoiceTableEl.html(rowsHtml);
         },
         displayPriceHistory = function (data) {
             var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {

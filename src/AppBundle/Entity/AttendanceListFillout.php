@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity

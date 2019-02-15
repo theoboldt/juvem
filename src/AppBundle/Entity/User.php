@@ -15,8 +15,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
  * @ORM\Entity
  * @ORM\Table(name="`user`")
  * @ORM\HasLifecycleCallbacks()
@@ -45,6 +48,8 @@ class User extends BaseUser
     const ROLE_EMPLOYEE_LABEL = 'Mitarbeiter';
 
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("integer")
      * @ORM\Id
      * @ORM\Column(type="integer", name="uid")
      * @ORM\GeneratedValue(strategy="AUTO")

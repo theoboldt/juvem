@@ -22,6 +22,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
@@ -112,6 +113,13 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      */
     protected $assignedUser;
 
+    /**
+     * Contains all related invoices
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Invoice", cascade={"all"}, mappedBy="participation")
+     */
+    protected $invoices;
+    
     /**
      * Constructor
      *
@@ -302,6 +310,31 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     public function removeParticipant(Participant $participant)
     {
         $this->participants->removeElement($participant);
+    }
+
+    /**
+     * Add invoice
+     *
+     * @param \AppBundle\Entity\Invoice $invoice
+     *
+     * @return Participation
+     */
+    public function addInvoice(Invoice $invoice)
+    {
+        $this->invoices[] = $invoice;
+        $invoice->setParticipation($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove invoice
+     *
+     * @param \AppBundle\Entity\Invoice $invoice
+     */
+    public function removeInvoice(Invoice $invoice)
+    {
+        $this->invoices->removeElement($invoice);
     }
 
     /**

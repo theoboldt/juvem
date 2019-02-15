@@ -11,12 +11,23 @@
 namespace AppBundle\Entity\Audit;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * Trait CreatedTrait
+ *
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ * @package AppBundle\Entity\Audit
+ */
 trait CreatedTrait
 {
 
     /**
+     * @var \DateTime
      * @ORM\Column(type="datetime", name="created_at")
+     * @Serialize\Expose
+     * @Serialize\Type("DateTime<'d.m.Y'>")
      */
     protected $createdAt;
 

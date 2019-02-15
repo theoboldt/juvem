@@ -99,6 +99,7 @@
                           <li role="presentation" class="active"><a href="#payment" aria-controls="payment" role="tab" data-toggle="tab">Zahlung erfassen</a></li>
                           <li role="presentation"><a href="#price" aria-controls="price" role="tab" data-toggle="tab">Preis</a></li>
                           <li role="presentation"><a href="#priceHistory" id="priceHistoryLink" aria-controls="priceHistory" role="tab" data-toggle="tab">Zahlungshistorie</a></li>
+                          <li role="presentation"><a href="#invoiceList" id="invoiceListLink" aria-controls="invoiceList" role="tab" data-toggle="tab">Rechnungen</a></li>
                       </ul>
                         <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="payment">
@@ -163,7 +164,7 @@
                                     <table class="table table-striped table-condensed">
                                         <thead>
                                         <tr>
-                                            <td class="text-right">Betrag</td>
+                                            <td class="value">Betrag</td>
                                             <td>Teilnehmer</td>
                                         </tr>
                                         </thead>
@@ -249,7 +250,7 @@
                                         <tr>
                                             <td></td>
                                             <td>Teilnehmer</td>
-                                            <td>Betrag</td>
+                                            <td class="value">Betrag</td>
                                             <td colspan="2">Art</td>
                                         </tr>
                                         </thead>
@@ -271,7 +272,7 @@
                                         <tr>
                                             <td></td>
                                             <td>Teilnehmer</td>
-                                            <td>Betrag</td>
+                                            <td class="value">Betrag</td>
                                             <td>Beschreibung</td>
                                             <td>Erfassung</td>
                                         </tr>
@@ -285,6 +286,29 @@
                                 </div>
                             </div>
                         </div>
+                        <div role="tabpanel" class="tab-pane" id="invoiceList">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <td></td>
+                                            <td class="value">Betrag</td>
+                                            <td>Nummer</td>
+                                            <td>Erstellung</td>
+                                            <td></td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="5" class="text-center">(Wird geladen)</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                       </div>
 
                     </div>

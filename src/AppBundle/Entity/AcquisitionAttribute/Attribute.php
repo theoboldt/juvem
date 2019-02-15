@@ -27,6 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
 use AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormula as AssertValidFormula;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @AssertValidFormula()

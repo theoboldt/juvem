@@ -114,6 +114,10 @@ services:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
         public: true
+    app.payment.invoice_manager:
+        class: AppBundle\Manager\Invoice\InvoiceManager
+        arguments:
+            - '@doctrine.orm.entity_manager'
     app.payment_manager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
@@ -156,6 +160,12 @@ services:
             - { name: monolog.logger, channel: mychannel }
         arguments:
             - "@logger"
+    app.response_serialize_listener:
+        class: AppBundle\EventListeners\ResponseSerializerListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -1}
+        arguments:
+            - "@jms_serializer"
 
     AppBundle\EventListeners\ParticipantRelatedParticipantResetListener:
         arguments:

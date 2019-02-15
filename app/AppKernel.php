@@ -32,6 +32,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Misd\PhoneNumberBundle\MisdPhoneNumberBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
             new Nelmio\SecurityBundle\NelmioSecurityBundle(),
             new Knp\Bundle\TimeBundle\KnpTimeBundle(),
             new Skies\QRcodeBundle\SkiesQRcodeBundle(),

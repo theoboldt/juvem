@@ -15,8 +15,10 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
+use AppBundle\Manager\Invoice\InvoiceManager;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
+use AppBundle\SerializeJsonResponse;
 use AppBundle\Twig\Extension\PaymentInformation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Participant;
@@ -78,7 +80,7 @@ class AdminPaymentController extends Controller
             default:
                 throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
-        return new JsonResponse(array_merge(['success' => true], $this->getPaymentResponseData($participants)));
+        return new SerializeJsonResponse(array_merge(['success' => true], $this->getPaymentResponseData($participants)));
     }
 
     /**
@@ -93,7 +95,7 @@ class AdminPaymentController extends Controller
         $aids         = explode(';', $request->get('aids'));
         $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
 
-        return new JsonResponse($this->getPaymentResponseData($participants));
+        return new SerializeJsonResponse($this->getPaymentResponseData($participants));
     }
 
     /**
@@ -117,13 +119,22 @@ class AdminPaymentController extends Controller
         foreach ($priceTags as $summand) {
             $priceSum += $summand['value'];
         }
-        return [
+        /** @var InvoiceManager $invoiceManager */
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $participant    = reset($participants);
+        
+        $b= $this->get('jms_serializer')->serialize($invoiceManager->getInvoicesForParticipation($participant->getParticipation()), 'json');
+    
+        $a= [
             'payment_history' => $this->paymentHistory($participants),
             'price_tag_list'  => $priceTags,
             'price_tag_sum'   => $priceSum,
             'to_pay_list'     => $toPayList,
             'to_pay_sum'      => $toPayTotal,
+            'invoice_list'    => $invoiceManager->getInvoicesForParticipation($participant->getParticipation())
         ];
+        
+        return $a;
     }
 
     /**

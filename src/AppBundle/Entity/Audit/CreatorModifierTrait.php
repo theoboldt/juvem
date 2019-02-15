@@ -12,7 +12,14 @@ namespace AppBundle\Entity\Audit;
 
 use AppBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * Trait CreatorModifierTrait
+ *
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ */
 trait CreatorModifierTrait
 {
     use CreatorTrait;
@@ -21,6 +28,7 @@ trait CreatorModifierTrait
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="modified_by", referencedColumnName="uid", onDelete="SET NULL")
      *
+     * @Serialize\Expose
      * @var User|null
      */
     protected $modifiedBy = null;

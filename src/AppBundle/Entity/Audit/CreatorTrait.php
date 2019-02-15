@@ -12,13 +12,21 @@ namespace AppBundle\Entity\Audit;
 
 use AppBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * Trait CreatorTrait
+ *
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ */
 trait CreatorTrait
 {
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="uid", onDelete="SET NULL")
      *
+     * @Serialize\Expose
      * @var User|null
      */
     protected $createdBy = null;
