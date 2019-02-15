@@ -38,12 +38,10 @@ $(function () {
      */
     $('.btn-download').on('click', function (e) {
         e.preventDefault();
-
         var button = $(this);
         button.prop('disabled', true);
 
-        var eid = button.data('eid'),
-            url = this.getAttribute('href'),
+        var url = this.getAttribute('href'),
             iframe = $("<iframe/>").attr({
                 src: url,
                 style: "display:none"

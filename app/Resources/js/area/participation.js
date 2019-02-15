@@ -75,7 +75,7 @@ $(function () {
                         creatorHtml = rowData.created_by.fullname;
                     }
                     if (rowData.download_url) {
-                        downloadBtnHtml = '<a href="' + rowData.download_url + '" target="_blank" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</a>';
+                        downloadBtnHtml = '<a href="' + rowData.download_url + '" target="_blank" class="btn btn-default btn-xs btn-download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</a>';
                     }
 
                     rowHtml = '<tr>' +
@@ -94,6 +94,33 @@ $(function () {
                 rowsHtml = '<td colspan="5" class="text-center">(Keine Rechnungen vorhanden)</td>';
             }
             invoiceTableEl.html(rowsHtml);
+
+
+    /**
+     * GLOBAL: Download-button
+     */
+    $('.btn-download').on('click', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        button.prop('disabled', true);
+
+        var eid = button.data('eid'),
+            url = this.getAttribute('href'),
+            iframe = $("<iframe/>").attr({
+                src: url,
+                style: "display:none"
+
+            }).appendTo(button);
+
+        iframe.on('load', function () {
+            button.prop('disabled', false);
+            setTimeout(function () {
+                iframe.remove();
+            }, 1000)
+        });
+    });
+
         },
         displayPriceHistory = function (data) {
             var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
