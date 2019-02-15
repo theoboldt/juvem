@@ -37,11 +37,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminPaymentController extends Controller
 {
-
+    
     const ACTION_PAYMENT_RECEIVED = 'paymentReceived';
     const ACTION_PRICE_SET        = 'newPrice';
-
-
+    
+    
     /**
      * Handle payment or price change
      *
@@ -55,25 +55,25 @@ class AdminPaymentController extends Controller
         $aids        = explode(';', $request->get('aids'));
         $value       = $request->get('value');
         $description = $request->get('description');
-
+        
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('Participationprice')) {
             throw new InvalidTokenHttpException();
         }
         $participants = $this->extractParticipantsFromAid($aids, 'participants_edit');
-
+        
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
         $price          = PaymentManager::convertEuroToCent($value);
-
+        
         switch ($action) {
             case self::ACTION_PRICE_SET:
                 $paymentManager->setBasePrice($participants, $price, $description);
                 break;
             case self::ACTION_PAYMENT_RECEIVED:
                 $price = $price * -1; //flip the sign of value
-
+                
                 if (count($participants) === 1) {
                     $participant = reset($participants);
                     $paymentManager->handlePaymentForParticipant($participant, $price, $description);
@@ -84,7 +84,9 @@ class AdminPaymentController extends Controller
             default:
                 throw new BadRequestHttpException('Unknown action "' . $action . '" transmitted');
         }
-        return new SerializeJsonResponse(array_merge(['success' => true], $this->getPaymentResponseData($participants)));
+        return new SerializeJsonResponse(
+            array_merge(['success' => true], $this->getPaymentResponseData($participants))
+        );
     }
     
     /**
@@ -118,7 +120,13 @@ class AdminPaymentController extends Controller
         $invoiceManager = $this->get('app.payment.invoice_manager');
         $invoice        = $invoiceManager->createInvoice($participation);
         
-        return new SerializeJsonResponse(['success' => true, 'invoice' => $invoice]);
+        return new SerializeJsonResponse(
+            [
+                'success'      => true,
+                'invoice'      => $invoice,
+                'invoice_list' => $invoiceManager->getInvoicesForParticipation($participation)
+            ]
+        );
     }
     
     /**
@@ -142,16 +150,17 @@ class AdminPaymentController extends Controller
         }
         
         $response = new BinaryFileResponse($invoiceManager->getInvoiceFilePath($invoice));
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         $response->headers->set(
-            'Content-Disposition', $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename
-        )
+            'Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
-
+        $response->headers->set(
+            'Content-Disposition',
+            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename)
+        );
+        
         return $response;
     }
-
+    
     /**
      *
      * @Route("/admin/event/participant/price/history", name="admin_participation_price_history")
@@ -163,10 +172,10 @@ class AdminPaymentController extends Controller
     {
         $aids         = explode(';', $request->get('aids'));
         $participants = $this->extractParticipantsFromAid($aids, 'participants_read');
-
+        
         return new SerializeJsonResponse($this->getPaymentResponseData($participants));
     }
-
+    
     /**
      * Generate payment info data for transmitted participants
      *
@@ -192,9 +201,7 @@ class AdminPaymentController extends Controller
         $invoiceManager = $this->get('app.payment.invoice_manager');
         $participant    = reset($participants);
         
-        $b= $this->get('jms_serializer')->serialize($invoiceManager->getInvoicesForParticipation($participant->getParticipation()), 'json');
-    
-        $a= [
+        return [
             'payment_history' => $this->paymentHistory($participants),
             'price_tag_list'  => $priceTags,
             'price_tag_sum'   => $priceSum,
@@ -202,10 +209,8 @@ class AdminPaymentController extends Controller
             'to_pay_sum'      => $toPayTotal,
             'invoice_list'    => $invoiceManager->getInvoicesForParticipation($participant->getParticipation())
         ];
-        
-        return $a;
     }
-
+    
     /**
      * Get flat array list of payment events
      *
@@ -218,7 +223,7 @@ class AdminPaymentController extends Controller
         $paymentManager = $this->get('app.payment_manager');
         $paymentEvents  = $paymentManager->getPaymentHistoryForParticipantList($participants);
         $flatEvents     = [];
-
+        
         /** @var ParticipantPaymentEvent $paymentEvent */
         foreach ($paymentEvents as $paymentEvent) {
             $user         = $paymentEvent->getCreatedBy();
@@ -237,7 +242,7 @@ class AdminPaymentController extends Controller
         }
         return $flatEvents;
     }
-
+    
     /**
      * Get price tags for data
      *
@@ -249,17 +254,17 @@ class AdminPaymentController extends Controller
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
         /** @var Participant $participant */
-
+        
         $result = [];
-
+        
         foreach ($participants as $participant) {
             $priceTag = $paymentManager->getEntityPriceTag($participant);
-
+            
             /** @var SummandInterface $summand */
             foreach ($priceTag->getSummands() as $summand) {
                 $attributeName = ($summand instanceof AttributeAwareInterface)
                     ? $summand->getAttribute()->getManagementTitle() : null;
-
+                
                 $result[] = [
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),
@@ -270,10 +275,10 @@ class AdminPaymentController extends Controller
                 ];
             }
         }
-
+        
         return $result;
     }
-
+    
     /**
      * Get value which still needs to be payed for transmitted list of participants
      *
@@ -285,9 +290,9 @@ class AdminPaymentController extends Controller
         /** @var PaymentManager $paymentManager */
         $paymentManager = $this->get('app.payment_manager');
         /** @var Participant $participant */
-
+        
         $detailedValues = [];
-    
+        
         foreach ($participants as $participant) {
             $toPayValue       = $paymentManager->getToPayValueForParticipant($participant, true);
             $priceValue       = $paymentManager->getPriceForParticipant($participant, true);
@@ -295,18 +300,20 @@ class AdminPaymentController extends Controller
                 'participant_name' => $participant->fullname(),
                 'participant_aid'  => $participant->getAid(),
                 'to_pay_value'     => $toPayValue,
-                'price_html'       => PaymentInformation::provideInfo($paymentManager->getParticipantPaymentStatus($participant)),
+                'price_html'       => PaymentInformation::provideInfo(
+                    $paymentManager->getParticipantPaymentStatus($participant)
+                ),
                 'price_value'      => $priceValue,
             ];
         }
-
+        
         return $detailedValues;
     }
-
+    
     /**
      * Extract @see Participant entities from aid list
      *
-     * @param array  $aidList            List of aids
+     * @param array $aidList             List of aids
      * @param string $requiredPermission Permission required for this operation
      * @return Participant[]
      */

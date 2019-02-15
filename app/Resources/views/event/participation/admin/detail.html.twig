@@ -289,6 +289,11 @@
                         <div role="tabpanel" class="tab-pane" id="invoiceList">
                             <div class="row">
                                 <div class="col-xs-12">
+                                    <div class="btn-group" role="group">
+                                        <span class="btn btn-default"
+                                              data-token="{{ csrf_token('Participation' ~ 'createInvoice' ~ participation.pid ) }}"
+                                              data-pid="{{ participation.pid }}" role="button" id="createInvoiceBtn">Neue Rechnung erstellen</span>
+                                    </div>
                                     <table class="table table-striped table-condensed">
                                         <thead>
                                         <tr>

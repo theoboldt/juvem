@@ -85,7 +85,7 @@ $(function () {
                         '    <td class="value">' + formatCurrencyNumber((rowData.sum / 100)) + '</td>' +
                         '    <td>' + rowData.invoice_number + '</td>' +
                         '    <td class="small"><span class="created">' + rowData.created_at + '</span>, ' + creatorHtml + '</td>' +
-                        '    <td>'+downloadBtnHtml+'</td>' +
+                        '    <td>' + downloadBtnHtml + '</td>' +
                         '</tr>';
 
                     rowsHtml += rowHtml;
@@ -94,33 +94,7 @@ $(function () {
                 rowsHtml = '<td colspan="5" class="text-center">(Keine Rechnungen vorhanden)</td>';
             }
             invoiceTableEl.html(rowsHtml);
-
-
-    /**
-     * GLOBAL: Download-button
-     */
-    $('.btn-download').on('click', function (e) {
-        e.preventDefault();
-
-        var button = $(this);
-        button.prop('disabled', true);
-
-        var eid = button.data('eid'),
-            url = this.getAttribute('href'),
-            iframe = $("<iframe/>").attr({
-                src: url,
-                style: "display:none"
-
-            }).appendTo(button);
-
-        iframe.on('load', function () {
-            button.prop('disabled', false);
-            setTimeout(function () {
-                iframe.remove();
-            }, 1000)
-        });
-    });
-
+            attachDownloadBtnListener();
         },
         displayPriceHistory = function (data) {
             var createPriceRow = function (type, value, description, date, creatorId, creatorName, participant) {
@@ -386,14 +360,14 @@ $(function () {
         button.toggleClass('disabled', true);
 
         $.ajax({
-            url: '/admin/event/participant/invoice/create',
+            url: '/admin/event/participation/invoice/create',
             data: {
                 _token: button.data('token'),
                 pid: button.data('pid')
             },
             success: function (result) {
-                if (result) {
-                    console.log(result);
+                if (result && result.invoice_list) {
+                    displayInvoiceList(result.invoice_list);
                 }
             },
             error: function () {

@@ -8,6 +8,10 @@ use AppBundle\Entity\InvoiceRepository;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Manager\Payment\PaymentManager;
+use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
+use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
+use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
+use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -93,13 +97,83 @@ class InvoiceManager
      */
     public function createInvoice(Participation $participation)
     {
+        $templatePath = $this->getInvoiceTemplatePath();
+        if (!file_exists($templatePath)) {
+            throw new \RuntimeException('No invoice template available');
+        }
+        
         $toPayValue = $this->paymentManager->getToPayValueForParticipation($participation, false);
         $invoice    = new Invoice($participation, $toPayValue);
         $invoice->setCreatedBy($this->user);
         $this->em->persist($invoice);
         $this->em->flush();
         
-        $templateProcessor = new TemplateProcessor($this->getInvoiceTemplatePath());
+        $templateProcessor = new TemplateProcessor($templatePath);
+        
+        $sumCents = 0;
+        $elements = [];
+        foreach ($participation->getParticipants() as $participant) {
+            $priceTag = $this->paymentManager->getEntityPriceTag($participant);
+            /** @var SummandInterface $summand */
+            foreach ($priceTag->getSummands() as $summand) {
+                
+                if ($summand instanceof BasePriceSummand) {
+                    $type        = 'Grundpreis';
+                    $description = '';
+                } elseif ($summand instanceof FilloutSummand) {
+                    $type        = 'Aufschlag/Rabatt';
+                    $description = ($summand instanceof AttributeAwareInterface)
+                        ? $summand->getAttribute()->getFormTitle() : '';
+                } else {
+                    $type        = 'Unbekannt';
+                    $description = 'Unbekannt';
+                }
+                
+                $sumCents += $summand->getValue(false);
+                
+                $elements[] = [
+                    'participant' => $participant->fullname(),
+                    'value'       => number_format($summand->getValue(true), 2, ',', '.') . ' €',
+                    'type'        => $type,
+                    'description' => $description,
+                ];
+            }
+        }
+        $templateProcessor->cloneRow('participantName', count($elements));
+        $i = 1;
+        foreach ($elements as $element) {
+            $templateProcessor->setValue('participantName#' . $i, $element['participant']);
+            $templateProcessor->setValue('invoiceRowDescription#' . $i, $element['description']);
+            $templateProcessor->setValue('invoiceRowType#' . $i, $element['type']);
+            $templateProcessor->setValue('invoiceRowValue#' . $i, $element['value']);
+            
+            ++$i;
+        }
+        
+        $search  = [
+            'salution',
+            'nameFirst',
+            'nameLast',
+            'addressStreet',
+            'addressZip',
+            'addressCity',
+            'email',
+            'invoiceNumber',
+            'invoiceRowSum'
+        ];
+        $replace = [
+            $participation->getSalutation(),
+            $participation->getNameFirst(),
+            $participation->getNameLast(),
+            $participation->getAddressStreet(),
+            $participation->getAddressZip(),
+            $participation->getAddressCity(),
+            $participation->getEmail(),
+            $invoice->getInvoiceNumber(),
+            number_format($sumCents / 100, 2, ',', '.') . ' €'
+        ];
+        $templateProcessor->setValue($search, $replace);
+        
         
         $this->ensureInvoiceDirectoryExists($invoice);
         $templateProcessor->saveAs($this->getInvoiceFilePath($invoice));
@@ -147,8 +221,13 @@ class InvoiceManager
      */
     public function getInvoiceFilePath(Invoice $invoice)
     {
-        return $this->invoiceBasePath . '/' . $invoice->getInvoiceYear() . '/' .
-               strtolower($invoice->getInvoiceNumber()) . '.docx';
+        return sprintf(
+            '%s/%d/%d/%s.docx',
+            $this->invoiceBasePath,
+            $invoice->getInvoiceYear(),
+            $invoice->getParticipation()->getPid(),
+            strtolower($invoice->getInvoiceNumber())
+        );
     }
     
     /**

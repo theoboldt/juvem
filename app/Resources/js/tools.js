@@ -36,25 +36,28 @@ $(function () {
     /**
      * GLOBAL: Download-button
      */
-    $('.btn-download').on('click', function (e) {
-        e.preventDefault();
-        var button = $(this);
-        button.prop('disabled', true);
+    window.attachDownloadBtnListener = function() {
+        $('.btn-download').on('click', function (e) {
+            e.preventDefault();
+            var button = $(this);
+            button.prop('disabled', true);
 
-        var url = this.getAttribute('href'),
-            iframe = $("<iframe/>").attr({
-                src: url,
-                style: "display:none"
+            var url = this.getAttribute('href'),
+                iframe = $("<iframe/>").attr({
+                    src: url,
+                    style: "display:none"
 
-            }).appendTo(button);
+                }).appendTo(button);
 
-        iframe.on('load', function () {
-            button.prop('disabled', false);
-            setTimeout(function () {
-                iframe.remove();
-            }, 1000)
+            iframe.on('load', function () {
+                button.prop('disabled', false);
+                setTimeout(function () {
+                    iframe.remove();
+                }, 1000)
+            });
         });
-    });
+    };
+    window.attachDownloadBtnListener();
 
     /**
      * GLOBAL: Provides a heartbeat to keep the csrf token always up to date
