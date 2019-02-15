@@ -16,6 +16,10 @@
                         <input type="hidden" id="_token" name="_token" value="{{ csrf_token('participants-list-edit' ~ event.eid ) }}" />
                         <input type="hidden" name="eid" value="{{ event.eid }}" />
                         <p id="participantsActionText"></p>
+                        <div class="form-group" id="inputDescriptionForm">
+                            <label>Anmerkung</label>
+                            <input type="text" class="form-control" />
+                        </div>
                         <ul id="participantsActionList"></ul>
                     </div>
                     <p class="meta"></p>

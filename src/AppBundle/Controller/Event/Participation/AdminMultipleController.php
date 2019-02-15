@@ -375,7 +375,7 @@ class AdminMultipleController extends Controller
     /**
      * Apply changes to multiple participants
      *
-     * @Route("/admin/event/participantschange", name="event_participants_change")
+     * @Route("/admin/event/participantschange", name="event_participants_change", methods={"POST"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
     public function activeButtonChangeStateHandler(Request $request)
@@ -383,6 +383,7 @@ class AdminMultipleController extends Controller
         $token        = $request->get('_token');
         $eid          = $request->get('eid');
         $action       = $request->get('action');
+        $message      = $request->get('message');
         $participants = filter_var_array($request->get('participants'), FILTER_VALIDATE_INT);
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
@@ -393,6 +394,7 @@ class AdminMultipleController extends Controller
 
         $eventRepository         = $this->getDoctrine()->getRepository(Event::class);
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        /** @var Event $event */
         $event                   = $eventRepository->findOneBy(['eid' => $eid]);
         $this->denyAccessUnlessGranted('participants_edit', $event);
         if (!$event) {
@@ -401,9 +403,10 @@ class AdminMultipleController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-
+    
         $participants         = $participationRepository->participantsList($event, $participants, true, true);
         $participationManager = $this->get('app.participation_manager');
+        $paymentManager       = $this->get('app.payment_manager');
         $em                   = $this->getDoctrine()->getManager();
 
         /** @var Participant $participant */
@@ -420,8 +423,10 @@ class AdminMultipleController extends Controller
                     }
                     break;
                 case 'paid':
-                    //TODO
-                    $changed = true;
+                    $toPay = $paymentManager->getToPayValueForParticipant($participant, false);
+                    if ($toPay > 0) {
+                        $paymentManager->handlePaymentForParticipant($participant, ($toPay*-1), $message);
+                    }
                     break;
             }
             if ($changed) {

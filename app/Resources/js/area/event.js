@@ -128,18 +128,22 @@ $(function () {
             action = buttonEl.data('action'),
             participants = $('#participantsListTable').bootstrapTable('getAllSelections'),
             participantIds = [],
+            inputDescriptionFormVisible,
             description;
 
         switch (action) {
             case 'confirm':
                 description = 'Sollen die Anmeldungen der folgenden Teilnehmer bestätigt werden? Dabei werden auch die entsprechenden E-Mails verschickt.';
+                inputDescriptionFormVisible = false;
                 break;
             case 'paid':
                 description = 'Sollen für die folgenden Teilnehmer Zahlungseingang vermerkt werden?';
+                inputDescriptionFormVisible = true;
                 break;
         }
 
         modalEl.find('#participantsActionText').text(description);
+        modalEl.find('#inputDescriptionForm').css('display', inputDescriptionFormVisible ? 'block' : 'none');
         listEl.html('');
         $.each(participants, function (key, participant) {
             participantIds.push(participant.aid);
@@ -153,6 +157,7 @@ $(function () {
                 data: {
                     _token: modalEl.find('input[name=_token]').val(),
                     eid: modalEl.find('input[name=eid]').val(),
+                    message: modalEl.find('#inputDescriptionForm input').val(),
                     action: action,
                     participants: participantIds
                 },
