@@ -101,20 +101,16 @@
                                 <tr>
                                     <td class=" text-right">Betrag</td>
                                     <td>Feld</td>
-                                    <td>Option</td>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {% for summand in summands %}
                                     <tr>
                                         <td class="value text-right">{{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€</td>
-                                        {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutChoiceSummand') %}
+                                        {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
                                             <td>{{ summand.attribute.managementTitle }}</td>
-                                            <td>{{ summand.choice.getManagementTitle(true) }}</td>
-                                        {% elseif summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
-                                            <td colspan="2">{{ summand.attribute.managementTitle }}</td>
                                         {% else %}
-                                            <td colspan="2"><code>{{ summand.type }}</code></td>
+                                            <td><code>{{ summand.type }}</code></td>
                                         {% endif %}
                                     </tr>
                                 {% endfor %}
