@@ -17,7 +17,7 @@
     "npm": "^6.6.0",
     "lodash": ">=4.17.11",
     "merge": ">=1.2.1",
-    "bootstrap-sass": "^3.4.0",
+    "bootstrap-sass": "^3.4.1",
     "bootstrap-table": "<=1.12",
     "ekko-lightbox": "^5.3.0",
     "imagesloaded": "^4.1.4",
