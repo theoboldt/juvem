@@ -8,7 +8,6 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.upload_image_manager.path: "%kernel.root_dir%/cache/%kernel.environment%/upload_image"
     app.tmp.root.path: "%kernel.root_dir%/../tmp"
     app.data.root.path: "%kernel.root_dir%/../data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
@@ -136,14 +135,14 @@ vich_uploader:
     mappings:
         event_image:
             uri_prefix:         /uploads/event
-            upload_destination: "%kernel.root_dir%/../uploads/event"
+            upload_destination: "%kernel.root_dir%/../data/uploads/event"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         gallery_image:
             uri_prefix:         /uploads/gallery
-            upload_destination: "%kernel.root_dir%/../uploads/gallery"
+            upload_destination: "%kernel.root_dir%/../data/uploads/gallery"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true

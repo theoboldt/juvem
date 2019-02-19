@@ -31,10 +31,10 @@
 !web/font/.gitkeep
 /web/js/*
 !web/js/.gitkeep
-/uploads/*
-!/uploads/.gitkeep
-/data/*
-!/data/.gitkeep
+/data/invoice/*
+!/data/invoice/.gitkeep
+/data/uploads/*
+!/data/uploads/.gitkeep
 /tmp/*
 !/tmp/.gitkeep
 .DS_Store
