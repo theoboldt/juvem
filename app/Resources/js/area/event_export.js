@@ -208,13 +208,11 @@ $(function () {
     $(".form-file-download").submit(function (event) {
         event.preventDefault();
         var form = $(this),
-            buttonSubmit =$(".form-file-download .btn-generator"),
-            button = form.find('button');
+            buttonSubmit =$(".form-file-download .btn-generator");
 
         if (buttonSubmit.hasClass('disabled')) {
             return;
         }
-        button.toggleClass('disabled', true);
         buttonSubmit.toggleClass('disabled', true);
 
         $.ajax({
@@ -236,7 +234,6 @@ $(function () {
 
             },
             complete: function (response, status) {
-                button.prop('disabled', false);
                 buttonSubmit.toggleClass('disabled', false);
 
                 if (status !== 'success') {

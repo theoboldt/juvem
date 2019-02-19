@@ -16,99 +16,119 @@
         method="post">
     <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}"/>
     <input type="hidden" name="eid" value="{{ event.eid }}"/>
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="btn-toolbar templates" role="toolbar" aria-label="Exportvorlagen">
-          <div class="btn-group" role="group">
-            <button class="btn btn-default" type="button" data-template="reset">{{ 'unchecked'|glyph }} Leer</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button class="btn btn-default btn-generator" type="button" data-template="participants">{{ 'user'|glyph }}
-              Standardliste
-            </button>
-            <button class="btn btn-default btn-generator" type="button" data-template="letter">{{ 'envelope'|glyph }}
-              Serienbrief
-            </button>
-            <button class="btn btn-default btn-generator" type="button"
-                    data-template="phone_list">{{ 'phone-alt'|glyph }} Telefonliste
-            </button>
-            <button class="btn btn-default btn-generator" type="button" data-template="food">{{ 'cutlery'|glyph }}
-              Ernährung
-            </button>
-          </div>
-          <div class="btn-group" role="group">
-            <a class="btn btn-default"
-               href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Zuschussantrag
-              (alt) {{ 'new-window'|glyph }}</a>
-            <a class="btn btn-default"
-               href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen {{ 'new-window'|glyph }}</a>
+
+    <div class="row column-configuration">
+      <div class="col-xs-12">
+         <ul class="nav nav-tabs" role="tablist">
+           {#<li role="presentation"><a href="#input" aria-controls="input" role="tab" data-toggle="tab">Eingabe (Daten-Auswahl)</a></li>#}
+           <li role="presentation" class="active"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Ausgabe (Spalten, Darstellung)</a></li>
+         </ul>
+      </div>
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane" id="input">
+
+        </div>
+        <div role="tabpanel" class="tab-pane active" id="output">
+          <div class="container">
+            <div class="row">
+              <div class="col-xs-12" style="margin: 15px 0;">
+                <div class="btn-toolbar templates" role="toolbar" aria-label="Exportvorlagen">
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-default" type="button" data-template="reset">{{ 'unchecked'|glyph }} Leer
+                    </button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-default btn-generator" type="button"
+                            data-template="participants">{{ 'user'|glyph }} Standardliste
+                    </button>
+                    <button class="btn btn-default btn-generator" type="button"
+                            data-template="letter">{{ 'envelope'|glyph }} Serienbrief
+                    </button>
+                    <button class="btn btn-default btn-generator" type="button"
+                            data-template="phone_list">{{ 'phone-alt'|glyph }} Telefonliste
+                    </button>
+                    <button class="btn btn-default btn-generator" type="button"
+                            data-template="food">{{ 'cutlery'|glyph }} Ernährung
+                    </button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <a class="btn btn-default"
+                       href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Zuschussantrag
+                      (alt) {{ 'new-window'|glyph }}</a>
+                    <a class="btn btn-default"
+                       href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen {{ 'new-window'|glyph }}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              {% for group in config %}
+                {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                  <div class="col-xs-12 col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">{{ group.info }}</h3>
+                      </div>
+                      <div class="panel-body">
+                        {% for option in group.children %}
+                          {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}]"
+                                       value="1"> {{ option.info }}
+                              </label>
+                            </div>
+                          {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                            <div class="checkbox">
+                              <label for="config[{{ group.name }}][{{ option.name }}]">{{ option.info }}:</label>
+                            </div>
+                            <div class="checkbox">
+                              <label>
+                                <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
+                                  {% for selectionKey, selectionOption in option.values %}
+                                    <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                  {% endfor %}
+                                </select>
+                              </label>
+                            </div>
+                          {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                            <div class="form-group">
+                              <label class="control-label">{{ option.info }}</label>
+                              {% for subOption in option.children %}
+                                {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                                  {% for selectionField in subOption.children %}
+                                    <div class="checkbox">
+                                      <label>
+                                        {% if selectionField is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                          <input type="checkbox"
+                                                 name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]"
+                                                 value="1"> {{ subOption.info }}
+                                        {% elseif selectionField is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                          <select class="form-control"
+                                                  name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]">
+                                            {% for selectionKey, selectionOption in selectionField.values %}
+                                              <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                            {% endfor %}
+                                          </select>
+                                        {% endif %}
+                                      </label>
+                                    </div>
+                                  {% endfor %}
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row column-configuration">
-      {% for group in config %}
-        {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
-          <div class="col-xs-12 col-sm-6">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">{{ group.info }}</h3>
-              </div>
-              <div class="panel-body">
-                {% for option in group.children %}
-                  {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}]"
-                               value="1"> {{ option.info }}
-                      </label>
-                    </div>
-                  {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
-                    <div class="checkbox">
-                      <label for="config[{{ group.name }}][{{ option.name }}]">{{ option.info }}:</label>
-                    </div>
-                    <div class="checkbox">
-                      <label>
-                        <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
-                          {% for selectionKey, selectionOption in option.values %}
-                            <option value="{{ selectionOption }}">{{ selectionKey }}</option>
-                          {% endfor %}
-                        </select>
-                      </label>
-                    </div>
-                  {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
-                    <div class="form-group">
-                      <label class="control-label">{{ option.info }}</label>
-                      {% for subOption in option.children %}
-                        {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
-                          {% for selectionField in subOption.children %}
-                            <div class="checkbox">
-                              <label>
-                                {% if selectionField is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
-                                  <input type="checkbox"
-                                         name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]"
-                                         value="1"> {{ subOption.info }}
-                                {% elseif selectionField is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
-                                  <select class="form-control"
-                                          name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]">
-                                    {% for selectionKey, selectionOption in selectionField.values %}
-                                      <option value="{{ selectionOption }}">{{ selectionKey }}</option>
-                                    {% endfor %}
-                                  </select>
-                                {% endif %}
-                              </label>
-                            </div>
-                          {% endfor %}
-                        {% endif %}
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
     </div>
     <div class="row">
       <div class="col-sm-12">
@@ -118,7 +138,7 @@
               <div class="form-group">
                 <label for="config[title]">Titel</label>
                 <input type="text" class="form-control" id="config[title]" name="config[title]"
-                       placeholder="Teilnehmer">
+                       placeholder="{{ event.title }} - Teilnehmer">
               </div>
               <button class="btn btn-primary export-generator-create btn-generator">Export erstellen
               </button>
