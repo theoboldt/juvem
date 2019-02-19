@@ -35,10 +35,6 @@ iframe[name=export-generator-frame] {
 
 }
 
-.row.column-configuration {
-  margin-top: 20px;
-}
-
 .acquisition-attribute.field-appbundle-form-participantdetectingtype > div,
 .acquisition-attribute.field-appbundle-form-bankaccounttype > div {
   @include make-row();
