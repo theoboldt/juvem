@@ -11,15 +11,13 @@
 namespace AppBundle\Command;
 
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DataExportCommand extends ContainerAwareCommand
+class DataExportCommand extends DataCommandBase
 {
     
     /**
@@ -28,13 +26,6 @@ class DataExportCommand extends ContainerAwareCommand
      * @var array|string[]
      */
     private $files = [];
-    
-    /**
-     * Path to output file
-     *
-     * @var string
-     */
-    private $path;
     
     /**
      * Full path to db image
@@ -120,7 +111,7 @@ class DataExportCommand extends ContainerAwareCommand
         
         if (`which mysqldump`) {
             $configurationPath = $container->getParameter('app.database.configuration.path');
-            self::createMysqlConfigurationFile($container);
+            $this->createMysqlConfigurationFile($container);
             shell_exec(
                 sprintf(
                     'mysqldump --defaults-file=%s --single-transaction --add-drop-table --host=%s --port=%d %s > %s',
@@ -159,50 +150,6 @@ class DataExportCommand extends ContainerAwareCommand
         $dataPath    = $this->getContainer()->getParameter('app.data.root.path');
         $this->files = array_merge($this->files, self::createFileListing($dataPath, '/data/'));
         return true;
-    }
-    
-    /**
-     * Create mysql configuration file
-     *
-     * @param ContainerInterface $container
-     */
-    public static function createMysqlConfigurationFile(ContainerInterface $container)
-    {
-        $configurationPath = $container->getParameter('app.database.configuration.path');
-        if (file_exists($configurationPath)) {
-            unlink($configurationPath);
-        }
-        file_put_contents(
-            $configurationPath, "[client]
-user=" . $container->getParameter('database_user') . "
-password=" . $container->getParameter('database_password')
-        );
-    }
-    
-    /**
-     * Create file listing of transmitted path (files starting with dot excluded), provide relative paths as values
-     *
-     * @param string $basePath      Path to scan
-     * @param string $subPathPrefix Prefix for relative paths
-     * @return array|string[]
-     */
-    public static function createFileListing(string $basePath, string $subPathPrefix = ''): array
-    {
-        $files = [];
-        
-        /** @var \SplFileInfo $item */
-        foreach (
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($basePath, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::SELF_FIRST
-            ) as $item
-        ) {
-            $path = $basePath . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
-            if (!$item->isDir() && strpos($item->getFilename(), '.') !== 0) {
-                $files[$path] = $subPathPrefix . $iterator->getSubPathName();
-            }
-        }
-        return $files;
     }
     
     /**

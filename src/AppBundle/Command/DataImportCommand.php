@@ -11,23 +11,14 @@
 namespace AppBundle\Command;
 
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class DataImportCommand extends ContainerAwareCommand
+class DataImportCommand extends DataCommandBase
 {
-    
-    /**
-     * Path to output file
-     *
-     * @var string
-     */
-    private $path;
-    
     /**
      * Contains list of files in data folder before import
      *
@@ -85,7 +76,7 @@ class DataImportCommand extends ContainerAwareCommand
         
         $output->write('Collecting current data files... ');
         $dataPath              = $this->getContainer()->getParameter('app.data.root.path');
-        $this->dataFilesBefore = array_values(DataExportCommand::createFileListing($dataPath, '/data/'));
+        $this->dataFilesBefore = array_values(self::createFileListing($dataPath, '/data/'));
         $output->writeln('done.');
         
         $output->write('Opening archive... ');
@@ -161,7 +152,7 @@ class DataImportCommand extends ContainerAwareCommand
         $archive->extractTo($this->getContainer()->getParameter('app.tmp.root.path'), 'database.sql', true);
         
         $configurationPath = $this->getContainer()->getParameter('app.database.configuration.path');
-        DataExportCommand::createMysqlConfigurationFile($this->getContainer());
+        $this->createMysqlConfigurationFile($this->getContainer());
         $output->writeln('done.');
         
         $output->write('Importing database... ');
