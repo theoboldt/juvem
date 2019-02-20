@@ -8,6 +8,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
+    app.database.configuration.path: "%kernel.root_dir%/config/.my.cnf"
     app.tmp.root.path: "%kernel.root_dir%/../tmp"
     app.data.root.path: "%kernel.root_dir%/../data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
