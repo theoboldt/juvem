@@ -13,7 +13,6 @@ namespace AppBundle\Command;
 
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class DataCommandBase extends ContainerAwareCommand
 {
@@ -24,6 +23,13 @@ abstract class DataCommandBase extends ContainerAwareCommand
      * @var string
      */
     protected $path;
+    
+    /**
+     * If true, indicates that app-disable flag should be removed after execution
+     *
+     * @var bool
+     */
+    private $removeServiceFlag = false;
     
     /**
      * Create mysql configuration file
@@ -67,6 +73,37 @@ password=" . $container->getParameter('database_password')
             }
         }
         return $files;
+    }
+    
+    /**
+     * Disable the service
+     */
+    protected function disableService()
+    {
+        $this->removeServiceFlag = !file_exists($this->getServiceDisablePath());
+        touch($this->getServiceDisablePath());
+    }
+    
+    /**
+     * Ennable the service if disabled by this command
+     */
+    protected function enableService()
+    {
+        if ($this->removeServiceFlag) {
+            if (file_exists($this->getServiceDisablePath())) {
+                unlink($this->getServiceDisablePath());
+            }
+        }
+    }
+    
+    /**
+     * Get path to disable marker
+     *
+     * @return string
+     */
+    private function getServiceDisablePath(): string
+    {
+        return $this->getContainer()->getParameter('kernel.root_dir') . '/../web/app-disabled';
     }
     
 }

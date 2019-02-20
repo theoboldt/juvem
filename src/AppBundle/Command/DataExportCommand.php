@@ -63,38 +63,46 @@ class DataExportCommand extends DataCommandBase
         }
         $this->cleanup();
         
-        $output->write('Creating database image... ');
-        if (!$this->addDatabaseDump($input, $output)) {
-            $output->writeln('aborted.');
-            return 1;
+        try {
+            $this->disableService();
+            $output->write('Creating database image... ');
+            if (!$this->addDatabaseDump($input, $output)) {
+                $output->writeln('aborted.');
+                $this->enableService();
+                return 1;
+            }
+            $output->writeln('done.');
+            
+            $output->write('Collecting data files to export... ');
+            $this->addDataFiles();
+            $output->writeln('done.');
+            
+            $output->writeln('Adding files to export...');
+            $archive = new \PharData($this->pathTar());
+            
+            $progress = new ProgressBar($output, count($this->files));
+            foreach ($this->files as $path => $subPathName) {
+                $archive->addFile($path, $subPathName);
+                $progress->advance();
+            }
+            $progress->finish();
+            $output->writeln(' done.');
+            
+            
+            $output->write('Compressing... ');
+            $archive->compress(\Phar::GZ);
+            $output->writeln('done.');
+            
+            if (file_exists($this->path)) {
+                unlink($this->path);
+            }
+            rename($this->pathTarGz(), $this->path);
+            $this->cleanup();
+        } catch (\Exception $e) {
+            $this->enableService();
+            throw $e;
         }
-        $output->writeln('done.');
-        
-        $output->write('Collecting data files to export... ');
-        $this->addDataFiles();
-        $output->writeln('done.');
-        
-        $output->writeln('Adding files to export...');
-        $archive = new \PharData($this->pathTar());
-        
-        $progress = new ProgressBar($output, count($this->files));
-        foreach ($this->files as $path => $subPathName) {
-            $archive->addFile($path, $subPathName);
-            $progress->advance();
-        }
-        $progress->finish();
-        $output->writeln(' done.');
-        
-        
-        $output->write('Compressing... ');
-        $archive->compress(\Phar::GZ);
-        $output->writeln('done.');
-        
-        if (file_exists($this->path)) {
-            unlink($this->path);
-        }
-        rename($this->pathTarGz(), $this->path);
-        $this->cleanup();
+        $this->enableService();
         
         return 0;
     }
