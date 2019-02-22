@@ -44,6 +44,7 @@
         {% endif %}
     </footer>
 </div>
+{% if not localhostInformationProvider.localhost %}
 <div id="cookiechoice" style="visibility: hidden;">
     <div class="container">
         <div class="col-xs-12">
@@ -58,6 +59,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% block javascriptMain %}
     {% if app.environment == 'dev' %}
         <script src="{{ asset('js/all.js', 'js') }}"></script>

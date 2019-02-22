@@ -85,6 +85,7 @@ twig:
         kernelRootDir: "%kernel.root_dir%"
         featureNewsletter: "%feature.newsletter%"
         themeColor: "%customization.theme_color%"
+        localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
 
 # Doctrine Configuration
 doctrine:
