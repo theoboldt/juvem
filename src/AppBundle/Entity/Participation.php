@@ -121,7 +121,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Invoice", cascade={"all"}, mappedBy="participation")
      */
     protected $invoices;
-    
+
     /**
      * Constructor
      *
@@ -200,7 +200,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     {
         return $this->pid;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -571,7 +571,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         $participation->setAddressZip($participationPrevious->getAddressZip());
         $participation->setEmail($participationPrevious->getEmail());
         $participation->setSalutation($participationPrevious->getSalutation());
-        
+
         if ($copyPrivateFields) {
             $participation->setAssignedUser($participationPrevious->getAssignedUser());
         }
@@ -595,7 +595,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
             $fillout = new Fillout();
             $fillout->setParticipation($participation);
             $fillout->setAttribute($attribute);
-            $fillout->setValue($filloutPrevious->getValue());
+            $fillout->setValue($filloutPrevious->getRawValue());
             $participation->addAcquisitionAttributeFillout($fillout);
         }
 
@@ -622,14 +622,14 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
                 $fillout = new Fillout();
                 $fillout->setParticipant($participant);
                 $fillout->setAttribute($attribute);
-                $fillout->setValue($filloutPrevious->getValue());
+                $fillout->setValue($filloutPrevious->getRawValue());
                 $participant->addAcquisitionAttributeFillout($fillout);
             }
 
             if ($copyPrivateFields) {
                 $participant->setStatus($participantPrevious->getStatus());
             }
-            
+
             $participation->addParticipant($participant);
         }
 
