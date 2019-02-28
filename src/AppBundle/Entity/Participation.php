@@ -554,10 +554,14 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      * Create a new participation for transmitted event based on data of given participation
      *
      * @param Participation $participationPrevious Data template
-     * @param Event         $event                 Event this new participation should belong to
+     * @param Event $event                         Event this new participation should belong to
+     * @param bool $copyPrivateFields              If set to true, also private acquisition data and user assignments
+     *                                             are copied
      * @return Participation
      */
-    public static function createFromTemplateForEvent(Participation $participationPrevious, Event $event)
+    public static function createFromTemplateForEvent(
+        Participation $participationPrevious, Event $event, $copyPrivateFields = false
+    )
     {
         $participation = new self($event, true, true);
         $participation->setNameLast($participationPrevious->getNameLast());
@@ -567,6 +571,10 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         $participation->setAddressZip($participationPrevious->getAddressZip());
         $participation->setEmail($participationPrevious->getEmail());
         $participation->setSalutation($participationPrevious->getSalutation());
+        
+        if ($copyPrivateFields) {
+            $participation->setAssignedUser($participationPrevious->getAssignedUser());
+        }
 
         /** @var PhoneNumber $numberPrevious */
         foreach ($participationPrevious->getPhoneNumbers() as $numberPrevious) {
@@ -578,7 +586,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         }
 
         /** @var Attribute $attribute */
-        foreach ($event->getAcquisitionAttributes(true, false, false, false, true) as $attribute) {
+        foreach ($event->getAcquisitionAttributes(true, false, false, $copyPrivateFields, true) as $attribute) {
             try {
                 $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
             } catch (\OutOfBoundsException $e) {
@@ -603,7 +611,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
             $participant->setInfoMedical($participantPrevious->getInfoMedical());
 
             /** @var Attribute $attribute */
-            foreach ($event->getAcquisitionAttributes(false, true, false, false, true) as $attribute) {
+            foreach ($event->getAcquisitionAttributes(false, true, false, $copyPrivateFields, true) as $attribute) {
                 try {
                     $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
                         $attribute->getBid(), false
@@ -617,6 +625,11 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
                 $fillout->setValue($filloutPrevious->getValue());
                 $participant->addAcquisitionAttributeFillout($fillout);
             }
+
+            if ($copyPrivateFields) {
+                $participant->setStatus($participantPrevious->getStatus());
+            }
+            
             $participation->addParticipant($participant);
         }
 

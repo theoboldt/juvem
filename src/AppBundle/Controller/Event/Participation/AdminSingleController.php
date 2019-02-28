@@ -18,6 +18,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Form\MoveParticipationType;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignRelatedParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
@@ -97,8 +98,31 @@ class AdminSingleController extends Controller
                 $participationChanged = true;
             }
         }
-        $em = $this->getDoctrine()->getManager();
+        
+        $formMoveParticipation = $this->createForm(
+            MoveParticipationType::class, null, [MoveParticipationType::PARTICIPATION_OPTION => $participation]
+        );
+        $formMoveParticipation->handleRequest($request);
+        if ($formMoveParticipation->isSubmitted() && $formMoveParticipation->isValid()) {
+            
+            $participationNew = $this->get('app.participation_manager')->moveParticipation(
+                $participation,
+                $formMoveParticipation->get('targetEvent')->getData(),
+                $formMoveParticipation->get('commentOldParticipation')->getData(),
+                $formMoveParticipation->get('commentNewParticipation')->getData(),
+                $this->getUser()
+            );
+            return $this->redirectToRoute(
+                'event_participation_detail',
+                [
+                    'eid' => $participationNew->getEvent()->getEid(),
+                    'pid' => $participationNew->getPid(),
+                ]
+            );
+        }
 
+        $em = $this->getDoctrine()->getManager();
+        
         $formRelated = $this->createForm(
             ParticipationAssignRelatedParticipantType::class, null, ['event' => $event]
         );
@@ -191,6 +215,7 @@ class AdminSingleController extends Controller
                 'formAction'          => $formAction->createView(),
                 'formAssignUser'      => $formUser->createView(),
                 'formRelated'         => $formRelated->createView(),
+                'formMoveParticipation' => $formMoveParticipation->createView(),
             ]
         );
     }

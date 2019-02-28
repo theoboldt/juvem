@@ -15,8 +15,10 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\Participation as ParticipationEntity;
+use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\User;
 use AppBundle\Form\EventMailType;
+use AppBundle\Form\MoveParticipationType;
 use AppBundle\Twig\MailGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -250,5 +252,67 @@ class ParticipationManager extends AbstractMailerAwareManager
             }
         );
     }
+    
+    /**
+     * Perform move @see Participation action, which is actually creating a duplicate and adding some comments
+     *
+     * @param Participation $oldParticipation The @see Participation to copy
+     * @param Event $newEvent                 Target event
+     * @param string $commentOldContent       Comment to add at old $oldParticipation
+     * @param string $commentNewContent       Comment to add at new participation
+     * @param User|null $responsibleUser      User performing this action
+     * @return Participation The new created entry
+     */
+    public function moveParticipation(
+        Participation $oldParticipation,
+        Event $newEvent,
+        string $commentOldContent,
+        string $commentNewContent,
+        User $responsibleUser = null
+    ): Participation
+    {
+        $newParticipation = Participation::createFromTemplateForEvent($oldParticipation, $newEvent, true);
 
+        return $this->em->transactional(
+            function (EntityManager $em) use ($oldParticipation, $newParticipation, $commentOldContent, $commentNewContent, $responsibleUser) {
+
+                /** @var Participant $participant */
+                foreach ($oldParticipation->getParticipants() as $participant) {
+                    $participant->setIsWithdrawn(true);
+                    $em->persist($participant);
+                }
+                
+                $em->persist($newParticipation);
+                $em->flush();
+                
+                $updateComment = function($comment) use ($oldParticipation, $newParticipation) {
+                    $comment = str_replace(MoveParticipationType::PARAM_EVENT_OLD, $oldParticipation->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveParticipationType::PARAM_EVENT_NEW, $newParticipation->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveParticipationType::PARAM_PID_OLD, $oldParticipation->getId(), $comment);
+                    $comment = str_replace(MoveParticipationType::PARAM_PID_NEW, $newParticipation->getId(), $comment);
+                    return $comment;
+                };
+                
+                $commentOldContent = $updateComment($commentOldContent);
+                $commentNewContent = $updateComment($commentNewContent);
+                
+                $commentOld = new ParticipationComment();
+                $commentOld->setParticipation($oldParticipation);
+                $commentOld->setCreatedAtNow();
+                $commentOld->setCreatedBy($responsibleUser);
+                $commentOld->setContent($commentOldContent);
+                $em->persist($commentOld);
+
+                $commentNew = new ParticipationComment();
+                $commentNew->setParticipation($newParticipation);
+                $commentNew->setCreatedAtNow();
+                $commentNew->setCreatedBy($responsibleUser);
+                $commentNew->setContent($commentNewContent);
+                $em->persist($commentNew);
+                $em->flush();
+                
+                return $newParticipation;
+            }
+        );
+    }
 }
