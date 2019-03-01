@@ -23,7 +23,7 @@ class DataImportCommand extends DataCommandBase
     /**
      * archive
      *
-     * @var \PharData
+     * @var \ZipArchive
      */
     private $archive;
     
@@ -63,18 +63,27 @@ class DataImportCommand extends DataCommandBase
     {
         $this->setName('app:data:import')
              ->setDescription('Import an exported package containing database and file system contents')
-             ->addArgument('path', InputArgument::REQUIRED, 'Location where imported package is located');
+             ->addArgument('path', InputArgument::REQUIRED, 'Location where imported package is located')
+             ->addArgument('password', InputArgument::OPTIONAL, 'Password which is used to encrypt archive');
     }
     
     /**
      * Open archive
      *
      * @param OutputInterface $output
+     * @param string|null $password Archive password
      */
-    private function openArchive(OutputInterface $output)
+    private function openArchive(OutputInterface $output, string $password = null)
     {
         $output->write('Opening archive... ');
-        $this->archive = new \PharData($this->path, \FilesystemIterator::KEY_AS_PATHNAME);
+        $this->archive = new \ZipArchive();
+        $this->archive->open($this->path, \ZipArchive::CHECKCONS);
+        if ($password) {
+            if (!$this->archive->setPassword($password)) {
+                $output->writeln('<error>Failed to open using password</error>');
+                throw new \RuntimeException();
+            }
+        }
         $output->writeln('done.');
     }
     
@@ -100,14 +109,16 @@ class DataImportCommand extends DataCommandBase
         $databaseImageFound = false;
         $output->write('Collecting expected files... ');
         /** @var \PharFileInfo $file */
-        foreach (new \RecursiveIteratorIterator($this->archive) as $path => $file) {
-            $relativePath = str_replace($this->getWrapper(), '', $path);
+        
+        for ($i = 0; $i < $this->archive->numFiles; $i++) {
+            $relativePath = $this->archive->getNameIndex($i);
             if (strpos($relativePath, '/data/') === 0) {
                 $this->dataFilesAfter[] = $relativePath;
             }
             if ($relativePath === '/database.sql') {
                 $databaseImageFound = true;
             }
+            #copy("zip://" . $path . "#" . $filename, "/your/new/destination/" . $fileinfo['basename']);
         }
         $output->writeln('done.');
         sort($this->dataFilesBefore);
@@ -143,6 +154,7 @@ class DataImportCommand extends DataCommandBase
     {
         $this->path = $input->getArgument('path');
         
+        
         if (!file_exists($this->path)) {
             $output->writeln(
                 '<error>Import file "' . $this->path . '" is not existing</error>'
@@ -175,7 +187,12 @@ class DataImportCommand extends DataCommandBase
             $this->dataFilesBefore = array_values(self::createFileListing($dataPath, '/data/'));
             $output->writeln('done.');
             
-            $this->openArchive($output);
+            //password handling
+            $password = $input->hasArgument('password') ? $input->getArgument('password') : null;
+            if (file_exists($password)) {
+                $password = file_get_contents($password);
+            }
+            $this->openArchive($output, $password);
             
             $result = $this->collectExpectedFiles($input, $output);
             if ($result !== true) {
@@ -195,23 +212,15 @@ class DataImportCommand extends DataCommandBase
             $progress->finish();
             $output->writeln(' done.');
             
-            $output->writeln('Extracting files from backup... ');
-            $progress = new ProgressBar($output, count($this->dataFilesAfter));
-            foreach ($this->dataFilesAfter as $path) {
-                $targetPath = dirname($dataPath . '/' . str_replace('/data/', '', $path));
-                if (!file_exists($targetPath)) {
-                    mkdir($targetPath, 0777, true);
-                }
-                $this->archive->extractTo($dataPath . '/../', substr($path, 1), true);
-                
-                $progress->advance();
-            }
-            $progress->finish();
-            $output->writeln(' done.');
-            
             $output->write('Preparing database import... ');
             $databaseImagePath = $this->getContainer()->getParameter('app.tmp.root.path') . '/database.sql';
-            $this->archive->extractTo($this->getContainer()->getParameter('app.tmp.root.path'), 'database.sql', true);
+            if (!$this->archive->extractTo($this->getContainer()->getParameter('app.tmp.root.path'), '/database.sql')) {
+                $output->writeln('<error>Failed to extract database file.</error>');
+                if ($password) {
+                    $output->writeln('The password set might be incorrect');
+                }
+                throw new \RuntimeException();
+            }
             
             $configurationPath = $this->getContainer()->getParameter('app.database.configuration.path');
             $this->createMysqlConfigurationFile();
@@ -231,6 +240,23 @@ class DataImportCommand extends DataCommandBase
             $output->writeln('done.');
             unlink($configurationPath);
             unlink($databaseImagePath);
+            
+            $output->writeln('Extracting files from backup... ');
+            $progress = new ProgressBar($output, count($this->dataFilesAfter));
+            foreach ($this->dataFilesAfter as $path) {
+                $targetPath = dirname($dataPath . '/' . str_replace('/data/', '', $path));
+                if (!file_exists($targetPath)) {
+                    mkdir($targetPath, 0777, true);
+                }
+                if (!$this->archive->extractTo($dataPath . '/../', $path)) {
+                    $output->writeln('<error>Failed to extract file "'.$path.'"</error>');
+                }
+                
+                $progress->advance();
+            }
+            $progress->finish();
+            $output->writeln(' done.');
+            
         } catch (\Exception $e) {
             $this->enableService();
             throw $e;

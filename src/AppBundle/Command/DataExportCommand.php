@@ -41,7 +41,8 @@ class DataExportCommand extends DataCommandBase
     {
         $this->setName('app:data:export')
              ->setDescription('Create export package containing database and file system contents')
-             ->addArgument('path', InputArgument::REQUIRED, 'Location where export package is saved to');
+             ->addArgument('path', InputArgument::REQUIRED, 'Location where export package is saved to')
+             ->addArgument('password', InputArgument::OPTIONAL, 'Password which is used to encrypt archive');
     }
     
     /**
@@ -51,10 +52,18 @@ class DataExportCommand extends DataCommandBase
     {
         $this->path = $input->getArgument('path');
         
+        //password handling
+        $password = $input->hasArgument('password') ? $input->getArgument('password') : null;
+        if (file_exists($password)) {
+            $password = file_get_contents($password);
+        }
+        
+        $archiveFlags = \ZipArchive::CREATE;
         $targetExists = file_exists($this->path);
         if ($input->isInteractive() && $targetExists) {
-            $helper   = $this->getHelper('question');
-            $question = new ConfirmationQuestion('Target file already exists, overwrite?', false);
+            $helper       = $this->getHelper('question');
+            $question     = new ConfirmationQuestion('Target file already exists, overwrite?', false);
+            $archiveFlags = \ZipArchive::OVERWRITE;
             
             if (!$helper->ask($input, $output, $question)) {
                 $output->writeln('Nothing exported');
@@ -77,26 +86,50 @@ class DataExportCommand extends DataCommandBase
             $this->addDataFiles();
             $output->writeln('done.');
             
-            $output->writeln('Adding files to export...');
-            $archive = new \PharData($this->pathTar());
+            if ($password) {
+                $output->writeln('Creating archive with password...');
+            } else {
+                $output->writeln('Creating archive without password...');
+            }
             
+            $archive = new \ZipArchive();
+            if (!$archive->open($this->path, $archiveFlags)) {
+                $output->writeln(
+                    '<error>Failed to open "' . $this->path . '", ' . $archive->getStatusString() . '</error>'
+                );
+                $archive->close();
+                $this->cleanup();
+                return 4;
+            }
+            if ($password) {
+                $archive->setPassword($password);
+            }
+            
+            $output->writeln('Adding files to export...');
             $progress = new ProgressBar($output, count($this->files));
             foreach ($this->files as $path => $subPathName) {
                 $archive->addFile($path, $subPathName);
+                if ($password) {
+                    if (!$archive->setEncryptionName($subPathName, \ZipArchive::EM_AES_256, $password)) {
+                        $output->writeln(
+                            '<error>Failed to encrypt "' . $subPathName . '", ' . $archive->getStatusString() .
+                            '</error>'
+                        );
+                        $archive->close();
+                        $this->cleanup();
+                        return 3;
+                    }
+                }
                 $progress->advance();
             }
             $progress->finish();
             $output->writeln(' done.');
             
             
-            $output->write('Compressing... ');
-            $archive->compress(\Phar::GZ);
+            $output->write('Closing... ');
+            $archive->close();
             $output->writeln('done.');
             
-            if (file_exists($this->path)) {
-                unlink($this->path);
-            }
-            rename($this->pathTarGz(), $this->path);
             $this->cleanup();
         } catch (\Exception $e) {
             $this->enableService();
@@ -119,7 +152,7 @@ class DataExportCommand extends DataCommandBase
         
         if (`which mysqldump`) {
             $configurationPath = $container->getParameter('app.database.configuration.path');
-            $this->createMysqlConfigurationFile($container);
+            $this->createMysqlConfigurationFile();
             shell_exec(
                 sprintf(
                     'mysqldump --defaults-file=%s --single-transaction --add-drop-table --host=%s --port=%d %s > %s',
@@ -161,36 +194,10 @@ class DataExportCommand extends DataCommandBase
     }
     
     /**
-     * Path to tarball
-     *
-     * @return string
-     */
-    private function pathTar(): string
-    {
-        return $this->path . '.tar';
-    }
-    
-    /**
-     * Path to archive
-     *
-     * @return  string
-     */
-    private function pathTarGz(): string
-    {
-        return $this->pathTar() . '.gz';
-    }
-    
-    /**
      * Cleanup temporary files
      */
     private function cleanup()
     {
-        if (file_exists($this->pathTar())) {
-            unlink($this->pathTar());
-        }
-        if (file_exists($this->pathTarGz())) {
-            unlink($this->pathTarGz());
-        }
         if (file_exists($this->dbImagePath)) {
             unlink($this->dbImagePath);
         }
