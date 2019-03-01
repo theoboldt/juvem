@@ -55,7 +55,7 @@ class DataExportCommand extends DataCommandBase
         //password handling
         $password = $input->hasArgument('password') ? $input->getArgument('password') : null;
         if (file_exists($password)) {
-            $password = file_get_contents($password);
+            $password = file_get_contents(trim($password));
         }
         
         $archiveFlags = \ZipArchive::CREATE;
