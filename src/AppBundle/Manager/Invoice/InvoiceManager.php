@@ -12,6 +12,7 @@ use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
 use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
+use AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -159,7 +160,9 @@ class InvoiceManager
             'addressCity',
             'email',
             'invoiceNumber',
-            'invoiceRowSum'
+            'invoiceRowSum',
+            'eventTitle',
+            'participantNamesCombined',
         ];
         $replace = [
             $participation->getSalutation(),
@@ -170,7 +173,9 @@ class InvoiceManager
             $participation->getAddressCity(),
             $participation->getEmail(),
             $invoice->getInvoiceNumber(),
-            number_format($sumCents / 100, 2, ',', '.') . ' €'
+            number_format($sumCents / 100, 2, ',', '.') . ' €',
+            $participation->getEvent()->getTitle(),
+            ParticipationsParticipantsNamesGrouped::combinedParticipantsNames($participation),
         ];
         $templateProcessor->setValue($search, $replace);
         
