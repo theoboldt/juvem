@@ -163,6 +163,7 @@ class InvoiceManager
             'invoiceRowSum',
             'eventTitle',
             'participantNamesCombined',
+            'invoiceRowSumEuroCentsRaw',
         ];
         $replace = [
             $participation->getSalutation(),
@@ -176,6 +177,7 @@ class InvoiceManager
             number_format($sumCents / 100, 2, ',', '.') . ' €',
             $participation->getEvent()->getTitle(),
             ParticipationsParticipantsNamesGrouped::combinedParticipantsNames($participation),
+            $sumCents,
         ];
         $templateProcessor->setValue($search, $replace);
         
