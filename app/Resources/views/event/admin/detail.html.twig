@@ -34,6 +34,7 @@
                                 {%- if is_granted('participants_edit', event) -%}
                                 <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
                                 {%- endif %}
+                                <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken</a></li>

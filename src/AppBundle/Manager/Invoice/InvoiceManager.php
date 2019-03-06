@@ -14,8 +14,10 @@ use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use AppBundle\Entity\Event;
 
 class InvoiceManager
 {
@@ -78,6 +80,17 @@ class InvoiceManager
         return $this->em->getRepository(Invoice::class);
     }
     
+    
+    /**
+     * Get list of all @see Invoice for transmitted Participation
+     *
+     * @param Event $event Related event
+     * @return array|Invoice[]
+     */
+    public function getInvoicesForEvent(Event $event): array
+    {
+        return $this->repository()->findByEvent($event);
+    }
     
     /**
      * Get list of all @see Invoice for transmitted Participation

@@ -11,6 +11,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\Event;
 
 /**
  * Repository for @see Invoice
@@ -38,5 +39,25 @@ class InvoiceRepository extends EntityRepository
     public function findByParticipation(Participation $participation): array
     {
         return $this->findBy(['participation' => $participation->getPid()]);
+    }
+    
+    /**
+     * Finds related to transmitted @see Event
+     *
+     * @param Event $event Related event
+     * @return array|Invoice[]
+     */
+    public function findByEvent(Event $event): array
+    {
+        $qb = $this->createQueryBuilder('i');
+        $qb->select('i', 'p')
+           ->innerJoin('i.participation', 'p')
+           ->innerJoin('p.event', 'e')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $event->getEid())
+           ->indexBy('i', 'i.id')
+           ->addOrderBy('p.nameLast')
+           ->addOrderBy('p.nameFirst');
+        return $qb->getQuery()->execute();
     }
 }

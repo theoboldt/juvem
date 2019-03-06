@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rechnungen verwalten ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Rechnungen', 'subtitle': 'verwalten'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Rechnungen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="bootstrap-table-toolbar" class="form-inline">
+          <div class="btn-group" role="group">
+            {{ 'is_latest'|tableFilterButtonTri(2, 'nur aktuellste', 'nur vergangene', 'aktuelle und vergangene', true) }}
+            {{ 'is_available'|tableFilterButtonTri(2, 'nur mit Rechnung', 'nur ohne Rechnung', 'mit und ohne Rechnung', true) }}
+          </div>
+        </div>
+        <table id="invoiceListTable" class="table table-striped table-remote-content" data-eid="{{ event.eid }}"
+               data-unique-id="index" data-id-field="index" data-toggle="table" data-cache="false" data-pagination="true"
+               data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+               data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+               data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
+               data-url="{{ path('event_invoices_list_data', {eid: event.eid}) }}"
+               data-sort-name="nameLast" data-sort-order="asc">
+          <thead>
+          <tr>
+            <th data-field="id" data-sortable="true" data-visible="false">#</th>
+            <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs<wbr>nummer</th>
+            <th data-field="name_first" data-sortable="true">Vorname</th>
+            <th data-field="name_last" data-sortable="true">Nachname</th>
+            <th data-field="created_at" data-sortable="true" data-sorter="germanDateTimeSorter"
+                title="Zeitpunkt der Erstellung der Rechnung">Erstellt
+            </th>
+            <th data-field="sum" data-visible="true" data-sortable="true" data-class="payment-cell"
+                data-sorter="germanNumberFormatSorter" title="Summe des Rechnungsbetrages">Betrag</th>
+          </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

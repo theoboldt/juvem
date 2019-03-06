@@ -119,6 +119,22 @@ class Invoice
         return $this;
     }
     
+
+    /**
+     * Get invoice sum
+     *
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|double|null
+     */
+    public function getSum($inEuro = false)
+    {
+        if ($this->sum === null) {
+            return null;
+        } else {
+            return $inEuro ? $this->sum / 100 : $this->sum;
+        }
+    }
+    
     /**
      * Get participation
      *
