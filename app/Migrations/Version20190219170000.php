@@ -21,7 +21,13 @@ final class Version20190219170000 extends AbstractMigration implements Container
     
     public function up(Schema $schema): void
     {
+        $oldExists = file_exists($this->getOldPath());
+        $this->skipIf(!$oldExists, 'Old data directory does not exist');
         $this->addSql('SELECT 1');
+        if (!$oldExists) {
+            return;
+        }
+        
         if ($this->copy($this->getOldPath(), $this->getNewPath())) {
             $this->remove($this->getOldPath());
         } else {
