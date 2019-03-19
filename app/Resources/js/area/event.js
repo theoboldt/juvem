@@ -386,4 +386,124 @@ $(function () {
             }
         });
     });
+
+
+    /**
+     * EVENT: Handle comment form call
+     */
+    var modalInvoiceCreate = $('#dialogModalInvoiceCreate'),
+        modalInvoiceCreateVisible = false;
+    modalInvoiceCreate.on('show.bs.modal', function (e) {
+        modalInvoiceCreateVisible = true;
+        createButton.toggleClass('disabled', false);
+        $('#dialogModalInvoiceForm').css('display', 'block');
+        $('#dialogModalInvoiceProgress').css('display', 'none');
+    });
+    modalInvoiceCreate.on('hide.bs.modal', function (e) {
+        modalInvoiceCreateVisible = false;
+    });
+    var createButton = $('#dialogModalInvoiceCreateButton');
+
+    createButton.on('click', function (e) {
+        e.preventDefault();
+        if (createButton.hasClass('disabled')) {
+            return;
+        }
+
+        var selectedValue,
+            selected = $("#dialogModalInvoiceCreate input[type='radio']:checked"),
+            eid = $("#dialogModalInvoiceCreate input[name='eid']").val(),
+            token = $("#dialogModalInvoiceCreate input[name='_token']").val(),
+            progressBarEl = $('#dialogModalInvoiceProgress .progress-bar');
+        progressBarEl.css('width', '0%');
+        progressBarEl.css('min-width', '0px');
+        progressBarEl.text('');
+        if (selected.length > 0) {
+            selectedValue = selected.val();
+        } else {
+            return;
+        }
+        createButton.toggleClass('disabled', true);
+
+        $('#dialogModalInvoiceForm').css('display', 'none');
+        $('#dialogModalInvoiceProgress').css('display', 'block');
+
+        var performInvoiceCreationRequest = function (pid, token, onComplete) {
+                if (!modalInvoiceCreateVisible) {
+                    return;
+                }
+                $.ajax({
+                    url: '/admin/event/participation/invoice/create',
+                    data: {
+                        _token: token,
+                        pid: pid
+                    },
+                    error: function () {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Rechnung für die Anmeldung #' + pid + ' konnte nicht erstellt werden',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        onComplete(response);
+                    }
+                });
+            },
+            finishInvoiceCreation = function (abort, participationsDone) {
+                createButton.toggleClass('disabled', false);
+                modalInvoiceCreate.modal('hide');
+                $(document).trigger('add-alerts', {
+                    message: 'Rechnungen für ' + parseInt(participationsDone) + ' Teilnehmer erstellt',
+                    priority: abort ? 'error' : 'success'
+                });
+            };
+
+        $.ajax({
+            url: '/admin/event/' + eid + '/invoice/participations',
+            data: {
+                _token: token,
+                filter: selectedValue
+            },
+            success: function (response) {
+                if (response && response.participations) {
+
+                    var participations = response.participations,
+                        participationsTotal = participations.length,
+                        participationsDone = participationsTotal - participations.length,
+                        updateProgressBar = function (participationsDone) {
+                        progressBarEl.css('width', (((participationsDone + 1) / (participationsTotal + 1)) * 100) + '%');
+                        progressBarEl.text(participationsDone + '/' + participationsTotal);
+                    };
+                    progressBarEl.css('min-width', '50px');
+                    updateProgressBar(participationsDone);
+
+                    if (participationsTotal === 1) {
+                        finishInvoiceCreation(false);
+                        return;
+                    }
+                    var participation = participations.pop(), //extract first element
+                        onComplete = function onComplete(rawResponse) {
+                            updateProgressBar(participationsTotal - participations.length);
+                            if (rawResponse.status !== 200 && !modalInvoiceCreateVisible) {
+                                finishInvoiceCreation(true, participationsDone);
+                            } else if (participations.length) {
+                                participation = participations.pop();
+                                performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
+                            } else {
+                                finishInvoiceCreation(false, participationsDone);
+                            }
+                        };
+                    performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
+                }
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Die qualifizierten Anmeldungen konnten nicht ermittelt werden',
+                    priority: 'error'
+                });
+                finishInvoiceCreation(true);
+            }
+        });
+    });
+
 });

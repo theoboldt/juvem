@@ -10,12 +10,79 @@
       <li class="active">Rechnungen</li>
     {% endblock %}
   {% endembed %}
+  <div class="modal fade" id="dialogModalInvoiceCreate" tabindex="-1" role="dialog"
+       aria-labelledby="dialogModalInvoiceCreateLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="dialogModalInvoiceCreateLabel">Rechnungen erstellen</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="hidden" id="_token" name="_token" value="{{ csrf_token('invoice-create' ~ event.eid ) }}"/>
+            <input type="hidden" name="eid" value="{{ event.eid }}"/>
+
+            <div id="dialogModalInvoiceForm">
+              <div class="form-group">
+                <div class="radio">
+                  <label for="invoice_filter_1">
+                    <input type="radio" id="invoice_filter_1" name="invoice_filter" value="">
+                    Für jede Anmeldung eine neue Rechnung erstellen</label>
+                </div>
+                <div class="radio">
+                  <label for="invoice_filter_2">
+                    <input type="radio" id="invoice_filter_2" name="invoice_filter" value="new">
+                    Nur für die Anmeldungen neue Rechnungen erstellen, bei denen noch keine Rechnung vorhanden
+                    ist</label>
+                </div>
+                <div class="radio">
+                  <label for="invoice_filter_3">
+                    <input type="radio" id="invoice_filter_3" name="invoice_filter" value="changed">
+                    Nur für die Anmeldungen neue Rechnungen erstellen, bei denen noch keine Rechnung vorhanden ist oder
+                    falls sich der fällige Betrag im Vergleich zur letzten (aktuellsten) Rechnung geändert hat</label>
+                </div>
+              </div>
+            </div>
+            <div id="dialogModalInvoiceProgress">
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <button type="button" class="btn btn-primary" id="dialogModalInvoiceCreateButton">Rechnungen erstellen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-md-12">
         <div id="bootstrap-table-toolbar" class="form-inline">
+          <div class="form-group">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate" >{{ 'credit-card'|glyph }} Rechnungen erstellen…</button>
+            <div class="btn-group" role="group">
+              <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn btn-default btn-download">{{ 'export'|glyph }} herunterladen</a>
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
+                  <span class="caret"></span>
+                  <span class="sr-only">Menü erweitern</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'export'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}" class="btn-download">{{ 'export'|glyph }} Alle Rechnungen herunterladen</a></li>
+              </ul>
+
+            </div>
+          </div>
           <div class="btn-group" role="group">
-            {{ 'is_latest'|tableFilterButtonTri(2, 'nur aktuellste', 'nur vergangene', 'aktuelle und vergangene', true) }}
+            {{ 'is_latest'|tableFilterButtonTri(2, 'nur aktuellste', 'nur ersetzte', 'aktuelle und ersetzte', true) }}
             {{ 'is_available'|tableFilterButtonTri(2, 'nur mit Rechnung', 'nur ohne Rechnung', 'mit und ohne Rechnung', true) }}
           </div>
         </div>
