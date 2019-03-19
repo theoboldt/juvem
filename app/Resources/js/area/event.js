@@ -452,6 +452,7 @@ $(function () {
             finishInvoiceCreation = function (abort, participationsDone) {
                 createButton.toggleClass('disabled', false);
                 modalInvoiceCreate.modal('hide');
+                $('#invoiceListTable').bootstrapTable('refresh');
                 $(document).trigger('add-alerts', {
                     message: 'Rechnungen für ' + parseInt(participationsDone) + ' Teilnehmer erstellt',
                     priority: abort ? 'error' : 'success'
