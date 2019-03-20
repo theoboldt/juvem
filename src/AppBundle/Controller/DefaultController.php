@@ -225,4 +225,36 @@ class DefaultController extends Controller
             ]
         );
     }
+    
+    /**
+     * @Route("/manifest.json")
+     */
+    public function manifestAction()
+    {
+        $webDir = $this->get('kernel')->getRootDir() . '/../web';
+        $icons  = [];
+        foreach (new \DirectoryIterator($webDir) as $fileinfo) {
+            $filename = $fileinfo->getFilename();
+            if (!$fileinfo->isDot() && preg_match('/android-chrome-(\d+)x(\d+).png/', $filename, $details)) {
+                $icons[] = [
+                    'src'  => '/' . $filename,
+                    'size' => $details[1] . 'x' . $details[1],
+                    'type' => 'image/png',
+                ];
+            }
+        }
+        
+        $manifest = [
+            'name'      => $this->get('app.twig_global_customization')->organizationName(),
+            'icons'     => $icons,
+            'start_url' => '/',
+            'display'   => 'browser',
+        ];
+        $color    = $this->getParameter('customization.theme_color');
+        if ($color) {
+            $manifest['theme_color'] = $color;
+        }
+        
+        return new JsonResponse($manifest);
+    }
 }
