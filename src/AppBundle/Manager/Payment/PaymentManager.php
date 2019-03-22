@@ -66,6 +66,7 @@ class PaymentManager
      */
     public static function convertEuroToCent($priceInEuro)
     {
+        $priceInEuro = trim($priceInEuro);
         if (empty($priceInEuro)) {
             return 0;
         } elseif (preg_match('/^(?:[^\d]*?)([-]{0,1})(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
