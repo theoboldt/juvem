@@ -20,13 +20,47 @@
     <div class="row column-configuration">
       <div class="col-xs-12">
          <ul class="nav nav-tabs" role="tablist">
-           {#<li role="presentation"><a href="#input" aria-controls="input" role="tab" data-toggle="tab">Eingabe (Daten-Auswahl)</a></li>#}
+           <li role="presentation"><a href="#input" aria-controls="input" role="tab" data-toggle="tab">Eingabe (Teilnehmer-Filter)</a></li>
            <li role="presentation" class="active"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Ausgabe (Spalten, Darstellung)</a></li>
          </ul>
       </div>
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane" id="input">
-
+          <div class="container">
+            <div class="row">
+              <div class="col-xs-12" style="margin: 15px 0;">
+                <div class="row">
+                  {% for categoryName, category in config %}
+                    {% if categoryName == 'filter' and category is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                      {% for groupName, group in category.children %}
+                        <div class="col-xs-12 col-sm-4">
+                          <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <h3 class="panel-title">{{ group.info }}</h3>
+                            </div>
+                            <div class="panel-body">
+                              {% if group is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                              {% elseif group is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                <div class="form-group">
+                                  {% for selectionKey, selectionOption in group.values %}
+                                    <div class="radio">
+                                      <label for="config[{{ categoryName }}]{{ groupName }}_{{ selectionOption }}">
+                                        <input type="radio" id="config[{{ categoryName }}]{{ groupName }}_{{ selectionOption }}" name="config[{{ categoryName }}][{{ groupName }}]" value="{{ selectionOption }}" {% if ((groupName == 'confirmed' or groupName == 'paid') and selectionOption == 'all') or selectionOption == 'notrejectedwithdrawn' %}checked="checked"{% endif %}>
+                                        {{ selectionKey }}</label>
+                                    </div>
+                                  {% endfor %}
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div role="tabpanel" class="tab-pane active" id="output">
           <div class="container">
@@ -63,8 +97,8 @@
             </div>
 
             <div class="row">
-              {% for group in config %}
-                {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+              {% for groupName, group in config %}
+                {% if groupName != 'filter' and group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                   <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
                       <div class="panel-heading">

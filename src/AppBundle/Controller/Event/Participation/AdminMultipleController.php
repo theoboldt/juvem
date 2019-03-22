@@ -574,7 +574,48 @@ class AdminMultipleController extends Controller
         }
 
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($event);
+        $paymentManager = $this->get('app.payment_manager');
+    
+        $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
+        $filterPaid              = $processedConfiguration['filter']['paid'];
+        $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
+        $participantList         = array_filter(
+            $participationRepository->participantsList(
+                $event,
+                null,
+                false,
+                ($filterRejectedWithdrawn !== Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN)
+            ),
+            function (Participant $participant) use ($paymentManager, $filterConfirmed, $filterPaid, $filterRejectedWithdrawn) {
+                $include = true;
+                switch ($filterConfirmed) {
+                    case Configuration::OPTION_CONFIRMED_CONFIRMED:
+                        $include = $include && $participant->isConfirmed();
+                        break;
+                    case Configuration::OPTION_CONFIRMED_UNCONFIRMED:
+                        $include = $include && !$participant->isConfirmed();
+                        break;
+                }
+                switch ($filterPaid) {
+                    case Configuration::OPTION_PAID_PAID:
+                        $include = $include && !$paymentManager->isParticipantRequiringPayment($participant);
+                        break;
+                    case Configuration::OPTION_PAID_NOTPAID:
+                        $include = $include && $paymentManager->isParticipantRequiringPayment($participant);
+                        break;
+                }
+                switch($filterRejectedWithdrawn) {
+                    case Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN:
+                        $include = $include && !($participant->isRejected() || $participant->isWithdrawn());
+                        break;
+                    case Configuration::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN:
+                        $include = $include && ($participant->isRejected() || $participant->isWithdrawn());
+                        break;
+                }
+                
+                return $include;
+            }
+        );
 
         $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),

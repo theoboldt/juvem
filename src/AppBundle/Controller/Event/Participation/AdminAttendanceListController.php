@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\Event;
@@ -167,6 +168,7 @@ class AdminAttendanceListController extends Controller
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
         $filloutRepository       = $this->getDoctrine()->getRepository(AttendanceListFillout::class);
         $filloutList             = [];
+        /** @var Fillout $fillout */
         foreach ($filloutRepository->findBy(['attendanceList' => $tid]) as $fillout) {
             $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
         }
