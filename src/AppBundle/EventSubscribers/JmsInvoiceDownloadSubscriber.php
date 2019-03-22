@@ -8,6 +8,8 @@ use AppBundle\Entity\Invoice;
 use AppBundle\Manager\Invoice\InvoiceManager;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
+use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Metadata\StaticPropertyMetadata;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class JmsInvoiceDownloadSubscriber implements EventSubscriberInterface
@@ -65,7 +67,11 @@ class JmsInvoiceDownloadSubscriber implements EventSubscriberInterface
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
-                $event->getVisitor()->addData('download_url', $url);
+    
+                $visitor = $event->getVisitor();
+                if ($visitor instanceof JsonSerializationVisitor) {
+                    $visitor->visitProperty(new StaticPropertyMetadata('', 'download_url', null), $url);
+                }
             }
         }
     }
