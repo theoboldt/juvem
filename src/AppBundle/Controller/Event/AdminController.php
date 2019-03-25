@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
@@ -245,11 +246,20 @@ class AdminController extends Controller
                 ),
             )
         );
-
+        
+        $groupCount = 0;
+        /** @var Attribute $attribute */
+        foreach ($event->getAcquisitionAttributes() as $attribute) {
+            if ($attribute->getFieldType() === \AppBundle\Form\GroupType::class) {
+                ++$groupCount;
+            }
+        }
+    
         return $this->render(
             'event/admin/detail.html.twig',
             [
                 'event'                     => $event,
+                'groupCount'                => $groupCount,
                 'pageDescription'           => $event->getDescriptionMeta(true),
                 'ageDistribution'           => $ageDistribution,
                 'ageDistributionMax'        => $ageDistributionMax,
