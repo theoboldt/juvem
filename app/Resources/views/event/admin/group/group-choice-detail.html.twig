@@ -37,13 +37,13 @@
                     </li>
                     {% endif %}
                     {% if attribute.useAtParticipant %}
-                    <li role="presentation">
+                    <li role="presentation"{% if not attribute.useAtEmployee %} class="active"{% endif %}>
                         <a href="#participants" aria-controls="participants" role="tab"
                            data-toggle="tab">{{ usage.participantsCount }} Teilnehmer</a>
                     </li>
                     {% endif %}
                     {% if attribute.useAtParticipation %}
-                    <li role="presentation">
+                    <li role="presentation"{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} class="active"{% endif %}>
                         <a href="#participations" aria-controls="participations" role="tab"
                            data-toggle="tab">{{ usage.participationCount }}
                             Anmeldung{% if usage.participationCount > 1 %}en{% endif %}</a>
