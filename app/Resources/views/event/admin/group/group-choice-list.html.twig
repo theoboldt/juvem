@@ -34,10 +34,20 @@
                         <th data-field="managementTitle" data-sortable="true">Titel (Intern)</th>
                         <th data-field="formTitle" data-sortable="true" data-visible="false">Titel (Formular)</th>
                         <th data-field="shortTitle" data-sortable="true">Kürzel</th>
-
+                        {% if attribute.useAtEmployee %}
+                            <th data-field="countEmployees" data-sortable="true" data-sorter="germanNumberFormatSorter" class="text-right" data-class="text-right">Mitarbeiter</th>
+                        {% endif %}
+                        {% if attribute.useAtParticipant %}
+                            <th data-field="countParticipants" data-sortable="true" data-sorter="germanNumberFormatSorter" class="text-right" data-class="text-right">Teilnehmer</th>
+                        {% endif %}
+                        {% if attribute.useAtParticipation %}
+                            <th data-field="countParticipations" data-sortable="true" data-sorter="germanNumberFormatSorter" class="text-right" data-class="text-right">Anmeldungen</th>
+                        {% endif %}
                     </thead>
                 </table>
             </div>
         </div>
     </div>
+
+
 {% endblock %}
