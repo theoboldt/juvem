@@ -83,7 +83,7 @@ class EmployeeController extends Controller
             ];
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseAtEmployee()) {
+                if (!$fillout->getAttribute()->getUseAtEmployee()) {
                     continue;
                 }
 
@@ -92,7 +92,7 @@ class EmployeeController extends Controller
             }
 
             foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseAtEmployee()) {
+                if (!$fillout->getAttribute()->getUseAtEmployee()) {
                     continue;
                 }
                 $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]

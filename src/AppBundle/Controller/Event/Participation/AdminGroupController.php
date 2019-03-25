@@ -83,7 +83,7 @@ class AdminGroupController extends Controller
                 if ($field->getUseAtParticipant()) {
                     $acquisition[] = 'Teilnehmer';
                 }
-                if ($field->isUseAtEmployee()) {
+                if ($field->getUseAtEmployee()) {
                     $acquisition[] = 'Mitarbeiter';
                 }
 
@@ -217,7 +217,7 @@ class AdminGroupController extends Controller
 
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if ($fillout->getAttribute()->isUseAtEmployee()) {
+                if ($fillout->getAttribute()->getUseAtEmployee()) {
                     $row['acq_field_' . $fillout->getAttribute()->getBid()]
                         = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
                 }
@@ -312,7 +312,7 @@ class AdminGroupController extends Controller
 
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
-                if ($fillout->getAttribute()->isUseAtEmployee()) {
+                if ($fillout->getAttribute()->getUseAtEmployee()) {
                     $row['acq_field_' . $fillout->getAttribute()->getBid()]
                         = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
                 }

@@ -540,21 +540,13 @@ class Attribute
         return (bool)$this->useAtParticipant;
     }
 
-    /**
-     * @deprecated
-     * @return bool
-     */
-    public function getUseAtEmployee(): bool
-    {
-        return $this->isUseAtEmployee();
-    }
 
     /**
      * Determine if this field is used for @see Employee
      *
      * @return bool
      */
-    public function isUseAtEmployee(): bool
+    public function getUseAtEmployee(): bool
     {
         return $this->useAtEmployee;
     }

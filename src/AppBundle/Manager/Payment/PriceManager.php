@@ -299,7 +299,7 @@ class PriceManager
                 if ($relatedAttribute->getBid() === $attribute->getBid()) {
                     //related attribute is also assigned to this event, so calculate
 
-                    if ($relatedAttribute->isUseAtEmployee() && $filloutEmployee) {
+                    if ($relatedAttribute->getUseAtEmployee() && $filloutEmployee) {
                         return $this->getValueFor($filloutEmployee, $relatedAttribute);
                     }
                     if ($relatedAttribute->getUseAtParticipant() && $filloutParticipant) {

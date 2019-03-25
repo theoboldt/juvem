@@ -824,7 +824,7 @@ class Event
                 (
                     ($includeParticipationFields && $acquisitionAttribute->getUseAtParticipation()) ||
                     ($includeParticipantFields && $acquisitionAttribute->getUseAtParticipant()) ||
-                    ($includeEmployeeFields && $acquisitionAttribute->isUseAtEmployee())
+                    ($includeEmployeeFields && $acquisitionAttribute->getUseAtEmployee())
                 )
                 && (
                     ($includePublic && $acquisitionAttribute->isPublic()) ||
