@@ -20,6 +20,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\GroupType;
+use AppBundle\Group\AttributeChoiceOptionUsageDistribution;
 use AppBundle\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
@@ -134,21 +135,28 @@ class AdminGroupController extends Controller
      */
     public function groupOverviewDataAction(Event $event, Attribute $attribute)
     {
-        $bid        = $attribute->getBid();
-        $repository = $this->getDoctrine()->getRepository(Attribute::class);
-        $attribute  = $repository->findWithOptions($bid);
-        $choices    = [];
-
+        $bid          = $attribute->getBid();
+        $repository   = $this->getDoctrine()->getRepository(Attribute::class);
+        $attribute    = $repository->findWithOptions($bid);
+        $choices      = [];
+        $distribution = new AttributeChoiceOptionUsageDistribution(
+            $this->get('doctrine.orm.entity_manager'), $event, $attribute
+        );
+    
         /** @var AttributeChoiceOption $choiceOption */
         foreach ($attribute->getChoiceOptions() as $choiceOption) {
             $choices[] = [
-                'bid'             => $bid,
-                'id'              => $choiceOption->getId(),
-                'managementTitle' => $choiceOption->getManagementTitle(true),
-                'formTitle'       => $choiceOption->getFormTitle(),
-                'shortTitle'      => $choiceOption->getShortTitle(false),
+                'bid'                 => $bid,
+                'id'                  => $choiceOption->getId(),
+                'managementTitle'     => $choiceOption->getManagementTitle(true),
+                'formTitle'           => $choiceOption->getFormTitle(),
+                'shortTitle'          => $choiceOption->getShortTitle(false),
+                'countEmployees'      => $distribution->getOptionDistribution($choiceOption)->getEmployeeCount(),
+                'countParticipants'   => $distribution->getOptionDistribution($choiceOption)->getParticipantsCount(),
+                'countParticipations' => $distribution->getOptionDistribution($choiceOption)->getParticipationCount(),
+        
             ];
-
+        
         }
 
         return new JsonResponse($choices);

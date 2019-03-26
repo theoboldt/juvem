@@ -57,12 +57,12 @@
                         </div>
                     {% endif %}
                     {% if attribute.useAtParticipant %}
-                        <div role="tabpanel" class="tab-pane" id="participants">
+                        <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee %} active{% endif %}" id="participants">
                             {% embed 'event/admin/group/embed-group-table-participants.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
                         </div>
                     {% endif %}
                     {% if attribute.useAtParticipation %}
-                        <div role="tabpanel" class="tab-pane" id="participations">
+                        <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} active{% endif %}" id="participations">
                             {% embed 'event/admin/group/embed-group-table-participations.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
                         </div>
                     {% endif %}

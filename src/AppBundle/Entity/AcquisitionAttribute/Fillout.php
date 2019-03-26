@@ -266,22 +266,9 @@ class Fillout
      */
     public function getValue()
     {
-        switch ($this->attribute->getFieldType()) {
-            case GroupType::class:
-                return new GroupFilloutValue($this->attribute, $this->value);
-            case FormChoiceType::class:
-                return new ChoiceFilloutValue($this->attribute, $this->value);
-            case BankAccountType::class:
-                return new BankAccountFilloutValue($this->attribute, $this->value);
-            case DateType::class:
-                return new DateFilloutValue($this->attribute, $this->value);
-            case ParticipantDetectingType::class:
-                return new ParticipantFilloutValue($this->attribute, $this->value);
-            default:
-                return new FilloutValue($this->attribute, $this->value);
-        }
+        return self::convertRawValueForField($this->attribute, $this->value);
     }
-
+    
     /**
      * Get list of @see AttributeChoiceOption which are selected
      *
@@ -331,6 +318,31 @@ class Fillout
 
         } else {
             return $value->getTextualValue();
+        }
+    }
+    
+    /**
+     * Convert transmitted raw value for transmitted @see Attribute to @see FilloutValue
+     *
+     * @param Attribute $attribute  Related attribute
+     * @param string|null $rawValue Raw value from db
+     * @return FilloutValue
+     */
+    public static function convertRawValueForField(Attribute $attribute, $rawValue): FilloutValue
+    {
+        switch ($attribute->getFieldType()) {
+            case GroupType::class:
+                return new GroupFilloutValue($attribute, $rawValue);
+            case FormChoiceType::class:
+                return new ChoiceFilloutValue($attribute, $rawValue);
+            case BankAccountType::class:
+                return new BankAccountFilloutValue($attribute, $rawValue);
+            case DateType::class:
+                return new DateFilloutValue($attribute, $rawValue);
+            case ParticipantDetectingType::class:
+                return new ParticipantFilloutValue($attribute, $rawValue);
+            default:
+                return new FilloutValue($attribute, $rawValue);
         }
     }
 }

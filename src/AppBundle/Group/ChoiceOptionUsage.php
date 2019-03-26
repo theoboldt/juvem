@@ -21,7 +21,7 @@ use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Expr\Join;
 
-class ChoiceOptionUsage
+class ChoiceOptionUsage implements ChoiceOptionUsageInterface
 {
 
     /**
