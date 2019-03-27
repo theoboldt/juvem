@@ -1,7 +1,7 @@
 #JUVEM
 Juvem is a symfony based web application to manage events and newsletters. 
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.1-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
 
 ## Features
 
@@ -31,12 +31,12 @@ People can register themselves in order to receive the newsletter. For each news
 Juvem is a symfony 3.2 based application.
 
 ### Production
-* PHP 7 and above
+* PHP 7.2 and above
 * MySQL InnoDB database
 * ~ 175 MB disk space (including dependencies)
 
 ### Development/Deployment
-* PHP 7 and above
+* PHP 7.2 and above
 * MySQL InnoDB database
 * Npm/Grunt for css/js deployment, having `grunt-cli` installed globally 
 * Having sass gem installed
