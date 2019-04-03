@@ -10,6 +10,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
@@ -87,12 +88,13 @@ class GroupFieldAssignParticipantsType extends AbstractType
                             $qbe = $this->em->createQueryBuilder();
                             $qbe->select(['i.nameFirst', 'i.nameLast'])
                                 ->from($entityType, 'i')
+                                ->andWhere('i.deletedAt IS NULL')
                                 ->addOrderBy('i.nameLast')
                                 ->addOrderBy('i.nameFirst');
                             switch ($entityType) {
                                 case Participant::class:
                                     $qbe->indexBy('i', 'i.aid');
-                                    $qbe->addSelect(['i.aid', 'i.birthday']);
+                                    $qbe->addSelect(['i.aid', 'i.birthday', 'i.status']);
                                     $qbe->innerJoin('i.participation', 'p', Join::WITH);
                                     $qbe->andWhere($qbe->expr()->eq('p.event', ':eid'));
                                     $qbf->andWhere($qbf->expr()->in('f.participant', ':ids'));
@@ -161,6 +163,14 @@ class GroupFieldAssignParticipantsType extends AbstractType
 
                             $choiceOptions = [];
                             foreach ($entities as $id => $entity) {
+                                if (isset($entity['status'])) {
+                                    $status = new ParticipantStatus($entity['status']);
+                                    if ($status->has(ParticipantStatus::TYPE_STATUS_REJECTED)
+                                        || $status->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN)) {
+                                        continue;
+                                    }
+                                }
+
                                 $title = HumanTrait::generateFullname($entity['nameLast'], $entity['nameFirst']);
                                 if (isset($entity['birthday'])) {
                                     $title .= ' (' . EventRepository::yearsOfLife(
