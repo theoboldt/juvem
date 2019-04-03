@@ -150,7 +150,7 @@ input.input-formula, textarea.input-formula {
     }
 
     tr.x td:first-child, td.y {
-        lighten($brandPrimaryDark, 60%) !important;
+        background: lighten($brandPrimaryDark, 60%) !important;
     }
 
     tr.x.day td {
