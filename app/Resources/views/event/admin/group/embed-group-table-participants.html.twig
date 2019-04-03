@@ -1,10 +1,9 @@
 <div class="col-md-12">
-    <div id="bootstrap-table-toolbar" class="form-inline">
-    </div>
+    <div id="bootstrap-table-toolbar-participants" class="form-inline">{% block toolbar %}{% endblock %}</div>
     <table id="groupParticipantsTable" class="table table-striped table-remote-content"
            data-id-field="did" data-toggle="table" data-cache="false" data-pagination="true"
            data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-           data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+           data-search-align="right" data-toolbar="#bootstrap-table-toolbar-participants" data-striped="true"
            data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
            data-url="{{ path('admin_event_group_participants_data', {'eid': event.eid, 'bid': choiceOption.attribute.bid, 'cid': choiceOption.id}) }}"
            data-sort-name="nameLast" data-sort-order="asc">

@@ -231,3 +231,8 @@ services:
     AppBundle\LocalhostInformationProvider:
         arguments:
             - "@request_stack"
+
+    AppBundle\Form\GroupFieldAssignParticipantsType:
+      autowire: true
+      tags:
+        - form.type

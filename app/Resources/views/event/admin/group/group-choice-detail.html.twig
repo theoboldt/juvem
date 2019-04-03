@@ -3,72 +3,188 @@
 {% block title %}{{ choiceOption.getManagementTitle(true) }} - {{ choiceOption.attribute.managementTitle }} ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': choiceOption.getManagementTitle(true), 'subtitle': choiceOption.attribute.managementTitle} %}
-        {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Einteilungsfelder</a></li>
-            <li>
-                <a href="{{ path('admin_event_group_overview', {'eid': event.eid, 'bid': choiceOption.attribute.bid }) }}">{{ choiceOption.attribute.managementTitle }}</a>
-            </li>
-            <li class="active">{{ choiceOption.getManagementTitle(true) }}</li>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        {% if not usage.hasEmployees and not usage.hasParticipants and not usage.hasParticipations %}
-            <div class="row">
-                <div class="col-xs-12" style="margin-top: 15px;">
-                    <div class="alert alert-info" role="alert">Niemand ist für
-                        <i>{{ choiceOption.attribute.managementTitle }}</i> in
-                        <i>{{ choiceOption.getManagementTitle(true) }}</i> eingeteilt.
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="row">
-            <div class="col-xs-12">
-            <div>
-                <ul class="nav nav-tabs" role="tablist">
-                    {% if attribute.useAtEmployee %}
-                    <li role="presentation" class="active">
-                        <a href="#employees" aria-controls="employees" role="tab"
-                           data-toggle="tab">{{ usage.employeeCount }} Mitarbeiter</a>
-                    </li>
-                    {% endif %}
-                    {% if attribute.useAtParticipant %}
-                    <li role="presentation"{% if not attribute.useAtEmployee %} class="active"{% endif %}>
-                        <a href="#participants" aria-controls="participants" role="tab"
-                           data-toggle="tab">{{ usage.participantsCount }} Teilnehmer</a>
-                    </li>
-                    {% endif %}
-                    {% if attribute.useAtParticipation %}
-                    <li role="presentation"{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} class="active"{% endif %}>
-                        <a href="#participations" aria-controls="participations" role="tab"
-                           data-toggle="tab">{{ usage.participationCount }}
-                            Anmeldung{% if usage.participationCount > 1 %}en{% endif %}</a>
-                    </li>
-                    {% endif %}
-                </ul>
-                <div class="tab-content">
-                    {% if attribute.useAtEmployee %}
-                        <div role="tabpanel" class="tab-pane active" id="employees">
-                            {% embed 'event/admin/group/embed-group-table-employees.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
-                        </div>
-                    {% endif %}
-                    {% if attribute.useAtParticipant %}
-                        <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee %} active{% endif %}" id="participants">
-                            {% embed 'event/admin/group/embed-group-table-participants.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
-                        </div>
-                    {% endif %}
-                    {% if attribute.useAtParticipation %}
-                        <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} active{% endif %}" id="participations">
-                            {% embed 'event/admin/group/embed-group-table-participations.html.twig' with {'event': event, 'choiceOption': choiceOption} %}{% endembed %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            </div>
+  {% embed 'common/header/base-page-header.html.twig' with {'title': choiceOption.getManagementTitle(true), 'subtitle': choiceOption.attribute.managementTitle} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">Einteilungsfelder</a></li>
+      <li>
+        <a href="{{ path('admin_event_group_overview', {'eid': event.eid, 'bid': choiceOption.attribute.bid }) }}">{{ choiceOption.attribute.managementTitle }}</a>
+      </li>
+      <li class="active">{{ choiceOption.getManagementTitle(true) }}</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="modal fade modal-add-entities" id="dialogAddParticipant" tabindex="-1" role="dialog"
+       aria-labelledby="dialogAddParticipantLabel">
+    <div class="modal-dialog" role="document">
+      {{ form_start(formParticipants) }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="dialogAddParticipant">Teilnehmer hinzufügen ({{ event.title }})</h4>
         </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              {{ form_errors(formParticipants) }}
+              {{ form_widget(formParticipants.assign) }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
+        </div>
+      </div>
+      {{ form_end(formParticipants) }}
     </div>
+  </div>
+  <div class="modal fade modal-add-entities" id="dialogAddParticipation" tabindex="-1" role="dialog"
+       aria-labelledby="dialogAddParticipationLabel">
+    <div class="modal-dialog" role="document">
+      {{ form_start(formParticipations) }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="dialogAddParticipant">Anmeldungen hinzufügen ({{ event.title }})</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              {{ form_errors(formParticipations) }}
+              {{ form_widget(formParticipations.assign) }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
+        </div>
+      </div>
+      {{ form_end(formParticipations) }}
+    </div>
+  </div>
+  <div class="modal fade modal-add-entities" id="dialogAddEmployee" tabindex="-1" role="dialog"
+       aria-labelledby="dialogAddEmployeeLabel">
+    <div class="modal-dialog" role="document">
+      {{ form_start(formEmployees) }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="dialogAddParticipant">Mitarbeiter hinzufügen ({{ event.title }})</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              {{ form_errors(formEmployees) }}
+              {{ form_widget(formEmployees.assign) }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
+        </div>
+      </div>
+      {{ form_end(formEmployees) }}
+    </div>
+  </div>
+  <div class="container">
+    {% if not usage.hasEmployees and not usage.hasParticipants and not usage.hasParticipations %}
+      <div class="row">
+        <div class="col-xs-12" style="margin-top: 15px;">
+          <div class="alert alert-info" role="alert">Niemand ist für
+            <i>{{ choiceOption.attribute.managementTitle }}</i> in
+            <i>{{ choiceOption.getManagementTitle(true) }}</i> eingeteilt.
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div>
+          <ul class="nav nav-tabs" role="tablist">
+            {% if attribute.useAtEmployee %}
+              <li role="presentation" class="active">
+                <a href="#employees" aria-controls="employees" role="tab"
+                   data-toggle="tab">{{ usage.employeeCount }} Mitarbeiter</a>
+              </li>
+            {% endif %}
+            {% if attribute.useAtParticipant %}
+              <li role="presentation"{% if not attribute.useAtEmployee %} class="active"{% endif %}>
+                <a href="#participants" aria-controls="participants" role="tab"
+                   data-toggle="tab">{{ usage.participantsCount }} Teilnehmer</a>
+              </li>
+            {% endif %}
+            {% if attribute.useAtParticipation %}
+              <li role="presentation"{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} class="active"{% endif %}>
+                <a href="#participations" aria-controls="participations" role="tab"
+                   data-toggle="tab">{{ usage.participationCount }}
+                  Anmeldung{% if usage.participationCount > 1 %}en{% endif %}</a>
+              </li>
+            {% endif %}
+          </ul>
+          <div class="tab-content">
+            {% if attribute.useAtEmployee %}
+              <div role="tabpanel" class="tab-pane active" id="employees">
+                {% embed 'event/admin/group/embed-group-table-employees.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
+                  {% block toolbar %}
+                    {% if is_granted('employees_edit', event) -%}
+                      <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
+                              data-target="#dialogAddEmployee">{{ 'plus'|glyph }} Hinzufügen
+                      </button>
+                    {% endif %}
+                  {% endblock %}
+                {% endembed %}
+              </div>
+            {% endif %}
+            {% if attribute.useAtParticipant %}
+              <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee %} active{% endif %}"
+                   id="participants">
+                {% embed 'event/admin/group/embed-group-table-participants.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
+                  {% block toolbar %}
+                    {% if is_granted('participants_edit', event) -%}
+                      <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
+                              data-target="#dialogAddParticipant">{{ 'plus'|glyph }} Hinzufügen
+                      </button>
+                    {% endif %}
+                  {% endblock %}
+                {% endembed %}
+              </div>
+            {% endif %}
+            {% if attribute.useAtParticipation %}
+              <div role="tabpanel"
+                   class="tab-pane{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} active{% endif %}"
+                   id="participations">
+                {% embed 'event/admin/group/embed-group-table-participations.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
+                  {% block toolbar %}
+                    {% if is_granted('participants_edit', event) -%}
+                      <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
+                              data-target="#dialogAddParticipation">{{ 'plus'|glyph }} Hinzufügen
+                      </button>
+                    {% endif %}
+                  {% endblock %}
+                {% endembed %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block javascriptCustom %}
+  {% cspscript %}
+    <script type='text/javascript'>
+        jQuery(document).ready(function () {
+            $('.modal-add-entities').on('show.bs.modal', function () {
+                $('.modal-add-entities select').css('height', $(window).height() * 0.6);
+            });
+        });
+    </script>
+  {% endcspscript %}
 {% endblock %}

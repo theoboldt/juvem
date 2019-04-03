@@ -14,9 +14,12 @@ use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\BankAccountType;
 use AppBundle\Form\GroupType;
 use AppBundle\Form\ParticipantDetectingType;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
@@ -149,7 +152,7 @@ class Attribute
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"},
      *                                                                                            mappedBy="attribute")
      * @Assert\Valid()
-     * @var \Doctrine\Common\Collections\Collection|array|AttributeChoiceOption[]
+     * @var Collection|array|AttributeChoiceOption[]
      */
     protected $choiceOptions;
 
@@ -298,13 +301,13 @@ class Attribute
      */
     public function setCreatedAtNow()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     /**
      * Set createdAt
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return self
      */
@@ -360,7 +363,7 @@ class Attribute
                     return self::LABEL_FIELD_DATE;
                 case FormDateTimeType::class:
                     return self::LABEL_FIELD_DATE_TIME;
-                case \AppBundle\Form\BankAccountType::class;
+                case BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
                 case GroupType::class;
                     return self::LABEL_FIELD_GROUP;
@@ -644,7 +647,7 @@ class Attribute
     /**
      * Get events
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getEvents()
     {
@@ -678,7 +681,7 @@ class Attribute
     /**
      * Get fillouts
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getFillouts()
     {
@@ -710,18 +713,35 @@ class Attribute
     public function removeChoiceOption(AttributeChoiceOption $choiceOption)
     {
         if (!$choiceOption->getDeletedAt()) {
-            $choiceOption->setDeletedAt(new \DateTime());
+            $choiceOption->setDeletedAt(new DateTime());
         }
     }
 
     /**
      * Get choiceOptions
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getChoiceOptions()
     {
         return $this->choiceOptions;
+    }
+
+    /**
+     * Get single @param int $id Id of option
+     *
+     * @return AttributeChoiceOption|null
+     * @see AttributeChoiceOption
+     *
+     */
+    public function getChoiceOption(int $id): ?AttributeChoiceOption
+    {
+        foreach ($this->choiceOptions as $choiceOption) {
+            if ($choiceOption->getId() === $id) {
+                return $choiceOption;
+            }
+        }
+        return null;
     }
 
     /**

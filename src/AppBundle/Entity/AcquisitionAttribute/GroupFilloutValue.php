@@ -12,8 +12,20 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
+use InvalidArgumentException;
+
 class GroupFilloutValue extends ChoiceFilloutValue
 {
+
+    /**
+     * Create new @see GroupFilloutValue having transmitted value selected
+     *
+     * @param AttributeChoiceOption $choiceOption
+     * @return GroupFilloutValue
+     */
+    public static function createForChoiceOption(AttributeChoiceOption $choiceOption) {
+        return new self($choiceOption->getAttribute(), (string)$choiceOption->getId());
+    }
 
     /**
      * Get group id
@@ -27,7 +39,7 @@ class GroupFilloutValue extends ChoiceFilloutValue
         }
         $choices = $this->getSelectedChoices();
         if (count($choices) > 1) {
-            throw new \InvalidArgumentException('Group fillout must contain only a single selected choice');
+            throw new InvalidArgumentException('Group fillout must contain only a single selected choice');
         } elseif (!count($choices)) {
             return null;
         }
