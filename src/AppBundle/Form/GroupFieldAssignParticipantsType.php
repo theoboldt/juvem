@@ -86,7 +86,9 @@ class GroupFieldAssignParticipantsType extends AbstractType
 
                             $qbe = $this->em->createQueryBuilder();
                             $qbe->select(['i.nameFirst', 'i.nameLast'])
-                                ->from($entityType, 'i');
+                                ->from($entityType, 'i')
+                                ->addOrderBy('i.nameLast')
+                                ->addOrderBy('i.nameFirst');
                             switch ($entityType) {
                                 case Participant::class:
                                     $qbe->indexBy('i', 'i.aid');
