@@ -25,7 +25,56 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GalleryPublicController extends BaseGalleryController
 {
-
+    /**
+     * Convert month number to german month name
+     *
+     * @param int $month Month number
+     * @return string Name
+     */
+    public static function convertMonthNumber(int $month): string
+    {
+        switch ($month) {
+            case 1:
+                return 'Januar';
+                break;
+            case 2:
+                return 'Februar';
+                break;
+            case 3:
+                return 'März';
+                break;
+            case 4:
+                return 'April';
+                break;
+            case 5:
+                return 'Mai';
+                break;
+            case 6:
+                return 'Juni';
+                break;
+            case 7:
+                return 'Juli';
+                break;
+            case 8:
+                return 'August';
+                break;
+            case 9:
+                return 'September';
+                break;
+            case 10:
+                return 'Oktober';
+                break;
+            case 11:
+                return 'November';
+                break;
+            case 12:
+                return 'Dezember';
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown month number transmitted');
+        }
+    }
+    
     /**
      * Page for list of events
      *
@@ -51,47 +100,8 @@ class GalleryPublicController extends BaseGalleryController
             }
             $recordedDate = $image->getRecordedAt();
             if ($recordedDate instanceof \DateTimeInterface && $recordedDate->format('Y') > 2000) {
-                switch((int)$recordedDate->format('m')) {
-                    case 1:
-                        $month = 'Januar';
-                        break;
-                    case 2:
-                        $month = 'Februar';
-                        break;
-                    case 3:
-                        $month = 'März';
-                        break;
-                    case 4:
-                        $month = 'April';
-                        break;
-                    case 5:
-                        $month = 'Mai';
-                        break;
-                    case 6:
-                        $month = 'Juni';
-                        break;
-                    case 7:
-                        $month = 'Juli';
-                        break;
-                    case 8:
-                        $month = 'August';
-                        break;
-                    case 9:
-                        $month = 'September';
-                        break;
-                    case 10:
-                        $month = 'Oktober';
-                        break;
-                    case 11:
-                        $month = 'November';
-                        break;
-                    case 12:
-                        $month = 'Dezember';
-                        break;
-                    default:
-                        throw new \InvalidArgumentException();
-                }
-                $key = $recordedDate->format('d').'. '.$month.' '.$recordedDate->format('Y');
+                $month = self::convertMonthNumber((int)$recordedDate->format('m'));
+                $key   = $recordedDate->format('d') . '. ' . $month . ' ' . $recordedDate->format('Y');
             } else {
                 $key = '';
             }

@@ -12,6 +12,23 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
+        <div class="modal fade" id="modalHistory" tabindex="-1" role="dialog" aria-labelledby="modalHistoryLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalHistoryLabel">Anmeldungsverlauf</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table></table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
@@ -206,7 +223,18 @@
                         {% endif %}
                     </div>
                     <div class="col-xs-12 flat-progress-bar">
-                        <h4>Verteilung</h4>
+                        <div style="clear:both;">
+                            <div style="float:left;"><h4>Verteilung</h4></div>
+                            <div style="float:right;">
+                                {% if ageDistribution|length %}
+                                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal"
+                                            data-target="#modalHistory">
+                                        {{ 'signal'|glyph }}<span class="hidden-xs"> Verlauf</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
                         {% if ageDistribution|length %}
                             <div class="row">
                                 <div class="col-xs-12">
@@ -278,6 +306,90 @@
     {% cspscript %}
     <script>
         jQuery(document).ready(function () {
+            jQuery('#modalHistory').on('show.bs.modal', function (event) {
+                var tableEl = jQuery('#modalHistory table');
+                tableEl.toggleClass('loading', true);
+
+                jQuery.ajax({
+                    type: 'GET',
+                    url: '{{ path('event_participate_timeline', {eid: event.eid}) }}',
+                    datatype: 'json',
+                    success: function (response) {
+                        var rowHtml,
+                            tableBodyEl,
+                            timeline = response.history,
+                            totalCount = response.max;
+
+                        tableEl.html('<tbody></tbody><tfoot></tfoot>');
+                        tableBodyEl = tableEl.find('tbody');
+                        tableFootEl = tableEl.find('tfoot');
+                        tableEl.toggleClass('loading', false);
+
+                        for (var row = totalCount; row > 0; --row) {
+                            rowHtml = '<tr>';
+                            rowHtml += '<td class="y">'+row+'</td>'; //y-axis
+                            jQuery.each(timeline, function (year, months) {
+                                jQuery.each(months, function (month, days) {
+                                    jQuery.each(days, function (index, dayData) {
+                                        var day = dayData.day;
+                                        if (row <= dayData.count) {
+                                            rowHtml += '<td class="f"></td>';
+                                        } else {
+                                            rowHtml += '<td></td>';
+                                        }
+                                    });
+                                });
+                            });
+
+                            rowHtml += '</tr>';
+                            tableBodyEl.append(rowHtml);
+                        }
+
+                        //x-axis days
+                        rowHtml = '<tr class="x day"><td></td>';
+                        jQuery.each(timeline, function (year, months) {
+                            jQuery.each(months, function (month, days) {
+                                jQuery.each(days, function (index, dayData) {
+                                    rowHtml += '<td>' + ((dayData.day % 5 === 0) ? dayData.day : '') + '</td>';
+                                });
+                            });
+                        });
+                        rowHtml += '</tr>';
+                        tableFootEl.append(rowHtml);
+
+                        //x-axis months
+                        rowHtml = '<tr class="x month"><td></td>';
+                        jQuery.each(timeline, function (year, months) {
+                            jQuery.each(months, function (month, days) {
+                                rowHtml += '<td colspan="' + days.length + '">' + month + '</td>';
+                            });
+                        });
+                        rowHtml += '</tr>';
+                        tableFootEl.append(rowHtml);
+
+                        //x-axis years
+                        rowHtml = '<tr class="x year"><td></td>';
+                        jQuery.each(timeline, function (year, months) {
+                            var yearDays = 0;
+                            jQuery.each(months, function (month, days) {
+                                yearDays += days.length
+                            });
+
+                            rowHtml += '<td colspan="' + yearDays + '">' + year + '</td>';
+                        });
+                        rowHtml += '</tr>';
+                        tableFootEl.append(rowHtml);
+
+                    },
+                    error: function (response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Der Anmeldungsverlauf konnte nicht geladen werden',
+                            priority: 'error'
+                        });
+                    }
+                });
+            });
+
             $('#dialogModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget),
                         action = button.data('action'),

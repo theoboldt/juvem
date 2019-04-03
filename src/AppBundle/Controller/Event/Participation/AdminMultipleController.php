@@ -666,4 +666,70 @@ class AdminMultipleController extends Controller
             ]
         );
     }
+    
+    /**
+     * Page for list of participants of an event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participate-timeline.json", requirements={"eid": "\d+"}, name="event_participate_timeline")
+     * @Security("is_granted('read', event)")
+     */
+    public function provideParticipateTimelineDataAction(Event $event)
+    {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $newParticipants = [];
+        /** @var Participant $participant */
+        foreach ($participationRepository->participantsList($event) as $participant) {
+            $date = $participant->getCreatedAt()->format('Y-m-d');
+            if (!isset($newParticipants[$date])) {
+                $newParticipants[$date] = 0;
+            }
+            $newParticipants[$date] += 1;
+        }
+    
+        ksort($newParticipants);
+        reset($newParticipants);
+        $startDate   = new \DateTime(key($newParticipants) . ' 10:00:00');
+        $currentDate = clone $startDate;
+    
+        $endDate = clone $event->getStartDate();
+        $endDate->setTime(10, 0);
+        
+        $today = new \DateTime();
+        $today->setTime(10, 0);
+        
+        $countBefore = 0;
+        $history     = [];
+        while($currentDate <= $endDate && $currentDate < $today) {
+            $countCurrent = $countBefore;
+            
+            $date = $currentDate->format('Y-m-d');
+            $diff = $currentDate->diff($endDate);
+            
+            if (isset($newParticipants[$date])) {
+                $countCurrent += $newParticipants[$date];
+            }
+    
+            $year  = $currentDate->format('Y');
+            $month = \AppBundle\Controller\Event\Gallery\GalleryPublicController::convertMonthNumber((int)$currentDate->format('n'));
+            $day   = $currentDate->format('d');
+            if (!isset($history[$year])) {
+                $history[$year] = [];
+            }
+            if (!isset($history[$year][$month])) {
+                $history[$year][$month] = [];
+            }
+            $history[$year][$month][] = [
+                'day'   => $day,
+                'count' => $countCurrent,
+                'days'  => $diff->days
+            ];
+        
+        
+            $countBefore = $countCurrent;
+            $currentDate->modify('+1 day');
+        }
+    
+        return new JsonResponse(['history' => $history, 'max' => $countCurrent]);
+    }
 }
