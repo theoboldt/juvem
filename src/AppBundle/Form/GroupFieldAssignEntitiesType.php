@@ -130,13 +130,13 @@ class GroupFieldAssignEntitiesType extends AbstractType
                                 $value = $fillout->getValue();
                                 switch ($entityType) {
                                     case Participant::class:
-                                        $id = $fillout->getParticipant()->getId();
+                                        $id = $fillout->getParticipant()->getAid();
                                         break;
                                     case Participation::class:
-                                        $id = $fillout->getParticipation()->getId();
+                                        $id = $fillout->getParticipation()->getPid();
                                         break;
                                     case Employee::class:
-                                        $id = $fillout->getEmployee()->getId();
+                                        $id = $fillout->getEmployee()->getGid();
                                         break;
                                     default:
                                         throw new InvalidArgumentException('Unknown entity class transmitted');
