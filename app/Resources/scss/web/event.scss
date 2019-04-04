@@ -213,7 +213,7 @@ input.input-formula, textarea.input-formula {
   .has-status-1 {
     &:after {
       background: $brand-success;
-      content: "Bestätigt";
+      content: "Best\00e4tigt";
     }
   }
 
@@ -221,7 +221,7 @@ input.input-formula, textarea.input-formula {
   .has-status-8 {
     &:after {
       background: $brand-warning;
-      content: "Rücknahme angefragt";
+      content: "R\00fccknahme angefragt";
     }
   }
 
@@ -229,7 +229,7 @@ input.input-formula, textarea.input-formula {
   .has-status-4 {
     &:after {
       background: $brand-danger;
-      content: "zurückgezogen";
+      content: "zur\00fcckgezogen";
     }
   }
 
