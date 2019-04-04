@@ -186,8 +186,58 @@ input.input-formula, textarea.input-formula {
     padding: 3px 0;
 
     &.has-groups {
-      opacity: 0.65;
+      opacity: 0.75;
     }
+  }
 
+  //please note that order of items is important here - since the css rules are overriding each other of there are
+  //multiple rules providing :after content in effect, only one is displayed which should be the most important one
+
+  .has-status-1, .has-status-4, .has-status-8, .has-status-16 {
+    &:after {
+      margin-left: 4px;
+      display: inline;
+      padding: 0.2em 0.6em 0.3em;
+      font-size: 75%;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25em;
+    }
+  }
+
+  // \AppBundle\BitMask\ParticipantStatus::TYPE_STATUS_CONFIRMED
+  .has-status-1 {
+    &:after {
+      background: $brand-success;
+      content: "Bestätigt";
+    }
+  }
+
+  // \AppBundle\BitMask\ParticipantStatus::TYPE_STATUS_WITHDRAW_REQUESTED
+  .has-status-8 {
+    &:after {
+      background: $brand-warning;
+      content: "Rücknahme angefragt";
+    }
+  }
+
+  // \AppBundle\BitMask\ParticipantStatus::TYPE_STATUS_WITHDRAWN
+  .has-status-4 {
+    &:after {
+      background: $brand-danger;
+      content: "zurückgezogen";
+    }
+  }
+
+  // \AppBundle\BitMask\ParticipantStatus::TYPE_STATUS_REJECTED
+  .has-status-16 {
+    &:after {
+      background: $brand-danger;
+      content: "abgelehnt";
+    }
   }
 }

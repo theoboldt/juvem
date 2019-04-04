@@ -157,34 +157,50 @@ class GroupFieldAssignEntitiesType extends AbstractType
 
                                 }
                             }
-
+    
                             $choiceOptions = [];
                             foreach ($entities as $id => $entity) {
-                                if (isset($entity['status'])) {
-                                    $status = new ParticipantStatus($entity['status']);
-                                    if ($status->has(ParticipantStatus::TYPE_STATUS_REJECTED)
-                                        || $status->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN)) {
-                                        continue;
-                                    }
-                                }
-                                $choiceOptions[] = new GroupFieldAssignEntityChoiceOption(
+                                $choiceOption = new GroupFieldAssignEntityChoiceOption(
                                     $event,
                                     $id,
                                     $entity['nameFirst'],
                                     $entity['nameLast'],
                                     isset($entity['groups']) ? $entity['groups'] : [],
-                                    isset($entity['birthday']) ? $entity['birthday'] : null
+                                    isset($entity['birthday']) ? $entity['birthday'] : null,
+                                    isset($entity['status']) ? new ParticipantStatus($entity['status']) : null
                                 );
+        
+                                if ($choiceOption->getStatus() !== null
+                                    && ($choiceOption->getStatus()->has(ParticipantStatus::TYPE_STATUS_REJECTED)
+                                        || $choiceOption->getStatus()->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN))) {
+                                    continue;
+                                }
+        
+                                $choiceOptions[] = $choiceOption;
                             }
-
+    
                             return $choiceOptions;
                         }
                     ),
-                    'choice_attr'   => function (GroupFieldAssignEntityChoiceOption $entity, $key, $value) {
-                        if ($entity->hasGroups()) {
-                            return ['class' => 'has-groups'];
+                    'choice_attr' => function (GroupFieldAssignEntityChoiceOption $entity, $key, $value) {
+                        $classes = [];
+    
+                        $status = $entity->getStatus();
+                        if ($status) {
+                            foreach ($status->getActiveList(false) as $state) {
+                                $classes[] = 'has-status-' . $state;
+                            }
                         }
-                        return [];
+    
+                        if ($entity->hasGroups()) {
+                            $classes[] = 'has-groups';
+                        }
+                        if (count($classes)) {
+                            return ['class' => implode(' ', $classes)];
+                        } else {
+                            return [];
+        
+                        }
                     },
                     'choice_value'  => function (GroupFieldAssignEntityChoiceOption $entity = null) {
                         return $entity ? $entity->getId() : '';

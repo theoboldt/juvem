@@ -12,8 +12,10 @@
 namespace AppBundle\Form;
 
 
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\Participant;
 use DateTime;
 
 class GroupFieldAssignEntityChoiceOption
@@ -24,51 +26,59 @@ class GroupFieldAssignEntityChoiceOption
      * @var Event
      */
     private $event;
-
+    
     /**
      * Entity id
      *
      * @var int
      */
     private $id;
-
+    
     /**
      * First name
      *
      * @var string
      */
     private $nameFirst;
-
+    
     /**
      * Last name
      *
      * @var string
      */
     private $nameLast;
-
+    
     /**
      * Groups this entity is already using
      *
      * @var array|string[]
      */
     private $groups = [];
-
+    
     /**
      * Birthday if available
      *
      * @var null|DateTime
      */
     private $birthday = null;
-
+    
+    /**
+     * Entity status if this is a @see Participant
+     *
+     * @var null|ParticipantStatus
+     */
+    private $status = null;
+    
     /**
      * GroupFieldAssignEntityChoiceOption constructor.
      *
-     * @param Event          $event
-     * @param int            $id
-     * @param string         $nameFirst
-     * @param string         $nameLast
+     * @param Event $event
+     * @param int $id
+     * @param string $nameFirst
+     * @param string $nameLast
      * @param array|string[] $groups
      * @param DateTime|null $birthday
+     * @param ParticipantStatus|null $status
      */
     public function __construct(
         Event $event,
@@ -76,16 +86,19 @@ class GroupFieldAssignEntityChoiceOption
         string $nameFirst,
         string $nameLast,
         $groups = [],
-        ?DateTime $birthday = null
-    ) {
+        ?DateTime $birthday = null,
+        ?ParticipantStatus $status = null
+    )
+    {
         $this->event     = $event;
         $this->id        = $id;
         $this->nameFirst = $nameFirst;
         $this->nameLast  = $nameLast;
         $this->groups    = $groups;
         $this->birthday  = $birthday;
+        $this->status    = $status;
     }
-
+    
     /**
      * @return Event
      */
@@ -93,7 +106,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->event;
     }
-
+    
     /**
      * @return int
      */
@@ -101,7 +114,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->id;
     }
-
+    
     /**
      * @return string
      */
@@ -109,7 +122,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->nameFirst;
     }
-
+    
     /**
      * @return string
      */
@@ -117,7 +130,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->nameLast;
     }
-
+    
     /**
      * @return array|string[]
      */
@@ -125,7 +138,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->groups;
     }
-
+    
     /**
      * Has groups
      *
@@ -135,7 +148,7 @@ class GroupFieldAssignEntityChoiceOption
     {
         return count($this->groups) > 0;
     }
-
+    
     /**
      * @return DateTime|null
      */
@@ -143,7 +156,15 @@ class GroupFieldAssignEntityChoiceOption
     {
         return $this->birthday;
     }
-
+    
+    /**
+     * @return ParticipantStatus|null
+     */
+    public function getStatus(): ?ParticipantStatus
+    {
+        return $this->status;
+    }
+    
     /**
      * Textual representation of option
      *
@@ -152,11 +173,11 @@ class GroupFieldAssignEntityChoiceOption
     public function __toString()
     {
         $title = $this->nameLast;
-
+        
         if ($this->nameFirst) {
             $title .= ', ' . $this->nameFirst;
         }
-
+        
         if ($this->birthday) {
             $title .= ' (' . EventRepository::yearsOfLife($this->birthday, $this->event->getStartDate()) . ')';
         }
@@ -166,6 +187,4 @@ class GroupFieldAssignEntityChoiceOption
         $title = htmlspecialchars($title, ENT_NOQUOTES);
         return $title;
     }
-
-
 }
