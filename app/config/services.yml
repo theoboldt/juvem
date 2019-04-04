@@ -232,7 +232,7 @@ services:
         arguments:
             - "@request_stack"
 
-    AppBundle\Form\GroupFieldAssignParticipantsType:
+    AppBundle\Form\GroupFieldAssignEntitiesType:
       autowire: true
       tags:
         - form.type

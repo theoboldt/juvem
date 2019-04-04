@@ -150,7 +150,7 @@ input.input-formula, textarea.input-formula {
     }
 
     tr.x td:first-child, td.y {
-        background: lighten($brandPrimaryDark, 60%) !important;
+      background: lighten($brandPrimaryDark, 60%) !important;
     }
 
     tr.x.day td {
@@ -160,6 +160,7 @@ input.input-formula, textarea.input-formula {
         background: lighten($brandPrimaryDark, 40%);
       }
     }
+
     tr.x.month td {
       background: lighten($brandPrimaryDark, 44%);
 
@@ -167,12 +168,25 @@ input.input-formula, textarea.input-formula {
         background: lighten($brandPrimaryDark, 51%);
       }
     }
+
     tr.x.year td {
       background: lighten($brandPrimaryDark, 60%);
 
       &:nth-child(2n+3) {
         background: lighten($brandPrimaryDark, 55%);
       }
+    }
+
+  }
+}
+
+
+.modal-add-entities {
+  option {
+    padding: 3px 0;
+
+    &.has-groups {
+      opacity: 0.65;
     }
 
   }

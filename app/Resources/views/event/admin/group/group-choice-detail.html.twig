@@ -14,6 +14,7 @@
       <li class="active">{{ choiceOption.getManagementTitle(true) }}</li>
     {% endblock %}
   {% endembed %}
+  {% if is_granted('participants_edit', event) -%}
   <div class="modal fade modal-add-entities" id="dialogAddParticipant" tabindex="-1" role="dialog"
        aria-labelledby="dialogAddParticipantLabel">
     <div class="modal-dialog" role="document">
@@ -22,13 +23,13 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                 aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="dialogAddParticipant">Teilnehmer hinzufügen ({{ event.title }})</h4>
+          <h4 class="modal-title" id="dialogAddParticipant">Teilnehmer zu <i>{{ choiceOption.getManagementTitle(true) }}</i> hinzufügen ({{ event.title }})</h4>
         </div>
         <div class="modal-body">
           <div class="row">
             <div class="col-xs-12">
               {{ form_errors(formParticipants) }}
-              {{ form_widget(formParticipants.assign) }}
+              {{ form_row(formParticipants.assign) }}
             </div>
           </div>
         </div>
@@ -48,13 +49,13 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                 aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="dialogAddParticipant">Anmeldungen hinzufügen ({{ event.title }})</h4>
+          <h4 class="modal-title" id="dialogAddParticipant">Anmeldungen zu <i>{{ choiceOption.getManagementTitle(true) }}</i> hinzufügen ({{ event.title }})</h4>
         </div>
         <div class="modal-body">
           <div class="row">
             <div class="col-xs-12">
               {{ form_errors(formParticipations) }}
-              {{ form_widget(formParticipations.assign) }}
+              {{ form_row(formParticipations.assign) }}
             </div>
           </div>
         </div>
@@ -74,13 +75,13 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                 aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="dialogAddParticipant">Mitarbeiter hinzufügen ({{ event.title }})</h4>
+          <h4 class="modal-title" id="dialogAddParticipant">Mitarbeiter zu <i>{{ choiceOption.getManagementTitle(true) }}</i> hinzufügen ({{ event.title }})</h4>
         </div>
         <div class="modal-body">
           <div class="row">
             <div class="col-xs-12">
               {{ form_errors(formEmployees) }}
-              {{ form_widget(formEmployees.assign) }}
+              {{ form_row(formEmployees.assign) }}
             </div>
           </div>
         </div>
@@ -92,6 +93,7 @@
       {{ form_end(formEmployees) }}
     </div>
   </div>
+  {% endif %}
   <div class="container">
     {% if not usage.hasEmployees and not usage.hasParticipants and not usage.hasParticipations %}
       <div class="row">
@@ -182,7 +184,7 @@
     <script type='text/javascript'>
         jQuery(document).ready(function () {
             $('.modal-add-entities').on('show.bs.modal', function () {
-                $('.modal-add-entities select').css('height', $(window).height() * 0.6);
+                $('.modal-add-entities select').css('height', $(window).height() * 0.65);
             });
         });
     </script>

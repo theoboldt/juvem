@@ -22,7 +22,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\EntityHavingFilloutsInterface;
-use AppBundle\Form\GroupFieldAssignParticipantsType;
+use AppBundle\Form\GroupFieldAssignEntitiesType;
 use AppBundle\Form\GroupType;
 use AppBundle\Group\AttributeChoiceOptionUsageDistribution;
 use AppBundle\JsonResponse;
@@ -195,17 +195,17 @@ class AdminGroupController extends Controller
 
         $formOptions        = ['event' => $event, 'choiceOption' => $choiceOption];
         $formParticipants   = $this->createForm(
-            GroupFieldAssignParticipantsType::class,
+            GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participant::class])
         );
         $formParticipations = $this->createForm(
-            GroupFieldAssignParticipantsType::class,
+            GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participation::class])
         );
         $formEmployees      = $this->createForm(
-            GroupFieldAssignParticipantsType::class,
+            GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Employee::class])
         );
@@ -234,7 +234,7 @@ class AdminGroupController extends Controller
     }
 
     /**
-     * Handle provided {@see GroupFieldAssignParticipantsType} forms and provide redirect response
+     * Handle provided {@see GroupFieldAssignEntitiesType} forms and provide redirect response
      *
      * @param Event                 $event        Related event
      * @param AttributeChoiceOption $choiceOption Group

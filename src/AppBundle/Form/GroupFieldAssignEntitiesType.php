@@ -16,8 +16,6 @@ use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
-use AppBundle\Entity\HumanTrait;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class GroupFieldAssignParticipantsType extends AbstractType
+class GroupFieldAssignEntitiesType extends AbstractType
 {
     /**
      * EM
@@ -40,7 +38,7 @@ class GroupFieldAssignParticipantsType extends AbstractType
     private $em;
 
     /**
-     * GroupFieldAssignParticipantsType constructor.
+     * GroupFieldAssignEntitiesType constructor.
      *
      * @param EntityManagerInterface $em
      */
@@ -48,7 +46,6 @@ class GroupFieldAssignParticipantsType extends AbstractType
     {
         $this->em = $em;
     }
-
 
     /**
      * {@inheritdoc}
@@ -72,7 +69,7 @@ class GroupFieldAssignParticipantsType extends AbstractType
                 'assign',
                 ChoiceType::class,
                 [
-                    'label'         => 'Neu hinzufügen',
+                    'label'         => $currentGroupOption->getManagementTitle(true),
                     'choice_loader' => new CallbackChoiceLoader(
                         function () use (
                             $event,
@@ -170,23 +167,31 @@ class GroupFieldAssignParticipantsType extends AbstractType
                                         continue;
                                     }
                                 }
-
-                                $title = HumanTrait::generateFullname($entity['nameLast'], $entity['nameFirst']);
-                                if (isset($entity['birthday'])) {
-                                    $title .= ' (' . EventRepository::yearsOfLife(
-                                            $entity['birthday'], $event->getStartDate()
-                                        ) . ')';
-                                }
-                                if (isset($entity['groups']) && count($entity['groups'])) {
-                                    $title .= ' [' . implode(', ', $entity['groups']) . ']';
-                                }
-                                $title                 = htmlspecialchars($title, ENT_NOQUOTES);
-                                $choiceOptions[$title] = $id;
+                                $choiceOptions[] = new GroupFieldAssignEntityChoiceOption(
+                                    $event,
+                                    $id,
+                                    $entity['nameFirst'],
+                                    $entity['nameLast'],
+                                    isset($entity['groups']) ? $entity['groups'] : [],
+                                    isset($entity['birthday']) ? $entity['birthday'] : null
+                                );
                             }
 
                             return $choiceOptions;
                         }
                     ),
+                    'choice_attr'   => function (GroupFieldAssignEntityChoiceOption $entity, $key, $value) {
+                        if ($entity->hasGroups()) {
+                            return ['class' => 'has-groups'];
+                        }
+                        return [];
+                    },
+                    'choice_value'  => function (GroupFieldAssignEntityChoiceOption $entity = null) {
+                        return $entity ? $entity->getId() : '';
+                    },
+                    'choice_label'  => function (GroupFieldAssignEntityChoiceOption $entity = null) {
+                        return $entity ? (string)$entity : '';
+                    },
                     'multiple'      => true,
                     'required'      => false,
                 ]
