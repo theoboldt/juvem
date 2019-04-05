@@ -3,6 +3,7 @@
     <div class="col-xs-12 col-sm-6">
         {{ form_label(form.email) }}
         {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
         <p class="help-block" id="help-email">Die Newsletter werden an diese Adresse
             verschickt. Sie kann von der im
             {% if app.user is null %}
@@ -14,12 +15,14 @@
 
         {{ form_label(form.isEnabled) }}
         {{ form_widget(form.isEnabled) }}
+        {{ form_errors(form.isEnabled) }}
         <p class="help-block" id="help-newsletter-enable">Diese Option muss aktiviert sein, wenn Sie Newsletter erhalten
             möchten. Ist diese Option deaktiviert, erhalten Sie <b>keine</b> Newsletter.</p>
     </div>
     <div class="col-xs-12 col-sm-6">
         {{ form_label(form.nameLast) }}
         {{ form_widget(form.nameLast) }}
+        {{ form_errors(form.isEnabled) }}
         <p class="help-block" id="help-last-name">Wenn Sie möchten, können Sie hier Ihren Familiennamen hinterlegen.
             {% if app.user is not null %}
                 Er kann von dem, der für das <a href="{{ path('fos_user_profile_edit') }}">Benutzerprofil</a> konfiguriert ist, abweichen.
@@ -38,6 +41,7 @@
             <div class="col-sm-2 col-xs-6">
                 <label class="control-label">von <span class="visible-xs-inline">x Jahren</span></label>
                 {{ form_widget(form.ageRangeBegin) }}
+                {{ form_errors(form.ageRangeBegin) }}
             </div>
             <div class="col-sm-8  col-xs-12 contains-slider">
                 <input type="hidden" class="slider-input"
@@ -46,10 +50,12 @@
             <div class="col-sm-2 col-xs-6">
                 <label class="control-label">bis <span class="visible-xs-inline">x Jahre</span></label>
                 {{ form_widget(form.ageRangeEnd) }}
+                {{ form_errors(form.ageRangeEnd) }}
             </div>
         </div>
         {{ form_label(form.useAging) }}
         {{ form_widget(form.useAging) }}
+        {{ form_errors(form.useAging) }}
         {% set ageRangeEndForExample = form.ageRangeEnd.vars.value < 18 ? form.ageRangeEnd.vars.value : 17 %}
         <p class="help-block" id="help-topic-ageeing">Wenn diese Option aktivert ist wächst die abbonierte Altersspanne
             automatisch mit. Wenn Sie beispielsweise jetzt <i>{{ form.ageRangeBegin.vars.value }}
@@ -59,6 +65,7 @@
     <div class="col-xs-12 col-sm-6">
         {{ form_label(form.events) }}
         {{ form_widget(form.events) }}
+        {{ form_errors(form.events) }}
         <p class="help-block" id="help-topic-subscribed"> Ist diese Option aktiviert, erhalten Sie E-Mails zu Veranstaltungen,
             die den oben ausgewählten Veranstaltungen ähnlich sind. Wird von uns ein neuer Newsletter versendet, wählen wir
             einige verangene Veranstaltungen aus, die zum Thema des Newsletter passen oder die eine Nachfolgeveranstaltung

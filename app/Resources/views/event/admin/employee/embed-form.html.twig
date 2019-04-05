@@ -46,7 +46,7 @@
     {% for fieldName,formField in form %}
         {% if fieldName starts with 'acq_field_' %}
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group acquisition-attribute">
+                <div class="form-group acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
                     {{ form_label(formField) }}
                     {%- set acquisitionField = acquisitionFields[fieldName] -%}
                     {% if not acquisitionField.isPublic %}
@@ -59,6 +59,7 @@
                         </button>
                     {% endif %}
                     {{ form_widget(formField) }}
+                    {{ form_errors(formField) }}
                 </div>
             </div>
         {% endif %}

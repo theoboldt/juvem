@@ -43,7 +43,9 @@
                             </div>
                             <div class="modal-body">
                                 {{ form_widget(form.uid) }}
+                                {{ form_errors(form.uid) }}
                                 {{ form_widget(form.role) }}
+                                {{ form_errors(form.role) }}
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen

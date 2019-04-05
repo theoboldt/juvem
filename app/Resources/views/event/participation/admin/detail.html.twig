@@ -55,6 +55,7 @@
                         <div class="col-xs-12">
                             {{ form_label(formRelated.related) }}
                             {{ form_widget(formRelated.related) }}
+                            {{ form_errors(formRelated.related) }}
                         </div>
                         <div class="col-xs-12 related-participants-proposal-list">
                             <label class="control-label">Vorschläge</label>
@@ -378,6 +379,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             {{ form_widget(formAssignUser.assignedUser) }}
+                            {{ form_errors(formAssignUser.assignedUser) }}
                             <p class="help-block">Hier kann die Anmeldung mit einem Benutzerkonto verknüpft werden, mit
                                 dem diese Anmeldung abgegeben wurde. Sie erscheint dann in der Liste der Anmeldungen
                                 dieses Benutzers.</p>
@@ -415,16 +417,19 @@
                             <div class="form-group">
                                 {{ form_label(formMoveParticipation.targetEvent) }}
                                 {{ form_widget(formMoveParticipation.targetEvent) }}
+                                {{ form_errors(formMoveParticipation.targetEvent) }}
                                 <p class="help-block">Zur Auswahl stehen nur im Moment aktive Veranstaltungen.</p>
                             </div>
                             <div class="form-group">
-                            {{ form_label(formMoveParticipation.commentOldParticipation) }}
-                            {{ form_widget(formMoveParticipation.commentOldParticipation) }}
+                                {{ form_label(formMoveParticipation.commentOldParticipation) }}
+                                {{ form_widget(formMoveParticipation.commentOldParticipation) }}
+                                {{ form_errors(formMoveParticipation.commentOldParticipation) }}
                                 <p class="help-block">Der Platzhalter <code>{EVENT_NEW}</code> wird durch den Namen der oben gewählten Veranstaltung ersetzt. <code>{PID_NEW}</code> wird durch die neue Anmeldungsnummer ersetzt.</p>
                             </div>
                             <div class="form-group">
-                            {{ form_label(formMoveParticipation.commentNewParticipation) }}
-                            {{ form_widget(formMoveParticipation.commentNewParticipation) }}
+                                {{ form_label(formMoveParticipation.commentNewParticipation) }}
+                                {{ form_widget(formMoveParticipation.commentNewParticipation) }}
+                                {{ form_errors(formMoveParticipation.commentNewParticipation) }}
                                 <p class="help-block">Der Platzhalter <code>{EVENT_OLD}</code> wird durch <i>{{ event.title }}</i> ersetzt. <code>{PID_OLD}</code> wird durch die alte Anmeldungsnummer <i>{{ participation.pid }}</i> ersetzt.</p>
                             </div>
                         </div>

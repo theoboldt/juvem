@@ -37,6 +37,7 @@ textarea {
     min-height: 10px;
     margin-bottom: 0;
   }
+
   @media (min-width: 768px) {
     .container-fluid {
       padding: 0;
@@ -65,12 +66,14 @@ textarea {
   .navbar-header {
 
   }
+
   .panel-body > div {
     position: relative;
     height: 300px;
     margin-top: 10px;
     overflow: auto;
   }
+
   .panel-footer {
     .checkbox, .radio {
       margin: 0;
@@ -99,6 +102,25 @@ dd ul,
   li span.deleted {
     text-decoration: line-through;
   }
+}
+
+// Feedback states
+.has-success .input-group-btn button, .has-success > button {
+  color: $state-success-text;
+  border-color: $state-success-text;
+  background-color: $state-success-bg;
+}
+
+.has-warning .input-group-btn button, .has-warning > button {
+  color: $state-warning-text;
+  border-color: $state-warning-text;
+  background-color: $state-warning-bg;
+}
+
+.has-error .input-group-btn button, .has-error > button {
+  color: $state-danger-text;
+  border-color: $state-danger-text;
+  background-color: $state-danger-bg;
 }
 
 .help-block ul.list-unstyled {

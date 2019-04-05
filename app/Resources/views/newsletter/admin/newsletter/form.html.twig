@@ -106,17 +106,19 @@
         <label class="control-label">Altersspanne</label>
 
         <div class="row" style="margin-bottom: 10px;">
-            <div class="col-sm-2 col-xs-6">
+            <div class="col-sm-2 col-xs-6{% if not form.ageRangeBegin.vars.valid %} has-error{% endif %}">
                 <label class="control-label">von</label>
                 {{ form_widget(form.ageRangeBegin) }}
+                {{ form_errors(form.ageRangeBegin) }}
             </div>
             <div class="col-sm-8  col-xs-12 contains-slider">
                 <input type="hidden" class="slider-input" id="newsletter_mail_ageRangeSlider"
                        value="{{ form.ageRangeBegin.vars.value }},{{ form.ageRangeEnd.vars.value }}"/>
             </div>
-            <div class="col-sm-2 col-xs-6">
+            <div class="col-sm-2 col-xs-6{% if not form.ageRangeEnd.vars.valid %} has-error{% endif %}">
                 <label class="control-label">bis</label>
                 {{ form_widget(form.ageRangeEnd) }}
+                {{ form_errors(form.ageRangeEnd) }}
             </div>
         </div>
         {{ form_row(form.events) }}

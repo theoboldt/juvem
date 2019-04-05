@@ -68,6 +68,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             {{ form_widget(formAssignUser.assignedUser) }}
+                            {{ form_errors(formAssignUser.assignedUser) }}
                             <p class="help-block">Wenn der Mitarbeiter über ein Benutzerkonto verfügt, kann es hier
                                 verknüpft verden. Es können nur Benutzer verknüpft werden, die die Rolle
                                 <i>{{ constant('AppBundle\\Entity\\User::ROLE_EMPLOYEE_LABEL') }}</i> zugewiesen haben.

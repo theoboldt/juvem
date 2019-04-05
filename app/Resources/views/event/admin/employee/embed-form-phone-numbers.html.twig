@@ -15,7 +15,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 col-sm-5">
-                    <div class="form-group">
+                    <div class="form-group {% if not formElement.number.vars.valid %}has-error{% endif %}">
                         {{ form_label(formElement.number) }}
                         <div class="input-group">
                             <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
@@ -27,11 +27,12 @@
                                 </button>
                             </div>
                         </div>
+                        {{ form_errors(formElement.number) }}
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-7">
                     {{ form_label(formElement.description) }}
-                    <div class="input-group">
+                    <div class="input-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
                         {{ form_widget(formElement.description) }}
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default" data-toggle="popover"
@@ -40,6 +41,7 @@
                             </button>
                         </div>
                     </div>
+                    {{ form_errors(formElement.description) }}
                 </div>
             </div>
         </div>
@@ -52,7 +54,6 @@
             <div class="form-group">
                 <div class="prototype-elements">
                     {{ form_label(formPhoneNumbers) }}
-                    <label class="control-label required">Telefonnummern</label>
                     {{ form_errors(formPhoneNumbers) }}
                     {% for phoneNumber in formPhoneNumbers %}
                         {{ m.prototypePhone(phoneNumber) }}

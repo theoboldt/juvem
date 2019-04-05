@@ -14,7 +14,9 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 trait AcquisitionAttributeIncludingTypeTrait
 {
@@ -50,6 +52,26 @@ trait AcquisitionAttributeIncludingTypeTrait
                 }
             } catch (\OutOfBoundsException $e) {
                 //intentionally left empty
+            }
+            
+            if ($attribute->isRequired()) {
+                switch ($attribute->getFieldType()) {
+                    case ChoiceType::class:
+                        if ($attribute->isMultipleChoiceType()) {
+                            $message = 'Mindestens eine Option muss ausgewählt sein.';
+                        } else {
+                            $message = 'Eine Option muss ausgewählt sein.';
+                        }
+                        $attributeOptions['constraints'] = [
+                            new NotBlank(['message' => $message])
+                        ];
+                        break;
+                    default:
+                        $attributeOptions['constraints'] = [
+                            new NotBlank()
+                        ];
+                        break;
+                }
             }
 
             $builder->add(

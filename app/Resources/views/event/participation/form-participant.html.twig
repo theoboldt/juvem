@@ -21,6 +21,7 @@
                 {{ 'question-sign'|glyph }}
             </button>
             {{ form_widget(form.food) }}
+            {{ form_errors(form.food) }}
         </div>
     </div>
     <div class="col-xs-12 col-sm-6">
@@ -46,6 +47,7 @@
                 {{ 'question-sign'|glyph }}
             </button>
             {{ form_widget(form.infoMedical) }}
+            {{ form_errors(form.infoMedical) }}
         </div>
     </div>
     <div class="col-xs-12 col-sm-6">
@@ -57,6 +59,7 @@
                 {{ 'question-sign'|glyph }}
             </button>
             {{ form_widget(form.infoGeneral) }}
+            {{ form_errors(form.infoGeneral) }}
         </div>
     </div>
 </div>
@@ -64,20 +67,20 @@
     {% for fieldName,formField in form %}
         {% if fieldName starts with 'acq_field_' %}
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group acquisition-attribute">
+                <div class="form-group acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
                     {{ form_label(formField) }}
                     {%- set acquisitionField = acquisitionFields[fieldName] -%}
                     {% if not acquisitionField.isPublic %}
                         {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
                     {%- endif -%}
                     {% if acquisitionField.formDescription %}
-                        <button type="button" class="btn btn-default btn-xs btn-round"
-                                data-toggle="popover"
+                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
                                 data-content="{{ acquisitionField.formDescription }}">
                             {{ 'question-sign'|glyph }}
                         </button>
                     {% endif %}
                     {{ form_widget(formField) }}
+                    {{ form_errors(formField) }}
                 </div>
             </div>
         {% endif %}
