@@ -13,7 +13,6 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Class ParticipationRepository
@@ -105,11 +104,11 @@ class ParticipationRepository extends EntityRepository
     /**
      * Get a list of participants of an event
      *
-     * @param   Event      $event                    The event
-     * @param   null|array $filter                   Transmit a list of aids to filter out participants
+     * @param Event      $event                      The event
+     * @param null|array $filter                     Transmit a list of aids to filter out participants
      *                                               not included in list
-     * @param   bool       $includeDeleted           Set to true to include deleted participants
-     * @param   bool       $includeWithdrawnRejected Set to true to include withdrawn participants
+     * @param bool       $includeDeleted             Set to true to include deleted participants
+     * @param bool       $includeWithdrawnRejected   Set to true to include withdrawn participants
      * @return  array
      */
     public function participantsList(
@@ -124,21 +123,24 @@ class ParticipationRepository extends EntityRepository
             return []; //empty result
         }
 
+        //re-fetch event in order to ensure attributes and options were fetched
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a, p, pn, aaf, aaafa, paf, paafa')
-           ->from(Participant::class, 'a')
+        $qb->select('e', 'a', 'o')
+           ->from(Event::class, 'e')
+           ->leftJoin('e.acquisitionAttributes', 'a')
+           ->leftJoin('a.choiceOptions', 'o')
+           ->andWhere($qb->expr()->eq('e.eid', ':eid'))
+           ->setParameter('eid', $eid);
+        $event = $qb->getQuery()->getSingleResult();
+
+        //fetch @see Participant
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('a', 'aaf')
+           ->from(Participant::class, 'a', 'a.aid')
            ->innerJoin('a.participation', 'p')
            ->leftJoin('a.acquisitionAttributeFillouts', 'aaf')
-           ->leftJoin('aaf.attribute', 'aaafa')
-           ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
-           ->leftJoin('paf.attribute', 'paafa')
-           ->leftJoin('p.phoneNumbers', 'pn')
            ->andWhere('p.event = :eid')
            ->orderBy('a.nameLast, a.nameFirst', 'ASC');
-
-        if (!$includeDeleted) {
-            $qb->andWhere('a.deletedAt IS NULL');
-        }
 
         if (!$includeWithdrawnRejected) {
             $qb->andWhere(
@@ -149,16 +151,32 @@ class ParticipationRepository extends EntityRepository
                 )
             );
         }
-
+        if (!$includeDeleted) {
+            $qb->andWhere('a.deletedAt IS NULL');
+        }
         if ($filter !== null) {
             $qb->andWhere("a.aid IN(:participantList)")
                ->setParameter('participantList', $filter);
         }
         $qb->setParameter('eid', $eid);
 
-        $query = $qb->getQuery();
+        $result = $qb->getQuery()->execute();
 
-        return $query->execute();
+        //fetch @see Participation and phone numbers
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('p, pn, paf')
+           ->from(Participation::class, 'p')
+           ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
+           ->leftJoin('p.phoneNumbers', 'pn')
+           ->andWhere('p.event = :eid')
+           ->setParameter('eid', $eid);
+        if (!$includeDeleted) {
+            $qb->andWhere('p.deletedAt IS NULL');
+        }
+
+        $participations = $qb->getQuery()->execute();
+
+        return $result;
     }
 
     /**
