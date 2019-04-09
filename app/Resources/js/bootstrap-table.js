@@ -25,6 +25,29 @@ $(function () {
         }
     };
 
+    var tableEnableQueryParam = function (table, params) {
+        var options = table.bootstrapTable('getOptions'),
+            changes = false,
+            newQueryParams = Object.keys(options.queryParams).length > 0 ? options.queryParams : {};
+
+        if (!$.isArray(params)) {
+            params = [params];
+        }
+
+        $.each(params, function (index, param) {
+            if (!newQueryParams[param]) {
+                newQueryParams[param] = 1;
+                changes = true;
+            }
+        });
+
+        if (changes) {
+            table.bootstrapTable('refreshOptions', {
+                queryParams: newQueryParams
+            });
+        }
+    };
+
     /**
      * GLOBAL: Bootstrap table on page which provides filters
      */
@@ -54,9 +77,8 @@ $(function () {
                 if (!$.isNumeric(indexTarget) || options.length <= indexTarget) {
                     indexTarget = 0;
                 }
-
                 options.each(function (indexCurrent, option) {
-                    if (indexCurrent == indexTarget) {
+                    if (indexCurrent === indexTarget) {
                         var optionEl = $(option),
                             text = optionEl.text(),
                             filter = optionEl.data('filter'),
@@ -111,29 +133,6 @@ $(function () {
             });
         });
     }();
-
-    var tableEnableQueryParam = function (table, params) {
-        var options = table.bootstrapTable('getOptions'),
-            changes = false,
-            newQueryParams = Object.keys(options.queryParams).length > 0 ? options.queryParams : {};
-
-        if (!$.isArray(params)) {
-            params = [params];
-        }
-
-        $.each(params, function (index, param) {
-            if (!newQueryParams[param]) {
-                newQueryParams[param] = 1;
-                changes = true;
-            }
-        });
-
-        if (changes) {
-            table.bootstrapTable('refreshOptions', {
-                queryParams: newQueryParams
-            });
-        }
-    };
 
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
