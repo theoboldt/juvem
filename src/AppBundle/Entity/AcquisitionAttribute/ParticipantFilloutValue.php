@@ -223,7 +223,25 @@ class ParticipantFilloutValue extends FilloutValue
                 $this->proposedParticipants = $value[self::KEY_PROPOSED_IDS];
             }
         } else {
-            $this->relatedFirstName = $this->rawValue;
+            $commaCount = substr_count($this->rawValue, ',');
+            if ($commaCount > 0) {
+                $name = explode(',', trim($this->rawValue));
+                if ($commaCount > 1) {
+                    //multiple commas indicate multiple participants were mentioned incorrectly
+                    $this->relatedFirstName = $this->rawValue;
+                } else {
+                    $this->relatedFirstName = trim($name[1]);
+                    $this->relatedLastName  = trim($name[0]);
+                }
+            } else {
+                $name = explode(' ', trim($this->rawValue));
+                if (count($name) < 2) {
+                    $this->relatedFirstName = $this->rawValue;
+                } else {
+                    $this->relatedLastName  = trim(array_pop($name));
+                    $this->relatedFirstName = implode(' ', $name);
+                }
+            }
         }
     }
 
