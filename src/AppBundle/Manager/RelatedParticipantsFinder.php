@@ -98,8 +98,11 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
 
                 $fillout   = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
                 $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
-
-                $filloutRawValue                  = json_decode($fillout->getRawValue(), true);
+    
+                /** @var ParticipantFilloutValue $value */
+                $value           = $fillout->getValue();
+                $filloutRawValue = $value->getFormValue();
+                
                 $filloutRawValue['proposed_aids'] = [];
                 /** @var Participant $qualifiedParticipant */
                 foreach ($qualified as $qualifiedParticipant) {
