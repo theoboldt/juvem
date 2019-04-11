@@ -14,6 +14,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\ExportTemplate;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
@@ -28,6 +29,9 @@ use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\Extension\PaymentInformation;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -441,25 +445,121 @@ class AdminMultipleController extends Controller
 
         return new JsonResponse();
     }
-
+    
+    /**
+     * Update transmitted template
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("template", class="AppBundle:ExportTemplate", options={"id" = "id"})
+     * @Route("/admin/event/{eid}/export/template/{id}/update", methods={"POST"}, requirements={"eid": "\d+", "id": "\d+"}, name="event_export_template_update")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function updateTemplateConfigurationAction(Event $event, ExportTemplate $template, Request $request)
+    {
+        $em            = $this->getDoctrine()->getManager();
+        $configuration = $this->processRequestConfiguration($request);
+        $template->setConfiguration($configuration);
+        $template->setModifiedAtNow();
+        $template->setModifiedBy($this->getUser());
+        $em->persist($template);
+        $em->flush();
+    
+        return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
+    }
+    
+    /**
+     * Create transmitted template
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/export/template/create", methods={"POST"}, requirements={"eid": "\d+"}, name="event_export_template_create")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function createTemplateConfigurationAction(Event $event, Request $request)
+    {
+        $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->templateCount();
+        
+        $configuration = $this->processRequestConfiguration($request);
+        $template      = new ExportTemplate($event, $event->getTitle() . ' Export #' . ($templates + 1), null, $configuration);
+        $template->setCreatedBy($this->getUser());
+        $em            = $this->getDoctrine()->getManager();
+        $em->persist($template);
+        $em->flush();
+        
+        return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
+    }
+    
     /**
      * Page for list of participants of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
      * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function exportGeneratorAction(Event $event)
+    public function exportGeneratorAction(Event $event, Request $request)
     {
+        $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->findSuitableForEvent($event);
+        $em        = $this->getDoctrine()->getManager();
+    
+        $formEditTemplate   = $this->createFormBuilder()
+                                   ->add('edit', HiddenType::class)
+                                   ->add('title', TextType::class, ['label'=> 'Titel'])
+                                   ->add('description', TextareaType::class, ['label' => 'Beschreibung'])
+                                   ->getForm();
+        $formDeleteTemplate = $this->createFormBuilder()
+                                   ->add('delete', HiddenType::class)
+                                   ->getForm();
+            $redirect = false;
+    
+        $formEditTemplate->handleRequest($request);
+        if ($formEditTemplate->isSubmitted() && $formEditTemplate->isValid()) {
+            $template = $em->find(ExportTemplate::class, $formEditTemplate->get('edit')->getData());
+            $template->setTitle($formEditTemplate->get('title')->getData());
+            $template->setDescription($formEditTemplate->get('description')->getData());
+            $template->setModifiedAtNow();
+            $template->setModifiedBy($this->getUser());
+            $em->persist($template);
+            $em->flush();
+            $redirect = true;
+        }
+    
+        $formDeleteTemplate->handleRequest($request);
+        if ($formDeleteTemplate->isSubmitted() && $formDeleteTemplate->isValid()) {
+            $template = $em->find(ExportTemplate::class, $formDeleteTemplate->get('delete')->getData());
+            if ($template instanceof ExportTemplate) {
+                $em->remove($template);
+                $em->flush();
+                $redirect = true;
+            }
+        }
+        if ($redirect) {
+            return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
+        }
+    
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
-
+    
         $processor     = new Processor();
         $configuration = new Configuration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
-
+    
+    
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
-
-        return $this->render('event/admin/export-generator.html.twig', array('event' => $event, 'config' => $tree->getChildren()));
+    
+        return $this->render(
+            'event/admin/export-generator.html.twig',
+            [
+                'event'              => $event,
+                'config'             => $tree->getChildren(),
+                'templates'          => $templates,
+                'formDeleteTemplate' => $formDeleteTemplate->createView(),
+                'formEditTemplate'   => $formEditTemplate->createView()
+            ]
+        );
     }
     
     /**
@@ -485,6 +585,7 @@ class AdminMultipleController extends Controller
         
         return JsonResponse::create(['download_url' => $url]);
     }
+    
     
     /**
      * Download created export
@@ -545,18 +646,25 @@ class AdminMultipleController extends Controller
         return $response;
     }
     
-    private function generateExport(Request $request) {
+    /**
+     * Process configuration from request and provide result as array
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function processRequestConfiguration(Request $request): array
+    {
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
         $config          = $request->get('config');
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-
+        
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('export-generator-' . $eid)) {
             throw new InvalidTokenHttpException();
         }
-
+        
         /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event || !is_array($config)) {
@@ -564,15 +672,31 @@ class AdminMultipleController extends Controller
         }
         $this->denyAccessUnlessGranted('participants_read', $event);
         $config = ['export' => $config]; //add root config option
-
+        
         $processor     = new Processor();
         $configuration = new Configuration($event);
-
+        
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
         if (!$processedConfiguration['title']) {
             $processedConfiguration['title'] = 'Teilnehmer';
         }
+        return $processedConfiguration;
+    }
+    
+    /**
+     * Generate export file and provide file info
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function generateExport(Request $request): array
+    {
+        $processedConfiguration = $this->processRequestConfiguration($request);
 
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        /** @var Event $event */
+        $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
+        
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $paymentManager = $this->get('app.payment_manager');
     

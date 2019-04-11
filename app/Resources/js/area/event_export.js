@@ -246,4 +246,83 @@ $(function () {
         });
     });
 
+
+    /**
+     * EVENT EXPORT TEMPLATES: Prepare buttons
+     */
+    $("#templates .export-template .btn-toolbar a").click(function (event) {
+        event.preventDefault();
+        var button = $(this),
+            action = button.data('action'),
+            templateEl = button.closest('.export-template'),
+            configuration = templateEl.data('configuration'),
+            configurationFlat;
+
+        const flattenObject = (obj, prefix = '') =>
+            Object.keys(obj).reduce((acc, k) => {
+                const pre = prefix.length ? prefix + '][' : '';
+                if (typeof obj[k] === 'object') Object.assign(acc, flattenObject(obj[k], pre + k));
+                else acc[pre + k] = obj[k];
+                return acc;
+            }, {});
+        configurationFlat = flattenObject(configuration);
+
+        if (action === 'apply-process' || action === 'apply-only') {
+            $.each(configurationFlat, function (name, value) {
+                var el = $('[name="config[' + name + ']"]');
+                if (el.is('input') || el.is('select')) {
+                    if (el.attr('type') === 'checkbox') {
+                        el.prop('checked', value);
+                    } else if (el.attr('type') === 'radio') {
+                        el.each(function () {
+                            var elOption = $(this);
+                            elOption.prop('checked', elOption.attr('value') === value);
+                        });
+                    } else {
+                        el.val(value);
+                    }
+                } else {
+                    console.log(el); //debugging, such elements are not expected
+                }
+            });
+        }
+        if (action === 'apply-process') {
+            $(".form-file-download").submit();
+        }
+        if (action === 'delete') {
+            let modal = $('#dialogDeleteTemplate'),
+                id = templateEl.data('id'),
+                title = templateEl.find('h3').text();
+
+            modal.find('.modal-title i').text(title);
+            modal.find('.modal-body i').text(title);
+
+            modal.find('input[name="form[delete]"]').val(id);
+        }
+        if (action === 'edit-meta') {
+            let modal = $('#dialogEditTemplate'),
+                id = templateEl.data('id'),
+                title = templateEl.find('h3').text(),
+                description = templateEl.find('.panel-body > p.description').text();
+
+            modal.find('.modal-title i').text(title);
+            modal.find('input[name="form[edit]"]').val(id);
+            modal.find('input[name="form[title]"]').val(title);
+            modal.find('textarea[name="form[description]"]').val(description);
+        }
+    });
+
+    /**
+     * EVENT EXPORT TEMPLATES: Prepare buttons
+     */
+    $("#templates .btn-form-redirect").click(function (event) {
+        event.preventDefault();
+        var button = $(this);
+
+        var submitEl = $(".form-file-download");
+        submitEl.off();
+        submitEl.attr('action', button.data('form-action'));
+        submitEl.submit();
+    });
+
 });

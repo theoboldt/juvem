@@ -11,6 +11,48 @@
       <li class="active">Exportieren</li>
     {% endblock %}
   {% endembed %}
+  <div class="modal fade" id="dialogDeleteTemplate" tabindex="-1" role="dialog" aria-labelledby="dialogDeleteTemplateLabel">
+    <div class="modal-dialog" role="document">
+      {{ form_start(formDeleteTemplate) }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="dialogDeleteTemplate">Vorlage <i></i> löschen</h4>
+        </div>
+        <div class="modal-body">
+          <p>Soll die Vorlage <i></i> unwiederruflich gelöscht werden?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Vorlage löschen"/>
+        </div>
+      </div>
+      {{ form_end(formDeleteTemplate) }}
+    </div>
+  </div>
+  <div class="modal fade" id="dialogEditTemplate" tabindex="-1" role="dialog" aria-labelledby="dialogEditTemplateLabel">
+    <div class="modal-dialog" role="document">
+      {{ form_start(formEditTemplate) }}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="dialogEditTemplate">Vorlage <i></i> bearbeiten</h4>
+        </div>
+        <div class="modal-body">
+          {{ form_row(formEditTemplate.title) }}
+          {{ form_row(formEditTemplate.description) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Änderungen speichern"/>
+        </div>
+      </div>
+      {{ form_end(formEditTemplate) }}
+    </div>
+  </div>
+
   <form class="container form-file-download" action="{{ path('event_export_generator_process_legacy') }}"
         data-new-action="{{ path('event_export_generator_process', {eid: event.eid, filename: 'export.xlsx'}) }}"
         method="post">
@@ -32,53 +74,59 @@
               <div class="col-xs-12" style="margin: 15px 0;">
                 <div class="btn-toolbar templates" role="toolbar" aria-label="Exportvorlagen">
                   <div class="btn-group" role="group">
-                    <button class="btn btn-default" type="button">{{ 'floppy-disk'|glyph }} Aktuelle Konfiguration als neue Vorlage speichern...</button>
+                    <span class="btn btn-default btn-form-redirect" data-form-action="{{ path('event_export_template_create', {eid: event.eid}) }}">{{ 'floppy-disk'|glyph }} Aktuelle Konfiguration als neue Vorlage speichern</span>
                   </div>
                 </div>
               </div>
               <div class="col-xs-12">
                 <div class="row">
-                  <div class="col-xs-12 col-sm-4">
-
-                    <div class="panel panel-default">
+                  {% for template in templates %}
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="panel panel-default export-template" data-id="{{ template.id }}"
+                           data-configuration="{{ template.configuration |json_encode() |e('html_attr') }}">
                       <div class="panel-heading">
-                        <h3 class="panel-title">Standard-Liste</h3>
-                      </div>
-                      <div class="panel-body">
-                        <p>Beschreibungs-text</p>
-                        <p class="meta"><small>Erik Theoboldt, 1.21.3.1, Veranstaltung BFZ</small></p>
-                      </div>
-                      <div class="panel-footer">
-                        <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
-                          <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default">Anwenden & Export erstellen</button>
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false"><span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                              <li>
-                                <a href="#">Konfiguration anwenden & Export erstellen</a>
-                              </li>
-                              <li>
-                                <a href="#">Nur Konfiguration anwenden</a>
-                              </li>
-                              <li>
-                                <a href="#">Einstellungen der Vorlage mit aktueller Konfiguration überschreiben...
-                                </a>
-                              </li>
-                              <li>
-                                <a href="#">Name & Beschreibung bearbeiten...</a>
-                              </li>
-                              <li>
-                                <a href="#">Vorlage löschen...</a>
-                              </li>
-                            </ul>
+                          <h3 class="panel-title">{{ template.title }}</h3>
+                        </div>
+                        <div class="panel-body">
+                          {% if template.description %}
+                            <p class="description">{{ template.description }}</p>
+                          {% endif %}
+                          <p class="meta">
+                            <small>{{ template.createdBy.fullname }}, {{ template.createdAt|date("d.m.Y H:i") }}{% if template.event %} bei {{ template.event.title }}{% endif %}</small>
+                          </p>
+                        </div>
+                        <div class="panel-footer">
+                          <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group" role="group">
+                              <a href="#{{ template.id }}" class="btn btn-default" data-action="apply-process">Anwenden & Export erstellen</a>
+                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                      aria-haspopup="true" aria-expanded="false"><span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li>
+                                  <a data-action="apply-process" href="#{{ template.id }}">Konfiguration anwenden & Export erstellen</a>
+                                </li>
+                                <li>
+                                  <a data-action="apply-only" href="#{{ template.id }}">Nur Konfiguration anwenden</a>
+                                </li>
+                                <li>
+                                  <a data-action="overwrite" data-form-action="{{ path('event_export_template_update', {eid: event.eid, id: template.id}) }}" href="#{{ template.id }}" class="btn-form-redirect">Einstellungen der Vorlage mit aktueller Konfiguration überschreiben...
+                                  </a>
+                                </li>
+                                <li>
+                                  <a data-action="edit-meta" data-toggle="modal" data-target="#dialogEditTemplate" href="#{{ template.id }}">Titel & Beschreibung bearbeiten...</a>
+                                </li>
+                                <li>
+                                  <a data-action="delete" data-toggle="modal" data-target="#dialogDeleteTemplate" href="#{{ template.id }}">Vorlage löschen...</a>
+                                </li>
+                              </ul>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                  </div>
+                    </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>
