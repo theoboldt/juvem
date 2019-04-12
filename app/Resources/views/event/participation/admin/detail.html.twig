@@ -466,6 +466,11 @@
                 {% if is_granted('participants_edit', event) -%}
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
+                        {% if is_granted('participants_edit', event) -%}
+                            <a class="btn btn-default" href="{{ path('admin_participation_create', {'eid': event.eid }) }}" title="Neue Anmeldung für diese Veranstaltung erfassen">{{ 'plus'|glyph }}</a>
+                        {% endif %}
+                    </div>
+                    <div class="btn-group" role="group">
                         {% if participation.rejected %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="rereject">
