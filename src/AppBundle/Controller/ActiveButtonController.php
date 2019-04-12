@@ -22,6 +22,9 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ActiveButtonController extends Controller
 {
+    
+    const USER_ID_SELF = '__self__';
+    
     /**
      * Detail page for one single event
      *
@@ -75,7 +78,10 @@ class ActiveButtonController extends Controller
         switch ($entityName) {
             case 'User':
                 $idColumn = 'id';
-                if (!$this->getUser()->hasRole(User::ROLE_ADMIN_USER)) {
+                if ($entityId === self::USER_ID_SELF && in_array($property, ['isExcludeHelpTabindex'])) {
+                    //edit own user is always allowed for transmitted properties
+                    $entityId = $this->getUser()->getId();
+                } elseif (!$this->getUser()->hasRole(User::ROLE_ADMIN_USER)) {
                     throw new AccessDeniedHttpException('Required group not assigned');
                 }
                 break;
