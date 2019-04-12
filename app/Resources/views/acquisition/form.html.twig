@@ -165,7 +165,7 @@
                                 <div class="input-group">
                                     {{ form_widget(formElement.formTitle) }}
                                     <span class="input-group-btn">
-                                        <a class="btn btn-default" href="#help-choice-options-public-title">
+                                        <a class="btn btn-default" href="#help-choice-options-public-title"{{ tab.skip|raw }}>
                                             <span class="glyphicon glyphicon-question-sign"></span>
                                         </a>
                                     </span>
@@ -180,7 +180,7 @@
                             <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
                                 {{ form_widget(formElement.managementTitle) }}
                                 <span class="input-group-btn">
-                                    <a class="btn btn-default" href="#help-choice-options-internal-title">
+                                    <a class="btn btn-default" href="#help-choice-options-internal-title"{{ tab.skip|raw }}>
                                         <span class="glyphicon glyphicon-question-sign"></span>
                                     </a>
                                 </span>
@@ -192,7 +192,7 @@
                             <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
                                 {{ form_widget(formElement.shortTitle) }}
                                 <span class="input-group-btn">
-                                    <a class="btn btn-default" href="#help-choice-options-internal-short">
+                                    <a class="btn btn-default" href="#help-choice-options-internal-short"{{ tab.skip|raw }}>
                                         <span class="glyphicon glyphicon-question-sign"></span>
                                     </a>
                                 </span>
