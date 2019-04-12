@@ -10,6 +10,9 @@
 
 namespace AppBundle\Twig\Extension;
 
+use Twig\Extension\AbstractExtension;
+use Twig\TwigTest;
+
 /**
  * Twig extension to test if object is of class
  *
@@ -17,7 +20,7 @@ namespace AppBundle\Twig\Extension;
  *
  * @package AppBundle\Twig\Extension
  */
-class IsInstanceof extends \Twig_Extension
+class IsInstanceof extends AbstractExtension
 {
     /**
      * {@inheritDoc}
@@ -25,7 +28,7 @@ class IsInstanceof extends \Twig_Extension
     public function getTests()
     {
         return [
-            new \Twig_SimpleTest('instanceof', [$this, 'isInstanceof'])
+            new TwigTest('instanceof', [$this, 'isInstanceof'])
         ];
     }
 

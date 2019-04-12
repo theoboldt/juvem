@@ -12,6 +12,9 @@ namespace AppBundle\Twig\Extension;
 
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig_Environment;
 
 /**
@@ -21,7 +24,7 @@ use Twig_Environment;
  *
  * @package AppBundle\Twig\Extension
  */
-class ParticipationsParticipantsNamesGrouped extends \Twig_Extension
+class ParticipationsParticipantsNamesGrouped extends AbstractExtension
 {
 
     /**
@@ -30,24 +33,24 @@ class ParticipationsParticipantsNamesGrouped extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'participantsgrouped',
                 [$this, 'participationParticipantsNamesGrouped'],
                 ['pre_escape' => 'html', 'is_safe' => ['html'], 'needs_environment' => true]
             ),
         ];
     }
-
+    
     /**
      * Get participant names grouped by last names
      *
-     * @param Twig_Environment $env           Twig environment in order to escape names @see twig_escape_filter()
-     * @param Participation    $participation Participants of related participations are processed
-     * @param bool             $noHtml        Default false, set to true to not use html markup
+     * @param Environment $env             Twig environment in order to escape names @see twig_escape_filter()
+     * @param Participation $participation Participants of related participations are processed
+     * @param bool $noHtml                 Default false, set to true to not use html markup
      * @return string
      */
     public function participationParticipantsNamesGrouped(
-        Twig_Environment $env, Participation $participation, $noHtml = false
+        Environment $env, Participation $participation, $noHtml = false
     )
     {
         $groups = [];

@@ -12,6 +12,8 @@ namespace AppBundle\Twig\Extension;
 
 use AppBundle\BitMask\BitMaskAbstract;
 use AppBundle\BitMask\LabelFormatter;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Twig extension for formatting bitmasks in twig
@@ -20,7 +22,7 @@ use AppBundle\BitMask\LabelFormatter;
  *
  * @package AppBundle\Twig\Extension
  */
-class BitMask extends \Twig_Extension
+class BitMask extends AbstractExtension
 {
     /**
      * {@inheritdoc}
@@ -28,7 +30,7 @@ class BitMask extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'bitmask',
                 array($this,
                       'formatBitMask'
@@ -37,7 +39,7 @@ class BitMask extends \Twig_Extension
                       'is_safe'    => array('html')
                 )
             ),
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'bitmaskoption',
                 array($this,
                       'formatBitMaskOption'

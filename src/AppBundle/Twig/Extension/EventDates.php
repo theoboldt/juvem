@@ -11,6 +11,8 @@
 namespace AppBundle\Twig\Extension;
 
 use AppBundle\Entity\Event;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Twig extension for easy display and formatting of event start/end dates/times
@@ -19,7 +21,7 @@ use AppBundle\Entity\Event;
  *
  * @package AppBundle\Twig\Extension
  */
-class EventDates extends \Twig_Extension
+class EventDates extends AbstractExtension
 {
 
     /**
@@ -28,12 +30,12 @@ class EventDates extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'eventStartDate',
                 [$this, 'eventStartDate'],
                 ['pre_escape' => 'html', 'is_safe' => ['html']]
             ),
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'eventEndDate',
                 [$this, 'eventEndDate'],
                 ['pre_escape' => 'html', 'is_safe' => ['html']]

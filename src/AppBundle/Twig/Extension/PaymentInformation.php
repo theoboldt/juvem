@@ -11,13 +11,14 @@
 namespace AppBundle\Twig\Extension;
 
 use AppBundle\Manager\Payment\PaymentStatusInterface;
+use Twig\Extension\AbstractExtension;
 
 /**
  * Class PaymentInformation
  *
  * @package AppBundle\Twig\Extension
  */
-class PaymentInformation extends \Twig_Extension
+class PaymentInformation extends AbstractExtension
 {
     /**
      * {@inheritdoc}
@@ -25,7 +26,7 @@ class PaymentInformation extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter(
+            new \Twig\TwigFilter(
                 'paymentLabel',
                 [
                     $this,
@@ -36,7 +37,7 @@ class PaymentInformation extends \Twig_Extension
                     'is_safe'    => ['html']
                 ]
             ),
-            new \Twig_SimpleFilter(
+            new \Twig\TwigFilter(
                 'paymentInfo',
                 [
                     $this,

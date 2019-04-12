@@ -10,6 +10,10 @@
 
 namespace AppBundle\Twig\Extension;
 
+use InvalidArgumentException;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
 /**
  * Twig extension for fast creation of glyphs
  *
@@ -17,7 +21,7 @@ namespace AppBundle\Twig\Extension;
  *
  * @package AppBundle\Twig\Extension
  */
-class BootstrapGlyph extends \Twig_Extension
+class BootstrapGlyph extends AbstractExtension
 {
 
     /**
@@ -309,7 +313,7 @@ class BootstrapGlyph extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'glyph',
                 array($this,
                       'bootstrapGlyph'
@@ -328,12 +332,12 @@ class BootstrapGlyph extends \Twig_Extension
      * @param   string      $glyph Glyph name
      * @param   string|null $title Title text for glyph icon if not null
      * @return  string             Html bootstrap glyph snippet
-     * @throws  \InvalidArgumentException   If transmitted glyph is not available
+     * @throws  InvalidArgumentException   If transmitted glyph is not available
      */
     public function bootstrapGlyph($glyph, string $title = null)
     {
         if (!self::isGlyhiconAvailable($glyph)) {
-            throw new \InvalidArgumentException('Transmitted glyph is not available');
+            throw new InvalidArgumentException('Transmitted glyph is not available');
         }
 
         $attributes = [];
