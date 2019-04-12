@@ -11,15 +11,15 @@
 namespace AppBundle\Twig;
 
 use Swift_Message;
-use Twig_Environment;
-use Twig_Template;
+use Twig\Environment;
+use Twig\Template;
 
 class MailGenerator
 {
     /**
      * Twig environment used for rendering
      *
-     * @var Twig_Environment
+     * @var Environment
      */
     protected $twig;
 
@@ -41,10 +41,10 @@ class MailGenerator
      * Create new mail generator
      *
      * @param string              $mailerAddress The e-mail address used for the "from" field of emails
-     * @param Twig_Environment    $twig          Twig environment used for rendering
+     * @param Environment    $twig          Twig environment used for rendering
      * @param GlobalCustomization $customization Customization provider service
      */
-    public function __construct($mailerAddress, Twig_Environment $twig, GlobalCustomization $customization)
+    public function __construct($mailerAddress, Environment $twig, GlobalCustomization $customization)
     {
         $this->mailerAddress = $mailerAddress;
         $this->twig          = $twig;
@@ -67,7 +67,7 @@ class MailGenerator
         $organizationName  = $this->customization->organizationName();
         $appTitle          = $this->customization->title();
 
-        /** @var Twig_Template $template */
+        /** @var Template $template */
         $template = $this->twig->loadTemplate($path); // Define your own schema
 
         $subject  = $template->renderBlock('subject', $parameters);

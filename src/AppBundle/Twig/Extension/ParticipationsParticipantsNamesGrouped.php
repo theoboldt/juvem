@@ -15,7 +15,6 @@ use AppBundle\Entity\Participation;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-use Twig_Environment;
 
 /**
  * Twig extension for fast creation of glyphs
