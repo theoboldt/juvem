@@ -27,6 +27,13 @@
                         <a href="{{ path('fos_user_change_password') }}"
                            class="btn btn-default">{{ 'wrench'|glyph }} Passwort <span class="hidden-xs">ändern</span></a>
                     </div>
+
+                    <button type="button" class="btn btn-default" data-element="activebutton" data-entity="User"
+                            data-property="isExcludeHelpTabindex" data-entity-id="__self__"
+                            data-token="{{ csrf_token('User' ~ 'isExcludeHelpTabindex' ~ '__self__' ) }}"
+                            data-button-enable-label="Hinweisknöpfe beim navigieren mit Tab überspringen" data-button-enable-glyph="fast-forward"
+                            data-button-disable-label="Hinweisknöpfe beim navigieren mit Tab mit einbeziehen"
+                            data-button-disable-glyph="transfer">{{ 'option-horizontal'|glyph }}</button>
                 </div>
             </div>
         </div>

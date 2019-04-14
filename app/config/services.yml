@@ -69,6 +69,12 @@ services:
             - '%customization.logo_website%'
         public: true
         lazy: true
+    app.twig_tab_index_skip:
+        class: AppBundle\Twig\TabIndexSkip
+        public: false
+        arguments:
+            - '@security.token_storage'
+        lazy: true
     app.twig_mail_generator:
         class: AppBundle\Twig\MailGenerator
         arguments: ['%mailer_address%', '@twig', '@app.twig_global_customization']

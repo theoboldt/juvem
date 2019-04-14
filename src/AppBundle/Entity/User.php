@@ -95,6 +95,15 @@ class User extends BaseUser
      * @ORM\Column(type="text", name="settings")
      */
     protected $settings = '[]';
+    
+    
+    /**
+     * Defines if help buttons should be excluded from tabindex in forms for this user
+     *
+     * @ORM\Column(type="boolean", name="is_exclude_help_tabindex", options={"default" : "0"})
+     * @var bool
+     */
+    protected $isExcludeHelpTabindex = false;
 
     /**
      * CONSTRUCTOR
@@ -308,5 +317,25 @@ class User extends BaseUser
      */
     public function userFullname() {
         return $this->fullname();
+    }
+    
+    /**
+     * Define if help buttons should be excluded from tabindex in forms for this user
+     *
+     * @return bool
+     */
+    public function isExcludeHelpTabindex(): bool
+    {
+        return $this->isExcludeHelpTabindex;
+    }
+    
+    /**
+     * Determine if help buttons should be excluded from tabindex in forms for this user
+     *
+     * @param bool $isExcludeHelpTabindex
+     */
+    public function setIsExcludeHelpTabindex(bool $isExcludeHelpTabindex): void
+    {
+        $this->isExcludeHelpTabindex = $isExcludeHelpTabindex;
     }
 }

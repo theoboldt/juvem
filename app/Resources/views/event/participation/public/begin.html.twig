@@ -120,7 +120,7 @@
                                                 <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
                                                 {{ form_widget(formElement.number) }}
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default" data-toggle="popover"
+                                                    <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
                                                             data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
                                                         <span class="glyphicon glyphicon-question-sign"></span>
                                                     </button>
@@ -134,7 +134,7 @@
                                         <div class="input-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
                                             {{ form_widget(formElement.description) }}
                                             <span class="input-group-btn">
-                                                <button type="button" class="btn btn-default" data-toggle="popover"
+                                                <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
                                                         data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
                                                     <span class="glyphicon glyphicon-question-sign"></span>
                                                 </button>
@@ -239,7 +239,7 @@
                                         <div class="form-group">
                                             {{ form_label(formElement.infoMedical) }}
                                             <button type="button" class="btn btn-default btn-xs btn-round"
-                                                    data-toggle="popover"
+                                                    data-toggle="popover"{{ tab.skip|raw }}
                                                     data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir ohne schriftliche Anweisungen Teilnehmern keine Medikamente verabreichen dürfen.)">
                                                 <span class="glyphicon glyphicon-question-sign"></span>
                                             </button>
@@ -251,7 +251,7 @@
                                         <div class="form-group">
                                             {{ form_label(formElement.infoGeneral) }}
                                             <button type="button" class="btn btn-default btn-xs btn-round"
-                                                    data-toggle="popover"
+                                                    data-toggle="popover"{{ tab.skip|raw }}
                                                     data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
                                                 <span class="glyphicon glyphicon-question-sign"></span>
                                             </button>
@@ -263,7 +263,7 @@
                                         <div class="form-group">
                                             {{ form_label(formElement.food) }}
                                             <button type="button" class="btn btn-default btn-xs btn-round"
-                                                    data-toggle="popover"
+                                                    data-toggle="popover"{{ tab.skip|raw }}
                                                     data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
                                                 <span class="glyphicon glyphicon-question-sign"></span>
                                             </button>

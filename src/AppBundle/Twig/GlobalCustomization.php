@@ -10,7 +10,7 @@
 
 namespace AppBundle\Twig;
 
-use Twig_Environment;
+use \Twig\Environment;
 
 /**
  * Twig global for placing installation based app names and legal notices
@@ -24,7 +24,7 @@ class GlobalCustomization
     /**
      * Twig environment used for rendering
      *
-     * @var Twig_Environment
+     * @var Environment
      */
     protected $twig;
 
@@ -125,29 +125,29 @@ class GlobalCustomization
      * @var null
      */
     private $privacyResponsible;
-
+    
     /**
      * Customization constructor
      *
-     * @param Twig_Environment $twig               Twig environment used for rendering
-     * @param string           $rootDir            Applications root dir
-     * @param string           $appTitle           Name of app
-     * @param string           $organizationName   Name of organization
-     * @param string           $addressStreet      Address of organization, street name
-     * @param string           $addressPostalCode  Address of organization, postal code
-     * @param string           $addressLocality    Address of organization, city
-     * @param string           $numberPhone        Phone number of organization
-     * @param string           $numberFax          Fax number of organization
-     * @param string           $email              E-mail address of organization
-     * @param null             $privacyResponsible Name of person responsible for data privacy
-     * @param string|null      $website            Website of organization
-     * @param string|null      $facebook           Facebook link if available
-     * @param string|null      $juvemWebsite       Juvem app website base url
-     * @param string|null      $logoLink           If configured, link of application logo will redirect to specified
+     * @param Environment $twig                    Twig environment used for rendering
+     * @param string $rootDir                      Applications root dir
+     * @param string $appTitle                     Name of app
+     * @param string $organizationName             Name of organization
+     * @param string $addressStreet                Address of organization, street name
+     * @param string $addressPostalCode            Address of organization, postal code
+     * @param string $addressLocality              Address of organization, city
+     * @param string $numberPhone                  Phone number of organization
+     * @param string $numberFax                    Fax number of organization
+     * @param string $email                        E-mail address of organization
+     * @param null $privacyResponsible             Name of person responsible for data privacy
+     * @param string|null $website                 Website of organization
+     * @param string|null $facebook                Facebook link if available
+     * @param string|null $juvemWebsite            Juvem app website base url
+     * @param string|null $logoLink                If configured, link of application logo will redirect to specified
      *                                             url
      */
     public function __construct(
-        Twig_Environment $twig,
+        Environment $twig,
         $rootDir,
         $appTitle,
         $organizationName,

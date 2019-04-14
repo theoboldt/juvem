@@ -10,7 +10,10 @@
 
 namespace AppBundle\Twig\Extension;
 
-class BootstrapTableFilter extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
+class BootstrapTableFilter extends AbstractExtension
 {
     /**
      * {@inheritdoc}
@@ -18,7 +21,7 @@ class BootstrapTableFilter extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'tableFilterButton',
                 array($this,
                       'bootstrapTableFilterButton'
@@ -27,7 +30,7 @@ class BootstrapTableFilter extends \Twig_Extension
                       'is_safe'    => array('html')
                 )
             ),
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'tableFilterButtonTri',
                 array($this,
                       'bootstrapTableFilterButtonTri'
@@ -36,7 +39,7 @@ class BootstrapTableFilter extends \Twig_Extension
                       'is_safe'    => array('html')
                 )
             ),
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'tableFilterButtonTriParam',
                 [
                     $this,

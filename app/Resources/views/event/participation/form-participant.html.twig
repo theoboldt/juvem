@@ -15,7 +15,7 @@
     <div class="col-xs-12 col-sm-6 ">
         <div class="form-group">
             {{ form_label(form.food) }}
-            <button type="button" class="btn btn-default btn-xs btn-round"
+            <button type="button" class="btn btn-default btn-xs btn-round"{{ tab.skip|raw }}
                     data-toggle="popover"
                     data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
                 {{ 'question-sign'|glyph }}
@@ -41,7 +41,7 @@
     <div class="col-xs-12 col-sm-6">
         <div class="form-group">
             {{ form_label(form.infoMedical) }}
-            <button type="button" class="btn btn-default btn-xs btn-round"
+            <button type="button" class="btn btn-default btn-xs btn-round"{{ tab.skip|raw }}
                     data-toggle="popover"
                     data-content="Leidet ihr Kind an Allergien oder Krankheiten? Muss ihr Kind während der Veranstaltung Medikamente einnehmen? (Bitte beachten Sie dabei, dass wir ohne schriftliche Anweisungen Teilnehmern keine Medikamente verabreichen dürfen.)">
                 {{ 'question-sign'|glyph }}
@@ -53,7 +53,7 @@
     <div class="col-xs-12 col-sm-6">
         <div class="form-group">
             {{ form_label(form.infoGeneral) }}
-            <button type="button" class="btn btn-default btn-xs btn-round"
+            <button type="button" class="btn btn-default btn-xs btn-round"{{ tab.skip|raw }}
                     data-toggle="popover"
                     data-content="Hier können Sie weiter Dinge angeben, die durch die anderen Felder nicht abgedeckt werden und die wir über ihr Kind wissen sollten. ">
                 {{ 'question-sign'|glyph }}
@@ -74,7 +74,7 @@
                         {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
                     {%- endif -%}
                     {% if acquisitionField.formDescription %}
-                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
+                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"{{ tab.skip|raw }}
                                 data-content="{{ acquisitionField.formDescription }}">
                             {{ 'question-sign'|glyph }}
                         </button>

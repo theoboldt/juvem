@@ -86,6 +86,7 @@ twig:
         featureNewsletter: "%feature.newsletter%"
         themeColor: "%customization.theme_color%"
         localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
+        tab: '@app.twig_tab_index_skip'
 
 # Doctrine Configuration
 doctrine:

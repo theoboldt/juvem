@@ -10,12 +10,16 @@
 
 namespace AppBundle\Twig\Extension;
 
-class ModalDialog extends \Twig_Extension
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
+class ModalDialog extends AbstractExtension
 {
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'modalDialog',
                 array($this,
                       'modalDialog'
@@ -28,15 +32,15 @@ class ModalDialog extends \Twig_Extension
         );
 
     }
-
+    
     /**
      * Create html for a bootstrap glyph
      *
-     * @param \Twig_Environment $twig
+     * @param Environment $twig
      * @return string Html bootstrap glyph snippet
      * @internal param string $glyph Glyph name
      */
-    public function modalDialog(\Twig_Environment $twig, $title)
+    public function modalDialog(Environment $twig, $title)
     {
         $data = array('modalId'    => 'xxx',
                       'modalTitle' => $title,

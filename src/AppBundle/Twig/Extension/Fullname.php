@@ -12,6 +12,8 @@ namespace AppBundle\Twig\Extension;
 
 use AppBundle\Entity\HumanTrait;
 use AppBundle\Entity\User;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Twig extension for fast creation of glyphs
@@ -20,7 +22,7 @@ use AppBundle\Entity\User;
  *
  * @package AppBundle\Twig\Extension
  */
-class Fullname extends \Twig_Extension
+class Fullname extends AbstractExtension
 {
     /**
      * {@inheritdoc}
@@ -28,7 +30,7 @@ class Fullname extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'fullname',
                 array($this,
                       'fullname'

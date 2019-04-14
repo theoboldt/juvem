@@ -51,7 +51,7 @@
                                     <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
                                     {{ form_widget(formElement.number) }}
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" data-toggle="popover"
+                                        <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
                                                 data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
                                             <span class="glyphicon glyphicon-question-sign"></span>
                                         </button>
@@ -65,7 +65,7 @@
                             <div class="input-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
                                 {{ form_widget(formElement.description) }}
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" data-toggle="popover"
+                                    <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
                                             data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
                                         <span class="glyphicon glyphicon-question-sign"></span>
                                     </button>

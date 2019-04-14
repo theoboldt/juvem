@@ -16,7 +16,7 @@ $(function () {
                     input = element.find('input');
 
                 if (input.val() == lactoseFreeOption && !element.find('button').length) {
-                    element.append(' <button type="button" class="btn btn-default btn-xs btn-round">' +
+                    element.append(' <button type="button" class="btn btn-default btn-xs btn-round" tabindex="-1">' +
                         '<span class="glyphicon glyphicon-question-sign"></span>' +
                         '</button>');
                     button = element.find('button');

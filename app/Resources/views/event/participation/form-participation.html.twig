@@ -51,7 +51,7 @@
                         {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
                     {%- endif -%}
                     {% if acquisitionField.formDescription %}
-                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
+                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"{{ tab.skip|raw }}
                                 data-content="{{ acquisitionField.formDescription }}">
                             <span class="glyphicon glyphicon-question-sign"></span>
                         </button>

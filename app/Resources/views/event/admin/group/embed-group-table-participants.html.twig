@@ -11,8 +11,8 @@
         <tr>
             <th data-field="aid" data-sortable="true" data-visible="false">#</th>
             <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs<wbr>nummer</th>
-            <th data-field="nameFirst" data-sortable="true">Vorname</th>
             <th data-field="nameLast" data-sortable="true">Nachname</th>
+            <th data-field="nameFirst" data-sortable="true">Vorname</th>
             <th data-field="gender" data-sortable="true" data-visible="false">Geschlecht</th>
             {% for attribute in event.getAcquisitionAttributes(true, false, false, true, true) %}
                 <th data-field="participation_acq_field_{{ attribute.getBid }}" data-sortable="true"
