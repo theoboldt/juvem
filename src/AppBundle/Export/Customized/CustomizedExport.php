@@ -22,6 +22,7 @@ use AppBundle\Export\Sheet\ParticipationsSheet;
 use AppBundle\Export\Sheet\SheetRequiringExplanationInterface;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Twig\GlobalCustomization;
+use Exception;
 
 class CustomizedExport extends Export
 {
@@ -98,7 +99,7 @@ class CustomizedExport extends Export
     /**
      * Attach additional participation sheet to this export
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function processParticipationSheet() {
         $participations = [];
@@ -123,7 +124,7 @@ class CustomizedExport extends Export
     /**
      * Add additional sheet containing participants list with address
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function processSubventionRequestSheet() {
         $sheet = $this->addSheet();
@@ -139,7 +140,8 @@ class CustomizedExport extends Export
     public function process()
     {
         $worksheet = $this->addSheet();
-        $worksheet->setTitle($this->configuration['title']);
+        $title     = mb_substr($this->configuration['title'], 0, 30, 'UTF-8');
+        $worksheet->setTitle($title);
 
         $participantsSheet = new CustomizedParticipantsSheet(
             $worksheet, $this->event, $this->participants, $this->configuration, $this->paymentManager
