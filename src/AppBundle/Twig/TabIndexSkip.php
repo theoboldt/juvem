@@ -22,15 +22,15 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
  */
 class TabIndexSkip
 {
-    
+
     /**
      * User provider
      *
      * @var TokenStorage
      */
     protected $tokenStorage = null;
-    
-    
+
+
     /**
      * Get user if available
      *
@@ -39,12 +39,13 @@ class TabIndexSkip
     private function getUser(): ?User
     {
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
-            return $this->tokenStorage->getToken()->getUser();
+            $user = $this->tokenStorage->getToken()->getUser();
+            return $user instanceof User ? $user : null;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Customization constructor
      *
@@ -56,7 +57,7 @@ class TabIndexSkip
     {
         $this->tokenStorage = $tokenStorage;
     }
-    
+
     /**
      * If user has tabexclude activated, related html is inserted
      *
@@ -70,5 +71,5 @@ class TabIndexSkip
             return '';
         }
     }
-    
+
 }
