@@ -569,6 +569,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         $participation->setAddressCity($participationPrevious->getAddressCity());
         $participation->setAddressStreet($participationPrevious->getAddressStreet());
         $participation->setAddressZip($participationPrevious->getAddressZip());
+        $participation->setAddressCountry($participationPrevious->getAddressCountry());
         $participation->setEmail($participationPrevious->getEmail());
         $participation->setSalutation($participationPrevious->getSalutation());
 

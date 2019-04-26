@@ -33,6 +33,15 @@ trait AddressTrait
 
 
     /**
+     * Related country
+     *
+     * @ORM\Column(type="string", length=128, name="address_country")
+     * @Assert\NotBlank()
+     */
+    protected $addressCountry = 'Deutschland'; //configuring default
+
+
+    /**
      * Set addressStreet
      *
      * @param string $addressStreet
@@ -102,5 +111,21 @@ trait AddressTrait
     public function getAddressZip()
     {
         return $this->addressZip;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getAddressCountry()
+    {
+        return $this->addressCountry;
+    }
+    
+    /**
+     * @param string $addressCountry
+     */
+    public function setAddressCountry(string $addressCountry)
+    {
+        $this->addressCountry = $addressCountry;
     }
 }
