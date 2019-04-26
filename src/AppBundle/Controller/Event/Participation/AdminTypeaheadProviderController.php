@@ -28,8 +28,7 @@ class AdminTypeaheadProviderController extends Controller
     /**
      * Collects and provides typeahead values for transmitted event
      *
-     * @Route("/admin/event/{eid}/typeahead/proposals.json", requirements={"eid": "\d+"},
-     *                                                name="admin_event_typeahead_proposals")
+     * @Route("/admin/event/{eid}/typeahead/proposals.json", requirements={"eid": "\d+"}, name="admin_event_typeahead_proposals")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('participants_read', event)")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
@@ -39,19 +38,20 @@ class AdminTypeaheadProviderController extends Controller
         /** @var ParticipationRepository $repository */
         $repository   = $this->getDoctrine()->getRepository(Participation::class);
         $lastModified = $repository->getLastModificationForParticipationOrParticipantEvent($event);
-        $expectedEtag = sha1($event->getEid().'-'.$lastModified);
+        $expectedEtag = sha1($event->getEid() . '-' . $lastModified);
         foreach ($request->getETags() as $givenEtag) {
             if (trim($givenEtag, " \t\n\r\0\x0B\"") === $expectedEtag || $expectedEtag === '*') {
                 return Response::create('', Response::HTTP_NOT_MODIFIED);
             }
         }
+        $participation = $repository->getFieldProposals();
         
         /** @var AcquisitionAttributeRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Attribute::class);
         $attributes = $repository->findTextualAttributesForEvent($event);
-        $values = $repository->findAllAttributeValuesForFillouts($attributes);
+        $fillouts     = $repository->findAllAttributeValuesForFillouts($attributes);
         
-        $response = new JsonResponse(['proposals' => $values]);
+        $response = new JsonResponse(['proposals' => array_merge($fillouts, $participation)]);
         $response->setLastModified($lastModified ? new \DateTime($lastModified) : null)
                  ->setMaxAge(1 * 60 * 60)
                  ->setETag($expectedEtag)

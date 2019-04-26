@@ -228,20 +228,47 @@ class ParticipationRepository extends EntityRepository
         $eid = $event ? $event->getEid() : 0;
         $qb = $this->_em->getConnection()->createQueryBuilder();
         $qb->select('MAX(a.modified_at) AS max_modified_at')
-           ->from('participant', 'a');
+           ->from('participant', 'a')
+           ->andWhere('a.deleted_at IS NULL');
         if ($event) {
             $qb->innerJoin('a', 'participation', 'p', 'a.pid = p.pid')
-               ->where($qb->expr()->eq('p.eid', $eid));
+               ->andWhere($qb->expr()->eq('p.eid', $eid));
         }
         $modificatioDates[] = $qb->execute()->fetchColumn();
         
         $qb = $this->_em->getConnection()->createQueryBuilder();
         $qb->select('MAX(p.modified_at) AS max_modified_at')
-           ->from('participation', 'p');
+           ->from('participation', 'p')
+           ->andWhere('p.deleted_at IS NULL');
         if ($event) {
-            $qb->where($qb->expr()->eq('p.eid', $eid));
+            $qb->andWhere($qb->expr()->eq('p.eid', $eid));
         }
         $modificatioDates[] = $qb->execute()->fetchColumn();
         return max($modificatioDates);
+    }
+    
+    /**
+     * Get proposals for several fields of participation table
+     *
+     * @return array
+     */
+    public function getFieldProposals(): array
+    {
+        $result = [];
+        
+        foreach (['address_street', 'address_city', 'address_zip'] as $column) {
+            $qb = $this->_em->getConnection()->createQueryBuilder();
+            $qb->select($column)
+               ->from('participation', 'p')
+               ->andWhere('p.deleted_at IS NULL')
+               ->groupBy($column);
+            
+            $queryResult = $qb->execute();
+            while ($row = $queryResult->fetch()) {
+                $result[$column][] = $row[$column];
+            }
+        }
+        
+        return $result;
     }
 }

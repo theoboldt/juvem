@@ -54,9 +54,32 @@ class ParticipationBaseType extends AbstractType
             )
             ->add('nameFirst', TextType::class, ['label' => 'Vorname', 'required' => true])
             ->add('nameLast', TextType::class, ['label' => 'Nachname', 'required' => true])
-            ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => true])
-            ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => true])
-            ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => true])
+            ->add(
+                'addressStreet', TextType::class,
+                [
+                    'label'    => 'Straße u. Hausnummer',
+                    'required' => true,
+                    'attr'     => ['data-typeahead-source' => 'address_street']
+                ]
+            )
+            ->add(
+                'addressZip',
+                TextType::class,
+                [
+                    'label'    => 'Postleitzahl',
+                    'required' => true,
+                    'attr'     => ['data-typeahead-source' => 'address_zip']
+                ]
+            )
+            ->add(
+                'addressCity',
+                TextType::class,
+                [
+                    'label'    => 'Stadt',
+                    'required' => true,
+                    'attr'     => ['data-typeahead-source' => 'address_city']
+                ]
+            )
             ->add('email', EmailType::class, ['label' => 'E-Mail', 'required' => true])
             ->add(
                 'phoneNumbers',
