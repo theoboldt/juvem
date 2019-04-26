@@ -3,29 +3,31 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "grunt": "^1.0.3",
+    "grunt": "^1.0.4",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "^1.0",
     "grunt-contrib-copy": "^1.0",
     "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-jshint": "^2.0.0",
+    "grunt-contrib-jshint": "^2.1.0",
     "grunt-contrib-sass": "^1.0",
     "grunt-contrib-uglify-es": "^3.3",
     "grunt-contrib-watch": "^1.1.0"
   },
   "dependencies": {
-    "npm": "^6.6.0",
-    "lodash": ">=4.17.11",
-    "merge": ">=1.2.1",
+    "bootstrap-3-typeahead": "^4.0",
     "bootstrap-sass": "^3.4.1",
     "bootstrap-table": "<=1.12",
     "ekko-lightbox": "^5.3.0",
-    "imagesloaded": "^4.1.4",
-    "jquery": "^3.3.1",
-    "jquery-number": "^2.1.6",
+    "imagesloaded": "^4.1",
+    "jquery": "^3.4.0",
+    "jquery-number": "^2.1",
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
     "justified-layout": "^2.1",
-    "masonry-layout": "^4.2.2"
+    "lodash": ">=4.17.11",
+    "masonry-layout": "^4.2",
+    "merge": ">=1.2.1",
+    "tar": ">=4.4.2",
+    "npm": "^6.9.0"
   }
 }
