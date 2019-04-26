@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 
 trait AddressTrait
 {
+    
     /**
      * @ORM\Column(type="string", length=128, name="address_street")
      * @Assert\NotBlank()
@@ -38,7 +39,7 @@ trait AddressTrait
      * @ORM\Column(type="string", length=128, name="address_country")
      * @Assert\NotBlank()
      */
-    protected $addressCountry = 'Deutschland'; //configuring default
+    protected $addressCountry = Event::DEFAULT_COUNTRY; //configuring default
 
 
     /**

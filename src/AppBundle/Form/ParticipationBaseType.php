@@ -80,6 +80,15 @@ class ParticipationBaseType extends AbstractType
                     'attr'     => ['data-typeahead-source' => 'address_city']
                 ]
             )
+            ->add(
+                'addressCountry',
+                TextType::class,
+                [
+                    'label'    => 'Land',
+                    'required' => true,
+                    'attr'     => ['data-typeahead-source' => 'address_country']
+                ]
+            )
             ->add('email', EmailType::class, ['label' => 'E-Mail', 'required' => true])
             ->add(
                 'phoneNumbers',

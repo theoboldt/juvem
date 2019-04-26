@@ -62,6 +62,14 @@ class EmployeeType extends AbstractType
             ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer'])
             ->add('addressZip', TextType::class, ['label' => 'Postleitzahl'])
             ->add('addressCity', TextType::class, ['label' => 'Stadt'])
+            ->add(
+                'addressCountry',
+                TextType::class,
+                [
+                    'label'    => 'Land',
+                    'required' => true
+                ]
+            )
             ->add('email', EmailType::class, ['label' => 'E-Mail'])
             ->add(
                 'phoneNumbers',

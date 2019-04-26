@@ -132,6 +132,14 @@ class EventType extends AbstractType
             ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => false])
             ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => false])
             ->add(
+                'addressCountry',
+                TextType::class,
+                [
+                    'label'    => 'Land',
+                    'required' => true
+                ]
+            )
+            ->add(
                 'hasConfirmationMessage', CheckboxType::class,
                 array_merge($smartCheckbox, array('label' => 'Bestätigungs-Text'))
             )

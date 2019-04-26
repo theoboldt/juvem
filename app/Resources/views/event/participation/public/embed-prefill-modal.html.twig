@@ -27,7 +27,8 @@
                                                 <p>{{ participation.fullname(participation.nameLast, participation.nameFirst) }}</p>
 
                                                 <p>{{ participation.addressStreet }}
-                                                    , {{ participation.addressZip }} {{ participation.addressCity }}</p>
+                                                    , {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                                    {{ participation.addressCountry }}{% endif %}</p>
                                             </div>
                                             <div class="col-xs-12 col-sm-7">
                                                 <ul>

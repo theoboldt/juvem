@@ -24,7 +24,8 @@ DATEN DER ELTERN:
   Anschrift:
     {{ participation.getName() }}
     {{ participation.addressStreet }}
-    {{ participation.addressZip }} {{ participation.addressCity }}
+    {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}
+    {{ participation.addressCountry }}{% endif %}
   E-Mail Adresse: {{ participation.email }}
 {% for fillout in  participation.acquisitionAttributeFillouts %}
     {% if fillout.attribute.public %}{{ fillout.attribute.formTitle }}: {{ fillout }}{% endif %}{% endfor %}
@@ -107,7 +108,8 @@ Mit besten Grüßen,
                 <td>
                         <strong>{{ participation.getName() }}</strong><br>
                         {{ participation.addressStreet }}<br>
-                        {{ participation.addressZip }} {{ participation.addressCity }}
+                        {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                        {{ participation.addressCountry }}{% endif %}
                 </td>
             </tr>
             <tr>

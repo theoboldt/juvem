@@ -57,7 +57,8 @@
                                 <address>
                                     <strong>{{ participation.getName() }}</strong><br>
                                     {{ participation.addressStreet }}<br>
-                                    {{ participation.addressZip }} {{ participation.addressCity }}
+                                    {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                                    {{ participation.addressCountry }}{% endif %}
                                 </address>
                             </dd>
                             <dt>E-Mail Adresse</dt>

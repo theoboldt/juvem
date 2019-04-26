@@ -232,7 +232,8 @@
                                 <address>
                                     <strong>{{ employee.fullname() }}</strong><br>
                                     {{ employee.addressStreet }}<br>
-                                    {{ employee.addressZip }} {{ employee.addressCity }}
+                                    {{ employee.addressZip }} {{ employee.addressCity }}{% if employee.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                                    {{ employee.addressCountry }}{% endif %}
                                 </address>
                             </dd>
                             <dt>E-Mail Adresse</dt>

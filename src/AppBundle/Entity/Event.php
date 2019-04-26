@@ -37,6 +37,8 @@ class Event
     const DATE_FORMAT_TIME      = 'H:i';
     const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
 
+    const DEFAULT_COUNTRY = 'Deutschland';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

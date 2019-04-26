@@ -119,6 +119,7 @@
                                 <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
                                     {% if event.addressStreet %}{% if not event.addressTitle %}<strong>{% endif %}<span itemprop="streetAddress">{{ event.addressStreet }}</span>{% if not event.addressTitle %}</strong>{% endif %}<br>{% endif %}
                                     <span itemprop="postalCode">{{ event.addressZip }}</span> <span itemprop="addressLocality">{{ event.addressCity }}</span>
+                                    <br><span itemprop="addressCountry" {% if event.addressCountry == constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}style="visibility: hidden;"{% endif %}>{{ event.addressCountry }}</span>
                                 </span>
                             </address>
                         </div>

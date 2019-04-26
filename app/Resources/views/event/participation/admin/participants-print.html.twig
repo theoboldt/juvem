@@ -185,7 +185,8 @@
                                     {{ participant.participation.salutation }}
                                     <strong>{{ participant.participation.getName() }}</strong><br>
                                     {{ participant.participation.addressStreet }}<br>
-                                    {{ participant.participation.addressZip }} {{ participant.participation.addressCity }}
+                                    {{ participant.participation.addressZip }} {{ participant.participation.addressCity }}{% if participant.participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                                    {{ participant.participation.addressCountry }}{% endif %}
                                 </address>
                             </dd>
                         </dl>
