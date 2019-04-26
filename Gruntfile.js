@@ -53,6 +53,7 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
+                    'node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.js',
                     'node_modules/jquery-range/jquery.range.js',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',

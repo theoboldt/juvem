@@ -40,6 +40,64 @@ class AcquisitionAttributeRepository extends EntityRepository
     }
     
     /**
+     * Find list of all attributes used at event and using textual fillouts
+     *
+     * @param Event $event
+     * @return array|Attribute[]
+     */
+    public function findTextualAttributesForEvent(Event $event): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('a')
+           ->innerJoin('a.events', 'e')
+           ->andWhere('e.eid = :eid')
+           ->setParameter('eid', $event->getEid())
+           ->andWhere(
+               $qb->expr()->orX(
+                   'a.fieldType = :typeText',
+                   'a.fieldType = :typeTextArea',
+                   'a.fieldType = :typeNumber'
+               )
+           )
+           ->setParameter('typeText', \Symfony\Component\Form\Extension\Core\Type\TextType::class)
+           ->setParameter('typeTextArea', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class)
+           ->setParameter('typeNumber', \Symfony\Component\Form\Extension\Core\Type\NumberType::class);
+        $result = $qb->getQuery()->execute();
+        return $result;
+    }
+    
+    /**
+     * Find all unique fillout values for transmitted attributes
+     *
+     * @param array $attributes
+     * @return array
+     */
+    public function findAllAttributeValuesForFillouts(array $attributes): array
+    {
+        $bids = [];
+        /** @var Attribute $attribute */
+        foreach ($attributes as $attribute) {
+            $bids[] = $attribute->getBid();
+        }
+        if (!count($bids)) {
+            return [];
+        }
+        $qb = $this->_em->getConnection()->createQueryBuilder();
+        $qb->select('f.bid', 'f.value')
+           ->from('acquisition_attribute_fillout', 'f')
+           ->andWhere($qb->expr()->in('f.bid', $bids))
+           ->andWhere('f.value IS NOT NULL')
+           ->groupBy('f.bid', 'f.value');
+        
+        $result = [];
+        $queryResult = $qb->execute();
+        while ($row = $queryResult->fetch()) {
+            $result['acq_field_'.$row['bid']][] = $row['value'];
+        }
+        return $result;
+    }
+    
+    /**
      * Find all @see Attributes with their options having formula enabled not deleted
      *
      * @return array|Attribute[]

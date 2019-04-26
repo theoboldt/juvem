@@ -21,7 +21,7 @@
             <li class="active">Teilnehmerdaten bearbeiten</li>
         {% endblock %}
     {% endembed %}
-    <div class="container">
+    <div class="container" {% if is_granted('participants_read', event) %}data-provide-proposals="{{ event.eid }}"{% endif %}>
         {{ form_start(form) }}
         {% include '/event/participation/form-participant.html.twig' with {'form': form} %}
         <div class="row">

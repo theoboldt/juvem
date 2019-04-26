@@ -12,7 +12,7 @@
             <li class="active">Teilnahme erfassen</li>
         {% endblock %}
     {% endembed %}
-    <div class="container">
+    <div class="container" {% if is_granted('participants_read', event) %}data-provide-proposals="{{ event.eid }}"{% endif %}>
         {{ form_start(form) }}
         {% include '/event/participation/form-participation.html.twig' with {'form': form, 'acquisitionFields': acquisitionFieldsParticipation} %}
         {% embed 'event/admin/employee/embed-form-phone-numbers.html.twig' with {'formPhoneNumbers': form.phoneNumbers, 'labelAddNumber': 'Telefonnummer hinzufügen'} %}{% endembed %}

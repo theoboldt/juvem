@@ -73,6 +73,8 @@ trait AcquisitionAttributeIncludingTypeTrait
                         break;
                 }
             }
+            
+            $attributeOptions['attr'] = ['data-typeahead-source' => $attribute->getName()];
 
             $builder->add(
                 $attribute->getName(),

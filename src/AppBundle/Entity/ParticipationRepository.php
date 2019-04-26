@@ -215,4 +215,33 @@ class ParticipationRepository extends EntityRepository
 
         return $result;
     }
+    
+    /**
+     * Get last modified for transmitted event participations and participants
+     *
+     * @param Event|null $event
+     * @return string
+     */
+    public function getLastModificationForParticipationOrParticipantEvent(Event $event = null)
+    {
+        $modificatioDates = [];
+        $eid = $event ? $event->getEid() : 0;
+        $qb = $this->_em->getConnection()->createQueryBuilder();
+        $qb->select('MAX(a.modified_at) AS max_modified_at')
+           ->from('participant', 'a');
+        if ($event) {
+            $qb->innerJoin('a', 'participation', 'p', 'a.pid = p.pid')
+               ->where($qb->expr()->eq('p.eid', $eid));
+        }
+        $modificatioDates[] = $qb->execute()->fetchColumn();
+        
+        $qb = $this->_em->getConnection()->createQueryBuilder();
+        $qb->select('MAX(p.modified_at) AS max_modified_at')
+           ->from('participation', 'p');
+        if ($event) {
+            $qb->where($qb->expr()->eq('p.eid', $eid));
+        }
+        $modificatioDates[] = $qb->execute()->fetchColumn();
+        return max($modificatioDates);
+    }
 }

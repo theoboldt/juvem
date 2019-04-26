@@ -1,4 +1,11 @@
 $(function () {
+    var g = {};
+    $(g).bind('prototype-element.added', function (event, data) {
+        ensureLactoseFreeAnnotations();
+        addElementHandlers(data.element);
+        updateFieldProposals();
+    });
+
     /**
      * EVENT: Participate lactose-free food option force hint
      */
@@ -52,6 +59,60 @@ $(function () {
     };
     ensureLactoseFreeAnnotations();
 
+    var addElementHandlers = function (element) {
+        if (!element) {
+            return;
+        }
+        element.find('[data-toggle="popover"]').popover({
+            container: 'body',
+            placement: 'top',
+            html: true,
+            trigger: 'focus'
+            /*
+             }).click(function (e) {
+             e.preventDefault();
+             $(this).popover('toggle');
+             */
+        });
+    };
+
+    /**
+     * Add proposals for fillouts of autocomplete fields
+     */
+    var provideProposals = ($('[data-provide-proposals]').length > 0),
+        proposals = [],
+        updateFieldProposals = function () {
+            $.each(proposals, function (field, fieldProposals) {
+                $('[data-typeahead-source="' + field + '"]').each(function () {
+                    var el = $(this);
+                    el.attr('autocomplete', 'off');
+                    el.typeahead({source: fieldProposals});
+                });
+            })
+        };
+
+    if (provideProposals) {
+        var eid = $('[data-provide-proposals]').data('provide-proposals');
+        $.ajax({
+            url: '/admin/event/' + eid + '/typeahead/proposals.json',
+            type: 'GET',
+            success: function (result) {
+                if (!result || !result.proposals) {
+                    return;
+                }
+                proposals = result.proposals;
+                updateFieldProposals();
+            },
+            error: function () {
+                $(document).trigger('add-alerts', {
+                    message: 'Die Vorschläge für die Autovervollständigung konnten nicht geladen werden',
+                    priority: 'error'
+                });
+            }
+        });
+
+    }
+
     /**
      * EVENT: Handle via prototype injected forms
      */
@@ -81,20 +142,6 @@ $(function () {
                 }
             });
 
-            var addElementHandlers = function () {
-                element.find('[data-toggle="popover"]').popover({
-                    container: 'body',
-                    placement: 'top',
-                    html: true,
-                    trigger: 'focus'
-                    /*
-                     }).click(function (e) {
-                     e.preventDefault();
-                     $(this).popover('toggle');
-                     */
-                });
-            };
-
             element.data('index', element.find('.prototype-element').length);
             element.find('.prototype-add').on('click', function (e) {
                 e.preventDefault();
@@ -108,9 +155,9 @@ $(function () {
 
                 element.find('.prototype-elements').append(newForm);
 
-                ensureLactoseFreeAnnotations();
+                $(g).trigger('prototype-element.added', {'index': index, 'element': element});
             });
-            addElementHandlers();
         }
     });
-});
+})
+;
