@@ -342,6 +342,7 @@ class AdminSingleController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em                   = $this->getDoctrine()->getManager();
             $managedParticipation = $em->merge($participation);
+            $managedParticipation->setModifiedAtNow();
             $em->persist($managedParticipation);
             $em->flush();
             $this->addFlash(
@@ -399,6 +400,7 @@ class AdminSingleController extends Controller
                 $number->setParticipation($participation);
             }
 
+            $participation->setModifiedAtNow();
             $em->persist($participation);
             $em->flush();
 
@@ -450,6 +452,8 @@ class AdminSingleController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            /** @var Participant $managedParticipant */
+            $participant->setModifiedAtNow();
             $em->persist($participant);
             $em->flush();
 
