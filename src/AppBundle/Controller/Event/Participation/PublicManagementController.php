@@ -376,8 +376,7 @@ class PublicManagementController extends Controller
     public function addParticipantAction(Request $request, Participation $participation)
     {
         $user          = $this->getUser();
-        $participant   = new Participant();
-        $participant->setParticipation($participation);
+        $participant   = new Participant($participation);
         $event             = $participation->getEvent();
         $participationUser = $participation->getAssignedUser();
 

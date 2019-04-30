@@ -496,8 +496,7 @@ class AdminSingleController extends Controller
         $repository    = $this->getDoctrine()->getRepository(Participation::class);
         /** @var Participation $participation */
         $participation = $repository->findOneBy(array('pid' => $pid));
-        $participant   = new Participant();
-        $participant->setParticipation($participation);
+        $participant   = new Participant($participation);
         $event = $participation->getEvent();
         $this->denyAccessUnlessGranted('participants_edit', $event);
 
