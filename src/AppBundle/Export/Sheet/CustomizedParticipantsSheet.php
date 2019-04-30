@@ -14,6 +14,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -427,15 +428,21 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                         $optionKey = $choice->getId();
 
                         $optionLabel = $this->fetchChoiceOptionLabel($choice, $configOptionValue);
-                        $converter   = function (Fillout $fillout) use ($choice, $configOptionValue, $explanation) {
-                            foreach ($fillout->getSelectedChoices() as $selectedChoice) {
-                                if ($choice->getId() === $selectedChoice->getId()) {
-                                    if ($explanation) {
-                                        $explanation->register($choice);
+                        $converter   = function (Fillout $fillout = null) use ($choice, $configOptionValue, $explanation) {
+                            if ($fillout) {
+                                /** @var ChoiceFilloutValue $value */
+                                $value = $fillout->getValue();
+                                if ($value->getSelectedChoices()) {
+                                    foreach ($value->getSelectedChoices() as $selectedChoice) {
+                                        if ($choice->getId() === $selectedChoice->getId()) {
+                                            if ($explanation) {
+                                                $explanation->register($choice);
+                                            }
+                                            return 'x';
+                                        }
                                     }
-
-                                    return 'x';
                                 }
+            
                             }
                             return '';
                         };
