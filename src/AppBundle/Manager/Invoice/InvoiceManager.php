@@ -130,7 +130,9 @@ class InvoiceManager
             $priceTag = $this->paymentManager->getEntityPriceTag($participant);
             /** @var SummandInterface $summand */
             foreach ($priceTag->getSummands() as $summand) {
-                
+                if (!$summand instanceof BasePriceSummand && $summand->getValue(false) === 0) {
+                    continue;
+                }
                 if ($summand instanceof BasePriceSummand) {
                     $type        = 'Grundpreis';
                     $description = '';
