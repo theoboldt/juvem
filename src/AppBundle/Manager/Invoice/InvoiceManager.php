@@ -130,14 +130,19 @@ class InvoiceManager
             $priceTag = $this->paymentManager->getEntityPriceTag($participant);
             /** @var SummandInterface $summand */
             foreach ($priceTag->getSummands() as $summand) {
-                if (!$summand instanceof BasePriceSummand && $summand->getValue(false) === 0) {
+                $summandValueCents = $summand->getValue(false);
+                if (!$summand instanceof BasePriceSummand && $summandValueCents === 0) {
                     continue;
                 }
                 if ($summand instanceof BasePriceSummand) {
                     $type        = 'Grundpreis';
                     $description = '';
                 } elseif ($summand instanceof FilloutSummand) {
-                    $type        = 'Aufschlag/Rabatt';
+                    if ($summandValueCents > 0) {
+                        $type = 'Aufschlag';
+                    } else {
+                        $type = 'Rabatt';
+                    }
                     $description = ($summand instanceof AttributeAwareInterface)
                         ? $summand->getAttribute()->getFormTitle() : '';
                 } else {
