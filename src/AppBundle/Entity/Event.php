@@ -154,17 +154,36 @@ class Event
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageFilename")
      *
-     * @var File
+     * @var File|null
      */
     private $imageFile;
 
     /**
      * @ORM\Column(type="string", length=255, name="image_filename", nullable=true)
      *
-     * @var string
+     * @var string|null
      */
     private $imageFilename;
+    
+    /**
+     * @Vich\UploadableField(mapping="invoice_template", fileNameProperty="invoiceTemplateFilename")
+     * @Assert\Type(type="Symfony\Component\HttpFoundation\File\File")
+     * @Assert\File(
+     *     maxSize="5M",
+     *     mimeTypes={"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+     *     mimeTypesMessage="Eine Rechnungsvorlage muss vom Typ Open XML Format (DOCX) sein"
+     * )
+     * @var Vich\UploadableField|File|null
+     */
+    private $invoiceTemplateFile;
 
+    /**
+     * @ORM\Column(type="string", length=255, name="invoice_template_filename", nullable=true)
+     *
+     * @var string|null
+     */
+    private $invoiceTemplateFilename;
+    
     /**
      * Contains the acquisition attributes assigned to this event
      *
@@ -563,7 +582,7 @@ class Event
     {
         return $this->imageFile;
     }
-
+    
     /**
      * @param string $imageFilename
      */
@@ -579,7 +598,52 @@ class Event
     {
         return $this->imageFilename;
     }
+    
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     */
+    public function setInvoiceTemplateFile(File $template = null)
+    {
+        $this->invoiceTemplateFile = $template;
 
+        if ($template) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->modifiedAt = new \DateTime('now');
+        }
+    }
+
+    /**
+     * @return File
+     */
+    public function getInvoiceTemplateFile()
+    {
+        return $this->invoiceTemplateFile;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getInvoiceTemplateFilename(): ?string
+    {
+        return $this->invoiceTemplateFilename;
+    }
+    
+    /**
+     * @param string|null $invoiceTemplateFilename
+     */
+    public function setInvoiceTemplateFilename(?string $invoiceTemplateFilename): void
+    {
+        $this->invoiceTemplateFilename = $invoiceTemplateFilename;
+    }
+
+    
     /**
      * Add participation
      *

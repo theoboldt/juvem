@@ -111,18 +111,22 @@ class InvoiceManager
      */
     public function createInvoice(Participation $participation)
     {
-        $templatePath = $this->getInvoiceTemplatePath();
-        if (!file_exists($templatePath)) {
-            throw new \RuntimeException('No invoice template available');
+        $event = $participation->getEvent();
+        if ($event->getInvoiceTemplateFile()) {
+            $templatePath = $event->getInvoiceTemplateFile()->getPathname();
+        } else {
+            $templatePath = $this->getInvoiceTemplatePath();
+            if (!file_exists($templatePath)) {
+                throw new \RuntimeException('No invoice template available');
+            }
         }
+        $templateProcessor = new TemplateProcessor($templatePath);
         
         $toPayValue = $this->paymentManager->getToPayValueForParticipation($participation, false);
         $invoice    = new Invoice($participation, $toPayValue);
         $invoice->setCreatedBy($this->user);
         $this->em->persist($invoice);
         $this->em->flush();
-        
-        $templateProcessor = new TemplateProcessor($templatePath);
         
         $sumCents = 0;
         $elements = [];

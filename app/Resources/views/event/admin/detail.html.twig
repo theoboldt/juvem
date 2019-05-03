@@ -195,6 +195,9 @@
                     {% if event.hasWaitingListThreshold() %}
                         <span class="label label-primary">Warteliste ab {{ event.waitingListThreshold }} <abbr title="Teilnehmern">TN</abbr></span>
                     {% endif %}
+                    {% if event.invoiceTemplateFile %}
+                        <span class="label label-primary" title="Eine eigene Rechnungsvorlage ist konfiguriert">Rechnungsvorlage</span>
+                    {% endif %}
                 </p>
                 {{ event.getDescription|markdown }}
             </div>

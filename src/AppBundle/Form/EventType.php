@@ -24,6 +24,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
@@ -118,6 +119,16 @@ class EventType extends AbstractType
                 'download_uri' => false,
                 // not mandatory, default is true
             )
+            )
+            ->add(
+                'invoiceTemplateFile',
+                VichFileType::class,
+                [
+                    'label'        => 'Rechnungs-Vorlage',
+                    'required'     => false,
+                    'allow_delete' => true,
+                    'download_uri' => false,
+                ]
             )
             ->add(
                 'ageRange', TextType::class,

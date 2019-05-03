@@ -188,18 +188,24 @@ class AdminInvoiceController extends Controller
     /**
      * Download invoice template
      *
-     * @Route("/admin/invoice/template.docx", name="admin_invoice_template_download")
+     * @Route("/admin/event/{eid}/invoice/template.docx", requirements={"eid": "\d+"}, name="admin_invoice_template_download")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('participants_read', event)")
      * @return BinaryFileResponse
      */
-    public function downloadInvoiceTemplateAction()
+    public function downloadInvoiceTemplateAction(Event $event)
     {
-        $invoiceManager = $this->get('app.payment.invoice_manager');
-        if (!file_exists($invoiceManager->getInvoiceTemplatePath())) {
-            throw new NotFoundHttpException('There is no template present');
+        if ($event->getInvoiceTemplateFile()) {
+            $response = new BinaryFileResponse($event->getInvoiceTemplateFile());
+        } else {
+            $invoiceManager = $this->get('app.payment.invoice_manager');
+            if (!file_exists($invoiceManager->getInvoiceTemplatePath())) {
+                throw new NotFoundHttpException('There is no template present');
+            }
+            $response = new BinaryFileResponse($invoiceManager->getInvoiceTemplatePath());
         }
-
-        $response = new BinaryFileResponse($invoiceManager->getInvoiceTemplatePath());
+    
         $response->headers->set(
             'Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
@@ -207,7 +213,7 @@ class AdminInvoiceController extends Controller
             'Content-Disposition',
             $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'template.docx')
         );
-
+    
         return $response;
     }
 
