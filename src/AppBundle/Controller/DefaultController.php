@@ -92,6 +92,7 @@ class DefaultController extends Controller
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
      * @Route("/robots.txt")
+     * @Route("/apple-touch-icon.png")
      * @Route("apple-touch-icon-{a}x{b}{c}.png", requirements={"a" = "\d+", "b" = "\d+", "c" = "-precomposed|"})
      */
     public function ressourceUnavailableAction()
