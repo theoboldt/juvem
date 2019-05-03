@@ -141,12 +141,15 @@ class GroupFieldAssignEntitiesType extends AbstractType
                                     default:
                                         throw new InvalidArgumentException('Unknown entity class transmitted');
                                 }
-                                if ($value->getGroupId() === $currentGroupOption->getId()) {
+                                $groupId = $value->getGroupId();
+                                if ($groupId === null) {
+                                    continue;
+                                } elseif ($groupId === $currentGroupOption->getId()) {
                                     if (isset($entities[$id])) {
                                         unset($entities[$id]);
                                     }
                                 } else {
-                                    $option = $attribute->getChoiceOption($value->getGroupId());
+                                    $option = $attribute->getChoiceOption($groupId);
                                     if (!$option) {
                                         continue;
                                     }

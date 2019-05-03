@@ -119,11 +119,15 @@ class AttributeChoiceOptionUsageDistribution
             
             )
         );
+        $qb->andWhere('f.value is NOT NULL AND f.value <> \'\'');
         
         $query = $qb->getQuery();
         
         $this->distribution = [];
         foreach ($query->execute() as $row) {
+            if (empty($row['value'])) {
+                continue;
+            }
             $value = Fillout::convertRawValueForField($this->attribute, $row['value']);
             if (!$value instanceof GroupFilloutValue) {
                 throw new \InvalidArgumentException('Unexpected value type occured');
