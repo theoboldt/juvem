@@ -68,15 +68,15 @@
           <div class="form-group">
             <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate" >{{ 'credit-card'|glyph }} Rechnungen erstellen…</button>
             <div class="btn-group" role="group">
-              <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn btn-default btn-download">{{ 'export'|glyph }} herunterladen</a>
+              <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn btn-default btn-download">{{ 'compressed'|glyph }} herunterladen</a>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                       aria-haspopup="true" aria-expanded="false">
                   <span class="caret"></span>
                   <span class="sr-only">Menü erweitern</span>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'export'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
-                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}" class="btn-download">{{ 'export'|glyph }} Alle Rechnungen herunterladen</a></li>
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}" class="btn-download">{{ 'compressed'|glyph }} Alle Rechnungen herunterladen</a></li>
               </ul>
 
             </div>
