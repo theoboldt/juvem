@@ -356,7 +356,7 @@
                                     jQuery.each(days, function (index, dayData) {
                                         var day = dayData.day;
                                         if (row <= dayData.count) {
-                                            rowHtml += '<td class="f"></td>';
+                                            rowHtml += '<td class="f" title="' + day + '. ' + month + ' ' + year + ': ' + dayData.count + ' Teilnehmer (' + dayData.days + ' Tage bis zur Veranstaltung)"></td>';
                                         } else {
                                             rowHtml += '<td></td>';
                                         }
@@ -374,7 +374,7 @@
                             jQuery.each(timeline, function (year, months) {
                                 jQuery.each(months, function (month, days) {
                                     jQuery.each(days, function (index, dayData) {
-                                        rowHtml += '<td>' + ((dayData.day % 5 === 0) ? dayData.day : '') + '</td>';
+                                        rowHtml += '<td title="' + dayData.day + '">' + ((dayData.day % 5 === 0) ? dayData.day : '') + '</td>';
                                     });
                                 });
                             });
@@ -386,7 +386,7 @@
                         rowHtml = '<tr class="x month"><td></td>';
                         jQuery.each(timeline, function (year, months) {
                             jQuery.each(months, function (month, days) {
-                                rowHtml += '<td colspan="' + days.length + '">' + month + '</td>';
+                                rowHtml += '<td colspan="' + days.length + '" title="' + month + '">' + month + '</td>';
                             });
                         });
                         rowHtml += '</tr>';
@@ -400,7 +400,7 @@
                                 yearDays += days.length
                             });
 
-                            rowHtml += '<td colspan="' + yearDays + '">' + year + '</td>';
+                            rowHtml += '<td colspan="' + yearDays + '" title="' + year + '">' + year + '</td>';
                         });
                         rowHtml += '</tr>';
                         tableFootEl.append(rowHtml);
