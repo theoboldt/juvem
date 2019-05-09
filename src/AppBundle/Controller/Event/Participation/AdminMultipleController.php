@@ -11,7 +11,9 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Controller\Event\Gallery\GalleryPublicController;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\ExportTemplate;
@@ -27,12 +29,15 @@ use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\Extension\PaymentInformation;
+use DateTime;
 use libphonenumber\PhoneNumberUtil;
+use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,6 +51,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class AdminMultipleController extends Controller
 {
@@ -164,7 +170,7 @@ class AdminMultipleController extends Controller
             } else {
                 $paymentStatus = null;
             }
-            
+
             $participantAction = '';
 
             $participantStatus = $participant->getStatus(true);
@@ -186,12 +192,12 @@ class AdminMultipleController extends Controller
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
 
             $basePrice = $participant->getBasePrice(true);
-    
+
             $participantEntry = [
                 'aid'                      => $participant->getAid(),
                 'pid'                      => $participant->getParticipation()->getPid(),
                 'is_paid'                  => null, //for tri state filter
-                'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
+                'is_deleted'               => (int)($participant->getDeletedAt() instanceof DateTime),
                 'is_withdrawn'             => (int)$participantStatusWithdrawn,
                 'is_rejected'              => (int)$participantStatusRejected,
                 'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
@@ -208,11 +214,11 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];
-    
+
             if ($includePayment) {
                 $toPay = $paymentStatus->getToPayValue(true);
                 $price = $paymentStatus->getPrice( true);
-        
+
                 $participantEntry['payment_to_pay'] = $toPay === null
                     ? '<i>nichts</i>'
                     : number_format($toPay, 2, ',', '.') . '&nbsp;€';
@@ -221,8 +227,8 @@ class AdminMultipleController extends Controller
                     : number_format($price, 2, ',', '.') . '&nbsp;€';
                 $participantEntry['is_paid']        = (int)($paymentStatus->isPaid());
             }
-    
-            /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
+
+            /** @var Fillout $fillout */
             foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
                 if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
                     continue;
@@ -394,7 +400,7 @@ class AdminMultipleController extends Controller
         $message      = $request->get('message');
         $participants = filter_var_array($request->get('participants'), FILTER_VALIDATE_INT);
 
-        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        /** @var CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('participants-list-edit' . $eid)) {
             throw new InvalidTokenHttpException();
@@ -411,7 +417,7 @@ class AdminMultipleController extends Controller
                 new Response(null, Response::HTTP_NOT_FOUND)
             );
         }
-    
+
         $participants         = $participationRepository->participantsList($event, $participants, true, true);
         $participationManager = $this->get('app.participation_manager');
         $paymentManager       = $this->get('app.payment_manager');
@@ -445,7 +451,7 @@ class AdminMultipleController extends Controller
 
         return new JsonResponse();
     }
-    
+
     /**
      * Update transmitted template
      *
@@ -463,10 +469,10 @@ class AdminMultipleController extends Controller
         $template->setModifiedBy($this->getUser());
         $em->persist($template);
         $em->flush();
-    
+
         return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
     }
-    
+
     /**
      * Create transmitted template
      *
@@ -475,22 +481,22 @@ class AdminMultipleController extends Controller
      * @Security("is_granted('participants_read', event)")
      * @param Event $event
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function createTemplateConfigurationAction(Event $event, Request $request)
     {
         $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->templateCount();
-        
+
         $configuration = $this->processRequestConfiguration($request);
         $template      = new ExportTemplate($event, $event->getTitle() . ' Export #' . ($templates + 1), null, $configuration);
         $template->setCreatedBy($this->getUser());
         $em            = $this->getDoctrine()->getManager();
         $em->persist($template);
         $em->flush();
-        
+
         return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
     }
-    
+
     /**
      * Page for list of participants of an event
      *
@@ -499,13 +505,13 @@ class AdminMultipleController extends Controller
      * @Security("is_granted('participants_read', event)")
      * @param Event $event
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @return RedirectResponse|Response
      */
     public function exportGeneratorAction(Event $event, Request $request)
     {
         $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->findSuitableForEvent($event);
         $em        = $this->getDoctrine()->getManager();
-    
+
         $formEditTemplate   = $this->createFormBuilder()
                                    ->add('edit', HiddenType::class)
                                    ->add('title', TextType::class, ['label'=> 'Titel'])
@@ -515,7 +521,7 @@ class AdminMultipleController extends Controller
                                    ->add('delete', HiddenType::class)
                                    ->getForm();
             $redirect = false;
-    
+
         $formEditTemplate->handleRequest($request);
         if ($formEditTemplate->isSubmitted() && $formEditTemplate->isValid()) {
             $template = $em->find(ExportTemplate::class, $formEditTemplate->get('edit')->getData());
@@ -527,7 +533,7 @@ class AdminMultipleController extends Controller
             $em->flush();
             $redirect = true;
         }
-    
+
         $formDeleteTemplate->handleRequest($request);
         if ($formDeleteTemplate->isSubmitted() && $formDeleteTemplate->isValid()) {
             $template = $em->find(ExportTemplate::class, $formDeleteTemplate->get('delete')->getData());
@@ -540,16 +546,16 @@ class AdminMultipleController extends Controller
         if ($redirect) {
             return $this->redirectToRoute('event_export_generator', ['eid' => $event->getEid()]);
         }
-    
+
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
-    
+
         $processor     = new Processor();
         $configuration = new Configuration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
-    
-    
+
+
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
-    
+
         return $this->render(
             'event/admin/export-generator.html.twig',
             [
@@ -561,7 +567,7 @@ class AdminMultipleController extends Controller
             ]
         );
     }
-    
+
     /**
      * Process transmitted configuration and provide download url
      *
@@ -572,7 +578,7 @@ class AdminMultipleController extends Controller
     public function exportGeneratorProcessDirectAction(Event $event, Request $request)
     {
         $result = $this->generateExport($request);
-        
+
         $url = $this->get('router')->generate(
             'event_export_generator_download',
             [
@@ -582,11 +588,11 @@ class AdminMultipleController extends Controller
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-        
+
         return JsonResponse::create(['download_url' => $url]);
     }
-    
-    
+
+
     /**
      * Download created export
      *
@@ -618,7 +624,7 @@ class AdminMultipleController extends Controller
                 }
             }
         );
-        
+
         return $response;
     }
 
@@ -633,7 +639,7 @@ class AdminMultipleController extends Controller
     public function exportGeneratorProcessAction(Event $event, Request $request)
     {
         $result = $this->generateExport($request);
-        
+
         $response = new BinaryFileResponse($result['path']);
 
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -645,7 +651,7 @@ class AdminMultipleController extends Controller
 
         return $response;
     }
-    
+
     /**
      * Process configuration from request and provide result as array
      *
@@ -658,13 +664,13 @@ class AdminMultipleController extends Controller
         $eid             = $request->get('eid');
         $config          = $request->get('config');
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-        
-        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+
+        /** @var CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('export-generator-' . $eid)) {
             throw new InvalidTokenHttpException();
         }
-        
+
         /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $eid]);
         if (!$event || !is_array($config)) {
@@ -672,17 +678,17 @@ class AdminMultipleController extends Controller
         }
         $this->denyAccessUnlessGranted('participants_read', $event);
         $config = ['export' => $config]; //add root config option
-        
+
         $processor     = new Processor();
         $configuration = new Configuration($event);
-        
+
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
         if (!$processedConfiguration['title']) {
             $processedConfiguration['title'] = 'Teilnehmer';
         }
         return $processedConfiguration;
     }
-    
+
     /**
      * Generate export file and provide file info
      *
@@ -696,10 +702,10 @@ class AdminMultipleController extends Controller
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
-        
+
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $paymentManager = $this->get('app.payment_manager');
-    
+
         $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
         $filterPaid              = $processedConfiguration['filter']['paid'];
         $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
@@ -736,7 +742,7 @@ class AdminMultipleController extends Controller
                         $include = $include && ($participant->isRejected() || $participant->isWithdrawn());
                         break;
                 }
-                
+
                 return $include;
             }
         );
@@ -751,7 +757,7 @@ class AdminMultipleController extends Controller
         );
         $tmpPath = tempnam($this->getParameter('app.tmp.root.path'), 'export_');
         if (!$tmpPath) {
-            throw new \RuntimeException('Failed to create tmp file');
+            throw new RuntimeException('Failed to create tmp file');
         }
         $export->setMetadata();
         $export->process();
@@ -790,7 +796,7 @@ class AdminMultipleController extends Controller
             ]
         );
     }
-    
+
     /**
      * Page for list of participants of an event
      *
@@ -810,32 +816,34 @@ class AdminMultipleController extends Controller
             }
             $newParticipants[$date] += 1;
         }
-    
+
         ksort($newParticipants);
         reset($newParticipants);
-        $startDate   = new \DateTime(key($newParticipants) . ' 10:00:00');
+        $startDate   = new DateTime(key($newParticipants) . ' 10:00:00');
         $currentDate = clone $startDate;
-    
+
         $endDate = clone $event->getStartDate();
         $endDate->setTime(10, 0);
-        
-        $today = new \DateTime();
+
+        $today = new DateTime();
         $today->setTime(10, 0);
-        
+
+        $days = 0;
         $countBefore = 0;
+        $countCurrent = 0;
         $history     = [];
         while($currentDate <= $endDate && $currentDate < $today) {
             $countCurrent = $countBefore;
-            
+
             $date = $currentDate->format('Y-m-d');
             $diff = $currentDate->diff($endDate);
-            
+
             if (isset($newParticipants[$date])) {
                 $countCurrent += $newParticipants[$date];
             }
-    
+
             $year  = $currentDate->format('Y');
-            $month = \AppBundle\Controller\Event\Gallery\GalleryPublicController::convertMonthNumber((int)$currentDate->format('n'));
+            $month = GalleryPublicController::convertMonthNumber((int)$currentDate->format('n'));
             $day   = $currentDate->format('d');
             if (!isset($history[$year])) {
                 $history[$year] = [];
@@ -848,12 +856,13 @@ class AdminMultipleController extends Controller
                 'count' => $countCurrent,
                 'days'  => $diff->days
             ];
-        
-        
+
+
             $countBefore = $countCurrent;
             $currentDate->modify('+1 day');
+            ++$days;
         }
-    
-        return new JsonResponse(['history' => $history, 'max' => $countCurrent]);
+
+        return new JsonResponse(['history' => $history, 'participantsTotal' => $countCurrent, 'daysTotal' => $days]);
     }
 }

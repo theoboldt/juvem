@@ -114,8 +114,22 @@ input.input-formula, textarea.input-formula {
     -moz-transition: height 0.6s ease-out;
     transition: height 0.6s ease-out;
 
+    tr.h td {
+      border-top: 1px solid black;
+      vertical-align: top;
+    }
+
+    tbody tr, tbody td {
+      box-sizing: unset;
+      height: 2px;
+    }
+
+    tfoot tr td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     td {
-      min-height: 2px;
       background: lightgray;
 
       &:first-child {

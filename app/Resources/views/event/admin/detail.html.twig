@@ -321,16 +321,36 @@
                         var rowHtml,
                             tableBodyEl,
                             timeline = response.history,
-                            totalCount = response.max;
+                            totalCount = response.participantsTotal;
 
                         tableEl.html('<tbody></tbody><tfoot></tfoot>');
                         tableBodyEl = tableEl.find('tbody');
                         tableFootEl = tableEl.find('tfoot');
-                        tableEl.toggleClass('loading', false);
+
+                        if (totalCount < 24) {
+                            yAxisSteps = 1;
+                        } else if (totalCount < 101) {
+                            yAxisSteps = 10;
+                        } else if (totalCount < 201) {
+                            yAxisSteps = 25;
+                        } else {
+                            yAxisSteps = 50;
+                        }
 
                         for (var row = totalCount; row > 0; --row) {
-                            rowHtml = '<tr>';
-                            rowHtml += '<td class="y">'+row+'</td>'; //y-axis
+                            rowHtml = '';
+
+                            rowHtml += '<tr data-index="'+row+'"';
+                            if (row % yAxisSteps === 0) {
+                                rowHtml += ' class="h"';
+                            }
+                            rowHtml += '>';
+                            rowHtml += '<td class="y">';
+                            if (row % yAxisSteps === 0) {
+                                rowHtml += '<span style="position: fixed;">'+row+'</span>';
+                            }
+                            rowHtml += '</td>'; //y-axis
+
                             jQuery.each(timeline, function (year, months) {
                                 jQuery.each(months, function (month, days) {
                                     jQuery.each(days, function (index, dayData) {
@@ -349,16 +369,18 @@
                         }
 
                         //x-axis days
-                        rowHtml = '<tr class="x day"><td></td>';
-                        jQuery.each(timeline, function (year, months) {
-                            jQuery.each(months, function (month, days) {
-                                jQuery.each(days, function (index, dayData) {
-                                    rowHtml += '<td>' + ((dayData.day % 5 === 0) ? dayData.day : '') + '</td>';
+                        if (response.daysTotal < 60) {
+                            rowHtml = '<tr class="x day"><td></td>';
+                            jQuery.each(timeline, function (year, months) {
+                                jQuery.each(months, function (month, days) {
+                                    jQuery.each(days, function (index, dayData) {
+                                        rowHtml += '<td>' + ((dayData.day % 5 === 0) ? dayData.day : '') + '</td>';
+                                    });
                                 });
                             });
-                        });
-                        rowHtml += '</tr>';
-                        tableFootEl.append(rowHtml);
+                            rowHtml += '</tr>';
+                            tableFootEl.append(rowHtml);
+                        }
 
                         //x-axis months
                         rowHtml = '<tr class="x month"><td></td>';
@@ -382,7 +404,7 @@
                         });
                         rowHtml += '</tr>';
                         tableFootEl.append(rowHtml);
-
+                        tableEl.toggleClass('loading', false);
                     },
                     error: function (response) {
                         $(document).trigger('add-alerts', {
