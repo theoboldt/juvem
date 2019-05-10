@@ -93,6 +93,7 @@ class AdminInvoiceController extends Controller
                     $row['is_available'] = 1;
                     $row['index']        .= $iid;
                     $row['id']           = $iid;
+                    $row['number']       = $invoice->getInvoiceNumber();
                     $row['sum']          = number_format($invoice->getSum(true), 2, ',', '.') . '&nbsp;€';
                     $row['created_at']   = $invoice->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
 
