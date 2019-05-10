@@ -25,7 +25,15 @@ Beside the default fields like name, age or phone numbers you can define your ow
 ### Newsletter
 People can register themselves in order to receive the newsletter. For each newsletter, you have to define an age range specifying for people of which age this newsletter is directed to. People can select the age range they want to be notified about.
 
-![Full Page Screenshot](/web/img/screenshot.png)
+![Homepage Screenshot](/app/Resources/screenshots/homepage.png)
+![Public participation form](/app/Resources/screenshots/participate.png)
+![Event management](/app/Resources/screenshots/event_admin.png)
+![Participation history](/app/Resources/screenshots/participate_history.png)
+![Excel export generation](/app/Resources/screenshots/export_generator.png)
+![Custom fields overview](/app/Resources/screenshots/formula_overview.png)
+![Formula editor](/app/Resources/screenshots/formula_editor.png)
+![Newsletter creation](/app/Resources/screenshots/newsletter.png)
+![Participation price management](/app/Resources/screenshots/participant_price.png)
 
 ## Requirements
 Juvem is a symfony 3.2 based application.
