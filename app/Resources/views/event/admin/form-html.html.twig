@@ -53,6 +53,15 @@
                                     <tbody>
                                     <tr>
                                         <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PID') -}}
+                                                }</code></td>
+                                        <td>Eindeutige Nummer der Anmeldung</td>
+                                        <td>
+                                            <span class="label label-default">310</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_SALUTION') -}}
                                                 }</code></td>
                                         <td>Anrede der Eltern</td>
@@ -81,12 +90,14 @@
                                             <span class="label label-default">Maier</span>
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td>
                                             <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_ADDRESS_STREET') -}}
                                                 }</code></td>
                                         <td>Straße & Hausnummer der Eltern</td>
                                         <td>
+                                            <span class="label label-default">{{ customization.organizationAddressStreet }}</span>
                                             <span class="label label-default">Musterstr. 10</span>
                                         </td>
                                     </tr>
@@ -96,7 +107,7 @@
                                                 }</code></td>
                                         <td>PLZ der Eltern</td>
                                         <td>
-                                            <span class="label label-default">70563</span>
+                                            <span class="label label-default">{{ customization.organizationAddressPostalCode }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -105,7 +116,7 @@
                                                 }</code></td>
                                         <td>Straße der Eltern</td>
                                         <td>
-                                            <span class="label label-default">Stuttgart</span>
+                                            <span class="label label-default">{{ customization.organizationAddressLocality }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -126,6 +137,7 @@
                                         <td>Summe der Rechnung</td>
                                         <td>
                                             <span class="label label-default">95,00 €</span>
+                                            {% if event is defined and event.price %}<span class="label label-default">{{ event.price(true)|number_format(2) }} €</span>{% endif %}
                                         </td>
                                     </tr>
                                     <tr>
@@ -136,6 +148,7 @@
                                         <td>
                                             <span class="label label-default">Abschnitt 2</span>
                                             <span class="label label-default">Burgfreizeit</span>
+                                            {% if event is defined %}<span class="label label-default">{{ event.title }}</span>{% endif %}
                                         </td>
                                     </tr>
                                     <tr>

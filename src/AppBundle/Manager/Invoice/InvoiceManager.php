@@ -54,6 +54,7 @@ class InvoiceManager
     const PLACEHOLDER_INVOICE_ROW_DESCRIPTION = 'invoiceRowDescription';
     const PLACEHOLDER_INVOICE_ROW_VALUE       = 'invoiceRowValue';
     
+    const PLACEHOLDER_PID                            = 'pid';
     const PLACEHOLDER_SALUTION                       = 'salution';
     const PLACEHOLDER_NAME_FIRST                     = 'nameFirst';
     const PLACEHOLDER_NAME_LAST                      = 'nameLast';
@@ -193,6 +194,7 @@ class InvoiceManager
         }
     
         $search  = [
+            self::PLACEHOLDER_PID,
             self::PLACEHOLDER_SALUTION,
             self::PLACEHOLDER_NAME_FIRST,
             self::PLACEHOLDER_NAME_LAST,
@@ -206,6 +208,7 @@ class InvoiceManager
             self::PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW,
         ];
         $replace = [
+            $participation->getPid(),
             $participation->getSalutation(),
             $participation->getNameFirst(),
             $participation->getNameLast(),
