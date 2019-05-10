@@ -29,7 +29,204 @@
                 {{ form_row(form.imageFile) }}
             </div>
             <div class="col-xs-12">
-                {{ form_row(form.invoiceTemplateFile) }}
+                <div class="modal fade" id="modalInvoiceTemplateHint" tabindex="-1" role="dialog" aria-labelledby="modalInvoiceTemplateHintLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modalInvoiceTemplateHintLabel">Platzhalter bei Rechnungsvorlagen</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>Word-Dateien für Rechnungsvorlagen müssen mit Platzhaltern versehen sein. Die
+                                    folgenden Plathalter können verwendet werden:</p>
+                                <h5>Plathalter je Rechnung</h5>
+                                <p>Diese Platzhalter gelten für die ganze Rechnung</p>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <td>Platzhalter</td>
+                                        <td>Erklärung</td>
+                                        <td>Beispiele</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_SALUTION') -}}
+                                                }</code></td>
+                                        <td>Anrede der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">Frau</span>
+                                            <span class="label label-default">Herr</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_NAME_FIRST') -}}
+                                                }</code></td>
+                                        <td>Vorname der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">Maria</span>
+                                            <span class="label label-default">Max</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_NAME_LAST') -}}
+                                                }</code></td>
+                                        <td>Nachname der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">Muster</span>
+                                            <span class="label label-default">Maier</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_ADDRESS_STREET') -}}
+                                                }</code></td>
+                                        <td>Straße & Hausnummer der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">Musterstr. 10</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_ADDRESS_ZIP') -}}
+                                                }</code></td>
+                                        <td>PLZ der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">70563</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_ADDRESS_CITY') -}}
+                                                }</code></td>
+                                        <td>Straße der Eltern</td>
+                                        <td>
+                                            <span class="label label-default">Stuttgart</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_NUMBER') -}}
+                                                }</code></td>
+                                        <td>Rechnungs-Nummer der vorliegenden Rechnung</td>
+                                        <td>
+                                            <span class="label label-default">R-10012</span>
+                                            <span
+                                                class="label label-default">R-{{ "now"|date("y") }}0{{ random(10, 99) }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_SUM') -}}
+                                                }</code></td>
+                                        <td>Summe der Rechnung</td>
+                                        <td>
+                                            <span class="label label-default">95,00 €</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_EVENT_TITLE') -}}
+                                                }</code></td>
+                                        <td>Name der Veranstaltung, zu der die Rechnung gehört</td>
+                                        <td>
+                                            <span class="label label-default">Abschnitt 2</span>
+                                            <span class="label label-default">Burgfreizeit</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PARTICIPANT_NAMES_COMBINED') -}}
+                                                }</code></td>
+                                        <td>Auflistung der Namen aller Teilnehmer für die diese Rechnung gilt
+                                        <td>
+                                            <span class="label label-default">Max, Moritz Muster</span>
+                                            <span class="label label-default">Anna Mayer, Hans Maier, Jens Meyer</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW') -}}
+                                                }</code></td>
+                                        <td>Summe der Rechnung in Euro-Cent (bspw. zur Benutzung in Formeln)</td>
+                                        <td>
+                                            <span class="label label-default">9500</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <h5>Plathalter je Positions-Zeile der Rechnung</h5>
+                                <p>Diese Platzhalter gelten für jede Position auf der Rechnung. Sie müssen in einer Tabelle in einer Zeile verwendet werden.</p>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <td>Platzhalter</td>
+                                        <td>Erklärung</td>
+                                        <td>Beispiele</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PARTICIPANT_NAME') -}}
+                                                }</code></td>
+                                        <td>Name der Teilnehmerin/des Teilnehmers</td>
+                                        <td>
+                                            <span class="label label-default">Anna Muster</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_DESCRIPTION') -}}
+                                                }</code></td>
+                                        <td>Name des Formularfeldes, welches zu diesem Rabatt/Auschlag geführt hat</td>
+                                        <td>
+                                            <span class="label label-default">Familiencard</span>
+                                            <span class="label label-default">benötigt Fahrkarte</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_TYPE') -}}
+                                                }</code></td>
+                                        <td>Art dieser Position</td>
+                                        <td>
+                                            <span class="label label-default">Grundpreis</span>
+                                            <span class="label label-default">Aufschlag</span>
+                                            <span class="label label-default">Rabatt</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_VALUE') -}}
+                                                }</code></td>
+                                        <td>Wert dieser Position</td>
+                                        <td>
+                                            <span class="label label-default">10,50 €</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.invoiceTemplateFile) }}
+                    <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="modal" data-target="#modalInvoiceTemplateHint"{{ tab.skip|raw }}>
+                        {{ 'question-sign'|glyph }}
+                    </button>
+                    {{ form_widget(form.invoiceTemplateFile) }}
+                    {{ form_errors(form.invoiceTemplateFile) }}
+                </div>
             </div>
             <div class="col-xs-12">
                 <h4 class="control-label">Veranstaltungsort</h4>

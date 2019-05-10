@@ -14,13 +14,13 @@ use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use AppBundle\Entity\Event;
 
 class InvoiceManager
 {
+    
     /**
      * Entity manager
      *
@@ -48,6 +48,23 @@ class InvoiceManager
      * @var User|null
      */
     protected $user = null;
+    
+    const PLACEHOLDER_PARTICIPANT_NAME        = 'participantName';
+    const PLACEHOLDER_INVOICE_ROW_TYPE        = 'invoiceRowType';
+    const PLACEHOLDER_INVOICE_ROW_DESCRIPTION = 'invoiceRowDescription';
+    const PLACEHOLDER_INVOICE_ROW_VALUE       = 'invoiceRowValue';
+    
+    const PLACEHOLDER_SALUTION                       = 'salution';
+    const PLACEHOLDER_NAME_FIRST                     = 'nameFirst';
+    const PLACEHOLDER_NAME_LAST                      = 'nameLast';
+    const PLACEHOLDER_ADDRESS_STREET                 = 'addressStreet';
+    const PLACEHOLDER_ADDRESS_ZIP                    = 'addressZip';
+    const PLACEHOLDER_ADDRESS_CITY                   = 'addressCity';
+    const PLACEHOLDER_INVOICE_NUMBER                 = 'invoiceNumber';
+    const PLACEHOLDER_INVOICE_ROW_SUM                = 'invoiceRowSum';
+    const PLACEHOLDER_EVENT_TITLE                    = 'eventTitle';
+    const PLACEHOLDER_PARTICIPANT_NAMES_COMBINED     = 'participantNamesCombined';
+    const PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW = 'invoiceRowSumEuroCentsRaw';
     
     /**
      * InvoiceManager constructor.
@@ -167,27 +184,26 @@ class InvoiceManager
         $templateProcessor->cloneRow('participantName', count($elements));
         $i = 1;
         foreach ($elements as $element) {
-            $templateProcessor->setValue('participantName#' . $i, $element['participant']);
-            $templateProcessor->setValue('invoiceRowDescription#' . $i, $element['description']);
-            $templateProcessor->setValue('invoiceRowType#' . $i, $element['type']);
-            $templateProcessor->setValue('invoiceRowValue#' . $i, $element['value']);
-            
+            $templateProcessor->setValue(self::PLACEHOLDER_PARTICIPANT_NAME . '#' . $i, $element['participant']);
+            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_TYPE . '#' . $i, $element['description']);
+            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_DESCRIPTION . '#' . $i, $element['type']);
+            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_VALUE . '#' . $i, $element['value']);
+        
             ++$i;
         }
-        
+    
         $search  = [
-            'salution',
-            'nameFirst',
-            'nameLast',
-            'addressStreet',
-            'addressZip',
-            'addressCity',
-            'email',
-            'invoiceNumber',
-            'invoiceRowSum',
-            'eventTitle',
-            'participantNamesCombined',
-            'invoiceRowSumEuroCentsRaw',
+            self::PLACEHOLDER_SALUTION,
+            self::PLACEHOLDER_NAME_FIRST,
+            self::PLACEHOLDER_NAME_LAST,
+            self::PLACEHOLDER_ADDRESS_STREET,
+            self::PLACEHOLDER_ADDRESS_ZIP,
+            self::PLACEHOLDER_ADDRESS_CITY,
+            self::PLACEHOLDER_INVOICE_NUMBER,
+            self::PLACEHOLDER_INVOICE_ROW_SUM,
+            self::PLACEHOLDER_EVENT_TITLE,
+            self::PLACEHOLDER_PARTICIPANT_NAMES_COMBINED,
+            self::PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW,
         ];
         $replace = [
             $participation->getSalutation(),
