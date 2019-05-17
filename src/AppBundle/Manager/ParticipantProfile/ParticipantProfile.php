@@ -11,6 +11,7 @@
 namespace AppBundle\Manager\ParticipantProfile;
 
 
+use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\Event;
@@ -33,6 +34,8 @@ class ParticipantProfile
     const STYLE_FONT_NONE = 'NoneF';
     
     const STYLE_PARAGRAPH_COMMENT = 'CommentP';
+    
+    const STYLE_LIST = 'ListL';
     
     /**
      * Document
@@ -156,6 +159,17 @@ class ParticipantProfile
         
         $document->addFontStyle(self::STYLE_FONT_NONE, ['size' => 8, 'color' => '666666', 'italic' => true]);
         
+        $document->addNumberingStyle(
+            self::STYLE_LIST,
+            [
+                'type'   => 'multilevel',
+                'levels' => [
+                    ['format' => 'bullet', 'text' => ' %1•', 'indent' => 100, 'left' => 160, 'hanging' => 160,
+                     'tabPos' => 160,
+                    ],
+                ],
+            ]
+        );
         
         return $document;
     }
@@ -229,14 +243,48 @@ class ParticipantProfile
     {
         /** @var Fillout $fillout */
         foreach ($fillouts as $fillout) {
-            $title       = $fillout->getAttribute()->getManagementTitle();
-            $description = $fillout->getAttribute()->getManagementDescription();
+            $attribute   = $fillout->getAttribute();
+            $title       = $attribute->getManagementTitle();
+            $description = $attribute->getManagementDescription();
             
-            $section->addTitle($title, 4);
-            if ($description !== $title) {
-                $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
+            $this->addDatumTitle($section, $title, $description);
+            
+            $value = $fillout->getValue();
+            /*
+            if ($value instanceof GroupFilloutValue) {
+                $choices = $value->getSelectedChoices();
+                if (count($choices)) {
+                    $choice = reset($choices);
+                    $section->addText($choice->getManagementTitle(true));
+                    
+                    
+                } else {
+                    $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
+                }
+        
+                $a = 1;
+            } else*/
+            if ($value instanceof ChoiceFilloutValue) {
+                $choices = $value->getSelectedChoices();
+                if (!count($choices)) {
+                    $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
+                } else {
+                    if ($attribute->isMultipleChoiceType()) {
+                        foreach ($choices as $choice) {
+                            $section->addListItem($choice->getManagementTitle(true), 0, null, self::STYLE_LIST);
+                        }
+                    } else {
+                        $choice = reset($choices);
+                        $section->addText($choice->getManagementTitle(true));
+                    }
+                }
+                
+                
+            } else {
+                $textrun = $section->addTextRun();
+                $textrun->addText($fillout->getValue()->getTextualValue());
             }
-            $section->addText($fillout->getValue()->getTextualValue());
+            
         }
     }
     
@@ -278,14 +326,10 @@ class ParticipantProfile
      */
     private function addDatum(Section $section, string $label, $data, ?string $description = null): void
     {
-        $section->addTitle($label, 4);
-        if ($description && $description !== $label) {
-            $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
-        }
+        $this->addDatumTitle($section, $label, $description);
         if (empty($data)) {
             $section->addText('(Keine Angabe)', self::STYLE_FONT_NONE);
         } else {
-            
             if (!is_array($data)) {
                 $data = [$data];
             }
@@ -300,6 +344,22 @@ class ParticipantProfile
                     $first = false;
                 }
             }
+        }
+    }
+    
+    /**
+     * Add title block to document
+     *
+     * @param Section $section         Section to add datum to
+     * @param string $label            Title of datum
+     * @param string|null $description Description text, will not be displayed if equal to label
+     * @return void
+     */
+    private function addDatumTitle(Section $section, string $label, ?string $description = null): void
+    {
+        $section->addTitle($label, 4);
+        if ($description && $description !== $label) {
+            $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
         }
     }
     
