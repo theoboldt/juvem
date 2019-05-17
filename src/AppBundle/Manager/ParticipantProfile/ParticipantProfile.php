@@ -209,7 +209,7 @@ class ParticipantProfile
      * @param array $participants
      * @return Event
      */
-    private function getEvent(array $participants)
+    private function getEvent(array $participants): Event
     {
         /** @var Participant $participant */
         $participant = reset($participants);
@@ -247,7 +247,7 @@ class ParticipantProfile
      * @param Section $section              Section to add comments to
      * @param string $commentTarget         Target  description text
      */
-    private function addCommentsToSection(array $comments, Section $section, string $commentTarget)
+    private function addCommentsToSection(array $comments, Section $section, string $commentTarget): void
     {
         /** @var CommentBase $comment */
         foreach ($comments as $comment) {
@@ -270,7 +270,7 @@ class ParticipantProfile
     /**
      * Generate document, provide export file path
      */
-    public function generate()
+    public function generate(): PhpWord
     {
         $participants = $this->participants;
         $document     = $this->prepareDocument();
@@ -347,15 +347,18 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
+            
             $section->addTitle('Anschrift (Eltern)', 4);
-            $addressCountry = ($participation->getAddressCountry() !== Event::DEFAULT_COUNTRY)
-                ? "\n" . $participation->getAddressCountry() : '';
-            $section->addText(
-                $participation->getSalutation() . ' ' . $participation->fullname() . "\n"
-                . $participation->getAddressStreet() . "\n"
-                . $participation->getAddressCity() . ' ' . $participation->getAddressZip()
-                . $addressCountry
-            );
+            $textrun = $section->addTextRun();
+            $textrun->addText($participation->getSalutation() . ' ' . $participation->fullname());
+            $textrun->addTextBreak();
+            $textrun->addText($participation->getAddressStreet());
+            $textrun->addTextBreak();
+            if ($participation->getAddressCountry() !== Event::DEFAULT_COUNTRY) {
+                $textrun->addTextBreak();
+                $textrun->addText($participation->getAddressCountry());
+            }
+            
             $section->addTitle('E-Mail Adresse', 4);
             $section->addLink('mailto:' . $participation->getEmail(), $participation->getEmail());
             
@@ -368,15 +371,8 @@ class ParticipantProfile
             $section->addTitle('Telefonnummern', 3);
             
             $phoneNumbers = $participation->getPhoneNumbers()->toArray();
-            
-            for ($i = random_int(0, 3); $i > 0; --$i) {
-                $phoneNumbers = array_merge($phoneNumbers, $phoneNumbers);
-                
-            }
-            
-            $phoneNumbersCount = count($phoneNumbers);
-            $columns           = 0;
-            if ($phoneNumbersCount) {
+            $columns      = 0;
+            if (count($phoneNumbers)) {
                 $table = $section->addTable(
                     [
                         'unit'  => TblWidth::PERCENT,
