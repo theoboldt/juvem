@@ -125,6 +125,7 @@ services:
         arguments:
             - "%app.tmp.root.path%"
             - "%app.web.root.path%"
+            - "@router"
             - "@skies_barcode.generator"
             - "@app.comment_manager"
             - "@libphonenumber.phone_number_util"

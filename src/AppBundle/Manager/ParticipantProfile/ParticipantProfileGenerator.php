@@ -11,19 +11,12 @@
 namespace AppBundle\Manager\ParticipantProfile;
 
 
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\PhoneNumber;
 use AppBundle\Manager\CommentManager;
 use libphonenumber\PhoneNumberUtil;
-use PhpOffice\PhpSpreadsheet\Comment;
-use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\SimpleType\Jc;
-use PhpOffice\PhpWord\Style\Language;
 use Skies\QRcodeBundle\Generator\Generator as BarcodeGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ParticipantProfileGenerator
 {
@@ -41,6 +34,13 @@ class ParticipantProfileGenerator
      * @var string
      */
     private $webDir;
+    
+    /**
+     * Router used to create the routes for the transmitted pages
+     *
+     * @var UrlGeneratorInterface
+     */
+    protected $urlGenerator;
     
     /**
      * Barcode generator for phone numbers and links
@@ -68,17 +68,22 @@ class ParticipantProfileGenerator
      *
      * @param string $tmpDir
      * @param string $webDir
+     * @param UrlGeneratorInterface $urlGenerator
      * @param BarcodeGenerator $barcodeGenerator
      * @param CommentManager $commentManager
      * @param PhoneNumberUtil $phoneUtil
      */
     public function __construct(
-        string $tmpDir, string $webDir, BarcodeGenerator $barcodeGenerator, CommentManager $commentManager,
+        string $tmpDir, string $webDir,
+        UrlGeneratorInterface $urlGenerator,
+        BarcodeGenerator $barcodeGenerator,
+        CommentManager $commentManager,
         PhoneNumberUtil $phoneUtil
     )
     {
         $this->tmpDir           = $tmpDir;
         $this->webDir           = $webDir;
+        $this->urlGenerator     = $urlGenerator;
         $this->barcodeGenerator = $barcodeGenerator;
         $this->commentManager   = $commentManager;
         $this->phoneUtil        = $phoneUtil;
@@ -111,7 +116,12 @@ class ParticipantProfileGenerator
         $barCodeGenerator = new TemporaryBarCodeGenerator($this->tmpDir, $this->barcodeGenerator);
         
         $profile  = new ParticipantProfile(
-            $participants, $this->phoneUtil, $this->commentManager, $barCodeGenerator, $this->provideLogoPath()
+            $participants,
+            $this->urlGenerator,
+            $this->phoneUtil,
+            $this->commentManager,
+            $barCodeGenerator,
+            $this->provideLogoPath()
         );
         $document = $profile->generate();
         

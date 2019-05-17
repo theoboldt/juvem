@@ -11,8 +11,10 @@
 namespace AppBundle\Manager\ParticipantProfile;
 
 
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
 use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -25,6 +27,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\Style\Language;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ParticipantProfile
 {
@@ -73,6 +76,13 @@ class ParticipantProfile
     private $columns = 3;
     
     /**
+     * Router used to create the routes for the transmitted pages
+     *
+     * @var UrlGeneratorInterface
+     */
+    protected $urlGenerator;
+    
+    /**
      * phoneUtil
      *
      * @var PhoneNumberUtil
@@ -97,6 +107,7 @@ class ParticipantProfile
      * ParticipantProfile constructor.
      *
      * @param Participant[]|array $participants                    List of participants for export
+     * @param UrlGeneratorInterface $urlGenerator                  Providing URLS
      * @param PhoneNumberUtil $phoneUtil                           Util to format phone numbers
      * @param CommentManager $commentManager                       Comment manager to fetch comments
      * @param TemporaryBarCodeGenerator $temporaryBarCodeGenerator Bar code image generator
@@ -104,6 +115,7 @@ class ParticipantProfile
      */
     public function __construct(
         array $participants,
+        UrlGeneratorInterface $urlGenerator,
         PhoneNumberUtil $phoneUtil,
         CommentManager $commentManager,
         TemporaryBarCodeGenerator $temporaryBarCodeGenerator,
@@ -111,6 +123,7 @@ class ParticipantProfile
     )
     {
         $this->participants              = $participants;
+        $this->urlGenerator              = $urlGenerator;
         $this->phoneUtil                 = $phoneUtil;
         $this->commentManager            = $commentManager;
         $this->logoPath                  = $logoPath;
@@ -220,13 +233,12 @@ class ParticipantProfile
     /**
      * Get related event
      *
-     * @param array $participants
      * @return Event
      */
-    private function getEvent(array $participants): Event
+    private function getEvent(): Event
     {
         /** @var Participant $participant */
-        $participant = reset($participants);
+        $participant = reset($this->participants);
         if (!$participant) {
             throw new \InvalidArgumentException();
         }
@@ -250,21 +262,27 @@ class ParticipantProfile
             $this->addDatumTitle($section, $title, $description);
             
             $value = $fillout->getValue();
-            /*
             if ($value instanceof GroupFilloutValue) {
                 $choices = $value->getSelectedChoices();
                 if (count($choices)) {
+                    /** @var AttributeChoiceOption $choice */
                     $choice = reset($choices);
-                    $section->addText($choice->getManagementTitle(true));
-                    
-                    
+                    $section->addLink(
+                        $this->urlGenerator->generate(
+                            'admin_event_group_detail',
+                            [
+                                'bid' => $attribute->getBid(),
+                                'eid' => $this->getEvent()->getEid(),
+                                'cid' => $choice->getId(),
+                            ],
+                            UrlGeneratorInterface::ABSOLUTE_URL
+                        ),
+                        $choice->getManagementTitle(true)
+                    );
                 } else {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 }
-        
-                $a = 1;
-            } else*/
-            if ($value instanceof ChoiceFilloutValue) {
+            } elseif ($value instanceof ChoiceFilloutValue) {
                 $choices = $value->getSelectedChoices();
                 if (!count($choices)) {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
@@ -278,8 +296,6 @@ class ParticipantProfile
                         $section->addText($choice->getManagementTitle(true));
                     }
                 }
-                
-                
             } else {
                 $textrun = $section->addTextRun();
                 $textrun->addText($fillout->getValue()->getTextualValue());
@@ -370,7 +386,7 @@ class ParticipantProfile
     {
         $participants = $this->participants;
         $document     = $this->prepareDocument();
-        $event        = $this->getEvent($participants);
+        $event        = $this->getEvent();
         
         /** @var Participant $participant */
         foreach ($participants as $participant) {
