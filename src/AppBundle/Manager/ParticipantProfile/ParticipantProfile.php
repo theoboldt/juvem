@@ -27,6 +27,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\Style\Frame;
+use PhpOffice\PhpWord\Style\Image;
 use PhpOffice\PhpWord\Style\Language;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -267,18 +268,38 @@ class ParticipantProfile
                 $choices = $value->getSelectedChoices();
                 if (count($choices)) {
                     /** @var AttributeChoiceOption $choice */
-                    $choice = reset($choices);
-                    $section->addLink(
-                        $this->urlGenerator->generate(
-                            'admin_event_group_detail',
-                            [
-                                'bid' => $attribute->getBid(),
-                                'eid' => $this->getEvent()->getEid(),
-                                'cid' => $choice->getId(),
-                            ],
-                            UrlGeneratorInterface::ABSOLUTE_URL
-                        ),
-                        $choice->getManagementTitle(true)
+                    $choice    = reset($choices);
+                    $groupLink = $this->urlGenerator->generate(
+                        'admin_event_group_detail',
+                        [
+                            'bid' => $attribute->getBid(),
+                            'eid' => $this->getEvent()->getEid(),
+                            'cid' => $choice->getId(),
+                        ],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    );
+                    $table     = $section->addTable(
+                        [
+                            'unit'  => TblWidth::PERCENT,
+                            'width' => 100 * 50,
+                        ]
+                    );
+                    $row       = $table->addRow();
+                    $cell      = $row->addCell();
+                    $cell->addLink($groupLink, $choice->getManagementTitle(true));
+                    
+                    $cell = $row->addCell();
+                    $run  = $cell->addTextRun();
+                    $run->addImage(
+                        $this->temporaryBarCodeGenerator->createCode('url:' . $groupLink, 32),
+                        [
+                            'width'         => 30,
+                            'height'        => 30,
+                            'positioning'   => 'relative',
+                            'marginTop'     => 0,
+                            'marginLeft'    => 1,
+                            'wrappingStyle' => 'tight'
+                        ]
                     );
                 } else {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
@@ -301,7 +322,6 @@ class ParticipantProfile
                 $textrun = $section->addTextRun();
                 $textrun->addText($fillout->getValue()->getTextualValue());
             }
-            
         }
     }
     
@@ -444,11 +464,11 @@ class ParticipantProfile
                     'marginTop'        => 0,
                     'marginLeft'       => -1,
                     'wrappingStyle'    => Frame::WRAP_SQUARE,
-                    'positioning'      => \PhpOffice\PhpWord\Style\Image::POSITION_ABSOLUTE,
-                    'posHorizontal'    => \PhpOffice\PhpWord\Style\Image::POSITION_HORIZONTAL_RIGHT,
-                    'posVertical'      => \PhpOffice\PhpWord\Style\Image::POSITION_VERTICAL_TOP,
-                    'posHorizontalRel' => \PhpOffice\PhpWord\Style\Image::POSITION_RELATIVE_TO_MARGIN,
-                    'posVerticalRel'   => \PhpOffice\PhpWord\Style\Image::POSITION_RELATIVE_TO_MARGIN,
+                    'positioning'      => Image::POSITION_ABSOLUTE,
+                    'posHorizontal'    => Image::POSITION_HORIZONTAL_RIGHT,
+                    'posVertical'      => Image::POSITION_VERTICAL_TOP,
+                    'posHorizontalRel' => Image::POSITION_RELATIVE_TO_MARGIN,
+                    'posVerticalRel'   => Image::POSITION_RELATIVE_TO_MARGIN,
                 ]
             );
             
