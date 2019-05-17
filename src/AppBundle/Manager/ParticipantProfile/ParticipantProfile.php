@@ -84,6 +84,13 @@ class ParticipantProfile
     private $commentManager;
     
     /**
+     * Code generator
+     *
+     * @var TemporaryBarCodeGenerator
+     */
+    private $temporaryBarCodeGenerator;
+    
+    /**
      * ParticipantProfile constructor.
      *
      * @param Participant[]|array $participants
@@ -92,14 +99,19 @@ class ParticipantProfile
      * @param string|null $logoPath
      */
     public function __construct(
-        array $participants, PhoneNumberUtil $phoneUtil, CommentManager $commentManager, ?string $logoPath = null
+        array $participants,
+        PhoneNumberUtil $phoneUtil,
+        CommentManager $commentManager,
+        TemporaryBarCodeGenerator $temporaryBarCodeGenerator,
+        ?string $logoPath = null
     )
     {
-        $this->participants   = $participants;
-        $this->phoneUtil      = $phoneUtil;
-        $this->commentManager = $commentManager;
-        $this->logoPath       = $logoPath;
-        $this->document       = $this->prepareDocument();
+        $this->participants              = $participants;
+        $this->phoneUtil                 = $phoneUtil;
+        $this->commentManager            = $commentManager;
+        $this->logoPath                  = $logoPath;
+        $this->temporaryBarCodeGenerator = $temporaryBarCodeGenerator;
+        $this->document                  = $this->prepareDocument();
     }
     
     /**
@@ -326,15 +338,63 @@ class ParticipantProfile
             
             $section = $this->addSection($document);
             $section->addTitle('Telefonnummern', 3);
-            /** @var PhoneNumber $phoneNumber */
-            foreach ($participation->getPhoneNumbers() as $phoneNumber) {
-                $textrun = $section->addTextRun();
-                $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
+            
+            $phoneNumbers = $participation->getPhoneNumbers()->toArray();
+            
+            for ($i = random_int(0, 3); $i > 0; --$i) {
+                $phoneNumbers = array_merge($phoneNumbers, $phoneNumbers);
                 
-                if ($phoneNumber->getDescription()) {
-                    $textrun->addTextBreak();
-                    $textrun->addText($phoneNumber->getDescription(), ['italic' => true]);
+            }
+            
+            $phoneNumbersCount = count($phoneNumbers);
+            $columns           = 0;
+            if ($phoneNumbersCount) {
+                $table = $section->addTable(
+                    [
+                        'unit'  => TblWidth::PERCENT,
+                        'width' => 100 * 50,
+                    ]
+                );
+                $row   = $table->addRow();
+                
+                /** @var PhoneNumber $phoneNumber */
+                foreach ($phoneNumbers as $phoneNumber) {
+                    if ($columns === 3) {
+                        $columns = 0;
+                        $row     = $table->addRow();
+                    }
+                    
+                    $cell     = $row->addCell(10);
+                    $codePath = $this->temporaryBarCodeGenerator->createCode(
+                        'tel:' .
+                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'))
+                    );
+                    $cell->addImage(
+                        $codePath,
+                        [
+                            'width'         => 30,
+                            'height'        => 30,
+                            'marginTop'     => -1,
+                            'marginLeft'    => -1,
+                            'wrappingStyle' => 'square',
+                        ]
+                    );
+                    $cell    = $row->addCell(null, ['rightFromText' => 10]);
+                    $textrun = $cell->addTextRun();
+                    $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
+                    if ($phoneNumber->getDescription()) {
+                        $textrun->addTextBreak();
+                        $textrun->addText($phoneNumber->getDescription(), ['italic' => true]);
+                    }
+                    
+                    ++$columns;
                 }
+                
+                
+            } else {
+                $section->addText(
+                    'Keine Telefonnummern gespeichert', self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION
+                );
             }
             
             $section = $this->addSection($document);
@@ -390,6 +450,6 @@ class ParticipantProfile
     
     public function cleanup()
     {
-    
+        $this->temporaryBarCodeGenerator->cleanup();
     }
 }

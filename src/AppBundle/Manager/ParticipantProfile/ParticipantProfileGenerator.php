@@ -108,9 +108,10 @@ class ParticipantProfileGenerator
      */
     public function generate(array $participants)
     {
+        $barCodeGenerator = new TemporaryBarCodeGenerator($this->tmpDir, $this->barcodeGenerator);
         
         $profile  = new ParticipantProfile(
-            $participants, $this->phoneUtil, $this->commentManager, $this->provideLogoPath()
+            $participants, $this->phoneUtil, $this->commentManager, $barCodeGenerator, $this->provideLogoPath()
         );
         $document = $profile->generate();
         
