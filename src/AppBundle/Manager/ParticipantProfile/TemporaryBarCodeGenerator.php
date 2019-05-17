@@ -54,14 +54,14 @@ class TemporaryBarCodeGenerator
      * @param string $code Textual code
      * @return string
      */
-    public function createCode(string $code)
+    public function createCode(string $code, int $size = 16)
     {
         $options  = [
             'code'   => $code,
             'type'   => 'qrcode',
             'format' => 'png',
-            'width'  => 16,
-            'height' => 16,
+            'width'  => $size,
+            'height' => $size,
             'color'  => [0, 0, 0],
         ];
         $code     = $this->barcodeGenerator->generate($options);

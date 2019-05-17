@@ -26,6 +26,7 @@ use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
+use PhpOffice\PhpWord\Style\Frame;
 use PhpOffice\PhpWord\Style\Language;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -423,6 +424,33 @@ class ParticipantProfile
             $this->addDatum($section, 'Nachname', $participant->getNameLast());
             $this->addDatum($section, 'Geschlecht', $participant->getGender(true));
             $this->addDatum($section, 'Geburtsdatum', $participant->getBirthday()->format(Event::DATE_FORMAT_DATE));
+            
+            $linkPath = $this->temporaryBarCodeGenerator->createCode(
+                'url:' . $this->urlGenerator->generate(
+                    'admin_participant_detail',
+                    [
+                        'aid' => $participant->getAid(),
+                        'eid' => $this->getEvent()->getEid(),
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+                32
+            );
+            $section->addImage(
+                $linkPath,
+                [
+                    'width'            => 40,
+                    'height'           => 40,
+                    'marginTop'        => 0,
+                    'marginLeft'       => -1,
+                    'wrappingStyle'    => Frame::WRAP_SQUARE,
+                    'positioning'      => \PhpOffice\PhpWord\Style\Image::POSITION_ABSOLUTE,
+                    'posHorizontal'    => \PhpOffice\PhpWord\Style\Image::POSITION_HORIZONTAL_RIGHT,
+                    'posVertical'      => \PhpOffice\PhpWord\Style\Image::POSITION_VERTICAL_TOP,
+                    'posHorizontalRel' => \PhpOffice\PhpWord\Style\Image::POSITION_RELATIVE_TO_MARGIN,
+                    'posVerticalRel'   => \PhpOffice\PhpWord\Style\Image::POSITION_RELATIVE_TO_MARGIN,
+                ]
+            );
             
             $section = $this->addSection(
                 $document,
