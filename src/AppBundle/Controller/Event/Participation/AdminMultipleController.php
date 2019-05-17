@@ -796,6 +796,42 @@ class AdminMultipleController extends Controller
             ]
         );
     }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participants/profile_export.docx", requirements={"eid": "\d+"}, name="event_participants_profile")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @return Response
+     */
+    public function generateParticipantsProfileAction(Event $event) {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participants            = $participationRepository->participantsList($event);
+    
+        $generator = $this->get('app.participant.profile_generator');
+        $path      = $generator->generate($participants);
+        $response  = new BinaryFileResponse($path);
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            preg_replace('/[^a-zA-Z0-9\-\._ ]/','', $event->getTitle().' Profile.docx')
+        );
+        $response->headers->set('Content-Disposition', $d);
+
+        //ensure file deleted after request
+        $this->get('event_dispatcher')->addListener(
+            KernelEvents::TERMINATE,
+            function (PostResponseEvent $event) use ($path) {
+                if (file_exists($path)) {
+                    usleep(100);
+                    unlink($path);
+                }
+            }
+        );
+
+        return $response;
+    }
 
     /**
      * Page for list of participants of an event

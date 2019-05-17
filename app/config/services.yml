@@ -120,6 +120,15 @@ services:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
         public: true
+    app.participant.profile_generator:
+        class: AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator
+        arguments:
+            - "%app.tmp.root.path%"
+            - "%app.web.root.path%"
+            - "@skies_barcode.generator"
+            - "@app.comment_manager"
+            - "@libphonenumber.phone_number_util"
+        public: true
     app.payment.invoice_manager:
         class: AppBundle\Manager\Invoice\InvoiceManager
         arguments:

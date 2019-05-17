@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de"{% block htmltag %}{% endblock %}>
+<head>
+    <title>{% block title %}{% endblock %} - {{ appTitle }}</title>
+    {% block stylesheets %}{% endblock %}
+
+    {% if app.environment == 'dev' %}
+        <link rel="stylesheet" href="{{ asset('css/all.css', 'css') }}">
+        <script src="//localhost:35729/livereload.js"></script>
+    {% else %}
+    <link rel="stylesheet" href="{{ asset('css/all.min.css', 'css') }}">
+    {% endif %}
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="{{ themeColor }}">
+    <meta name="theme-color" content="{{ themeColor }}">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if pageDescription is defined %}
+        <meta name="description" content="{{ pageDescription|e|length > 157 ? pageDescription|e|slice(0, 155) ~ '…' : pageDescription|e }}">
+    {% endif %}
+    {% block head %}
+    {% endblock %}
+</head>
+<body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %}>
+<div id="page">
+    {% block page %}{% endblock %}
+</div>
+{% if not localhostInformationProvider.localhost %}
+  <div id="cookiechoice" style="visibility: hidden;">
+    <div class="container">
+      <div class="col-xs-12">
+        <div>
+          <div class="button-container">
+            <button class="btn btn-primary" id="cookieChoiceDismiss">Ich habe verstanden</button>
+          </div>
+          Auf dieser Website werden Cookies eingesetzt, um den Besuchern das beste Webseiten-Erlebnis zu ermöglichen.
+          Weiterführende Informationen erhalten Sie in unserer<a href="{{ path('legal') }}">Datenschutzerklärung</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% block javascriptMain %}
+    {% if app.environment == 'dev' %}
+        <script src="{{ asset('js/all.js', 'js') }}"></script>
+    {% else %}
+        <script src="{{ asset('js/all.min.js', 'js') }}" integrity="sha256-{{ assetJsIntegrity }}"></script>
+    {% endif %}
+{% endblock %}
+{% block javascriptCustom %}{% endblock %}
+</body>
+</html>

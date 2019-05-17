@@ -10,6 +10,7 @@ parameters:
     locale: de
     app.database.configuration.path: "%kernel.root_dir%/config/.my.cnf"
     app.tmp.root.path: "%kernel.root_dir%/../tmp"
+    app.web.root.path: "%kernel.root_dir%/../web"
     app.data.root.path: "%kernel.root_dir%/../data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
 
