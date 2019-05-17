@@ -141,10 +141,14 @@ class ParticipantProfile
     private function prepareDocument(): PhpWord
     {
         Settings::setOutputEscapingEnabled(true);
-        $document = new PhpWord();
-        $language = new Language(Language::DE_DE);
-        $settings = $document->getSettings();
-        $document->getDocInfo();
+        $document    = new PhpWord();
+        $language    = new Language(Language::DE_DE);
+        $settings    = $document->getSettings();
+        $information = $document->getDocInfo();
+        $information->setTitle('Teilnehmerprofile');
+        $information->setSubject($this->getEvent()->getTitle());
+        $information->setDescription('Profile der Teilnehmer der Veranstaltung ' . $this->getEvent()->getTitle());
+        
         $settings->setThemeFontLang($language);
         
         $document->addTitleStyle(2, ['size' => 13], ['spaceBefore' => 0]);
