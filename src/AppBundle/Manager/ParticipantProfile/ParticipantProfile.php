@@ -40,7 +40,8 @@ class ParticipantProfile
     
     const STYLE_PARAGRAPH_COMMENT = 'CommentP';
     
-    const STYLE_LIST = 'ListL';
+    const STYLE_LIST           = 'ListL';
+    const STYLE_PARAGRAPH_LIST = 'ListP';
     
     /**
      * Document
@@ -162,12 +163,15 @@ class ParticipantProfile
         );
         
         $document->setDefaultFontSize(8);
-        $defaultParagraphStyle = ['spaceBefore'  => 0, 'spaceAfter' => 100, 'marginLeft' => 100, 'marginRight' => 600,
-                                  'widowControl' => false,
+        $defaultParagraphStyle = [
+            'spaceBefore' => 0, 'spaceAfter' => 100, 'marginLeft' => 100, 'marginRight' => 600, 'widowControl' => false,
         ];
         $document->setDefaultParagraphStyle($defaultParagraphStyle);
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_COMMENT, array_merge($defaultParagraphStyle, ['keepNext' => true])
+        );
+        $document->addParagraphStyle(
+            self::STYLE_PARAGRAPH_LIST, array_merge($defaultParagraphStyle, ['spaceAfter' => 50])
         );
         
         $document->addParagraphStyle(
@@ -183,8 +187,13 @@ class ParticipantProfile
             [
                 'type'   => 'multilevel',
                 'levels' => [
-                    ['format' => 'bullet', 'text' => ' %1•', 'indent' => 100, 'left' => 160, 'hanging' => 160,
-                     'tabPos' => 160,
+                    [
+                        'format'  => 'bullet',
+                        'text'    => ' %1•',
+                        'indent'  => 100,
+                        'left'    => 160,
+                        'hanging' => 160,
+                        'tabPos'  => 160,
                     ],
                 ],
             ]
@@ -315,7 +324,9 @@ class ParticipantProfile
                 } else {
                     if ($attribute->isMultipleChoiceType()) {
                         foreach ($choices as $choice) {
-                            $section->addListItem($choice->getManagementTitle(true), 0, null, self::STYLE_LIST);
+                            $section->addListItem(
+                                $choice->getManagementTitle(true), 0, null, self::STYLE_LIST, self::STYLE_PARAGRAPH_LIST
+                            );
                         }
                     } else {
                         $choice = reset($choices);
