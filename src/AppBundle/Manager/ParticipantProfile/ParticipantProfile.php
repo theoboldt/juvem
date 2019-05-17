@@ -268,6 +268,42 @@ class ParticipantProfile
     }
     
     /**
+     * Add Datum to document
+     *
+     * @param Section $section         Section to add datum to
+     * @param string $label            Title of datum
+     * @param array|string $data       Data rows, will be separated by line breaks
+     * @param string|null $description Description text, will not be displayed if equal to label
+     * @return void
+     */
+    private function addDatum(Section $section, string $label, $data, ?string $description = null): void
+    {
+        $section->addTitle($label, 4);
+        if ($description && $description !== $label) {
+            $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
+        }
+        if (empty($data)) {
+            $section->addText('(Keine Angabe)', self::STYLE_FONT_NONE);
+        } else {
+            
+            if (!is_array($data)) {
+                $data = [$data];
+            }
+            if (count($data)) {
+                $textrun = $section->addTextRun();
+                $first   = true;
+                foreach ($data as $datum) {
+                    if (!$first) {
+                        $textrun->addTextBreak();
+                    }
+                    $textrun->addText($datum);
+                    $first = false;
+                }
+            }
+        }
+    }
+    
+    /**
      * Generate document, provide export file path
      */
     public function generate(): PhpWord
@@ -306,17 +342,11 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
-            $section->addTitle('Vorname', 4);
-            $section->addText($participant->getNameFirst());
             
-            $section->addTitle('Nachname', 4);
-            $section->addText($participant->getNameLast());
-            
-            $section->addTitle('Geschlecht', 4);
-            $section->addText($participant->getGender(true));
-            
-            $section->addTitle('Geburtsdatum', 4);
-            $section->addText($participant->getBirthday()->format(Event::DATE_FORMAT_DATE));
+            $this->addDatum($section, 'Vorname', $participant->getNameFirst());
+            $this->addDatum($section, 'Nachname', $participant->getNameLast());
+            $this->addDatum($section, 'Geschlecht', $participant->getGender(true));
+            $this->addDatum($section, 'Geburtsdatum', $participant->getBirthday()->format(Event::DATE_FORMAT_DATE));
             
             $section = $this->addSection(
                 $document,
@@ -325,14 +355,9 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
-            $section->addTitle('Medizinische Hinweise', 4);
-            $section->addText($participant->getInfoMedical());
-            
-            $section->addTitle('Allgemeine Hinweise', 4);
-            $section->addText($participant->getInfoGeneral());
-            
-            $section->addTitle('Ernährung', 4);
-            $section->addText(implode(', ', $participant->getFood(true)->getActiveList(true)));
+            $this->addDatum($section, 'Medizinische Hinweise', $participant->getInfoMedical());
+            $this->addDatum($section, 'Allgemeine Hinweise', $participant->getInfoGeneral());
+            $this->addDatum($section, 'Ernährung', implode(', ', $participant->getFood(true)->getActiveList(true)));
             
             $this->addFilloutsToSection($participant->getAcquisitionAttributeFillouts()->toArray(), $section);
             
@@ -348,22 +373,19 @@ class ParticipantProfile
                 ]
             );
             
-            $section->addTitle('Anschrift (Eltern)', 4);
-            $textrun = $section->addTextRun();
-            $textrun->addText($participation->getSalutation() . ' ' . $participation->fullname());
-            $textrun->addTextBreak();
-            $textrun->addText($participation->getAddressStreet());
-            $textrun->addTextBreak();
+            $participationAddress = [
+                $participation->getSalutation() . ' ' . $participation->fullname(),
+                $participation->getAddressStreet(),
+            ];
             if ($participation->getAddressCountry() !== Event::DEFAULT_COUNTRY) {
-                $textrun->addTextBreak();
-                $textrun->addText($participation->getAddressCountry());
+                $participationAddress[] = $participation->getAddressCountry();
             }
+            $this->addDatum($section, 'Anschrift', $participationAddress);
             
             $section->addTitle('E-Mail Adresse', 4);
             $section->addLink('mailto:' . $participation->getEmail(), $participation->getEmail());
             
-            $section->addTitle('Eingang', 4);
-            $section->addText($participant->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME));
+            $this->addDatum($section, 'Eingang', $participant->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME));
             
             $this->addFilloutsToSection($participation->getAcquisitionAttributeFillouts()->toArray(), $section);
             
@@ -408,7 +430,7 @@ class ParticipantProfile
                     $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
                     if ($phoneNumber->getDescription()) {
                         $textrun->addTextBreak();
-                        $textrun->addText($phoneNumber->getDescription(), ['italic' => true]);
+                        $textrun->addText($phoneNumber->getDescription());
                     }
                     
                     ++$columns;
