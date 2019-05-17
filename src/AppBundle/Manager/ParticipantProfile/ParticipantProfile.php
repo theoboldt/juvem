@@ -93,10 +93,11 @@ class ParticipantProfile
     /**
      * ParticipantProfile constructor.
      *
-     * @param Participant[]|array $participants
-     * @param PhoneNumberUtil $phoneUtil
-     * @param CommentManager $commentManager
-     * @param string|null $logoPath
+     * @param Participant[]|array $participants                    List of participants for export
+     * @param PhoneNumberUtil $phoneUtil                           Util to format phone numbers
+     * @param CommentManager $commentManager                       Comment manager to fetch comments
+     * @param TemporaryBarCodeGenerator $temporaryBarCodeGenerator Bar code image generator
+     * @param string|null $logoPath                                Logo path for doc
      */
     public function __construct(
         array $participants,
@@ -236,6 +237,33 @@ class ParticipantProfile
                 $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
             }
             $section->addText($fillout->getValue()->getTextualValue());
+        }
+    }
+    
+    /**
+     * Add comment section
+     *
+     * @param array|CommentBase[] $comments Comments to add
+     * @param Section $section              Section to add comments to
+     * @param string $commentTarget         Target  description text
+     */
+    private function addCommentsToSection(array $comments, Section $section, string $commentTarget)
+    {
+        /** @var CommentBase $comment */
+        foreach ($comments as $comment) {
+            if ($comment->getDeletedAt()) {
+                continue;
+            }
+            $metaText = ($comment->getCreatedBy() ? $comment->getCreatedBy()->fullname() : 'SYSTEM') .
+                        ' am ' . $comment->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
+            if ($comment->getModifiedAt()) {
+                $metaText .= ', geändert von ' .
+                             ($comment->getCreatedBy() ? $comment->getCreatedBy()->fullname() : 'SYSTEM') .
+                             ' am  ' . $comment->getModifiedAt()->format(Event::DATE_FORMAT_DATE_TIME);
+            }
+            $metaText .= $commentTarget;
+            $section->addText($metaText, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
+            $section->addText($comment->getContent(), [], self::STYLE_PARAGRAPH_COMMENT);
         }
     }
     
@@ -427,28 +455,12 @@ class ParticipantProfile
         return $document;
     }
     
-    private function addCommentsToSection(array $comments, Section $section, string $commentTarget)
-    {
-        /** @var CommentBase $comment */
-        foreach ($comments as $comment) {
-            if ($comment->getDeletedAt()) {
-                continue;
-            }
-            $metaText = ($comment->getCreatedBy() ? $comment->getCreatedBy()->fullname() : 'SYSTEM') .
-                        ' am ' . $comment->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
-            if ($comment->getModifiedAt()) {
-                $metaText .= ', geändert von ' .
-                             ($comment->getCreatedBy() ? $comment->getCreatedBy()->fullname() : 'SYSTEM') .
-                             ' am  ' . $comment->getModifiedAt()->format(Event::DATE_FORMAT_DATE_TIME);
-            }
-            $metaText .= $commentTarget;
-            $section->addText($metaText, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
-            $section->addText($comment->getContent(), [], self::STYLE_PARAGRAPH_COMMENT);
-        }
-    }
-    
-    
-    public function cleanup()
+    /**
+     * Cleanup
+     *
+     * @return void
+     */
+    public function cleanup(): void
     {
         $this->temporaryBarCodeGenerator->cleanup();
     }
