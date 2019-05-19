@@ -108,7 +108,7 @@ class PriceManager
         foreach ($participation->getParticipants() as $participant) {
             $priceTag = $this->getEntityPriceTag($participant);
             $price    = $priceTag->getPrice($inEuro);
-            $prices[] = $prices;
+            $prices[] = $price;
             $allNull  = $allNull && $price === null;
         }
         if ($allNull) {
