@@ -20,6 +20,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Manager\CommentManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\PhpWord;
@@ -47,6 +48,10 @@ class ParticipantProfile
     const STYLE_PARAGRAPH_LIST_END = 'ListEndP';
     const STYLE_FONT_LIST_END      = 'ListEndF';
     
+    const STYLE_FONT_NEGATIVE_LABEL = 'LabelNegativeF';
+    const STYLE_LIST_NEGATIVE       = 'ListNegativeL';
+    const STYLE_FONT_NEGATIVE       = 'NegativeP';
+    
     /**
      * Document
      *
@@ -60,6 +65,13 @@ class ParticipantProfile
      * @var array|Participant[]
      */
     private $participants;
+    
+    /**
+     * Array containing configuration options defined in {@see Configuration}
+     *
+     * @var array
+     */
+    private $configuration;
     
     /**
      * Path to logo if exists
@@ -104,6 +116,13 @@ class ParticipantProfile
     private $commentManager;
     
     /**
+     * PaymentManager
+     *
+     * @var PaymentManager
+     */
+    private $paymentManager;
+    
+    /**
      * Code generator
      *
      * @var TemporaryBarCodeGenerator
@@ -114,28 +133,33 @@ class ParticipantProfile
      * ParticipantProfile constructor.
      *
      * @param Participant[]|array $participants                    List of participants for export
+     * @param array $configuration                                 Array containing configuration options defined in {@see Configuration}
      * @param UrlGeneratorInterface $urlGenerator                  Providing URLS
      * @param PhoneNumberUtil $phoneUtil                           Util to format phone numbers
      * @param CommentManager $commentManager                       Comment manager to fetch comments
+     * @param PaymentManager $paymentManager
      * @param TemporaryBarCodeGenerator $temporaryBarCodeGenerator Bar code image generator
      * @param string|null $logoPath                                Logo path for doc
      */
     public function __construct(
         array $participants,
+        array $configuration,
         UrlGeneratorInterface $urlGenerator,
         PhoneNumberUtil $phoneUtil,
         CommentManager $commentManager,
+        PaymentManager $paymentManager,
         TemporaryBarCodeGenerator $temporaryBarCodeGenerator,
         ?string $logoPath = null
     )
     {
         $this->participants              = $participants;
+        $this->configuration             = $configuration;
         $this->urlGenerator              = $urlGenerator;
         $this->phoneUtil                 = $phoneUtil;
         $this->commentManager            = $commentManager;
         $this->logoPath                  = $logoPath;
         $this->temporaryBarCodeGenerator = $temporaryBarCodeGenerator;
-        $this->document                  = $this->prepareDocument();
+        $this->paymentManager            = $paymentManager;
     }
     
     /**
@@ -146,58 +170,56 @@ class ParticipantProfile
     private function prepareDocument(): PhpWord
     {
         Settings::setOutputEscapingEnabled(true);
-        $document    = new PhpWord();
-        $language    = new Language(Language::DE_DE);
-
-        $settings    = $document->getSettings();
+        $document = new PhpWord();
+        $language = new Language(Language::DE_DE);
+        
+        $settings = $document->getSettings();
         $settings->setHideSpellingErrors(true);
         $settings->setDecimalSymbol(',');
         $settings->setAutoHyphenation(true);
         $settings->setThemeFontLang($language);
-
+        
         $information = $document->getDocInfo();
         $information->setTitle('Teilnehmerprofile');
         $information->setSubject($this->getEvent()->getTitle());
         $information->setDescription('Profile der Teilnehmer der Veranstaltung ' . $this->getEvent()->getTitle());
         
-        $document->addTitleStyle(2, ['size' => 13], ['spaceBefore' => 0]);
+        //title styles
         $document->addTitleStyle(
-            3, ['size' => 9, 'smallCaps' => true, 'color' => '222222'],
+            2,
+            ['size' => 13],
+            ['spaceBefore' => 0]
+        );
+        $document->addTitleStyle(
+            3,
+            ['size' => 9, 'smallCaps' => true, 'color' => '222222'],
             ['spaceBefore' => 150, 'spaceAfter' => 0, 'keepNext' => true]
         );
-        
         $document->addTitleStyle(
-            4, ['size' => 8, 'bold' => true], ['spaceBefore' => 100, 'spaceAfter' => 0, 'keepNext' => true]
+            4,
+            ['size' => 8, 'bold' => true],
+            ['spaceBefore' => 100, 'spaceAfter' => 0, 'keepNext' => true]
         );
         
+        //default styles
         $document->setDefaultFontSize(8);
         $defaultParagraphStyle = [
-            'keepLines'    => true, 'spaceBefore' => 0, 'spaceAfter' => 100, 'marginLeft' => 100, 'marginRight' => 600,
+            'keepLines'    => true,
+            'spaceBefore'  => 0,
+            'spaceAfter'   => 60,
+            'marginLeft'   => 100,
+            'marginRight'  => 600,
             'widowControl' => false,
         ];
         $document->setDefaultParagraphStyle($defaultParagraphStyle);
-        $document->addParagraphStyle(
-            self::STYLE_PARAGRAPH_COMMENT, array_merge($defaultParagraphStyle, ['keepNext' => true])
-        );
-        $document->addParagraphStyle(
-            self::STYLE_PARAGRAPH_LIST,
-            array_merge($defaultParagraphStyle, ['spaceAfter' => 40, 'cantSplit' => true, 'keepNext' => true])
-        );
-        $document->addParagraphStyle(
-            self::STYLE_PARAGRAPH_LIST_END, array_merge($defaultParagraphStyle, ['keepNext' => false])
-        );
-        $document->addFontStyle(self::STYLE_FONT_LIST_END, ['size' => 2, 'spaceAfter' => 0,]);
         
+        //comment style
         $document->addParagraphStyle(
-            self::STYLE_PARAGRAPH_DESCRIPTION,
-            ['spaceBefore' => 0, 'spaceAfter' => 0, 'keepNext' => true, 'marginLeft' => 400, 'marginRight' => 600]
+            self::STYLE_PARAGRAPH_COMMENT,
+            array_merge($defaultParagraphStyle, ['keepNext' => true])
         );
-        $document->addFontStyle(self::STYLE_FONT_DESCRIPTION, ['size' => 7, 'color' => '333333']);
         
-        $document->addFontStyle(self::STYLE_FONT_NONE, ['size' => 8, 'color' => '666666', 'italic' => true]);
-        
-        $document->addFontStyle(self::STYLE_FONT_LABEL, ['size' => 7, 'color' => 'FFFFFF', 'bgColor' => '000000', 'boldt' => true]);
-        
+        //list styles
         $document->addNumberingStyle(
             self::STYLE_LIST,
             [
@@ -206,13 +228,75 @@ class ParticipantProfile
                     [
                         'restart' => true,
                         'format'  => 'bullet',
-                        'text'    => ' %1•',
+                        'text'    => " %1\u{25cf}",
                         'indent'  => 100,
                         'left'    => 160,
                         'hanging' => 160,
                         'tabPos'  => 160,
                     ],
                 ],
+            ]
+        );
+        $document->addNumberingStyle(
+            self::STYLE_LIST_NEGATIVE,
+            [
+                'type'   => 'multilevel',
+                'levels' => [
+                    [
+                        'restart' => true,
+                        'format'  => 'bullet',
+                        'text'    => " %1\u{25cb}",
+                        'indent'  => 100,
+                        'left'    => 160,
+                        'hanging' => 160,
+                        'tabPos'  => 160,
+                    ],
+                ],
+            ]
+        );
+        $document->addParagraphStyle(
+            self::STYLE_PARAGRAPH_LIST,
+            array_merge($defaultParagraphStyle, ['spaceAfter' => 10, 'cantSplit' => true, 'keepNext' => true])
+        );
+        $document->addParagraphStyle(
+            self::STYLE_PARAGRAPH_LIST_END, array_merge($defaultParagraphStyle, ['keepNext' => true])
+        );
+        $document->addFontStyle(
+            self::STYLE_FONT_LIST_END, ['size' => 2, 'spaceAfter' => 0]
+        );
+        
+        //fillout attribute description style
+        $document->addParagraphStyle(
+            self::STYLE_PARAGRAPH_DESCRIPTION,
+            ['spaceBefore' => 0, 'spaceAfter' => 0, 'keepNext' => true, 'marginLeft' => 400, 'marginRight' => 600]
+        );
+        $document->addFontStyle(self::STYLE_FONT_DESCRIPTION, ['size' => 7, 'color' => '333333']);
+        
+        //none fillout value style
+        $document->addFontStyle(self::STYLE_FONT_NONE, ['size' => 8, 'color' => '666666', 'italic' => true]);
+        
+        //label style
+        $document->addFontStyle(
+            self::STYLE_FONT_LABEL,
+            ['size' => 7, 'color' => 'FFFFFF', 'bgColor' => '000000', 'boldt' => true]
+        );
+        $document->addFontStyle(
+            self::STYLE_FONT_NEGATIVE_LABEL,
+            [
+                'size'          => 7,
+                'color'         => '333333',
+                'bgColor'       => 'CCCCCC',
+                'boldt'         => true,
+                'strikethrough' => true,
+                'italic'        => true,
+            ]
+        );
+        $document->addFontStyle(
+            self::STYLE_FONT_NEGATIVE,
+            [
+                'color'         => 'AAAAAA',
+                'italic'        => true,
+                'strikethrough' => true
             ]
         );
         
@@ -287,9 +371,17 @@ class ParticipantProfile
     {
         /** @var Fillout $fillout */
         foreach ($fillouts as $fillout) {
-            $attribute   = $fillout->getAttribute();
+            $attribute = $fillout->getAttribute();
+            
+            if ($this->configuration['general']['includePrivate'] && !$attribute->isPublic()) {
+                continue;
+            }
             $title       = $attribute->getManagementTitle();
             $description = $attribute->getManagementDescription();
+            
+            if (!$attribute->isPublic()) {
+                $title .= "\xc2\xa0\u{1f512}";
+            }
             
             $this->addDatumTitle($section, $title, $description);
             
@@ -335,23 +427,48 @@ class ParticipantProfile
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 }
             } elseif ($value instanceof ChoiceFilloutValue) {
-                $choices = $value->getSelectedChoices();
-                if (!count($choices)) {
+                $choices  = $attribute->getChoiceOptions();
+                $selected = $value->getSelectedChoices();
+                
+                if (!count($selected) && !$this->configuration['choices']['includeNotSelected']) {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 } else {
-                    if ($attribute->isMultipleChoiceType()) {
+                    if ($attribute->isMultipleChoiceType() || $this->configuration['choices']['includeNotSelected']) {
                         foreach ($choices as $choice) {
-                            $listItemRun     = $section->addListItemRun(0, self::STYLE_LIST);
-                            $listItemTextRun = $listItemRun->addTextRun(self::STYLE_PARAGRAPH_LIST);
-                            if ($choice->getShortTitle(false)) {
-                                $listItemTextRun->addText(" ".$choice->getShortTitle(false)." ", self::STYLE_FONT_LABEL);
-                                $listItemTextRun->addText(' ');
+                            if (isset($selected[$choice->getId()])) {
+                                $fontStyleLabel     = self::STYLE_FONT_LABEL;
+                                $listStyle          = self::STYLE_LIST;
+                                $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
+                                $fontStyle          = null;
+                                
+                            } else {
+                                if (!$this->configuration['choices']['includeNotSelected']) {
+                                    continue;
+                                }
+                                $fontStyleLabel     = self::STYLE_FONT_NEGATIVE_LABEL;
+                                $listStyle          = self::STYLE_LIST_NEGATIVE;
+                                $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
+                                $fontStyle          = self::STYLE_FONT_NEGATIVE;
                             }
-                            $listItemTextRun->addText($choice->getManagementTitle(true));
+                            
+                            $listItemRun     = $section->addListItemRun(0, $listStyle, $listParagraphStyle);
+                            $listItemTextRun = $listItemRun->addTextRun($listParagraphStyle);
+                            
+                            if ($this->configuration['choices']['includeShortTitle'] && $choice->getShortTitle(false)) {
+                                $listItemTextRun->addText(
+                                    " " . $choice->getShortTitle(false) . " ", $fontStyleLabel, $listParagraphStyle
+                                );
+                                $listItemTextRun->addText(' ', null, $listParagraphStyle);
+                            }
+                            if ($this->configuration['choices']['includeManagementTitle']) {
+                                $listItemTextRun->addText(
+                                    $choice->getManagementTitle(true), $fontStyle, $listParagraphStyle
+                                );
+                            }
                         }
                         $section->addText("\xc2\xa0", self::STYLE_FONT_LIST_END, self::STYLE_PARAGRAPH_LIST_END);
                     } else {
-                        $choice = reset($choices);
+                        $choice = reset($selected);
                         $section->addText($choice->getManagementTitle(true));
                     }
                 }
@@ -432,7 +549,7 @@ class ParticipantProfile
     private function addDatumTitle(Section $section, string $label, ?string $description = null): void
     {
         $section->addTitle($label, 4);
-        if ($description && $description !== $label) {
+        if ($description && $description !== $label && $this->configuration['general']['includeDescription']) {
             $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
         }
     }
@@ -516,6 +633,30 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
+            if ($this->paymentManager && $this->configuration['general']['includePrice']) {
+                $this->addDatum(
+                    $section, 'Preis',
+                    number_format(
+                        $this->paymentManager->getEntityPriceTag($participant)->getPrice(true),
+                        2,
+                        ',',
+                        '.'
+                    ) . ' €'
+                );
+            }
+            if ($this->paymentManager && $this->configuration['general']['includePrice']) {
+                $this->addDatum(
+                    $section,
+                    'Offener Zahlungsbetrag',
+                    number_format(
+                        $this->paymentManager->getToPayValueForParticipant($participant, true),
+                        2,
+                        ',',
+                        '.'
+                    ) . ' €'
+        
+                );
+            }
             $this->addDatum($section, 'Medizinische Hinweise', $participant->getInfoMedical());
             $this->addDatum($section, 'Allgemeine Hinweise', $participant->getInfoGeneral());
             $this->addDatum($section, 'Ernährung', implode(', ', $participant->getFood(true)->getActiveList(true)));
@@ -603,33 +744,36 @@ class ParticipantProfile
                     'Keine Telefonnummern gespeichert', self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION
                 );
             }
-            
-            $section = $this->addSection($document);
-            $section->addTitle('Anmerkungen', 3);
-            $section = $this->addSection(
-                $document,
-                [
-                    'colsNum'   => $this->columns,
-                    'colsSpace' => 100,
-                ]
-            );
-            if (!$this->commentManager->countForParticipation($participation)
-                && !$this->commentManager->countForParticipant($participant)) {
-                $section->addText(
-                    'Keine Anmerkungen gespeichert.', self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION
+    
+            if ($this->configuration['general']['includeComments']) {
+                $section = $this->addSection($document);
+                $section->addTitle('Anmerkungen', 3);
+                $section = $this->addSection(
+                    $document,
+                    [
+                        'colsNum'   => $this->columns,
+                        'colsSpace' => 100,
+                    ]
                 );
-            } else {
-                $this->addCommentsToSection(
-                    $this->commentManager->forParticipation($participation), $section, ' zur Anmeldung'
-                );
-                $this->addCommentsToSection(
-                    $this->commentManager->forParticipant($participant),
-                    $section,
-                    $participant->getGender() ===
-                    Participant::TYPE_GENDER_FEMALE ? ' zur Teilnehmerin' : 'zum Teilnehmer'
-                );
+                if (!$this->commentManager->countForParticipation($participation)
+                    && !$this->commentManager->countForParticipant($participant)) {
+                    $section->addText(
+                        'Keine Anmerkungen gespeichert.', self::STYLE_FONT_DESCRIPTION,
+                        self::STYLE_PARAGRAPH_DESCRIPTION
+                    );
+                } else {
+                    $this->addCommentsToSection(
+                        $this->commentManager->forParticipation($participation), $section, ' zur Anmeldung'
+                    );
+                    $this->addCommentsToSection(
+                        $this->commentManager->forParticipant($participant),
+                        $section,
+                        $participant->getGender() ===
+                        Participant::TYPE_GENDER_FEMALE ? ' zur Teilnehmerin' : 'zum Teilnehmer'
+                    );
+                }
             }
-            
+    
         }
         return $document;
     }

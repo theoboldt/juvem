@@ -867,8 +867,31 @@ class AdminMultipleController extends Controller
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
     
+        $config = [
+            'profile' => [
+                'general' =>
+                    [
+                        'includePrivate'     => true,
+                        'includeDescription' => true,
+                        'includeComments'    => true,
+                        'includePrice'       => true,
+                        'includeToPay'       => true,
+                    ],
+                'choices' =>
+                    [
+                        'includeShortTitle'      => true,
+                        'includeManagementTitle' => true,
+                        'includeNotSelected'     => false,
+                    ],
+            ]
+        ];
+        $processor     = new Processor();
+        $configuration = new \AppBundle\Manager\ParticipantProfile\Configuration();
+
+        $processedConfiguration = $processor->processConfiguration($configuration, $config);
+        
         $generator = $this->get('app.participant.profile_generator');
-        $path      = $generator->generate($participants);
+        $path      = $generator->generate($participants, $processedConfiguration);
         $response  = new BinaryFileResponse($path);
 
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
