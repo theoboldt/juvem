@@ -467,7 +467,9 @@
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
                         {% if is_granted('participants_edit', event) -%}
+                            <a class="btn btn-default" href="{{ path('admin_participation_navigate', {'eid': event.eid, 'pid': participation.pid, 'direction': 'previous' }) }}" title="Zur vorigen (nicht gelöschten, nicht zurückgezogenen/abgelehnten) Anmeldung springen">{{ 'chevron-left'|glyph }}</a>
                             <a class="btn btn-default" href="{{ path('admin_participation_create', {'eid': event.eid }) }}" title="Neue Anmeldung für diese Veranstaltung erfassen">{{ 'plus'|glyph }}</a>
+                            <a class="btn btn-default" href="{{ path('admin_participation_navigate', {'eid': event.eid, 'pid': participation.pid, 'direction': 'next' }) }}" title="Zur nächsten (nicht gelöschten, nicht zurückgezogenen/abgelehnten) Anmeldung springen">{{ 'chevron-right'|glyph }}</a>
                         {% endif %}
                     </div>
                     <div class="btn-group" role="group">
