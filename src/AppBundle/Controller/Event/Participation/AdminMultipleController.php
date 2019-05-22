@@ -139,9 +139,11 @@ class AdminMultipleController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("expectedParticipation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/admin/event/{eid}/participation/{pid}/{direction}", requirements={"eid": "\d+", "pid": "\d+", "direction":"previous|next"}, name="admin_participation_navigate")
+     * @param Event $event
+     * @param Participation $expectedParticipation
      * @param string $direction Either previous or next
-     * @Security("is_granted('participants_read', event)")
      * @return Response
+     * @Security("is_granted('participants_read', event)")
      */
     public function navigateParticipation(Event $event, Participation $expectedParticipation, string $direction)
     {
