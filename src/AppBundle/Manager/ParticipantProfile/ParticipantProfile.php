@@ -36,12 +36,16 @@ class ParticipantProfile
     const STYLE_FONT_DESCRIPTION      = 'DescriptionF';
     const STYLE_PARAGRAPH_DESCRIPTION = 'DescriptionP';
     
+    const STYLE_FONT_LABEL = 'LabelF';
+    
     const STYLE_FONT_NONE = 'NoneF';
     
     const STYLE_PARAGRAPH_COMMENT = 'CommentP';
     
-    const STYLE_LIST           = 'ListL';
-    const STYLE_PARAGRAPH_LIST = 'ListP';
+    const STYLE_LIST               = 'ListL';
+    const STYLE_PARAGRAPH_LIST     = 'ListP';
+    const STYLE_PARAGRAPH_LIST_END = 'ListEndP';
+    const STYLE_FONT_LIST_END      = 'ListEndF';
     
     /**
      * Document
@@ -144,13 +148,17 @@ class ParticipantProfile
         Settings::setOutputEscapingEnabled(true);
         $document    = new PhpWord();
         $language    = new Language(Language::DE_DE);
+
         $settings    = $document->getSettings();
+        $settings->setHideSpellingErrors(true);
+        $settings->setDecimalSymbol(',');
+        $settings->setAutoHyphenation(true);
+        $settings->setThemeFontLang($language);
+
         $information = $document->getDocInfo();
         $information->setTitle('Teilnehmerprofile');
         $information->setSubject($this->getEvent()->getTitle());
         $information->setDescription('Profile der Teilnehmer der Veranstaltung ' . $this->getEvent()->getTitle());
-        
-        $settings->setThemeFontLang($language);
         
         $document->addTitleStyle(2, ['size' => 13], ['spaceBefore' => 0]);
         $document->addTitleStyle(
@@ -164,15 +172,21 @@ class ParticipantProfile
         
         $document->setDefaultFontSize(8);
         $defaultParagraphStyle = [
-            'spaceBefore' => 0, 'spaceAfter' => 100, 'marginLeft' => 100, 'marginRight' => 600, 'widowControl' => false,
+            'keepLines'    => true, 'spaceBefore' => 0, 'spaceAfter' => 100, 'marginLeft' => 100, 'marginRight' => 600,
+            'widowControl' => false,
         ];
         $document->setDefaultParagraphStyle($defaultParagraphStyle);
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_COMMENT, array_merge($defaultParagraphStyle, ['keepNext' => true])
         );
         $document->addParagraphStyle(
-            self::STYLE_PARAGRAPH_LIST, array_merge($defaultParagraphStyle, ['spaceAfter' => 50])
+            self::STYLE_PARAGRAPH_LIST,
+            array_merge($defaultParagraphStyle, ['spaceAfter' => 40, 'cantSplit' => true, 'keepNext' => true])
         );
+        $document->addParagraphStyle(
+            self::STYLE_PARAGRAPH_LIST_END, array_merge($defaultParagraphStyle, ['keepNext' => false])
+        );
+        $document->addFontStyle(self::STYLE_FONT_LIST_END, ['size' => 2, 'spaceAfter' => 0,]);
         
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_DESCRIPTION,
@@ -182,12 +196,15 @@ class ParticipantProfile
         
         $document->addFontStyle(self::STYLE_FONT_NONE, ['size' => 8, 'color' => '666666', 'italic' => true]);
         
+        $document->addFontStyle(self::STYLE_FONT_LABEL, ['size' => 7, 'color' => 'FFFFFF', 'bgColor' => '000000', 'boldt' => true]);
+        
         $document->addNumberingStyle(
             self::STYLE_LIST,
             [
                 'type'   => 'multilevel',
                 'levels' => [
                     [
+                        'restart' => true,
                         'format'  => 'bullet',
                         'text'    => ' %1•',
                         'indent'  => 100,
@@ -324,10 +341,15 @@ class ParticipantProfile
                 } else {
                     if ($attribute->isMultipleChoiceType()) {
                         foreach ($choices as $choice) {
-                            $section->addListItem(
-                                $choice->getManagementTitle(true), 0, null, self::STYLE_LIST, self::STYLE_PARAGRAPH_LIST
-                            );
+                            $listItemRun     = $section->addListItemRun(0, self::STYLE_LIST);
+                            $listItemTextRun = $listItemRun->addTextRun(self::STYLE_PARAGRAPH_LIST);
+                            if ($choice->getShortTitle(false)) {
+                                $listItemTextRun->addText(" ".$choice->getShortTitle(false)." ", self::STYLE_FONT_LABEL);
+                                $listItemTextRun->addText(' ');
+                            }
+                            $listItemTextRun->addText($choice->getManagementTitle(true));
                         }
+                        $section->addText("\xc2\xa0", self::STYLE_FONT_LIST_END, self::STYLE_PARAGRAPH_LIST_END);
                     } else {
                         $choice = reset($choices);
                         $section->addText($choice->getManagementTitle(true));
@@ -379,7 +401,7 @@ class ParticipantProfile
     private function addDatum(Section $section, string $label, $data, ?string $description = null): void
     {
         $this->addDatumTitle($section, $label, $description);
-        if (empty($data)) {
+        if (empty($data) || (is_string($data) && trim($data) === '')) {
             $section->addText('(Keine Angabe)', self::STYLE_FONT_NONE);
         } else {
             if (!is_array($data)) {
