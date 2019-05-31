@@ -116,6 +116,11 @@ services:
         arguments: ['@doctrine']
         tags:
             - { name: kernel.event_subscriber }
+    app.security.implicit_login_listener:
+        class: AppBundle\EventListeners\ImplicitLoginListener
+        arguments: ['@session']
+        tags:
+            - { name: kernel.event_subscriber }
     app.comment_manager:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']

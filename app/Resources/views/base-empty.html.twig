@@ -26,7 +26,7 @@
     {% block head %}
     {% endblock %}
 </head>
-<body data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %}>
+<body data-secure-cache="{% if app.session is not null and app.session.get('use_secure_cache', false) %}1{% else %}0{% endif %}" data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %}>
 <div id="page">
     {% block page %}{% endblock %}
 </div>
