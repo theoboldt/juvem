@@ -32,6 +32,13 @@ interface ChoiceOptionUsageInterface
     public function getParticipationCount(): int;
     
     /**
+     * Get list of assigned participation ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipationIds(): array;
+    
+    /**
      * Determine if multiple participations assigned
      *
      * @return bool
@@ -46,6 +53,13 @@ interface ChoiceOptionUsageInterface
     public function getParticipantsCount(): int;
     
     /**
+     * Get list of assigned participant ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipantIds(): array;
+    
+    /**
      * Determine if multiple participants assigned
      *
      * @return bool
@@ -58,6 +72,13 @@ interface ChoiceOptionUsageInterface
      * @return int
      */
     public function getEmployeeCount();
+
+    /**
+     * Get list of assigned employee ids
+     *
+     * @return array|int[]
+     */
+    public function getEmployeeIds(): array;
     
     /**
      * Determine if multiple employees assigned
@@ -72,5 +93,12 @@ interface ChoiceOptionUsageInterface
      * @return bool
      */
     public function hasMultipleAssignments();
+    
+    /**
+     * Returns true if any assignment is available
+     *
+     * @return bool
+     */
+    public function hasAnyAssignment(): bool;
     
 }

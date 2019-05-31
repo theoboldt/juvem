@@ -19,7 +19,6 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Query\Expr\Join;
 
 class ChoiceOptionUsage implements ChoiceOptionUsageInterface
 {
@@ -212,8 +211,18 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getParticipationCount(): int
     {
+        return count($this->getParticipationIds());
+    }
+    
+    /**
+     * Get list of assigned participation ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipationIds(): array
+    {
         $this->ensureIdsFetched();
-        return count($this->participationIds);
+        return $this->participationIds;
     }
 
     /**
@@ -253,10 +262,19 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getParticipantsCount(): int
     {
-        $this->ensureIdsFetched();
-        return count($this->participantIds);
+        return count($this->getParticipantIds());
     }
 
+    /**
+     * Get list of assigned participant ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipantIds(): array
+    {
+        $this->ensureIdsFetched();
+        return $this->participantIds;
+    }
 
     /**
      * Determine if multiple participants assigned
@@ -293,10 +311,20 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getEmployeeCount(): int
     {
-        $this->ensureIdsFetched();
-        return count($this->employeeIds);
+        return count($this->getEmployeeIds());
     }
 
+    /**
+     * Get list of assigned employee ids
+     *
+     * @return array|int[]
+     */
+    public function getEmployeeIds(): array
+    {
+        $this->ensureIdsFetched();
+        return $this->employeeIds;
+    }
+    
     /**
      * Determine if multiple employees assigned
      *
@@ -306,7 +334,7 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
     {
         return $this->getEmployeeCount() > 0;
     }
-
+    
     /**
      * Returns true if multiple assignments are available
      *
@@ -321,5 +349,14 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
         return $assignments > 1;
     }
 
+    /**
+     * Returns true if any assignment is available
+     *
+     * @return bool
+     */
+    public function hasAnyAssignment(): bool
+    {
+        return $this->hasParticipations() || $this->hasParticipants() || $this->hasEmployees();
+    }
 
 }

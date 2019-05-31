@@ -160,6 +160,13 @@ class AttributeChoiceOptionUsageDistribution
                 $usage->addEmployeeId($row['gid']);
             }
         }
+    
+        foreach ($this->attribute->getChoiceOptions() as $choiceOption) {
+            $choiceOptionId = $choiceOption->getId();
+            if (!isset($this->distribution[$choiceOptionId])) {
+                $this->distribution[$choiceOptionId] = new FetchedChoiceOptionUsage($choiceOption);
+            }
+        }
         
         /** @var FetchedChoiceOptionUsage $usage */
         foreach ($this->distribution as $usage) {
