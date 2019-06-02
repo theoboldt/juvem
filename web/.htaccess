@@ -24,7 +24,7 @@ DirectoryIndex app.php
 
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
-
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
     # Determine the RewriteBase automatically and set it as environment variable.
@@ -38,12 +38,14 @@ DirectoryIndex app.php
     RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule ^(.*) - [E=BASE:%1]
 
     # Sets the HTTP_AUTHORIZATION header removed by apache
     RewriteCond %{HTTP:Authorization} .
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
     # Redirect to URI without front controller to prevent duplicate content
@@ -60,6 +62,7 @@ DirectoryIndex app.php
     RewriteCond %{ENV:REDIRECT_STATUS} ^$
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule ^app\.php(/(.*)|$) %{ENV:BASE}/$2 [R=301,L]
 
     # If the requested filename exists, simply serve it.
@@ -67,11 +70,13 @@ DirectoryIndex app.php
     RewriteCond %{REQUEST_FILENAME} -f
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule .? - [L]
 
     # Rewrite all other queries to the front controller.
     # rewrite rule for server-status to prevent 404 error
     RewriteCond %{REQUEST_URI} !=/server-status
+    RewriteCond %{REQUEST_URI} !=/apc_info.php
     RewriteRule .? %{ENV:BASE}/app.php [L]
 </IfModule>
 
