@@ -13,6 +13,7 @@ namespace AppBundle\Manager\ParticipantProfile;
 
 use AppBundle\Entity\Participant;
 use AppBundle\Manager\CommentManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpWord\IOFactory;
 use Skies\QRcodeBundle\Generator\Generator as BarcodeGenerator;
@@ -64,6 +65,13 @@ class ParticipantProfileGenerator
     private $commentManager;
     
     /**
+     * PaymentManager
+     *
+     * @var PaymentManager
+     */
+    private $paymentManager;
+    
+    /**
      * ParticipantProfileGenerator constructor.
      *
      * @param string $tmpDir
@@ -71,6 +79,7 @@ class ParticipantProfileGenerator
      * @param UrlGeneratorInterface $urlGenerator
      * @param BarcodeGenerator $barcodeGenerator
      * @param CommentManager $commentManager
+     * @param PaymentManager $paymentManager
      * @param PhoneNumberUtil $phoneUtil
      */
     public function __construct(
@@ -78,6 +87,7 @@ class ParticipantProfileGenerator
         UrlGeneratorInterface $urlGenerator,
         BarcodeGenerator $barcodeGenerator,
         CommentManager $commentManager,
+        PaymentManager $paymentManager,
         PhoneNumberUtil $phoneUtil
     )
     {
@@ -86,6 +96,7 @@ class ParticipantProfileGenerator
         $this->urlGenerator     = $urlGenerator;
         $this->barcodeGenerator = $barcodeGenerator;
         $this->commentManager   = $commentManager;
+        $this->paymentManager   = $paymentManager;
         $this->phoneUtil        = $phoneUtil;
     }
     
@@ -109,17 +120,20 @@ class ParticipantProfileGenerator
      * Generate document, provide export file path
      *
      * @param array|Participant[] $participants List of participants for export
+     * @param array $configuration              Array containing configuration options defined in {@see Configuration}
      * @return string  Path of export file
      */
-    public function generate(array $participants)
+    public function generate(array $participants, array $configuration)
     {
         $barCodeGenerator = new TemporaryBarCodeGenerator($this->tmpDir, $this->barcodeGenerator);
         
         $profile  = new ParticipantProfile(
             $participants,
+            $configuration,
             $this->urlGenerator,
             $this->phoneUtil,
             $this->commentManager,
+            $this->paymentManager,
             $barCodeGenerator,
             $this->provideLogoPath()
         );

@@ -135,10 +135,20 @@ class FetchedChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getParticipationCount(): int
     {
+        return count($this->getParticipationIds());
+    }
+    
+    /**
+     * Get list of assigned participation ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipationIds(): array
+    {
         if (!$this->frozen) {
             throw new \RuntimeException('Collection of related items is not yet completed');
         }
-        return count($this->participationIds);
+        return $this->participationIds;
     }
     
     /**
@@ -161,10 +171,20 @@ class FetchedChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getParticipantsCount(): int
     {
+        return count($this->getParticipantIds());
+    }
+    
+    /**
+     * Get list of assigned participants ids
+     *
+     * @return array|int[]
+     */
+    public function getParticipantIds(): array
+    {
         if (!$this->frozen) {
             throw new \RuntimeException('Collection of related items is not yet completed');
         }
-        return count($this->participantIds);
+        return $this->participantIds;
     }
     
     /**
@@ -187,10 +207,20 @@ class FetchedChoiceOptionUsage implements ChoiceOptionUsageInterface
      */
     public function getEmployeeCount()
     {
+        return count($this->getEmployeeIds());
+    }
+    
+    /**
+     * Get list of assigned employees ids
+     *
+     * @return array|int[]
+     */
+    public function getEmployeeIds(): array
+    {
         if (!$this->frozen) {
             throw new \RuntimeException('Collection of related items is not yet completed');
         }
-        return count($this->employeeIds);
+        return $this->employeeIds;
     }
     
     /**
@@ -218,5 +248,15 @@ class FetchedChoiceOptionUsage implements ChoiceOptionUsageInterface
         $assignments += $this->hasParticipants() ? 1 : 0;
         $assignments += $this->hasEmployees() ? 1 : 0;
         return $assignments > 1;
+    }
+    
+    /**
+     * Returns true if any assignment is available
+     *
+     * @return bool
+     */
+    public function hasAnyAssignment(): bool
+    {
+        return $this->hasParticipations() || $this->hasParticipants() || $this->hasEmployees();
     }
 }

@@ -71,7 +71,11 @@ class FilloutSummand extends BaseSummand implements SummandInterface, AttributeA
      */
     public function getValue($inEuro = false)
     {
-        return $inEuro ? $this->value : (100*$this->value);
+        $value = $inEuro ? $this->value : (100*$this->value);
+        if (is_float($value) && round($value, 0) === round($value, 2)) {
+            return (int)round($value, 0);
+        }
+        return $value;
     }
 
     /**

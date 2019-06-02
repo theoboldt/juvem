@@ -132,6 +132,65 @@ class AdminMultipleController extends Controller
 
         return new JsonResponse($participantList);
     }
+    
+    /**
+     * Navigate to other participation
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("expectedParticipation", class="AppBundle:Participation", options={"id" = "pid"})
+     * @Route("/admin/event/{eid}/participation/{pid}/{direction}", requirements={"eid": "\d+", "pid": "\d+", "direction":"previous|next"}, name="admin_participation_navigate")
+     * @param Event $event
+     * @param Participation $expectedParticipation
+     * @param string $direction Either previous or next
+     * @return Response
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function navigateParticipation(Event $event, Participation $expectedParticipation, string $direction)
+    {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participants            = $participationRepository->participantsList($event, null, false, false);
+        $participations          = [];
+        
+        /** @var Participant $participant */ //prepare ordered list
+        foreach ($participants as $participant) {
+            $participation                            = $participant->getParticipation();
+            $participations[$participation->getPid()] = $participation;
+        }
+        $participations      = array_values($participations); //get rid of indexes, keep order
+        $participationTarget = null;
+        if (!count($participations)) {
+            throw new NotFoundHttpException('Participations list seems to be empty');
+        } elseif (count($participations) === 1) {
+            $participationTarget = reset($participations);
+        } else {
+            foreach ($participations as $index => $participation) {
+                if ($participation->getPid() === $expectedParticipation->getPid()) {
+                    //found
+                    if ($direction === 'previous') {
+                        if (isset($participations[$index - 1])) {
+                            $participationTarget = $participations[$index - 1];
+                        } else {
+                            $participationTarget = end($participations);
+                        }
+                    } else {
+                        if (isset($participations[$index + 1])) {
+                            $participationTarget = $participations[$index + 1];
+                        } else {
+                            $participationTarget = reset($participations);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if (!$participationTarget) {
+            throw new NotFoundHttpException('Failed to identify desired participation');
+        }
+        
+        return $this->redirectToRoute(
+            'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participationTarget->getPid()]
+        );
+    }
 
     /**
      * Data provider for events participants list grid
@@ -808,8 +867,31 @@ class AdminMultipleController extends Controller
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
     
+        $config = [
+            'profile' => [
+                'general' =>
+                    [
+                        'includePrivate'     => true,
+                        'includeDescription' => true,
+                        'includeComments'    => true,
+                        'includePrice'       => true,
+                        'includeToPay'       => true,
+                    ],
+                'choices' =>
+                    [
+                        'includeShortTitle'      => true,
+                        'includeManagementTitle' => true,
+                        'includeNotSelected'     => false,
+                    ],
+            ]
+        ];
+        $processor     = new Processor();
+        $configuration = new \AppBundle\Manager\ParticipantProfile\Configuration();
+
+        $processedConfiguration = $processor->processConfiguration($configuration, $config);
+        
         $generator = $this->get('app.participant.profile_generator');
-        $path      = $generator->generate($participants);
+        $path      = $generator->generate($participants, $processedConfiguration);
         $response  = new BinaryFileResponse($path);
 
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');

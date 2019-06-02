@@ -61,7 +61,7 @@ module.exports = function (grunt) {
                     'node_modules/justified-layout/dist/justified-layout.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
-                    '<%= resourcesPath %>/js/user-settings.js',
+                    '<%= resourcesPath %>/js/storage.js',
                     '<%= resourcesPath %>/js/bootstrap-overrides.js',
                     '<%= resourcesPath %>/js/bootstrap-table.js',
                     '<%= resourcesPath %>/js/active-button.js',

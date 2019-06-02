@@ -75,4 +75,37 @@ $(function(){
     window.onbeforeunload = function () {
         userSettings.store(true);
     };
+
+    /**
+     * GLOBAL load user settings
+     */
+    window.tableCache = {
+        storage: $.localStorage,
+        init: function () {
+            var useSecureCache = $('body').data('use-secure-cache');
+            $.alwaysUseJsonInStorage(true);
+            if (!useSecureCache) {
+                this.storage.remove('table-cache');
+            }
+        },
+        getKey(table, url) {
+            return 'table-cache.' + table + '.' + url;
+        },
+        has: function (table, url) {
+            return this.storage.isSet(this.getKey(table, url));
+        },
+        get: function (table, url) {
+            if (this.has(table, url)) {
+                return this.storage.get(this.getKey(table, url));
+            }
+        },
+        set: function (table, url, valueNew) {
+            var key = this.getKey(table, url),
+                storageOld = this.storage.get('table-cache'),
+                result = this.storage.set(key, valueNew),
+                storageNew = this.storage.get('table-cache');
+            return result;
+        }
+    };
+    tableCache.init();
 });
