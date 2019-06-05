@@ -28,7 +28,7 @@ $(function () {
     var tableEnableQueryParam = function (table, params) {
         var options = table.bootstrapTable('getOptions'),
             changes = false,
-            newQueryParams = Object.keys(options.queryParams).length > 0 ? options.queryParams : {};
+            newQueryParams = (options.queryParams && Object.keys(options.queryParams).length > 0) ? options.queryParams : {};
 
         if (!$.isArray(params)) {
             params = [params];

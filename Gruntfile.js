@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 
         concat: {
             options: {
-                sourceMap: true,
+                sourceMap: false,
                 separator: ''
             },
             distWebJs: {
@@ -40,8 +40,6 @@ module.exports = function (grunt) {
                     'node_modules/jquery-number/jquery.number.js',
                     '<%= resourcesPath %>/js/lib/jquery.filedrop.js',
                     '<%= resourcesPath %>/js/lib/jquery.visible.js',
-                    'node_modules/bootstrap-table/src/bootstrap-table.js',
-                    'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/alert.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/button.js',
@@ -53,6 +51,13 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
+                    'node_modules/bootstrap-table/src/bootstrap-table.js', //must now be load after bootstrap to make it use correct styles
+                    '<%= resourcesPath %>/js/lib/semicolon1.js',
+                    'node_modules/bootstrap-table/src/extensions/toolbar/bootstrap-table-toolbar.js',
+                    'node_modules/bootstrap-table/src/extensions/natural-sorting/bootstrap-table-natural-sorting.js',
+                    'node_modules/bootstrap-table/src/extensions/mobile/bootstrap-table-mobile.js',
+                    'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
+                    '<%= resourcesPath %>/js/lib/semicolon2.js',
                     'node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.js',
                     'node_modules/jquery-range/jquery.range.js',
@@ -82,10 +87,10 @@ module.exports = function (grunt) {
             },
             distCssWeb: {
                 src: [
+                    'app/cache/dep/bootstrap-table-sass.css',
                     'app/cache/dep/all-sass.css',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
-                    'node_modules/bootstrap-table/src/bootstrap-table.css'
                 ],
                 dest: 'web/css/all.css'
             },
@@ -103,7 +108,8 @@ module.exports = function (grunt) {
                     style: 'expanded'
                 },
                 files: {
-                    'app/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss'
+                    'app/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss',
+                    'app/cache/dep/bootstrap-table-sass.css': 'node_modules/bootstrap-table/src/bootstrap-table.scss'
                 }
             },
             print: {
@@ -122,7 +128,7 @@ module.exports = function (grunt) {
 
         uglify: {
             options: {
-                sourceMap: false,
+                sourceMap: true,
                 mangle: {
                     reserved: ['jQuery', 'Backbone']
                 }
