@@ -306,8 +306,11 @@ class AdminMultipleController extends Controller
 
             $participantList[] = $participantEntry;
         }
-
-        return new JsonResponse($participantList);
+        
+        $response = new JsonResponse($participantList);
+        $response->setEtag(sha1(json_encode($participantList)));
+        
+        return $response;
     }
 
     /**

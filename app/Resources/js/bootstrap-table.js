@@ -142,6 +142,7 @@ $(function () {
         var table = $(this),
             tableToolbar = $('#bootstrap-table-toolbar'),
             id = table.attr('id'),
+            useHead = table.data('use-head'),
             url = table.data('fetch-url');
 
         if (!url) {
@@ -153,15 +154,24 @@ $(function () {
             });
             return; //load the classic way
         }
-        //transfer
-        var fetchDataAndCache = function () {
-            table.bootstrapTable('showLoading');
-            tableCache.remove(id, url);
+
+        var appendIndicator = function (text, tooltip, glyph) {
             tableToolbar.find('.indicator-fetch').remove();
-            tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...">' +
-                '<i class="glyphicon glyphicon-transfer"></i> Lade...' +
+            tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="' + tooltip + '">' +
+                '<i class="glyphicon glyphicon-' + glyph + '"></i> ' + text + '...' +
                 '</span>');
             tableToolbar.find('.indicator-fetch').tooltip();
+        };
+
+        var fetchDataAndCache = function (text, tooltip, showLoading, glyph) {
+            if (!glyph) {
+                glyph = 'transfer';
+            }
+            if (showLoading) {
+                table.bootstrapTable('showLoading');
+            }
+            tableCache.remove(id, url);
+            appendIndicator(text, tooltip, glyph);
 
             $.ajax({
                 type: "GET",
@@ -173,7 +183,9 @@ $(function () {
                         tableCache.set(id, url, {data: result, etag: etag});
                     }
                     table.bootstrapTable('load', result);
-                    table.bootstrapTable('hideLoading');
+                    if (showLoading) {
+                        table.bootstrapTable('hideLoading');
+                    }
                     tableToolbar.find('.indicator-fetch').remove();
                 }
             });
@@ -181,29 +193,30 @@ $(function () {
 
         if (tableCache.has(id, url)) {
             var tableCacheEntry = tableCache.get(id, url);
-            tableToolbar.append('<span class="indicator-fetch checking" data-placement="top" title="Die Tabelle zeigt auf dem Computer zwischengespeicherte Daten. Es wird überprüft, ob auf dem Server aktuellere Daten vorhanden sind.">' +
-                '<i class="glyphicon glyphicon-refresh"></i> Prüfe...' +
-                '</span>');
-            tableToolbar.find('.indicator-fetch').tooltip();
-
             table.bootstrapTable('load', tableCacheEntry.data);
-            $.ajax({
-                type: "HEAD",
-                async: true,
-                url: url,
-                success: function (c, t, response) {
-                    tableToolbar.find('.indicator-fetch').remove();
-                    if (tableCacheEntry.etag !== response.getResponseHeader('ETag')) {
-                        tableCache.remove(id, url);
-                        fetchDataAndCache();
+
+            if (useHead) {
+                appendIndicator('Prüfe', 'Die Tabelle zeigt auf dem Computer zwischengespeicherte Daten. Es wird überprüft, ob auf dem Server aktuellere Daten vorhanden sind.', 'resize-horizontal');
+                $.ajax({
+                    type: "HEAD",
+                    async: true,
+                    url: url,
+                    success: function (c, t, response) {
+                        tableToolbar.find('.indicator-fetch').remove();
+                        if (tableCacheEntry.etag !== response.getResponseHeader('ETag')) {
+                            tableCache.remove(id, url);
+                            fetchDataAndCache('Lade', 'Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...', false, 'warning-sign');
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                fetchDataAndCache('Aktualisiere', 'Die Tabelle könnte veraltete Daten anzeigen. Die Daten werden mit denen vom Server abgeglichen und ggf. aktualisiert.', false, 'alert');
+            }
         } else {
-            fetchDataAndCache();
+            fetchDataAndCache('Lade', 'Noch keine zwischengespeicherten Daten vorhanden. Aktuellere Daten werden jetzt vom Server geladen...', true);
         }
         table.on('refresh.bs.table', function (e) {
-            fetchDataAndCache();
+            fetchDataAndCache('Aktualisiere', 'Aktuellere Daten werden jetzt vom Server geladen...', false);
         });
     });
 

@@ -61,7 +61,12 @@
                        data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                        data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                        data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
-                       data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}"
+                       {% if secureCacheDecider.enabled %}
+                           data-fetch-url="{{ path('event_participants_list_data', {eid: event.eid}) }}?payment=1"
+                           data-query-params="payment"
+                       {% else %}
+                           data-url="{{ path('event_participants_list_data', {eid: event.eid}) }}"
+                       {% endif %}
                        data-sort-name="nameLast" data-sort-order="asc">
                     <thead>
                     <tr>
