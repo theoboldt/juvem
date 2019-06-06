@@ -69,6 +69,10 @@ services:
             - '%customization.logo_website%'
         public: true
         lazy: true
+    app.secure_cache_decider:
+        class: AppBundle\Twig\SecureCacheDecider
+        arguments: ['@session']
+        public: true
     app.twig_tab_index_skip:
         class: AppBundle\Twig\TabIndexSkip
         public: false

@@ -30,16 +30,20 @@ $(function () {
             changes = false,
             newQueryParams = (options.queryParams && Object.keys(options.queryParams).length > 0) ? options.queryParams : {};
 
-        if (!$.isArray(params)) {
+        if (!$.isArray(params) && $.isArray(options.queryParams)) {
             params = [params];
-        }
-
-        $.each(params, function (index, param) {
-            if (!newQueryParams[param]) {
-                newQueryParams[param] = 1;
+            $.each(params, function (index, param) {
+                if (!newQueryParams[param]) {
+                    newQueryParams[param] = 1;
+                    changes = true;
+                }
+            });
+        } else {
+            if (options.queryParams !== params) {
                 changes = true;
+                newQueryParams = params;
             }
-        });
+        }
 
         if (changes) {
             table.bootstrapTable('refreshOptions', {
@@ -151,6 +155,7 @@ $(function () {
         }
         //transfer
         var fetchDataAndCache = function () {
+            table.bootstrapTable('showLoading');
             tableCache.remove(id, url);
             tableToolbar.find('.indicator-fetch').remove();
             tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...">' +
@@ -164,8 +169,11 @@ $(function () {
                 url: url,
                 success: function (result, t, response) {
                     var etag = response.getResponseHeader('ETag');
-                    tableCache.set(id, url, {data: result, etag: etag});
+                    if (etag) {
+                        tableCache.set(id, url, {data: result, etag: etag});
+                    }
                     table.bootstrapTable('load', result);
+                    table.bootstrapTable('hideLoading');
                     tableToolbar.find('.indicator-fetch').remove();
                 }
             });
