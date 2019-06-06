@@ -134,6 +134,71 @@ $(function () {
         });
     }();
 
+    $('table.table-remote-content').each(function () {
+        var table = $(this),
+            tableToolbar = $('#bootstrap-table-toolbar'),
+            id = table.attr('id'),
+            url = table.data('fetch-url');
+
+        if (!url) {
+            return; //this table does not support cached fetch
+        }
+        if (!useSecureCache()) {
+            table.bootstrapTable('refreshOptions', {
+                url: url
+            });
+            return; //load the classic way
+        }
+        //transfer
+        var fetchDataAndCache = function () {
+            tableCache.remove(id, url);
+            tableToolbar.find('.indicator-fetch').remove();
+            tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...">' +
+                '<i class="glyphicon glyphicon-transfer"></i> Lade...' +
+                '</span>');
+            tableToolbar.find('.indicator-fetch').tooltip();
+
+            $.ajax({
+                type: "GET",
+                async: true,
+                url: url,
+                success: function (result, t, response) {
+                    var etag = response.getResponseHeader('ETag');
+                    tableCache.set(id, url, {data: result, etag: etag});
+                    table.bootstrapTable('load', result);
+                    tableToolbar.find('.indicator-fetch').remove();
+                }
+            });
+        };
+
+        if (tableCache.has(id, url)) {
+            var tableCacheEntry = tableCache.get(id, url);
+            tableToolbar.append('<span class="indicator-fetch checking" data-placement="top" title="Die Tabelle zeigt auf dem Computer zwischengespeicherte Daten. Es wird überprüft, ob auf dem Server aktuellere Daten vorhanden sind.">' +
+                '<i class="glyphicon glyphicon-refresh"></i> Prüfe...' +
+                '</span>');
+            tableToolbar.find('.indicator-fetch').tooltip();
+
+            table.bootstrapTable('load', tableCacheEntry.data);
+            $.ajax({
+                type: "HEAD",
+                async: true,
+                url: url,
+                success: function (c, t, response) {
+                    tableToolbar.find('.indicator-fetch').remove();
+                    if (tableCacheEntry.etag !== response.getResponseHeader('ETag')) {
+                        tableCache.remove(id, url);
+                        fetchDataAndCache();
+                    }
+                }
+            });
+        } else {
+            fetchDataAndCache();
+        }
+        table.on('refresh.bs.table', function (e) {
+            fetchDataAndCache();
+        });
+    });
+
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
      */

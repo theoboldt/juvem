@@ -77,14 +77,21 @@ $(function(){
     };
 
     /**
+     * GLOBAL Determine if secure cache should be used or not
+     *
+     * @returns {*|jQuery|{}}
+     */
+    window.useSecureCache = function() {
+        return $('body').data('use-secure-cache');
+    };
+    /**
      * GLOBAL load user settings
      */
     window.tableCache = {
         storage: $.localStorage,
         init: function () {
-            var useSecureCache = $('body').data('use-secure-cache');
             $.alwaysUseJsonInStorage(true);
-            if (!useSecureCache) {
+            if (!useSecureCache()) {
                 this.storage.remove('table-cache');
             }
         },
@@ -92,6 +99,9 @@ $(function(){
             return 'table-cache.' + table + '.' + url;
         },
         has: function (table, url) {
+            if (!useSecureCache()) {
+                return false;
+            }
             return this.storage.isSet(this.getKey(table, url));
         },
         get: function (table, url) {
@@ -99,11 +109,14 @@ $(function(){
                 return this.storage.get(this.getKey(table, url));
             }
         },
+        remove: function (table, url) {
+            if (this.has(table, url)) {
+                return this.storage.remove(this.getKey(table, url));
+            }
+        },
         set: function (table, url, valueNew) {
             var key = this.getKey(table, url),
-                storageOld = this.storage.get('table-cache'),
-                result = this.storage.set(key, valueNew),
-                storageNew = this.storage.get('table-cache');
+                result = this.storage.set(key, valueNew);
             return result;
         }
     };

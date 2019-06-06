@@ -5,3 +5,55 @@ table.table-hover tbody td {
 div table.table-no-hover tbody td {
   cursor: default;
 }
+
+.bootstrap-table .indicator-fetch {
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 4px 6px;
+
+  &.loading, &.checking {
+    @include transition(color 0.2s);
+    font-family: $font-family-base;
+    font-size: $font-size-small;
+  }
+
+  &.checking {
+    background-color: $brandPrimaryLight;
+    animation: pulse-check 3s infinite;
+  }
+
+  &.loading {
+    background-color: $brandPrimaryDark;
+    animation: pulse-load 3s infinite;
+  }
+
+}
+
+@keyframes pulse-load {
+  0% {
+    color: lighten($brandPrimaryLight, 20%);
+  }
+  50% {
+    color: $brandPrimaryLight;
+  }
+  100% {
+    color: lighten($brandPrimaryLight, 20%);
+  }
+}
+
+@keyframes pulse-check {
+  0% {
+    color: darken($brandPrimaryDark, 25%);
+  }
+  50% {
+    color: $brandPrimaryDark;
+  }
+  100% {
+    color: darken($brandPrimaryDark, 25%);
+  }
+}
+
+
+div.bootstrap-table .fixed-table-container .fixed-table-body .table.fixed-table-loading .loading-wrap .loading-text {
+  font-size: $font-size-base;
+}

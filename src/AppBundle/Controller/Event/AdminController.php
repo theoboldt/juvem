@@ -58,12 +58,14 @@ class AdminController extends Controller
             )
         );
     }
-
+    
     /**
      * Data provider for event list grid
      *
-     * @Route("/admin/event/list.json", name="event_list_data")
+     * @Route("/admin/event/list.json", name="event_list_data", methods={"GET", "HEAD"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return JsonResponse|Response
      */
     public function listDataAction(Request $request)
     {
@@ -74,12 +76,13 @@ class AdminController extends Controller
 
         $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
 
+        $eTagData = '';
+        $eTagModified = new \DateTime('2000-01-01');
+
         $eventList = array();
         /** @var Event $event */
         foreach ($eventEntityList as $event) {
             $eventStatus    = '';
-            $eventStartDate = '';
-            $eventEndDate   = '';
 
             if ($event->isVisible()) {
                 $eventStatus .= sprintf($glyphicon, 'eye-open');
@@ -121,10 +124,27 @@ class AdminController extends Controller
                 'participants'           => $event->getParticipantsCount(),
                 'status'                 => $eventStatus,
             );
+    
+            $eTagData .= sprintf(
+                '-%d.%d.%d.%s-', $event->getEid(), $event->getParticipantsConfirmedCount(),
+                $event->getParticipantsCount(), $eventStatus
+            );
+            if ($event->getModifiedAt() > $eTagModified) {
+                $eTagModified = $event->getModifiedAt();
+            }
         }
-
-
-        return new JsonResponse($eventList);
+    
+        if ($request->isMethod(Request::METHOD_HEAD)) {
+            $response = new Response();
+        } else {
+            $response = new JsonResponse($eventList);
+        }
+    
+        $eTag = sha1($eTagData.$eTagModified->format('r'));
+        $response->setEtag($eTag)
+                 ->setLastModified($eTagModified);
+    
+        return $response;
     }
 
     /**

@@ -53,8 +53,8 @@ module.exports = function (grunt) {
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
                     'node_modules/bootstrap-table/src/bootstrap-table.js', //must now be load after bootstrap to make it use correct styles
                     '<%= resourcesPath %>/js/lib/semicolon1.js',
-                    'node_modules/bootstrap-table/src/extensions/toolbar/bootstrap-table-toolbar.js',
                     'node_modules/bootstrap-table/src/extensions/natural-sorting/bootstrap-table-natural-sorting.js',
+                    'node_modules/bootstrap-table/src/extensions/resizable/bootstrap-table-resizable.js',
                     'node_modules/bootstrap-table/src/extensions/mobile/bootstrap-table-mobile.js',
                     'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
                     '<%= resourcesPath %>/js/lib/semicolon2.js',
