@@ -472,9 +472,9 @@ $(function () {
                         participationsTotal = participations.length,
                         participationsDone = participationsTotal - participations.length,
                         updateProgressBar = function (participationsDone) {
-                        progressBarEl.css('width', (((participationsDone + 1) / (participationsTotal + 1)) * 100) + '%');
-                        progressBarEl.text(participationsDone + '/' + participationsTotal);
-                    };
+                            progressBarEl.css('width', (((participationsDone + 1) / (participationsTotal + 1)) * 100) + '%');
+                            progressBarEl.text(participationsDone + '/' + participationsTotal);
+                        };
                     progressBarEl.css('min-width', '50px');
                     updateProgressBar(participationsDone);
 
@@ -503,6 +503,64 @@ $(function () {
                     priority: 'error'
                 });
                 finishInvoiceCreation(true);
+            }
+        });
+    });
+
+    $('#prepareThmubnails').click(function () {
+        var btn = $(this),
+            progressContainerEl = $('#cache-progress');
+        if (btn.hasClass('disabled')) {
+            return;
+        }
+        progressContainerEl.html('<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%;min-width:90px;">Preparing...</div></div>');
+
+        btn.toggleClass('disabled', true);
+        $.ajax({
+            type: 'GET',
+            url: '/admin/event/' + btn.data('eid') + '/gallery/image_urls.json',
+            success: function (response) {
+                if (!response.urls || !response.urls.length) {
+                    progressContainerEl.html('');
+                    return;
+                }
+                var urls = response.urls,
+                    urlsTotal = urls.length;
+                barEl = progressContainerEl.find('.progress-bar');
+                barEl.data('aria-valuemax', urlsTotal);
+                barEl.text('0/' + urlsTotal);
+
+                var popImage = function () {
+                    if (!urls.length) {
+                        progressContainerEl.html('');
+                        btn.toggleClass('disabled', false);
+                        return;
+                    }
+                    var url = urls.shift();
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'text',
+                        url: url,
+                        complete: function () {
+                            var urlsDone = urlsTotal - urls.length;
+                            barEl.data('aria-valuenow', urlsDone);
+                            barEl.text(urlsDone + '/' + urlsTotal);
+                            barEl.css('width', (urlsDone / urlsTotal * 100) + '%');
+                            popImage();
+                        }
+                    });
+                };
+                popImage();
+            },
+            error: function () {
+                progressContainerEl.html('');
+                $(document).trigger('add-alerts', {
+                    message: 'Die Bilder-Liste konnte nicht geladen werden',
+                    priority: 'error'
+                });
+            },
+            complete: function (response) {
+                btn.toggleClass('disabled');
             }
         });
     });

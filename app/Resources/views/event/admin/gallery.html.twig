@@ -83,6 +83,9 @@
                                                 data-target="#dialogModalTruncate" title="Alle Bilder löschen">
                                             {{ 'remove'|glyph }}<span class="hidden-xs"> Leeren…</span>
                                         </button>
+                                        <button type="button" class="btn btn-default" title="Vorschau und Thumbnails vorbereiten" id="prepareThmubnails" data-eid="{{ event.eid }}">
+                                            {{ 'fire'|glyph }}<span class="hidden-xs"> Cache vorbereiten</span>
+                                        </button>
                                         <button type="button" class="btn btn-default" data-element="activebutton"
                                                 data-entity="Event"
                                                 data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
@@ -100,13 +103,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-1" id="galleryUploadSpeed">
-                    </div>
-                    <div class="col-xs-11" id="upload-progress">
-                        <div class="row"></div>
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12" id="cache-progress">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-1" id="galleryUploadSpeed">
+                            </div>
+                            <div class="col-xs-11" id="upload-progress">
+                                <div class="row"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xs-12" id="dropzone-gallery">
-                        {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': false, 'galleryId': 1} %}
+                    {% embed 'event/public/embed-gallery.html.twig' with {'eid': event.eid, 'images': images, 'hash': galleryHash, 'lightbox': false, 'galleryId': 1} %}
                         {% endembed %}
                     </div>
                 </div>

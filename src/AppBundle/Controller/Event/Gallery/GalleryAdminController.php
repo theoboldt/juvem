@@ -78,6 +78,37 @@ class GalleryAdminController extends BaseGalleryController
             ]
         );
     }
+    
+    /**
+     * Get list of all urls for all image previews/thumbnails etc.
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/gallery/image_urls.json", requirements={"eid": "\d+"}, name="event_gallery_image_urls_admin", methods={"GET"})
+     * @Security("is_granted('read', event)")
+     * @param Event $event Related event
+     * @return JsonResponse
+     */
+    public function listGalleryImageUrls(Event $event) {
+        $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
+        $images      = $repository->findByEvent($event);
+        $galleryHash = $this->galleryHash($event);
+        $result = [];
+    
+        /** @var GalleryImage $image */
+        foreach ($images as $image) {
+            $params = [
+                'eid'      => $event->getEid(),
+                'iid'      => $image->getIid(),
+                'hash'     => $galleryHash,
+                'filename' => $image->getIid() . '.jpg'
+            ];
+            $result[] = $this->generateUrl('gallery_image_preview', $params);
+            $result[] = $this->generateUrl('gallery_image_thumbnail', $params);
+            $result[] = $this->generateUrl('gallery_image_detail', $params);
+        }
+        
+        return new JsonResponse(['success' => true, 'urls' => $result]);
+    }
 
     /**
      * Page for list of events
