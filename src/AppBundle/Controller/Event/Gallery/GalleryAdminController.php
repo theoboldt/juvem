@@ -46,11 +46,11 @@ class GalleryAdminController extends BaseGalleryController
         $repository  = $this->getDoctrine()->getRepository(GalleryImage::class);
         $images      = $repository->findByEvent($event);
         $galleryHash = $this->galleryHash($event);
-
+    
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
-            ->getForm();
-
+                     ->getForm();
+    
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -59,13 +59,15 @@ class GalleryAdminController extends BaseGalleryController
             }
             $em->flush();
             $images = [];
+        
+            return $this->redirectToRoute('event_gallery_admin', ['eid' => $event->getEid()]);
         }
-
+    
         $grantedGalleries = $request->getSession()->get('grantedGalleries', []);
         $request->getSession()->set(
             'grantedGalleries', array_unique(array_merge($grantedGalleries, [$event->getEid()]))
         );
-
+    
         return $this->render(
             'event/admin/gallery.html.twig',
             [
