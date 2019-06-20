@@ -74,7 +74,7 @@ class GalleryPublicController extends BaseGalleryController
                 throw new \InvalidArgumentException('Unknown month number transmitted');
         }
     }
-    
+
     /**
      * Page for list of events
      *
@@ -141,7 +141,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Preview for image
      *
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/preview/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_preview")
      * @Route("/event/{eid}/gallery/{iid}/preview/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
@@ -179,7 +179,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Thumbnail for image
      *
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_thumbnail")
      * @Route("/event/{eid}/gallery/{iid}/thumbnail/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
@@ -215,7 +215,7 @@ class GalleryPublicController extends BaseGalleryController
     }
 
     /**
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/detail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *     defaults={"hash": "0"}, name="gallery_image_detail")
      *
@@ -247,7 +247,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Detail page for one single event
      *
-     * @ParamConverter("galleryImage", class="AppBundle:GalleryImage", options={"id" = "iid"})
+     * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/original/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                                      name="gallery_image_original")
      * @param Request       $request      Request used to ensure that user has visited overview page before
