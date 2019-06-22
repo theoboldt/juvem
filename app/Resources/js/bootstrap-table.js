@@ -52,13 +52,92 @@ $(function () {
         }
     };
 
-    /**
-     * GLOBAL: Bootstrap table on page which provides filters
-     */
-    var tableRemoteContent = function () {
-        $('.table-remote-content').each(function () {
-            var table = $(this),
-                tableFilterList = {},
+    var handleFetchTable = function (table) {
+            var tableToolbar = $('#bootstrap-table-toolbar'),
+                id = table.attr('id'),
+                useHead = table.data('use-head'),
+                url = table.data('fetch-url');
+
+            if (!url) {
+                return; //this table does not support cached fetch
+            }
+            if (!useSecureCache()) {
+                table.bootstrapTable('refreshOptions', {
+                    url: url
+                });
+                return; //load the classic way
+            }
+
+            var appendIndicator = function (text, tooltip, glyph) {
+                tableToolbar.find('.indicator-fetch').remove();
+                tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="' + tooltip + '">' +
+                    '<i class="glyphicon glyphicon-' + glyph + '"></i> ' + text + '...' +
+                    '</span>');
+                tableToolbar.find('.indicator-fetch').tooltip();
+            };
+
+            var fetchDataAndCache = function (text, tooltip, showLoading, glyph) {
+                if (!glyph) {
+                    glyph = 'transfer';
+                }
+                if (showLoading) {
+                    table.bootstrapTable('showLoading');
+                }
+                tableCache.remove(id, url);
+                appendIndicator(text, tooltip, glyph);
+
+                $.ajax({
+                    type: "GET",
+                    async: true,
+                    url: url,
+                    success: function (result, t, response) {
+                        var etag = response.getResponseHeader('ETag');
+                        if (etag) {
+                            tableCache.set(id, url, {data: result, etag: etag});
+                        }
+                        table.bootstrapTable('load', result);
+                        if (showLoading) {
+                            table.bootstrapTable('hideLoading');
+                        }
+                        tableToolbar.find('.indicator-fetch').remove();
+                    }
+                });
+            };
+
+            if (tableCache.has(id, url)) {
+                var tableCacheEntry = tableCache.get(id, url);
+                table.bootstrapTable('load', tableCacheEntry.data);
+
+                if (useHead) {
+                    appendIndicator('Prüfe', 'Die Tabelle zeigt auf dem Computer zwischengespeicherte Daten. Es wird überprüft, ob auf dem Server aktuellere Daten vorhanden sind.', 'resize-horizontal');
+                    $.ajax({
+                        type: "HEAD",
+                        async: true,
+                        url: url,
+                        success: function (c, t, response) {
+                            tableToolbar.find('.indicator-fetch').remove();
+                            if (tableCacheEntry.etag !== response.getResponseHeader('ETag')) {
+                                tableCache.remove(id, url);
+                                fetchDataAndCache('Lade', 'Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...', false, 'warning-sign');
+                            }
+                        }
+                    });
+                } else {
+                    fetchDataAndCache('Aktualisiere', 'Die Tabelle könnte veraltete Daten anzeigen. Die Daten werden mit denen vom Server abgeglichen und ggf. aktualisiert.', false, 'alert');
+                }
+            } else {
+                fetchDataAndCache('Lade', 'Noch keine zwischengespeicherten Daten vorhanden. Aktuellere Daten werden jetzt vom Server geladen...', true);
+            }
+            table.on('refresh.bs.table', function (e) {
+                fetchDataAndCache('Aktualisiere', 'Aktuellere Daten werden jetzt vom Server geladen...', false);
+            });
+        },
+        /**
+         * GLOBAL: Bootstrap table on page which provides filters
+         */
+        handleTableFilters = function (table) {
+
+            var tableFilterList = {},
                 id = table.attr('id'),
                 subId = table.data('sub-id'),
                 queryParams = [],
@@ -135,90 +214,15 @@ $(function () {
                 table.bootstrapTable('filterBy', tableFilterList);
                 userSettings.set(tableSettingsIdentifier + property, index);
             });
-        });
-    }();
 
-    $('table.table-remote-content').each(function () {
-        var table = $(this),
-            tableToolbar = $('#bootstrap-table-toolbar'),
-            id = table.attr('id'),
-            useHead = table.data('use-head'),
-            url = table.data('fetch-url');
-
-        if (!url) {
-            return; //this table does not support cached fetch
-        }
-        if (!useSecureCache()) {
-            table.bootstrapTable('refreshOptions', {
-                url: url
+        },
+        handleRemoteTables = function () {
+            $('.table-remote-content').each(function () {
+                var table = $(this);
+                handleTableFilters(table);
+                handleFetchTable(table);
             });
-            return; //load the classic way
-        }
-
-        var appendIndicator = function (text, tooltip, glyph) {
-            tableToolbar.find('.indicator-fetch').remove();
-            tableToolbar.append('<span class="indicator-fetch loading" data-placement="top" title="' + tooltip + '">' +
-                '<i class="glyphicon glyphicon-' + glyph + '"></i> ' + text + '...' +
-                '</span>');
-            tableToolbar.find('.indicator-fetch').tooltip();
-        };
-
-        var fetchDataAndCache = function (text, tooltip, showLoading, glyph) {
-            if (!glyph) {
-                glyph = 'transfer';
-            }
-            if (showLoading) {
-                table.bootstrapTable('showLoading');
-            }
-            tableCache.remove(id, url);
-            appendIndicator(text, tooltip, glyph);
-
-            $.ajax({
-                type: "GET",
-                async: true,
-                url: url,
-                success: function (result, t, response) {
-                    var etag = response.getResponseHeader('ETag');
-                    if (etag) {
-                        tableCache.set(id, url, {data: result, etag: etag});
-                    }
-                    table.bootstrapTable('load', result);
-                    if (showLoading) {
-                        table.bootstrapTable('hideLoading');
-                    }
-                    tableToolbar.find('.indicator-fetch').remove();
-                }
-            });
-        };
-
-        if (tableCache.has(id, url)) {
-            var tableCacheEntry = tableCache.get(id, url);
-            table.bootstrapTable('load', tableCacheEntry.data);
-
-            if (useHead) {
-                appendIndicator('Prüfe', 'Die Tabelle zeigt auf dem Computer zwischengespeicherte Daten. Es wird überprüft, ob auf dem Server aktuellere Daten vorhanden sind.', 'resize-horizontal');
-                $.ajax({
-                    type: "HEAD",
-                    async: true,
-                    url: url,
-                    success: function (c, t, response) {
-                        tableToolbar.find('.indicator-fetch').remove();
-                        if (tableCacheEntry.etag !== response.getResponseHeader('ETag')) {
-                            tableCache.remove(id, url);
-                            fetchDataAndCache('Lade', 'Die Tabelle zeigt veraltete Daten. Aktuellere Daten werden jetzt vom Server geladen...', false, 'warning-sign');
-                        }
-                    }
-                });
-            } else {
-                fetchDataAndCache('Aktualisiere', 'Die Tabelle könnte veraltete Daten anzeigen. Die Daten werden mit denen vom Server abgeglichen und ggf. aktualisiert.', false, 'alert');
-            }
-        } else {
-            fetchDataAndCache('Lade', 'Noch keine zwischengespeicherten Daten vorhanden. Aktuellere Daten werden jetzt vom Server geladen...', true);
-        }
-        table.on('refresh.bs.table', function (e) {
-            fetchDataAndCache('Aktualisiere', 'Aktuellere Daten werden jetzt vom Server geladen...', false);
-        });
-    });
+        }();
 
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
@@ -312,14 +316,14 @@ $(function () {
      * GROUP: List of choices of an event's group
      */
     $('#eventGroupChoicesTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey(row.bid+'/group/' + row.id);
+        openInNewTabOnMetaKey(row.bid + '/group/' + row.id);
     });
 
     /**
      * GROUP EMPLOYEE: List of employees assigned to a group option
      */
     $('#groupEmployeesTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey('../../../employee/'+row.gid);
+        openInNewTabOnMetaKey('../../../employee/' + row.gid);
     });
 
     /**
@@ -335,4 +339,5 @@ $(function () {
     $('#groupParticipantsTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey('../../../participation/' + row.pid);
     });
-});
+})
+;
