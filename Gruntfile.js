@@ -51,12 +51,12 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
-                    'node_modules/bootstrap-table/src/bootstrap-table.js', //must now be load after bootstrap to make it use correct styles
+                    'node_modules/bootstrap-table/dist/bootstrap-table.js', //must now be load after bootstrap to make it use correct styles
                     '<%= resourcesPath %>/js/lib/semicolon1.js',
-                    'node_modules/bootstrap-table/src/extensions/natural-sorting/bootstrap-table-natural-sorting.js',
-                    'node_modules/bootstrap-table/src/extensions/resizable/bootstrap-table-resizable.js',
-                    'node_modules/bootstrap-table/src/extensions/mobile/bootstrap-table-mobile.js',
-                    'node_modules/bootstrap-table/src/locale/bootstrap-table-de-DE.js',
+                    'node_modules/bootstrap-table/dist/extensions/natural-sorting/bootstrap-table-natural-sorting.js',
+                    'node_modules/bootstrap-table/dist/extensions/resizable/bootstrap-table-resizable.js',
+                    'node_modules/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.js',
+                    'node_modules/bootstrap-table/dist/locale/bootstrap-table-de-DE.js',
                     '<%= resourcesPath %>/js/lib/semicolon2.js',
                     'node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.js',
