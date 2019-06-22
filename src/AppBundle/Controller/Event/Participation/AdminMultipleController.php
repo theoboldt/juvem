@@ -132,7 +132,7 @@ class AdminMultipleController extends Controller
 
         return new JsonResponse($participantList);
     }
-    
+
     /**
      * Navigate to other participation
      *
@@ -150,7 +150,7 @@ class AdminMultipleController extends Controller
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event, null, false, false);
         $participations          = [];
-        
+
         /** @var Participant $participant */ //prepare ordered list
         foreach ($participants as $participant) {
             $participation                            = $participant->getParticipation();
@@ -186,7 +186,7 @@ class AdminMultipleController extends Controller
         if (!$participationTarget) {
             throw new NotFoundHttpException('Failed to identify desired participation');
         }
-        
+
         return $this->redirectToRoute(
             'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participationTarget->getPid()]
         );
@@ -234,11 +234,14 @@ class AdminMultipleController extends Controller
 
             $participantStatus = $participant->getStatus(true);
 
-            $age = $participant->getYearsOfLifeAtEvent();
+            $age = '';
+            if ($participant->hasBirthdayAtEvent()) {
+                $age = '<span class="birthday-during-event">';
+            }
+            $age .= '<span class="years-of-life">' . $participant->getYearsOfLifeAtEvent() . '</span>';
             $age .= ' <span class="rounded-age">(' . number_format($participant->getAgeAtEvent(), 1, ',', '.') . ')</span>';
             if ($participant->hasBirthdayAtEvent()) {
-                $glyph = new BootstrapGlyph();
-                $age .= ' ' . $glyph->bootstrapGlyph('gift');
+                '</span>';
             }
             $participantStatusText = $statusFormatter->formatMask($participantStatus);
             if ($participant->getDeletedAt()) {
@@ -306,10 +309,10 @@ class AdminMultipleController extends Controller
 
             $participantList[] = $participantEntry;
         }
-        
+
         $response = new JsonResponse($participantList);
         $response->setEtag(sha1(json_encode($participantList)));
-        
+
         return $response;
     }
 
@@ -858,7 +861,7 @@ class AdminMultipleController extends Controller
             ]
         );
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/profile_export.docx", requirements={"eid": "\d+"}, name="event_participants_profile")
@@ -869,7 +872,7 @@ class AdminMultipleController extends Controller
     public function generateParticipantsProfileAction(Event $event) {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
-    
+
         $config = [
             'profile' => [
                 'general' =>
@@ -892,7 +895,7 @@ class AdminMultipleController extends Controller
         $configuration = new \AppBundle\Manager\ParticipantProfile\Configuration();
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
-        
+
         $generator = $this->get('app.participant.profile_generator');
         $path      = $generator->generate($participants, $processedConfiguration);
         $response  = new BinaryFileResponse($path);

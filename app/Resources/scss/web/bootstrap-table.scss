@@ -54,6 +54,29 @@ div table.table-no-hover tbody td {
 }
 
 
-div.bootstrap-table .fixed-table-container .fixed-table-body .table.fixed-table-loading .loading-wrap .loading-text {
-  font-size: $font-size-base;
+div.bootstrap-table {
+  .fixed-table-container .fixed-table-body .table.fixed-table-loading .loading-wrap .loading-text {
+    font-size: $font-size-base;
+  }
+
+  td.age {
+    text-align: right;
+    min-width: 100px;
+  }
+
+  td .birthday-during-event {
+    .years-of-life:before {
+      content: "\e102";
+      position: relative;
+      padding-right: 10px;
+      top: 1px;
+      display: inline-block;
+      font-family: "Glyphicons Halflings";
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
 }
