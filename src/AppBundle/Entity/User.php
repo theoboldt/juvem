@@ -89,14 +89,14 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
      */
-    protected $settingsHash = '97d170e1550eee4afc0af065b78cda302a97674c';
+    protected $settingsHash = 'bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f';
 
     /**
      * @ORM\Column(type="text", name="settings")
      */
-    protected $settings = '[]';
-    
-    
+    protected $settings = '{}';
+
+
     /**
      * Defines if help buttons should be excluded from tabindex in forms for this user
      *
@@ -318,7 +318,7 @@ class User extends BaseUser
     public function userFullname() {
         return $this->fullname();
     }
-    
+
     /**
      * Define if help buttons should be excluded from tabindex in forms for this user
      *
@@ -328,7 +328,7 @@ class User extends BaseUser
     {
         return $this->isExcludeHelpTabindex;
     }
-    
+
     /**
      * Determine if help buttons should be excluded from tabindex in forms for this user
      *

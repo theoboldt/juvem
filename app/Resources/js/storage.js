@@ -63,7 +63,16 @@ $(function(){
         },
         set: function (key, valueNew) {
             var storageOld = this.storage.get('user-settings'),
-                result = this.storage.set('user-settings.' + key, valueNew),
+                result,
+                storageNew;
+
+            if (typeof storageOld !== 'object' || storageOld === null || storageOld === []) {
+                //prevent error in case settings is not yet declared as object
+                storageOld = {};
+                this.storage.set('user-settings', storageOld);
+            }
+
+                result = this.storage.set('user-settings.' + key, valueNew);
                 storageNew = this.storage.get('user-settings');
             if (JSON.stringify(storageOld) !== JSON.stringify(storageNew)) {
                 this.storage.set('user-settings-dirty', true);
