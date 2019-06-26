@@ -81,6 +81,16 @@ class ParticipantPaymentStatus implements PaymentStatusInterface
     }
     
     /**
+     * Get sum of all payments made for this participant
+     *
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|float|null
+     */
+    public function getPaymentSum(bool $inEuro = false) {
+        return $this->paymentManager->getParticipantPaymentHistorySum($this->participant, $inEuro);
+    }
+    
+    /**
      * Determine if this participant is overpaid
      *
      * @return bool
@@ -128,5 +138,17 @@ class ParticipantPaymentStatus implements PaymentStatusInterface
         
         return ($price + $transactionSum <= 0);
         
+    }
+    
+    /**
+     * Determine if no payment is active because related entity is withdrawn/deleted
+     *
+     * @return bool
+     */
+    public function isInactive(): bool
+    {
+        return $this->participant->isWithdrawn()
+               || $this->participant->isRejected()
+               || $this->participant->getDeletedAt();
     }
 }

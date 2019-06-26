@@ -149,6 +149,9 @@ class InvoiceManager
         $sumCents = 0;
         $elements = [];
         foreach ($participation->getParticipants() as $participant) {
+            if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
+                continue; //do not take into account
+            }
             $priceTag = $this->paymentManager->getEntityPriceTag($participant);
             /** @var SummandInterface $summand */
             foreach ($priceTag->getSummands() as $summand) {

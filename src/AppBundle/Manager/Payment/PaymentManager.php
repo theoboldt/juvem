@@ -54,7 +54,7 @@ class PaymentManager
     /**
      * Cache for all payments
      *
-     * @var array
+     * @var array|ParticipantPaymentEvent[]
      */
     private $paymentCache = [];
 
@@ -156,6 +156,27 @@ class PaymentManager
     }
     
     /**
+     * Reset payment cache for transmitted ids
+     *
+     * @param int $eid      Related event id
+     * @param int|null $aid If just single participant affected, transmit id
+     * @return void
+     */
+    private function resetPaymentCache(int $eid, int $aid = null): void
+    {
+        if ($aid) {
+            if (isset($this->paymentCache[$eid][$aid])) {
+                unset($this->paymentCache[$eid][$aid]);
+            }
+        } else {
+            if (isset($this->paymentCache[$eid])) {
+                unset($this->paymentCache[$eid]);
+            }
+        }
+    }
+    
+    
+    /**
      * Fetch all payment events for @see Event
      *
      * @param Event $event
@@ -251,6 +272,9 @@ class PaymentManager
         $participants = [];
         /** @var Participant $participant */
         foreach ($participantsUnordered as $participant) {
+            if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
+                continue; //do not take into account
+            }
             $participants[$participant->getAid()] = $participant;
         }
         unset($participantsUnordered);
@@ -320,6 +344,7 @@ class PaymentManager
 
                     $this->em->persist($participant);
                     $payments[] = $payment;
+                    $this->resetPaymentCache($participant->getEvent()->getEid(), $participant->getAid());
                 }
                 $this->em->flush();
                 return $payments;
@@ -347,6 +372,7 @@ class PaymentManager
 
                 $this->em->persist($payment);
                 $this->em->flush();
+                $this->resetPaymentCache($participant->getEvent()->getEid(), $participant->getAid());
                 return $payment;
             }
         );

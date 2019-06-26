@@ -105,7 +105,12 @@ class PriceManager
     {
         $allNull = true;
         $prices  = [];
+        
+        /** @var Participant $participant */
         foreach ($participation->getParticipants() as $participant) {
+            if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
+                continue; //do not take into account
+            }
             $priceTag = $this->getEntityPriceTag($participant);
             $price    = $priceTag->getPrice($inEuro);
             $prices[] = $price;

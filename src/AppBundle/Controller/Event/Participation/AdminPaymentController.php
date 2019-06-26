@@ -109,18 +109,18 @@ class AdminPaymentController extends Controller
      */
     private function getPaymentResponseData(array $participants): array
     {
-        $toPayList  = $this->getParticipantsToPayList($participants);
-        $toPayTotal = null;
+        $toPayList      = $this->getParticipantsToPayList($participants);
+        $toPayTotalCent = null;
         foreach ($toPayList as $payItem) {
-            $payValue = $payItem['to_pay_value'];
+            $payValue = $payItem['to_pay_value_cent'];
             if (is_numeric($payValue)) {
-                $toPayTotal += $payValue;
+                $toPayTotalCent += $payValue;
             }
         }
-        $priceTags = $this->getParticipantsPriceTagList($participants);
-        $priceSum  = 0;
+        $priceTags    = $this->getParticipantsPriceTagList($participants);
+        $priceSumCent = 0;
         foreach ($priceTags as $summand) {
-            $priceSum += $summand['value'];
+            $priceSumCent += $summand['value_cent'];
         }
         /** @var InvoiceManager $invoiceManager */
         $invoiceManager = $this->get('app.payment.invoice_manager');
@@ -129,9 +129,10 @@ class AdminPaymentController extends Controller
         return [
             'payment_history' => $this->paymentHistory($participants),
             'price_tag_list'  => $priceTags,
-            'price_tag_sum'   => $priceSum,
+            'price_tag_sum'   => $priceSumCent/100,
             'to_pay_list'     => $toPayList,
-            'to_pay_sum'      => $toPayTotal,
+            'to_pay_sum'      => $toPayTotalCent/100,
+            'to_pay_euro'     => $toPayTotalCent/100,
             'invoice_list'    => $invoiceManager->getInvoicesForParticipation($participant->getParticipation())
         ];
     }
@@ -183,18 +184,27 @@ class AdminPaymentController extends Controller
         $result = [];
         
         foreach ($participants as $participant) {
+            if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
+                continue; //do not take into account
+            }
+    
             $priceTag = $paymentManager->getEntityPriceTag($participant);
-            
+    
             /** @var SummandInterface $summand */
             foreach ($priceTag->getSummands() as $summand) {
                 $attributeName = ($summand instanceof AttributeAwareInterface)
                     ? $summand->getAttribute()->getManagementTitle() : null;
-                
+        
+                $valueEuro = $summand->getValue(true);
+                $valueCent = $summand->getValue(false);
+        
                 $result[] = [
                     'participant_name'         => $participant->fullname(),
                     'participant_aid'          => $participant->getId(),
                     'is_participation_summand' => ($summand->getCause() instanceof Participation),
-                    'value'                    => $summand->getValue(true),
+                    'value'                    => $valueEuro,
+                    'value_euro'               => $valueEuro,
+                    'value_cent'               => $valueCent,
                     'type'                     => get_class($summand),
                     'attribute_name'           => $attributeName,
                 ];
@@ -219,16 +229,26 @@ class AdminPaymentController extends Controller
         $detailedValues = [];
         
         foreach ($participants as $participant) {
-            $toPayValue       = $paymentManager->getToPayValueForParticipant($participant, true);
-            $priceValue       = $paymentManager->getPriceForParticipant($participant, true);
+            if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
+                continue; //do not take into account
+            }
+    
+            $toPayValueEuro   = $paymentManager->getToPayValueForParticipant($participant, true);
+            $toPayValueCents  = $paymentManager->getToPayValueForParticipant($participant, false);
+            $priceValueEuro   = $paymentManager->getPriceForParticipant($participant, true);
+            $priceValueCents  = $paymentManager->getPriceForParticipant($participant, false);
             $detailedValues[] = [
-                'participant_name' => $participant->fullname(),
-                'participant_aid'  => $participant->getAid(),
-                'to_pay_value'     => $toPayValue,
-                'price_html'       => PaymentInformation::provideInfo(
+                'participant_name'  => $participant->fullname(),
+                'participant_aid'   => $participant->getAid(),
+                'to_pay_value'      => $toPayValueEuro,
+                'to_pay_value_euro' => $toPayValueEuro,
+                'to_pay_value_cent' => $toPayValueCents,
+                'price_html'        => PaymentInformation::provideInfo(
                     $paymentManager->getParticipantPaymentStatus($participant)
                 ),
-                'price_value'      => $priceValue,
+                'price_value'       => $priceValueEuro,
+                'price_value_euro'  => $priceValueEuro,
+                'price_value_cent'  => $priceValueCents,
             ];
         }
         

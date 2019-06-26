@@ -276,18 +276,33 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];
-
+    
             if ($includePayment) {
-                $toPay = $paymentStatus->getToPayValue(true);
-                $price = $paymentStatus->getPrice( true);
-
-                $participantEntry['payment_to_pay'] = $toPay === null
-                    ? '<i>nichts</i>'
-                    : number_format($toPay, 2, ',', '.') . '&nbsp;€';
-                $participantEntry['payment_price']  = $price === null
-                    ? '<i>keiner</i>'
-                    : number_format($price, 2, ',', '.') . '&nbsp;€';
-                $participantEntry['is_paid']        = (int)($paymentStatus->isPaid());
+                $price = $paymentStatus->getPrice(true);
+    
+                if ($paymentStatus->isInactive()) {
+                    $toPay = '';
+                    if ($paymentStatus->getPaymentSum(false) < 0) {
+                        $toPay = number_format($paymentStatus->getPaymentSum(true), 2, ',', '.') . '&nbsp;€';
+                    }
+                    $toPay .= ' <i title="Keine Zahlung nötig da inaktiv">inaktiv</i>';
+                    $participantEntry['payment_to_pay'] = $toPay;
+                } else {
+                    $toPay = $paymentStatus->getToPayValue(true);
+                    $participantEntry['payment_to_pay'] = $paymentStatus->isFree()
+                        ? '<i>nichts</i>'
+                        : number_format($toPay, 2, ',', '.') . '&nbsp;€';
+                }
+                $paymentPrice = $paymentStatus->hasPriceSet()
+                    ? number_format($price, 2, ',', '.') . '&nbsp;€'
+                    : '<i>keiner</i>';
+                if ($paymentStatus->isInactive()) {
+                    $paymentPrice = '<i>'.$paymentPrice.'</i>';
+                }
+                
+                $participantEntry['payment_price']  = $paymentPrice;
+                
+                $participantEntry['is_paid'] = (int)($paymentStatus->isPaid());
             }
 
             /** @var Fillout $fillout */

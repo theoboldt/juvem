@@ -81,17 +81,29 @@ class PaymentInformation extends AbstractExtension
      */
     public static function provideLabel(PaymentStatusInterface $paymentStatus)
     {
-        if ($paymentStatus->isOverPaid()) {
-            return '<span class="label label-info option-payment option-overpaid">überbezahlt</span>';
-        } elseif (!$paymentStatus->hasPriceSet()) {
-            return '<span class="label label-info option-payment option-no-price">kein Preis</span>';
-        } elseif ($paymentStatus->isFree()) {
-            return '<span class="label label-info option-payment option-price-zero">kostenlos</span>';
-        } elseif ($paymentStatus->isPaid()) {
-            return '<span class="label label-info option-payment option-paid">bezahlt</span>';
+        $labels = [];
+        if ($paymentStatus->isInactive()) {
+            if ($paymentStatus->getPaymentSum(false) < 0) {
+                $labels[]
+                    = ' <span class="label label-warning option-payment option-inactive-payments" title="Teilnehmer ist inaktiv, Zahlungen wurden jedoch bereits erfasst">Zahlungen erfasst</span>';
+            }
+        } else {
+            if ($paymentStatus->isOverPaid()) {
+                $labels[] = ' <span class="label label-info option-payment option-overpaid">überbezahlt</span>';
+            } elseif (!$paymentStatus->hasPriceSet()) {
+                $labels[] = '<span class="label label-info option-payment option-no-price">kein Preis</span>';
+            } elseif ($paymentStatus->isFree()) {
+                $labels[] = '<span class="label label-info option-payment option-price-zero">kostenlos</span>';
+            } elseif ($paymentStatus->isPaid()) {
+                $labels[] = '<span class="label label-info option-payment option-paid">bezahlt</span>';
+            }
         }
-        
-        return null;
+    
+        if (count($labels)) {
+            return implode(' ', $labels);
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -104,17 +116,29 @@ class PaymentInformation extends AbstractExtension
     {
         $result = '';
         if ($paymentStatus->hasPriceSet()) {
-            $result .= number_format($paymentStatus->getPrice(true), 2, ',', "'").'&nbsp;€';
-            if ($paymentStatus->isOverPaid()) {
-                $result .= ' (zu viel bezahlt: '
-                           . number_format(($paymentStatus->getToPayValue(true) * -1), 2, ',', "'")
-                           . '&nbsp;€)';
-            } elseif ($paymentStatus->hasPriceSet() && $paymentStatus->isPaid()) {
-                $result .= ' (bezahlt)';
-            } elseif (!$paymentStatus->isPaid()) {
-                $result .= ' (noch zu zahlen: '
-                           . number_format($paymentStatus->getToPayValue(true), 2, ',', "'")
-                           . '&nbsp;€)';
+            $result .= number_format($paymentStatus->getPrice(true), 2, ',', "'") . '&nbsp;€';
+            
+            if ($paymentStatus->isInactive()) {
+                if ($paymentStatus->getPaymentSum(false) < 0) {
+                    $result .= ' (Keine Zahlung nötig, jedoch bereits '
+                               . number_format(($paymentStatus->getPaymentSum(true) * -1), 2, ',', "'")
+                               . '&nbsp;€ bezahlt)';
+                } else {
+                    $result .= ' (Keine Zahlung nötig)';
+                }
+            } else {
+                
+                if ($paymentStatus->isOverPaid()) {
+                    $result .= ' (zu viel bezahlt: '
+                               . number_format(($paymentStatus->getToPayValue(true) * -1), 2, ',', "'")
+                               . '&nbsp;€)';
+                } elseif ($paymentStatus->hasPriceSet() && $paymentStatus->isPaid()) {
+                    $result .= ' (bezahlt)';
+                } elseif (!$paymentStatus->isPaid()) {
+                    $result .= ' (noch zu zahlen: '
+                               . number_format($paymentStatus->getToPayValue(true), 2, ',', "'")
+                               . '&nbsp;€)';
+                }
             }
             
             $result .= ' ' . (string)self::provideLabel($paymentStatus);

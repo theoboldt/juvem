@@ -45,6 +45,14 @@ interface PaymentStatusInterface
     public function getToPayValue(bool $inEuro = false);
     
     /**
+     * Get sum of all payments made for this participant
+     *
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @return int|float|null
+     */
+    public function getPaymentSum(bool $inEuro = false);
+    
+    /**
      * Determine if this participant is overpaid
      *
      * @return bool
@@ -71,4 +79,11 @@ interface PaymentStatusInterface
      * @return bool
      */
     public function isPaid(): bool;
+    
+    /**
+     * Determine if no payment is active because related entity is withdrawn/deleted
+     *
+     * @return bool
+     */
+    public function isInactive(): bool;
 }
