@@ -10,6 +10,8 @@
 
 namespace AppBundle\Manager;
 
+use AppBundle\Entity\Employee;
+use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
@@ -18,6 +20,7 @@ use AppBundle\Entity\Participation as ParticipationEntity;
 use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\User;
 use AppBundle\Form\EventMailType;
+use AppBundle\Form\MoveEmployeeType;
 use AppBundle\Form\MoveParticipationType;
 use AppBundle\Twig\MailGenerator;
 use Doctrine\ORM\EntityManager;
@@ -312,6 +315,65 @@ class ParticipationManager extends AbstractMailerAwareManager
                 $em->flush();
                 
                 return $newParticipation;
+            }
+        );
+    }
+    
+    /**
+     * Perform move @see Employee action, which is actually creating a duplicate and adding some comments
+     *
+     * @param Employee $oldEmployee The @see Employee to copy
+     * @param Event $newEvent                 Target event
+     * @param string $commentOldContent       Comment to add at old $oldEmployee
+     * @param string $commentNewContent       Comment to add at new employee
+     * @param User|null $responsibleUser      User performing this action
+     * @return Employee The new created entry
+     */
+    public function moveEmployee(
+        Employee $oldEmployee,
+        Event $newEvent,
+        string $commentOldContent,
+        string $commentNewContent,
+        User $responsibleUser = null
+    ): Employee
+    {
+        $newEmployee = Employee::createFromTemplateForEvent($oldEmployee, $newEvent, true);
+
+        return $this->em->transactional(
+            function (EntityManager $em) use ($oldEmployee, $newEmployee, $commentOldContent, $commentNewContent, $responsibleUser) {
+
+                $oldEmployee->setDeletedAt(new \DateTime());
+                $em->persist($oldEmployee);
+                $em->persist($newEmployee);
+                $em->flush();
+                
+                $updateComment = function($comment) use ($oldEmployee, $newEmployee) {
+                    $comment = str_replace(MoveEmployeeType::PARAM_EVENT_OLD, $oldEmployee->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveEmployeeType::PARAM_EVENT_NEW, $newEmployee->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveEmployeeType::PARAM_PID_OLD, $oldEmployee->getId(), $comment);
+                    $comment = str_replace(MoveEmployeeType::PARAM_PID_NEW, $newEmployee->getId(), $comment);
+                    return $comment;
+                };
+                
+                $commentOldContent = $updateComment($commentOldContent);
+                $commentNewContent = $updateComment($commentNewContent);
+                
+                $commentOld = new EmployeeComment();
+                $commentOld->setEmployee($oldEmployee);
+                $commentOld->setCreatedAtNow();
+                $commentOld->setCreatedBy($responsibleUser);
+                $commentOld->setContent($commentOldContent);
+                $em->persist($commentOld);
+
+                $commentNew = new EmployeeComment();
+                $commentNew->setEmployee($newEmployee);
+                $commentNew->setCreatedAtNow();
+                $commentNew->setCreatedBy($responsibleUser);
+                $commentNew->setContent($commentNewContent);
+                $em->persist($commentNew);
+                $em->flush();
+                
+                return $newEmployee;
             }
         );
     }

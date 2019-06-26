@@ -17,6 +17,8 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
+use AppBundle\Form\MoveEmployeeType;
+use AppBundle\Form\MoveParticipationType;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\Payment\PaymentManager;
 use libphonenumber\PhoneNumberUtil;
@@ -145,6 +147,27 @@ class EmployeeController extends Controller
 
             }
         }
+        $formMoveEmployee = $this->createForm(
+            MoveEmployeeType::class, null, [MoveEmployeeType::EMPLOYEE_OPTION => $employee]
+        );
+        $formMoveEmployee->handleRequest($request);
+        if ($formMoveEmployee->isSubmitted() && $formMoveEmployee->isValid()) {
+            
+            $employeeNew = $this->get('app.participation_manager')->moveEmployee(
+                $employee,
+                $formMoveEmployee->get('targetEvent')->getData(),
+                $formMoveEmployee->get('commentOldEmployee')->getData(),
+                $formMoveEmployee->get('commentNewEmployee')->getData(),
+                $this->getUser()
+            );
+            return $this->redirectToRoute(
+                'admin_employee_detail',
+                [
+                    'eid' => $event->getEid(),
+                    'gid' => $employeeNew->getGid(),
+                ]
+            );
+        }
 
         if ($employeeChanged) {
             $this->denyAccessUnlessGranted('employees_edit', $event);
@@ -179,6 +202,7 @@ class EmployeeController extends Controller
                 'similarEmployees' => $similarEmployees,
                 'formAction'       => $formAction->createView(),
                 'formAssignUser'   => $formUser->createView(),
+                'formMoveEmployee' => $formMoveEmployee->createView(),
             ]
         );
     }

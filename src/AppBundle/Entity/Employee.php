@@ -12,6 +12,8 @@
 namespace AppBundle\Entity;
 
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
@@ -67,7 +69,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     protected $email;
 
     /**
-     * Contains the phone numbers assigned to this participation
+     * Contains the phone numbers assigned to this employee
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"all"}, mappedBy="employee")
      */
@@ -81,7 +83,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     protected $comments;
 
     /**
-     * Contains the participants assigned to this participation
+     * Contains the participants assigned to this employee
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout",
      *     cascade={"all"}, mappedBy="employee")
@@ -89,7 +91,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     protected $acquisitionAttributeFillouts;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedParticipations")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedEmployees")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
      */
     protected $assignedUser;
@@ -233,4 +235,57 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
         return $this->assignedUser;
     }
 
+    /**
+     * Create a new employee for transmitted event based on data of given employee
+     *
+     * @param Employee $employeePrevious Data template
+     * @param Event $event                         Event this new employee should belong to
+     * @param bool $copyPrivateFields              If set to true, also private acquisition data and user assignments
+     *                                             are copied
+     * @return Employee
+     */
+    public static function createFromTemplateForEvent(
+        Employee $employeePrevious, Event $event, $copyPrivateFields = false
+    )
+    {
+        /** @var Employee $employee */
+        $employee = new self($event);
+        $employee->setNameLast($employeePrevious->getNameLast());
+        $employee->setNameFirst($employeePrevious->getNameFirst());
+        $employee->setAddressCity($employeePrevious->getAddressCity());
+        $employee->setAddressStreet($employeePrevious->getAddressStreet());
+        $employee->setAddressZip($employeePrevious->getAddressZip());
+        $employee->setAddressCountry($employeePrevious->getAddressCountry());
+        $employee->setEmail($employeePrevious->getEmail());
+        $employee->setSalutation($employeePrevious->getSalutation());
+
+        if ($copyPrivateFields) {
+            $employee->setAssignedUser($employeePrevious->getAssignedUser());
+        }
+
+        /** @var PhoneNumber $numberPrevious */
+        foreach ($employeePrevious->getPhoneNumbers() as $numberPrevious) {
+            $number = new PhoneNumber();
+            $number->setEmployee($employee);
+            $number->setDescription($numberPrevious->getDescription());
+            $number->setNumber($numberPrevious->getNumber());
+            $employee->addPhoneNumber($number);
+        }
+
+        /** @var Attribute $attribute */
+        foreach ($event->getAcquisitionAttributes(false, false, true, $copyPrivateFields, true) as $attribute) {
+            try {
+                $filloutPrevious = $employeePrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
+            } catch (\OutOfBoundsException $e) {
+                continue;
+            }
+            $fillout = new Fillout();
+            $fillout->setEmployee($employee);
+            $fillout->setAttribute($attribute);
+            $fillout->setValue($filloutPrevious->getRawValue());
+            $employee->addAcquisitionAttributeFillout($fillout);
+        }
+
+        return $employee;
+    }
 }

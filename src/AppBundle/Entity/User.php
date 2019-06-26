@@ -62,11 +62,18 @@ class User extends BaseUser
     protected $createdAt;
 
     /**
-     * Contains the participations assigned to this event @see Assert\NotBlank
+     * Contains the participations assigned to this event
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="assignedUser", cascade={"persist"})
      */
     protected $assignedParticipations;
+    
+    /**
+     * Contains the employees assigned to this event
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Employee", mappedBy="assignedUser", cascade={"persist"})
+     */
+    protected $assignedEmployees;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|Event[]

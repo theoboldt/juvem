@@ -11,6 +11,52 @@
 {% endblock %}
 {% block body %}
     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
+    <div class="modal fade" id="dialogModalMoveEmployee" tabindex="-1" role="dialog" aria-labelledby="dialogModalMoveEmployeeLabel">
+        <div class="modal-dialog" role="document">
+            {{ form_start(formMoveEmployee) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalMoveEmployeeLabel">Mitarbeiter verschieben</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p>
+                                Der Mitarbeiter kann verschoben werden. Dabei werden die Daten in die Ziel-Veranstaltung kopiert und mit einem Kommentar versehen. Der Mitarbeiter wird hier mit einem Kommentar in den Papierkorb gelegt. Der Text der Kommentare kann unten angepasst werden.
+                            </p>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                {{ form_label(formMoveEmployee.targetEvent) }}
+                                {{ form_widget(formMoveEmployee.targetEvent) }}
+                                {{ form_errors(formMoveEmployee.targetEvent) }}
+                                <p class="help-block">Zur Auswahl stehen nur im Moment aktive Veranstaltungen.</p>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formMoveEmployee.commentOldEmployee) }}
+                                {{ form_widget(formMoveEmployee.commentOldEmployee) }}
+                                {{ form_errors(formMoveEmployee.commentOldEmployee) }}
+                                <p class="help-block">Der Platzhalter <code>{EVENT_NEW}</code> wird durch den Namen der oben gewählten Veranstaltung ersetzt. <code>{GID_NEW}</code> wird durch die neue Anmeldungsnummer ersetzt.</p>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formMoveEmployee.commentNewEmployee) }}
+                                {{ form_widget(formMoveEmployee.commentNewEmployee) }}
+                                {{ form_errors(formMoveEmployee.commentNewEmployee) }}
+                                <p class="help-block">Der Platzhalter <code>{EVENT_OLD}</code> wird durch <i>{{ event.title }}</i> ersetzt. <code>{GID_OLD}</code> wird durch die alte Anmeldungsnummer <i>{{ employee.id }}</i> ersetzt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Mitarbeiter verschieben"/>
+                </div>
+            </div>
+            {{ form_end(formMoveEmployee) }}
+        </div>
+    </div>
     <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -168,6 +214,9 @@
                     </div>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPayment">
                         {{ 'credit-card'|glyph }}<span class="hidden-xs"> Aufwandsentschädigung</span>
+                    </button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalMoveEmployee">
+                        {{ 'arrow-right'|glyph }} Mitarbeiter verschieben…
                     </button>
                 </div>
                 {% endif -%}
