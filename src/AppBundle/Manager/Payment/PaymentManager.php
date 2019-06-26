@@ -72,7 +72,7 @@ class PaymentManager
         } elseif (preg_match('/^(?:[^\d]*?)([-]{0,1})(\d+)(?:[,.]{0,1})(\d*)$/', $priceInEuro, $priceParts)) {
             $euros = $priceParts[2] ?: 0;
             if ($priceParts[3]) {
-                $cents = substr_replace($priceParts[3], '.', 2, 0) . '0';
+                $cents = substr_replace(str_pad($priceParts[3], 2, '0'), '.', 2, 0) . '0';
             } else {
                 $cents = 0;
             }
