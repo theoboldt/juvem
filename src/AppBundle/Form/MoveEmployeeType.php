@@ -34,8 +34,8 @@ class MoveEmployeeType extends AbstractType
     
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $commentOld    = 'Diese Mitarbeiter/Diese Mitarbeiterin wurde verschoben in die Veranstaltung "{EVENT_NEW}". Der neue Datensatz hat die Nummer #{GID_NEW}.';
-        $commentNew    = 'Diese Mitarbeiter/Diese Mitarbeiterin ist verschoben worden von der Veranstaltung "{EVENT_OLD}". Der alte Datensatz hatte die Nummer #{GID_OLD}.';
+        $commentOld    = 'Dieser Mitarbeiter/Diese Mitarbeiterin wurde verschoben in die Veranstaltung "{EVENT_NEW}". Der neue Datensatz hat die Nummer #{GID_NEW}.';
+        $commentNew    = 'Dieser Mitarbeiter/Diese Mitarbeiterin ist verschoben worden von der Veranstaltung "{EVENT_OLD}". Der alte Datensatz hatte die Nummer #{GID_OLD}.';
         $Employee = null;
         if ($options[self::EMPLOYEE_OPTION]) {
             /** @var Employee $employee */
