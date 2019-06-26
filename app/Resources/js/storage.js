@@ -65,8 +65,7 @@ $(function(){
             var storageOld = this.storage.get('user-settings'),
                 result,
                 storageNew;
-
-            if (typeof storageOld !== 'object' || storageOld === null || storageOld === []) {
+            if (typeof storageOld !== 'object' || storageOld === null || $.isArray(storageOld)) {
                 //prevent error in case settings is not yet declared as object
                 storageOld = {};
                 this.storage.set('user-settings', storageOld);
