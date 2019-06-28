@@ -47,6 +47,7 @@
                             <ul class="dropdown-menu">
                                 <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer verwalten</a></li>
                                 <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">{{ 'transfer'|glyph }} {{ groupCount }} Einteilungsfeld{% if groupCount != 1 %}er{% endif %} verwalten</a></li>
+                                <li><a href="{{ path('event_admin_detectings_list', {'eid': event.eid }) }}">{{ 'random'|glyph }} {{ detectingsCount }} Teilnehmerfeld{% if groupCount != 1 %}er{% endif %} verwalten</a></li>
                                 <li><a href="{{ path('event_participants_list_specific_age', {'eid': event.eid }) }}">{{ 'calendar'|glyph }} Stichtagsliste erstellen</a></li>
                                 <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten</a></li>
                                 {%- if is_granted('participants_edit', event) -%}

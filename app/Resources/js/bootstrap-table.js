@@ -313,6 +313,13 @@ $(function () {
     });
 
     /**
+     * PARTICIPANT DETECTING: List of participant detecting fields of an event
+     */
+    $('#eventParticipantsDetectingsTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('detectings/' + row.bid);
+    });
+
+    /**
      * GROUP: List of choices of an event's group
      */
     $('#eventGroupChoicesTable').on('click-row.bs.table', function (e, row, $element) {

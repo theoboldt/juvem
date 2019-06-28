@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ attribute.managementTitle }} (Teilnehmerfelder, {{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': attribute.managementTitle, 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Teilnehmerfelder</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <p>{{ attribute.managementDescription }}</p>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          {% for node in nodes %}
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <div class="panel panel-default" id="participant-aid-{{ node.participant.aid }}">
+                <div class="panel-heading">
+                  {{ node.participant.fullname }}
+                  <span data-toggle="tooltip" data-placement="top" class="age"
+                        title="~{{ node.participant.getAgeAtEvent|number_format(1) }} Jahre">({{ node.participant.yearsOfLifeAtEvent }})</span>
+                  <span class="gender">
+                  {% if node.participant.getGender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_FEMALE') %}
+                    w
+                  {% elseif node.participant.getGender == constant('AppBundle\\Entity\\Participant::TYPE_GENDER_MALE') %}
+                    m
+                  {% endif %}
+                  </span>
+                  <a href="{{ path('event_participation_detail', {eid: event.eid, pid: node.participant.participation.pid}) }}"
+                     target="_blank" class="btn btn-default btn-xs">{{ 'search'|glyph }}</a>
+                </div>
+                <div class="panel-body">
+                  <p>wünscht:
+                    {% if node.selected %}
+                    <a href="#participant-aid-{{ node.selected.participation.pid }}">
+                      {% endif %}
+                      {{ node.value.getTextualValue() }}
+                      {% if node.selected %}
+                    </a>
+                    <a href="{{ path('event_participation_detail', {eid: event.eid, pid: node.selected.participation.pid}) }}"
+                       target="_blank" class="btn btn-default btn-xs">{{ 'search'|glyph }}</a>
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

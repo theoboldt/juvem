@@ -266,12 +266,18 @@ class AdminController extends Controller
                 ),
             )
         );
-        
-        $groupCount = 0;
+    
+        $groupCount      = 0;
+        $detectingsCount = 0;
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes() as $attribute) {
-            if ($attribute->getFieldType() === \AppBundle\Form\GroupType::class) {
-                ++$groupCount;
+            switch ($attribute->getFieldType()) {
+                case \AppBundle\Form\GroupType::class:
+                    ++$groupCount;
+                    break;
+                case \AppBundle\Form\ParticipantDetectingType::class:
+                    ++$detectingsCount;
+                    break;
             }
         }
     
@@ -280,6 +286,7 @@ class AdminController extends Controller
             [
                 'event'                     => $event,
                 'groupCount'                => $groupCount,
+                'detectingsCount'           => $detectingsCount,
                 'pageDescription'           => $event->getDescriptionMeta(true),
                 'ageDistribution'           => $ageDistribution,
                 'ageDistributionMax'        => $ageDistributionMax,
