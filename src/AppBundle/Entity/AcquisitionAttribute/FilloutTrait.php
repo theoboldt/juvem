@@ -120,7 +120,7 @@ trait FilloutTrait
             return $fillout;
 
         }
-        throw new \OutOfBoundsException('Requested fillout was not found');
+        throw new RequestedFilloutNotFoundException();
     }
 
     /**

@@ -15,6 +15,7 @@ namespace AppBundle\Manager;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
+use AppBundle\Entity\AcquisitionAttribute\RequestedFilloutNotFoundException;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -96,13 +97,17 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             foreach ($participants as $participant) {
                 $this->participantsCache[$participant->getAid()] = $participant;
 
-                $fillout   = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
+                try {
+                    $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
+                } catch (RequestedFilloutNotFoundException $e) {
+                    continue;
+                }
                 $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
-    
+
                 /** @var ParticipantFilloutValue $value */
                 $value           = $fillout->getValue();
                 $filloutRawValue = $value->getFormValue();
-                
+
                 $filloutRawValue['proposed_aids'] = [];
                 /** @var Participant $qualifiedParticipant */
                 foreach ($qualified as $qualifiedParticipant) {
