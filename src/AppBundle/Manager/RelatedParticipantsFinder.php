@@ -140,7 +140,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
              INNER JOIN acquisition_attribute ON (acquisition_attribute_fillout.bid = acquisition_attribute.bid)
              INNER JOIN event_acquisition_attribute ON (event_acquisition_attribute.bid = acquisition_attribute.bid)
                   WHERE acquisition_attribute.field_type = ?
-                    AND event_acquisition_attribute.eid',
+                    AND event_acquisition_attribute.eid = ?',
                 [\AppBundle\Form\ParticipantDetectingType::class, $event->getEid()]
             );
             $this->em->getConnection()->beginTransaction();
