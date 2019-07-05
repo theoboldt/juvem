@@ -194,19 +194,22 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
 
             if ($diffFirstName < 2 && $diffLastName < 2) {
                 $qualified[($diffFirstName + $diffLastName)][] = $participant;
+            } elseif ($diffFirstName < 3) {
+                $qualified[($diffFirstName + 10)][] = $participant;
+            } elseif ($diffLastName < 3) {
+                $qualified[($diffLastName + 11)][] = $participant;
             }
         }
 
         ksort($qualified);
-        $qualified = array_reverse($qualified);
         $result    = [];
         foreach ($qualified as $subQualified) {
             foreach ($subQualified as $participant) {
-                $result[] = $participant;
+                $result[$participant->getAid()] = $participant;
             }
         }
 
-        return $result;
+        return array_values($result);
     }
 
     /**
