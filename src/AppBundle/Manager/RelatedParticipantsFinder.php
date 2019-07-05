@@ -68,6 +68,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         if (!$filloutValue instanceof ParticipantFilloutValue) {
             return [];
         }
+            $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
 
         if (!$filloutValue->hasProposedParticipantsCalculated()) {
             $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
@@ -112,6 +113,22 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 }
                 if (!is_array($filloutRawValue)) {
                     $filloutRawValue = [];
+                }
+
+                /** @var ParticipantFilloutValue $value */
+                $value = $fillout->getValue();
+                if ($value->getSelectedParticipantId() === null) {
+                    //check for exact match
+                    foreach ($qualified as $relatedParticipant) {
+                        if ($relatedParticipant->getNameFirst() === $value->getRelatedFirstName()
+                            && $relatedParticipant->getNameLast() === $value->getRelatedLastName()
+                        ) {
+                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_AID] = $relatedParticipant->getAid();
+                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_FIRST] = $relatedParticipant->getNameFirst();
+                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_LAST] = $relatedParticipant->getNameLast();
+                            $filloutRawValue[ParticipantFilloutValue::KEY_SYSTEM_SELECTION] = true;
+                        }
+                    }
                 }
 
                 $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];

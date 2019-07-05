@@ -98,13 +98,13 @@ class AdminSingleController extends Controller
                 $participationChanged = true;
             }
         }
-        
+
         $formMoveParticipation = $this->createForm(
             MoveParticipationType::class, null, [MoveParticipationType::PARTICIPATION_OPTION => $participation]
         );
         $formMoveParticipation->handleRequest($request);
         if ($formMoveParticipation->isSubmitted() && $formMoveParticipation->isValid()) {
-            
+
             $participationNew = $this->get('app.participation_manager')->moveParticipation(
                 $participation,
                 $formMoveParticipation->get('targetEvent')->getData(),
@@ -122,7 +122,7 @@ class AdminSingleController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
-        
+
         $formRelated = $this->createForm(
             ParticipationAssignRelatedParticipantType::class, null, ['event' => $event]
         );
@@ -139,7 +139,7 @@ class AdminSingleController extends Controller
                     $filloutValue = $fillout->getValue();
                     if ($fillout->getOid() === $oid && $filloutValue instanceof ParticipantFilloutValue) {
                         $this->denyAccessUnlessGranted('participants_edit', $event);
-                        $filloutValue = $filloutValue->createWithParticipantSelected($relatedParticipant);
+                        $filloutValue = $filloutValue->createWithParticipantSelected($relatedParticipant, false);
                         $fillout->setValue($filloutValue->getRawValue());
                         $em->persist($fillout);
                         $participationChanged = true;

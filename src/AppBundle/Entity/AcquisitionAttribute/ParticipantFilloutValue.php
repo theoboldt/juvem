@@ -20,12 +20,26 @@ class ParticipantFilloutValue extends FilloutValue
 
     const KEY_PROPOSED_IDS = 'proposed_aids';
 
+    const KEY_SYSTEM_SELECTION = 'system_selection';
+
+    const KEY_SELECTED_AID = 'participant_selected';
+
+    const KEY_SELECTED_FIRST = 'participant_selected_first_name';
+
+    const KEY_SELECTED_LAST = 'participant_selected_last_name';
     /**
      * True if @see $rawValue is processed
      *
      * @var bool
      */
     private $processed = false;
+
+    /**
+     * True if selection was done automatically by system because of exact match
+     *
+     * @var bool
+     */
+    private $systemSelection = false;
 
     /**
      * Textual original first name value of participant
@@ -72,22 +86,24 @@ class ParticipantFilloutValue extends FilloutValue
     private $proposedParticipants = null;
 
     /**
-     * Create duplicate, having transmitted participant selected
+     * Create duplicate, having transmitted participant selected (manually)
      *
-     * @param Participant|null $participant Participant to select
+     * @param Participant|null $participant     Participant to select
+     * @param bool             $systemSelection Set to true if system selection
      * @return ParticipantFilloutValue New instance
      */
-    public function createWithParticipantSelected(Participant $participant = null)
+    public function createWithParticipantSelected(Participant $participant = null, bool $systemSelection = false)
     {
         $value = json_decode($this->getRawValue(), true);
         if (!is_array($value)) {
             $value = [];
         }
-        
-        $participantId = $participant ? $participant->getAid() : null;
+
+        $participantId        = $participant ? $participant->getAid() : null;
         $participantFirstName = $participant ? $participant->getNameFirst() : null;
-        $participantLastName = $participant ? $participant->getNameLast() : null;
-        
+        $participantLastName  = $participant ? $participant->getNameLast() : null;
+
+        $value[self::KEY_SYSTEM_SELECTION]        = $systemSelection;
         $value['participant_selected']            = $participantId;
         $value['participant_selected_first_name'] = $participantFirstName;
         $value['participant_selected_last_name']  = $participantLastName;
@@ -188,6 +204,14 @@ class ParticipantFilloutValue extends FilloutValue
     }
 
     /**
+     * @return bool
+     */
+    public function isSystemSelection(): bool
+    {
+        return $this->systemSelection;
+    }
+
+    /**
      * Process data
      *
      * @return void
@@ -221,6 +245,9 @@ class ParticipantFilloutValue extends FilloutValue
             }
             if (isset($value[self::KEY_PROPOSED_IDS])) {
                 $this->proposedParticipants = $value[self::KEY_PROPOSED_IDS];
+            }
+            if (isset($value[self::KEY_SYSTEM_SELECTION])) {
+                $this->systemSelection = $value[self::KEY_SYSTEM_SELECTION];
             }
         } else {
             $commaCount = substr_count($this->rawValue, ',');
