@@ -68,6 +68,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         if (!$filloutValue instanceof ParticipantFilloutValue) {
             return [];
         }
+
         if (!$filloutValue->hasProposedParticipantsCalculated()) {
             $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
         }
@@ -105,13 +106,18 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
 
                 /** @var ParticipantFilloutValue $value */
-                $value           = $fillout->getValue();
-                $filloutRawValue = $value->getFormValue();
+                $filloutRawValue = $fillout->getRawValue();
+                if (is_string($filloutRawValue)) {
+                    $filloutRawValue = json_decode($filloutRawValue, true);
+                }
+                if (!is_array($filloutRawValue)) {
+                    $filloutRawValue = [];
+                }
 
-                $filloutRawValue['proposed_aids'] = [];
+                $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
                 /** @var Participant $qualifiedParticipant */
                 foreach ($qualified as $qualifiedParticipant) {
-                    $filloutRawValue['proposed_aids'][] = $qualifiedParticipant->getAid();
+                    $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS][] = $qualifiedParticipant->getAid();
                 }
                 $fillout->setValue($filloutRawValue);
                 $this->em->persist($fillout);
