@@ -26,7 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class AdminParticipantDetectingController extends Controller
 {
-    
+
     /**
      * List groups of event
      *
@@ -38,7 +38,7 @@ class AdminParticipantDetectingController extends Controller
      */
     public function participantDetectingFieldsAction(Event $event)
     {
-        
+
         return $this->render(
             'event/admin/participant_detecting/event-detecting-list.html.twig',
             [
@@ -46,12 +46,13 @@ class AdminParticipantDetectingController extends Controller
             ]
         );
     }
-    
+
     /**
      * Data for {@see participantDetectingFieldsAction()}
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/detectings-data.json", requirements={"eid": "\d+"}, name="event_admin_detectings_data")
+     * @Route("/admin/event/{eid}/detectings-data.json", requirements={"eid": "\d+"},
+     *                                                   name="event_admin_detectings_data")
      * @Security("is_granted('participants_read', event)")
      * @param Event $event Related event
      * @return JsonResponse
@@ -61,13 +62,13 @@ class AdminParticipantDetectingController extends Controller
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         $event           = $eventRepository->findWithAcquisitionAttributes($event->getEid());
         $allFields       = $event->getAcquisitionAttributes(true, true, true, true, true);
-        
+
         $fields = [];
         /** @var Attribute $field */
         foreach ($allFields as $field) {
             if ($field->getFieldType() === ParticipantDetectingType::class) {
                 $acquisition = [];
-                
+
                 if ($field->getUseAtParticipation()) {
                     $acquisition[] = 'Anmeldung';
                 }
@@ -77,7 +78,7 @@ class AdminParticipantDetectingController extends Controller
                 if ($field->getUseAtEmployee()) {
                     $acquisition[] = 'Mitarbeiter';
                 }
-                
+
                 $fields[] = [
                     'bid'             => $field->getBid(),
                     'managementTitle' => $field->getManagementTitle(),
@@ -85,18 +86,18 @@ class AdminParticipantDetectingController extends Controller
                 ];
             }
         }
-        
+
         return new JsonResponse($fields);
     }
-    
-    
+
     /**
      * Get details for detecting field
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
-     * @Route("/admin/event/{eid}/detectings/{bid}", requirements={"eid": "\d+", "bid": "\d+"}, name="event_admin_detectings_overview")
-     * @param Event $event
+     * @Route("/admin/event/{eid}/detectings/{bid}", requirements={"eid": "\d+", "bid": "\d+"},
+     *                                               name="event_admin_detectings_overview")
+     * @param Event     $event
      * @param Attribute $attribute
      * @return Response
      */
@@ -105,8 +106,34 @@ class AdminParticipantDetectingController extends Controller
         if ($attribute->getFieldType() !== ParticipantDetectingType::class) {
             throw new \InvalidArgumentException('Requested detecting overview for non-detecting field');
         }
+
+        return $this->render(
+            'event/admin/participant_detecting/event-detecting-overview.html.twig',
+            [
+                'event'     => $event,
+                'attribute' => $attribute,
+            ]
+        );
+    }
+
+    /**
+     * Get detailed data for detecting field
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/event/{eid}/detectings/{bid}/network.json", requirements={"eid": "\d+", "bid": "\d+"},
+     *                                                            name="event_admin_detectings_data")
+     * @param Event     $event
+     * @param Attribute $attribute
+     * @return JsonResponse
+     */
+    public function participantDetectingDataAction(Event $event, Attribute $attribute)
+    {
+        if ($attribute->getFieldType() !== ParticipantDetectingType::class) {
+            throw new \InvalidArgumentException('Requested detecting overview for non-detecting field');
+        }
         $bid = $attribute->getBid();
-        
+
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = [];
         /** @var Participant $participant */
@@ -114,38 +141,42 @@ class AdminParticipantDetectingController extends Controller
             $participants[$participant->getId()] = $participant;
         }
         $nodes = [];
-        $selections = [];
-        
-        //$finder = $this->get('app.related_participants_finder');
+        $edges = [];
+
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
                 continue;
             }
-            
+
             if ($attribute->getUseAtParticipant()) {
                 $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
                 /** @var ParticipantFilloutValue $value */
                 $value       = $fillout->getValue();
                 $selectedAid = $value->getSelectedParticipantId();
-                $selections[$participant->getId()] = $selectedAid;
-                
-                $nodes[$participant->getId()] = [
-                    'participant' => $participant,
-                    'selected'    => $selectedAid !== null ? $participants[$selectedAid] : null,
-                    'value'       => $value
+                if ($selectedAid) {
+                    $edges[] = [
+                        'from'   => (int)$participant->getId(),
+                        'to'     => (int)$selectedAid,
+                        'arrows' => 'to',
+                    ];
+                }
+                $color = sprintf(
+                    'rgba(%s,%1.2f)',
+                    $participant->getGender(false) ===
+                    Participant::TYPE_GENDER_FEMALE ? '255,161,201' : '85,159,255',
+                    ($participant->getYearsOfLifeAtEvent() / 18)
+                );
+
+                $nodes[] = [
+                    'id'    => (int)$participant->getId(),
+                    'label' => $participant->fullname() . ' (' . $participant->getYearsOfLifeAtEvent() . ')',
+                    'shape' => 'box',
+                    'color' => $color,
                 ];
             }
         }
-        
-        return $this->render(
-            'event/admin/participant_detecting/event-detecting-overview.html.twig',
-            [
-                'event'     => $event,
-                'attribute' => $attribute,
-                'nodes'     => $nodes,
-            ]
-        );
+
+        return new JsonResponse(['nodes' => $nodes, 'edges' => $edges]);
     }
-    
 }

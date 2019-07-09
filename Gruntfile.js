@@ -64,6 +64,7 @@ module.exports = function (grunt) {
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     'node_modules/imagesloaded/imagesloaded.pkgd.js',
                     'node_modules/justified-layout/dist/justified-layout.js',
+                    'node_modules/vis/dist/vis.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
                     '<%= resourcesPath %>/js/storage.js',
@@ -89,6 +90,7 @@ module.exports = function (grunt) {
                 src: [
                     'app/cache/dep/bootstrap-table-sass.css',
                     'app/cache/dep/all-sass.css',
+                    'node_modules/vis/dist/vis.css',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
                 ],

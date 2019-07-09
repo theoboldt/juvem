@@ -565,4 +565,31 @@ $(function () {
         });
     });
 
+    if ($('#vis-network')) {
+        var el = $('#vis-network');
+        el.on('resize', function () {
+            debugger
+            el.css('height', window.innerHeight+'px');
+        }());
+        $.ajax({
+            type: 'GET',
+            url: '/admin/event/' + el.data('eid') + '/detectings/' + el.data('bid') + '/network.json',
+            success: function (response) {
+                if (!response.nodes || !response.edges) {
+                    $(document).trigger('add-alerts', {
+                        message: 'Die Netzwerkdaten konnte nicht geladen werden',
+                        priority: 'error'
+                    });
+                    return;
+                }
+                var container = document.getElementById('vis-network');
+                var data = {
+                    nodes: response.nodes,
+                    edges: response.edges
+                };
+                var options = {};
+                var network = new vis.Network(container, data, options);
+            },
+        });
+    }
 });
