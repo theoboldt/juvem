@@ -6,6 +6,18 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-12">
+        <div class="btn-toolbar" role="toolbar">
+          <div class="btn-group filters" data-toggle="buttons">
+            <label class="btn btn-primary active">
+              <input type="checkbox" checked data-property="gender" data-value="2"> Mädchen
+            </label>
+            <label class="btn btn-primary active">
+              <input type="checkbox" checked data-property="gender" data-value="1"> Jungen
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12">
         <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"
              data-eid="{{ event.eid }}" data-bid="{{ attribute.bid }}"></div>
       </div>

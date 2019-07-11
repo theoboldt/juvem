@@ -565,12 +565,52 @@ $(function () {
         });
     });
 
-    if ($('#vis-network')) {
-        var el = $('#vis-network');
+    var el = $('#vis-network');
+    if (el.length) {
         el.on('resize', function () {
-            debugger
-            el.css('height', window.innerHeight+'px');
+            el.css('height', window.innerHeight - 100 + 'px');
         }());
+
+        var filters = null;
+        var container = document.getElementById('vis-network');
+        var nodesSet = new vis.DataSet([]);
+        var edgesSet = new vis.DataSet([]);
+        var dataView = new vis.DataView(nodesSet, {
+            filter: function (item) {
+                if (filters === null) {
+                    return true;
+                }
+                var filterResult = false;
+                $.each(filters, function (key, value) {
+                    if (item[key] === value) {
+                        filterResult = true;
+                        return false;
+                    }
+                });
+
+                return filterResult;
+            },
+            fields: ['id', 'label', 'gender']
+        });
+        var data = {
+            nodes: dataView,
+            edges: edgesSet
+        };
+
+        var options = {};
+        var network = new vis.Network(container, data, options);
+
+        $('.filters input').on('change', function () {
+            filters = {};
+            $('.filters input').each(function () {
+                var filterEl = $(this);
+                if (filterEl.prop('checked')) {
+                    filters[filterEl.data('property')] = filterEl.data('value');
+                }
+            });
+            dataView.refresh();
+        });
+
         $.ajax({
             type: 'GET',
             url: '/admin/event/' + el.data('eid') + '/detectings/' + el.data('bid') + '/network.json',
@@ -582,13 +622,8 @@ $(function () {
                     });
                     return;
                 }
-                var container = document.getElementById('vis-network');
-                var data = {
-                    nodes: response.nodes,
-                    edges: response.edges
-                };
-                var options = {};
-                var network = new vis.Network(container, data, options);
+                nodesSet.update(response.nodes);
+                edgesSet.update(response.edges);
             },
         });
     }

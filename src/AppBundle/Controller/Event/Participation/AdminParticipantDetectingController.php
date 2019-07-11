@@ -173,6 +173,7 @@ class AdminParticipantDetectingController extends Controller
                     'label' => $participant->fullname() . ' (' . $participant->getYearsOfLifeAtEvent() . ')',
                     'shape' => 'box',
                     'color' => $color,
+                    'gender' => $participant->getGender(false),
                 ];
             }
         }
