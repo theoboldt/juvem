@@ -63,7 +63,7 @@ class AdminParticipantDetectingController extends Controller
                 'rgba(%1$d,%2$d,%3$d,0.9)',
                 150 - $hexNumber / 140,
                 100 - $hexNumber / 100,
-                200 - $hexNumber / 190,
+                200 - $hexNumber / 190
                 );
         }
         
