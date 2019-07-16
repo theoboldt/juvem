@@ -60,9 +60,9 @@ class AdminParticipantDetectingController extends Controller
             $attributeNumber       = hexdec(sha1($attribute->getFieldType(false) . '_' . $bid, true));
             $attributeColor        = sprintf(
                 'rgba(%1$d,%2$d,%3$d,0.9)',
-                150 - $attributeNumber / 140,
-                100 - $attributeNumber / 100,
-                200 - $attributeNumber / 190
+                170 - $attributeNumber / 170,
+                150 - $attributeNumber / 150,
+                190 - $attributeNumber / 190
             );
             $attributeColors[$bid] = $attributeColor;
 
