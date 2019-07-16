@@ -55,6 +55,18 @@ class AdminParticipantDetectingController extends Controller
         $nodes                = [];
         $edges                = [];
         
+        $attributeColors = [];
+        foreach ($attributes as $attribute) {
+            $bid                   = $attribute->getBid();
+            $hexNumber             = hexdec(sha1($bid, true));
+            $attributeColors[$bid] = sprintf(
+                'rgba(%1$d,%2$d,%3$d,0.9)',
+                150 - $hexNumber / 140,
+                100 - $hexNumber / 100,
+                200 - $hexNumber / 190,
+                );
+        }
+        
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
@@ -87,12 +99,19 @@ class AdminParticipantDetectingController extends Controller
                     /** @var ParticipantFilloutValue $value */
                     $value       = $fillout->getValue();
                     $selectedAid = $value->getSelectedParticipantId();
+                    
                     if ($selectedAid) {
-                        $edges[] = [
+                        $edge = [
                             'from'   => (int)$participant->getId(),
                             'to'     => (int)$selectedAid,
                             'arrows' => 'to',
+                            'color'  => ['color' => $attributeColors[$bid]],
                         ];
+                        if ($value->isSystemSelection()) {
+                            $edge['dashes'] = true;
+                        }
+                        
+                        $edges[] = $edge;
                     }
                     
                 }
