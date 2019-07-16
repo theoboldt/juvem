@@ -151,6 +151,9 @@ class AdminGroupController extends Controller
 
         /** @var AttributeChoiceOption $choiceOption */
         foreach ($attribute->getChoiceOptions() as $choiceOption) {
+            if ($choiceOption->getDeletedAt()) {
+                continue;
+            }
             $choices[] = [
                 'bid'                 => $bid,
                 'id'                  => $choiceOption->getId(),
