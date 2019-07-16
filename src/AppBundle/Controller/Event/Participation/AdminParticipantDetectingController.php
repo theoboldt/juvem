@@ -26,158 +26,90 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class AdminParticipantDetectingController extends Controller
 {
-
     /**
-     * List groups of event
+     * Get details for detecting fields
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/detectings", requirements={"eid": "\d+"}, name="event_admin_detectings_list")
-     * @Security("is_granted('participants_read', event)")
-     * @param Event $event Related event
+     * @Route("/admin/event/{eid}/detectings", requirements={"eid": "\d+"}, name="event_admin_detectings_overview")
+     * @param Event $event
+     * @param Attribute $attribute
      * @return Response
      */
-    public function participantDetectingFieldsAction(Event $event)
+    public function participantDetectingOverviewAction(Event $event)
     {
-
-        return $this->render(
-            'event/admin/participant_detecting/event-detecting-list.html.twig',
-            [
-                'event' => $event,
-            ]
-        );
-    }
-
-    /**
-     * Data for {@see participantDetectingFieldsAction()}
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/detectings-data.json", requirements={"eid": "\d+"},
-     *                                                   name="event_admin_detectings_data")
-     * @Security("is_granted('participants_read', event)")
-     * @param Event $event Related event
-     * @return JsonResponse
-     */
-    public function participantDetectingFieldsDataAction(Event $event)
-    {
-        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-        $event           = $eventRepository->findWithAcquisitionAttributes($event->getEid());
-        $allFields       = $event->getAcquisitionAttributes(true, true, true, true, true);
-
-        $fields = [];
-        /** @var Attribute $field */
-        foreach ($allFields as $field) {
-            if ($field->getFieldType() === ParticipantDetectingType::class) {
-                $acquisition = [];
-
-                if ($field->getUseAtParticipation()) {
-                    $acquisition[] = 'Anmeldung';
-                }
-                if ($field->getUseAtParticipant()) {
-                    $acquisition[] = 'Teilnehmer';
-                }
-                if ($field->getUseAtEmployee()) {
-                    $acquisition[] = 'Mitarbeiter';
-                }
-
-                $fields[] = [
-                    'bid'             => $field->getBid(),
-                    'managementTitle' => $field->getManagementTitle(),
-                    'acquisition'     => implode(', ', $acquisition),
-                ];
+        $attributes = [];
+        foreach ($event->getAcquisitionAttributes(false, true, true) as $attribute) {
+            if ($attribute->getFieldType() === ParticipantDetectingType::class) {
+                $attributes[] = $attribute;
             }
         }
-
-        return new JsonResponse($fields);
-    }
-
-    /**
-     * Get details for detecting field
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
-     * @Route("/admin/event/{eid}/detectings/{bid}", requirements={"eid": "\d+", "bid": "\d+"},
-     *                                               name="event_admin_detectings_overview")
-     * @param Event     $event
-     * @param Attribute $attribute
-     * @return Response
-     */
-    public function participantDetectingOverviewAction(Event $event, Attribute $attribute)
-    {
-        if ($attribute->getFieldType() !== ParticipantDetectingType::class) {
-            throw new \InvalidArgumentException('Requested detecting overview for non-detecting field');
-        }
-
-        return $this->render(
-            'event/admin/participant_detecting/event-detecting-overview.html.twig',
-            [
-                'event'     => $event,
-                'attribute' => $attribute,
-            ]
-        );
-    }
-
-    /**
-     * Get detailed data for detecting field
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
-     * @Route("/admin/event/{eid}/detectings/{bid}/network.json", requirements={"eid": "\d+", "bid": "\d+"},
-     *                                                            name="event_admin_detectings_data")
-     * @param Event     $event
-     * @param Attribute $attribute
-     * @return JsonResponse
-     */
-    public function participantDetectingDataAction(Event $event, Attribute $attribute)
-    {
-        if ($attribute->getFieldType() !== ParticipantDetectingType::class) {
-            throw new \InvalidArgumentException('Requested detecting overview for non-detecting field');
-        }
-        $bid = $attribute->getBid();
-
+        
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = [];
         /** @var Participant $participant */
         foreach ($participationRepository->participantsList($event, null, true, true) as $participant) {
             $participants[$participant->getId()] = $participant;
         }
-        $nodes = [];
-        $edges = [];
-
+        
+        $yearsOfLifeAvailable = [];
+        $nodes                = [];
+        $edges                = [];
+        
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
                 continue;
             }
-
-            if ($attribute->getUseAtParticipant()) {
-                $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
-                /** @var ParticipantFilloutValue $value */
-                $value       = $fillout->getValue();
-                $selectedAid = $value->getSelectedParticipantId();
-                if ($selectedAid) {
-                    $edges[] = [
-                        'from'   => (int)$participant->getId(),
-                        'to'     => (int)$selectedAid,
-                        'arrows' => 'to',
-                    ];
+            
+            $yearsOfLife                        = $participant->getYearsOfLifeAtEvent();
+            $yearsOfLifeAvailable[$yearsOfLife] = $yearsOfLife;
+            
+            $color   = sprintf(
+                'rgba(%s,%1.2f)',
+                $participant->getGender(false) ===
+                Participant::TYPE_GENDER_FEMALE ? '255,161,201' : '85,159,255',
+                ($yearsOfLife / 18)
+            );
+            $nodes[] = [
+                'id'          => (int)$participant->getId(),
+                'label'       => $participant->fullname() . ' (' . $yearsOfLife . ')',
+                'shape'       => 'box',
+                'color'       => $color,
+                'gender'      => $participant->getGender(false),
+                'yearsOfLife' => $yearsOfLife,
+            ];
+            
+            foreach ($attributes as $attribute) {
+                $bid = $attribute->getBid();
+                
+                if ($attribute->getUseAtParticipant()) {
+                    $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
+                    /** @var ParticipantFilloutValue $value */
+                    $value       = $fillout->getValue();
+                    $selectedAid = $value->getSelectedParticipantId();
+                    if ($selectedAid) {
+                        $edges[] = [
+                            'from'   => (int)$participant->getId(),
+                            'to'     => (int)$selectedAid,
+                            'arrows' => 'to',
+                        ];
+                    }
+                    
                 }
-                $color = sprintf(
-                    'rgba(%s,%1.2f)',
-                    $participant->getGender(false) ===
-                    Participant::TYPE_GENDER_FEMALE ? '255,161,201' : '85,159,255',
-                    ($participant->getYearsOfLifeAtEvent() / 18)
-                );
-
-                $nodes[] = [
-                    'id'    => (int)$participant->getId(),
-                    'label' => $participant->fullname() . ' (' . $participant->getYearsOfLifeAtEvent() . ')',
-                    'shape' => 'box',
-                    'color' => $color,
-                    'gender' => $participant->getGender(false),
-                ];
             }
         }
-
-        return new JsonResponse(['nodes' => $nodes, 'edges' => $edges]);
+        
+        $yearsOfLifeAvailable = array_values($yearsOfLifeAvailable);
+        sort($yearsOfLifeAvailable);
+        
+        return $this->render(
+            'event/admin/participant_detecting/event-detecting-overview.html.twig',
+            [
+                'event'       => $event,
+                'nodes'       => $nodes,
+                'edges'       => $edges,
+                'yearsOfLife' => $yearsOfLifeAvailable,
+            ]
+        );
     }
 }

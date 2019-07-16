@@ -1,6 +1,6 @@
 {% extends 'base-empty.html.twig' %}
 
-{% block title %}{{ attribute.managementTitle }} (Teilnehmerfelder, {{ event.title }}){% endblock %}
+{% block title %}Beziehungsübersicht ({{ event.title }}){% endblock %}
 
 {% block page %}
   <div class="container-fluid">
@@ -15,11 +15,20 @@
               <input type="checkbox" checked data-property="gender" data-value="1"> Jungen
             </label>
           </div>
+          <div class="btn-group filters" data-toggle="buttons">
+            {% for year in yearsOfLife %}
+              <label class="btn btn-primary active">
+                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"> {{ year }}
+              </label>
+            {% endfor %}
+          </div>
         </div>
+
       </div>
       <div class="col-xs-12">
         <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"
-             data-eid="{{ event.eid }}" data-bid="{{ attribute.bid }}"></div>
+             data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}"
+        ></div>
       </div>
     </div>
   </div>

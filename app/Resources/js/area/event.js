@@ -571,60 +571,56 @@ $(function () {
             el.css('height', window.innerHeight - 100 + 'px');
         }());
 
-        var filters = null;
+        var filterGroups = null;
         var container = document.getElementById('vis-network');
-        var nodesSet = new vis.DataSet([]);
-        var edgesSet = new vis.DataSet([]);
+        var nodesSet = new vis.DataSet(el.data('nodes'));
+        var edgesSet = new vis.DataSet(el.data('edges'));
         var dataView = new vis.DataView(nodesSet, {
             filter: function (item) {
-                if (filters === null) {
+                if (filterGroups === null) {
                     return true;
                 }
-                var filterResult = false;
-                $.each(filters, function (key, value) {
-                    if (item[key] === value) {
-                        filterResult = true;
+                var acceptGroup = false;
+                $.each(filterGroups, function (groupName, acceptedValues) {
+                    var groupValue = item[groupName];
+                    acceptGroup = false;
+
+                    $.each(acceptedValues, function (key, acceptedValue) {
+                        if (groupValue === acceptedValue) {
+                            acceptGroup = true;
+                            return false;
+                        }
+                    });
+                    if (!acceptGroup) {
                         return false;
                     }
                 });
 
-                return filterResult;
-            },
-            fields: ['id', 'label', 'gender']
+                return acceptGroup;
+            }
         });
         var data = {
             nodes: dataView,
             edges: edgesSet
         };
 
-        var options = {};
+        var options = {layout: {improvedLayout: false}};
         var network = new vis.Network(container, data, options);
 
         $('.filters input').on('change', function () {
-            filters = {};
+            filterGroups = {};
             $('.filters input').each(function () {
                 var filterEl = $(this);
                 if (filterEl.prop('checked')) {
-                    filters[filterEl.data('property')] = filterEl.data('value');
+                    var property = filterEl.data('property'),
+                        value = filterEl.data('value');
+                    if (!filterGroups[property]) {
+                        filterGroups[property] = [];
+                    }
+                    filterGroups[property].push(value);
                 }
             });
             dataView.refresh();
-        });
-
-        $.ajax({
-            type: 'GET',
-            url: '/admin/event/' + el.data('eid') + '/detectings/' + el.data('bid') + '/network.json',
-            success: function (response) {
-                if (!response.nodes || !response.edges) {
-                    $(document).trigger('add-alerts', {
-                        message: 'Die Netzwerkdaten konnte nicht geladen werden',
-                        priority: 'error'
-                    });
-                    return;
-                }
-                nodesSet.update(response.nodes);
-                edgesSet.update(response.edges);
-            },
         });
     }
 });
