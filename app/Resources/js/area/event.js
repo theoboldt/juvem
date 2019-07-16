@@ -568,7 +568,7 @@ $(function () {
     var el = $('#vis-network');
     if (el.length) {
         el.on('resize', function () {
-            el.css('height', window.innerHeight - 100 + 'px');
+            el.css('height', window.innerHeight - 75 + 'px');
         }());
 
         var filterGroups = null;
