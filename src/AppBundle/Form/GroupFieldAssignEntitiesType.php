@@ -54,16 +54,13 @@ class GroupFieldAssignEntitiesType extends AbstractType
     {
         /** @var Event $event */
         $event = $options['event'];
-        $eid   = $event->getEid();
 
         /** @var AttributeChoiceOption $currentGroupOption */
         $currentGroupOption = $options['choiceOption'];
-        $optionId           = $currentGroupOption->getId();
         $attribute          = $currentGroupOption->getAttribute();
 
         $entityType = $options['entities'];
-
-
+        
         $builder
             ->add(
                 'assign',
@@ -230,10 +227,19 @@ class GroupFieldAssignEntitiesType extends AbstractType
                             return $result;
                         },
                         function ($entityIds) use ($entityType) {
-                            if (!$entityIds) {
+                            if (!$entityIds || !count($entityIds)) {
                                 return [];
                             }
-
+                            $firstEntityId = reset($entityIds);
+                            if ($firstEntityId instanceof GroupFieldAssignEntityChoiceOption) {
+                                $entityId = null;
+                                /** @var GroupFieldAssignEntityChoiceOption $entityId */
+                                foreach ($entityIds as &$entityId) {
+                                    $entityId = $entityId->getId();
+                                }
+                                unset($entityId);
+                            }
+                            
                             $qb = $this->em->createQueryBuilder();
                             $qb->select(['e']);
                             switch ($entityType) {
