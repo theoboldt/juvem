@@ -197,17 +197,20 @@ class AdminGroupController extends Controller
         $usage      = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
 
         $formOptions        = ['event' => $event, 'choiceOption' => $choiceOption];
-        $formParticipants   = $this->createForm(
+        $formParticipants   = $this->container->get('form.factory')->createNamed(
+            'group_field_assign_participants',
             GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participant::class])
         );
-        $formParticipations = $this->createForm(
+        $formParticipations = $this->container->get('form.factory')->createNamed(
+            'group_field_assign_participations',
             GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participation::class])
         );
-        $formEmployees      = $this->createForm(
+        $formEmployees      = $this->container->get('form.factory')->createNamed(
+            'group_field_assign_employees',
             GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Employee::class])
@@ -261,6 +264,8 @@ class AdminGroupController extends Controller
                 $entities = $form->get('assign')->getData();
                 /** @var EntityHavingFilloutsInterface $entity */
                 foreach ($entities as $entity) {
+                    $this->denyAccessUnlessGranted('participants_edit', $event);
+
                     /** @var Fillout $fillout */
                     $fillout = $entity->getAcquisitionAttributeFillout($bid, true);
                     $value   = GroupFilloutValue::createForChoiceOption($choiceOption);
