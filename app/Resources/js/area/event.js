@@ -614,26 +614,33 @@ $(function () {
         network.on("doubleClick", function (params) {
             if (params.nodes.length == 1) {
                 var nodeId = params.nodes[0];
-                if (!network.isCluster(nodeId)) {
+                if (network.isCluster(nodeId)) {
+                    network.openCluster(nodeId);
+                } else {
                     var node = nodesSet.get(nodeId),
-                        clusterOptionsByData = {
-                            processProperties: function (clusterOptions, childNodes) {
-                                debugger
-                            clusterOptions.label = node.label + "[" + childNodes.length + "]";
+                        clusterOptionsByData ;
+
+                    if (node.type !== 'choice') {
+                        return;
+                    }
+
+                    clusterOptionsByData = {
+                        processProperties: function (clusterOptions, childNodes) {
+                            clusterOptions.label = node.label + ' [' + childNodes.length + ']';
+                            clusterOptions.color = node.color;
+                            clusterOptions.shape = node.shape;
                             return clusterOptions;
                         },
-                        clusterNodeProperties: {borderWidth: 3, shape: 'box', font: {size: 30}}
+                        clusterNodeProperties: {
+                            borderWidth: 2,
+                            shapeProperties: {borderDashes: [5, 2]}
+                        }
                     };
                     network.clusterByConnection(nodeId, clusterOptionsByData);
                 }
             }
         });
         network.on("selectNode", function (params) {
-            if (params.nodes.length == 1) {
-                if (network.isCluster(params.nodes[0])) {
-                    network.openCluster(params.nodes[0]);
-                }
-            }
         });
 
         $('.filters input').on('change', function () {
