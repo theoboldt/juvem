@@ -18,26 +18,27 @@
           <div class="btn-group filters" data-toggle="buttons">
             {% for year in yearsOfLife %}
               <label class="btn btn-primary active">
-                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}" data-nodes="participant"> {{ year }}
+                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"
+                       data-nodes="participant"> {{ year }}
               </label>
             {% endfor %}
           </div>
-        <div class="btn-toolbar" role="toolbar">
           <div class="btn-group filters" data-toggle="buttons">
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="participant" data-nodes="participant,choice"> Teilnehmer
+              <input type="checkbox" checked data-property="type" data-value="participant"
+                     data-nodes="participant,choice"> Teilnehmer
             </label>
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="choice" data-nodes="participant,choice"> Einteilungen
+              <input type="checkbox" checked data-property="type" data-value="choice" data-nodes="participant,choice">
+              Einteilungen
             </label>
           </div>
         </div>
-
-      </div>
-      <div class="col-xs-12">
-        <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"
-             data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}"
-        ></div>
+        <div class="col-xs-12">
+          <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"
+               data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}"
+          ></div>
+        </div>
       </div>
     </div>
   </div>
