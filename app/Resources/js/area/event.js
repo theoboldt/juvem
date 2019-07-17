@@ -607,6 +607,31 @@ $(function () {
         var options = {layout: {improvedLayout: false}};
         var network = new vis.Network(container, data, options);
 
+        network.on("doubleClick", function (params) {
+            if (params.nodes.length == 1) {
+                var nodeId = params.nodes[0];
+                if (!network.isCluster(nodeId)) {
+                    var node = nodesSet.get(nodeId),
+                        clusterOptionsByData = {
+                            processProperties: function (clusterOptions, childNodes) {
+                                debugger
+                            clusterOptions.label = node.label + "[" + childNodes.length + "]";
+                            return clusterOptions;
+                        },
+                        clusterNodeProperties: {borderWidth: 3, shape: 'box', font: {size: 30}}
+                    };
+                    network.clusterByConnection(nodeId, clusterOptionsByData);
+                }
+            }
+        });
+        network.on("selectNode", function (params) {
+            if (params.nodes.length == 1) {
+                if (network.isCluster(params.nodes[0])) {
+                    network.openCluster(params.nodes[0]);
+                }
+            }
+        });
+
         $('.filters input').on('change', function () {
             filterGroups = {};
             $('.filters input').each(function () {
