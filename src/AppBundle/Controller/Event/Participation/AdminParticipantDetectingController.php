@@ -88,13 +88,13 @@ class AdminParticipantDetectingController extends Controller
                         );
 
                         $attributeOptionColors[$bid][$choiceOption->getId()] = $attributeOptionColor;
-
+    
                         $nodes[] = [
-                            'id'    => self::choiceOptionNodeId($bid, $choiceOption->getId()),
-                            'type'  => 'choice',
-                            'label' => $choiceOption->getManagementTitle(true),
-                            'shape' => 'circle',
-                            'color' => $attributeOptionColor,
+                            'id'        => self::choiceOptionNodeId($bid, $choiceOption->getId()),
+                            'type'      => 'choice',
+                            'label'     => $choiceOption->getManagementTitle(true),
+                            'shape'     => 'circle',
+                            'color'     => $attributeOptionColor,
                             'collapsed' => false,
                         ];
                         ++$choiceOptions;

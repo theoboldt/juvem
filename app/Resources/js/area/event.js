@@ -585,8 +585,12 @@ $(function () {
                     var groupValue = item[groupName];
                     acceptGroup = false;
 
-                    $.each(acceptedValues, function (key, acceptedValue) {
-                        if (groupValue === acceptedValue) {
+                    $.each(acceptedValues, function (key, acceptedConfiguration) {
+                        var acceptedValue = acceptedConfiguration.value,
+                            filterableNodes = acceptedConfiguration.nodes;
+
+                        if ($.inArray(item.type, filterableNodes) === -1
+                            || groupValue === acceptedValue) {
                             acceptGroup = true;
                             return false;
                         }
@@ -638,11 +642,15 @@ $(function () {
                 var filterEl = $(this);
                 if (filterEl.prop('checked')) {
                     var property = filterEl.data('property'),
-                        value = filterEl.data('value');
+                        value = filterEl.data('value'),
+                        nodes = filterEl.data('nodes');
                     if (!filterGroups[property]) {
                         filterGroups[property] = [];
                     }
-                    filterGroups[property].push(value);
+                    filterGroups[property].push({
+                        value: value,
+                        nodes: nodes.split(',')
+                    });
                 }
             });
             dataView.refresh();

@@ -9,26 +9,26 @@
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group filters" data-toggle="buttons">
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="gender" data-value="2"> Mädchen
+              <input type="checkbox" checked data-property="gender" data-value="2" data-nodes="participant"> Mädchen
             </label>
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="gender" data-value="1"> Jungen
+              <input type="checkbox" checked data-property="gender" data-value="1" data-nodes="participant"> Jungen
             </label>
           </div>
           <div class="btn-group filters" data-toggle="buttons">
             {% for year in yearsOfLife %}
               <label class="btn btn-primary active">
-                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"> {{ year }}
+                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}" data-nodes="participant"> {{ year }}
               </label>
             {% endfor %}
           </div>
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group filters" data-toggle="buttons">
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="participant"> Teilnehmer
+              <input type="checkbox" checked data-property="type" data-value="participant" data-nodes="participant,choice"> Teilnehmer
             </label>
             <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="choice"> Einteilungen
+              <input type="checkbox" checked data-property="type" data-value="choice" data-nodes="participant,choice"> Einteilungen
             </label>
           </div>
         </div>
