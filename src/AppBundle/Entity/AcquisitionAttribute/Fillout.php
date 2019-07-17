@@ -65,7 +65,7 @@ class Fillout
     protected $employee;
 
     /**
-     * @ORM\Column(type="string", length=255, name="value", nullable=true)
+     * @ORM\Column(type="string", length=2048, name="value", nullable=true)
      * @var string
      */
     protected $value;
