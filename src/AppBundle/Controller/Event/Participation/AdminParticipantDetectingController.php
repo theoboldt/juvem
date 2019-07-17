@@ -35,7 +35,6 @@ class AdminParticipantDetectingController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/detectings", requirements={"eid": "\d+"}, name="event_admin_detectings_overview")
      * @param Event     $event
-     * @param Attribute $attribute
      * @return Response
      */
     public function participantDetectingOverviewAction(Event $event)
@@ -52,32 +51,51 @@ class AdminParticipantDetectingController extends Controller
         $yearsOfLifeAvailable = [];
         $nodes                = [];
         $edges                = [];
-
+    
         $attributeColors = [];
+        $attributeOptionColors = [];
         /** @var Attribute $attribute */
         foreach ($attributes as $attribute) {
-            $bid                   = $attribute->getBid();
-            $attributeNumber       = hexdec(sha1($attribute->getFieldType(false) . '_' . $bid, true));
+            $bid             = $attribute->getBid();
+            $attributeNumber = (hexdec(sha1($bid, true)) * hexdec(sha1($attribute->getFieldType(false), true)));
+            while ($attributeNumber > 210) {
+                $attributeNumber = array_sum(str_split($attributeNumber));
+            }
+       
             $attributeColor        = sprintf(
                 'rgba(%1$d,%2$d,%3$d,0.9)',
-                170 - $attributeNumber / 170,
-                150 - $attributeNumber / 150,
-                190 - $attributeNumber / 190
+                $attributeNumber,
+                225 - $attributeNumber,
+                ($attributeNumber+50) < 250 ? $attributeNumber+50 : $attributeNumber
             );
             $attributeColors[$bid] = $attributeColor;
+            $attributeOptionColors[$bid] = [];
 
             $bid = $attribute->getBid();
             if ($attribute->getFieldType() === GroupType::class) {
                 if ($attribute->getUseAtParticipant() || $attribute->getUseAtEmployee()) {
                     /** @var AttributeChoiceOption $choiceOption */
+                    $choiceOptions = 0;
                     foreach ($attribute->getChoiceOptions() as $choiceOption) {
-
+                        if ($choiceOption->getDeletedAt()) {
+                            continue;
+                        }
+                        $attributeOptionColor = sprintf(
+                            'rgba(%1$d,%2$d,%3$d,0.9)',
+                            $attributeNumber + ($choiceOptions*6),
+                            230 - $attributeNumber - ($choiceOptions*6),
+                            ($attributeNumber+50) < 250 ? $attributeNumber+50 : $attributeNumber
+                        );
+  
+                        $attributeOptionColors[$bid][$choiceOption->getId()] = $attributeOptionColor;
+    
                         $nodes[] = [
                             'id'    => self::choiceOptionNodeId($bid, $choiceOption->getId()),
                             'label' => $choiceOption->getManagementTitle(true),
                             'shape' => 'circle',
-                            'color' => $attributeColor,
+                            'color' => $attributeOptionColor,
                         ];
+                        ++$choiceOptions;
                     }
                 }
             }
@@ -142,7 +160,7 @@ class AdminParticipantDetectingController extends Controller
                             $edge    = [
                                 'from'  => self::participantNodeId($participant->getId()),
                                 'to'    => self::choiceOptionNodeId($bid, $groupId),
-                                'color' => ['color' => $attributeColors[$bid]],
+                                'color' => ['color' => $attributeOptionColors[$bid][$groupId]],
                             ];
                             $edges[] = $edge;
                         }
