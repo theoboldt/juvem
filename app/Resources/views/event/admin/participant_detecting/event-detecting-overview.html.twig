@@ -35,9 +35,20 @@
           </div>
         </div>
         <div class="col-xs-12">
-          <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"
+          <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"  data-token="{{ csrf_token('detecting' ~ event.eid ) }}"
                data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}"
           ></div>
+        </div>
+        <div class="col-xs-12">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group modes" data-toggle="buttons">
+              {% if is_granted('participants_edit', event) %}
+                <label class="btn btn-primary" data-mode="add-edge">
+                  <input type="checkbox"> verknüpfen
+                </label>
+              {% endif %}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -20,20 +20,70 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\GroupType;
 use AppBundle\Form\ParticipantDetectingType;
+use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class AdminParticipantDetectingController extends Controller
 {
+    /**
+     * Apply changes to multiple participants
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
+     * @Route("/admin/event/{eid}/detectings/change_group_assignment/a{aid}", requirements={"eid": "\d+", "aid": "\d+"}, methods={"POST"})
+     * @Security("is_granted('participants_edit', event)")
+     * @param Event $event
+     * @param Participant $participant
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeGroupAssignmentAction(Event $event, Participant $participant, Request $request)
+    {
+        $token    = $request->get('_token');
+        $bid      = (int)$request->get('bid');
+        $choiceId = (int)$request->get('choiceId');
+        
+        /** @var CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('detecting' . $event->getEid())) {
+            throw new InvalidTokenHttpException();
+        }
+        $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
+        $value = $fillout->getValue();
+        if (!$value instanceof GroupFilloutValue) {
+            throw new \InvalidArgumentException('Invalid fillout value provided');
+        }
+    
+        $em = $this->getDoctrine()->getManager();
+    
+        $choices = $fillout->getAttribute()->getChoiceOptions();
+        /** @var AttributeChoiceOption $choice */
+        foreach ($choices as $choice) {
+            if ($choiceId === $choice->getId()) {
+                $value = GroupFilloutValue::createForChoiceOption($choice);
+                $fillout->setValue($value->getRawValue());
+                $em->persist($fillout);
+                $em->flush();
+                return new JsonResponse(['success' => true]);
+            }
+        }
+    
+        return new JsonResponse(['success' => false]);
+    }
+    
     /**
      * Get details for detecting fields
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/detectings", requirements={"eid": "\d+"}, name="event_admin_detectings_overview")
+     * @Security("is_granted('participants_read', event)")
      * @param Event     $event
      * @return Response
      */
@@ -91,6 +141,8 @@ class AdminParticipantDetectingController extends Controller
     
                         $nodes[] = [
                             'id'        => self::choiceOptionNodeId($bid, $choiceOption->getId()),
+                            'bid'       => $bid,
+                            'choiceId'  => $choiceOption->getId(),
                             'type'      => 'choice',
                             'label'     => $choiceOption->getManagementTitle(true),
                             'shape'     => 'circle',
@@ -120,6 +172,7 @@ class AdminParticipantDetectingController extends Controller
             );
             $nodes[] = [
                 'id'          => self::participantNodeId($participant->getId()),
+                'aid'         => $participant->getId(),
                 'type'        => 'participant',
                 'label'       => $participant->fullname() . ' (' . $yearsOfLife . ')',
                 'shape'       => 'box',
@@ -159,11 +212,13 @@ class AdminParticipantDetectingController extends Controller
                         /** @var GroupFilloutValue $value */
                         $groupId = $value->getGroupId();
                         if ($groupId) {
-
-                            $edge    = [
-                                'from'  => self::participantNodeId($participant->getId()),
-                                'to'    => self::choiceOptionNodeId($bid, $groupId),
-                                'color' => ['color' => $attributeOptionColors[$bid][$groupId]],
+    
+                            $edge = [
+                                'from'     => self::participantNodeId($participant->getId()),
+                                'to'       => self::choiceOptionNodeId($bid, $groupId),
+                                'bid'      => $bid,
+                                'choiceId' => $groupId,
+                                'color'    => ['color' => $attributeOptionColors[$bid][$groupId]],
                             ];
                             $edges[] = $edge;
                         }
@@ -194,7 +249,7 @@ class AdminParticipantDetectingController extends Controller
      */
     private static function participantNodeId(int $aid): string
     {
-        return 'p.' . $aid;
+        return 'a' . $aid;
     }
 
     /**
