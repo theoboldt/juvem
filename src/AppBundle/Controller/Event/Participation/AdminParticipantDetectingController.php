@@ -73,10 +73,12 @@ class AdminParticipantDetectingController extends Controller
                     foreach ($attribute->getChoiceOptions() as $choiceOption) {
 
                         $nodes[] = [
-                            'id'    => self::choiceOptionNodeId($bid, $choiceOption->getId()),
-                            'label' => $choiceOption->getManagementTitle(true),
-                            'shape' => 'circle',
-                            'color' => $attributeColor,
+                            'id'        => self::choiceOptionNodeId($bid, $choiceOption->getId()),
+                            'type'      => 'choice',
+                            'label'     => $choiceOption->getManagementTitle(true),
+                            'shape'     => 'circle',
+                            'color'     => $attributeColor,
+                            'collapsed' => false,
                         ];
                     }
                 }
@@ -100,6 +102,7 @@ class AdminParticipantDetectingController extends Controller
             );
             $nodes[] = [
                 'id'          => self::participantNodeId($participant->getId()),
+                'type'        => 'participant',
                 'label'       => $participant->fullname() . ' (' . $yearsOfLife . ')',
                 'shape'       => 'box',
                 'color'       => $color,
