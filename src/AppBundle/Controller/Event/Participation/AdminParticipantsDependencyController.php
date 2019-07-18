@@ -30,14 +30,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-class AdminParticipantDetectingController extends Controller
+class AdminParticipantsDependencyController extends Controller
 {
     /**
      * Apply changes to multiple participants
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
-     * @Route("/admin/event/{eid}/detectings/change_group_assignment/a{aid}", requirements={"eid": "\d+", "aid": "\d+"}, methods={"POST"})
+     * @Route("/admin/event/{eid}/dependencies/change_group_assignment/a{aid}", requirements={"eid": "\d+", "aid": "\d+"}, methods={"POST"})
      * @Security("is_granted('participants_edit', event)")
      * @param Event $event
      * @param Participant $participant
@@ -82,7 +82,7 @@ class AdminParticipantDetectingController extends Controller
      * Get details for detecting fields
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/detectings", requirements={"eid": "\d+"}, name="event_admin_detectings_overview")
+     * @Route("/admin/event/{eid}/dependencies", requirements={"eid": "\d+"}, name="event_admin_dependencies_overview")
      * @Security("is_granted('participants_read', event)")
      * @param Event     $event
      * @return Response

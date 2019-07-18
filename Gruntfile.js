@@ -78,6 +78,7 @@ module.exports = function (grunt) {
                     '<%= resourcesPath %>/js/area/gallery_renderer.js',
                     '<%= resourcesPath %>/js/area/gallery.js',
                     '<%= resourcesPath %>/js/area/event.js',
+                    '<%= resourcesPath %>/js/area/dependencies.js',
                     '<%= resourcesPath %>/js/area/employee.js',
                     '<%= resourcesPath %>/js/area/event_export.js',
                     '<%= resourcesPath %>/js/area/participation.js',
