@@ -8,30 +8,33 @@
       <div class="col-xs-12">
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group filters" data-toggle="buttons">
-            <label class="btn btn-primary active">
+            <label class="btn btn-default active" title="Teilnehmerinnen anzeigen">
               <input type="checkbox" checked data-property="gender" data-value="2" data-nodes="participant"> Mädchen
             </label>
-            <label class="btn btn-primary active">
+            <label class="btn btn-default active" title="Teilnehmer anzeigen">
               <input type="checkbox" checked data-property="gender" data-value="1" data-nodes="participant"> Jungen
             </label>
           </div>
           <div class="btn-group filters" data-toggle="buttons">
             {% for year in yearsOfLife %}
-              <label class="btn btn-primary active">
+              <label class="btn btn-default active" title="Teilnehmer/Innen im Alter von {{ year }} Jahren anzeigen">
                 <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"
                        data-nodes="participant"> {{ year }}
               </label>
             {% endfor %}
           </div>
-          <div class="btn-group filters" data-toggle="buttons">
-            <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="participant"
-                     data-nodes="participant,choice"> Teilnehmer
+          <div class="btn-group filter-nodes" data-toggle="buttons">
+            <label class="btn btn-default active">
+              <input type="checkbox" checked data-type="participant"> Teilnehmer
             </label>
-            <label class="btn btn-primary active">
-              <input type="checkbox" checked data-property="type" data-value="choice" data-nodes="participant,choice">
-              Einteilungen
-            </label>
+            {% for attribute in attributes %}
+              {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+                <label class="btn btn-default active">
+                  <input type="checkbox" checked data-type="choice" data-bid="{{ attribute.bid }}">
+                  {{ attribute.getManagementTitle(true) }}
+                </label>
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
         <div class="col-xs-12">
@@ -42,9 +45,12 @@
         <div class="col-xs-12">
           <div class="btn-toolbar" role="toolbar">
             <div class="btn-group modes" data-toggle="buttons">
+              <label class="btn btn-default active">
+                <input type="radio" name="mode" id="display" checked> Anzeigemodus
+              </label>
               {% if is_granted('participants_edit', event) %}
-                <label class="btn btn-primary" data-mode="add-edge">
-                  <input type="checkbox"> verknüpfen
+                <label class="btn btn-default">
+                  <input type="radio" name="mode" id="add-edge"> Verknüpfungsmodus
                 </label>
               {% endif %}
             </div>

@@ -89,7 +89,15 @@ class AdminParticipantsDependencyController extends Controller
      */
     public function participantDetectingOverviewAction(Event $event)
     {
-        $attributes = $event->getAcquisitionAttributes(false, true, true);
+        $attributes = array_filter(
+            $event->getAcquisitionAttributes(false, true, true, true, true),
+            function ($attribute) {
+                if (!$attribute || ($attribute instanceof Attribute && $attribute->getDeletedAt())) {
+                    return false;
+                }
+                return true;
+            }
+        );
 
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = [];
@@ -234,6 +242,7 @@ class AdminParticipantsDependencyController extends Controller
             'event/admin/participant_detecting/event-detecting-overview.html.twig',
             [
                 'event'       => $event,
+                'attributes'  => $attributes,
                 'nodes'       => $nodes,
                 'edges'       => $edges,
                 'yearsOfLife' => $yearsOfLifeAvailable,
