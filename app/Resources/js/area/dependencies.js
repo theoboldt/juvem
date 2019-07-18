@@ -1,5 +1,5 @@
 $(function () {
-    var el = $('#vis-network');
+    const el = $('#vis-network');
     if (!el.length) {
         return;
     }
@@ -8,19 +8,21 @@ $(function () {
     }());
 
     var filterGroups = null,
-        showParticipants = null,
+        filterShowParticipants = null,
+        filterShowParticipationEdges = null,
         filterIncludeChoices = [],
         container = document.getElementById('vis-network'),
-        nodesSet = new vis.DataSet(el.data('nodes')),
+        participationEdges = el.data('participation-edges'),
         edgesSet = new vis.DataSet(el.data('edges')),
-        dataView = new vis.DataView(nodesSet, {
+        nodesSet = new vis.DataSet(el.data('nodes')),
+        nodesView = new vis.DataView(nodesSet, {
             filter: function (item) {
                 if (filterGroups === null) {
                     return true;
                 }
                 var type = item.type;
 
-                if (!showParticipants && type === 'participant') {
+                if (!filterShowParticipants && type === 'participant') {
                     return false;
                 }
                 if (type === 'choice' && $.inArray(item.bid, filterIncludeChoices) === -1) {
@@ -50,12 +52,26 @@ $(function () {
                 return acceptGroup;
             }
         });
-    var data = {
-        nodes: dataView,
-        edges: edgesSet
-    };
 
-    var connectToChoice = function (nodeHuman, nodeChoice) {
+    const hideParticipationEdges = function () {
+            var edges = edgesSet.get({
+                filter: function (item) {
+                    return (item.type === 'participation');
+                }
+            });
+            $.each(edges, function (key, edge) {
+                edgesSet.remove(edge.id);
+            });
+        },
+        showParticipationEdges = function () {
+            hideParticipationEdges();
+            $.each(participationEdges, function (key, edge) {
+                edgesSet.add(edge);
+            });
+        };
+    showParticipationEdges();
+
+    const connectToChoice = function (nodeHuman, nodeChoice) {
         var nodeHumanId = nodeHuman.id,
             nodeChoiceId = nodeChoice.id,
             newBid = nodeChoice.bid,
@@ -82,7 +98,7 @@ $(function () {
             color: {color: nodeChoice.color},
             dashes: true
         });
-        dataView.refresh();
+        nodesView.refresh();
         $.ajax({
             type: 'POST',
             url: '/admin/event/' + el.data('eid') + '/dependencies/change_group_assignment/' + nodeHumanId,
@@ -107,7 +123,7 @@ $(function () {
     };
 
     var options = {
-        layout: {improvedLayout: false},
+        //layout: {improvedLayout: false},
         manipulation: {
             enabled: false,
             addEdge: function (edgeData, callback) {
@@ -148,7 +164,14 @@ $(function () {
             }
         }
     };
-    var network = new vis.Network(container, data, options);
+    var network = new vis.Network(
+        container,
+        {
+            nodes: nodesView,
+            edges: edgesSet
+        },
+        options
+    );
 
     network.on("doubleClick", function (params) {
         if (params.nodes.length !== 1) {
@@ -167,7 +190,7 @@ $(function () {
 
             clusterOptionsByData = {
                 processProperties: function (clusterOptions, childNodes) {
-                    clusterOptions.label = node.label + ' [' + childNodes.length + ']';
+                    clusterOptions.label = node.label + ' [' + (childNodes.length - 1) + ']';
                     clusterOptions.color = node.color;
                     clusterOptions.shape = node.shape;
                     return clusterOptions;
@@ -199,7 +222,9 @@ $(function () {
         }
     });
 
-    var updateFilterConfiguration = function () {
+    const filtersInputEls = $('.filters input'),
+        filterIncludeChoicesEls = $('.filter-entities input.f'),
+        updateFilterConfiguration = function () {
             filterGroups = {};
             filtersInputEls.each(function () {
                 var filterEl = $(this);
@@ -216,7 +241,8 @@ $(function () {
                     });
                 }
             });
-            showParticipants = false;
+            filterShowParticipants = false;
+            filterShowParticipationEdges = false;
             filterIncludeChoices = [];
             filterIncludeChoicesEls.each(function () {
                 var filterEl = $(this);
@@ -225,8 +251,11 @@ $(function () {
                         bid = filterEl.data('bid');
 
                     switch (type) {
+                        case 'participation-edges':
+                            filterShowParticipationEdges = true;
+                            break;
                         case 'participant':
-                            showParticipants = true;
+                            filterShowParticipants = true;
                             break;
                         case 'choice':
                             filterIncludeChoices.push(bid);
@@ -234,10 +263,16 @@ $(function () {
                     }
                 }
             });
-            dataView.refresh();
-        },
-        filtersInputEls = $('.filters input'),
-        filterIncludeChoicesEls = $('.filter-entities input');
+            nodesView.refresh();
+        };
     filtersInputEls.on('change', updateFilterConfiguration);
     filterIncludeChoicesEls.on('change', updateFilterConfiguration);
+
+    $('#btnShowParticipationEdges').on('change', function () {
+        if ($(this).prop('checked')) {
+            showParticipationEdges();
+        } else {
+            hideParticipationEdges();
+        }
+    });
 });

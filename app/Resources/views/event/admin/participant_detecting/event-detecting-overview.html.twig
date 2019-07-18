@@ -25,12 +25,15 @@
           </div>
           <div class="btn-group filter-entities" data-toggle="buttons">
             <label class="btn btn-default active">
-              <input type="checkbox" checked data-type="participant" title="Teilnehmer/Innen anzeigen"> Teilnehmer
+              <input class="f" type="checkbox" checked data-type="participant" title="Teilnehmer/Innen anzeigen"> Teilnehmer
+            </label>
+            <label class="btn btn-default active">
+              <input type="checkbox" checked title="Zusammengehörigkeit von Teilnehmern durch Verbindung anzeigen" id="btnShowParticipationEdges"> Anmeldungsverbindung
             </label>
             {% for attribute in attributes %}
               {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
                 <label class="btn btn-default active" title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">
-                  <input type="checkbox" checked data-type="choice" data-bid="{{ attribute.bid }}">
+                  <input class="f" type="checkbox" checked data-type="choice" data-bid="{{ attribute.bid }}">
                   {{ attribute.getManagementTitle(true) }}
                 </label>
               {% endif %}
@@ -39,7 +42,7 @@
         </div>
         <div class="col-xs-12">
           <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"  data-token="{{ csrf_token('detecting' ~ event.eid ) }}"
-               data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}"
+               data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}" data-participation-edges="{{ participationEdges|json_encode() }}"
           ></div>
         </div>
         <div class="col-xs-12">

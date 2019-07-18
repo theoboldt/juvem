@@ -109,6 +109,7 @@ class AdminParticipantsDependencyController extends Controller
         $yearsOfLifeAvailable = [];
         $nodes                = [];
         $edges                = [];
+        $participationEdges   = [];
 
         $attributeColors = [];
         $attributeOptionColors = [];
@@ -193,6 +194,26 @@ class AdminParticipantsDependencyController extends Controller
                 'gender'      => $participant->getGender(false),
                 'yearsOfLife' => $yearsOfLife,
             ];
+    
+            /** @var Participant $relatedParticipant */
+            foreach ($participant->getParticipation()->getParticipants() as $relatedParticipant) {
+                if ($participant->getId() < $relatedParticipant->getId()) {
+                    $edge = [
+                        'from'   => self::participantNodeId($participant->getId()),
+                        'to'     => self::participantNodeId($relatedParticipant->getId()),
+                        'title'  => sprintf(
+                            'Teil derselben Anmeldung',
+                            ),
+                        'arrows' => [
+                            'to'   => ['enabled' => true, 'type' => 'bar'],
+                            'from' => ['enabled' => true, 'type' => 'bar'],
+                        ],
+                        'type'   => 'participation',
+                        'color'  => ['color' => 'rgba(7,80,142,0.8)'],
+                    ];
+                    $participationEdges[] = $edge;
+                }
+            }
 
             foreach ($attributes as $attribute) {
                 $bid = $attribute->getBid();
@@ -210,12 +231,14 @@ class AdminParticipantsDependencyController extends Controller
                         if ($selectedAid) {
                             $edge = [
                                 'from'   => self::participantNodeId($participant->getId()),
+                                'type'   => 'detecting',
                                 'title'  => sprintf(
-                                    '<i>%s</i> ist bei <i>%s</i> mit <i>%s</i> verknüpft',
-                                    htmlspecialchars($participant->getNameFirst()),
-                                    htmlspecialchars($attribute->getManagementTitle()),
-                                    htmlspecialchars($value->getRelatedFirstName())
-                                    ),
+                                                '<i>%s</i> ist bei <i>%s</i> mit <i>%s</i>, <i>%s</i> verknüpft',
+                                                htmlspecialchars($participant->getNameFirst()),
+                                                htmlspecialchars($attribute->getManagementTitle()),
+                                                htmlspecialchars($value->getRelatedLastName()),
+                                                htmlspecialchars($value->getRelatedFirstName())
+                                            ) . ($value->isSystemSelection() ? ' (automatisch)' : ''),
                                 'to'     => self::participantNodeId($selectedAid),
                                 'arrows' => 'to',
                                 'color'  => ['color' => $attributeColors[$bid]],
@@ -238,6 +261,7 @@ class AdminParticipantsDependencyController extends Controller
                             $edge    = [
                                 'from'     => self::participantNodeId($participant->getId()),
                                 'to'       => self::choiceOptionNodeId($bid, $groupId),
+                                'type'     => 'choice',
                                 'title'    => sprintf(
                                     '<i>%s</i> ist bei <i>%s</i> eingeteilt in <i>%s</i>',
                                     htmlspecialchars($participant->getNameFirst()),
@@ -265,6 +289,7 @@ class AdminParticipantsDependencyController extends Controller
                 'attributes'  => $attributes,
                 'nodes'       => $nodes,
                 'edges'       => $edges,
+                'participationEdges' => $participationEdges,
                 'yearsOfLife' => $yearsOfLifeAvailable,
             ]
         );
