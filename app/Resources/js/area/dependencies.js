@@ -134,6 +134,18 @@ $(function () {
                     connectToChoice(nodeFrom, nodeTo, callback);
                 }
             }
+        },
+        nodes: {
+            font: {
+                face: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                multi: 'md'
+            }
+        },
+        edges: {
+            font: {
+                face: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                multi: 'html'
+            }
         }
     };
     var network = new vis.Network(container, data, options);
@@ -225,7 +237,7 @@ $(function () {
             dataView.refresh();
         },
         filtersInputEls = $('.filters input'),
-        filterIncludeChoicesEls = $('.filter-nodes input');
+        filterIncludeChoicesEls = $('.filter-entities input');
     filtersInputEls.on('change', updateFilterConfiguration);
     filterIncludeChoicesEls.on('change', updateFilterConfiguration);
 });
