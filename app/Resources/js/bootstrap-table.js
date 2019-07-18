@@ -236,6 +236,13 @@ $(function () {
     });
 
     /**
+     * EVENT: Admin event participants list table
+     */
+    participantsTable.on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('participation/' + row.pid);
+    });
+
+    /**
      * ACQUISITION: Admin acquisition list table
      */
     $('#acquisitionListTable').on('click-row.bs.table', function (e, row, $element) {
@@ -247,13 +254,6 @@ $(function () {
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey(row.eid);
-    });
-
-    /**
-     * EVENT: Admin event participants list table
-     */
-    $('#participantsListTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey('participation/' + row.pid);
     });
 
     /**
@@ -310,13 +310,6 @@ $(function () {
      */
     $('#eventGroupsTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey('groups/' + row.bid);
-    });
-
-    /**
-     * PARTICIPANT DETECTING: List of participant detecting fields of an event
-     */
-    $('#eventParticipantsDetectingsTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey('detectings/' + row.bid);
     });
 
     /**
