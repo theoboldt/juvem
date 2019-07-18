@@ -152,7 +152,12 @@ class AdminParticipantsDependencyController extends Controller
                             'bid'       => $bid,
                             'choiceId'  => $choiceOption->getId(),
                             'type'      => 'choice',
-                            'label'     => $choiceOption->getManagementTitle(true),
+                            'label'     => $choiceOption->getShortTitle(true),
+                            'title'     => sprintf(
+                                '%s (<i>%s</i>)',
+                                htmlspecialchars($choiceOption->getManagementTitle(true)),
+                                htmlspecialchars($attribute->getManagementTitle())
+                            ),
                             'shape'     => 'circle',
                             'color'     => $attributeOptionColor,
                             'collapsed' => false,
@@ -205,6 +210,12 @@ class AdminParticipantsDependencyController extends Controller
                         if ($selectedAid) {
                             $edge = [
                                 'from'   => self::participantNodeId($participant->getId()),
+                                'title'  => sprintf(
+                                    '<i>%s</i> ist bei <i>%s</i> mit <i>%s</i> verknüpft',
+                                    htmlspecialchars($participant->getNameFirst()),
+                                    htmlspecialchars($attribute->getManagementTitle()),
+                                    htmlspecialchars($value->getRelatedFirstName())
+                                    ),
                                 'to'     => self::participantNodeId($selectedAid),
                                 'arrows' => 'to',
                                 'color'  => ['color' => $attributeColors[$bid]],
@@ -220,10 +231,19 @@ class AdminParticipantsDependencyController extends Controller
                         /** @var GroupFilloutValue $value */
                         $groupId = $value->getGroupId();
                         if ($groupId) {
-    
-                            $edge = [
+                            /** @var AttributeChoiceOption $selectedChoice */
+                            $selectedChoice = $value->getSelectedChoices();
+                            $selectedChoice = reset($selectedChoice);
+            
+                            $edge    = [
                                 'from'     => self::participantNodeId($participant->getId()),
                                 'to'       => self::choiceOptionNodeId($bid, $groupId),
+                                'title'    => sprintf(
+                                    '<i>%s</i> ist bei <i>%s</i> eingeteilt in <i>%s</i>',
+                                    htmlspecialchars($participant->getNameFirst()),
+                                    htmlspecialchars($attribute->getManagementTitle()),
+                                    htmlspecialchars($selectedChoice->getManagementTitle(true))
+                                ),
                                 'bid'      => $bid,
                                 'choiceId' => $groupId,
                                 'color'    => ['color' => $attributeOptionColors[$bid][$groupId]],

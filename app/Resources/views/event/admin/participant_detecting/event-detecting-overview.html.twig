@@ -23,13 +23,13 @@
               </label>
             {% endfor %}
           </div>
-          <div class="btn-group filter-nodes" data-toggle="buttons">
+          <div class="btn-group filter-entities" data-toggle="buttons">
             <label class="btn btn-default active">
-              <input type="checkbox" checked data-type="participant"> Teilnehmer
+              <input type="checkbox" checked data-type="participant" title="Teilnehmer/Innen anzeigen"> Teilnehmer
             </label>
             {% for attribute in attributes %}
               {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
-                <label class="btn btn-default active">
+                <label class="btn btn-default active" title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">
                   <input type="checkbox" checked data-type="choice" data-bid="{{ attribute.bid }}">
                   {{ attribute.getManagementTitle(true) }}
                 </label>
