@@ -201,9 +201,7 @@ class AdminParticipantsDependencyController extends Controller
                     $edge = [
                         'from'   => self::participantNodeId($participant->getId()),
                         'to'     => self::participantNodeId($relatedParticipant->getId()),
-                        'title'  => sprintf(
-                            'Teil derselben Anmeldung',
-                            ),
+                        'title'  => 'Teil derselben Anmeldung',
                         'arrows' => [
                             'to'   => ['enabled' => true, 'type' => 'bar'],
                             'from' => ['enabled' => true, 'type' => 'bar'],
