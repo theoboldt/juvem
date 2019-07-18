@@ -264,6 +264,7 @@ $(function () {
                 }
             });
             nodesView.refresh();
+            $('#display').click();
         };
     filtersInputEls.on('change', updateFilterConfiguration);
     filterIncludeChoicesEls.on('change', updateFilterConfiguration);
