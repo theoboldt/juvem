@@ -22,7 +22,7 @@ class AdminSystemController extends Controller
     /**
      * Clear cache
      *
-     * @Route("/admin/cache/clear", name="admin_cache_clean")
+     * @Route("/admin/cache/clear", name="admin_cache_clean", methods={"GET"})
      * @Security("has_role('ROLE_ADMIN')")
      */
     public function cacheCleanAction()
@@ -62,7 +62,7 @@ class AdminSystemController extends Controller
     /**
      * Clear cache
      *
-     * @Route("/admin/cache/clear", name="admin_cache_clean_result")
+     * @Route("/admin/cache/clear/result", name="admin_cache_clean_result", methods={"GET"})
      * @Security("has_role('ROLE_ADMIN')")
      */
     public function cacheCleanedAction()
