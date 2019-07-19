@@ -79,7 +79,7 @@ $(function () {
                             '<td>' + row.age + '</td>' +
                             '<td>' + row.status + '</td>' +
                             '<td class="text-right">' +
-                            ' <div data-aid="' + row.aid + '" class="btn btn-primary btn-xs ' + (row.selected ? 'disabled' : '') + '">' +
+                            ' <div data-aid="' + row.aid + '" class="btn btn-' + (row.selected ? 'default' : 'primary') + ' btn-xs ' + (row.selected && row.system ? 'disabled' : '') + '">' +
                             '  <span class="glyphicon glyphicon-link" aria-hidden="true"></span> ' +
                             (row.system ? '<span class="glyphicon glyphicon-flash" "="" aria-hidden="true" title="automatisch"></span>' : '') +
                             (row.selected ? 'verknüpft' : 'verknüpfen') +
