@@ -155,7 +155,7 @@ class ParticipantFilloutValue extends FilloutValue
     public function getSelectedParticipantId()
     {
         $this->ensureProcessed();
-        return $this->participantAid;
+        return $this->participantAid ? (int)$this->participantAid : null;
     }
 
     /**

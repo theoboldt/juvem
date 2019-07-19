@@ -577,6 +577,8 @@ class AdminSingleController extends Controller
         $finder       = $this->get('app.related_participants_finder');
         $participants = $finder->proposedParticipants($fillout);
 
+        /** @var ParticipantFilloutValue $value */
+        $value = $fillout->getValue();
 
         $result = [];
         foreach ($participants as $participant) {
@@ -584,13 +586,17 @@ class AdminSingleController extends Controller
             if ($participant->getDeletedAt()) {
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
-
+    
+            $isSelected = $participant->getAid() === (int)$value->getSelectedParticipantId();
+    
             $result[] = [
                 'aid'       => $participant->getAid(),
                 'firstName' => $participant->getNameFirst(),
                 'lastName'  => $participant->getNameLast(),
                 'age'       => $participant->getYearsOfLifeAtEvent(),
-                'status'    => $participantStatusText
+                'status'    => $participantStatusText,
+                'selected'  => $isSelected,
+                'system'    => $isSelected && $value->isSystemSelection()
             ];
         }
 

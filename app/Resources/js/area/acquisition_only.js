@@ -78,7 +78,13 @@ $(function () {
                             '<td>' + row.lastName + '</td>' +
                             '<td>' + row.age + '</td>' +
                             '<td>' + row.status + '</td>' +
-                            '<td class="text-right"><div data-aid="' + row.aid + '" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> verknüpfen</div></td>' +
+                            '<td class="text-right">' +
+                            ' <div data-aid="' + row.aid + '" class="btn btn-primary btn-xs ' + (row.selected ? 'disabled' : '') + '">' +
+                            '  <span class="glyphicon glyphicon-link" aria-hidden="true"></span> ' +
+                            (row.system ? '<span class="glyphicon glyphicon-flash" "="" aria-hidden="true" title="automatisch"></span>' : '') +
+                            (row.selected ? 'verknüpft' : 'verknüpfen') +
+                            ' </div>' +
+                            '</td>' +
                             '</tr>';
                     });
 
@@ -87,6 +93,9 @@ $(function () {
                         console.log(e);
                         e.preventDefault();
                         var aidButtonEl = $(this);
+                        if (aidButtonEl.hasClass('disabled')) {
+                            return;
+                        }
                         modalEl.find('#participation_assign_related_participant_related').val(aidButtonEl.data('aid'));
                         $('#dialogModalRelateParticipant form').submit();
                     });
