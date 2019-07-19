@@ -27,20 +27,22 @@ class AdminSystemController extends Controller
      */
     public function cacheCleanAction()
     {
-        $removeDirectory = function ($dir) {
+        $error           = false;
+        $removeDirectory = function ($dir) use ($error) {
             try {
                 $files = new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
                     \RecursiveIteratorIterator::CHILD_FIRST
                 );
-
+            
                 foreach ($files as $fileinfo) {
                     $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
                     $todo($fileinfo->getRealPath());
                 }
-
+            
                 rmdir($dir);
             } catch (\Exception $e) {
+                $error = true;
                 $this->addFlash(
                     'error',
                     $e->getMessage()
@@ -49,17 +51,26 @@ class AdminSystemController extends Controller
         };
 
         $removeDirectory('../app/cache/dev');
-        $this->addFlash(
-            'info',
-            'DEV cache cleaned'
-        );
-
         $removeDirectory('../app/cache/prod');
+        
+        if ($error) {
+            return $this->redirect('/');
+        }
+        
+        return $this->redirectToRoute('admin_cache_clean_result');
+    }
+    /**
+     * Clear cache
+     *
+     * @Route("/admin/cache/clear", name="admin_cache_clean_result")
+     * @Security("has_role('ROLE_ADMIN')")
+     */
+    public function cacheCleanedAction()
+    {
         $this->addFlash(
             'info',
-            'PROD cache cleaned'
+            'Prod/Dev cache cleaned'
         );
-
         return $this->redirect('/');
     }
 
