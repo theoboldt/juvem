@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -54,7 +55,7 @@ class AdminSystemController extends Controller
         $removeDirectory('../app/cache/prod');
         
         if ($error) {
-            return $this->redirect('/');
+            return new RedirectResponse('/admin/cache/clear/result');
         }
         
         return $this->redirectToRoute('admin_cache_clean_result');
