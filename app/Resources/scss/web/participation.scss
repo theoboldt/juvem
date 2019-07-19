@@ -93,7 +93,7 @@
 
 .participation-panels {
   > .row:first-child,
-  .panel-body .row:first-child {
+  .panel-body .row .col-xs-12:first-child {
     margin-bottom: 20px;
   }
 

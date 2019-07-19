@@ -779,10 +779,10 @@
                                         </dd>
                                     </dl>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 status-label-list">
-                                {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
-                                {{ paymentManager.getParticipantPaymentStatus(participant)|paymentLabel }}
+                                <div class="col-xs-12 status-label-list">
+                                    {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+                                    {{ paymentManager.getParticipantPaymentStatus(participant)|paymentLabel }}
+                                </div>
                             </div>
                         </div>
                         {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
