@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Event\Participation;
 
 
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
@@ -279,16 +280,18 @@ class AdminParticipantsDependencyController extends Controller
 
         $yearsOfLifeAvailable = array_values($yearsOfLifeAvailable);
         sort($yearsOfLifeAvailable);
-
+    
         return $this->render(
             'event/admin/participant_detecting/event-detecting-overview.html.twig',
             [
-                'event'       => $event,
-                'attributes'  => $attributes,
-                'nodes'       => $nodes,
-                'edges'       => $edges,
+                'event'              => $event,
+                'statusFormatter'    => ParticipantStatus::formatter(),
+                'participants'       => $participants,
+                'attributes'         => $attributes,
+                'nodes'              => $nodes,
+                'edges'              => $edges,
                 'participationEdges' => $participationEdges,
-                'yearsOfLife' => $yearsOfLifeAvailable,
+                'yearsOfLife'        => $yearsOfLifeAvailable,
             ]
         );
     }

@@ -181,26 +181,29 @@ $(function () {
         if (network.isCluster(nodeId)) {
             network.openCluster(nodeId);
         } else {
-            var node = nodesSet.get(nodeId),
-                clusterOptionsByData;
+            var node = nodesSet.get(nodeId);
 
-            if (node.type !== 'choice') {
-                return;
+            switch (node.type) {
+                case 'choice':
+                var clusterOptionsByData = {
+                    processProperties: function (clusterOptions, childNodes) {
+                        clusterOptions.label = node.label + ' [' + (childNodes.length - 1) + ']';
+                        clusterOptions.color = node.color;
+                        clusterOptions.shape = node.shape;
+                        return clusterOptions;
+                    },
+                    clusterNodeProperties: {
+                        borderWidth: 2,
+                        shapeProperties: {borderDashes: [5, 2]}
+                    }
+                };
+                network.clusterByConnection(nodeId, clusterOptionsByData);
+                    break;
+                case 'participant':
+                    $('#modalParticipant'+node.aid).modal('show');
+                    break;
             }
 
-            clusterOptionsByData = {
-                processProperties: function (clusterOptions, childNodes) {
-                    clusterOptions.label = node.label + ' [' + (childNodes.length - 1) + ']';
-                    clusterOptions.color = node.color;
-                    clusterOptions.shape = node.shape;
-                    return clusterOptions;
-                },
-                clusterNodeProperties: {
-                    borderWidth: 2,
-                    shapeProperties: {borderDashes: [5, 2]}
-                }
-            };
-            network.clusterByConnection(nodeId, clusterOptionsByData);
         }
     });
     network.on("selectNode", function (params) {

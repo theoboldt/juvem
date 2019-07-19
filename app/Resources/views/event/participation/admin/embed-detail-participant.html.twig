@@ -1,0 +1,90 @@
+<div class="col-xs-12">
+    <dl class="dl-horizontal">
+        <dt>Vorname</dt>
+        <dd>{{ participant.nameFirst }}</dd>
+        <dt>Nachname</dt>
+        <dd>{{ participant.nameLast }}</dd>
+        <dt>Geschlecht</dt>
+        <dd>{{ participant.getGender(true) }}</dd>
+        <dt>Geburtsdatum</dt>
+        <dd>
+            {{ participant.getBirthday|date("d.m.Y") }}
+            {% if (participant.hasBirthdayAtEvent) %}
+                {{ 'gift'|glyph(participant.nameFirst ~ ' hat während der Veranstaltung Geburtstag') }}
+            {% endif %}
+        </dd>
+        <dt>Alter</dt>
+        <dd><span data-toggle="tooltip" title="{{ participant.nameFirst }} hat zu Beginn der Veranstaltung das {{ participant.yearsOfLifeAtEvent }}.&nbsp;Lebensjahr erreicht">{{ participant.yearsOfLifeAtEvent }} Jahre</span> (rund {{ participant.getAgeAtEvent|number_format(1) }} Jahre)
+        </dd>
+        <dt>Ernährung</dt>
+        <dd>
+            {% set participantFood = participant.getFood(true) %}
+            {% if participantFood.getValue() %}
+                {{ ' '|bitmask(participantFood) }}
+            {% else %}
+                <i class="empty no-special"><span></span></i>
+            {% endif %}
+        </dd>
+        <dt>Medizinische Hinweise</dt>
+        <dd>
+            {% if participant.infoMedical %}
+                {{ participant.infoMedical }}
+            {% else %}
+                <i class="empty no-special"><span></span></i>
+            {% endif %}
+        </dd>
+        <dt>Allgemeine Hinweise</dt>
+        <dd>
+            {% if participant.infoGeneral %}
+                {{ participant.infoGeneral }}
+            {% else %}
+                <i class="empty no-special"><span></span></i>
+            {% endif %}
+        </dd>
+        {% for fillout in participant.acquisitionAttributeFillouts %}
+            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
+                data-placement="right">
+                {%- if not fillout.attribute.isPublic -%}
+                    {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+                {% endif %}
+                {{ fillout.attribute.formTitle }}
+            </dt>
+            <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
+        {% endfor %}
+        {% if paymentManager and event.price %}
+            <dt>Preis</dt>
+            <dd>
+                <span id="participant-price-{{ participant.aid }}">
+                    {{ paymentManager.getParticipantPaymentStatus(participant)|paymentInfo }}
+                </span>
+                {% if is_granted('participants_edit', event) -%}
+                    <button data-toggle="modal"
+                            data-target="#dialogPriceConfiguration"
+                            data-aids="{{ participant.aid }}"
+                            data-title="{{ participant|fullname }}"
+                            class="btn btn-default btn-xs"
+                            title="Grundpreis festlegen/Zahlung erfassen">{{ 'credit-card'|glyph }}</button>
+                {% endif -%}
+            </dd>
+        {% endif -%}
+        {% if similarParticipants -%}
+        <dt>Weitere Teilnahmen</dt>
+        <dd>
+            {% if similarParticipants[participant.aid]|length == 0 %}
+                <i>(keine Teilnahmen bei anderen Veranstaltungen)</i>
+            {% endif %}
+            {% for relatedParticipant in similarParticipants[participant.aid] %}
+                <a data-toggle="tooltip"
+                   title="Veranstaltung: {{ relatedParticipant.participation.event.startDate|date("d.m.Y") }}, Angemeldet: {{ relatedParticipant.participation.createdAt|date("d.m.Y h:i") }}"
+                   href="{{ path('event_participation_detail', {eid: relatedParticipant.participation.event.eid, pid: relatedParticipant.participation.pid}) }}">{{ relatedParticipant.participation.event.title }}</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
+            {% endfor %}
+        </dd>
+        {% endif %}
+    </dl>
+</div>
+<div class="col-xs-12 status-label-list">
+    {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+    {% if paymentManager -%}
+        {{ paymentManager.getParticipantPaymentStatus(participant)|paymentLabel }}
+    {%- endif %}
+</div>

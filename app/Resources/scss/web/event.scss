@@ -264,4 +264,17 @@ input.input-formula, textarea.input-formula {
   .row .col-xs-12 {
     padding: 0;
   }
+
+  .fillout-participant-detecting button {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .dl-horizontal dt {
+      width: 220px;
+    }
+    .dl-horizontal dd {
+      margin-left: 240px;
+    }
+  }
 }
