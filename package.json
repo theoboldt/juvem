@@ -16,7 +16,7 @@
   "dependencies": {
     "bootstrap-3-typeahead": "^4.0",
     "bootstrap-sass": "^3.4.1",
-    "bootstrap-table": "^1.15.2",
+    "bootstrap-table": "^1.15.3",
     "ekko-lightbox": "^5.3.0",
     "imagesloaded": "^4.1",
     "jquery": "^3.4.1",
@@ -24,10 +24,10 @@
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
     "justified-layout": "^2.1.2",
-    "lodash": ">=4.17.11",
+    "lodash": "^4.17.15",
     "masonry-layout": "^4.2",
     "merge": ">=1.2.1",
-    "npm": "^6.10.0",
+    "npm": "^6.10.1",
     "tar": "^4.4.10",
     "vis": "^4.21.0"
   }
