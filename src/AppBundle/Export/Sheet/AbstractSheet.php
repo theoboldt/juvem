@@ -349,14 +349,18 @@ abstract class AbstractSheet
     {
         $columnStart = 1;
         $columnEnd   = 1;
-        
-        if (isset($this->columnList['nameLast'])) {
-            $columnStart = $this->columnList['nameLast']->getColumnIndex();
+    
+        if (isset($this->columnList['aid'])) {
+            $columnStart = $this->columnList['aid']->getColumnIndex();
+        } else {
+            if (isset($this->columnList['nameLast'])) {
+                $columnStart = $this->columnList['nameLast']->getColumnIndex();
+            }
+            if (isset($this->columnList['firstLast'])) {
+                $columnEnd = $this->columnList['nameLast']->getColumnIndex();
+            }
         }
-        if (isset($this->columnList['firstLast'])) {
-            $columnEnd = $this->columnList['nameLast']->getColumnIndex();
-        }
-        
+    
         $pageSetup = $this->sheet->getPageSetup();
         $pageSetup->setRowsToRepeatAtTopByStartAndEnd(1, 1);
         $pageSetup->setColumnsToRepeatAtLeftByStartAndEnd(
