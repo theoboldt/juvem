@@ -40,6 +40,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -768,6 +769,23 @@ class AdminMultipleController extends Controller
         }
         return $processedConfiguration;
     }
+    
+    /**
+     * Provides a callable which can be used to extract textual values of participant data
+     *
+     * @return \Closure
+     */
+    public static function provideTextualValueAccessor(): callable {
+        $accessor = PropertyAccess::createPropertyAccessor();
+    
+        return function (Participant $entity, string $property) use ($accessor) {
+            $value = $accessor->getValue($entity, $property);
+            if ($value instanceof Fillout) {
+                $value = $value->getValue()->getTextualValue();
+            }
+            return $value;
+        };
+    }
 
     /**
      * Generate export file and provide file info
@@ -826,6 +844,43 @@ class AdminMultipleController extends Controller
                 return $include;
             }
         );
+        
+        $groupBy = null;
+        if (isset($processedConfiguration['participant']['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['grouping']['field'])) {
+            $groupBy = $processedConfiguration['participant']['grouping_sorting']['grouping']['field'];
+        }
+        $orderBy = null;
+        if (isset($processedConfiguration['participant']['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['sorting']['field'])) {
+            $orderBy = $processedConfiguration['participant']['grouping_sorting']['sorting']['field'];
+        }
+    
+        $extractTextualValue = self::provideTextualValueAccessor();
+        $compareValues       = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
+            $aValue = $extractTextualValue($a, $property);
+            $bValue = $extractTextualValue($b, $property);
+        
+            if ($aValue == $bValue) {
+                return 0;
+            }
+            return ($aValue < $bValue) ? -1 : 1;
+        };
+    
+        if ($groupBy || $orderBy) {
+            uasort(
+                $participantList,
+                function (Participant $a, Participant $b) use ($groupBy, $orderBy, $compareValues) {
+                    $result = 0;
+                    if ($groupBy) {
+                        $result = $compareValues($a, $b, $groupBy);
+                    }
+                    if ($orderBy && $result === 0) {
+                        $result = $compareValues($a, $b, $orderBy);
+                    }
+                
+                    return $result;
+                }
+            );
+        }
 
         $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),

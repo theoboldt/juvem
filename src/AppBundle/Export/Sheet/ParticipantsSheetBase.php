@@ -11,6 +11,7 @@
 namespace AppBundle\Export\Sheet;
 
 
+use AppBundle\Controller\Event\Participation\AdminMultipleController;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
@@ -42,16 +43,25 @@ abstract class ParticipantsSheetBase extends AbstractSheet
      * @var array
      */
     protected $participants;
-
+    
+    /**
+     * Field to use for grouping
+     *
+     * @var null|string
+     */
+    protected $groupBy = null;
+    
     /**
      * AbstractSheet constructor.
      *
-     * @param Worksheet           $sheet Related @see PHPExcel worksheet
+     * @param Worksheet $sheet     Related @see PHPExcel worksheet
+     * @param string|null $groupBy Group by field if set
      * @param PaymentManager|null $paymentManager
      */
-    public function __construct(Worksheet $sheet, PaymentManager $paymentManager = null)
+    public function __construct(Worksheet $sheet, ?string $groupBy = null, PaymentManager $paymentManager = null)
     {
         $this->paymentManager = $paymentManager;
+        $this->groupBy        = $groupBy;
         parent::__construct($sheet);
     }
 
@@ -71,6 +81,10 @@ abstract class ParticipantsSheetBase extends AbstractSheet
      */
     public function setBody()
     {
+        $previousParticipant = null;
+        
+        $textualAccessor = AdminMultipleController::provideTextualValueAccessor();
+        
         /** @var Participant $participant */
         foreach ($this->participants as $participant) {
             $row = $this->row();
@@ -101,7 +115,21 @@ abstract class ParticipantsSheetBase extends AbstractSheet
                     }
                 }
             }
+
+            if ($this->groupBy && $previousParticipant) {
+                $currentValue  = $textualAccessor($participant, $this->groupBy);
+                $previousValue = $textualAccessor($previousParticipant, $this->groupBy);
+                if ($currentValue != $previousValue) {
+                    if (!isset($columnIndex)) {
+                        $columnIndex = 1;
+                    }
+                    $this->sheet->setBreakByColumnAndRow(1, $row-1, Worksheet::BREAK_ROW);
+                }
+            }
+
+            $previousParticipant = $participant;
         }
+        $this->sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, $this->columnMax);
     }
 
 }

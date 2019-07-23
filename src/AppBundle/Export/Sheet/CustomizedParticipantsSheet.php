@@ -55,10 +55,14 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     {
         $this->event        = $event;
         $this->participants = $participants;
-
-        parent::__construct($sheet, $paymentManager);
-
-        $configParticipant = $config['participant'];
+        $configParticipant  = $config['participant'];
+        
+        $groupBy = null;
+        if (isset($configParticipant['grouping_sorting']['grouping']['enabled']) &&
+            isset($configParticipant['grouping_sorting']['grouping']['field'])) {
+            $groupBy = $configParticipant['grouping_sorting']['grouping']['field'];
+        }
+        parent::__construct($sheet, $groupBy, $paymentManager);
 
         if (self::issetAndTrue($configParticipant, 'aid')) {
             $column = new EntityAttributeColumn('aid', 'AID');

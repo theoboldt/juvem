@@ -12,6 +12,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Export\Sheet\Column\AbstractColumn;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
@@ -88,9 +89,7 @@ abstract class AbstractSheet
         $this->sheet   = $sheet;
         $this->sheet->getPageSetup()
                     ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
-                    ->setPaperSize(PageSetup::PAPERSIZE_A4)
-                    ->setRowsToRepeatAtTop([1, 1])
-                    ->setColumnsToRepeatAtLeft([1, 1]);
+                    ->setPaperSize(PageSetup::PAPERSIZE_A4);
 
         $this->sheet->getPageMargins()
                     ->setTop(0.75)
@@ -325,7 +324,9 @@ abstract class AbstractSheet
 
         $sheet->getColumnDimensionByColumn($column)
               ->setWidth(3);
-
+        
+        $this->setCellsToRepeat();
+        
         $sheet->getStyleByColumnAndRow(0, $row, $column, $row)
               ->applyFromArray(
                   array(
@@ -337,6 +338,30 @@ abstract class AbstractSheet
               );
 
         return $this;
+    }
+    
+    /**
+     * Set columns/rows to repeat. Must be done after data cells are written
+     *
+     * @return void
+     */
+    private function setCellsToRepeat(): void
+    {
+        $columnStart = 1;
+        $columnEnd   = 1;
+        
+        if (isset($this->columnList['nameLast'])) {
+            $columnStart = $this->columnList['nameLast']->getColumnIndex();
+        }
+        if (isset($this->columnList['firstLast'])) {
+            $columnEnd = $this->columnList['nameLast']->getColumnIndex();
+        }
+        
+        $pageSetup = $this->sheet->getPageSetup();
+        $pageSetup->setRowsToRepeatAtTopByStartAndEnd(1, 1);
+        $pageSetup->setColumnsToRepeatAtLeftByStartAndEnd(
+            Coordinate::stringFromColumnIndex($columnStart), Coordinate::stringFromColumnIndex($columnEnd)
+        );
     }
 
     /**

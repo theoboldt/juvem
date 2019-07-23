@@ -12,9 +12,15 @@ namespace AppBundle\Export\Customized;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
+use function foo\func;
+use Symfony\Component\Config\Definition\ArrayNode;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\BooleanNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\EnumNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\PrototypeNodeInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class Configuration implements ConfigurationInterface
@@ -40,6 +46,9 @@ class Configuration implements ConfigurationInterface
     const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
     const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
 
+    const OPTION_GROUP_NONE = '___group_by_none';
+    const OPTION_SORT_NONE = '___sort_by_none';
+    
     /**
      * Event this export is configurated for
      *
@@ -72,6 +81,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
+        $participantNodes = $this->participantNodesCreator();
+        
         $treeBuilder = new TreeBuilder();
         $rootNode    = $treeBuilder->root('export');
         $rootNode
@@ -116,37 +127,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-
-                ->arrayNode('participant')
-                    ->addDefaultsIfNotSet()
-                    ->info('Teilnehmerdaten')
-                    ->children()
-                        ->append($this->booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)'))
-                        ->append($this->booleanNodeCreator('nameFirst', 'Vorname'))
-                        ->append($this->booleanNodeCreator('nameLast', 'Nachname'))
-                        ->append($this->booleanNodeCreator('birthday', 'Geburtsdatum'))
-                        ->enumNode('ageAtEvent')
-                            ->info('Alter (bei Beginn der Veranstaltung)')
-                            ->values([
-                                         'Nicht exportieren'         => 'none',
-                                         'Vollendete Lebensjahre'    => 'completed',
-                                         'Auf Jahre gerundet'        => 'round',
-                                         'Mit einer Nachkommastelle' => 'decimalplace'
-                            ])
-                        ->end()
-                        ->append($this->booleanNodeCreator('gender', 'Geschlecht'))
-                        ->append($this->booleanNodeCreator('foodVegetarian', 'Vegetarisch (Essgewohnheiten)'))
-                        ->append($this->booleanNodeCreator('foodLactoseFree', 'Laktosefrei (Essgewohnheiten)'))
-                        ->append($this->booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)'))
-                        ->append($this->booleanNodeCreator('infoMedical', 'Medizinische Hinweise'))
-                        ->append($this->booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise'))
-                        ->append($this->booleanNodeCreator('basePrice', 'Grundpreis'))
-                        ->append($this->booleanNodeCreator('price', 'Preis (inkl. Formeln)'))
-                        ->append($this->booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)'))
-                        ->append($this->addAcquisitionAttributesNode(false, true))
-                        //food
-                    ->end()
-                ->end()
+                ->append($this->participantNodeCreator($participantNodes))
                 ->arrayNode('participation')
                     ->addDefaultsIfNotSet()
                     ->info('Anmeldungsdaten')
@@ -191,9 +172,9 @@ class Configuration implements ConfigurationInterface
      *
      * @param bool $participation Set to true to include participation fields
      * @param bool $participant   Set to true to include participant fields
-     * @return \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition|\Symfony\Component\Config\Definition\Builder\NodeDefinition
+     * @return \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition|NodeDefinition
      */
-    public function addAcquisitionAttributesNode($participation, $participant)
+    private function addAcquisitionAttributesNode($participation, $participant)
     {
         $attributes = $this->event->getAcquisitionAttributes($participation, $participant, false, true, true);
         $builder    = new TreeBuilder();
@@ -246,6 +227,149 @@ class Configuration implements ConfigurationInterface
             }
         }
 
+        return $node;
+    }
+    
+    /**
+     * Create participant node definition
+     *
+     * @param array|NodeDefinition[] $participantNodes Sub-nodes to add
+     * @return NodeDefinition
+     */
+    private function participantNodeCreator(array $participantNodes): NodeDefinition
+    {
+        $builder = new TreeBuilder();
+        $node    = $builder->root('participant')
+                           ->addDefaultsIfNotSet()
+                           ->info('Teilnehmerdaten');
+        
+        $children = $node->children();
+        foreach ($participantNodes as $childNode) {
+            $children->append($childNode);
+        }
+        
+        $children->append($this->createGroupSortNodes($participantNodes));
+        
+        return $node;
+    }
+    
+    /**
+     * Create participant nodes
+     *
+     * @return array|NodeDefinition[]
+     */
+    private function participantNodesCreator(): array
+    {
+        $nodes   = [];
+        $nodes[] = $this->booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)');
+        $nodes[] = $this->booleanNodeCreator('nameFirst', 'Vorname');
+        $nodes[] = $this->booleanNodeCreator('nameLast', 'Nachname');
+        $nodes[] = $this->booleanNodeCreator('birthday', 'Geburtsdatum');
+    
+        $node = new EnumNodeDefinition('ageAtEvent');
+        $node->info('Alter (bei Beginn der Veranstaltung)')
+             ->values(
+                 [
+                     'Nicht exportieren'         => 'none',
+                     'Vollendete Lebensjahre'    => 'completed',
+                     'Auf Jahre gerundet'        => 'round',
+                     'Mit einer Nachkommastelle' => 'decimalplace'
+                 ]
+             );
+        $nodes[] = $node;
+        
+        $nodes[] = $this->booleanNodeCreator('gender', 'Geschlecht');
+        $nodes[] = $this->booleanNodeCreator('foodVegetarian', 'Vegetarisch (Essgewohnheiten)');
+        $nodes[] = $this->booleanNodeCreator('foodLactoseFree', 'Laktosefrei (Essgewohnheiten)');
+        $nodes[] = $this->booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)');
+        $nodes[] = $this->booleanNodeCreator('infoMedical', 'Medizinische Hinweise');
+        $nodes[] = $this->booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise');
+        $nodes[] = $this->booleanNodeCreator('basePrice', 'Grundpreis');
+        $nodes[] = $this->booleanNodeCreator('price', 'Preis (inkl. Formeln)');
+        $nodes[] = $this->booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)');
+        $nodes[] = $this->addAcquisitionAttributesNode(false, true);
+        
+        return $nodes;
+    }
+    
+    /**
+     * Get flattened nodes
+     *
+     * @param array $nodes
+     * @return array
+     */
+    private function flattenOptions(array $nodes): array
+    {
+        $result = [];
+        $unsupported = [
+            'infoMedical',
+            'infoGeneral',
+            'price',
+            'toPay',
+        ];
+        
+        /** @var NodeDefinition|PrototypeNodeInterface[] $participantNodeDefinition */
+        foreach ($nodes as $participantNodeDefinition) {
+            if ($participantNodeDefinition instanceof ArrayNode) {
+                $participantNode = $participantNodeDefinition;
+            } else {
+                $participantNode = $participantNodeDefinition->getNode(true);
+            }
+            if ($participantNode !== $participantNodeDefinition && $participantNode instanceof ArrayNode) {
+                $result = array_merge($result, $this->flattenOptions($participantNode->getChildren()));
+            } else {
+                $label = $participantNode->getInfo();
+                $name  = $participantNode->getName();
+                if (in_array($name, $unsupported)) {
+                    continue;
+                }
+                $result[$label] = $name;
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Grouping/sorting configuration nodes depending on participant nodes
+     *
+     * @param array|NodeDefinition[] $participantNodes Nodes for participant
+     * @return EnumNodeDefinition Result
+     */
+    public function createGroupSortNodes(array $participantNodes): NodeDefinition
+    {
+        $node = new ArrayNodeDefinition('grouping_sorting');
+        $node->info('Gruppierung & Sortierung');
+        $values = $this->flattenOptions($participantNodes);
+        
+        //grouping
+        $groupingNode = new ArrayNodeDefinition('grouping');
+        $groupingNode->info('Gruppieren (Fügt einen Seitenumbruch zwischen alle verfügbaren Werte)');
+        $groupingNode->append(
+            $this->booleanNodeCreator(
+                'enabled', 'Teilnehmer gruppieren'
+            )
+        );
+        $enum = new EnumNodeDefinition('field');
+        $enum->values($values)
+             ->info('Feld');
+        $enum->beforeNormalization()->ifNotInArray(array_values($values))->thenUnset();
+        $groupingNode->append($enum);
+        $node->append($groupingNode);
+        
+        //sorting
+        $sortingNode = new ArrayNodeDefinition('sorting');
+        $sortingNode->info('Sortieren (Nachdem die Gruppierung angewandt wurde)');
+        $sortingNode->append(
+            $this->booleanNodeCreator(
+                'enabled', 'Teilnehmer sortieren'
+            )
+        );
+        $enum = new EnumNodeDefinition('field');
+        $enum->values($values)
+             ->info('Feld');
+        $sortingNode->append($enum);
+        $node->append($sortingNode);
+        
         return $node;
     }
 }
