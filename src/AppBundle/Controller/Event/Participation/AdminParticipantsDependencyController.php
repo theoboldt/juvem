@@ -194,6 +194,7 @@ class AdminParticipantsDependencyController extends Controller
                 'color'       => $color,
                 'gender'      => $participant->getGender(false),
                 'yearsOfLife' => $yearsOfLife,
+                'confirmed'   => (int)$participant->isConfirmed(),
             ];
     
             /** @var Participant $relatedParticipant */

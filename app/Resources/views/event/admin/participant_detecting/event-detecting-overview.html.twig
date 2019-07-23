@@ -44,6 +44,15 @@
             </label>
           </div>
           <div class="btn-group filters" data-toggle="buttons">
+            <label class="btn btn-default active" title="Bestätigte Teilnehmer anzeigen">
+              <input type="checkbox" checked data-property="confirmed" data-value="1" data-nodes="participant"> Bestätigt
+            </label>
+            <label class="btn btn-default active" title="Noch nicht bestätigte Teilnehmer anzeigen">
+              <input type="checkbox" checked data-property="confirmed" data-value="0" data-nodes="participant"> Unbestätigt
+            </label>
+          </div>
+
+          <div class="btn-group filters" data-toggle="buttons">
             {% for year in yearsOfLife %}
               <label class="btn btn-default active" title="Teilnehmer/Innen im Alter von {{ year }} Jahren anzeigen">
                 <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"
