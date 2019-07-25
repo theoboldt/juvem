@@ -55,7 +55,7 @@
                                 {%- endif %}
                                 <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="{{ path('event_participants_profile', {'eid': event.eid}) }}" target="_blank" class="btn-download">{{ 'book'|glyph }} Steckbriefe mit Deckblättern exportieren (Experimentell)</a></li>
+                                <li><a href="{{ path('event_participants_profile', {'eid': event.eid}) }}" target="_blank" class="btn-download">{{ 'book'|glyph }} Steckbriefe exportieren (Experimentell)</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken (alt)</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken (alt)</a></li>
                                 <li role="separator" class="divider"></li>
