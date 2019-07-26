@@ -21,17 +21,11 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\Customized\Configuration;
-use AppBundle\Export\Customized\CustomizedExport;
-use AppBundle\Export\ParticipantsBirthdayAddressExport;
-use AppBundle\Export\ParticipantsExport;
-use AppBundle\Export\ParticipantsMailExport;
-use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\Extension\PaymentInformation;
 use DateTime;
 use libphonenumber\PhoneNumberUtil;
-use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -40,7 +34,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -49,7 +42,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -328,141 +320,6 @@ class AdminMultipleController extends Controller
 
         $response = new JsonResponse($participantList);
         $response->setEtag(sha1(json_encode($participantList)));
-
-        return $response;
-    }
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function exportParticipantsAction(Event $event)
-    {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($event);
-
-        $export = new ParticipantsExport(
-            $this->get('app.twig_global_customization'), $event, $participantList, $this->getUser()
-        );
-        $export->setMetadata();
-        $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Teilnehmer.xlsx'
-        );
-        $response->headers->set('Content-Disposition', $d);
-
-        return $response;
-    }
-
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
-     *                                                    name="event_participations_export")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function exportParticipationsAction(Event $event)
-    {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participationsList      = $participationRepository->participationsList($event);
-
-        $export = new ParticipationsExport(
-            $this->get('app.twig_global_customization'), $event, $participationsList, $this->getUser()
-        );
-        $export->setMetadata();
-        $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Anmeldungen.xlsx'
-        );
-        $response->headers->set('Content-Disposition', $d);
-
-        return $response;
-    }
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
-     *     name="event_participants_birthday_address_export")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function exportParticipantsBirthdayAddressAction(Event $event)
-    {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($event);
-
-        $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
-        $export->setMetadata();
-        $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Teilnehmer.xlsx'
-        );
-        $response->headers->set('Content-Disposition', $d);
-
-        return $response;
-    }
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
-     *                                                    name="event_participants_mail_export")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function exportParticipantsMailAction(Event $event)
-    {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($event);
-        $participationsList      = $participationRepository->participationsList($event);
-
-        $export = new ParticipantsMailExport(
-            $this->get('app.twig_global_customization'), $event, $participantList, $participationsList, $this->getUser()
-        );
-        $export->setMetadata();
-        $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Anmeldungen.xlsx'
-        );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -771,144 +628,6 @@ class AdminMultipleController extends Controller
     }
     
     /**
-     * Provides a callable which can be used to extract textual values of participant data
-     *
-     * @return \Closure
-     */
-    public static function provideTextualValueAccessor(): callable {
-        $accessor = PropertyAccess::createPropertyAccessor();
-    
-        return function (Participant $entity, string $property) use ($accessor) {
-            $value = $accessor->getValue($entity, $property);
-            if ($value instanceof Fillout) {
-                $value = $value->getValue()->getTextualValue();
-            }
-            return $value;
-        };
-    }
-
-    /**
-     * Generate export file and provide file info
-     *
-     * @param Request $request
-     * @return array
-     */
-    private function generateExport(Request $request): array
-    {
-        $processedConfiguration = $this->processRequestConfiguration($request);
-
-        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-        /** @var Event $event */
-        $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
-
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $paymentManager = $this->get('app.payment_manager');
-
-        $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
-        $filterPaid              = $processedConfiguration['filter']['paid'];
-        $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
-        $participantList         = array_filter(
-            $participationRepository->participantsList(
-                $event,
-                null,
-                false,
-                ($filterRejectedWithdrawn !== Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN)
-            ),
-            function (Participant $participant) use ($paymentManager, $filterConfirmed, $filterPaid, $filterRejectedWithdrawn) {
-                $include = true;
-                switch ($filterConfirmed) {
-                    case Configuration::OPTION_CONFIRMED_CONFIRMED:
-                        $include = $include && $participant->isConfirmed();
-                        break;
-                    case Configuration::OPTION_CONFIRMED_UNCONFIRMED:
-                        $include = $include && !$participant->isConfirmed();
-                        break;
-                }
-                switch ($filterPaid) {
-                    case Configuration::OPTION_PAID_PAID:
-                        $include = $include && !$paymentManager->isParticipantRequiringPayment($participant);
-                        break;
-                    case Configuration::OPTION_PAID_NOTPAID:
-                        $include = $include && $paymentManager->isParticipantRequiringPayment($participant);
-                        break;
-                }
-                switch($filterRejectedWithdrawn) {
-                    case Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN:
-                        $include = $include && !($participant->isRejected() || $participant->isWithdrawn());
-                        break;
-                    case Configuration::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN:
-                        $include = $include && ($participant->isRejected() || $participant->isWithdrawn());
-                        break;
-                }
-
-                return $include;
-            }
-        );
-        
-        $groupBy = null;
-        if (isset($processedConfiguration['participant']['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['grouping']['field'])) {
-            $groupBy = $processedConfiguration['participant']['grouping_sorting']['grouping']['field'];
-        }
-        $orderBy = null;
-        if (isset($processedConfiguration['participant']['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['sorting']['field'])) {
-            $orderBy = $processedConfiguration['participant']['grouping_sorting']['sorting']['field'];
-        }
-    
-        $extractTextualValue = self::provideTextualValueAccessor();
-        $compareValues       = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
-            $aValue = $extractTextualValue($a, $property);
-            $bValue = $extractTextualValue($b, $property);
-        
-            if ($aValue == $bValue) {
-                return 0;
-            }
-            return ($aValue < $bValue) ? -1 : 1;
-        };
-    
-        if ($groupBy || $orderBy) {
-            uasort(
-                $participantList,
-                function (Participant $a, Participant $b) use ($groupBy, $orderBy, $compareValues) {
-                    $result = 0;
-                    if ($groupBy) {
-                        $result = $compareValues($a, $b, $groupBy);
-                    }
-                    if ($orderBy && $result === 0) {
-                        $result = $compareValues($a, $b, $orderBy);
-                    }
-                
-                    return $result;
-                }
-            );
-        }
-
-        $export = new CustomizedExport(
-            $this->get('app.twig_global_customization'),
-            $this->get('app.payment_manager'),
-            $event,
-            $participantList,
-            $this->getUser(),
-            $processedConfiguration
-        );
-        $tmpPath = tempnam($this->getParameter('app.tmp.root.path'), 'export_');
-        if (!$tmpPath) {
-            throw new RuntimeException('Failed to create tmp file');
-        }
-        $export->setMetadata();
-        $export->process();
-        $export->write($tmpPath);
-
-        //filter name
-        $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
-        $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
-
-        return [
-            'path' => $tmpPath,
-            'name' => $filename
-        ];
-    }
-
-    /**
      * Page for list of participants of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -930,65 +649,6 @@ class AdminMultipleController extends Controller
                 'statusFormatter' => ParticipantStatus::formatter(),
             ]
         );
-    }
-
-    /**
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants/profile_export.docx", requirements={"eid": "\d+"}, name="event_participants_profile")
-     * @Security("is_granted('participants_read', event)")
-     * @param Event $event
-     * @return Response
-     */
-    public function generateParticipantsProfileAction(Event $event) {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participants            = $participationRepository->participantsList($event);
-
-        $config = [
-            'profile' => [
-                'general' =>
-                    [
-                        'includePrivate'     => true,
-                        'includeDescription' => true,
-                        'includeComments'    => true,
-                        'includePrice'       => true,
-                        'includeToPay'       => true,
-                    ],
-                'choices' =>
-                    [
-                        'includeShortTitle'      => true,
-                        'includeManagementTitle' => true,
-                        'includeNotSelected'     => false,
-                    ],
-            ]
-        ];
-        $processor     = new Processor();
-        $configuration = new \AppBundle\Manager\ParticipantProfile\Configuration();
-
-        $processedConfiguration = $processor->processConfiguration($configuration, $config);
-
-        $generator = $this->get('app.participant.profile_generator');
-        $path      = $generator->generate($participants, $processedConfiguration);
-        $response  = new BinaryFileResponse($path);
-
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            preg_replace('/[^a-zA-Z0-9\-\._ ]/','', $event->getTitle().' Profile.docx')
-        );
-        $response->headers->set('Content-Disposition', $d);
-
-        //ensure file deleted after request
-        $this->get('event_dispatcher')->addListener(
-            KernelEvents::TERMINATE,
-            function (PostResponseEvent $event) use ($path) {
-                if (file_exists($path)) {
-                    usleep(100);
-                    unlink($path);
-                }
-            }
-        );
-
-        return $response;
     }
 
     /**
