@@ -18,12 +18,14 @@ use AppBundle\Entity\User;
 use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
+use AppBundle\Form\EventParticipantGroupByType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -255,6 +257,7 @@ class AdminController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($event);
             $em->flush();
+            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
         }
 
         $acquisitionAssignmentForm = $this->createForm(
