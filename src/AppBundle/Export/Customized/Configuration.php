@@ -32,22 +32,22 @@ class Configuration implements ConfigurationInterface
     const OPTION_VALUE_FORM = 'formTitle';
     const OPTION_VALUE_MANAGEMENT = 'managementTitle';
     const OPTION_VALUE_SHORT = 'shortTitle';
-    
+
     const OPTION_CONFIRMED_ALL         = 'all';
     const OPTION_CONFIRMED_CONFIRMED   = 'confirmed';
     const OPTION_CONFIRMED_UNCONFIRMED = 'unconfirmed';
-    
+
     const OPTION_PAID_ALL     = 'all';
     const OPTION_PAID_PAID    = 'paid';
     const OPTION_PAID_NOTPAID = 'notpaid';
-    
+
     const OPTION_REJECTED_WITHDRAWN_ALL                    = 'all';
     const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
     const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
 
     const OPTION_GROUP_NONE = '___group_by_none';
     const OPTION_SORT_NONE = '___sort_by_none';
-    
+
     /**
      * Event this export is configurated for
      *
@@ -65,7 +65,7 @@ class Configuration implements ConfigurationInterface
         $this->event = $event;
     }
 
-    protected function booleanNodeCreator($name, $info) {
+    public static function booleanNodeCreator($name, $info) {
         $node = new BooleanNodeDefinition($name);
         $node->beforeNormalization()
              ->ifString()
@@ -81,7 +81,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $participantNodes = $this->participantNodesCreator();
-        
+
         $treeBuilder = new TreeBuilder();
         $rootNode    = $treeBuilder->root(self::ROOT_NODE_NAME);
         $rootNode
@@ -131,11 +131,11 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->info('Anmeldungsdaten')
                     ->children()
-                        ->append($this->booleanNodeCreator('pid', 'PID (Eindeutige Anmeldungsnummer)'))
-                        ->append($this->booleanNodeCreator('salutation', 'Anrede'))
-                        ->append($this->booleanNodeCreator('nameFirst', 'Vorname (Eltern)'))
-                        ->append($this->booleanNodeCreator('nameLast', 'Nachname (Eltern)'))
-                        ->append($this->booleanNodeCreator('email', 'E-Mail Adresse'))
+                        ->append(Configuration::booleanNodeCreator('pid', 'PID (Eindeutige Anmeldungsnummer)'))
+                        ->append(Configuration::booleanNodeCreator('salutation', 'Anrede'))
+                        ->append(Configuration::booleanNodeCreator('nameFirst', 'Vorname (Eltern)'))
+                        ->append(Configuration::booleanNodeCreator('nameLast', 'Nachname (Eltern)'))
+                        ->append(Configuration::booleanNodeCreator('email', 'E-Mail Adresse'))
                         ->enumNode('phoneNumber')
                             ->info('Telefonnummern')
                             ->values([
@@ -146,9 +146,9 @@ class Configuration implements ConfigurationInterface
                                          'Kommasepariert, mit Beschreibung, umbrechend'  => 'comma_description_wrap',
                             ])
                         ->end()
-                        ->append($this->booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
-                        ->append($this->booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
-                        ->append($this->booleanNodeCreator('addressZip', 'PLZ (Anschrift'))
+                        ->append(Configuration::booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
+                        ->append(Configuration::booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
+                        ->append(Configuration::booleanNodeCreator('addressZip', 'PLZ (Anschrift'))
                         ->append($this->addAcquisitionAttributesNode(true, false))
                     ->end()
                 ->end()
@@ -156,8 +156,16 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->info('Zusätzliche Mappen')
                     ->children()
-                        ->append($this->booleanNodeCreator('participation', 'Anmeldungen aller enthaltener Teilnehmer'))
-                        ->append($this->booleanNodeCreator('subvention_request', 'Teilnehmerliste für Zuschussantrag (Geburtsdatum und Anschrift)'))
+                        ->append(
+                            Configuration::booleanNodeCreator(
+                                'participation', 'Anmeldungen aller enthaltener Teilnehmer'
+                            )
+                        )
+                        ->append(
+                            Configuration::booleanNodeCreator(
+                                'subvention_request', 'Teilnehmerliste für Zuschussantrag (Geburtsdatum und Anschrift)'
+                            )
+                        )
                     ->end()
                 ->end()
             ->end()
@@ -209,7 +217,7 @@ class Configuration implements ConfigurationInterface
                 ];
 
                 $attributeChildren
-                        ->append($this->booleanNodeCreator('enabled', 'Feld anzeigen'))
+                        ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen'))
                         ->enumNode('display')
                             ->values($displayList)
                         ->end()
@@ -220,7 +228,7 @@ class Configuration implements ConfigurationInterface
                 ->end();
             } else {
                 $attributeChildren
-                        ->append($this->booleanNodeCreator('enabled', 'Feld anzeigen'))
+                        ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen'))
                     ->end()
                 ->end();
             }
@@ -228,7 +236,7 @@ class Configuration implements ConfigurationInterface
 
         return $node;
     }
-    
+
     /**
      * Create participant node definition
      *
@@ -241,17 +249,17 @@ class Configuration implements ConfigurationInterface
         $node    = $builder->root('participant')
                            ->addDefaultsIfNotSet()
                            ->info('Teilnehmerdaten');
-        
+
         $children = $node->children();
         foreach ($participantNodes as $childNode) {
             $children->append($childNode);
         }
-        
-        $children->append($this->createGroupSortNodes($participantNodes));
-        
+
+        $children->append(Configuration::createGroupSortNodes($participantNodes));
+
         return $node;
     }
-    
+
     /**
      * Create participant nodes
      *
@@ -260,11 +268,11 @@ class Configuration implements ConfigurationInterface
     private function participantNodesCreator(): array
     {
         $nodes   = [];
-        $nodes[] = $this->booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)');
-        $nodes[] = $this->booleanNodeCreator('nameFirst', 'Vorname');
-        $nodes[] = $this->booleanNodeCreator('nameLast', 'Nachname');
-        $nodes[] = $this->booleanNodeCreator('birthday', 'Geburtsdatum');
-    
+        $nodes[] = Configuration::booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)');
+        $nodes[] = Configuration::booleanNodeCreator('nameFirst', 'Vorname');
+        $nodes[] = Configuration::booleanNodeCreator('nameLast', 'Nachname');
+        $nodes[] = Configuration::booleanNodeCreator('birthday', 'Geburtsdatum');
+
         $node = new EnumNodeDefinition('ageAtEvent');
         $node->info('Alter (bei Beginn der Veranstaltung)')
              ->values(
@@ -276,28 +284,28 @@ class Configuration implements ConfigurationInterface
                  ]
              );
         $nodes[] = $node;
-        
-        $nodes[] = $this->booleanNodeCreator('gender', 'Geschlecht');
-        $nodes[] = $this->booleanNodeCreator('foodVegetarian', 'Vegetarisch (Essgewohnheiten)');
-        $nodes[] = $this->booleanNodeCreator('foodLactoseFree', 'Laktosefrei (Essgewohnheiten)');
-        $nodes[] = $this->booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)');
-        $nodes[] = $this->booleanNodeCreator('infoMedical', 'Medizinische Hinweise');
-        $nodes[] = $this->booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise');
-        $nodes[] = $this->booleanNodeCreator('basePrice', 'Grundpreis');
-        $nodes[] = $this->booleanNodeCreator('price', 'Preis (inkl. Formeln)');
-        $nodes[] = $this->booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)');
+
+        $nodes[] = Configuration::booleanNodeCreator('gender', 'Geschlecht');
+        $nodes[] = Configuration::booleanNodeCreator('foodVegetarian', 'Vegetarisch (Essgewohnheiten)');
+        $nodes[] = Configuration::booleanNodeCreator('foodLactoseFree', 'Laktosefrei (Essgewohnheiten)');
+        $nodes[] = Configuration::booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)');
+        $nodes[] = Configuration::booleanNodeCreator('infoMedical', 'Medizinische Hinweise');
+        $nodes[] = Configuration::booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise');
+        $nodes[] = Configuration::booleanNodeCreator('basePrice', 'Grundpreis');
+        $nodes[] = Configuration::booleanNodeCreator('price', 'Preis (inkl. Formeln)');
+        $nodes[] = Configuration::booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)');
         $nodes[] = $this->addAcquisitionAttributesNode(false, true);
-        
+
         return $nodes;
     }
-    
+
     /**
      * Get flattened nodes
      *
      * @param array $nodes
      * @return array
      */
-    private function flattenOptions(array $nodes): array
+    public static function flattenOptions(array $nodes): array
     {
         $result = [];
         $unsupported = [
@@ -306,7 +314,7 @@ class Configuration implements ConfigurationInterface
             'price',
             'toPay',
         ];
-        
+
         /** @var NodeDefinition|PrototypeNodeInterface[] $participantNodeDefinition */
         foreach ($nodes as $participantNodeDefinition) {
             if ($participantNodeDefinition instanceof ArrayNode) {
@@ -315,7 +323,7 @@ class Configuration implements ConfigurationInterface
                 $participantNode = $participantNodeDefinition->getNode(true);
             }
             if ($participantNode !== $participantNodeDefinition && $participantNode instanceof ArrayNode) {
-                $result = array_merge($result, $this->flattenOptions($participantNode->getChildren()));
+                $result = array_merge($result, Configuration::flattenOptions($participantNode->getChildren()));
             } else {
                 $label = $participantNode->getInfo();
                 $name  = $participantNode->getName();
@@ -327,24 +335,24 @@ class Configuration implements ConfigurationInterface
         }
         return $result;
     }
-    
+
     /**
      * Grouping/sorting configuration nodes depending on participant nodes
      *
      * @param array|NodeDefinition[] $participantNodes Nodes for participant
      * @return EnumNodeDefinition Result
      */
-    public function createGroupSortNodes(array $participantNodes): NodeDefinition
+    public static function createGroupSortNodes(array $participantNodes): NodeDefinition
     {
         $node = new ArrayNodeDefinition('grouping_sorting');
         $node->info('Gruppierung & Sortierung');
-        $values = $this->flattenOptions($participantNodes);
-        
+        $values = Configuration::flattenOptions($participantNodes);
+
         //grouping
         $groupingNode = new ArrayNodeDefinition('grouping');
         $groupingNode->info('Gruppieren (Fügt einen Seitenumbruch zwischen alle verfügbaren Werte)');
         $groupingNode->append(
-            $this->booleanNodeCreator(
+            Configuration::booleanNodeCreator(
                 'enabled', 'Teilnehmer gruppieren'
             )
         );
@@ -354,12 +362,12 @@ class Configuration implements ConfigurationInterface
         $enum->beforeNormalization()->ifNotInArray(array_values($values))->thenUnset();
         $groupingNode->append($enum);
         $node->append($groupingNode);
-        
+
         //sorting
         $sortingNode = new ArrayNodeDefinition('sorting');
         $sortingNode->info('Sortieren (Nachdem die Gruppierung angewandt wurde)');
         $sortingNode->append(
-            $this->booleanNodeCreator(
+            Configuration::booleanNodeCreator(
                 'enabled', 'Teilnehmer sortieren'
             )
         );
@@ -368,7 +376,7 @@ class Configuration implements ConfigurationInterface
              ->info('Feld');
         $sortingNode->append($enum);
         $node->append($sortingNode);
-        
+
         return $node;
     }
 }
