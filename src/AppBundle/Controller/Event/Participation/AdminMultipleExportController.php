@@ -608,7 +608,7 @@ class AdminMultipleExportController extends Controller
             $filterPaid,
             $filterRejectedWithdrawn,
             $groupBy,
-            $orderBy,
+            $orderBy
             );
     
         $generator = $this->get('app.participant.profile_generator');
@@ -657,7 +657,7 @@ class AdminMultipleExportController extends Controller
             $filterPaid,
             $filterRejectedWithdrawn,
             $groupBy,
-            $orderBy,
+            $orderBy
             );
 
         $export = new CustomizedExport(
