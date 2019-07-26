@@ -12,7 +12,6 @@ namespace AppBundle\Export\Customized;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
-use function foo\func;
 use Symfony\Component\Config\Definition\ArrayNode;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\BooleanNodeDefinition;
@@ -21,7 +20,6 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\PrototypeNodeInterface;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class Configuration implements ConfigurationInterface
 {
