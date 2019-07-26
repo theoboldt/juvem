@@ -54,7 +54,7 @@ class AdminMultipleExportController extends Controller
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportParticipantsAction(Event $event)
+    public function exportExcelParticipantsAction(Event $event)
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
@@ -88,7 +88,7 @@ class AdminMultipleExportController extends Controller
      *                                                    name="event_participations_export")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportParticipationsAction(Event $event)
+    public function exportExcelParticipationsAction(Event $event)
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationsList      = $participationRepository->participationsList($event);
@@ -122,7 +122,7 @@ class AdminMultipleExportController extends Controller
      *     name="event_participants_birthday_address_export")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportParticipantsBirthdayAddressAction(Event $event)
+    public function exportExcelParticipantsBirthdayAddressAction(Event $event)
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
@@ -154,7 +154,7 @@ class AdminMultipleExportController extends Controller
      *                                                    name="event_participants_mail_export")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportParticipantsMailAction(Event $event)
+    public function exportExcelParticipantsMailAction(Event $event)
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
@@ -189,7 +189,7 @@ class AdminMultipleExportController extends Controller
      * @Route("/admin/event/{eid}/export/template/{id}/update", methods={"POST"}, requirements={"eid": "\d+", "id": "\d+"}, name="event_export_template_update")
      * @Security("is_granted('participants_read', event)")
      */
-    public function updateTemplateConfigurationAction(Event $event, ExportTemplate $template, Request $request)
+    public function updateExcelTemplateConfigurationAction(Event $event, ExportTemplate $template, Request $request)
     {
         $em            = $this->getDoctrine()->getManager();
         $configuration = $this->processRequestConfiguration($request);
@@ -212,7 +212,7 @@ class AdminMultipleExportController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function createTemplateConfigurationAction(Event $event, Request $request)
+    public function createExcelTemplateConfigurationAction(Event $event, Request $request)
     {
         $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->templateCount();
 
@@ -227,7 +227,7 @@ class AdminMultipleExportController extends Controller
     }
 
     /**
-     * Page for list of participants of an event
+     * Page for excel export generation wizard
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
@@ -236,7 +236,7 @@ class AdminMultipleExportController extends Controller
      * @param Request $request
      * @return RedirectResponse|Response
      */
-    public function exportGeneratorAction(Event $event, Request $request)
+    public function exportExcelGeneratorAction(Event $event, Request $request)
     {
         $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->findSuitableForEvent($event);
         $em        = $this->getDoctrine()->getManager();
@@ -304,7 +304,7 @@ class AdminMultipleExportController extends Controller
      * @Route("/admin/event/{eid}/export/download/{filename}", requirements={"eid": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_process")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportGeneratorProcessDirectAction(Event $event, Request $request)
+    public function exportExcelGeneratorProcessDirectAction(Event $event, Request $request)
     {
         $result = $this->generateExport($request);
 
@@ -329,7 +329,7 @@ class AdminMultipleExportController extends Controller
      * @Route("/admin/event/{eid}/export/download/{tmpname}/{filename}", requirements={"eid": "\d+", "tmpname": "([a-zA-Z0-9\s_\\.\-\(\):])+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_download")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportGeneratedDownloadAction(Event $event, string $tmpname, string $filename, Request $request) {
+    public function exportExcelGeneratedDownloadAction(Event $event, string $tmpname, string $filename, Request $request) {
         $path = $this->getParameter('app.tmp.root.path').'/'.$tmpname;
         if (!file_exists($path)) {
             throw new NotFoundHttpException('Requested export '.$path.' not found');
@@ -365,7 +365,7 @@ class AdminMultipleExportController extends Controller
      * @Route("/admin/event/export/process", name="event_export_generator_process_legacy")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportGeneratorProcessAction(Event $event, Request $request)
+    public function exportExcelGeneratorProcessAction(Event $event, Request $request)
     {
         $result = $this->generateExport($request);
 
@@ -563,7 +563,7 @@ class AdminMultipleExportController extends Controller
      * @param Event $event
      * @return Response
      */
-    public function generateParticipantsProfileAction(Event $event) {
+    public function generateWordParticipantsProfileAction(Event $event) {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
 
