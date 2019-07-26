@@ -12,6 +12,7 @@ namespace AppBundle\Export\Sheet;
 
 
 use AppBundle\Controller\Event\Participation\AdminMultipleController;
+use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
@@ -83,7 +84,7 @@ abstract class ParticipantsSheetBase extends AbstractSheet
     {
         $previousParticipant = null;
         
-        $textualAccessor = AdminMultipleController::provideTextualValueAccessor();
+        $textualAccessor = AdminMultipleExportController::provideTextualValueAccessor();
         
         /** @var Participant $participant */
         foreach ($this->participants as $participant) {

@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Steckbriefe erstellen ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'Steckbriefe erstellen'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+      <li class="active">Steckbriefe erstellen</li>
+    {% endblock %}
+  {% endembed %}
+  <form class="container form-file-download" action="{{ path('event_export_generator_process_legacy', {type: 'profiles'}) }}"
+        data-new-action="{{ path('event_export_generator_process', {type: 'profiles', eid: event.eid, filename: 'profiles.docx'}) }}"
+        method="post">
+    <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}"/>
+    <input type="hidden" name="eid" value="{{ event.eid }}"/>
+
+    <div class="row column-configuration">
+          <div class="container">
+            <div class="row">
+              {% for groupName, group in config %}
+                {% if groupName != 'filter' and group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                  <div class="col-xs-12 col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">{{ group.info }}</h3>
+                      </div>
+                      <div class="panel-body">
+                        {% for option in group.children %}
+                          {% if option is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}]" checked
+                                       value="1"> {{ option.info }}
+                              </label>
+                            </div>
+                          {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                            <div class="checkbox">
+                              <label for="config[{{ group.name }}][{{ option.name }}]">{{ option.info }}:</label>
+                            </div>
+                            <div class="checkbox">
+                              <label>
+                                <select class="form-control" name="config[{{ group.name }}][{{ option.name }}]">
+                                  {% for selectionKey, selectionOption in option.values %}
+                                    <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                  {% endfor %}
+                                </select>
+                              </label>
+                            </div>
+                          {% elseif option is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                            <div class="form-group">
+                              <label class="control-label">{{ option.info }}</label>
+                              {% for subOption in option.children %}
+                                {% if subOption is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                                  {% for selectionField in subOption.children %}
+                                    <div class="checkbox">
+                                      <label>
+                                        {% if selectionField is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                          <input type="checkbox"  checked
+                                                 name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]"
+                                                 value="1"> {{ subOption.info }}
+                                        {% elseif selectionField is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                          <select class="form-control"
+                                                  name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}][{{ selectionField.name }}]">
+                                            {% for selectionKey, selectionOption in selectionField.values %}
+                                              <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                            {% endfor %}
+                                          </select>
+                                        {% endif %}
+                                      </label>
+                                    </div>
+                                  {% endfor %}
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="form-inline">
+              <div class="form-group">
+                <label for="config[title]">Titel</label>
+                <input type="text" class="form-control" id="config[title]" name="config[title]"
+                       placeholder="{{ event.title }} - Steckbriefe">
+              </div>
+              <button class="btn btn-primary export-generator-create btn-generator">Steckbriefe erstellen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

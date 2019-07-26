@@ -16,6 +16,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    const ROOT_NODE_NAME = 'profile';
+
     const OPTION_CONFIRMED_ALL         = 'all';
     const OPTION_CONFIRMED_CONFIRMED   = 'confirmed';
     const OPTION_CONFIRMED_UNCONFIRMED = 'unconfirmed';
@@ -47,8 +49,12 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('profile');
+        $rootNode    = $treeBuilder->root(self::ROOT_NODE_NAME);
         $rootNode->children()
+                    ->scalarNode('title')
+                        ->info('Titel')
+                        ->defaultValue('Profile')
+                    ->end()
                     ->arrayNode('general')
                         ->addDefaultsIfNotSet()
                         ->info('Allgemein')

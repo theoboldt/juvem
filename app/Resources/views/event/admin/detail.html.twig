@@ -55,14 +55,14 @@
                                 {%- endif %}
                                 <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="{{ path('event_participants_profile', {'eid': event.eid}) }}" target="_blank" class="btn-download">{{ 'book'|glyph }} Steckbriefe exportieren (Experimentell)</a></li>
+                                <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren…</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken (alt)</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken (alt)</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Export erstellen…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer exportieren...</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren...</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren...</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen…</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer exportieren…</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren…</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren…</a></li>
                                 <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussantrag exportieren (alt) {{ 'new-window'|glyph }}</a></li>
                                 <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren {{ 'new-window'|glyph }}</a></li>
                             </ul>

@@ -15,13 +15,14 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\ExportTemplate;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Export\Customized\Configuration;
+use AppBundle\Export\Customized\Configuration as ExcelConfiguration;
 use AppBundle\Export\Customized\CustomizedExport;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\ParticipantProfile\Configuration as WordConfiguration;
 use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -192,7 +193,7 @@ class AdminMultipleExportController extends Controller
     public function updateExcelTemplateConfigurationAction(Event $event, ExportTemplate $template, Request $request)
     {
         $em            = $this->getDoctrine()->getManager();
-        $configuration = $this->processRequestConfiguration($request);
+        $configuration = $this->processRequestConfiguration($request, ExcelConfiguration::class);
         $template->setConfiguration($configuration);
         $template->setModifiedAtNow();
         $template->setModifiedBy($this->getUser());
@@ -216,7 +217,7 @@ class AdminMultipleExportController extends Controller
     {
         $templates = $this->getDoctrine()->getRepository(ExportTemplate::class)->templateCount();
 
-        $configuration = $this->processRequestConfiguration($request);
+        $configuration = $this->processRequestConfiguration($request, ExcelConfiguration::class);
         $template      = new ExportTemplate($event, $event->getTitle() . ' Export #' . ($templates + 1), null, $configuration);
         $template->setCreatedBy($this->getUser());
         $em            = $this->getDoctrine()->getManager();
@@ -279,7 +280,7 @@ class AdminMultipleExportController extends Controller
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processor     = new Processor();
-        $configuration = new Configuration($event);
+        $configuration = new ExcelConfiguration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
 
 
@@ -296,47 +297,88 @@ class AdminMultipleExportController extends Controller
             ]
         );
     }
-
+    
+    /**
+     * Page for excel word generation wizard
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/profiles", requirements={"eid": "\d+"}, name="event_profiles_generator")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Request $request
+     * @return RedirectResponse|Response
+     */
+    public function exportWordGeneratorAction(Event $event, Request $request)
+    {
+        $configuration = new WordConfiguration();
+        $tree          = $configuration->getConfigTreeBuilder()->buildTree();
+        
+        return $this->render(
+            'event/admin/profile-generator.html.twig',
+            [
+                'event'              => $event,
+                'config'             => $tree->getChildren()
+            ]
+        );
+    }
+    
     /**
      * Process transmitted configuration and provide download url
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/export/download/{filename}", requirements={"eid": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_process")
+     * @Route("/admin/event/{eid}/{type}/download/{filename}", requirements={"type": "(export|profiles)", "eid": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_process")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportExcelGeneratorProcessDirectAction(Event $event, Request $request)
+    public function exportGeneratorProcessDirectAction(Event $event, string $type, Request $request)
     {
-        $result = $this->generateExport($request);
-
+        switch ($type) {
+            case 'export':
+                $result = $this->generateExcelExport($request);
+                break;
+            case 'profiles':
+                $result = $this->generateWordExport($request);
+                break;
+        }
+    
         $url = $this->get('router')->generate(
             'event_export_generator_download',
             [
                 'eid'      => $event->getEid(),
+                'type'     => $type,
                 'tmpname'  => basename($result['path']),
                 'filename' => $result['name']
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-
+    
         return JsonResponse::create(['download_url' => $url]);
     }
-
-
+    
+    
     /**
      * Download created export
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/export/download/{tmpname}/{filename}", requirements={"eid": "\d+", "tmpname": "([a-zA-Z0-9\s_\\.\-\(\):])+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_download")
+     * @Route("/admin/event/{eid}/{type}/download/{tmpname}/{filename}", requirements={"type": "(export|profiles)", "eid": "\d+", "tmpname": "([a-zA-Z0-9\s_\\.\-\(\):])+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_download")
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportExcelGeneratedDownloadAction(Event $event, string $tmpname, string $filename, Request $request) {
+    public function exportGeneratedDownloadAction(Event $event, string $type, string $tmpname, string $filename, Request $request) {
         $path = $this->getParameter('app.tmp.root.path').'/'.$tmpname;
         if (!file_exists($path)) {
             throw new NotFoundHttpException('Requested export '.$path.' not found');
         }
         $response = new BinaryFileResponse($path);
 
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        switch ($type) {
+            case 'export':
+                $mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                break;
+            case 'profiles':
+                $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                break;
+        }
+
+        $response->headers->set('Content-Type', $mime);
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $filename
@@ -356,22 +398,33 @@ class AdminMultipleExportController extends Controller
 
         return $response;
     }
-
-
+    
     /**
-     * Page for list of participants of an event
+     * Process export configuration
      *
+     * @param string $type
+     * @param Request $request
+     * @return BinaryFileResponse
      * @deprecated
-     * @Route("/admin/event/export/process", name="event_export_generator_process_legacy")
+     * @Route("/admin/event/{type}/process", name="event_export_generator_process_legacy", requirements={"type": "(export|profiles)"})
      * @Security("is_granted('participants_read', event)")
      */
-    public function exportExcelGeneratorProcessAction(Event $event, Request $request)
+    public function exportGeneratorProcessAction(string $type, Request $request)
     {
-        $result = $this->generateExport($request);
+        switch ($type) {
+            case 'export':
+                $mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                $result = $this->generateExcelExport($request);
+                break;
+            case 'profiles':
+                $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                $result = $this->generateWordExport($request);
+                break;
+        }
 
         $response = new BinaryFileResponse($result['path']);
 
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Type', $mime);
         $d = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $result['name']
@@ -380,14 +433,15 @@ class AdminMultipleExportController extends Controller
 
         return $response;
     }
-
+    
     /**
      * Process configuration from request and provide result as array
      *
      * @param Request $request
+     * @param string $configurationClassName Class to use for configuration
      * @return array
      */
-    private function processRequestConfiguration(Request $request): array
+    private function processRequestConfiguration(Request $request, string $configurationClassName): array
     {
         $token           = $request->get('_token');
         $eid             = $request->get('eid');
@@ -406,11 +460,11 @@ class AdminMultipleExportController extends Controller
             throw new NotFoundHttpException('Transmitted event was not found');
         }
         $this->denyAccessUnlessGranted('participants_read', $event);
-        $config = ['export' => $config]; //add root config option
-
+    
         $processor     = new Processor();
-        $configuration = new Configuration($event);
-
+        $configuration = new $configurationClassName($event);
+        $config        = [$configuration::ROOT_NODE_NAME => $config]; //add root config option
+        
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
         if (!$processedConfiguration['title']) {
             $processedConfiguration['title'] = 'Teilnehmer';
@@ -434,57 +488,60 @@ class AdminMultipleExportController extends Controller
             return $value;
         };
     }
-
+    
     /**
-     * Generate export file and provide file info
+     * Provide a filtered participants list for event
      *
-     * @param Request $request
+     * @param Event $event                    Related event
+     * @param string $filterConfirmed         Confirmed filter configuration
+     * @param string $filterPaid              Paid filter configuration
+     * @param string $filterRejectedWithdrawn Rejected filter
+     * @param string|null $groupBy            Grouping
+     * @param string|null $orderBy            Sorting
      * @return array
      */
-    private function generateExport(Request $request): array
+    private function provideGroupedFilteredParticipantsList(
+        Event $event,
+        string $filterConfirmed,
+        string $filterPaid,
+        string $filterRejectedWithdrawn,
+        ?string $groupBy = null,
+        ?string $orderBy = null
+    )
     {
-        $processedConfiguration = $this->processRequestConfiguration($request);
+    $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+    $paymentManager = $this->get('app.payment_manager');
 
-        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-        /** @var Event $event */
-        $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
-
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $paymentManager = $this->get('app.payment_manager');
-
-        $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
-        $filterPaid              = $processedConfiguration['filter']['paid'];
-        $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
-        $participantList         = array_filter(
+    $participantList         = array_filter(
             $participationRepository->participantsList(
                 $event,
                 null,
                 false,
-                ($filterRejectedWithdrawn !== Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN)
+                ($filterRejectedWithdrawn !== ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN)
             ),
             function (Participant $participant) use ($paymentManager, $filterConfirmed, $filterPaid, $filterRejectedWithdrawn) {
                 $include = true;
                 switch ($filterConfirmed) {
-                    case Configuration::OPTION_CONFIRMED_CONFIRMED:
+                    case ExcelConfiguration::OPTION_CONFIRMED_CONFIRMED:
                         $include = $include && $participant->isConfirmed();
                         break;
-                    case Configuration::OPTION_CONFIRMED_UNCONFIRMED:
+                    case ExcelConfiguration::OPTION_CONFIRMED_UNCONFIRMED:
                         $include = $include && !$participant->isConfirmed();
                         break;
                 }
                 switch ($filterPaid) {
-                    case Configuration::OPTION_PAID_PAID:
+                    case ExcelConfiguration::OPTION_PAID_PAID:
                         $include = $include && !$paymentManager->isParticipantRequiringPayment($participant);
                         break;
-                    case Configuration::OPTION_PAID_NOTPAID:
+                    case ExcelConfiguration::OPTION_PAID_NOTPAID:
                         $include = $include && $paymentManager->isParticipantRequiringPayment($participant);
                         break;
                 }
                 switch($filterRejectedWithdrawn) {
-                    case Configuration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN:
+                    case ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN:
                         $include = $include && !($participant->isRejected() || $participant->isWithdrawn());
                         break;
-                    case Configuration::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN:
+                    case ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN:
                         $include = $include && ($participant->isRejected() || $participant->isWithdrawn());
                         break;
                 }
@@ -493,15 +550,6 @@ class AdminMultipleExportController extends Controller
             }
         );
         
-        $groupBy = null;
-        if (isset($processedConfiguration['participant']['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['grouping']['field'])) {
-            $groupBy = $processedConfiguration['participant']['grouping_sorting']['grouping']['field'];
-        }
-        $orderBy = null;
-        if (isset($processedConfiguration['participant']['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['sorting']['field'])) {
-            $orderBy = $processedConfiguration['participant']['grouping_sorting']['sorting']['field'];
-        }
-    
         $extractTextualValue = self::provideTextualValueAccessor();
         $compareValues       = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
             $aValue = $extractTextualValue($a, $property);
@@ -529,6 +577,88 @@ class AdminMultipleExportController extends Controller
                 }
             );
         }
+        
+        return $participantList;
+    }
+    
+    /**
+     * Generate word export file and provide file info
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function generateWordExport(Request $request): array
+    {
+        $processedConfiguration = $this->processRequestConfiguration($request, WordConfiguration::class);
+
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        /** @var Event $event */
+        $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
+    
+        $filterConfirmed         = ExcelConfiguration::OPTION_CONFIRMED_CONFIRMED;
+        $filterPaid              = ExcelConfiguration::OPTION_PAID_ALL;
+        $filterRejectedWithdrawn = ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN;
+    
+        $groupBy = null;
+        $orderBy = null;
+    
+        $participantList = $this->provideGroupedFilteredParticipantsList(
+            $event,
+            $filterConfirmed,
+            $filterPaid,
+            $filterRejectedWithdrawn,
+            $groupBy,
+            $orderBy,
+            );
+    
+        $generator = $this->get('app.participant.profile_generator');
+        $tmpPath   = $generator->generate($participantList, $processedConfiguration);
+        
+        //filter name
+        $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.docx';
+        $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
+
+        return [
+            'path' => $tmpPath,
+            'name' => $filename
+        ];
+    }
+
+    /**
+     * Generate export file and provide file info
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function generateExcelExport(Request $request): array
+    {
+        $processedConfiguration = $this->processRequestConfiguration($request, ExcelConfiguration::class);
+
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        /** @var Event $event */
+        $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
+
+        $groupBy = null;
+        if (isset($processedConfiguration['participant']['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['grouping']['field'])) {
+            $groupBy = $processedConfiguration['participant']['grouping_sorting']['grouping']['field'];
+        }
+        $orderBy = null;
+        if (isset($processedConfiguration['participant']['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['sorting']['field'])) {
+            $orderBy = $processedConfiguration['participant']['grouping_sorting']['sorting']['field'];
+        }
+        
+        $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
+        $filterPaid              = $processedConfiguration['filter']['paid'];
+        $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
+    
+        $participantList = $this->provideGroupedFilteredParticipantsList(
+            $event,
+            $filterConfirmed,
+            $filterPaid,
+            $filterRejectedWithdrawn,
+            $groupBy,
+            $orderBy,
+            );
 
         $export = new CustomizedExport(
             $this->get('app.twig_global_customization'),
@@ -562,6 +692,7 @@ class AdminMultipleExportController extends Controller
      * @Security("is_granted('participants_read', event)")
      * @param Event $event
      * @return Response
+     * @deprecated
      */
     public function generateWordParticipantsProfileAction(Event $event) {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
@@ -586,7 +717,7 @@ class AdminMultipleExportController extends Controller
             ]
         ];
         $processor     = new Processor();
-        $configuration = new \AppBundle\Manager\ParticipantProfile\Configuration();
+        $configuration = new WordConfiguration();
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
 

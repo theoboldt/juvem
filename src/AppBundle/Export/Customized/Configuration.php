@@ -23,6 +23,7 @@ use Symfony\Component\Config\Definition\PrototypeNodeInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    const ROOT_NODE_NAME = 'export';
 
     const OPTION_DEFAULT = '___default';
 
@@ -82,7 +83,7 @@ class Configuration implements ConfigurationInterface
         $participantNodes = $this->participantNodesCreator();
         
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('export');
+        $rootNode    = $treeBuilder->root(self::ROOT_NODE_NAME);
         $rootNode
             ->children()
                 ->scalarNode('title')

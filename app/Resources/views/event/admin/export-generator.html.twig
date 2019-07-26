@@ -53,8 +53,8 @@
     </div>
   </div>
 
-  <form class="container form-file-download" action="{{ path('event_export_generator_process_legacy') }}"
-        data-new-action="{{ path('event_export_generator_process', {eid: event.eid, filename: 'export.xlsx'}) }}"
+  <form class="container form-file-download" action="{{ path('event_export_generator_process_legacy', {type: 'export'}) }}"
+        data-new-action="{{ path('event_export_generator_process', {type: 'export', eid: event.eid, filename: 'export.xlsx'}) }}"
         method="post">
     <input type="hidden" name="_token" value="{{ csrf_token('export-generator-' ~ event.eid) }}"/>
     <input type="hidden" name="eid" value="{{ event.eid }}"/>
