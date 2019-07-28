@@ -36,99 +36,99 @@ class ParticipantProfile
 {
     const STYLE_FONT_DESCRIPTION      = 'DescriptionF';
     const STYLE_PARAGRAPH_DESCRIPTION = 'DescriptionP';
-    
+
     const STYLE_FONT_LABEL = 'LabelF';
-    
+
     const STYLE_FONT_NONE = 'NoneF';
-    
+
     const STYLE_PARAGRAPH_COMMENT = 'CommentP';
-    
+
     const STYLE_LIST               = 'ListL';
     const STYLE_PARAGRAPH_LIST     = 'ListP';
     const STYLE_PARAGRAPH_LIST_END = 'ListEndP';
     const STYLE_FONT_LIST_END      = 'ListEndF';
-    
+
     const STYLE_FONT_NEGATIVE_LABEL = 'LabelNegativeF';
     const STYLE_LIST_NEGATIVE       = 'ListNegativeL';
     const STYLE_FONT_NEGATIVE       = 'NegativeP';
-    
+
     /**
      * Document
      *
      * @var PhpWord
      */
     private $document;
-    
+
     /**
      * Participants
      *
      * @var array|Participant[]
      */
     private $participants;
-    
+
     /**
      * Array containing configuration options defined in {@see Configuration}
      *
      * @var array
      */
     private $configuration;
-    
+
     /**
      * Path to logo if exists
      *
      * @var string|null
      */
     private $logoPath;
-    
+
     /**
      * First section
      *
      * @var bool
      */
     private $firstSection = true;
-    
+
     /**
      * Amount of columns for detail rows
      *
      * @var int
      */
     private $columns = 3;
-    
+
     /**
      * Router used to create the routes for the transmitted pages
      *
      * @var UrlGeneratorInterface
      */
     protected $urlGenerator;
-    
+
     /**
      * phoneUtil
      *
      * @var PhoneNumberUtil
      */
     private $phoneUtil;
-    
+
     /**
      * Comment provider
      *
      * @var CommentManager
      */
     private $commentManager;
-    
+
     /**
      * PaymentManager
      *
      * @var PaymentManager
      */
     private $paymentManager;
-    
+
     /**
      * Code generator
      *
      * @var TemporaryBarCodeGenerator
      */
     private $temporaryBarCodeGenerator;
-    
+
     /**
      * ParticipantProfile constructor.
      *
@@ -161,7 +161,7 @@ class ParticipantProfile
         $this->temporaryBarCodeGenerator = $temporaryBarCodeGenerator;
         $this->paymentManager            = $paymentManager;
     }
-    
+
     /**
      * Prepare php document, add style definitions etc
      *
@@ -172,18 +172,18 @@ class ParticipantProfile
         Settings::setOutputEscapingEnabled(true);
         $document = new PhpWord();
         $language = new Language(Language::DE_DE);
-        
+
         $settings = $document->getSettings();
         $settings->setHideSpellingErrors(true);
         $settings->setDecimalSymbol(',');
         $settings->setAutoHyphenation(true);
         $settings->setThemeFontLang($language);
-        
+
         $information = $document->getDocInfo();
         $information->setTitle('Teilnehmerprofile');
         $information->setSubject($this->getEvent()->getTitle());
         $information->setDescription('Profile der Teilnehmer der Veranstaltung ' . $this->getEvent()->getTitle());
-        
+
         //title styles
         $document->addTitleStyle(
             2,
@@ -200,7 +200,7 @@ class ParticipantProfile
             ['size' => 8, 'bold' => true],
             ['spaceBefore' => 100, 'spaceAfter' => 0, 'keepNext' => true]
         );
-        
+
         //default styles
         $document->setDefaultFontSize(8);
         $defaultParagraphStyle = [
@@ -212,13 +212,13 @@ class ParticipantProfile
             'widowControl' => false,
         ];
         $document->setDefaultParagraphStyle($defaultParagraphStyle);
-        
+
         //comment style
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_COMMENT,
             array_merge($defaultParagraphStyle, ['keepNext' => true])
         );
-        
+
         //list styles
         $document->addNumberingStyle(
             self::STYLE_LIST,
@@ -264,17 +264,17 @@ class ParticipantProfile
         $document->addFontStyle(
             self::STYLE_FONT_LIST_END, ['size' => 2, 'spaceAfter' => 0]
         );
-        
+
         //fillout attribute description style
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_DESCRIPTION,
             ['spaceBefore' => 0, 'spaceAfter' => 0, 'keepNext' => true, 'marginLeft' => 400, 'marginRight' => 600]
         );
         $document->addFontStyle(self::STYLE_FONT_DESCRIPTION, ['size' => 7, 'color' => '333333']);
-        
+
         //none fillout value style
         $document->addFontStyle(self::STYLE_FONT_NONE, ['size' => 8, 'color' => '666666', 'italic' => true]);
-        
+
         //label style
         $document->addFontStyle(
             self::STYLE_FONT_LABEL,
@@ -299,10 +299,10 @@ class ParticipantProfile
                 'strikethrough' => true
             ]
         );
-        
+
         return $document;
     }
-    
+
     /**
      * Add a section
      *
@@ -316,7 +316,7 @@ class ParticipantProfile
         $section = $document->addSection(array_merge($default, $config));
         if ($this->firstSection) {
             $footer = $section->addFooter();
-            
+
             $table = $footer->addTable(
                 [
                     'unit'  => TblWidth::PERCENT,
@@ -337,15 +337,15 @@ class ParticipantProfile
                     ]
                 );
             }
-            
+
             $cell = $table->addCell();
             $cell->addPreserveText('{PAGE}/{NUMPAGES}', [], ['alignment' => Jc::RIGHT]);
         }
-        
+
         $this->firstSection = false;
         return $section;
     }
-    
+
     /**
      * Get related event
      *
@@ -360,7 +360,22 @@ class ParticipantProfile
         }
         return $participant->getEvent();
     }
-    
+
+    /**
+     * Check if configuration option is set and true
+     *
+     * @param string $group  Configuration group
+     * @param string $option Configuration option
+     * @return bool
+     */
+    private function isConfigurationEnabled(string $group, string $option): bool
+    {
+        if (isset($this->configuration[$group]) && isset($this->configuration[$group][$option])) {
+            return (bool)$this->configuration[$group][$option];
+        }
+        return false;
+    }
+
     /**
      * Add transmitted fillouts to transmitted section
      *
@@ -372,19 +387,19 @@ class ParticipantProfile
         /** @var Fillout $fillout */
         foreach ($fillouts as $fillout) {
             $attribute = $fillout->getAttribute();
-            
-            if ($this->configuration['general']['includePrivate'] && !$attribute->isPublic()) {
+
+            if ($this->isConfigurationEnabled('general', 'includePrivate') && !$attribute->isPublic()) {
                 continue;
             }
             $title       = $attribute->getManagementTitle();
             $description = $attribute->getManagementDescription();
-            
+
             if (!$attribute->isPublic()) {
                 $title .= "\xc2\xa0\u{1f512}";
             }
-            
+
             $this->addDatumTitle($section, $title, $description);
-            
+
             $value = $fillout->getValue();
             if ($value instanceof GroupFilloutValue) {
                 $choices = $value->getSelectedChoices();
@@ -409,7 +424,7 @@ class ParticipantProfile
                     $row       = $table->addRow();
                     $cell      = $row->addCell();
                     $cell->addLink($groupLink, $choice->getManagementTitle(true));
-                    
+
                     $cell = $row->addCell();
                     $run  = $cell->addTextRun();
                     $run->addImage(
@@ -429,20 +444,20 @@ class ParticipantProfile
             } elseif ($value instanceof ChoiceFilloutValue) {
                 $choices  = $attribute->getChoiceOptions();
                 $selected = $value->getSelectedChoices();
-                
-                if (!count($selected) && !$this->configuration['choices']['includeNotSelected']) {
+
+                if (!count($selected) && !$this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 } else {
-                    if ($attribute->isMultipleChoiceType() || $this->configuration['choices']['includeNotSelected']) {
+                    if ($attribute->isMultipleChoiceType() || $this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                         foreach ($choices as $choice) {
                             if (isset($selected[$choice->getId()])) {
                                 $fontStyleLabel     = self::STYLE_FONT_LABEL;
                                 $listStyle          = self::STYLE_LIST;
                                 $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
                                 $fontStyle          = null;
-                                
+
                             } else {
-                                if (!$this->configuration['choices']['includeNotSelected']) {
+                                if (!$this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                                     continue;
                                 }
                                 $fontStyleLabel     = self::STYLE_FONT_NEGATIVE_LABEL;
@@ -450,17 +465,17 @@ class ParticipantProfile
                                 $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
                                 $fontStyle          = self::STYLE_FONT_NEGATIVE;
                             }
-                            
+
                             $listItemRun     = $section->addListItemRun(0, $listStyle, $listParagraphStyle);
                             $listItemTextRun = $listItemRun->addTextRun($listParagraphStyle);
-                            
-                            if ($this->configuration['choices']['includeShortTitle'] && $choice->getShortTitle(false)) {
+
+                            if ($this->isConfigurationEnabled('choices', 'includeShortTitle') && $choice->getShortTitle(false)) {
                                 $listItemTextRun->addText(
                                     " " . $choice->getShortTitle(false) . " ", $fontStyleLabel, $listParagraphStyle
                                 );
                                 $listItemTextRun->addText(' ', null, $listParagraphStyle);
                             }
-                            if ($this->configuration['choices']['includeManagementTitle']) {
+                            if ($this->isConfigurationEnabled('choices', 'includeManagementTitle')) {
                                 $listItemTextRun->addText(
                                     $choice->getManagementTitle(true), $fontStyle, $listParagraphStyle
                                 );
@@ -478,7 +493,7 @@ class ParticipantProfile
             }
         }
     }
-    
+
     /**
      * Add comment section
      *
@@ -505,7 +520,7 @@ class ParticipantProfile
             $section->addText($comment->getContent(), [], self::STYLE_PARAGRAPH_COMMENT);
         }
     }
-    
+
     /**
      * Add Datum to document
      *
@@ -537,7 +552,7 @@ class ParticipantProfile
             }
         }
     }
-    
+
     /**
      * Add title block to document
      *
@@ -549,11 +564,11 @@ class ParticipantProfile
     private function addDatumTitle(Section $section, string $label, ?string $description = null): void
     {
         $section->addTitle($label, 4);
-        if ($description && $description !== $label && $this->configuration['general']['includeDescription']) {
+        if ($description && $description !== $label && $this->isConfigurationEnabled('general', 'includeDescription')) {
             $section->addText($description, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
         }
     }
-    
+
     /**
      * Generate document, provide export file path
      */
@@ -562,12 +577,12 @@ class ParticipantProfile
         $participants = $this->participants;
         $document     = $this->prepareDocument();
         $event        = $this->getEvent();
-        
+
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             $section = $this->addSection($document, ['breakType' => 'nextPage']);
             $section->addTitle($participant->fullname(), 2);
-            
+
             //header
             $header = $section->addHeader();
             $table  = $header->addTable(
@@ -580,11 +595,11 @@ class ParticipantProfile
             $cell    = $table->addCell();
             $textrun = $cell->addTextRun();
             $textrun->addText($participant->fullname());
-            
+
             $cell    = $table->addCell();
             $textrun = $cell->addTextRun(['alignment' => Jc::RIGHT]);
             $textrun->addText($event->getTitle() . ' (' . $event->getStartDate()->format('Y') . ')');
-            
+
             //participants data
             $section = $this->addSection(
                 $document,
@@ -593,12 +608,12 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
-            
+
             $this->addDatum($section, 'Vorname', $participant->getNameFirst());
             $this->addDatum($section, 'Nachname', $participant->getNameLast());
             $this->addDatum($section, 'Geschlecht', $participant->getGender(true));
             $this->addDatum($section, 'Geburtsdatum', $participant->getBirthday()->format(Event::DATE_FORMAT_DATE));
-            
+
             $linkPath = $this->temporaryBarCodeGenerator->createCode(
                 'url:' . $this->urlGenerator->generate(
                     'admin_participant_detail',
@@ -625,7 +640,7 @@ class ParticipantProfile
                     'posVerticalRel'   => Image::POSITION_RELATIVE_TO_MARGIN,
                 ]
             );
-            
+
             $section = $this->addSection(
                 $document,
                 [
@@ -633,7 +648,7 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
-            if ($this->paymentManager && $this->configuration['general']['includePrice']) {
+            if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
                 $this->addDatum(
                     $section, 'Preis',
                     number_format(
@@ -644,7 +659,7 @@ class ParticipantProfile
                     ) . ' €'
                 );
             }
-            if ($this->paymentManager && $this->configuration['general']['includePrice']) {
+            if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
                 $this->addDatum(
                     $section,
                     'Offener Zahlungsbetrag',
@@ -654,15 +669,15 @@ class ParticipantProfile
                         ',',
                         '.'
                     ) . ' €'
-        
+
                 );
             }
             $this->addDatum($section, 'Medizinische Hinweise', $participant->getInfoMedical());
             $this->addDatum($section, 'Allgemeine Hinweise', $participant->getInfoGeneral());
             $this->addDatum($section, 'Ernährung', implode(', ', $participant->getFood(true)->getActiveList(true)));
-            
+
             $this->addFilloutsToSection($participant->getAcquisitionAttributeFillouts()->toArray(), $section);
-            
+
             //participations data
             $section = $this->addSection($document);
             $section->addTitle('Anmeldung', 3);
@@ -674,7 +689,7 @@ class ParticipantProfile
                     'colsSpace' => 100,
                 ]
             );
-            
+
             $participationAddress = [
                 $participation->getSalutation() . ' ' . $participation->fullname(),
                 $participation->getAddressStreet(),
@@ -683,17 +698,17 @@ class ParticipantProfile
                 $participationAddress[] = $participation->getAddressCountry();
             }
             $this->addDatum($section, 'Anschrift', $participationAddress);
-            
+
             $section->addTitle('E-Mail Adresse', 4);
             $section->addLink('mailto:' . $participation->getEmail(), $participation->getEmail());
-            
+
             $this->addDatum($section, 'Eingang', $participant->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME));
-            
+
             $this->addFilloutsToSection($participation->getAcquisitionAttributeFillouts()->toArray(), $section);
-            
+
             $section = $this->addSection($document);
             $section->addTitle('Telefonnummern', 3);
-            
+
             $phoneNumbers = $participation->getPhoneNumbers()->toArray();
             $columns      = 0;
             if (count($phoneNumbers)) {
@@ -704,14 +719,14 @@ class ParticipantProfile
                     ]
                 );
                 $row   = $table->addRow();
-                
+
                 /** @var PhoneNumber $phoneNumber */
                 foreach ($phoneNumbers as $phoneNumber) {
                     if ($columns === 3) {
                         $columns = 0;
                         $row     = $table->addRow();
                     }
-                    
+
                     $cell     = $row->addCell(10);
                     $codePath = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
@@ -734,18 +749,18 @@ class ParticipantProfile
                         $textrun->addTextBreak();
                         $textrun->addText($phoneNumber->getDescription());
                     }
-                    
+
                     ++$columns;
                 }
-                
-                
+
+
             } else {
                 $section->addText(
                     'Keine Telefonnummern gespeichert', self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION
                 );
             }
-    
-            if ($this->configuration['general']['includeComments']) {
+
+            if ($this->isConfigurationEnabled('general', 'includeComments')) {
                 $section = $this->addSection($document);
                 $section->addTitle('Anmerkungen', 3);
                 $section = $this->addSection(
@@ -773,11 +788,11 @@ class ParticipantProfile
                     );
                 }
             }
-    
+
         }
         return $document;
     }
-    
+
     /**
      * Cleanup
      *
