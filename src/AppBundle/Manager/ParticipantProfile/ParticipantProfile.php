@@ -11,6 +11,7 @@
 namespace AppBundle\Manager\ParticipantProfile;
 
 
+use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
@@ -578,8 +579,19 @@ class ParticipantProfile
         $document     = $this->prepareDocument();
         $event        = $this->getEvent();
 
+        $accessor = AdminMultipleExportController::provideTextualValueAccessor();
+        $grouping = isset($this->configuration['grouping_sorting']['grouping'])
+                    && isset($this->configuration['grouping_sorting']['grouping']['enabled'])
+                    && $this->configuration['grouping_sorting']['grouping']['enabled'];
+
         /** @var Participant $participant */
         foreach ($participants as $participant) {
+            $groupValue = null;
+            if ($grouping) {
+                $groupField = $this->configuration['grouping_sorting']['grouping']['field'];
+                $groupValue = $accessor($participant, $groupField);
+            }
+
             $section = $this->addSection($document, ['breakType' => 'nextPage']);
             $section->addTitle($participant->fullname(), 2);
 
@@ -595,6 +607,14 @@ class ParticipantProfile
             $cell    = $table->addCell();
             $textrun = $cell->addTextRun();
             $textrun->addText($participant->fullname());
+
+            if ($grouping) {
+                if ($groupValue) {
+                    $textrun->addText(sprintf(' [%s]', $groupValue));
+                } else {
+                    $textrun->addText(' [keine Angabe]', self::STYLE_FONT_NONE);
+                }
+            }
 
             $cell    = $table->addCell();
             $textrun = $cell->addTextRun(['alignment' => Jc::RIGHT]);
