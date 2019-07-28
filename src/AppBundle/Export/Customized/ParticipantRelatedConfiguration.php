@@ -28,6 +28,9 @@ abstract class ParticipantRelatedConfiguration
     const OPTION_VALUE_MANAGEMENT = 'managementTitle';
     const OPTION_VALUE_SHORT      = 'shortTitle';
 
+    const OPTION_GROUP_NONE = '___group_by_none';
+    const OPTION_SORT_NONE = '___sort_by_none';
+
     /**
      * Event this export is configurated for
      *
@@ -114,7 +117,9 @@ abstract class ParticipantRelatedConfiguration
         $nodes[] = Configuration::booleanNodeCreator('basePrice', 'Grundpreis');
         $nodes[] = Configuration::booleanNodeCreator('price', 'Preis (inkl. Formeln)');
         $nodes[] = Configuration::booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)');
-        $nodes[] = $this->addAcquisitionAttributesNode(false, true);
+        if ($this->event) {
+            $nodes[] = $this->addAcquisitionAttributesNode(false, true);
+        }
 
         return $nodes;
     }
@@ -187,32 +192,42 @@ abstract class ParticipantRelatedConfiguration
      * Grouping/sorting configuration nodes depending on participant nodes
      *
      * @param array|NodeDefinition[] $participantNodes Nodes for participant
+     * @param string                 $groupInfo        Label for group field
+     * @param string                 $sortingInfo      Label for sorting field
      * @return EnumNodeDefinition Result
      */
-    public static function createGroupSortNodes(array $participantNodes): NodeDefinition
-    {
+    public static function createGroupSortNodes(
+        array $participantNodes,
+        string $groupInfo = 'Gruppieren (Fügt einen Seitenumbruch zwischen alle verfügbaren Werte)',
+        string $sortingInfo = 'Sortieren (Nachdem die Gruppierung angewandt wurde)'
+    ): NodeDefinition {
         $node = new ArrayNodeDefinition('grouping_sorting');
         $node->info('Gruppierung & Sortierung');
         $values = Configuration::flattenOptions($participantNodes);
 
+        $valuesGrouping = array_filter(
+            $values, function ($v) {
+            return $v !== 'aid';
+        });
+
         //grouping
         $groupingNode = new ArrayNodeDefinition('grouping');
-        $groupingNode->info('Gruppieren (Fügt einen Seitenumbruch zwischen alle verfügbaren Werte)');
+        $groupingNode->info($groupInfo);
         $groupingNode->append(
             Configuration::booleanNodeCreator(
                 'enabled', 'Teilnehmer gruppieren'
             )
         );
         $enum = new EnumNodeDefinition('field');
-        $enum->values($values)
+        $enum->values($valuesGrouping)
              ->info('Feld');
-        $enum->beforeNormalization()->ifNotInArray(array_values($values))->thenUnset();
+        $enum->beforeNormalization()->ifNotInArray(array_values($valuesGrouping))->thenUnset();
         $groupingNode->append($enum);
         $node->append($groupingNode);
 
         //sorting
         $sortingNode = new ArrayNodeDefinition('sorting');
-        $sortingNode->info('Sortieren (Nachdem die Gruppierung angewandt wurde)');
+        $sortingNode->info($sortingInfo);
         $sortingNode->append(
             Configuration::booleanNodeCreator(
                 'enabled', 'Teilnehmer sortieren'

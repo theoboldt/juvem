@@ -10,44 +10,33 @@
 
 namespace AppBundle\Manager\ParticipantProfile;
 
-use Symfony\Component\Config\Definition\Builder\BooleanNodeDefinition;
+use AppBundle\Export\Customized\ParticipantRelatedConfiguration;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-class Configuration implements ConfigurationInterface
+class Configuration extends ParticipantRelatedConfiguration implements ConfigurationInterface
 {
     const ROOT_NODE_NAME = 'profile';
 
     const OPTION_CONFIRMED_ALL         = 'all';
     const OPTION_CONFIRMED_CONFIRMED   = 'confirmed';
     const OPTION_CONFIRMED_UNCONFIRMED = 'unconfirmed';
-    
+
     const OPTION_PAID_ALL     = 'all';
     const OPTION_PAID_PAID    = 'paid';
     const OPTION_PAID_NOTPAID = 'notpaid';
-    
+
     const OPTION_REJECTED_WITHDRAWN_ALL                    = 'all';
     const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
     const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
-
-
-    protected function booleanNodeCreator($name, $info) {
-        $node = new BooleanNodeDefinition($name);
-        $node->beforeNormalization()
-             ->ifString()
-                ->then(function ($v) { return (bool)$v; })
-                ->end()
-             ->info($info)
-             ->defaultFalse();
-        
-        return $node;
-    }
 
     /**
      * {@inheritDoc}
      */
     public function getConfigTreeBuilder()
     {
+        $participantNodes = $this->participantNodesCreator();
+
         $treeBuilder = new TreeBuilder();
         $rootNode    = $treeBuilder->root(self::ROOT_NODE_NAME);
         $rootNode->children()
@@ -59,22 +48,27 @@ class Configuration implements ConfigurationInterface
                         ->addDefaultsIfNotSet()
                         ->info('Allgemein')
                         ->children()
-                            ->append($this->booleanNodeCreator('includePrivate', 'Interne Felder mit ausgeben'))
-                            ->append($this->booleanNodeCreator('includeDescription', 'Internen Erklärungstext der Felder mit ausgeben (wenn vorhanden)'))
-                            ->append($this->booleanNodeCreator('includeComments', 'Anmerkungen mit ausgeben'))
-                            ->append($this->booleanNodeCreator('includePrice', 'Preis mit ausgeben'))
-                            ->append($this->booleanNodeCreator('includeToPay', 'Offener Zahlungsbetrag mit ausgeben'))
+                            ->append(self::booleanNodeCreator('includePrivate', 'Interne Felder mit ausgeben'))
+                            ->append(self::booleanNodeCreator('includeDescription', 'Internen Erklärungstext der Felder mit ausgeben (wenn vorhanden)'))
+                            ->append(self::booleanNodeCreator('includeComments', 'Anmerkungen mit ausgeben'))
+                            ->append(self::booleanNodeCreator('includePrice', 'Preis mit ausgeben'))
+                            ->append(self::booleanNodeCreator('includeToPay', 'Offener Zahlungsbetrag mit ausgeben'))
                         ->end()
                     ->end()
                     ->arrayNode('choices')
                         ->addDefaultsIfNotSet()
                         ->info('Auswahlfelder')
                         ->children()
-                            ->append($this->booleanNodeCreator('includeShortTitle', 'Kürzel mit ausgeben (wenn vorhanden)'))
-                            ->append($this->booleanNodeCreator('includeManagementTitle', 'Internen Titel mit ausgeben'))
-                            ->append($this->booleanNodeCreator('includeNotSelected', 'Nicht zutreffende Optionen mit ausgeben (und als nicht zutreffend markieren)'))
+                            ->append(self::booleanNodeCreator('includeShortTitle', 'Kürzel mit ausgeben (wenn vorhanden)'))
+                            ->append(self::booleanNodeCreator('includeManagementTitle', 'Internen Titel mit ausgeben'))
+                            ->append(self::booleanNodeCreator('includeNotSelected', 'Nicht zutreffende Optionen mit ausgeben (und als nicht zutreffend markieren)'))
                         ->end()
                 ->end()
+            ->append(
+                self::createGroupSortNodes(
+                    $participantNodes, 'Gruppieren (erscheint in der Kopfzeile, zunächst sortiert nach diesem Feld)'
+                )
+            )
             ->end()
         ;
         return $treeBuilder;

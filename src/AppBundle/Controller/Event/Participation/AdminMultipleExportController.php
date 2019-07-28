@@ -297,7 +297,7 @@ class AdminMultipleExportController extends Controller
             ]
         );
     }
-    
+
     /**
      * Page for excel word generation wizard
      *
@@ -310,9 +310,9 @@ class AdminMultipleExportController extends Controller
      */
     public function exportWordGeneratorAction(Event $event, Request $request)
     {
-        $configuration = new WordConfiguration();
+        $configuration = new WordConfiguration($event);
         $tree          = $configuration->getConfigTreeBuilder()->buildTree();
-        
+
         return $this->render(
             'event/admin/profile-generator.html.twig',
             [
@@ -321,7 +321,7 @@ class AdminMultipleExportController extends Controller
             ]
         );
     }
-    
+
     /**
      * Process transmitted configuration and provide download url
      *
@@ -339,7 +339,7 @@ class AdminMultipleExportController extends Controller
                 $result = $this->generateWordExport($request);
                 break;
         }
-    
+
         $url = $this->get('router')->generate(
             'event_export_generator_download',
             [
@@ -350,11 +350,11 @@ class AdminMultipleExportController extends Controller
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-    
+
         return JsonResponse::create(['download_url' => $url]);
     }
-    
-    
+
+
     /**
      * Download created export
      *
@@ -398,7 +398,7 @@ class AdminMultipleExportController extends Controller
 
         return $response;
     }
-    
+
     /**
      * Process export configuration
      *
@@ -433,7 +433,7 @@ class AdminMultipleExportController extends Controller
 
         return $response;
     }
-    
+
     /**
      * Process configuration from request and provide result as array
      *
@@ -460,18 +460,18 @@ class AdminMultipleExportController extends Controller
             throw new NotFoundHttpException('Transmitted event was not found');
         }
         $this->denyAccessUnlessGranted('participants_read', $event);
-    
+
         $processor     = new Processor();
         $configuration = new $configurationClassName($event);
         $config        = [$configuration::ROOT_NODE_NAME => $config]; //add root config option
-        
+
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
         if (!$processedConfiguration['title']) {
             $processedConfiguration['title'] = 'Teilnehmer';
         }
         return $processedConfiguration;
     }
-    
+
     /**
      * Provides a callable which can be used to extract textual values of participant data
      *
@@ -479,7 +479,7 @@ class AdminMultipleExportController extends Controller
      */
     public static function provideTextualValueAccessor(): callable {
         $accessor = PropertyAccess::createPropertyAccessor();
-    
+
         return function (Participant $entity, string $property) use ($accessor) {
             $value = $accessor->getValue($entity, $property);
             if ($value instanceof Fillout) {
@@ -488,7 +488,7 @@ class AdminMultipleExportController extends Controller
             return $value;
         };
     }
-    
+
     /**
      * Provide a filtered participants list for event
      *
@@ -549,18 +549,18 @@ class AdminMultipleExportController extends Controller
                 return $include;
             }
         );
-        
+
         $extractTextualValue = self::provideTextualValueAccessor();
         $compareValues       = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
             $aValue = $extractTextualValue($a, $property);
             $bValue = $extractTextualValue($b, $property);
-        
+
             if ($aValue == $bValue) {
                 return 0;
             }
             return ($aValue < $bValue) ? -1 : 1;
         };
-    
+
         if ($groupBy || $orderBy) {
             uasort(
                 $participantList,
@@ -569,18 +569,26 @@ class AdminMultipleExportController extends Controller
                     if ($groupBy) {
                         $result = $compareValues($a, $b, $groupBy);
                     }
-                    if ($orderBy && $result === 0) {
+                    if ($orderBy && (!$groupBy || $result === 0)) {
                         $result = $compareValues($a, $b, $orderBy);
+
+                        if ($result === 0) {
+                            if ($orderBy === 'nameLast') {
+                                $result = $compareValues($a, $b, 'nameFirst');
+                            } elseif ($orderBy === 'nameFirst') {
+                                $result = $compareValues($a, $b, 'nameLast');
+                            }
+                        }
                     }
-                
+
                     return $result;
                 }
             );
         }
-        
+
         return $participantList;
     }
-    
+
     /**
      * Generate word export file and provide file info
      *
@@ -594,14 +602,21 @@ class AdminMultipleExportController extends Controller
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
-    
+
         $filterConfirmed         = ExcelConfiguration::OPTION_CONFIRMED_CONFIRMED;
         $filterPaid              = ExcelConfiguration::OPTION_PAID_ALL;
         $filterRejectedWithdrawn = ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN;
-    
+
+
         $groupBy = null;
+        if (isset($processedConfiguration['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['grouping_sorting']['grouping']['field'])) {
+            $groupBy = $processedConfiguration['grouping_sorting']['grouping']['field'];
+        }
         $orderBy = null;
-    
+        if (isset($processedConfiguration['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['grouping_sorting']['sorting']['field'])) {
+            $orderBy = $processedConfiguration['grouping_sorting']['sorting']['field'];
+        }
+
         $participantList = $this->provideGroupedFilteredParticipantsList(
             $event,
             $filterConfirmed,
@@ -610,10 +625,10 @@ class AdminMultipleExportController extends Controller
             $groupBy,
             $orderBy
             );
-    
+
         $generator = $this->get('app.participant.profile_generator');
         $tmpPath   = $generator->generate($participantList, $processedConfiguration);
-        
+
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.docx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
@@ -646,11 +661,11 @@ class AdminMultipleExportController extends Controller
         if (isset($processedConfiguration['participant']['grouping_sorting']['sorting']['enabled']) && isset($processedConfiguration['participant']['grouping_sorting']['sorting']['field'])) {
             $orderBy = $processedConfiguration['participant']['grouping_sorting']['sorting']['field'];
         }
-        
+
         $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
         $filterPaid              = $processedConfiguration['filter']['paid'];
         $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
-    
+
         $participantList = $this->provideGroupedFilteredParticipantsList(
             $event,
             $filterConfirmed,
@@ -717,7 +732,7 @@ class AdminMultipleExportController extends Controller
             ]
         ];
         $processor     = new Processor();
-        $configuration = new WordConfiguration();
+        $configuration = new WordConfiguration($event);
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
 

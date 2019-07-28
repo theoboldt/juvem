@@ -72,6 +72,25 @@
                                       </label>
                                     </div>
                                   {% endfor %}
+                              {% elseif subOption is instanceof('Symfony\\Component\\Config\\Definition\\BooleanNode') %}
+                                <div class="checkbox">
+                                  <label>
+                                    <input type="checkbox" name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}]"> {{ subOption.info }}
+                                  </label>
+                                </div>
+                              {% elseif subOption is instanceof('Symfony\\Component\\Config\\Definition\\EnumNode') %}
+                                <div class="checkbox">
+                                  <label for="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}]">{{ subOption.info }}:</label>
+                                </div>
+                                <div class="checkbox">
+                                  <label>
+                                    <select class="form-control" name="config[{{ group.name }}][{{ option.name }}][{{ subOption.name }}]">
+                                      {% for selectionKey, selectionOption in subOption.values %}
+                                        <option value="{{ selectionOption }}">{{ selectionKey }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </label>
+                                </div>
                                 {% endif %}
                               {% endfor %}
                             </div>

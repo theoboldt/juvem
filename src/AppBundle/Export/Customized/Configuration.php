@@ -34,9 +34,6 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
     const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
     const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
 
-    const OPTION_GROUP_NONE = '___group_by_none';
-    const OPTION_SORT_NONE = '___sort_by_none';
-
     /**
      * {@inheritDoc}
      */
