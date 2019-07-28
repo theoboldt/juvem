@@ -36,7 +36,7 @@ $(function () {
     /**
      * GLOBAL: Download-button
      */
-    window.attachDownloadBtnListener = function() {
+    window.attachDownloadBtnListener = function () {
         $('.btn-download').on('click', function (e) {
             e.preventDefault();
             var button = $(this);
@@ -100,8 +100,8 @@ $(function () {
         columnWidth: '.grid-sizer',
         percentPosition: true
     });
-    $grid.imagesLoaded().progress( function() {
-      $grid.masonry('layout');
+    $grid.imagesLoaded().progress(function () {
+        $grid.masonry('layout');
     });
 
     /**
@@ -147,44 +147,43 @@ $(function () {
                 });
         });
     });
-});
 
-/**
- * Sort numbers which use german number format
- *
- * @param a
- * @param b
- * @returns {number}
- */
-function germanNumberFormatSorter(a, b) {
-    'use strict';
-    var numberize = function (n) {
-        var nFloat = parseFloat(n.replace(/\./g, '').replace(',', '.'));
+    const sorterNumberize = function (n) {
+        var nFloat,
+            regex = /^.*<span class="rounded-age">\(([,.0-9]+)\)<\/span>.*$/,
+            matches;
+
+        if (regex.test(n)) {
+            matches = regex.exec(n);
+            n = matches[1];
+        }
+
+        nFloat = parseFloat(n.replace(/\./g, '').replace(',', '.'));
         if (isNaN(nFloat)) {
             return Number.MIN_SAFE_INTEGER ? Number.MIN_SAFE_INTEGER : -900719925474099;
         } else {
             return nFloat;
         }
     };
-    a = numberize(a);
-    b = numberize(b);
+    /**
+     * Sort numbers which use german number format
+     *
+     * @param a
+     * @param b
+     * @returns {number}
+     */
+    window.germanNumberFormatSorter = function (a, b) {
+        'use strict';
 
-    if (a > b) return 1;
-    if (a < b) return -1;
-    return 0;
-}
+        a = sorterNumberize(a);
+        b = sorterNumberize(b);
 
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
+    };
 
-/**
- * Sort date time values which use german format
- *
- * @param a
- * @param b
- * @returns {number}
- */
-function germanDateTimeSorter(a, b) {
-    'use strict';
-    var date = function (v) {
+    const sorterDatify = function (v) {
         var parts;
         parts = v.match(/^(\d{2})\.(\d{2})\.(\d{2,4})$/);
         if (parts) {
@@ -203,10 +202,22 @@ function germanDateTimeSorter(a, b) {
             return new Date(1980);
         }
     };
-    a = date(a);
-    b = date(b);
 
-    if (a > b) return 1;
-    if (a < b) return -1;
-    return 0;
-}
+    /**
+     * Sort date time values which use german format
+     *
+     * @param a
+     * @param b
+     * @returns {number}
+     */
+    window.germanDateTimeSorter = function (a, b) {
+        'use strict';
+        a = sorterDatify(a);
+        b = sorterDatify(b);
+
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
+    };
+
+});
