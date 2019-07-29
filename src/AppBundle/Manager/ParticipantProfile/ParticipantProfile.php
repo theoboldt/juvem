@@ -174,6 +174,10 @@ class ParticipantProfile
         $document = new PhpWord();
         $language = new Language(Language::DE_DE);
 
+        if ($this->isConfigurationEnabled('general', 'includeComments')) {
+            $this->commentManager->ensureFetchedForEvent($this->getEvent());
+        }
+
         $settings = $document->getSettings();
         $settings->setHideSpellingErrors(true);
         $settings->setDecimalSymbol(',');

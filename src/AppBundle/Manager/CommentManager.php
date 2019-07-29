@@ -14,6 +14,7 @@ use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\CommentRepositoryBase;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\EmployeeComment;
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\Participation;
@@ -183,7 +184,7 @@ class CommentManager
         }
         return $this->doctrine->getRepository($property)->findOneBy(['cid' => $cid]);
     }
-    
+
     /**
      * Fetch amount of comments for transmitted @see Employee
      *
@@ -194,7 +195,7 @@ class CommentManager
     {
         return count($this->forEmployee($employee));
     }
-    
+
     /**
      * Fetch list of all @see CommentBase for transmitted @see Employee
      *
@@ -209,7 +210,7 @@ class CommentManager
         }
         return $this->cache['employee'][$pid]['comments'];
     }
-	
+
 	/**
 	 * Fetch amount of comments for transmitted @see Participation
 	 *
@@ -235,6 +236,35 @@ class CommentManager
 		}
 		return $this->cache['participation'][$pid]['comments'];
 	}
+
+    /**
+     * Ensure comments for whole event were fetched efficiently, use for exports
+     *
+     * @param Event $event Related event
+     */
+	public function ensureFetchedForEvent(Event $event) {
+        $comments = $this->repository->findForEvent($event);
+
+        foreach ($comments as $pid => $participantData) {
+            if (!isset($this->cache['participation'][$pid])) {
+                $this->cache['participation'][$pid] = [
+                    'participants' => [],
+                    'comments'     => [],
+                ];
+            }
+            foreach ($participantData['comments'] as $comment) {
+                $this->cache['participation'][$pid]['comments'][] = $comment;
+            }
+            foreach ($participantData['participants'] as $aid => $comments) {
+                if (!isset($this->cache['participation'][$pid]['participants'][$aid])) {
+                    $this->cache['participation'][$pid]['participants'][$aid] = [];
+                }
+                foreach ($comments as $comment) {
+                    $this->cache['participation'][$pid]['participants'][$aid][] = $comment;
+                }
+            }
+        }
+    }
 
 	/**
 	 * Fetch amount of comments for transmitted @see Participant
@@ -307,7 +337,7 @@ class CommentManager
                 break;
         }
     }
-    
+
     /**
      * Invalidate caches
      *

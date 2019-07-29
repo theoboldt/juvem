@@ -25,15 +25,15 @@ abstract class CommentRepositoryBase extends EntityRepository
     public function findForEmployee(Employee $employee)
     {
         $qb = $this->createCommentQueryBuilder('AppBundle:EmployeeComment');
-        
+
         $qb->innerJoin('c.employee', 'r')
            ->andWhere('c.employee = :r');
         $qb->setParameter('r', $employee);
-        
+
         return $qb->getQuery()->execute();
     }
 
-	
+
 	/**
 	 * Fetch list of all @see CommentBase for transmitted @see Participation
 	 *
@@ -102,8 +102,66 @@ abstract class CommentRepositoryBase extends EntityRepository
         }
 	}
 
+    /**
+     * Find all {@see ParticipantComment} for single {@see Event}
+     *
+     * @param Event $event Related event
+     * @return array
+     */
+    public function findForEvent(Event $event): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-	/**
+        $qb->from(Participant::class, 'participant')
+           ->select(['participant.aid', 'participation.pid'])
+           ->innerJoin('participant.participation', 'participation')
+           ->andWhere('participation.event = :event');
+        $qb->setParameter('event', $event);
+        $result = [];
+        foreach ($qb->getQuery()->execute() as $row) {
+            if (!isset($result[$row['pid']])) {
+                $result[$row['pid']] = [
+                    'participants' => [],
+                    'comments'     => [],
+                ];
+            }
+            $result[$row['pid']]['participants'][$row['aid']] = [];
+        }
+
+        //participant
+        $qb = $this->createCommentQueryBuilder('AppBundle:ParticipantComment');
+        $qb->innerJoin('c.participant', 'r')
+           ->innerJoin('r.participation', 'participation')
+           ->andWhere('participation.event = :event');
+        $qb->setParameter('event', $event);
+
+        $flatResult = $qb->getQuery()->execute();
+        /** @var ParticipantComment $comment */
+        foreach ($flatResult as $comment) {
+            $participant = $comment->getParticipant();
+            $aid         = $participant->getAid();
+            $pid         = $participant->getParticipation()->getPid();
+
+            $result[$pid]['participants'][$aid][] = $comment;
+        }
+
+        //participation
+        $qb = $this->createCommentQueryBuilder('AppBundle:ParticipationComment');
+        $qb->innerJoin('c.participation', 'r')
+           ->andWhere('r.event = :event');
+        $qb->setParameter('event', $event);
+
+        $flatResult = $qb->getQuery()->execute();
+        /** @var ParticipationComment $comment */
+        foreach ($flatResult as $comment) {
+            $pid         =$comment->getParticipation()->getPid();
+            $result[$pid]['comments'][] = $comment;
+        }
+
+        return $result;
+    }
+
+    /**
 	 * Creates comment query builder, adds audit fields, applies order
 	 *
 	 * @param string $alias
