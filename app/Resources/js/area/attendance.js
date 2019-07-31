@@ -5,7 +5,9 @@ $(function () {
         autoRefreshInterval = false,
         reloadBlocked = true,
         updateInProgress = false,
-        queuedUpdates = [];
+        queuedUpdates = [],
+        filterGroups = [],
+        filterColumns = [];
 
     if (attendanceList.length) {
         $('td.column label').on('click', function () {
@@ -123,7 +125,7 @@ $(function () {
                     },
                     datatype: 'json',
                     success: function () {
-
+                        filterRows();
                     },
                     error: function (response) {
                         $.each(updatesToProcess, function (key, el) {
@@ -210,5 +212,51 @@ $(function () {
                 $('#modalComment .btn-primary').off();
             });
         });
+
+        $('#attendance-filters label').on('change', function () {
+            filterGroups = {};
+            filterColumns = {};
+
+            $('#attendance-filters label').each(function () {
+                var el = $(this),
+                    elInput = el.find('input'),
+                    elValue = elInput.val(),
+                    elChecked = elInput.prop('checked'),
+                    elFilter = elInput.parents('.filter');
+                if (!elChecked || elValue === 'all') {
+                    return;
+                }
+                if (elFilter.hasClass('filter-column')) {
+                    var columnId = elFilter.data('column-id');
+                    filterColumns[columnId] = elValue;
+                } else if (elFilter.hasClass('filter-group')) {
+                    var bid = elFilter.data('bid');
+                    filterGroups[bid] = elValue;
+                }
+            });
+            filterRows();
+        });
+
+        const filterRows = function () {
+            $('#attendanceList tbody tr').each(function () {
+                var el = $(this);
+                el.toggleClass('hidden', false);
+                $.each(filterGroups, function (groupId, expectedChoiceId) {
+                    var givenChoice = el.data('group-' + groupId);
+                    if (givenChoice != expectedChoiceId) {
+                        el.toggleClass('hidden', true);
+                    }
+                });
+                $.each(filterColumns, function (columnId, expectedChoiceId) {
+                    var elColumn = el.find('td[data-column-id="' + columnId + '"]'),
+                        elChoice = elColumn.find('input[data-choice-id="' + expectedChoiceId + '"]');
+
+                    if (!elChoice.parent().hasClass('active')) {
+                        el.toggleClass('hidden', true);
+                    }
+                });
+            });
+        };
+
     }
 });

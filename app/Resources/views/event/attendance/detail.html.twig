@@ -43,23 +43,29 @@
             </label>
           </div>
         </div>
-        <nav class="navbar navbar-default attendance-filters">
+        <nav class="navbar navbar-default" id="attendance-filters">
           {% for column in list.columns %}
-            <div class="navbar-form navbar-left">
+            <div class="navbar-form navbar-left filter filter-column" data-column-id="{{ column.columnId }}">
               <p class="navbar-text">{{ column.title }}</p>
               <div class="btn-group" data-toggle="buttons">
                 <label class="btn navbar-btn btn-default active"
                        title="Der Wert der Spalte '{{ column.title }}' soll beim Filtern keine Rolle spielen"
                        data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                  <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}"
+                         data-column-id="{{ column.columnId }}" checked value="all"> Alle
+                </label>
+                <label class="btn navbar-btn btn-default"
+                       title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' nichts ausgewählt haben"
+                       data-toggle="tooltip" data-placement="top" data-trigger="hover">
                   <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}_0"
-                         data-column-id="{{ column.columnId }}" checked> Alle
+                         data-column-id="{{ column.columnId }}" value="0"> <i>Nichts</i>
                 </label>
                 {% for choice in column.choices %}
                   <label class="btn navbar-btn btn-default"
                          title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' keine Option oder '{{ choice.title }}' ausgewählt haben"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <input type="radio" name="column_{{ column.columnId }}"
-                           id="group_{{ column.columnId }}_{{ choice.choiceId }}"
+                           id="group_{{ column.columnId }}_{{ choice.choiceId }}" value="{{ choice.choiceId }}"
                            data-column-id="{{ column.columnId }}" data-choice-id="{{ choice.choiceId }}">
                     {{ choice.title }}
                   </label>
@@ -69,14 +75,20 @@
           {% endfor %}
           {% for attribute in event.acquisitionAttributes %}
             {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
-              <div class="navbar-form navbar-left">
+              <div class="navbar-form navbar-left filter filter-group" data-bid="{{ attribute.bid }}">
                 <p class="navbar-text">{{ attribute.getManagementTitle(true) }}</p>
                 <div class="btn-group" data-toggle="buttons">
                   <label class="btn navbar-btn btn-default active"
                          title="Der Wert des Feldes '{{ attribute.getManagementTitle(true) }}' soll beim Filtern keine Rolle spielen"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
-                    <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
-                           data-bid="{{ attribute.bid }}" checked> Alle
+                    <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_all"
+                           data-bid="{{ attribute.bid }}" checked value="all"> Alle
+                  </label>
+                  <label class="btn navbar-btn btn-default"
+                         title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' nicht eingeteilt sind"
+                         data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                      <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
+                             data-bid="{{ attribute.bid }}" value=""> Nichts
                   </label>
                   {% for choice in attribute.choiceOptions %}
                     {% if not choice.deletedAt %}
@@ -86,7 +98,7 @@
                              title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">
                         <input type="radio" name="group_{{ attribute.bid }}"
                                id="group_{{ attribute.bid }}_{{ choice.id }}" data-bid="{{ attribute.bid }}"
-                               data-id="{{ choice.id }}">
+                               data-id="{{ choice.id }}" value="{{ choice.id }}">
                         {{ choice.getManagementTitle(true) }}
                       </label>
                     {% endif %}
@@ -128,7 +140,13 @@
           </thead>
           <tbody>
           {% for participant in participants %}
-            <tr data-aid="{{ participant.aid }}" id="participant-row-{{ participant.aid }}">
+            <tr data-aid="{{ participant.aid }}" id="participant-row-{{ participant.aid }}"
+                {% for fillout in participant.acquisitionAttributeFillouts %}
+                  {% if fillout.attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+                    data-group-{{ fillout.attribute.bid }}="{{ fillout.value.getGroupId() }}"
+                  {% endif %}
+                {% endfor %}
+            >
               <td class="name-first">{{ participant.nameLast }}</td>
               <td class="name-last">{{ participant.nameFirst }}</td>
               {% for column in list.columns %}
