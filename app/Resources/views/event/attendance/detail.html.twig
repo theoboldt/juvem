@@ -11,6 +11,25 @@
       <li class="active">{{ list.title }} ausfüllen</li>
     {% endblock %}
   {% endembed %}
+  <div class="modal fade" tabindex="-1" role="dialog" id="modalComment">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Kommentar</h4>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control" id="modalCommentContent" data-aid="" data-column-id=""
+                    data-token="{{ csrf_token('attendance-comment'~list.tid) }}"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+          <button type="button" class="btn btn-primary">Änderungen speichern</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
@@ -80,7 +99,7 @@
 
         <table class="table table-striped table-hover" id="attendanceList" data-list-id="{{ list.tid }}"
                data-token="{{ csrf_token('attendance'~list.tid) }}">
-        <thead>
+          <thead>
           <tr>
             <th>Nachname</th>
             <th>Vorname</th>
@@ -113,7 +132,7 @@
               <td class="name-first">{{ participant.nameLast }}</td>
               <td class="name-last">{{ participant.nameFirst }}</td>
               {% for column in list.columns %}
-                <td class="column column-{{ column.columnId }}">
+                <td class="column" data-column-id="{{ column.columnId }}">
                   <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default" title="{{ column.title }}: Keine der Optionen wählen"
                            data-toggle="tooltip"
@@ -135,6 +154,10 @@
                       </label>
                     {% endfor %}
                   </div>
+                  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalComment"
+                          id="choice_{{ participant.aid }}_{{ column.columnId }}_comment" data-comment="">
+                    {{ 'comment'|glyph }}
+                  </button>
                 </td>
               {% endfor %}
             </tr>

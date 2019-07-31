@@ -27,11 +27,18 @@ $(function () {
                 success: function (response) {
                     $.each(response.participants, function (aid, participant) {
                         $.each(participant.columns, function (columnId, column) {
-                            var choiceId = column.choice_id;
+                            var choiceId = column.choice_id,
+                                baseId = "#choice_" + aid + "_" + columnId + "_",
+                                elBtn,
+                                elCommentBtn;
                             if (!choiceId) {
                                 choiceId = 0;
                             }
-                            $("#choice_" + aid + "_" + columnId + "_" + choiceId).trigger('click', ['caused-by-refresh']);
+                            elBtn = $(baseId + choiceId);
+                            elCommentBtn = $(baseId + 'comment');
+                            elCommentBtn.toggleClass('active', column.comment !== null);
+                            elCommentBtn.data('comment', column.comment);
+                            elBtn.trigger('click', ['caused-by-refresh']);
                         });
 
                     });
@@ -102,8 +109,7 @@ $(function () {
                     updates.push({
                         aid: aid,
                         columnId: columnId,
-                        choiceId: choiceId,
-                        comment: null
+                        choiceId: choiceId
                     });
                     el.toggleClass('preview', true);
                 });
@@ -153,6 +159,56 @@ $(function () {
             scheduleQueueFlush();
         });
 
+        $('#modalComment').on('show.bs.modal', function (event) {
+            var btn = $(event.relatedTarget),
+                elInput = $('#modalCommentContent'),
+                columnId = btn.parents('td').data('column-id'),
+                aid = btn.parents('tr').data('aid');
+            elInput.val(btn.data('comment'));
+            elInput.data('aid', aid);
+            elInput.data('column-id', columnId);
+            elInput.focus();
 
+            $('#modalComment .btn-primary').click(function () {
+                var elInput = $('#modalCommentContent'),
+                    newComment = elInput.val();
+                $('#modalComment').modal('hide');
+                btn.toggleClass('active', newComment);
+                btn.data('comment', newComment);
+
+                $.ajax({
+                    type: 'POST',
+                    url: listId + '/comment.json',
+                    data: {
+                        _token: elInput.data('token'),
+                        aid: elInput.data('aid'),
+                        columnId: elInput.data('column-id'),
+                        comment: newComment,
+                    },
+                    datatype: 'json',
+                    success: function (response) {
+                        if (response && response.message) {
+                            btn.toggleClass('active', false);
+                            $(document).trigger('add-alerts', {
+                                message: response.message,
+                                priority: 'warning'
+                            });
+                        }
+                    },
+                    error: function (response) {
+                        btn.toggleClass('btn-alert', true);
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        btn.toggleClass('preview', false);
+                    }
+                });
+
+                $('#modalComment .btn-primary').off();
+            });
+        });
     }
 });

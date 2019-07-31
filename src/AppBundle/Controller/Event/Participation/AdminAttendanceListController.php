@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
@@ -37,7 +38,7 @@ class AdminAttendanceListController extends Controller
     {
         return $this->render('event/attendance/list.html.twig', ['event' => $event]);
     }
-
+    
     /**
      * @see listAttendanceListsAction()
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -49,9 +50,9 @@ class AdminAttendanceListController extends Controller
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
         $eid        = $event->getEid();
-
+        
         $result = $repository->findBy(['event' => $eid]);
-
+        
         return new JsonResponse(
             array_map(
                 function (AttendanceList $list) use ($eid) {
@@ -64,7 +65,7 @@ class AdminAttendanceListController extends Controller
                         $columns[] = $column->getTitle();
                     }
                     sort($columns);
-    
+                    
                     return [
                         'tid'        => $list->getTid(),
                         'eid'        => $eid,
@@ -80,7 +81,7 @@ class AdminAttendanceListController extends Controller
             )
         );
     }
-
+    
     /**
      * Create a new attendance list
      *
@@ -92,22 +93,22 @@ class AdminAttendanceListController extends Controller
     {
         $list = new AttendanceList();
         $list->setEvent($event);
-
+        
         $form = $this->createForm(AttendanceListType::class, $list);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-
+            
             return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
     }
-
+    
     /**
      * Edit an attendance list
      *
@@ -119,7 +120,7 @@ class AdminAttendanceListController extends Controller
     public function editAction(Event $event, $tid, Request $request)
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
-
+        
         $list = $repository->findOneBy(['tid' => $tid]);
         if (!$list) {
             return $this->render(
@@ -128,22 +129,22 @@ class AdminAttendanceListController extends Controller
         }
         $event = $list->getEvent();
         $form  = $this->createForm(AttendanceListType::class, $list);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-
+            
             return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render(
             '/event/attendance/edit.html.twig', ['form' => $form->createView(), 'list' => $list, 'event' => $event]
         );
     }
-
+    
     /**
      * View an attendance list
      *
@@ -157,7 +158,7 @@ class AdminAttendanceListController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
-    
+        
         return $this->render(
             '/event/attendance/detail.html.twig',
             ['list' => $list, 'event' => $event, 'participants' => $participantEntityList]
@@ -211,8 +212,7 @@ class AdminAttendanceListController extends Controller
                 return [
                     'aid'      => (int)$update['aid'],
                     'columnId' => (int)$update['columnId'],
-                    'choiceId' => $update['choiceId'] === 0 ? null : (int)$update['choiceId'],
-                    'comment'  => $update['comment'] === null ? null : (string)$update['comment']
+                    'choiceId' => $update['choiceId'] === 0 ? null : (int)$update['choiceId']
                 ];
             }, $request->get('updates')
         );
@@ -221,5 +221,44 @@ class AdminAttendanceListController extends Controller
         $repositoryFillout->processUpdates($list, $updates);
         
         return $this->provideAttendanceListData($event, $list);
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/comment.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_comment")
+     * @Security("is_granted('participants_edit', event)")
+     * @param Event $event
+     * @param AttendanceList $list
+     * @param Request $request
+     * @return Response
+     */
+    public function updateAttendanceListComment(Event $event, AttendanceList $list, Request $request): Response
+    {
+        $token = $request->get('_token');
+        /** @var CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('attendance-comment' . $list->getTid())) {
+            throw new InvalidTokenHttpException();
+        }
+        $repositoryFillout     = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
+        $repositoryParticipant = $this->getDoctrine()->getRepository(Participant::class);
+        $fillout               = $repositoryFillout->findFillout(
+            $repositoryParticipant->find($request->get('aid')),
+            $list,
+            $repositoryFillout->findColumnById($request->get('columnId'))
+        );
+        if ($fillout) {
+            $comment = trim($request->get('comment'));
+            $fillout->setComment(empty($comment) ? null : $comment);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($fillout);
+            $em->flush();
+            return new JsonResponse([]);
+        } else {
+            return new JsonResponse(
+                ['message' => 'Wenn nichts ausgewählt ist, kann kein Kommentar gespeichert werden']
+            );
+        }
     }
 }
