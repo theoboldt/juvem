@@ -1,5 +1,6 @@
 $(function () {
     var attendanceList = $('#attendanceList'),
+        elAutoRefresh = $('#autoRefresh'),
         listId = attendanceList.data('list-id'),
         autoRefreshInterval = false,
         reloadBlocked = true;
@@ -50,7 +51,7 @@ $(function () {
             });
         };
         autoRefresh();
-        $('#autoRefresh').click(function () {
+        elAutoRefresh.click(function () {
             var checkbox = $(this).find('input'),
                 oldValue = checkbox.prop('checked'),
                 newValue = !oldValue;
@@ -66,6 +67,8 @@ $(function () {
             if (cause === 'caused-by-refresh') {
                 return;
             }
+            clearInterval(autoRefreshInterval);
+
             var el = $(this),
                 elInput = el.find('input'),
                 elRow = el.parents('tr'),
@@ -89,7 +92,7 @@ $(function () {
                 },
                 datatype: 'json',
                 success: function () {
-                debugger
+
                 },
                 error: function (response) {
                     el.toggleClass('btn-alert', true);
@@ -100,7 +103,9 @@ $(function () {
                 },
                 complete: function (response) {
                     el.toggleClass('preview', false);
-                    //elementLabel.removeClass('disabled');
+                    if (elAutoRefresh.find('input').prop('checked')) {
+                        autoRefreshInterval = setInterval(autoRefresh, 10000);
+                    }
                 }
             });
 
