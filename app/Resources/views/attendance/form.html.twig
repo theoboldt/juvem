@@ -1,0 +1,131 @@
+{% import _self as m %}
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+            <div class="btn-group" role="group">
+                <input type="submit" value="{{ submitTitle }}" class="btn btn-primary"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+        {{ form_errors(form) }}
+        <div class="row">
+            <div class="col-xs-12 {% if not form.title.vars.valid %} has-error{% endif %}">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                {{ form_errors(form.title) }}
+                <p class="help-block" id="help-management-title">Name der Tabellenspalte (z.B. <i>Anwesenheit</i> oder <i>Fahrkarte</i>)</p>
+            </div>
+        </div>
+        <div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <label class="control-label required control-label">Optionen der Auswahl</label>
+                    <div class="choice-options prototype-container"
+                         data-prototype="{{ m.prototypeChoice(form.choices.vars.prototype, false)|e('html_attr') }}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id='help-choice-options' class='help-block'>
+                                    <p>Hier werden die Optionen der Auswahl gepflegt.</p>
+                                    <p id="help-choice-options-public-title">
+                                        Möglichst kompakter und dennoch aussagekräftiger Titel für die Option.
+                                        Er muss allgemein und neutral formuliert sein.
+                                        Für eine Anwesenheits-Option könnte er bspw. „<i>Anwesend</i>“ lauten.
+                                    </p>
+                                    <p id="help-choice-options-internal-short">Für die Schalter sollte
+                                        ein Code als <span>Kürzel</span> angegebene werden. Im Normalfall
+                                        besteht er nur aus Buchstaben. Für eine Anwesenheits-Option könnte der Wert
+                                        bspw. „<i>A</i>“ lauten.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="prototype-elements">
+                            {{ form_errors(form.choices) }}
+                            {% for choiceOption in form.choices %}
+                                {{ m.prototypeChoice(choiceOption) }}
+                            {% endfor %}
+                            {% if form.choices|length == 0 %}
+                                {{ form_row(form.choices) }}
+                            {% endif %}
+                            <div class="prototype-missing-message"{% if form.choices|length > 0 %} style="display: none;"{% endif %}>
+                                <div class="alert alert-danger">
+                                    <ul class="list-unstyled">
+                                        <li><span class="glyphicon glyphicon-exclamation-sign"></span> Jede Spalte einer Anwesenheitslisten benötigt mindestens eine Option.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 15px;">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success prototype-add form-acquisition-option-add">{{ 'plus-sign'|glyph }}
+                                    Weitere Option hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <input type="submit" value="{{ submitTitle }}" class="btn btn-primary navbar-btn"/>
+            </div>
+        </nav>
+    </div>
+</div>
+{% macro prototypeChoice(formElement) %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default prototype-element">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-10 col-sm-8">
+                            <h3 class="panel-title">Option</h3>
+                        </div>
+                        <div class="col-xs-2 col-sm-4 text-right">
+                            <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                               title="Option entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Option entfernen</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-9">
+                            {{ form_errors(formElement) }}
+                            <div class="form-group {% if not formElement.title.vars.valid %}has-error{% endif %}">
+                                {{ form_label(formElement.title) }}
+                                <div class="input-group">
+                                    {{ form_widget(formElement.title) }}
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default" href="#help-choice-options-public-title"{{ tab.skip|raw }}>
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </a>
+                                    </span>
+                                </div>
+                                {{ form_errors(formElement.title) }}
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-3">
+                            {{ form_label(formElement.shortTitle) }}
+                            <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
+                                {{ form_widget(formElement.shortTitle) }}
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" href="#help-choice-options-internal-short"{{ tab.skip|raw }}>
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </a>
+                                </span>
+                            </div>
+                            {{ form_errors(formElement.shortTitle) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{{ form_end(form) }}

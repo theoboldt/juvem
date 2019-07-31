@@ -10,9 +10,14 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList;
+use AppBundle\Entity\AttendanceListColumn;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,23 +29,27 @@ class AttendanceListType extends AbstractType
         $builder
             ->add('title', TextType::class, ['label' => 'Titel'])
             ->add(
-                'isPublicTransport',
-                CheckboxType::class,
-                [
-                    'label'    => 'Verfügbarkeit von Fahrkarte für öffentliche Verkehrsmittel abfragen',
-                    'required' => false
+                'startDate',
+                DateType::class,
+                ['label'    => 'Datum',
+                 'years'    => range(Date('Y') - 2, Date('Y') + 2),
+                 'format'   => 'dd.MM.yyyy',
+                 'required' => false,
                 ]
             )
             ->add(
-                'isPaid',
-                CheckboxType::class,
+                'columns',
+                EntityType::class,
                 [
-                    'label'    => 'Bezahlung abfragen',
-                    'required' => false
+                    'class'        => AttendanceListColumn::class,
+                    'choice_label' => 'title',
+                    'multiple'     => true,
+                    'expanded'     => true,
+                    'label'        => 'Spalten bei der Erfassung verwenden',
                 ]
             );
     }
-
+    
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(

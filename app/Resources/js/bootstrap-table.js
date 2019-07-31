@@ -339,5 +339,12 @@ $(function () {
     $('#groupParticipantsTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey('../../../participation/' + row.pid);
     });
+
+    /**
+     *ATTENDANCE LIST COLUMN: Jump to column details
+     */
+    $('#attendanceColumnListTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('columns/' + row.column_id);
+    });
 })
 ;

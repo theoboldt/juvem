@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anwesenheitslisten Spalte anlegen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitslisten', 'subtitle': 'Spalte anlegen'} %}
+        {% block breadcrumb %}
+            <li>Anwesenheitslisten</li>
+            <li><a href="{{ path('attendance_column_list') }}">Spalten verwalten</a></li>
+            <li><a href="{{ path('attendance_column_detail', {column_id: column.columnId}) }}">{{ column.title }}</a></li>
+            <li class="active">Spalte bearbeiten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        {% include '/attendance/form.html.twig' with {'form': form, submitTitle: 'Änderungen speichern'} %}
+    </div>
+{% endblock %}

@@ -10,22 +10,22 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AttendanceList;
-use AppBundle\Entity\AttendanceListFillout;
+use AppBundle\Entity\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class AdminAttendanceListController extends Controller
 {
@@ -38,7 +38,7 @@ class AdminAttendanceListController extends Controller
     {
         return $this->render('event/attendance/list.html.twig', ['event' => $event]);
     }
-
+    
     /**
      * @see listAttendanceListsAction()
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -50,9 +50,9 @@ class AdminAttendanceListController extends Controller
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
         $eid        = $event->getEid();
-
+        
         $result = $repository->findBy(['event' => $eid]);
-
+        
         return new JsonResponse(
             array_map(
                 function (AttendanceList $list) use ($eid) {
@@ -60,21 +60,28 @@ class AdminAttendanceListController extends Controller
                     if ($list->getModifiedAt()) {
                         $modifiedAt = $list->getModifiedAt()->format(Event::DATE_FORMAT_DATE_TIME);
                     }
-
+                    $columns = [];
+                    foreach ($list->getColumns() as $column) {
+                        $columns[] = $column->getTitle();
+                    }
+                    sort($columns);
+                    
                     return [
-                        'tid'               => $list->getTid(),
-                        'eid'               => $eid,
-                        'title'             => $list->getTitle(),
-                        'createdAt'         => $list->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
-                        'modifiedAt'        => $modifiedAt,
-                        'isPublicTransport' => $list->getIsPublicTransport() ? 'ja' : 'nein',
-                        'isPaid'            => $list->getIsPaid() ? 'ja' : 'nein',
+                        'tid'        => $list->getTid(),
+                        'eid'        => $eid,
+                        'title'      => $list->getTitle(),
+                        'startDate'  => $list->getStartDate()
+                            ? $list->getStartDate()->format(Event::DATE_FORMAT_DATE_TIME)
+                            : null,
+                        'createdAt'  => $list->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
+                        'modifiedAt' => $modifiedAt,
+                        'columns'    => implode(', ', $columns),
                     ];
                 }, $result
             )
         );
     }
-
+    
     /**
      * Create a new attendance list
      *
@@ -86,22 +93,22 @@ class AdminAttendanceListController extends Controller
     {
         $list = new AttendanceList();
         $list->setEvent($event);
-
+        
         $form = $this->createForm(AttendanceListType::class, $list);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-
+            
             return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
     }
-
+    
     /**
      * Edit an attendance list
      *
@@ -113,7 +120,7 @@ class AdminAttendanceListController extends Controller
     public function editAction(Event $event, $tid, Request $request)
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
-
+        
         $list = $repository->findOneBy(['tid' => $tid]);
         if (!$list) {
             return $this->render(
@@ -122,24 +129,24 @@ class AdminAttendanceListController extends Controller
         }
         $event = $list->getEvent();
         $form  = $this->createForm(AttendanceListType::class, $list);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-
+            
             return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render(
             '/event/attendance/edit.html.twig', ['form' => $form->createView(), 'list' => $list, 'event' => $event]
         );
     }
-
+    
     /**
-     * Edit an attendance list
+     * View an attendance list
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
@@ -147,116 +154,111 @@ class AdminAttendanceListController extends Controller
      *                                                    name="event_attendance_details")
      * @Security("is_granted('participants_read', event)")
      */
-    public function detailAction(Event $event, AttendanceList $list, Request $request)
-    {
-        return $this->render(
-            '/event/attendance/detail.html.twig', ['list' => $list, 'event' => $event]
-        );
-    }
-
-    /**
-     * Data provider for events participants list grid
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/attendance/{tid}/participants.json", requirements={"eid": "\d+", "tid": "\d+"},
-     *                                                                 name="event_attendance_list_participants_data")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function listParticipationsAction(Event $event, $tid, Request $request)
+    public function detailAction(Event $event, AttendanceList $list, Request $request): Response
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
-        $filloutRepository       = $this->getDoctrine()->getRepository(AttendanceListFillout::class);
-        $filloutList             = [];
-        /** @var Fillout $fillout */
-        foreach ($filloutRepository->findBy(['attendanceList' => $tid]) as $fillout) {
-            $filloutList[$fillout->getParticipant()->getAid()] = $fillout;
-        }
-
-        $statusFormatter = ParticipantStatus::formatter();
-
-        $participantList = [];
-        /** @var Participant $participant */
-        foreach ($participantEntityList as $participant) {
-            if (isset($filloutList[$participant->getAid()])) {
-                /** @var AttendanceListFillout $fillout */
-                $fillout = $filloutList[$participant->getAid()];
-            } else {
-                $fillout = null;
-            }
-            $did = $fillout ? $fillout->getDid() : false;
-            $aid = $participant->getAid();
-
-            $participantEntry = [
-                'tid'               => (int)$tid,
-                'did'               => (int)$did,
-                'aid'               => (int)$aid,
-                'pid'               => $participant->getParticipation()->getPid(),
-                'nameFirst'         => $participant->getNameFirst(),
-                'nameLast'          => $participant->getNameLast(),
-                'status'            => $statusFormatter->formatMask($participant->getStatus(true)),
-                'isAttendant'       => (int)($fillout ? $fillout->getIsAttendant() : 0),
-                'isPaid'            => (int)($fillout ? $fillout->getIsPaid() : 0),
-                'isPublicTransport' => (int)($fillout ? $fillout->getIsPublicTransport() : 0),
-                'comment'           => $fillout ? $fillout->getComment() : false
-            ];
-
-            $participantList[] = $participantEntry;
-        }
-
-        return new JsonResponse($participantList);
+        
+        return $this->render(
+            '/event/attendance/detail.html.twig',
+            ['list' => $list, 'event' => $event, 'participants' => $participantEntityList]
+        );
     }
-
+    
     /**
-     * Data provider for events participants list grid
-     *
-     * @Route("/admin/attendance/{tid}/change", requirements={"tid": "\d+"}, name="event_attendance_list_change")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"GET"}, name="event_attendance_fillout_data")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param AttendanceList $list
+     * @return Response
      */
-    public function changeAttendanceListEntryAction($tid, Request $request)
+    public function provideAttendanceListData(Event $event, AttendanceList $list): Response
     {
-        $token    = $request->get('_token');
-        $aid      = $request->get('aid');
-        $property = $request->get('property');
-        $valueNew = $request->get('valueNew');
-
-        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
+        $result            = $filloutRepository->fetchAttendanceListDataForList($list);
+        
+        $resultEncoded = json_encode(['participants' => $result]);
+        $checksum      = sha1($resultEncoded);
+        return new JsonResponse($resultEncoded, Response::HTTP_OK, ['X-Response-Checksum' => $checksum], true);
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_update")
+     * @Security("is_granted('participants_edit', event)")
+     * @param Event $event
+     * @param AttendanceList $list
+     * @param Request $request
+     * @return Response
+     */
+    public function updateAttendanceListFillouts(Event $event, AttendanceList $list, Request $request): Response
+    {
+        $token = $request->get('_token');
+        /** @var CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken($tid)) {
+        if ($token != $csrf->getToken('attendance' . $list->getTid())) {
             throw new InvalidTokenHttpException();
         }
-
+        
+        if ($list->getEvent()->getEid() !== $event->getEid()) {
+            throw new BadRequestHttpException('List and event are incompatible');
+        }
+        
+        $updates           = array_map(
+            function ($update) {
+                return [
+                    'aid'      => (int)$update['aid'],
+                    'columnId' => (int)$update['columnId'],
+                    'choiceId' => $update['choiceId'] === 0 ? null : (int)$update['choiceId']
+                ];
+            }, $request->get('updates')
+        );
+        $repositoryFillout = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
+        
+        $repositoryFillout->processUpdates($list, $updates);
+        
+        return $this->provideAttendanceListData($event, $list);
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/comment.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_comment")
+     * @Security("is_granted('participants_edit', event)")
+     * @param Event $event
+     * @param AttendanceList $list
+     * @param Request $request
+     * @return Response
+     */
+    public function updateAttendanceListComment(Event $event, AttendanceList $list, Request $request): Response
+    {
+        $token = $request->get('_token');
+        /** @var CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('attendance-comment' . $list->getTid())) {
+            throw new InvalidTokenHttpException();
+        }
+        $repositoryFillout     = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $repositoryParticipant = $this->getDoctrine()->getRepository(Participant::class);
-        $participant           = $repositoryParticipant->findOneBy(['aid' => $aid]);
-        $repositoryList        = $this->getDoctrine()->getRepository(AttendanceList::class);
-        $list                  = $repositoryList->findOneBy(['tid' => $tid]);
-        $event                 = $list->getEvent();
-        $repositoryFillout     = $this->getDoctrine()->getRepository(AttendanceListFillout::class);
-
-        $this->denyAccessUnlessGranted('participants_edit', $event);
-
-        if (!$participant || !$list) {
-            throw new \InvalidArgumentException('Unknown participant or list transmitted');
+        $fillout               = $repositoryFillout->findFillout(
+            $repositoryParticipant->find($request->get('aid')),
+            $list,
+            $repositoryFillout->findColumnById($request->get('columnId'))
+        );
+        if ($fillout) {
+            $comment = trim($request->get('comment'));
+            $fillout->setComment(empty($comment) ? null : $comment);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($fillout);
+            $em->flush();
+            return new JsonResponse([]);
+        } else {
+            return new JsonResponse(
+                ['message' => 'Wenn nichts ausgewählt ist, kann kein Kommentar gespeichert werden']
+            );
         }
-
-        $fillout = $repositoryFillout->findFillout($participant, $list, true);
-        switch ($property) {
-            case 'isAttendant':
-                $fillout->setIsAttendant($valueNew);
-                break;
-            case 'isPaid':
-                $fillout->setIsPaid($valueNew);
-                break;
-            case 'isPublicTransport':
-                $fillout->setIsPublicTransport($valueNew);
-                break;
-            default:
-                throw new \InvalidArgumentException('Unknown property transmitted');
-        }
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($fillout);
-        $em->flush();
-
-        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }
