@@ -10,20 +10,13 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AttendanceList;
-use AppBundle\Entity\AttendanceListFillout;
 use AppBundle\Entity\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
-use phpDocumentor\Reflection\Types\Null_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
