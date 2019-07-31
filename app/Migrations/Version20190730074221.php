@@ -167,7 +167,7 @@ VALUES
         );
         
         $rows = $this->connection->fetchAll(
-            'SELECT * FROM attendance_list_participant_fillout',
+            'SELECT * FROM attendance_list_participant_fillout'
             );
         $data = [];
         
