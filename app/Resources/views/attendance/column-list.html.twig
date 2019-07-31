@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anwesenheitslisten Spalten verwalten{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitslisten', 'subtitle': 'Spalten verwalten'} %}
+        {% block breadcrumb %}
+            <li>Anwesenheitslisten</li>
+            <li class="active">Spalten verwalten</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="bootstrap-table-toolbar" class="form-inline">
+                    <div class="form-group">
+                        <a class="btn btn-primary" href="{{ path('attendance_column_new') }}">{{ 'plus'|glyph }} Neu</a>
+                    </div>
+                </div>
+                <table id="attendanceColumnListTable" class="table table-striped table-remote-content" data-id-field="column_id"
+                       data-toggle="table" data-cache="false" data-pagination="true"
+                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+                       data-show-filter="true" data-search="true"
+                       data-url="{{ path('attendance_column_list_data') }}">
+                    <thead>
+                    <tr>
+                        <th data-field="column_id" data-sortable="true" data-visible="false">#</th>
+                        <th data-field="title" data-sortable="true" data-order="asc">Titel</th>
+                        <th data-field="choice_count" data-sortable="true">Antwortmöglichkeiten</th>
+                        <th data-field="list_count" data-sortable="true">Verwendung</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

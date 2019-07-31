@@ -3,206 +3,145 @@
 {% block title %}Anwesenheitsliste ausfüllen ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitsliste', 'subtitle': 'ausfüllen'} %}
-        {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">Anwesenheitslisten</a></li>
-            <li class="active">{{ list.title }} ausfüllen</li>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div id="bootstrap-table-toolbar" class="form-inline">
-                    <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
-                       class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
-                    <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
-                        <label class="btn btn-info">
-                            <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
-                                    class="hidden-xs">aktuell halten</span>
-                        </label>
-                    </div>
-                    <div class="btn-group" role="group">
-                        {{ 'isAttendant'|tableFilterButtonTri(2, 'nur Anwesende', 'ohne Anwesende', 'inkl. Anwesende', true) }}
-                        {{ 'isPaid'|tableFilterButtonTri(2, 'nur bezahlte', 'ohne bezahlte', 'inkl. bezahlt') }}
-                    </div>
-                </div>
-                <table id="participantsAttendanceListTable"
-                       class="table table-striped table-remote-content table-no-hover" data-unique-id="aid"
-                       data-id-field="aid" data-toggle="table" data-cache="false" data-pagination="true"
-                       data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
-                       data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
-                       data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"
-                       data-sort-name="nameLast" data-sort-order="asc"
-                       data-url="{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}">
-                    <thead>
-                    <tr>
-                        <th data-field="did" data-sortable="true" data-visible="false">#</th>
-                        <th data-field="tid" data-sortable="true" data-visible="false">#T</th>
-                        <th data-field="aid" data-sortable="true" data-visible="false">#A</th>
-                        <th data-field="pid" data-sortable="true" data-visible="false">#P</th>
-                        <th data-field="nameLast" data-sortable="true">Nachname</th>
-                        <th data-field="nameFirst" data-sortable="true">Vorname</th>
-                        <th data-field="isAttendant" data-class="cell-button cell-attendant" data-sortable="false">AT
-                        </th>
-                        <th data-field="isPaid" data-class="cell-button cell-paid" data-sortable="false">P</th>
-                        <th data-field="isPublicTransport" data-class="cell-button cell-public-transport"
-                            data-sortable="false">T
-                        </th>
-
-                        <th data-field="status" data-sortable="false" data-visible="false">Status</th>
-                    </tr>
-                    </thead>
-                </table>
-
-            </div>
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anwesenheitsliste', 'subtitle': 'ausfüllen'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">Anwesenheitslisten</a></li>
+      <li class="active">{{ list.title }} ausfüllen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar" role="toolbar">
+          <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
+             class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+          <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
+            <label class="btn btn-info">
+              <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
+                  class="hidden-xs">aktuell halten</span>
+            </label>
+          </div>
         </div>
+        <nav class="navbar navbar-default attendance-filters">
+          {% for column in list.columns %}
+            <div class="navbar-form navbar-left">
+              <p class="navbar-text">{{ column.title }}</p>
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn navbar-btn btn-default active"
+                       title="Der Wert der Spalte '{{ column.title }}' soll beim Filtern keine Rolle spielen"
+                       data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                  <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}_0"
+                         data-column-id="{{ column.columnId }}" checked> Alle
+                </label>
+                {% for choice in column.choices %}
+                  <label class="btn navbar-btn btn-default"
+                         title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' keine Option oder '{{ choice.title }}' ausgewählt haben"
+                         data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                    <input type="radio" name="column_{{ column.columnId }}"
+                           id="group_{{ column.columnId }}_{{ choice.choiceId }}"
+                           data-column-id="{{ column.columnId }}" data-choice-id="{{ choice.choiceId }}">
+                    {{ choice.title }}
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+          {% for attribute in event.acquisitionAttributes %}
+            {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+              <div class="navbar-form navbar-left">
+                <p class="navbar-text">{{ attribute.getManagementTitle(true) }}</p>
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn navbar-btn btn-default active"
+                         title="Der Wert des Feldes '{{ attribute.getManagementTitle(true) }}' soll beim Filtern keine Rolle spielen"
+                         data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                    <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
+                           data-bid="{{ attribute.bid }}" checked> Alle
+                  </label>
+                  {% for choice in attribute.choiceOptions %}
+                    {% if not choice.deletedAt %}
+                      <label class="btn navbar-btn btn-default"
+                             title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' in '{{ choice.getManagementTitle(true) }}' eingeteilt sind"
+                             data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                             title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">
+                        <input type="radio" name="group_{{ attribute.bid }}"
+                               id="group_{{ attribute.bid }}_{{ choice.id }}" data-bid="{{ attribute.bid }}"
+                               data-id="{{ choice.id }}">
+                        {{ choice.getManagementTitle(true) }}
+                      </label>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </nav>
+
+        <table class="table table-striped table-hover" id="attendanceList" data-list-id="{{ list.tid }}"
+               data-token="{{ csrf_token('attendance'~list.tid) }}">
+        <thead>
+          <tr>
+            <th>Nachname</th>
+            <th>Vorname</th>
+            {% for column in list.columns %}
+              <th>
+                {{ column.title }}<br>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-default btn-column-all" data-column-id="{{ column.columnId }}"
+                          data-choice-id="0"
+                          title="{{ column.title }}: Bei allen sichtbaren Teilnehmern für '{{ column.title }}' keine der Optionen wählen"
+                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                    <i>nichts</i>
+                  </button>
+                  {% for choice in column.choices %}
+                    <button type="button" class="btn btn-default btn-column-all" data-column-id="{{ column.columnId }}"
+                            data-choice-id="{{ choice.choiceId }}"
+                            title="{{ column.title }}: Bei allen sichtbaren Teilnehmern '{{ choice.title }}' für '{{ column.title }}' wählen"
+                            data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                      {{ choice.getShortTitle(true) }}
+                    </button>
+                  {% endfor %}
+                </div>
+              </th>
+            {% endfor %}
+          </tr>
+          </thead>
+          <tbody>
+          {% for participant in participants %}
+            <tr data-aid="{{ participant.aid }}" id="participant-row-{{ participant.aid }}">
+              <td class="name-first">{{ participant.nameLast }}</td>
+              <td class="name-last">{{ participant.nameFirst }}</td>
+              {% for column in list.columns %}
+                <td class="column column-{{ column.columnId }}">
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default" title="{{ column.title }}: Keine der Optionen wählen"
+                           data-toggle="tooltip"
+                           data-placement="top" data-trigger="hover">
+                      <input type="radio" name="choice_{{ participant.aid }}_0"
+                             id="choice_{{ participant.aid }}_{{ column.columnId }}_0"
+                             data-aid="{{ participant.aid }}" data-column-id="{{ column.columnId }}"
+                             data-choice-id="0"
+                      ><i>nichts</i></label>
+                    {% for choice in column.choices %}
+                      <label class="btn btn-default" title="{{ column.title }}: {{ choice.title }}"
+                             data-toggle="tooltip" data-placement="top" data-trigger="hover">
+                        <input type="radio" name="choice_{{ participant.aid }}_{{ column.columnId }}"
+                               id="choice_{{ participant.aid }}_{{ column.columnId }}_{{ choice.choiceId }}"
+                               data-aid="{{ participant.aid }}" data-column-id="{{ column.columnId }}"
+                               data-choice-id="{{ choice.choiceId }}"
+                        >
+                        {{ choice.getShortTitle(true) }}
+                      </label>
+                    {% endfor %}
+                  </div>
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-{% endblock %}
-{% block javascriptCustom %}
-    {% cspscript %}
-    <script type='text/javascript'>
-        $(function () {
-            var reloadBlocked = false,
-                table = $('#participantsAttendanceListTable');
-
-            /**
-             * Auto refresh
-             **/
-            var autoRefresh = function () {
-                    if (!reloadBlocked) {
-                        reloadBlocked = true;
-                        $.ajax({
-                            type: 'POST',
-                            url: '{{ path('event_attendance_list_participants_data', {eid: event.eid, tid: list.tid}) }}',
-                            datatype: 'json',
-                            success: function (dataNew) {
-                                table.bootstrapTable('load', dataNew);
-                                reloadBlocked = false;
-                            },
-                            error: function () {
-                                var autoRefreshInput = $('#autoRefresh input');
-                                if (autoRefreshInput.prop('checked')) {
-                                    autoRefreshInput.prop('checked', false);
-                                    $('#autoRefresh label').removeClass('active');
-                                }
-                                clearInterval(autoRefreshInterval);
-                                $(document).trigger('add-alerts', {
-                                    message: 'Die Daten der Anwesenheitsliste konnten nicht geladen werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
-                                    priority: 'error'
-                                });
-                                reloadBlocked = false;
-                            }
-                        });
-
-                    } else {
-                        reloadBlocked = true;
-                    }
-                },
-                autoRefreshInterval = false;
-            $('#autoRefresh').click(function () {
-                var checkbox = $(this).find('input'),
-                    oldValue = checkbox.prop('checked'),
-                    newValue = !oldValue;
-
-                if (newValue) {
-                    autoRefresh();
-                    autoRefreshInterval = setInterval(autoRefresh, 10000);
-                } else if (autoRefreshInterval !== false) {
-                    clearInterval(autoRefreshInterval);
-                }
-            });
-
-            var renderActionButton = function () {
-                $('tbody .cell-button').each(function () {
-                    var html = '',
-                        element = $(this),
-                        row = table.bootstrapTable('getRowByUniqueId', element.parent().data('uniqueid'));
-
-                    var generateButton = function (property, valueOld) {
-                        var valueNew = valueOld ? 0 : 1,
-                            glyph,
-                            labelClass = 'btn btn-primary';
-                        if (valueOld) {
-                            labelClass += ' active';
-                        }
-
-                        switch (property) {
-                            case 'isAttendant':
-                                glyph = 'ok';
-                                break;
-                            case 'isPaid':
-                                glyph = 'euro';
-                                break;
-                            case 'isPublicTransport':
-                                glyph = 'credit-card';
-                                break;
-                        }
-
-                        return '<label class="' + labelClass + '"' +
-                            ' data-property="' + property + '"' +
-                            ' data-value-new="' + valueNew + '"' +
-                            '><span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true"></span></label> ';
-                    };
-
-                    if (element.hasClass('cell-attendant')) {
-                        html = generateButton('isAttendant', row.isAttendant);
-                    }
-                    if (element.hasClass('cell-paid')) {
-                        html = generateButton('isPaid', row.isPaid);
-                    }
-                    if (element.hasClass('cell-public-transport')) {
-                        html = generateButton('isPublicTransport', row.isPublicTransport);
-                    }
-
-                    element.html(html);
-                });
-            };
-
-            table.on('post-body.bs.table', renderActionButton);
-            table.on('load-success.bs.table', renderActionButton);
-
-            table.on('click-cell.bs.table', function (e, field, value, row, $element) {
-                var elementLabel = $element.find('label'),
-                    aid = row.aid,
-                    valueNew = value ? 0 : 1;
-
-                if (elementLabel && (field == 'isAttendant' || field == 'isPaid' || field == 'isPublicTransport')) {
-                    elementLabel.addClass('disabled');
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ path('event_attendance_list_change', {tid: list.tid} ) }}',
-                        data: {
-                            _token: '{{ csrf_token(list.tid ) }}',
-                            aid: aid,
-                            property: field,
-                            valueNew: valueNew
-                        },
-                        datatype: 'json',
-                        success: function () {
-                            if (row[field] != undefined) {
-                                var rowUpdate = {};
-                                rowUpdate[field] = valueNew;
-                                table.bootstrapTable('updateByUniqueId', {id: aid, row: rowUpdate});
-                            }
-
-                        },
-                        error: function (response) {
-                            $(document).trigger('add-alerts', {
-                                message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
-                                priority: 'error'
-                            });
-                        },
-                        complete: function (response) {
-                            elementLabel.removeClass('disabled');
-                        }
-                    });
-                    return false;
-                }
-            });
-
-        });
-    </script>
-    {% endcspscript %}
+  </div>
 {% endblock %}

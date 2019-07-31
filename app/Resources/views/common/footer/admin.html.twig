@@ -19,10 +19,10 @@
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
-                <h3><a href="{{ path('acquisition_list') }}">Felder</a></h3>
+                <h3>Anpassungen</h3>
                 <ul>
-                    <li><a href="{{ path('acquisition_list') }}">Felder verwalten</a></li>
-                    <li><a href="{{ path('acquisition_new') }}">Feld erstellen</a></li>
+                    <li><a href="{{ path('acquisition_list') }}">Felder verwalten</a> <a href="{{ path('acquisition_new') }}">(erstellen)</a></li>
+                    <li><a href="{{ path('attendance_column_list') }}">Anwesenheitslisten Spalten verwalten</a></li>
                 </ul>
             {% endif %}
             {% if featureNewsletter %}

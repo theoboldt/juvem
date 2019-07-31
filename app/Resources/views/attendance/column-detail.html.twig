@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ column.title }} (Anwesenheitslisten-Spalte){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': column.title, 'subtitle': 'Detailansicht'} %}
+    {% block breadcrumb %}
+      <li>Anwesenheitslisten</li>
+      <li><a href="{{ path('attendance_column_list') }}">Spalten verwalten</a></li>
+      <li class="active">{{ column.title }}</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <a href="{{ path('attendance_column_edit', {'column_id': column.columnId }) }}"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-6">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Titel</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">{{ column.title }}</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Optionen</label>
+            <div class="col-sm-8">
+              <ul class="form-control-static">
+                {% for choice in column.choices %}
+                  <li>
+                    <b>Kürzel:</b>
+                    <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
+                    <br>
+                    <b>Interner Titel:</b>
+                    <span>{{ choice.title }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

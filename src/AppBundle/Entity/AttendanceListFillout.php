@@ -19,7 +19,8 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list_fillout")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\AttendanceListFilloutRepository")
+ * @ORM\Entity(repositoryClass="AttendanceListFilloutParticipantRepository")
+ * @deprecated
  */
 class   AttendanceListFillout
 {

@@ -111,7 +111,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Contains the list of attendance lists fillouts of this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListFillout", mappedBy="participant", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListParticipantFillout", mappedBy="participant", cascade={"all"})
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $attendanceListsFillouts;
@@ -500,23 +500,26 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Add attendanceListsFillout
      *
-     * @param AttendanceListFillout $attendanceListsFillout
+     * @param AttendanceListParticipantFillout $attendanceListsFillout
      *
      * @return Participant
      */
-    public function addAttendanceListsFillout(AttendanceListFillout $attendanceListsFillout)
+    public function addAttendanceListsFillout(AttendanceListParticipantFillout $attendanceListsFillout)
     {
         $this->attendanceListsFillouts[] = $attendanceListsFillout;
-
+        if ($attendanceListsFillout->getParticipant() !== $this) {
+            $attendanceListsFillout->setParticipant($this);
+        }
+        
         return $this;
     }
 
     /**
      * Remove attendanceListsFillout
      *
-     * @param AttendanceListFillout $attendanceListsFillout
+     * @param AttendanceListParticipantFillout $attendanceListsFillout
      */
-    public function removeAttendanceListsFillout(AttendanceListFillout $attendanceListsFillout)
+    public function removeAttendanceListsFillout(AttendanceListParticipantFillout $attendanceListsFillout)
     {
         $this->attendanceListsFillouts->removeElement($attendanceListsFillout);
     }

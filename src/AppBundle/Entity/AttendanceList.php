@@ -12,6 +12,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -40,25 +41,32 @@ class AttendanceList
     protected $event;
 
     /**
-     * @ORM\OneToMany(targetEntity="AttendanceListFillout", mappedBy="attendanceList", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListParticipantFillout", mappedBy="attendanceList", cascade={"remove"})
      */
     protected $fillouts;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="AttendanceListColumn", inversedBy="lists")
+     * @ORM\JoinTable(name="attendance_list_column_assignments",
+     *      joinColumns={@ORM\JoinColumn(name="list_id", referencedColumnName="tid", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="column_id", referencedColumnName="column_id",
+     *      onDelete="CASCADE")})
+     * @var array|Collection|AttendanceList[]
+     */
+    protected $columns;
+    
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      */
     protected $title;
-
+    
     /**
-     * @ORM\Column(type="boolean", name="is_public_transport")
+     * @ORM\Column(type="date", nullable=true)
+     * @Assert\Type("\DateTime")
+     * @var \DateTime|null
      */
-    protected $isPublicTransport = false;
-
-    /**
-     * @ORM\Column(type="boolean", name="is_paid")
-     */
-    protected $isPaid = false;
+    protected $startDate;
 
     /**
      * Constructor
@@ -66,6 +74,7 @@ class AttendanceList
     public function __construct()
     {
         $this->fillouts = new ArrayCollection();
+        $this->columns  = new ArrayCollection();
     }
 
     /**
@@ -125,65 +134,101 @@ class AttendanceList
     {
         return $this->title;
     }
-
+    
     /**
-     * Set isPublicTransport
+     * @return \DateTime|null
+     */
+    public function getStartDate(): ?\DateTime
+    {
+        return $this->startDate;
+    }
+    
+    /**
+     * @param \DateTime|null $startDate
+     * @return AttendanceList
+     */
+    public function setStartDate(?\DateTime $startDate = null)
+    {
+        if ($startDate) {
+            $this->startDate = clone $startDate;
+            $this->startDate->setTime(10, 0, 0);
+        } else {
+            $this->startDate = null;
+        }
+        return $this;
+    }
+
+    
+    
+    /**
+     * @return Collection|array|AttendanceListColumn[]
+     */
+    public function getColumns()
+    {
+        return $this->columns;
+    }
+    
+    /**
+     * Determine if list contains column
      *
-     * @param boolean $isPublicTransport
+     * @param AttendanceListColumn $column
+     * @return bool
+     */
+    public function hasColumn(AttendanceListColumn $column): bool
+    {
+        return $this->columns->contains($column);
+    }
+    
+    /**
+     * @param Collection|array|AttendanceListColumn[] $columns
+     * @return AttendanceList
+     */
+    public function setColumns(array $columns)
+    {
+        $this->columns = $columns;
+        return $this;
+    }
+    
+    /**
+     * Add column
+     *
+     * @param AttendanceListColumn $column
      *
      * @return AttendanceList
      */
-    public function setIsPublicTransport($isPublicTransport)
+    public function addColumn(AttendanceListColumn $column)
     {
-        $this->isPublicTransport = $isPublicTransport;
+        $this->columns->add($column);
+        if (!$column->hasList($this)) {
+            $column->addList($this);
+        }
 
         return $this;
     }
 
     /**
-     * Get isPublicTransport
+     * Remove column
      *
-     * @return boolean
+     * @param AttendanceListColumn $column
      */
-    public function getIsPublicTransport()
+    public function removeColumn(AttendanceListColumn $column)
     {
-        return $this->isPublicTransport;
-    }
-
-    /**
-     * Set isPaid
-     *
-     * @param boolean $isPaid
-     *
-     * @return AttendanceList
-     */
-    public function setIsPaid($isPaid)
-    {
-        $this->isPaid = $isPaid;
-
-        return $this;
-    }
-
-    /**
-     * Get isPaid
-     *
-     * @return boolean
-     */
-    public function getIsPaid()
-    {
-        return $this->isPaid;
+        $this->columns->removeElement($column);
     }
 
     /**
      * Add fillout
      *
-     * @param AttendanceListFillout $fillout
+     * @param AttendanceListParticipantFillout $fillout
      *
      * @return AttendanceList
      */
-    public function addFillout(AttendanceListFillout $fillout)
+    public function addFillout(AttendanceListParticipantFillout $fillout)
     {
         $this->fillouts[] = $fillout;
+        if ($fillout->getAttendanceList() !== $this) {
+            $fillout->setAttendanceList($this);
+        }
 
         return $this;
     }
@@ -191,9 +236,9 @@ class AttendanceList
     /**
      * Remove fillout
      *
-     * @param AttendanceListFillout $fillout
+     * @param AttendanceListParticipantFillout $fillout
      */
-    public function removeFillout(AttendanceListFillout $fillout)
+    public function removeFillout(AttendanceListParticipantFillout $fillout)
     {
         $this->fillouts->removeElement($fillout);
     }
