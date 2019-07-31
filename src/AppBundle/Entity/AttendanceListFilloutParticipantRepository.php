@@ -72,7 +72,7 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
                    ->from('attendance_list_column_choices', 'o')
                    ->innerJoin('o', 'attendance_list_column', 'c', 'c.column_id = o.column_id')
                    ->innerJoin('c', 'attendance_list_column_assignments', 's', 's.column_id = c.column_id')
-                   ->andWhere($qb->expr()->eq('s.list_id', $list->getEvent()->getEid()));
+                   ->andWhere($qb->expr()->eq('s.list_id', $list->getTid()));
                 $result  = $qb->execute();
                 $choices = [];
                 while ($row = $result->fetch()) {
