@@ -34,27 +34,34 @@ $(function () {
     };
 
     /**
+     * GLOBAL: Download-button handler
+     */
+    window.handleDownloadBtnClick = function (button) {
+        button.prop('disabled', true);
+
+        var url = button.attr('href'),
+            iframe = $("<iframe/>").attr({
+                src: url,
+                style: "display:none"
+
+            }).appendTo(button);
+
+        iframe.on('load', function () {
+            button.prop('disabled', false);
+            setTimeout(function () {
+                iframe.remove();
+            }, 1000)
+        });
+    };
+
+    /**
      * GLOBAL: Download-button
      */
     window.attachDownloadBtnListener = function () {
         $('.btn-download').on('click', function (e) {
             e.preventDefault();
             var button = $(this);
-            button.prop('disabled', true);
-
-            var url = this.getAttribute('href'),
-                iframe = $("<iframe/>").attr({
-                    src: url,
-                    style: "display:none"
-
-                }).appendTo(button);
-
-            iframe.on('load', function () {
-                button.prop('disabled', false);
-                setTimeout(function () {
-                    iframe.remove();
-                }, 1000)
-            });
+            handleDownloadBtnClick(button);
         });
     };
     window.attachDownloadBtnListener();

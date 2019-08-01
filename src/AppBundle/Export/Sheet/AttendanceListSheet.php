@@ -1,0 +1,253 @@
+<?php
+/**
+ * This file is part of the Juvem package.
+ *
+ * (c) Erik Theoboldt <erik@theoboldt.eu>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace AppBundle\Export\Sheet;
+
+
+use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\Participant;
+use AppBundle\Export\Sheet\Column\AbstractColumn;
+use AppBundle\Export\Sheet\Column\AcquisitionAttributeAttributeColumn;
+use AppBundle\Export\Sheet\Column\AttendanceListColumn;
+use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Style;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+class AttendanceListSheet extends AbstractSheet
+{
+    
+    /**
+     * The attendance list (containing event)
+     *
+     * @var AttendanceList
+     */
+    protected $list;
+    
+    /**
+     * Stores a list of Participant entities
+     *
+     * @var array
+     */
+    protected $participants;
+    
+    /**
+     * Filed attendance list data
+     *
+     * @var array
+     */
+    private $attendanceData;
+    
+    /**
+     * Group field
+     *
+     * @var null|Attribute
+     */
+    private $groupBy = null;
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(
+        Worksheet $sheet, AttendanceList $list, array $participants, array $attendanceData, ?Attribute $groupBy = null
+    )
+    {
+        $this->list           = $list;
+        $this->participants   = $participants;
+        $this->attendanceData = $attendanceData;
+        $this->groupBy        = $groupBy;
+        
+        parent::__construct($sheet);
+        $this->sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
+        
+        $this->addColumn(new EntityAttributeColumn('aid', 'AID'));
+        $this->addColumn(new EntityAttributeColumn('nameFirst', 'Vorname'));
+        $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
+        
+        if ($this->groupBy) {
+            $column = new AcquisitionAttributeAttributeColumn(
+                $this->groupBy->getName(), $this->groupBy->getManagementTitle(), $this->groupBy
+            );
+            $column->setWidth(12);
+            $column->addDataStyleCalback(
+                function ($style) {
+                    /** @var Style $style */
+                    $style->getAlignment()->setShrinkToFit(true);
+                }
+            );
+            $this->addColumn($column);
+        }
+        
+        foreach ($list->getColumns() as $listColumn) {
+            $column = new AttendanceListColumn(
+                'column_' . $listColumn->getColumnId(),
+                $listColumn->getTitle(),
+                $listColumn,
+                $this->attendanceData
+            );
+            $column->setNumberFormat(NumberFormat::FORMAT_TEXT);
+            $column->addHeaderStyleCallback(
+                function ($style) {
+                    /** @var Style $style */
+                    $style->getAlignment()->setTextRotation(45);
+                }
+            );
+            $column->addDataStyleCalback(
+                function ($style) {
+                    /** @var Style $style */
+                    
+                    $style->getBorders()->getLeft()->setBorderStyle(Border::BORDER_HAIR);
+                    $style->getBorders()->getRight()->setBorderStyle(Border::BORDER_HAIR);
+                    $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                }
+            );
+            $column->setWidth(4);
+            
+            $this->addColumn($column);
+        }
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeader(string $title = null, string $subtitle = null)
+    {
+        parent::setHeader(
+            $this->list->getTitle(), sprintf('Anwesenheitsliste (%s)', $this->list->getEvent()->getTitle())
+        );
+        parent::setColumnHeaders();
+        $this->sheet->getRowDimension(1)->setRowHeight(-1);
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setBody()
+    {
+        $previousParticipant = null;
+        
+        $textualAccessor = AdminMultipleExportController::provideTextualValueAccessor();
+        
+        /** @var Participant $participant */
+        foreach ($this->participants as $participant) {
+            $groupChange = false;
+            $row         = $this->row();
+            
+            if ($this->groupBy && $previousParticipant) {
+                $currentValue  = $textualAccessor($participant, $this->groupBy->getName());
+                $previousValue = $textualAccessor($previousParticipant, $this->groupBy->getName());
+                if ($currentValue != $previousValue) {
+                    if (!isset($columnIndex)) {
+                        $columnIndex = 1;
+                    }
+                    $groupChange = true;
+                    $this->sheet->setBreakByColumnAndRow(1, $row - 1, Worksheet::BREAK_ROW);
+                }
+            }
+            
+            /** @var EntityAttributeColumn $column */
+            foreach ($this->columnList as $column) {
+                $columnIndex = $column->getColumnIndex();
+                $cellStyle   = $this->sheet->getStyleByColumnAndRow($columnIndex, $row);
+                
+                $column->process($this->sheet, $row, $participant);
+                
+                $cellStyle->getAlignment()->setVertical(
+                    Alignment::VERTICAL_TOP
+                );
+                $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+                
+                $columnStyles = $column->getDataStyleCallbacks();
+                if (count($columnStyles)) {
+                    foreach ($columnStyles as $columnStyle) {
+                        if (!is_callable($columnStyle)) {
+                            throw new \InvalidArgumentException('Defined column style callback is not callable');
+                        }
+                        $columnStyle($cellStyle);
+                    }
+                }
+                if ($groupChange) {
+                    $cellStyle = $this->sheet->getStyleByColumnAndRow($columnIndex, $row - 1);
+                    $cellStyle->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
+                }
+            }
+            
+            $previousParticipant = $participant;
+        }
+        $this->sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, $this->columnMax);
+        $this->configureColumnsPostData();
+    }
+    
+    /**
+     * Apply column specific configurations
+     *
+     * @return void
+     */
+    private function configureColumnsPostData(): void
+    {
+        /** @var AbstractColumn $excelColumn */
+        foreach ($this->columnList as $excelColumn) {
+            $columnIndexString = Coordinate::stringFromColumnIndex($excelColumn->getColumnIndex());
+            $dataRange         = $columnIndexString . ($this->rowHeaderLine + 1) . ':' . $columnIndexString .
+                                 $this->rowMax;
+            
+            if ($excelColumn instanceof AttendanceListColumn) {
+                $listColumn      = $excelColumn->getListColumn();
+                $listColumnTitle = $listColumn->getTitle();
+                
+                $allowedValues = [];
+                $explanations  = [];
+                foreach ($listColumn->getChoices() as $choice) {
+                    $allowedValues[] = $choice->getShortTitle(true);
+                    $explanations[]  = $choice->getShortTitle(true) . ' -> ' . $choice->getTitle();
+                }
+                
+                $validation = new DataValidation();
+                $validation->setErrorStyle(DataValidation::STYLE_STOP)
+                           ->setAllowBlank(true)
+                           ->setType(DataValidation::TYPE_LIST)
+                           ->setFormula1('"' . implode(', ', $allowedValues) . '"')
+                           ->setShowDropDown(true)
+                           ->setShowErrorMessage(true)
+                           ->setErrorTitle('Option für ' . $listColumnTitle . ' nicht verfügbar')
+                           ->setError(
+                               'Die eingegebene Option ist für ' . $listColumnTitle .
+                               ' nicht verfügbar. So kann diese Anwesenheitsliste nicht mehr importiert werden. Wenn eine wichtige Option für ' .
+                               $listColumnTitle .
+                               ' fehlt, fügen Sie diese in Juvem hinzu, und erstellen Sie den Export erneut.'
+                           )
+                           ->setShowInputMessage(true)
+                           ->setPromptTitle($excelColumn->getListColumn()->getTitle())
+                           ->setPrompt(implode(", ", $explanations));
+                
+                $this->sheet->setDataValidation(
+                    $dataRange,
+                    $validation
+                );
+                //                $this->sheet->getstyle($dataRange)->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+            } else {
+                /*
+                $protection = $this->sheet->getstyle($dataRange)->getProtection();
+                $protection->setLocked(Protection::PROTECTION_PROTECTED);
+                $this->sheet->protectCells($dataRange, 'php');
+                */
+            }
+        }
+        
+        
+    }
+}

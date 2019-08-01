@@ -30,12 +30,55 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+  <div class="modal fade" tabindex="-1" role="dialog" id="modalExport">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Anwesenheitsliste exportieren</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="control-label">Gruppierung</label>
+            <form id="exportListForm">
+            <div class="radio">
+              <label for="exportGroupBy0">
+                <input type="radio" id="exportGroupBy0" name="exportGroupBy" value="" checked="checked">
+                Nicht gruppieren</label>
+            </div>
+            {% for attribute in event.acquisitionAttributes %}
+              {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+                <div class="radio">
+                  <label for="exportGroupBy{{ attribute.bid }}">
+                    <input type="radio" id="exportGroupBy{{ attribute.bid }}" name="exportGroupBy"
+                           value="{{ attribute.bid }}">
+                    {{ attribute.getManagementTitle(true) }}</label>
+                </div>
+              {% endif %}
+            {% endfor %}
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+          <a href="{{ path('event_attendance_fillout_export', {eid: event.eid, tid: list.tid}) }}"
+             class="btn btn-primary" target="_blank">
+            Export erstellen
+          </a>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar attendance-list-toolbar" role="toolbar">
           <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
              class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalExport">
+            {{ 'export'|glyph }} <span class="hidden-xs">Exportieren...</span>
+          </button>
           <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
             <label class="btn btn-info">
               <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
@@ -58,7 +101,7 @@
                        title="Der Wert der Spalte '{{ column.title }}' soll beim Filtern keine Rolle spielen"
                        data-toggle="tooltip" data-placement="top" data-trigger="hover">
                   <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}"
-                         data-column-id="{{ column.columnId }}" checked value="all"> Alle
+                         data-column-id="{{ column.columnId }}" checked value="all"> <i>Alle</i>
                 </label>
                 <label class="btn navbar-btn btn-default"
                        title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' nichts ausgewählt haben"
@@ -88,13 +131,13 @@
                          title="Der Wert des Feldes '{{ attribute.getManagementTitle(true) }}' soll beim Filtern keine Rolle spielen"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_all"
-                           data-bid="{{ attribute.bid }}" checked value="all"> Alle
+                           data-bid="{{ attribute.bid }}" checked value="all"> <i>Alle</i>
                   </label>
                   <label class="btn navbar-btn btn-default"
                          title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' nicht eingeteilt sind"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                       <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
-                             data-bid="{{ attribute.bid }}" value=""> Nichts
+                             data-bid="{{ attribute.bid }}" value=""> <i>Nichts</i>
                   </label>
                   {% for choice in attribute.choiceOptions %}
                     {% if not choice.deletedAt %}

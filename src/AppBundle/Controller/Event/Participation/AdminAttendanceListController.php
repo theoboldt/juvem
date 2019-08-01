@@ -10,14 +10,20 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\ParticipationRepository;
+use AppBundle\Export\AttendanceListExport;
+use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -260,5 +266,63 @@ class AdminAttendanceListController extends Controller
                 ['message' => 'Wenn nichts ausgewählt ist, kann kein Kommentar gespeichert werden']
             );
         }
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/export/{bid}", requirements={"eid": "\d+", "tid": "\d+", "bid": "\d+"}, name="event_attendance_fillout_export_grouped")
+     * @Security("is_granted('participants_read', event)")
+     * @param AttendanceList $list
+     * @param Attribute $attribute
+     * @return Response
+     */
+    public function exportAttendanceListGroupedAction(AttendanceList $list, ?Attribute $attribute = null): Response
+    {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participantList         = $participationRepository->participantsList($list->getEvent(), null, false, false);
+        
+        $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
+        $attendanceData    = $filloutRepository->fetchAttendanceListDataForList($list);
+    
+        if ($attribute) {
+            $participantList = ParticipationRepository::sortAndGroupParticipantList(
+                $participantList, null, $attribute->getName()
+            );
+        }
+        
+        $export = new AttendanceListExport(
+            $this->get('app.twig_global_customization'), $list, $participantList, $attendanceData, $this->getUser(), $attribute
+        );
+        $export->setMetadata();
+        $export->process();
+        
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $d = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $list->getTitle() . ' - Anwesenheitsliste.xlsx'
+        );
+        $response->headers->set('Content-Disposition', $d);
+        
+        return $response;
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/export", requirements={"eid": "\d+", "tid": "\d+"}, name="event_attendance_fillout_export")
+     * @Security("is_granted('participants_read', event)")
+     * @param AttendanceList $list
+     * @return Response
+     */
+    public function exportAttendanceListAction(AttendanceList $list): Response
+    {
+        return $this->exportAttendanceListGroupedAction($list, null);
     }
 }

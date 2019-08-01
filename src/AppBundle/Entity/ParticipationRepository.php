@@ -12,6 +12,7 @@
 namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -177,6 +178,56 @@ class ParticipationRepository extends EntityRepository
         $participations = $qb->getQuery()->execute();
 
         return $result;
+    }
+    
+    /**
+     * Apply sorting and grouping to participant list
+     *
+     * @param array|Participant[] $participants List of participants to process
+     * @param string|null $orderBy              Field to sort by
+     * @param string|null $groupBy              Field to group by (first sorting level)
+     * @return array|Participant[]
+     */
+    public static function sortAndGroupParticipantList(
+        array $participants, string $orderBy = null, string $groupBy = null
+    ): array
+    {
+        $extractTextualValue = AdminMultipleExportController::provideTextualValueAccessor();
+        $compareValues = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
+            $aValue = $extractTextualValue($a, $property);
+            $bValue = $extractTextualValue($b, $property);
+            
+            if ($aValue == $bValue) {
+                return 0;
+            }
+            return ($aValue < $bValue) ? -1 : 1;
+        };
+        
+        if ($groupBy || $orderBy) {
+            uasort(
+                $participants,
+                function (Participant $a, Participant $b) use ($groupBy, $orderBy, $compareValues) {
+                    $result = 0;
+                    if ($groupBy) {
+                        $result = $compareValues($a, $b, $groupBy);
+                    }
+                    if ($orderBy && (!$groupBy || $result === 0)) {
+                        $result = $compareValues($a, $b, $orderBy);
+                        
+                        if ($result === 0) {
+                            if ($orderBy === 'nameLast') {
+                                $result = $compareValues($a, $b, 'nameFirst');
+                            } elseif ($orderBy === 'nameFirst') {
+                                $result = $compareValues($a, $b, 'nameLast');
+                            }
+                        }
+                    }
+                    
+                    return $result;
+                }
+            );
+        }
+        return $participants;
     }
 
     /**

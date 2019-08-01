@@ -15,6 +15,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\ExportTemplate;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Export\Customized\Configuration as ExcelConfiguration;
 use AppBundle\Export\Customized\CustomizedExport;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
@@ -549,44 +550,8 @@ class AdminMultipleExportController extends Controller
                 return $include;
             }
         );
-
-        $extractTextualValue = self::provideTextualValueAccessor();
-        $compareValues       = function (Participant $a, Participant $b, string $property) use ($extractTextualValue) {
-            $aValue = $extractTextualValue($a, $property);
-            $bValue = $extractTextualValue($b, $property);
-
-            if ($aValue == $bValue) {
-                return 0;
-            }
-            return ($aValue < $bValue) ? -1 : 1;
-        };
-
-        if ($groupBy || $orderBy) {
-            uasort(
-                $participantList,
-                function (Participant $a, Participant $b) use ($groupBy, $orderBy, $compareValues) {
-                    $result = 0;
-                    if ($groupBy) {
-                        $result = $compareValues($a, $b, $groupBy);
-                    }
-                    if ($orderBy && (!$groupBy || $result === 0)) {
-                        $result = $compareValues($a, $b, $orderBy);
-
-                        if ($result === 0) {
-                            if ($orderBy === 'nameLast') {
-                                $result = $compareValues($a, $b, 'nameFirst');
-                            } elseif ($orderBy === 'nameFirst') {
-                                $result = $compareValues($a, $b, 'nameLast');
-                            }
-                        }
-                    }
-
-                    return $result;
-                }
-            );
-        }
-
-        return $participantList;
+    
+        return ParticipationRepository::sortAndGroupParticipantList($participantList, $orderBy, $groupBy);
     }
 
     /**

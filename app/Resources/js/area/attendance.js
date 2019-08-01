@@ -265,5 +265,16 @@ $(function () {
             });
         };
 
+        $('#modalExport .btn-primary').on('click', function (e) {
+            e.preventDefault();
+            var elBtn = $(this),
+                bid = $('#modalExport input[name=exportGroupBy]:checked').val(),
+                url = listId + '/export' + (bid ? '/' + bid : '');
+
+            elBtn.attr('href', url);
+
+            handleDownloadBtnClick(elBtn);
+            $('#modalExport').modal('hide');
+        });
     }
 });
