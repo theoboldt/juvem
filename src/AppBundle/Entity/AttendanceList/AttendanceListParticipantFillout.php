@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AttendanceList;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serialize;
@@ -35,7 +36,7 @@ class AttendanceListParticipantFillout
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Participant", inversedBy="attendanceListsFillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts", cascade={"all"})
      * @ORM\JoinColumn(name="participant_id", referencedColumnName="aid", onDelete="cascade", nullable=false)
      * @var Participant
      */
@@ -43,7 +44,7 @@ class AttendanceListParticipantFillout
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AttendanceListColumn", inversedBy="fillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="fillouts", cascade={"all"})
      * @ORM\JoinColumn(name="column_id", referencedColumnName="column_id", onDelete="cascade", nullable=false)
      * @var Participant
      */
@@ -85,14 +86,6 @@ class AttendanceListParticipantFillout
         if ($participant) {
             $participant->addAttendanceListsFillout($this);
         }
-    }
-    
-    /**
-     * @return int|null
-     */
-    public function getListFilloutId(): ?int
-    {
-        return $this->listFilloutId;
     }
     
     /**

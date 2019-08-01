@@ -8,8 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AttendanceList;
 
+use AppBundle\Entity\Participant;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;

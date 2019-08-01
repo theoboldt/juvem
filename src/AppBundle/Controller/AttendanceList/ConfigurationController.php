@@ -10,24 +10,17 @@
 
 namespace AppBundle\Controller\AttendanceList;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AttendanceListColumn;
-use AppBundle\Entity\AttendanceListColumnChoice;
-use AppBundle\Form\AcquisitionFormulaType;
-use AppBundle\Form\AcquisitionType;
+use AppBundle\Entity\AttendanceList\AttendanceListColumn;
+use AppBundle\Entity\AttendanceList\AttendanceListColumnChoice;
+use AppBundle\Entity\AttendanceList\AttendanceListColumnRepository;
 use AppBundle\Form\AttendanceListColumnType;
-use AppBundle\Form\GroupType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,6 +43,7 @@ class ConfigurationController extends Controller
      */
     public function columnListDataAction(): Response
     {
+        /** @var AttendanceListColumnRepository $repository */
         $repository = $this->getDoctrine()->getRepository(AttendanceListColumn::class);
         $result     = $repository->findAllForList();
         
@@ -67,7 +61,7 @@ class ConfigurationController extends Controller
     /**
      * Show column details
      *
-     * @ParamConverter("column", class="AppBundle\Entity\AttendanceListColumn", options={"id" = "column_id"})
+     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
      * @Route("/admin/attendance/columns/{column_id}", requirements={"column_id": "\d+"}, name="attendance_column_detail")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column
@@ -86,7 +80,7 @@ class ConfigurationController extends Controller
     /**
      * Edit column
      *
-     * @ParamConverter("column", class="AppBundle\Entity\AttendanceListColumn", options={"id" = "column_id"})
+     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
      * @Route("/admin/attendance/columns/{column_id}/edit", requirements={"column_id": "\d+"}, name="attendance_column_edit")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column

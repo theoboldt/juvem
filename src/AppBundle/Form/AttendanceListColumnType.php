@@ -10,9 +10,7 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AttendanceListColumn;
-use AppBundle\Entity\AttendanceListColumnChoice;
-use AppBundle\Entity\Participation;
+use AppBundle\Entity\AttendanceList\AttendanceListColumn;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,7 +22,7 @@ class AttendanceListColumnType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var AttendanceListColumn $column */
+        /** @var \AppBundle\Entity\AttendanceList\AttendanceListColumn $column */
         $column = $options['data'];
         
         $builder->add(

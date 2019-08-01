@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
+use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
@@ -111,7 +112,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Contains the list of attendance lists fillouts of this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListParticipantFillout", mappedBy="participant", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout", mappedBy="participant", cascade={"all"})
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $attendanceListsFillouts;

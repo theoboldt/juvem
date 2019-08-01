@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AttendanceList;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,13 +36,13 @@ class AttendanceList
     protected $tid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Event", inversedBy="attendanceLists", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="attendanceLists", cascade={"all"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      */
     protected $event;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListParticipantFillout", mappedBy="attendanceList", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AttendanceListParticipantFillout", mappedBy="attendanceList", cascade={"remove"})
      */
     protected $fillouts;
 

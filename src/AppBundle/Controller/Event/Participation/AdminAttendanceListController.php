@@ -10,8 +10,8 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\Entity\AttendanceList;
-use AppBundle\Entity\AttendanceListParticipantFillout;
+use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -149,7 +149,7 @@ class AdminAttendanceListController extends Controller
      * View an attendance list
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                    name="event_attendance_details")
      * @Security("is_granted('participants_read', event)")
@@ -167,7 +167,7 @@ class AdminAttendanceListController extends Controller
     
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"GET"}, name="event_attendance_fillout_data")
      * @Security("is_granted('participants_read', event)")
      * @param Event $event
@@ -186,7 +186,7 @@ class AdminAttendanceListController extends Controller
     
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_update")
      * @Security("is_granted('participants_edit', event)")
      * @param Event $event
@@ -225,7 +225,7 @@ class AdminAttendanceListController extends Controller
     
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("list", class="AppBundle:AttendanceList", options={"id" = "tid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/comment.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_comment")
      * @Security("is_granted('participants_edit', event)")
      * @param Event $event

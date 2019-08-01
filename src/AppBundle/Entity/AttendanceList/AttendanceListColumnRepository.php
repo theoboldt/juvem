@@ -9,7 +9,7 @@
  */
 
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AttendanceList;
 
 use Doctrine\ORM\EntityRepository;
 

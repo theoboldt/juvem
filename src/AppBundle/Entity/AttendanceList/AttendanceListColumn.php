@@ -8,14 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\AttendanceList;
 
-use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use libphonenumber\PhoneNumberToTimeZonesMapper;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
 
@@ -23,7 +21,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list_column")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\AttendanceListColumnRepository")
+ * @ORM\Entity(repositoryClass="AttendanceListColumnRepository")
  */
 class AttendanceListColumn
 {
@@ -52,7 +50,7 @@ class AttendanceListColumn
     protected $choices;
     
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceListParticipantFillout", mappedBy="column", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AttendanceListParticipantFillout", mappedBy="column", cascade={"remove"})
      */
     protected $fillouts;
     

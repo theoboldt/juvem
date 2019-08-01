@@ -10,12 +10,8 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AttendanceListColumn;
-use AppBundle\Entity\AttendanceListColumnChoice;
-use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
-use AppBundle\Form\Transformer\AcquistionFormulaTransformer;
+use AppBundle\Entity\AttendanceList\AttendanceListColumn;
+use AppBundle\Entity\AttendanceList\AttendanceListColumnChoice;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

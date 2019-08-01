@@ -11,9 +11,11 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AttendanceList\AttendanceList;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
@@ -228,7 +230,8 @@ class Event
     /**
      * Contains the list of attendance lists assigned to the event
      *
-     * @ORM\OneToMany(targetEntity="AttendanceList", mappedBy="event", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\AttendanceList\AttendanceList", mappedBy="event", cascade={"remove"})
+     * @var Collection
      */
     protected $attendanceLists;
 
@@ -247,7 +250,7 @@ class Event
     protected $participantsConfirmedCount = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|User[]
+     * @var Collection|User[]
      *
      * @ORM\ManyToMany(targetEntity="User", mappedBy="subscribedEvents")
      */
@@ -256,7 +259,7 @@ class Event
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"persist",
      *                                                                     "remove"})
-     * @var \Doctrine\Common\Collections\Collection|EventUserAssignment[]
+     * @var Collection|EventUserAssignment[]
      */
     protected $userAssignments;
 
@@ -671,7 +674,7 @@ class Event
     /**
      * Get participations
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getParticipations()
     {
@@ -705,7 +708,7 @@ class Event
     /**
      * Get galleryImages
      *
-     * @return \Doctrine\Common\Collections\Collection|GalleryImage[]
+     * @return Collection|GalleryImage[]
      */
     public function getGalleryImages()
     {
@@ -1010,7 +1013,7 @@ class Event
     /**
      * Get attendanceLists
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getAttendanceLists()
     {
@@ -1050,7 +1053,7 @@ class Event
     /**
      * Get subscribers
      *
-     * @return \Doctrine\Common\Collections\Collection|User[]
+     * @return Collection|User[]
      */
     public function getSubscribers()
     {
@@ -1069,7 +1072,7 @@ class Event
     }
 
     /**
-     * @return EventUserAssignment[]|\Doctrine\Common\Collections\Collection
+     * @return EventUserAssignment[]|Collection
      */
     public function getUserAssignments()
     {
