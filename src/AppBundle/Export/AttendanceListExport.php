@@ -117,8 +117,11 @@ class AttendanceListExport extends Export
         );
         $participantsSheet->process();
         
-        $list = reset($this->lists);
-        $sheet->setTitle($list->getEvent()->getTitle());
+        $titles     = [];
+        foreach ($this->lists as $list) {
+            $titles[]   = $list->getTitle();
+        }
+        $sheet->setTitle(implode(', ', $titles));
         
         parent::process();
     }

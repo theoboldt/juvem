@@ -301,6 +301,7 @@ $(function () {
             elBtn.attr('href', url);
 
             handleDownloadBtnClick(elBtn);
+            elBtn.off();
             modalExportMultiple.modal('hide');
         });
     });

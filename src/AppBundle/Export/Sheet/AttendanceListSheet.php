@@ -23,6 +23,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
@@ -112,6 +114,7 @@ class AttendanceListSheet extends AbstractSheet
                     function ($style) {
                         /** @var Style $style */
                         $style->getAlignment()->setTextRotation(45);
+                        $style->getBorders()->getRight()->setBorderStyle(Border::BORDER_THIN);
                     }
                 );
                 $column->addDataStyleCalback(
@@ -120,7 +123,6 @@ class AttendanceListSheet extends AbstractSheet
                         
                         $style->getBorders()->getLeft()->setBorderStyle(Border::BORDER_HAIR);
                         $style->getBorders()->getRight()->setBorderStyle(Border::BORDER_HAIR);
-                        $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     }
                 );
                 $column->setWidth(4);
@@ -208,7 +210,6 @@ class AttendanceListSheet extends AbstractSheet
             $previousParticipant = $participant;
         }
         $this->sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, $this->columnMax);
-        $this->configureColumnsPostData();
     }
     
     /**
@@ -218,11 +219,15 @@ class AttendanceListSheet extends AbstractSheet
      */
     private function configureColumnsPostData(): void
     {
+        $highestDataRow = $this->rowMax;
+        $rowColumnId    = $this->row();
+        $rowTableId     = $this->row();
+        
         /** @var AbstractColumn $excelColumn */
         foreach ($this->columnList as $excelColumn) {
             $columnIndexString = Coordinate::stringFromColumnIndex($excelColumn->getColumnIndex());
-            $dataRange         = $columnIndexString . ($this->rowHeaderLine + 1) . ':' . $columnIndexString .
-                                 $this->rowMax;
+            $dataRange         = $columnIndexString . ($this->rowHeaderLine + 2) . ':' . $columnIndexString .
+                                 ($highestDataRow-1);
             
             if ($excelColumn instanceof AttendanceListColumn) {
                 $listColumn      = $excelColumn->getListColumn();
@@ -257,6 +262,17 @@ class AttendanceListSheet extends AbstractSheet
                     $dataRange,
                     $validation
                 );
+                
+                //add ids to bottom
+                $this->sheet->setCellValueByColumnAndRow(
+                    $excelColumn->getColumnIndex(), $rowColumnId, $listColumn->getColumnId()
+                );
+                $this->sheet->setCellValueByColumnAndRow($excelColumn->getColumnIndex(), $rowTableId, rand(0, 10));
+                $style = $this->sheet->getStyleByColumnAndRow(
+                    $excelColumn->getColumnIndex(), $rowColumnId, $excelColumn->getColumnIndex(), $rowTableId
+                );
+                $style->getFill()->setFillType(Fill::FILL_SOLID)->setStartColor(new Color(Color::COLOR_RED));
+
                 //                $this->sheet->getstyle($dataRange)->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
             } else {
                 /*
@@ -266,7 +282,31 @@ class AttendanceListSheet extends AbstractSheet
                 */
             }
         }
-        
-        
+        $this->sheet->getColumnDimensionByColumn(1)->setVisible(false);
+        $this->sheet->getRowDimension($rowColumnId)->setVisible(false);
+        $this->sheet->getRowDimension($rowTableId)->setVisible(false);
     }
+    
+    /**
+     * Set the footer of this sheet if any
+     *
+     * @return $this
+     */
+    public function setFooter()
+    {
+        parent::setFooter();
+        $this->configureColumnsPostData();
+    }
+    
+    /**
+     * Provide footer text
+     *
+     * @param string|null $title    Title
+     * @param string|null $subtitle Sub title
+     * @return string
+     */
+    protected function provideFooterText(string $title = null, string $subtitle = null) {
+        return sprintf('&L %s - &B %s &"-,Regular" &R &P/&N', $title, $subtitle);
+    }
+
 }
