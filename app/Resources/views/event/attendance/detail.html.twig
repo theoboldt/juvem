@@ -78,7 +78,7 @@
              class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
           {% if list.startDate %}
           <a href="{{ path('event_attendance_followup', {eid: event.eid, tid: list.tid}) }}"
-             class="btn btn-default">{{ 'share-alt'|glyph }}<span class="hidden-xs"> Nachfolger erstellen</span></a>
+             class="btn btn-default">{{ 'share-alt'|glyph }}<span class="hidden-xs"> Nachfolger erstellen...</span></a>
           {% endif %}
           <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#attendance-filters"
                   aria-expanded="false" aria-controls="attendance-filters">
