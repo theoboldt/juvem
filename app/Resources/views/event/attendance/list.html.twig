@@ -10,6 +10,53 @@
             <li class="active">Anwesenheitslisten</li>
         {% endblock %}
     {% endembed %}
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalExportMultiple">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Anwesenheitslisten exportieren</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label">Kombinieren</label>
+                        <ul>
+
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Gruppierung</label>
+                        <form id="exportListForm">
+                            <div class="radio">
+                                <label for="exportGroupBy0">
+                                    <input type="radio" id="exportGroupBy0" name="exportGroupBy" value=""
+                                           checked="checked">
+                                    Nicht gruppieren</label>
+                            </div>
+                            {% for attribute in event.acquisitionAttributes %}
+                                {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+                                    <div class="radio">
+                                        <label for="exportGroupBy{{ attribute.bid }}">
+                                            <input type="radio" id="exportGroupBy{{ attribute.bid }}"
+                                                   name="exportGroupBy"
+                                                   value="{{ attribute.bid }}">
+                                            {{ attribute.getManagementTitle(true) }}</label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                    <a href="#" target="_blank" class="btn btn-primary">Export erstellen</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -17,8 +64,11 @@
                     <div class="form-group">
                         <a class="btn btn-primary"
                            href="{{ path('event_attendance_list_new', {'eid': event.eid }) }}">{{ 'plus'|glyph }}
-                            Neu</a>
+                            <span class="hidden-xs">Neu</span></a>
                     </div>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalExportMultiple">
+                        {{ 'export'|glyph }} <span class="hidden-xs">Exportieren...</span>
+                    </button>
                 </div>
                 <table id="eventAttendanceListTable" class="table table-striped table-remote-content"
                        data-id-field="tid" data-toggle="table" data-cache="false" data-pagination="true"
@@ -29,6 +79,7 @@
                        data-sort-name="title" data-sort-order="asc">
                     <thead>
                     <tr>
+                        <th data-field="state" data-checkbox="true"></th>
                         <th data-field="tid" data-sortable="true" data-visible="false">#T</th>
                         <th data-field="eid" data-sortable="true" data-visible="false">E</th>
                         <th data-field="title" data-sortable="true">Titel</th>

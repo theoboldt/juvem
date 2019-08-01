@@ -23,23 +23,23 @@ class AttendanceListExport extends Export
     /**
      * The attendance list (containing event)
      *
-     * @var AttendanceList
+     * @var array|AttendanceList[]
      */
-    protected $list;
+    protected $lists = [];
     
     /**
      * Stores a list of Participant entities
      *
      * @var array
      */
-    protected $participants;
+    protected $participants = [];
     
     /**
      * Filed attendance list data
      *
      * @var array
      */
-    private $attendanceData;
+    private $attendanceData = [];
     /**
      * Group field
      *
@@ -51,7 +51,7 @@ class AttendanceListExport extends Export
      * ParticipationsExport constructor.
      *
      * @param GlobalCustomization $customization Customization provider in order to eg. add company information
-     * @param AttendanceList $list               Attendance list
+     * @param array|AttendanceList[] $lists      Attendance lists to export
      * @param array $participants                List of participants qualified for export
      * @param array $attendanceData              Filed attendance list data
      * @param User|null $modifier                Modifier/creator of export
@@ -59,14 +59,17 @@ class AttendanceListExport extends Export
      */
     public function __construct(
         $customization,
-        AttendanceList $list,
+        $lists,
         array $participants,
         array $attendanceData,
         User $modifier,
         ?Attribute $groupBy = null
     )
     {
-        $this->list           = $list;
+        $this->lists = $lists;
+        if (!count($this->lists)) {
+            throw new \InvalidArgumentException('Must provide multiple lists for export');
+        }
         $this->participants   = $participants;
         $this->attendanceData = $attendanceData;
         $this->groupBy        = $groupBy;
@@ -80,15 +83,24 @@ class AttendanceListExport extends Export
     {
         parent::setMetadata();
         
+        $titles     = [];
+        $eventTitle = '';
+        
+        foreach ($this->lists as $list) {
+            $titles[]   = $list->getTitle();
+            $eventTitle = $list->getEvent()->getTitle();
+        }
+        
         $this->document->getProperties()
-                       ->setTitle($this->list->getTitle());
+                       ->setTitle(implode(', ', $titles));
         $this->document->getProperties()
-                       ->setSubject($this->list->getEvent()->getTitle());
+                       ->setSubject($eventTitle);
         $this->document->getProperties()
                        ->setDescription(
                            sprintf(
-                               'Anwesenheitsliste "%s" für Veranstaltung "%s"', $this->list->getTitle(),
-                               $this->list->getEvent()->getTitle()
+                               'Anwesenheitsliste "%s" für Veranstaltung "%s"',
+                               implode('", "', $titles),
+                               $eventTitle
                            )
                        );
     }
@@ -101,11 +113,12 @@ class AttendanceListExport extends Export
         $sheet = $this->addSheet();
         
         $participantsSheet = new AttendanceListSheet(
-            $sheet, $this->list, $this->participants, $this->attendanceData, $this->groupBy
+            $sheet, $this->lists, $this->participants, $this->attendanceData, $this->groupBy
         );
         $participantsSheet->process();
         
-        $sheet->setTitle($this->list->getTitle());
+        $list = reset($this->lists);
+        $sheet->setTitle($list->getEvent()->getTitle());
         
         parent::process();
     }

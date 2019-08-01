@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\AttendanceList\AttendanceListFilloutParticipantRepository;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -324,11 +325,77 @@ class AdminAttendanceListController extends Controller
      */
     public function exportAttendanceListGroupedAction(AttendanceList $list, ?Attribute $attribute = null): Response
     {
+        return $this->createExportResponse([$list], $attribute);
+    }
+    
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/export", requirements={"eid": "\d+", "tid": "\d+"}, name="event_attendance_fillout_export")
+     * @Security("is_granted('participants_read', event)")
+     * @param AttendanceList $list
+     * @return Response
+     */
+    public function exportAttendanceListAction(AttendanceList $list): Response
+    {
+        return $this->exportAttendanceListGroupedAction($list, null);
+    }
+    
+    /**
+     * Create export of multiple lists
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/event/{eid}/attendance/export-multiple/0/{listids}", requirements={"eid": "\d+", "listids": "[\d,]+"})
+     * @Route("/admin/event/{eid}/attendance/export-multiple/{bid}/{listids}", requirements={"eid": "\d+", "bid":"^[1-9]\d*$", "listids": "[\d,]+"})
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Attribute $attribute
+     * @param Request $request
+     * @return Response
+     */
+    public function exportMultipleAttendanceListsAction(Request $request, Event $event, ?Attribute $attribute = null): Response
+    {
+        $listIds = array_map(
+            function ($listId) {
+                return (int)$listId;
+            }, explode(',', $request->get('listids'))
+        );
+        
+        /** @var AttendanceListFilloutParticipantRepository $filloutRepository */
+        $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
+        $lists             = $filloutRepository->findByIds($listIds);
+        
+        return $this->createExportResponse($lists, $attribute);
+    }
+    
+    /**
+     * Create a attendance list export
+     *
+     * @param array|AttendanceList[] $lists Lists to include in export
+     * @param Attribute|null $attribute
+     * @return Response
+     */
+    private function createExportResponse(array $lists, ?Attribute $attribute = null): Response
+    {
+        if (!count($lists)) {
+            throw new BadRequestHttpException('No lists configured for export');
+        }
+        /** @var AttendanceList $list */
+        $list  = reset($lists);
+        $event = $list->getEvent();
+        
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($list->getEvent(), null, false, false);
+        $participantList         = $participationRepository->participantsList($event, null, false, false);
         
         $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
-        $attendanceData    = $filloutRepository->fetchAttendanceListDataForList($list);
+        $attendanceData    = [];
+        foreach ($lists as $list) {
+            if ($list->getEvent()->getEid() !== $event->getEid()) {
+                throw new BadRequestHttpException('Export of lists of different events requested');
+            }
+            $attendanceData[$list->getTid()] = $filloutRepository->fetchAttendanceListDataForList($list);
+        }
         
         if ($attribute) {
             $participantList = ParticipationRepository::sortAndGroupParticipantList(
@@ -337,7 +404,7 @@ class AdminAttendanceListController extends Controller
         }
         
         $export = new AttendanceListExport(
-            $this->get('app.twig_global_customization'), $list, $participantList, $attendanceData, $this->getUser(),
+            $this->get('app.twig_global_customization'), $lists, $participantList, $attendanceData, $this->getUser(),
             $attribute
         );
         $export->setMetadata();
@@ -356,18 +423,5 @@ class AdminAttendanceListController extends Controller
         $response->headers->set('Content-Disposition', $d);
         
         return $response;
-    }
-    
-    /**
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
-     * @Route("/admin/event/{eid}/attendance/{tid}/export", requirements={"eid": "\d+", "tid": "\d+"}, name="event_attendance_fillout_export")
-     * @Security("is_granted('participants_read', event)")
-     * @param AttendanceList $list
-     * @return Response
-     */
-    public function exportAttendanceListAction(AttendanceList $list): Response
-    {
-        return $this->exportAttendanceListGroupedAction($list, null);
     }
 }

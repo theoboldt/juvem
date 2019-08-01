@@ -32,11 +32,11 @@ class AttendanceListSheet extends AbstractSheet
 {
     
     /**
-     * The attendance list (containing event)
+     * The attendance lists (containing event)
      *
-     * @var AttendanceList
+     * @var array|AttendanceList[]
      */
-    protected $list;
+    protected $lists = [];
     
     /**
      * Stores a list of Participant entities
@@ -63,10 +63,10 @@ class AttendanceListSheet extends AbstractSheet
      * {@inheritdoc}
      */
     public function __construct(
-        Worksheet $sheet, AttendanceList $list, array $participants, array $attendanceData, ?Attribute $groupBy = null
+        Worksheet $sheet, array $lists, array $participants, array $attendanceData, ?Attribute $groupBy = null
     )
     {
-        $this->list           = $list;
+        $this->lists          = $lists;
         $this->participants   = $participants;
         $this->attendanceData = $attendanceData;
         $this->groupBy        = $groupBy;
@@ -92,33 +92,43 @@ class AttendanceListSheet extends AbstractSheet
             $this->addColumn($column);
         }
         
-        foreach ($list->getColumns() as $listColumn) {
-            $column = new AttendanceListColumn(
-                'column_' . $listColumn->getColumnId(),
-                $listColumn->getTitle(),
-                $listColumn,
-                $this->attendanceData
-            );
-            $column->setNumberFormat(NumberFormat::FORMAT_TEXT);
-            $column->addHeaderStyleCallback(
-                function ($style) {
-                    /** @var Style $style */
-                    $style->getAlignment()->setTextRotation(45);
+        $multipleLists = count($this->lists) > 1;
+        foreach ($this->lists as $list) {
+            foreach ($list->getColumns() as $listColumn) {
+                $columnTitle = '';
+                if ($multipleLists) {
+                    $columnTitle = $list->getTitle() . ' - ';
                 }
-            );
-            $column->addDataStyleCalback(
-                function ($style) {
-                    /** @var Style $style */
-                    
-                    $style->getBorders()->getLeft()->setBorderStyle(Border::BORDER_HAIR);
-                    $style->getBorders()->getRight()->setBorderStyle(Border::BORDER_HAIR);
-                    $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                }
-            );
-            $column->setWidth(4);
-            
-            $this->addColumn($column);
+                $columnTitle .= $listColumn->getTitle();
+                
+                $column = new AttendanceListColumn(
+                    $list->getTid() . '_column_' . $listColumn->getColumnId(),
+                    $columnTitle,
+                    $listColumn,
+                    $this->attendanceData[$list->getTid()]
+                );
+                $column->setNumberFormat(NumberFormat::FORMAT_TEXT);
+                $column->addHeaderStyleCallback(
+                    function ($style) {
+                        /** @var Style $style */
+                        $style->getAlignment()->setTextRotation(45);
+                    }
+                );
+                $column->addDataStyleCalback(
+                    function ($style) {
+                        /** @var Style $style */
+                        
+                        $style->getBorders()->getLeft()->setBorderStyle(Border::BORDER_HAIR);
+                        $style->getBorders()->getRight()->setBorderStyle(Border::BORDER_HAIR);
+                        $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    }
+                );
+                $column->setWidth(4);
+                
+                $this->addColumn($column);
+            }
         }
+        
     }
     
     /**
@@ -126,8 +136,17 @@ class AttendanceListSheet extends AbstractSheet
      */
     public function setHeader(string $title = null, string $subtitle = null)
     {
+        
+        $titles     = [];
+        $eventTitle = '';
+        
+        foreach ($this->lists as $list) {
+            $titles[]   = $list->getTitle();
+            $eventTitle = $list->getEvent()->getTitle();
+        }
+        
         parent::setHeader(
-            $this->list->getTitle(), sprintf('Anwesenheitsliste (%s)', $this->list->getEvent()->getTitle())
+            implode(', ', $titles), sprintf('Anwesenheitsliste (%s)', $eventTitle)
         );
         parent::setColumnHeaders();
         $this->sheet->getRowDimension(1)->setRowHeight(-1);

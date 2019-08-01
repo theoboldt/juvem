@@ -277,4 +277,32 @@ $(function () {
             $('#modalExport').modal('hide');
         });
     }
+
+    var modalExportMultiple = $('#modalExportMultiple');
+    modalExportMultiple.on('show.bs.modal', function () {
+        var modalEl = $('#modalExportMultiple'),
+            lists = $('#eventAttendanceListTable').bootstrapTable('getAllSelections'),
+            listEl = modalEl.find('ul'),
+            listIds = [];
+
+        listEl.html('');
+        $.each(lists, function (key, list) {
+            listIds.push(list.tid);
+            listEl.append('<li>' + eHtml(list.title) + '</li>');
+        });
+        $('#modalExportMultiple .btn-primary').on('click', function (e) {
+            e.preventDefault();
+            var elBtn = $(this),
+                bid = $('#modalExportMultiple input[name=exportGroupBy]:checked').val(),
+                url = 'attendance/export-multiple/' + (bid ? bid : '0') + '/';
+
+            url += listIds.join(',');
+
+            elBtn.attr('href', url);
+
+            handleDownloadBtnClick(elBtn);
+            modalExportMultiple.modal('hide');
+        });
+    });
+
 });

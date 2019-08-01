@@ -14,6 +14,7 @@ use AppBundle\Entity\Participant;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 
 class AttendanceListFilloutParticipantRepository extends EntityRepository
 {
@@ -193,4 +194,24 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
         
         return $result;
     }
+    
+    /**
+     * Fetch all by id
+     *
+     * @param array|int[] $tids
+     * @return array|AttendanceList[]
+     */
+    public function findByIds(array $tids): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('attendance_list', 'event', 'columns', 'choices')
+           ->from(AttendanceList::class, 'attendance_list')
+            ->innerJoin('attendance_list.event', 'event')
+            ->innerJoin('attendance_list.columns', 'columns')
+            ->innerJoin('columns.choices', 'choices')
+           ->where($qb->expr()->in('attendance_list.tid', $tids));
+        
+        return $qb->getQuery()->execute();
+    }
+    
 }
