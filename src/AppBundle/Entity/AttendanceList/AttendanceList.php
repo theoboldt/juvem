@@ -68,14 +68,17 @@ class AttendanceList
      * @var \DateTime|null
      */
     protected $startDate;
-
+    
     /**
      * Constructor
+     *
+     * @param Event|null $event
      */
-    public function __construct()
+    public function __construct(?Event $event = null)
     {
         $this->fillouts = new ArrayCollection();
         $this->columns  = new ArrayCollection();
+        $this->event    = $event;
     }
 
     /**
@@ -141,6 +144,7 @@ class AttendanceList
      */
     public function getStartDate(): ?\DateTime
     {
+        $this->startDate->setTime(10, 0, 0);
         return $this->startDate;
     }
     

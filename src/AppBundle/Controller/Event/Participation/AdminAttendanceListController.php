@@ -77,7 +77,7 @@ class AdminAttendanceListController extends Controller
                         'eid'        => $eid,
                         'title'      => $list->getTitle(),
                         'startDate'  => $list->getStartDate()
-                            ? $list->getStartDate()->format(Event::DATE_FORMAT_DATE_TIME)
+                            ? $list->getStartDate()->format(Event::DATE_FORMAT_DATE)
                             : null,
                         'createdAt'  => $list->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
                         'modifiedAt' => $modifiedAt,
@@ -97,8 +97,52 @@ class AdminAttendanceListController extends Controller
      */
     public function newAction(Event $event, Request $request)
     {
-        $list = new AttendanceList();
+        $list = new AttendanceList($event);
+        $form = $this->createForm(AttendanceListType::class, $list);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($list);
+            $em->flush();
+            
+            return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
+        }
+        
+        return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
+    }
+    
+    /**
+     * Create a new attendance list
+     *
+     * @ParamConverter("previous", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/attendance/{tid}/followup", requirements={"eid": "\d+", "tid": "\d+"},
+     *                                                    name="event_attendance_followup")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function createFollowupAction(Event $event, AttendanceList $previous, Request $request)
+    {
+        $list = new AttendanceList($event);
         $list->setEvent($event);
+        if (preg_match('/^(?P<title>.*)(\s*)(\d+)\.(\d+)\.(\d+)(\s*)$/', $previous->getTitle(), $matches)) {
+            $title = trim($matches['title']);
+        } else {
+            $title = $previous->getTitle();
+        }
+        if ($previous->getStartDate()) {
+            $date = clone $previous->getStartDate();
+            $date->modify('+1 day');
+            $list->setStartDate($date);
+            
+            $title .= ' ' . $date->format(\AppBundle\Entity\Event::DATE_FORMAT_DATE);
+        }
+        $list->setTitle($title);
+        
+        foreach ($previous->getColumns() as $column) {
+            $list->addColumn($column);
+        }
         
         $form = $this->createForm(AttendanceListType::class, $list);
         
@@ -285,7 +329,7 @@ class AdminAttendanceListController extends Controller
         
         $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $attendanceData    = $filloutRepository->fetchAttendanceListDataForList($list);
-    
+        
         if ($attribute) {
             $participantList = ParticipationRepository::sortAndGroupParticipantList(
                 $participantList, null, $attribute->getName()
@@ -293,7 +337,8 @@ class AdminAttendanceListController extends Controller
         }
         
         $export = new AttendanceListExport(
-            $this->get('app.twig_global_customization'), $list, $participantList, $attendanceData, $this->getUser(), $attribute
+            $this->get('app.twig_global_customization'), $list, $participantList, $attendanceData, $this->getUser(),
+            $attribute
         );
         $export->setMetadata();
         $export->process();
