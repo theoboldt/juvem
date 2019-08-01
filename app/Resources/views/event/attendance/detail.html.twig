@@ -76,6 +76,10 @@
         <div class="btn-toolbar attendance-list-toolbar" role="toolbar">
           <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
              class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+          <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#attendance-filters"
+                  aria-expanded="false" aria-controls="attendance-filters">
+            {{ 'filter'|glyph }}<span class="hidden-xs"> Filter </span><span class="caret"></span>
+          </button>
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalExport">
             {{ 'export'|glyph }} <span class="hidden-xs">Exportieren...</span>
           </button>
@@ -92,25 +96,31 @@
           </span>
           </div>
         </div>
-        <nav class="navbar navbar-default" id="attendance-filters">
+      </div>
+    </div>
+  </div>
+  <div class="container container-sm-no-padding">
+    <div class="row">
+      <div class="col-xs-12">
+        <nav class="navbar navbar-default collapse" id="attendance-filters">
           {% for column in list.columns %}
             <div class="navbar-form navbar-left filter filter-column" data-column-id="{{ column.columnId }}">
               <p class="navbar-text">{{ column.title }}</p>
               <div class="btn-group" data-toggle="buttons">
-                <label class="btn navbar-btn btn-default active"
+                <label class="btn btn-sm navbar-btn btn-default active"
                        title="Der Wert der Spalte '{{ column.title }}' soll beim Filtern keine Rolle spielen"
                        data-toggle="tooltip" data-placement="top" data-trigger="hover">
                   <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}"
                          data-column-id="{{ column.columnId }}" checked value="all"> <i>Alle</i>
                 </label>
-                <label class="btn navbar-btn btn-default"
+                <label class="btn btn-sm navbar-btn btn-default"
                        title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' nichts ausgewählt haben"
                        data-toggle="tooltip" data-placement="top" data-trigger="hover">
                   <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}_0"
                          data-column-id="{{ column.columnId }}" value="0"> <i>Nichts</i>
                 </label>
                 {% for choice in column.choices %}
-                  <label class="btn navbar-btn btn-default"
+                  <label class="btn btn-sm navbar-btn btn-default"
                          title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' keine Option oder '{{ choice.title }}' ausgewählt haben"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <input type="radio" name="column_{{ column.columnId }}"
@@ -127,13 +137,13 @@
               <div class="navbar-form navbar-left filter filter-group" data-bid="{{ attribute.bid }}">
                 <p class="navbar-text">{{ attribute.getManagementTitle(true) }}</p>
                 <div class="btn-group" data-toggle="buttons">
-                  <label class="btn navbar-btn btn-default active"
+                  <label class="btn btn-sm navbar-btn btn-default active"
                          title="Der Wert des Feldes '{{ attribute.getManagementTitle(true) }}' soll beim Filtern keine Rolle spielen"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_all"
                            data-bid="{{ attribute.bid }}" checked value="all"> <i>Alle</i>
                   </label>
-                  <label class="btn navbar-btn btn-default"
+                  <label class="btn btn-sm navbar-btn btn-default"
                          title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' nicht eingeteilt sind"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                       <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
@@ -141,7 +151,7 @@
                   </label>
                   {% for choice in attribute.choiceOptions %}
                     {% if not choice.deletedAt %}
-                      <label class="btn navbar-btn btn-default"
+                      <label class="btn btn-sm navbar-btn btn-default"
                              title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' in '{{ choice.getManagementTitle(true) }}' eingeteilt sind"
                              data-toggle="tooltip" data-placement="top" data-trigger="hover"
                              title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">

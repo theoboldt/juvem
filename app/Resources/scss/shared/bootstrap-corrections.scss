@@ -32,3 +32,29 @@
 .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .btn-group-vertical, .btn-toolbar > .input-group {
   margin-left: 5px;
 }
+
+@media (max-width: $screen-md-max) {
+  .container-sm-no-padding {
+    padding-right: 0;
+    padding-left: 0;
+
+    .row {
+      margin: 0;
+    }
+
+    .col-xs-12 {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .btn {
+      @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+    }
+
+    .table > thead > tr > th,
+    .table > tbody > tr > td {
+      padding: 8px 2px;
+    }
+  }
+}
+

@@ -279,12 +279,45 @@ input.input-formula, textarea.input-formula {
   }
 }
 
+.attendance-list-toolbar {
+  margin-bottom: 10px;
+}
+
+#attendance-filters {
+  @media (max-width: $screen-md) {
+    .navbar-form {
+      padding: 5px;
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+
+  .navbar-btn.btn-sm {
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
+
+  .navbar-form {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .navbar-text {
+    line-height: 30px;
+    margin-right: 5px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
+}
+
+
 #attendanceList {
   .btn.active {
     color: #fff;
     background-color: $btn-primary-bg;
     border-color: darken($btn-primary-bg, 14%);
   }
+
   .btn.btn-alert {
     background-color: $btn-danger-bg !important;
     border-color: darken($btn-danger-bg, 14%) !important;;
