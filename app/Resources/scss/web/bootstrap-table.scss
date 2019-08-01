@@ -6,6 +6,15 @@ div table.table-no-hover tbody td {
   cursor: default;
 }
 
+.attendance-list-toolbar .indicator-fetch {
+  visibility: hidden;
+
+  &.loading, &.checking {
+    visibility: visible;
+  }
+}
+
+.attendance-list-toolbar .indicator-fetch,
 .bootstrap-table .indicator-fetch {
   border: 1px solid transparent;
   border-radius: 3px;

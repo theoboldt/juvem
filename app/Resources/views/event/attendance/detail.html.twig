@@ -33,7 +33,7 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
-        <div class="btn-toolbar" role="toolbar">
+        <div class="btn-toolbar attendance-list-toolbar" role="toolbar">
           <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
              class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
           <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
@@ -41,6 +41,12 @@
               <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
                   class="hidden-xs">aktuell halten</span>
             </label>
+          </div>
+          <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
+            <span class="indicator-fetch" data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                title="Die Daten der Tabelle werden gerade aktualisiert...">
+            {{ 'transfer'|glyph }} Aktualisiere
+          </span>
           </div>
         </div>
         <nav class="navbar navbar-default" id="attendance-filters">

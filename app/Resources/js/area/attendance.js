@@ -7,7 +7,8 @@ $(function () {
         updateInProgress = false,
         queuedUpdates = [],
         filterGroups = [],
-        filterColumns = [];
+        filterColumns = [],
+        elIndicator = $('.attendance-list-toolbar .indicator-fetch');
 
     if (attendanceList.length) {
         $('td.column label').on('click', function () {
@@ -22,6 +23,7 @@ $(function () {
                 reloadBlocked = true;
             }
             reloadBlocked = true;
+            elIndicator.toggleClass('loading', true);
             $.ajax({
                 type: 'GET',
                 url: listId + '/fillout.json',
@@ -58,6 +60,9 @@ $(function () {
                         priority: 'error'
                     });
                     reloadBlocked = false;
+                },
+                complete: function (response) {
+                    elIndicator.toggleClass('loading', false);
                 }
             });
         };
@@ -100,6 +105,7 @@ $(function () {
                 var updatesToProcess = queuedUpdates,
                     updates = [];
                 queuedUpdates = []; //empty queue
+                elIndicator.toggleClass('loading', true);
 
                 $.each(updatesToProcess, function (key, el) {
                     var elInput = el.find('input'),
@@ -145,6 +151,7 @@ $(function () {
                         }
                         updateInProgress = false;
                         scheduleQueueFlush();
+                        elIndicator.toggleClass('loading', false);
                     }
                 });
 
