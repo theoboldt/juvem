@@ -64,7 +64,7 @@ module.exports = function (grunt) {
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     'node_modules/imagesloaded/imagesloaded.pkgd.js',
                     'node_modules/justified-layout/dist/justified-layout.js',
-                    'node_modules/vis/dist/vis.js',
+                    'node_modules/vis-network/dist/vis-network.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
                     '<%= resourcesPath %>/js/storage.js',
