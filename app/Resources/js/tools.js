@@ -301,21 +301,4 @@ $(function () {
         return modes;
     };
 
-    /**
-     * The "range" of a list a numbers is the difference between the largest and
-     * smallest values.
-     *
-     * For example, the "range" of [3, 5, 4, 4, 1, 1, 2, 3] is [1, 5].
-     *
-     * @param {Array} numbers An array of numbers.
-     * @return {Array} The range of the specified numbers.
-     */
-    window.eRange = function (numbers) {
-        if (numbers.length === 1) {
-            return [numbers[0], numbers[0]];
-        }
-        numbers.sort();
-        return [numbers[0], numbers[numbers.length - 1]];
-    };
-
 });

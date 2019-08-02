@@ -220,11 +220,7 @@ $(function () {
                     label += "\n";
                     median = eMedian(groupAges);
                     mean = eMean(groupAges);
-                    range = eRange(groupAges);
-                    distance = range[1] - range[0];
-                    if (distance < 0) {
-                        distance *= -1;
-                    }
+                    distance = (Math.max(...groupAges) - Math.min(...groupAges));
 
                     label += ' ~' + formatNumber(median);
                     label += ' x' + formatNumber(mean);
