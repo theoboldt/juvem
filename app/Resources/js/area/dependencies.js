@@ -203,7 +203,7 @@ $(function () {
                     mean,
                     range,
                     distance,
-                    nodeSize = 20;
+                    nodeSize = (connectedNodeIds.length*1.5)+20;
                 $.each(connectedNodeIds, function (key, connectedNodeId) {
                     var connectedNode = nodesSet.get(connectedNodeId);
                     if (connectedNode.type === 'participant') {
@@ -225,7 +225,6 @@ $(function () {
                     if (distance < 0) {
                         distance *= -1;
                     }
-                    nodeSize = (groupAges.length*1.5)+20;
 
                     label += ' ~' + formatNumber(median);
                     label += ' x' + formatNumber(mean);
@@ -244,8 +243,7 @@ $(function () {
                         median: median,
                         mean: mean,
                         distance: distance,
-                        value: nodeSize,
-                        title: nodeSize
+                        value: nodeSize
                     });
                     var connectedEdges = network.getConnectedEdges(node.id);
                     $.each(connectedEdges, function (key, connectedEdgeId) {
@@ -261,8 +259,7 @@ $(function () {
                         }
                         edgeUpdates.push({
                             id: connectedEdgeId,
-                            value: edgeDistance,
-                            title: edgeDistance
+                            value: edgeDistance
                         });
                     });
                 } else if (node.label !== label) {
@@ -272,8 +269,7 @@ $(function () {
                         median: 0,
                         mean: 0,
                         distance: 0,
-                        value: nodeSize,
-                        title: nodeSize
+                        value: nodeSize
                     });
                 }
             }
