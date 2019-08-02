@@ -151,20 +151,23 @@ class AdminParticipantsDependencyController extends Controller
 
                         $attributeOptionColors[$bid][$choiceOption->getId()] = $attributeOptionColor;
     
-                        $nodes[] = [
-                            'id'        => self::choiceOptionNodeId($bid, $choiceOption->getId()),
-                            'bid'       => $bid,
-                            'choiceId'  => $choiceOption->getId(),
-                            'type'      => 'choice',
-                            'label'     => $choiceOption->getShortTitle(true),
-                            'title'     => sprintf(
+                        $groupTitle = sprintf(
                                 '%s (<i>%s</i>)',
                                 htmlspecialchars($choiceOption->getManagementTitle(true)),
                                 htmlspecialchars($attribute->getManagementTitle())
-                            ),
-                            'shape'     => 'circle',
-                            'color'     => $attributeOptionColor,
-                            'collapsed' => false,
+                            );
+    
+                        $nodes[] = [
+                            'id'         => self::choiceOptionNodeId($bid, $choiceOption->getId()),
+                            'bid'        => $bid,
+                            'choiceId'   => $choiceOption->getId(),
+                            'type'       => 'choice',
+                            'label'      => $choiceOption->getShortTitle(true),
+                            'title'      => $groupTitle,
+                            'shortTitle' => $choiceOption->getShortTitle(true),
+                            'shape'      => 'circle',
+                            'color'      => $attributeOptionColor,
+                            'collapsed'  => false,
                         ];
                         ++$choiceOptions;
                     }
@@ -196,6 +199,7 @@ class AdminParticipantsDependencyController extends Controller
                 'color'       => $color,
                 'gender'      => $participant->getGender(false),
                 'yearsOfLife' => $yearsOfLife,
+                'age'         => $participant->getAgeAtEvent(),
                 'confirmed'   => (int)$participant->isConfirmed(),
             ];
     

@@ -98,6 +98,9 @@ $(function () {
             color: {color: nodeChoice.color},
             dashes: true
         });
+        if (!newEdges) {
+            debugger
+        }
         nodesView.refresh();
         $.ajax({
             type: 'POST',
@@ -109,7 +112,6 @@ $(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    console.log(newEdges[0]);
                     edgesSet.update({id: newEdges[0], dashes: false});
                 } else {
                     location.reload();
@@ -120,6 +122,7 @@ $(function () {
             }
         });
         network.addEdgeMode();
+        updateGroupTitles();
     };
 
     var options = {
@@ -155,15 +158,30 @@ $(function () {
             font: {
                 face: '"Helvetica Neue", Helvetica, Arial, sans-serif',
                 multi: 'md'
+            },
+            scaling: {
+                min: 20,
+                max: 60
             }
         },
         edges: {
             font: {
                 face: '"Helvetica Neue", Helvetica, Arial, sans-serif',
                 multi: 'html'
+            },
+            scaling: {
+                min: 0.5,
+                max: 5
             }
         }
     };
+
+    const formatNumber = function (number) {
+        number = (Math.round(number * 10) / 10);
+        var stringNumber = number.toString();
+        return stringNumber.replace('.', ',');
+    };
+
     var network = new vis.Network(
         container,
         {
@@ -172,6 +190,113 @@ $(function () {
         },
         options
     );
+    const updateGroupTitles = function () {
+        var nodeUpdates = [],
+            edgeUpdates = [];
+
+        nodesSet.forEach(function (node) {
+            if (node.type === 'choice') {
+                var connectedNodeIds = network.getConnectedNodes(node.id),
+                    groupAges = [],
+                    label,
+                    median,
+                    mean,
+                    range,
+                    distance,
+                    nodeSize = 20;
+                $.each(connectedNodeIds, function (key, connectedNodeId) {
+                    var connectedNode = nodesSet.get(connectedNodeId);
+                    if (connectedNode.type === 'participant') {
+                        if (connectedNode.age) {
+                            groupAges.push(connectedNode.age);
+                        }
+                    }
+                });
+
+                if (node.shortTitle) {
+                    label = '*' + node.shortTitle + '*';
+                }
+                if (groupAges.length) {
+                    label += "\n";
+                    median = eMedian(groupAges);
+                    mean = eMean(groupAges);
+                    range = eRange(groupAges);
+                    distance = range[1] - range[0];
+                    if (distance < 0) {
+                        distance *= -1;
+                    }
+                    nodeSize = (groupAges.length*1.5)+20;
+
+                    label += ' ~' + formatNumber(median);
+                    label += ' x' + formatNumber(mean);
+                    label += ' d' + formatNumber(distance);
+
+                    if (node.label === label
+                        && node.median === median
+                        && node.mean === mean
+                        && node.distance === distance
+                        && node.nodeSize === nodeSize) {
+                        return true;
+                    }
+                    nodeUpdates.push({
+                        id: node.id,
+                        label: label,
+                        median: median,
+                        mean: mean,
+                        distance: distance,
+                        value: nodeSize,
+                        title: nodeSize
+                    });
+                    var connectedEdges = network.getConnectedEdges(node.id);
+                    $.each(connectedEdges, function (key, connectedEdgeId) {
+                        var connectedEdge = edgesSet.get(connectedEdgeId),
+                            connectedNode = nodesSet.get(connectedEdge.from),
+                            edgeDistance;
+                        if (!connectedNode || connectedNode.type !== 'participant' || connectedEdge.type !== 'choice') {
+                            return;
+                        }
+                        edgeDistance = (connectedNode.age - mean)+0.25;
+                        if (edgeDistance < 0) {
+                            edgeDistance *= -1;
+                        }
+                        edgeUpdates.push({
+                            id: connectedEdgeId,
+                            value: edgeDistance,
+                            title: edgeDistance
+                        });
+                    });
+                } else if (node.label !== label) {
+                    nodeUpdates.push({
+                        id: node.id,
+                        label: label,
+                        median: 0,
+                        mean: 0,
+                        distance: 0,
+                        value: nodeSize,
+                        title: nodeSize
+                    });
+                }
+            }
+        });
+
+        var handleQueue = function() {
+            var update;
+            if (nodeUpdates.length) {
+                update = nodeUpdates.shift();
+                nodesSet.update(update);
+            }
+            if (edgeUpdates.length) {
+                update = edgeUpdates.shift();
+                edgesSet.update(update);
+            }
+            scheduleQueue();
+        }, scheduleQueue = function() {
+            if (nodeUpdates.length || edgeUpdates.length) {
+                window.setTimeout(handleQueue, 1);
+            }
+        };
+        scheduleQueue();
+    };
 
     network.on("doubleClick", function (params) {
         if (params.nodes.length !== 1) {
@@ -279,4 +404,7 @@ $(function () {
             hideParticipationEdges();
         }
     });
+
+    updateGroupTitles();
+    nodesView.refresh();
 });
