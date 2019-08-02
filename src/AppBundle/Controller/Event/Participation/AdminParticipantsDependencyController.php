@@ -99,12 +99,14 @@ class AdminParticipantsDependencyController extends Controller
                 return true;
             }
         );
-
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participants            = [];
+    
+        $participationRepository     = $this->getDoctrine()->getRepository(Participation::class);
+        $participants                = [];
+        $participantsByParticipation = [];
         /** @var Participant $participant */
         foreach ($participationRepository->participantsList($event, null, true, true) as $participant) {
             $participants[$participant->getId()] = $participant;
+            $participantsByParticipation[$participant->getParticipation()->getId()][$participant->getId()] = $participant;
         }
 
         $yearsOfLifeAvailable = [];
@@ -198,7 +200,7 @@ class AdminParticipantsDependencyController extends Controller
             ];
     
             /** @var Participant $relatedParticipant */
-            foreach ($participant->getParticipation()->getParticipants() as $relatedParticipant) {
+            foreach ($participantsByParticipation[$participant->getParticipation()->getId()] as $relatedParticipant) {
                 if ($participant->getId() < $relatedParticipant->getId()) {
                     $edge = [
                         'from'   => self::participantNodeId($participant->getId()),
