@@ -55,20 +55,20 @@ class AttendanceList
      * @var array|Collection|AttendanceList[]
      */
     protected $columns;
-    
+
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      */
     protected $title;
-    
+
     /**
      * @ORM\Column(type="date", nullable=true)
      * @Assert\Type("\DateTime")
      * @var \DateTime|null
      */
     protected $startDate;
-    
+
     /**
      * Constructor
      *
@@ -138,16 +138,18 @@ class AttendanceList
     {
         return $this->title;
     }
-    
+
     /**
      * @return \DateTime|null
      */
     public function getStartDate(): ?\DateTime
     {
-        $this->startDate->setTime(10, 0, 0);
+        if ($this->startDate) {
+            $this->startDate->setTime(10, 0, 0);
+        }
         return $this->startDate;
     }
-    
+
     /**
      * @param \DateTime|null $startDate
      * @return AttendanceList
@@ -163,8 +165,8 @@ class AttendanceList
         return $this;
     }
 
-    
-    
+
+
     /**
      * @return Collection|array|AttendanceListColumn[]
      */
@@ -172,7 +174,7 @@ class AttendanceList
     {
         return $this->columns;
     }
-    
+
     /**
      * Determine if list contains column
      *
@@ -183,7 +185,7 @@ class AttendanceList
     {
         return $this->columns->contains($column);
     }
-    
+
     /**
      * @param Collection|array|AttendanceListColumn[] $columns
      * @return AttendanceList
@@ -193,7 +195,7 @@ class AttendanceList
         $this->columns = $columns;
         return $this;
     }
-    
+
     /**
      * Add column
      *
