@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                 src: [
                     'app/cache/dep/bootstrap-table-sass.css',
                     'app/cache/dep/all-sass.css',
-                    'node_modules/vis/dist/vis.css',
+                    'node_modules/vis-network/dist/vis-network.css',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
                 ],
