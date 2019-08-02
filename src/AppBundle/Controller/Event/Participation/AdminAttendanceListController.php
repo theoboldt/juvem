@@ -45,7 +45,7 @@ class AdminAttendanceListController extends Controller
     {
         return $this->render('event/attendance/list.html.twig', ['event' => $event]);
     }
-    
+
     /**
      * @see listAttendanceListsAction()
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -57,9 +57,9 @@ class AdminAttendanceListController extends Controller
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
         $eid        = $event->getEid();
-        
+
         $result = $repository->findBy(['event' => $eid]);
-        
+
         return new JsonResponse(
             array_map(
                 function (AttendanceList $list) use ($eid) {
@@ -72,7 +72,7 @@ class AdminAttendanceListController extends Controller
                         $columns[] = $column->getTitle();
                     }
                     sort($columns);
-                    
+
                     return [
                         'tid'        => $list->getTid(),
                         'eid'        => $eid,
@@ -88,7 +88,7 @@ class AdminAttendanceListController extends Controller
             )
         );
     }
-    
+
     /**
      * Create a new attendance list
      *
@@ -100,20 +100,20 @@ class AdminAttendanceListController extends Controller
     {
         $list = new AttendanceList($event);
         $form = $this->createForm(AttendanceListType::class, $list);
-        
+
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-            
-            return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
+
+            return $this->redirectToRoute('event_attendance_details', ['eid' => $event->getEid(), 'tid' => $list->getTid()]);
         }
-        
+
         return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
     }
-    
+
     /**
      * Create a new attendance list
      *
@@ -136,30 +136,30 @@ class AdminAttendanceListController extends Controller
             $date = clone $previous->getStartDate();
             $date->modify('+1 day');
             $list->setStartDate($date);
-            
+
             $title .= ' ' . $date->format(\AppBundle\Entity\Event::DATE_FORMAT_DATE);
         }
         $list->setTitle($title);
-        
+
         foreach ($previous->getColumns() as $column) {
             $list->addColumn($column);
         }
-        
+
         $form = $this->createForm(AttendanceListType::class, $list);
-        
+
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-            
+
             return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
         }
-        
+
         return $this->render('/event/attendance/new.html.twig', ['form' => $form->createView(), 'event' => $event]);
     }
-    
+
     /**
      * Edit an attendance list
      *
@@ -171,7 +171,7 @@ class AdminAttendanceListController extends Controller
     public function editAction(Event $event, $tid, Request $request)
     {
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
-        
+
         $list = $repository->findOneBy(['tid' => $tid]);
         if (!$list) {
             return $this->render(
@@ -180,22 +180,22 @@ class AdminAttendanceListController extends Controller
         }
         $event = $list->getEvent();
         $form  = $this->createForm(AttendanceListType::class, $list);
-        
+
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($list);
             $em->flush();
-            
-            return $this->redirectToRoute('event_attendance_lists', ['eid' => $event->getEid()]);
+
+            return $this->redirectToRoute('event_attendance_details', ['eid' => $event->getEid(), 'tid' => $list->getTid()]);
         }
-        
+
         return $this->render(
             '/event/attendance/edit.html.twig', ['form' => $form->createView(), 'list' => $list, 'event' => $event]
         );
     }
-    
+
     /**
      * View an attendance list
      *
@@ -209,13 +209,13 @@ class AdminAttendanceListController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, false, false);
-        
+
         return $this->render(
             '/event/attendance/detail.html.twig',
             ['list' => $list, 'event' => $event, 'participants' => $participantEntityList]
         );
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
@@ -229,12 +229,12 @@ class AdminAttendanceListController extends Controller
     {
         $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $result            = $filloutRepository->fetchAttendanceListDataForList($list);
-        
+
         $resultEncoded = json_encode(['participants' => $result]);
         $checksum      = sha1($resultEncoded);
         return new JsonResponse($resultEncoded, Response::HTTP_OK, ['X-Response-Checksum' => $checksum], true);
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
@@ -253,11 +253,11 @@ class AdminAttendanceListController extends Controller
         if ($token != $csrf->getToken('attendance' . $list->getTid())) {
             throw new InvalidTokenHttpException();
         }
-        
+
         if ($list->getEvent()->getEid() !== $event->getEid()) {
             throw new BadRequestHttpException('List and event are incompatible');
         }
-        
+
         $updates           = array_map(
             function ($update) {
                 return [
@@ -268,12 +268,12 @@ class AdminAttendanceListController extends Controller
             }, $request->get('updates')
         );
         $repositoryFillout = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
-        
+
         $repositoryFillout->processUpdates($list, $updates);
-        
+
         return $this->provideAttendanceListData($event, $list);
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
@@ -312,7 +312,7 @@ class AdminAttendanceListController extends Controller
             );
         }
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
@@ -327,7 +327,7 @@ class AdminAttendanceListController extends Controller
     {
         return $this->createExportResponse([$list], $attribute);
     }
-    
+
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
@@ -340,7 +340,7 @@ class AdminAttendanceListController extends Controller
     {
         return $this->exportAttendanceListGroupedAction($list, null);
     }
-    
+
     /**
      * Create export of multiple lists
      *
@@ -361,14 +361,14 @@ class AdminAttendanceListController extends Controller
                 return (int)$listId;
             }, explode(',', $request->get('listids'))
         );
-        
+
         /** @var AttendanceListFilloutParticipantRepository $filloutRepository */
         $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $lists             = $filloutRepository->findByIds($listIds);
-        
+
         return $this->createExportResponse($lists, $attribute);
     }
-    
+
     /**
      * Create a attendance list export
      *
@@ -384,10 +384,10 @@ class AdminAttendanceListController extends Controller
         /** @var AttendanceList $list */
         $list  = reset($lists);
         $event = $list->getEvent();
-        
+
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event, null, false, false);
-        
+
         $filloutRepository = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $attendanceData    = [];
         foreach ($lists as $list) {
@@ -396,20 +396,20 @@ class AdminAttendanceListController extends Controller
             }
             $attendanceData[$list->getTid()] = $filloutRepository->fetchAttendanceListDataForList($list);
         }
-        
+
         if ($attribute) {
             $participantList = ParticipationRepository::sortAndGroupParticipantList(
                 $participantList, null, $attribute->getName()
             );
         }
-        
+
         $export = new AttendanceListExport(
             $this->get('app.twig_global_customization'), $lists, $participantList, $attendanceData, $this->getUser(),
             $attribute
         );
         $export->setMetadata();
         $export->process();
-        
+
         $response = new StreamedResponse(
             function () use ($export) {
                 $export->write('php://output');
@@ -421,7 +421,7 @@ class AdminAttendanceListController extends Controller
             $list->getTitle() . ' - Anwesenheitsliste.xlsx'
         );
         $response->headers->set('Content-Disposition', $d);
-        
+
         return $response;
     }
 }
