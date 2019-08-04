@@ -26,6 +26,7 @@ use AppBundle\Export\Sheet\Column\CallableAccessingColumn;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
 use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
+use AppBundle\Form\GroupType;
 use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Style;
@@ -56,7 +57,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         $this->event        = $event;
         $this->participants = $participants;
         $configParticipant  = $config['participant'];
-        
+
         $groupBy = null;
         if (isset($configParticipant['grouping_sorting']['grouping']['enabled']) &&
             isset($configParticipant['grouping_sorting']['grouping']['field'])) {
@@ -203,7 +204,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $column->setWidth(8);
             $this->addColumn($column);
         }
-    
+
         if ($event->getPrice() && $this->paymentManager) {
             if (self::issetAndTrue($configParticipant, 'price')) {
                 $column = new CallableAccessingColumn(
@@ -408,7 +409,9 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $configDisplay = $config[$bid]['display'];
         }
 
-        if ($attribute->getFieldType() === ChoiceType::class) {
+        if ($attribute->getFieldType() === ChoiceType::class
+            || $attribute->getFieldType() === GroupType::class
+        ) {
             $configOptionValue = Configuration::OPTION_VALUE_SHORT;
         } else {
             $configOptionValue = Configuration::OPTION_VALUE_MANAGEMENT;
@@ -425,7 +428,9 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
         switch ($configDisplay) {
             case Configuration::OPTION_SEPARATE_COLUMNS:
-                if ($attribute->getFieldType() === ChoiceType::class) {
+                if ($attribute->getFieldType() === ChoiceType::class
+                    || $attribute->getFieldType() === GroupType::class
+                ) {
                     $choices = $attribute->getChoiceOptions();
                     /** @var AttributeChoiceOption $choice */
                     foreach ($choices as $choice) {
@@ -446,7 +451,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                                         }
                                     }
                                 }
-            
+
                             }
                             return '';
                         };
@@ -467,7 +472,9 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
                 );
 
-                if ($attribute->getFieldType() === ChoiceType::class) {
+                if ($attribute->getFieldType() === ChoiceType::class
+                    || $attribute->getFieldType() === GroupType::class
+                ) {
                     $optionValue = $configOptionValue;
                     $converter   = function (Fillout $fillout = null) use ($optionValue, $explanation) {
                         $selectedOptions = [];
