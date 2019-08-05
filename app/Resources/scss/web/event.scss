@@ -330,6 +330,12 @@ input.input-formula, textarea.input-formula {
     @include transition(background-color 0.2s);
     animation: pulse-bg 3s infinite;
   }
+
+  &.disabled .btn {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    opacity: 0.65;
+  }
 }
 
 @keyframes pulse-bg {

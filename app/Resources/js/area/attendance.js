@@ -84,15 +84,21 @@ $(function () {
             var el = $(this),
                 columnId = el.data('column-id'),
                 choiceId = el.data('choice-id');
-
-            $.each($('#attendanceList tbody tr'), function (key, element) {
-                var el = $(element);
-                if (!el.hasClass('hidden')) {
-                    var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
-                    inputEl.parents('label').click();
-                }
-            });
-            el.focus();
+            el.tooltip('destroy');
+            el.toggleClass('btn-primary', true);
+            attendanceList.toggleClass('disabled', true);
+            setTimeout(function () {
+                $.each($('#attendanceList tbody tr'), function (key, element) {
+                    var el = $(element);
+                    if (!el.hasClass('hidden')) {
+                        var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
+                        inputEl.parents('label').click();
+                    }
+                });
+                attendanceList.toggleClass('disabled', false);
+                el.toggleClass('btn-primary', false);
+                el.focus();
+            }, 100);
         });
 
         const scheduleQueueFlush = function () {
@@ -103,7 +109,7 @@ $(function () {
                 }
                 updateInProgress = true;
                 var updatesToProcess = queuedUpdates,
-                    updates = [];
+                    updates = {};
                 queuedUpdates = []; //empty queue
                 elIndicator.toggleClass('loading', true);
 
@@ -114,11 +120,13 @@ $(function () {
                         columnId = elInput.data('column-id'),
                         choiceId = elInput.data('choice-id');
 
-                    updates.push({
-                        aid: aid,
-                        columnId: columnId,
-                        choiceId: choiceId
-                    });
+                    if (!updates[columnId]) {
+                        updates[columnId] = {};
+                    }
+                    if (!updates[columnId][choiceId]) {
+                        updates[columnId][choiceId] = [];
+                    }
+                    updates[columnId][choiceId].push(aid);
                     el.toggleClass('preview', true);
                 });
 

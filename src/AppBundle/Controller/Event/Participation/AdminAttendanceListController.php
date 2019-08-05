@@ -253,20 +253,24 @@ class AdminAttendanceListController extends Controller
         if ($token != $csrf->getToken('attendance' . $list->getTid())) {
             throw new InvalidTokenHttpException();
         }
-
+    
         if ($list->getEvent()->getEid() !== $event->getEid()) {
             throw new BadRequestHttpException('List and event are incompatible');
         }
+    
+        $updates = [];
+        foreach ($request->get('updates') as $columnId => $choices) {
+            foreach ($choices as $choiceId => $aids) {
+                foreach ($aids as $aid) {
+                    $updates[] = [
+                        'aid'      => (int)$aid,
+                        'columnId' => (int)$columnId,
+                        'choiceId' => $choiceId === 0 ? null : (int)$choiceId
+                    ];
+                }
+            }
+        }
 
-        $updates           = array_map(
-            function ($update) {
-                return [
-                    'aid'      => (int)$update['aid'],
-                    'columnId' => (int)$update['columnId'],
-                    'choiceId' => $update['choiceId'] === 0 ? null : (int)$update['choiceId']
-                ];
-            }, $request->get('updates')
-        );
         $repositoryFillout = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
 
         $repositoryFillout->processUpdates($list, $updates);
