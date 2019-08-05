@@ -58,7 +58,7 @@ class AdminAttendanceListController extends Controller
         $repository = $this->getDoctrine()->getRepository(AttendanceList::class);
         $eid        = $event->getEid();
 
-        $result = $repository->findBy(['event' => $eid]);
+        $result = $repository->findBy(['event' => $eid], ['startDate' => 'ASC', 'title' => 'ASC']);
 
         return new JsonResponse(
             array_map(
