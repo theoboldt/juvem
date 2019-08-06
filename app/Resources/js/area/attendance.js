@@ -96,7 +96,7 @@ $(function () {
             setTimeout(function () {
                 $.each($('#attendanceList tbody tr'), function (key, element) {
                     var el = $(element);
-                    if (!el.hasClass('hidden')) {
+                    if (!el.hasClass('filtered-hidden')) {
                         var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
                         inputEl.parents('label').click();
                     }
@@ -268,11 +268,11 @@ $(function () {
         const filterRows = function () {
             $('#attendanceList tbody tr').each(function () {
                 var el = $(this);
-                el.toggleClass('hidden', false);
+                el.toggleClass('filtered-hidden', false);
                 $.each(filterGroups, function (groupId, expectedChoiceId) {
                     var givenChoice = el.data('group-' + groupId);
                     if (givenChoice != expectedChoiceId) {
-                        el.toggleClass('hidden', true);
+                        el.toggleClass('filtered-hidden', true);
                     }
                 });
                 $.each(filterColumns, function (columnId, expectedChoiceId) {
@@ -280,7 +280,7 @@ $(function () {
                         elChoice = elColumn.find('input[data-choice-id="' + expectedChoiceId + '"]');
 
                     if (!elChoice.parent().hasClass('active')) {
-                        el.toggleClass('hidden', true);
+                        el.toggleClass('filtered-hidden', true);
                     }
                 });
             });

@@ -340,8 +340,38 @@ input.input-formula, textarea.input-formula {
     max-width: 40px;
   }
 
-  tbody tr td {
-    cursor: default;
+  tbody {
+    tr td {
+      @include transition(border-width 0.2s ease-out);
+      cursor: default;
+      padding: 0;
+
+      .p {
+        @include transition(max-height 0.5s ease-out);
+        overflow: hidden;
+        max-height: 100px;
+
+        .i {
+          padding: 8px;
+        }
+      }
+    }
+  }
+
+  tr.filtered-hidden {
+    td {
+      @include transition(border-width 0.2s ease-out);
+      border-width: 0px;
+
+      .p {
+        @include transition(max-height 0.5s ease-out);
+        max-height: 0;
+
+        .btn {
+
+        }
+      }
+    }
   }
 }
 
