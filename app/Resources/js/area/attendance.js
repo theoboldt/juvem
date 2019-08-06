@@ -34,6 +34,7 @@ $(function () {
                         elBtn.trigger('click', ['caused-by-refresh']);
                     });
                 });
+                filterRows();
             }
         };
 
@@ -146,7 +147,6 @@ $(function () {
                     datatype: 'json',
                     success: function (response) {
                         handleParticipantsResponse(response);
-                        filterRows();
                     },
                     error: function (response) {
                         $.each(updatesToProcess, function (key, el) {
