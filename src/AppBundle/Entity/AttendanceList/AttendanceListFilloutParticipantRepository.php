@@ -99,7 +99,10 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
                             'Desired column ' . $update['columnId'] . ' is not available for list ' . $listId
                         );
                     }
-                    if ($update['choiceId'] !== 0 && !in_array($update['choiceId'], $choices[$update['columnId']])) {
+                    if ($update['choiceId'] !== 0
+                        && $update['choiceId'] !== null
+                        && !in_array($update['choiceId'], $choices[$update['columnId']])
+                    ) {
                         throw new \RuntimeException(
                             'Desired choice ' . $update['choiceId'] . ' is not available for  column ' .
                             $update['columnId'] . ' in list ' . $listId
