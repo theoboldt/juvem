@@ -50,6 +50,9 @@
     .btn {
       @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
     }
+    .btn.btn-xs {
+      @include button-size($padding-xs-vertical, $padding-xs-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+    }
 
     .table > thead > tr > th,
     .table > tbody > tr > td {

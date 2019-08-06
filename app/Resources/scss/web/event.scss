@@ -336,6 +336,13 @@ input.input-formula, textarea.input-formula {
     filter: alpha(opacity=65);
     opacity: 0.65;
   }
+  td.action {
+    max-width: 40px;
+  }
+
+  tbody tr td {
+    cursor: default;
+  }
 }
 
 @keyframes pulse-bg {

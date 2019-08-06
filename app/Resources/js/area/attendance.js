@@ -15,10 +15,32 @@ $(function () {
             $(this).tooltip('destroy');
         });
 
+        const handleParticipantsResponse = function (response) {
+            if (response.participants) {
+                $.each(response.participants, function (aid, participant) {
+                    $.each(participant.columns, function (columnId, column) {
+                        var choiceId = column.choice_id,
+                            baseId = "#choice_" + aid + "_" + columnId + "_",
+                            elBtn,
+                            elCommentBtn;
+                        if (!choiceId) {
+                            choiceId = 0;
+                        }
+                        elBtn = $(baseId + choiceId);
+                        elCommentBtn = $(baseId + 'comment');
+                        elCommentBtn.toggleClass('disabled', !choiceId);
+                        elCommentBtn.toggleClass('active', column.comment !== null);
+                        elCommentBtn.data('comment', column.comment);
+                        elBtn.trigger('click', ['caused-by-refresh']);
+                    });
+                });
+            }
+        };
+
         /**
          * Auto refresh
          **/
-        const autoRefresh = function () {
+        const refreshView = function () {
             if (!reloadBlocked) {
                 reloadBlocked = true;
             }
@@ -29,23 +51,7 @@ $(function () {
                 url: listId + '/fillout.json',
                 datatype: 'json',
                 success: function (response) {
-                    $.each(response.participants, function (aid, participant) {
-                        $.each(participant.columns, function (columnId, column) {
-                            var choiceId = column.choice_id,
-                                baseId = "#choice_" + aid + "_" + columnId + "_",
-                                elBtn,
-                                elCommentBtn;
-                            if (!choiceId) {
-                                choiceId = 0;
-                            }
-                            elBtn = $(baseId + choiceId);
-                            elCommentBtn = $(baseId + 'comment');
-                            elCommentBtn.toggleClass('active', column.comment !== null);
-                            elCommentBtn.data('comment', column.comment);
-                            elBtn.trigger('click', ['caused-by-refresh']);
-                        });
-
-                    });
+                    handleParticipantsResponse(response);
                     reloadBlocked = false;
                 },
                 error: function () {
@@ -66,15 +72,15 @@ $(function () {
                 }
             });
         };
-        autoRefresh();
+        refreshView();
         elAutoRefresh.click(function () {
             var checkbox = $(this).find('input'),
                 oldValue = checkbox.prop('checked'),
                 newValue = !oldValue;
 
             if (newValue) {
-                autoRefresh();
-                autoRefreshInterval = setInterval(autoRefresh, 10000);
+                refreshView();
+                autoRefreshInterval = setInterval(refreshView, 10000);
             } else if (autoRefreshInterval !== false) {
                 clearInterval(autoRefreshInterval);
             }
@@ -138,7 +144,8 @@ $(function () {
                         updates: updates,
                     },
                     datatype: 'json',
-                    success: function () {
+                    success: function (response) {
+                        handleParticipantsResponse(response);
                         filterRows();
                     },
                     error: function (response) {
@@ -155,7 +162,7 @@ $(function () {
                             el.toggleClass('preview', false);
                         });
                         if (elAutoRefresh.find('input').prop('checked')) {
-                            autoRefreshInterval = setInterval(autoRefresh, 10000);
+                            autoRefreshInterval = setInterval(refreshView, 10000);
                         }
                         updateInProgress = false;
                         scheduleQueueFlush();
@@ -181,6 +188,12 @@ $(function () {
                 elInput = $('#modalCommentContent'),
                 columnId = btn.parents('td').data('column-id'),
                 aid = btn.parents('tr').data('aid');
+            if (btn.hasClass('disabled')) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return false;
+            }
+
             elInput.val(btn.data('comment'));
             elInput.data('aid', aid);
             elInput.data('column-id', columnId);
