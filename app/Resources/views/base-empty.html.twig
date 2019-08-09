@@ -19,7 +19,9 @@
     <meta name="theme-color" content="{{ themeColor }}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block viewport %}
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% endblock %}
     {% if pageDescription is defined %}
         <meta name="description" content="{{ pageDescription|e|length > 157 ? pageDescription|e|slice(0, 155) ~ '…' : pageDescription|e }}">
     {% endif %}
