@@ -336,6 +336,43 @@ input.input-formula, textarea.input-formula {
     filter: alpha(opacity=65);
     opacity: 0.65;
   }
+  td.action {
+    max-width: 40px;
+  }
+
+  tbody {
+    tr td {
+      @include transition(border-width 0.2s ease-out);
+      cursor: default;
+      padding: 0;
+
+      .p {
+        @include transition(max-height 0.5s ease-out);
+        overflow: hidden;
+        max-height: 100px;
+
+        .i {
+          padding: 8px;
+        }
+      }
+    }
+  }
+
+  tr.filtered-hidden {
+    td {
+      @include transition(border-width 0.2s ease-out);
+      border-width: 0px;
+
+      .p {
+        @include transition(max-height 0.5s ease-out);
+        max-height: 0;
+
+        .btn {
+
+        }
+      }
+    }
+  }
 }
 
 @keyframes pulse-bg {

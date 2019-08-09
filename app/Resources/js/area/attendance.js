@@ -15,10 +15,33 @@ $(function () {
             $(this).tooltip('destroy');
         });
 
+        const handleParticipantsResponse = function (response) {
+            if (response.participants) {
+                $.each(response.participants, function (aid, participant) {
+                    $.each(participant.columns, function (columnId, column) {
+                        var choiceId = column.choice_id,
+                            baseId = "#choice_" + aid + "_" + columnId + "_",
+                            elBtn,
+                            elCommentBtn;
+                        if (!choiceId) {
+                            choiceId = 0;
+                        }
+                        elBtn = $(baseId + choiceId);
+                        elCommentBtn = $(baseId + 'comment');
+                        elCommentBtn.toggleClass('disabled', !choiceId);
+                        elCommentBtn.toggleClass('active', column.comment !== null);
+                        elCommentBtn.data('comment', column.comment);
+                        elBtn.trigger('click', ['caused-by-refresh']);
+                    });
+                });
+                filterRows();
+            }
+        };
+
         /**
          * Auto refresh
          **/
-        const autoRefresh = function () {
+        const refreshView = function () {
             if (!reloadBlocked) {
                 reloadBlocked = true;
             }
@@ -29,23 +52,7 @@ $(function () {
                 url: listId + '/fillout.json',
                 datatype: 'json',
                 success: function (response) {
-                    $.each(response.participants, function (aid, participant) {
-                        $.each(participant.columns, function (columnId, column) {
-                            var choiceId = column.choice_id,
-                                baseId = "#choice_" + aid + "_" + columnId + "_",
-                                elBtn,
-                                elCommentBtn;
-                            if (!choiceId) {
-                                choiceId = 0;
-                            }
-                            elBtn = $(baseId + choiceId);
-                            elCommentBtn = $(baseId + 'comment');
-                            elCommentBtn.toggleClass('active', column.comment !== null);
-                            elCommentBtn.data('comment', column.comment);
-                            elBtn.trigger('click', ['caused-by-refresh']);
-                        });
-
-                    });
+                    handleParticipantsResponse(response);
                     reloadBlocked = false;
                 },
                 error: function () {
@@ -66,15 +73,15 @@ $(function () {
                 }
             });
         };
-        autoRefresh();
+        refreshView();
         elAutoRefresh.click(function () {
             var checkbox = $(this).find('input'),
                 oldValue = checkbox.prop('checked'),
                 newValue = !oldValue;
 
             if (newValue) {
-                autoRefresh();
-                autoRefreshInterval = setInterval(autoRefresh, 10000);
+                refreshView();
+                autoRefreshInterval = setInterval(refreshView, 10000);
             } else if (autoRefreshInterval !== false) {
                 clearInterval(autoRefreshInterval);
             }
@@ -90,7 +97,7 @@ $(function () {
             setTimeout(function () {
                 $.each($('#attendanceList tbody tr'), function (key, element) {
                     var el = $(element);
-                    if (!el.hasClass('hidden')) {
+                    if (!el.hasClass('filtered-hidden')) {
                         var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
                         inputEl.parents('label').click();
                     }
@@ -138,8 +145,8 @@ $(function () {
                         updates: updates,
                     },
                     datatype: 'json',
-                    success: function () {
-                        filterRows();
+                    success: function (response) {
+                        handleParticipantsResponse(response);
                     },
                     error: function (response) {
                         $.each(updatesToProcess, function (key, el) {
@@ -155,7 +162,7 @@ $(function () {
                             el.toggleClass('preview', false);
                         });
                         if (elAutoRefresh.find('input').prop('checked')) {
-                            autoRefreshInterval = setInterval(autoRefresh, 10000);
+                            autoRefreshInterval = setInterval(refreshView, 10000);
                         }
                         updateInProgress = false;
                         scheduleQueueFlush();
@@ -181,6 +188,12 @@ $(function () {
                 elInput = $('#modalCommentContent'),
                 columnId = btn.parents('td').data('column-id'),
                 aid = btn.parents('tr').data('aid');
+            if (btn.hasClass('disabled')) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return false;
+            }
+
             elInput.val(btn.data('comment'));
             elInput.data('aid', aid);
             elInput.data('column-id', columnId);
@@ -255,11 +268,11 @@ $(function () {
         const filterRows = function () {
             $('#attendanceList tbody tr').each(function () {
                 var el = $(this);
-                el.toggleClass('hidden', false);
+                el.toggleClass('filtered-hidden', false);
                 $.each(filterGroups, function (groupId, expectedChoiceId) {
                     var givenChoice = el.data('group-' + groupId);
                     if (givenChoice != expectedChoiceId) {
-                        el.toggleClass('hidden', true);
+                        el.toggleClass('filtered-hidden', true);
                     }
                 });
                 $.each(filterColumns, function (columnId, expectedChoiceId) {
@@ -267,7 +280,7 @@ $(function () {
                         elChoice = elColumn.find('input[data-choice-id="' + expectedChoiceId + '"]');
 
                     if (!elChoice.parent().hasClass('active')) {
-                        el.toggleClass('hidden', true);
+                        el.toggleClass('filtered-hidden', true);
                     }
                 });
             });

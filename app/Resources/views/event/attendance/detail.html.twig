@@ -172,10 +172,11 @@
           {% endfor %}
         </nav>
 
-        <table class="table table-striped table-hover" id="attendanceList" data-list-id="{{ list.tid }}"
+        <table class="table table-hover" id="attendanceList" data-list-id="{{ list.tid }}"
                data-token="{{ csrf_token('attendance'~list.tid) }}">
           <thead>
           <tr>
+            <th>&nbsp;</th>
             <th>Nachname</th>
             <th>Vorname</th>
             {% for column in list.columns %}
@@ -210,10 +211,29 @@
                   {% endif %}
                 {% endfor %}
             >
-              <td class="name-first">{{ participant.nameLast }}</td>
-              <td class="name-last">{{ participant.nameFirst }}</td>
+              <td class="action">
+                <div class="p">
+                  <div class="i">
+                    <a href="{{ path('admin_participant_detail', {'aid': participant.aid, 'eid': event.eid}) }}"
+                       target="_blank" class="btn-default btn btn-xs" data-toggle="tooltip" data-placement="right"
+                       title="Zu den Anmeldungsdetails von {{ participant.fullname }} springen (in neuem Fenster)">{{ 'new-window'|glyph }}</a>
+                  </div>
+                </div>
+              </td>
+              <td class="name-first">
+                <div class="p">
+                  <div class="i">{{ participant.nameLast }}</div>
+                </div>
+              </td>
+              <td class="name-last">
+                <div class="p">
+                  <div class="i">{{ participant.nameFirst }}</div>
+                </div>
+              </td>
               {% for column in list.columns %}
                 <td class="column" data-column-id="{{ column.columnId }}">
+                  <div class="p">
+                  <div class="i">
                   <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default" title="{{ column.title }}: Keine der Optionen wählen"
                            data-toggle="tooltip"
@@ -239,6 +259,8 @@
                           id="choice_{{ participant.aid }}_{{ column.columnId }}_comment" data-comment="">
                     {{ 'comment'|glyph }}
                   </button>
+                  </div>
+                  </div>
                 </td>
               {% endfor %}
             </tr>
