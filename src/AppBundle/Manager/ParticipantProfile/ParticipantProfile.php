@@ -727,6 +727,7 @@ class ParticipantProfile
             $participationAddress = [
                 $participation->getSalutation() . ' ' . $participation->fullname(),
                 $participation->getAddressStreet(),
+                $participation->getAddressZip().' '.$participation->getAddressCity(),
             ];
             if ($participation->getAddressCountry() !== Event::DEFAULT_COUNTRY) {
                 $participationAddress[] = $participation->getAddressCountry();
