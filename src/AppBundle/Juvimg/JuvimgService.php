@@ -103,12 +103,15 @@ class JuvimgService
             $this->logger->warning('Resize requested but juvimg is unaccessible');
             throw new JuvimgUnaccessibleException('Can not resize image because juvimg is unaccessible');
         }
-
+    
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($path);
+    
         try {
             $this->logger->debug('Requested resize of "' . $path . '"');
             $result = $this->client()->post(
                 $this->getResizeUrl($width, $height, $mode, $quality),
-                ['body' => fopen($path, 'r')]
+                ['body' => fopen($path, 'r'), 'content-type' => $mimeType, 'Accept' => $mimeType]
             );
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
