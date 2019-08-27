@@ -134,24 +134,42 @@ class GalleryAdminController extends BaseGalleryController
         /** @var UploadedFile $file */
         foreach ($request->files as $file) {
             $galleryImage = new GalleryImage($event, $file);
+            list($width, $height) = getimagesize($file->getPathname(), $info);
             try {
-                $exif = exif_read_data($file->getPathname());
+                $exif = exif_read_data($file->getPathname(), 'ANY_TAG', true, false);
             } catch (\Exception $e) {
                 $exif = [];
+                $info = [];
             }
+    
+            $iptcCaption = '';
+            $iptcTitle   = '';
+            //extract title from iptc data
+            if (isset($info['APP13'])) {
+                $iptc        = iptcparse($info['APP13']);
+                $iptcCaption = str_replace("\000", "", $iptc["2#120"][0]);
+                if (isset($iptc["1#090"]) && $iptc["1#090"][0] == "\x1B%G") {
+                    $iptcCaption = utf8_decode($iptcCaption);
+                }
+                $iptcTitle = str_replace("\000", "", $iptc["2#105"][0]);
+                if (isset($iptc["2#105"]) && $iptc["2#105"][0] == "\x1B%G") {
+                    $iptcTitle = utf8_decode($iptcTitle);
+                }
+            }
+            
             try {
-                if (isset($exif['DateTimeOriginal'])) {
-                    $recorded = new \DateTime($exif['DateTimeOriginal']);
-                } elseif (isset($exif['DateTimeDigitized'])) {
-                    $recorded = new \DateTime($exif['DateTimeDigitized']);
-                } elseif (isset($exif['DateTime'])) {
-                    $recorded = new \DateTime($exif['DateTime']);
+                if (isset($exif['EXIF']['DateTimeOriginal'])) {
+                    $recorded = new \DateTime($exif['EXIF']['DateTimeOriginal']);
+                } elseif (isset($exif['EXIF']['DateTimeDigitized'])) {
+                    $recorded = new \DateTime($exif['EXIF']['DateTimeDigitized']);
+                } elseif (isset($exif['EXIF']['DateTime'])) {
+                    $recorded = new \DateTime($exif['EXIF']['DateTime']);
                 } else {
                     $recorded = null;
                 }
                 $galleryImage->setRecordedAt($recorded);
-
-                list($width, $height) = getimagesize($file->getPathname());
+                $galleryImage->setTitle($iptcTitle);
+                $galleryImage->setCaption($iptcCaption);
                 $galleryImage->setWidth($width);
                 $galleryImage->setHeight($height);
             } catch (\Exception $e) {

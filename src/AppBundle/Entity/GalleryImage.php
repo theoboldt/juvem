@@ -59,6 +59,13 @@ class GalleryImage
     private $title = '';
 
     /**
+     * @ORM\Column(type="string", length=2048, options={"default":""})
+     *
+     * @var string
+     */
+    private $caption = '';
+    
+    /**
      * @Vich\UploadableField(mapping="gallery_image", fileNameProperty="filename")
      *
      * @var File
@@ -162,7 +169,25 @@ class GalleryImage
         $this->title = $title;
         return $this;
     }
-
+    
+    /**
+     * @return string
+     */
+    public function getCaption(): string
+    {
+        return $this->caption;
+    }
+    
+    /**
+     * @param string $caption
+     * @return GalleryImage
+     */
+    public function setCaption(string $caption): GalleryImage
+    {
+        $this->caption = $caption;
+        return $this;
+    }
+    
     /**
      * @return File
      */
