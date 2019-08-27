@@ -30,7 +30,7 @@ class GalleryImage
 
     const THUMBNAIL_DIMENSION = 160;
     const PREVIEW_DIMENSION = 480;
-    const THUMBNAIL_DETAIL = 800;
+    const THUMBNAIL_DETAIL = 1600;
 
     /**
      * Gallery image id

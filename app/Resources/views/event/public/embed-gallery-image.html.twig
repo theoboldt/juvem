@@ -3,11 +3,11 @@
      data-image-id="{{ image.iid }}"
      data-src-thumbnail="{{ url('gallery_image_thumbnail', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
      data-src-preview="{{ url('gallery_image_preview', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
-     data-src-original="{{ url('gallery_image_original', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
+     data-src-original="{{ url('gallery_image_detail', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
      data-height="{{ image.height }}"
      data-width="{{ image.width }}">
     <div class="gallery-image"></div>
-    <a href="{{ url('gallery_image_original', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
+    <a href="{{ url('gallery_image_detail', {'eid': eid, 'iid': image.iid, 'hash': hash, 'filename': image.filename}) }}"
        {% if lightbox %}data-toggle="lightbox"{% endif %} data-title="{{ image.title|e('html_attr') }}"
        data-iid="{{ image.iid }}"
        data-gallery="g" data-type="image">
