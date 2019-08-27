@@ -67,6 +67,19 @@ body.dark {
     width: auto;
   }
   width: auto;
+
+  .modal-content {
+    background: #333;
+  }
+
+  .modal-header {
+    border-bottom-color: lighten(#333, 25%);
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 10px;
+  }
 }
 
 #gallery-cache-clear-btn-wrap {
