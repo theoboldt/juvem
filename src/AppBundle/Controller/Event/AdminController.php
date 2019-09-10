@@ -369,9 +369,22 @@ class AdminController extends Controller
                        ->getManager();
 
             $em->persist($event);
+            if ($this->getUser()) {
+                /** @var User $user */
+                $user = $this->getUser();
+                if (!$user->hasRole(\AppBundle\Entity\User::ROLE_ADMIN_EVENT_GLOBAL)) {
+                    $assignment = new EventUserAssignment($event, $user);
+                    $assignment->setAllowedToEdit(true);
+                    $assignment->setAllowedToManageParticipants(true);
+                    $assignment->setAllowedToComment(true);
+                    $assignment->setAllowedToReadComments(true);
+                    $event->getUserAssignments()->add($assignment);
+                    $em->persist($assignment);
+                }
+            }
             $em->flush();
 
-            return $this->redirectToRoute('event_list');
+            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
         }
 
         return $this->render(
