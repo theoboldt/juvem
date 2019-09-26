@@ -100,6 +100,7 @@ services:
         arguments:
           - "%juvimg.url%"
           - "%juvimg.password%"
+          - "@logger"
     app.file_cache.event:
         class: AppBundle\Cache\FileCache
         arguments:
@@ -110,10 +111,10 @@ services:
           - "%kernel.root_dir%/cache/%kernel.environment%/fc/gallery"
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['@app.file_cache.event', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'event_image', '@?app.juvimg.service']
+        arguments: ['@app.file_cache.event', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'event_image', '@logger', '@?app.juvimg.service']
     app.gallery_image_manager:
         class: AppBundle\Manager\UploadImageManager
-        arguments: ['@app.file_cache.gallery', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'gallery_image', '@?app.juvimg.service']
+        arguments: ['@app.file_cache.gallery', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'gallery_image', '@logger', '@?app.juvimg.service']
         public: true
     app.user_registration.participation_listener:
         class: AppBundle\EventListeners\UserRegistrationListener

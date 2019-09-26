@@ -14,7 +14,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Imagine\Image\ImageInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class JuvimgService
@@ -22,7 +22,7 @@ class JuvimgService
     /**
      * Logger
      *
-     * @var AbstractLogger
+     * @var LoggerInterface
      */
     private $logger;
 
@@ -59,10 +59,10 @@ class JuvimgService
      *
      * @param string|null    $url      URL to juvimg installation
      * @param string|null    $password Password configured in juvimg for Basic authentication
-     * @param AbstractLogger $logger   Logger
+     * @param LoggerInterface $logger   Logger
      * @return JuvimgService|null      Service or null if not valid
      */
-    public static function create(string $url = null, string $password = null, AbstractLogger $logger = null)
+    public static function create(string $url = null, string $password = null, LoggerInterface $logger = null)
     {
         if (!empty($url) && !empty($password)) {
             return new self($url, $password, $logger);
@@ -76,9 +76,9 @@ class JuvimgService
      *
      * @param string              $url      URL to juvimg installation
      * @param string              $password Password configured in juvimg for Basic authentication
-     * @param AbstractLogger|null $logger   Logger
+     * @param LoggerInterface|null $logger   Logger
      */
-    public function __construct(string $url, string $password, AbstractLogger $logger = null)
+    public function __construct(string $url, string $password, LoggerInterface $logger = null)
     {
         $this->url      = rtrim($url, '/');
         $this->password = $password;
@@ -107,8 +107,10 @@ class JuvimgService
         $finfo    = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($path);
     
+        $url = null;
         try {
             $this->logger->debug('Requested resize of "' . $path . '"');
+            $url   = $this->getResizeUrl($width, $height, $mode, $quality);
             $result = $this->client()->post(
                 $this->getResizeUrl($width, $height, $mode, $quality),
                 ['body' => fopen($path, 'r'), 'content-type' => $mimeType, 'Accept' => $mimeType]
@@ -117,9 +119,12 @@ class JuvimgService
             if ($e->hasResponse()) {
                 $body = $e->getResponse()->getBody();
                 if ($body->getSize() < 1024) {
-                    $this->logger->warning('Failed to resize image: ' . $body->getContents());
+                    $this->logger->warning(
+                        'Failed to resize image: {body}',
+                        ['url' => $url, 'body' => $body->getContents()]
+                    );
                 } else {
-                    $this->logger->warning('Failed to resize image');
+                    $this->logger->warning('Failed to resize image {url}', ['url' => $url]);
                 }
             }
             throw new JuvimgImageResizeFailedException('Failed to resize image', $e->getCode(), $e);
@@ -141,14 +146,15 @@ class JuvimgService
                 $response = $this->client()->get('/');
                 $body     = $response->getBody();
                 if ($body->getSize() < 1024 && $body->getContents() === 'OK') {
-                    $this->logger->notice('Juvimg service is not accessible');
+                    $this->logger->notice('Juvimg service is accessible');
                     $this->accessible = true;
                     return true;
                 }
             } catch (RequestException $e) {
-                $this->logger->debug('Juvimg service is not accessible, request failed');
+                $this->logger->warning('Juvimg service is not accessible, request failed');
             }
             $this->accessible = false;
+            $this->logger->notice('Juvimg service does not seem to be accessible');
         }
         return $this->accessible;
     }
@@ -184,7 +190,7 @@ class JuvimgService
         int $width, int $height, string $mode = ImageInterface::THUMBNAIL_INSET, int $quality = 70
     )
     {
-        return sprintf('/resized/%d/%d/%d/%s', $width, $height, $quality, $mode);
+        return sprintf('/index.php/resized/%d/%d/%d/%s', $width, $height, $quality, $mode);
     }
 
 }

@@ -19,6 +19,8 @@ use AppBundle\UploadImage\UploadImage;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class UploadImageManager
 {
@@ -49,31 +51,41 @@ class UploadImageManager
      * @var string
      */
     protected $uploadMapping;
-
+    
+    /**
+     * Logger
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+    
     /**
      * JuvimgService if available
      *
      * @var JuvimgService|null
      */
     private $juvimgService;
-
+    
     /**
      * Create new instance of upload image manager
      *
-     * @param FileCache          $cache
-     * @param string             $tmpDir
-     * @param array              $uploadMappings Available upload mappings
-     * @param string             $mapping        Mapping to use
-     * @param JuvimgService|null $juvimg         Juvimg Resize service if available
+     * @param FileCache $cache
+     * @param string $tmpDir
+     * @param array $uploadMappings       Available upload mappings
+     * @param string $mapping             Mapping to use
+     * @param LoggerInterface|null $logger Logger
+     * @param JuvimgService|null $juvimg  Juvimg Resize service if available
      */
     public function __construct(
         FileCache $cache,
         string $tmpDir,
         array $uploadMappings,
         string $mapping,
-        JuvimgService $juvimg = null
-    ) {
-
+        ?LoggerInterface $logger = null,
+        ?JuvimgService $juvimg = null
+    )
+    {
+        
         if (!array_key_exists($mapping, $uploadMappings)) {
             throw new \InvalidArgumentException('Could not find desired upload mapping in vich upload configuration');
         }
@@ -81,6 +93,7 @@ class UploadImageManager
         $this->tmpDir        = $tmpDir;
         $this->uploadMapping = $mapping;
         $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
+        $this->logger        = $logger ?: new NullLogger();
         $this->juvimgService = $juvimg;
     }
 
@@ -122,6 +135,8 @@ class UploadImageManager
             $tmpFile = tempnam($this->tmpDir, 'imagine_resize');
             $image = null;
             if ($this->juvimgService && $this->juvimgService->isAccessible()) {
+                $this->logger->info('Resizing image {name} using juvimg service', ['name' => $name]);
+                $start = microtime(true);
                 try {
                     $result = $this->juvimgService->resize(
                         $originalPath, $width, $height, $mode, $quality
@@ -134,11 +149,21 @@ class UploadImageManager
                     }
                     fclose($image);
                     $image = new \SplFileInfo($tmpFile);
+                    $this->logger->info(
+                        'Resized image {name} using juvimg service within {time} seconds',
+                        ['name' => $name, 'time' => microtime(true) - $start]
+                    );
                 } catch (JuvimgNoResizePerformedException $e) {
+                    $this->logger->warning(
+                        'Failed to resize image {name} using juvimg service within {time} seconds, message: {message}',
+                        ['name' => $name, 'time' => microtime(true) - $start, 'message' => $e->getMessage()]
+                    );
                     $image = null;
                 }
             }
             if (!$image) {
+                $this->logger->debug('Resizing image {name} using Imagine', ['name' => $name]);
+                $start   = microtime(true);
                 $imagine = new Imagine();
                 $size    = new Box($width, $height);
                 $imagine->open($originalPath)
@@ -151,6 +176,10 @@ class UploadImageManager
                             ]
                         );
                 $image = new \SplFileInfo($tmpFile);
+                $this->logger->info(
+                    'Resized image {name} using Imagine within {time} seconds',
+                    ['name' => $name, 'time' => microtime(true) - $start]
+                );
             }
 
             $this->cache->save($key, $image);
