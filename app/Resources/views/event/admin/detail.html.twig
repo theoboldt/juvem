@@ -86,10 +86,6 @@
                                     data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
                                     data-button-disable-label="Deaktivieren"
                                     data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#acquisitionAssignmentModal" id ="acquisitionAssignmentButton" title="Felder verwalten">
-                                {{ 'th-list'|glyph }}<span class="hidden-xs"> Felder</span>
-                            </button>
                         </div>
                     {% endif -%}
                     <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
@@ -97,29 +93,6 @@
                     {%- if is_granted('edit', event) -%}
                         <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
                            class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
-                        <div class="modal fade" id="acquisitionAssignmentModal" tabindex="-1" role="dialog" aria-labelledby="acquisitionAssignmentButton">
-                            <div class="modal-dialog" role="document">
-                                {{ form_start(acquisitionAssignmentForm) }}
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal"
-                                                aria-label="Abbrechen"><span
-                                                    aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">Felder verwalten</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ form_row(acquisitionAssignmentForm.acquisitionAttributes) }}
-                                        <p>Hier werden die zusätzlichen Felder ausgewählt, die bei jeder Anmeldung eines Teilnehmers erfasst werden. Werden Felder deaktiviert, bleiben bereits erfasste Daten erhalten. Die Eigenschaften der verfügbaren Felder werden im <a href="{{ path('acquisition_list') }}">Felder</a>-Bereich verwaltet.</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
-                                        </button>
-                                        <input type="submit" class="btn btn-primary" value="Bestätigen"/>
-                                    </div>
-                                </div>
-                                {{ form_end(acquisitionAssignmentForm) }}
-                            </div>
-                        </div>
                         {% if event.deletedAt -%}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">

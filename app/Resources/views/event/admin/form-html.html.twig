@@ -22,6 +22,89 @@
                 <p class="help-block" id="help-description-meta">Wenn definiert, wird dieser Text in der Veranstaltungs-Übersicht verwendet. Dieser Text wird auch als Auszug für Suchmaschienen verwendet. Es ist nur reiner Text erlaubt.</p>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-4">
+                {{ form_row(form.startDate) }}
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+                <div class="form-group">
+                    {{ form_widget(form.hasStartTime) }}
+                    {{ form_errors(form.startTime) }}
+                    {{ form_widget(form.startTime) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-4">
+                <div class="form-group">
+                    {{ form_widget(form.hasEndDate) }}
+                    {{ form_errors(form.endDate) }}
+                    {{ form_widget(form.endDate) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+                <div class="form-group">
+                    {{ form_widget(form.hasEndTime) }}
+                    {{ form_errors(form.endTime) }}
+                    {{ form_widget(form.endTime) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-4">
+                {{ form_row(form.isVisible) }}
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                {{ form_row(form.isActive) }}
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                {{ form_row(form.isAutoConfirm) }}
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-4">
+                {{ form_label(form.price) }}
+                {{ form_widget(form.price) }}
+                {{ form_errors(form.price) }}
+                <p class="help-block" id="help-price">Leer lassen, wenn kein Preis angegeben werden soll. Wird vor allem
+                    für Hervorhebung in Suchergebnissen verwendet.</p>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                {{ form_label(form.ageRange) }}
+                {{ form_widget(form.ageRange) }}
+                {{ form_errors(form.ageRange) }}
+                <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der
+                    Zielgruppe in Jahren angeben, bspw. <code>7-13</code>. Wird vor allem für Hervorhebung in
+                    Suchergebnissen verwendet.</p>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <div class="form-group">
+                    {{ form_widget(form.hasWaitingListThreshold) }}
+                    {{ form_errors(form.waitingListThreshold) }}
+                    {{ form_widget(form.waitingListThreshold) }}
+                    <p class="help-block" id="help-waiting-list">Wird die hier festgelegte Zahl Anmeldungen (Teilnehmer)
+                        erreicht, erfolgen eingehende Anmeldungen auf Warteliste. Die Veranstaltungsseite und
+                        Eingangs-E-Mails erhalten diesen hinweis. Ist die Differenz zwischen Schwelle und Teilnehmern
+                        &le; 3, wird die Info "wenig Plätze frei" angezeigt.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    {{ form_widget(form.hasConfirmationMessage) }}
+                    {{ form_errors(form.confirmationMessage) }}
+                    {{ form_widget(form.confirmationMessage) }}
+                    <p class="help-block" id="help-confirmation-message">Dieser Text wird in der Bestätgungs-E-Mail mit
+                        angezeigt. Der Text wird in der E-Mail als Absatz dargestellt, es kann demnach nur Fließtext
+                        ohne Formatierung verwendet werden.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="col-xs-12 col-sm-4">
         <div class="row">
@@ -268,76 +351,13 @@
                 {{ form_row(form.addressCountry) }}
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        {{ form_row(form.startDate) }}
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="form-group">
-            {{ form_widget(form.hasStartTime) }}
-            {{ form_errors(form.startTime) }}
-            {{ form_widget(form.startTime) }}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="form-group">
-            {{ form_widget(form.hasEndDate) }}
-            {{ form_errors(form.endDate) }}
-            {{ form_widget(form.endDate) }}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="form-group">
-            {{ form_widget(form.hasEndTime) }}
-            {{ form_errors(form.endTime) }}
-            {{ form_widget(form.endTime) }}
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12 col-sm-4">
-        {{ form_row(form.isVisible) }}
-    </div>
-    <div class="col-xs-12 col-sm-4">
-        {{ form_row(form.isActive) }}
-    </div>
-    <div class="col-xs-12 col-sm-4">
-        {{ form_row(form.isAutoConfirm) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12 col-sm-4">
-        {{ form_label(form.price) }}
-        {{ form_widget(form.price) }}
-        {{ form_errors(form.price) }}
-        <p class="help-block" id="help-price">Leer lassen, wenn kein Preis angegeben werden soll. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
-    </div>
-    <div class="col-xs-12 col-sm-4">
-        {{ form_label(form.ageRange) }}
-        {{ form_widget(form.ageRange) }}
-        {{ form_errors(form.ageRange) }}
-        <p class="help-block" id="help-age-range">Kann leer gelassen werden. Sollte die Altersspanne der Zielgruppe in Jahren angeben, bspw. <samp>7-13</samp>. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
-    </div>
-    <div class="col-xs-12 col-sm-4">
-        <div class="form-group">
-            {{ form_widget(form.hasWaitingListThreshold) }}
-            {{ form_errors(form.waitingListThreshold) }}
-            {{ form_widget(form.waitingListThreshold) }}
-            <p class="help-block" id="help-waiting-list">Wird die hier festgelegte Zahl Anmeldungen (Teilnehmer) erreicht, erfolgen eingehende Anmeldungen auf Warteliste. Die Veranstaltungsseite und Eingangs-E-Mails erhalten diesen hinweis. Ist die Differenz zwischen Schwelle und Teilnehmern &le; 3, wird die Info "wenig Plätze frei" angezeigt.</p>
-        </div>
-    </div>
-</div>
-
-
-<div class="row">
-    <div class="col-xs-12 col-sm-8">
-        <div class="form-group">
-            {{ form_widget(form.hasConfirmationMessage) }}
-            {{ form_errors(form.confirmationMessage) }}
-            {{ form_widget(form.confirmationMessage) }}
-            <p class="help-block" id="help-confirmation-message">Dieser Text wird in der Bestätgungs-E-Mail mit angezeigt. Der Text wird in der E-Mail als Absatz dargestellt, es kann demnach nur Fließtext ohne Formatierung verwendet werden.</p>
+        <div class="row">
+            <div class="col-xs-12" style="margin-top: 10px;">
+                {{ form_label(form.acquisitionAttributes) }}
+                {{ form_widget(form.acquisitionAttributes) }}
+                {{ form_errors(form.acquisitionAttributes) }}
+                <p class="help-block">Die aktivierten Felder werden bei jeder Anmeldung eines Teilnehmers erfasst. Werden zuvor verwendete Felder deaktiviert, bleiben bereits erfasste Daten erhalten. Die Eigenschaften der verfügbaren Felder werden im <a target="_blank" href="{{ path('acquisition_list') }}">Felder</a>-Bereich verwaltet.</p>
+            </div>
         </div>
     </div>
 </div>

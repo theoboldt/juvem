@@ -10,6 +10,9 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -172,6 +175,22 @@ class EventType extends AbstractType
                     'label'    => 'Schwelle',
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-waiting-list'],
+                ]
+            )
+            ->add(
+                'acquisitionAttributes',
+                EntityType::class,
+                [
+                    'class'         => Attribute::class,
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('a')
+                                  ->where('a.deletedAt IS NULL')
+                                  ->orderBy('a.managementTitle', 'ASC');
+                    },
+                    'choice_label'  => 'managementTitle',
+                    'multiple'      => true,
+                    'expanded'      => true,
+                    'label'         => 'Bei Anmeldungen zu erfassende Felder',
                 ]
             )
             ->add('save', SubmitType::class);

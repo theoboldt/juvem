@@ -15,7 +15,6 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
-use AppBundle\Form\EventAcquisitionType;
 use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
@@ -182,34 +181,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Edit acquisitions
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/acquisition", requirements={"eid": "\d+"}, name="event_acquisition_assignment")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     */
-    public function editEventAcquisitionAssignmentAction(Request $request, Event $event)
-    {
-        $this->denyAccessUnlessGranted('edit', $event);
-        $form = $this->createForm(
-            EventAcquisitionType::class,
-            $event,
-            [
-                'action' => $this->generateUrl('event_acquisition_assignment', ['eid' => $event->getEid()]),
-            ]
-        );
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($event);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('event', array('eid' => $event->getEid()));
-    }
-
-    /**
      * Detail page for one single event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
@@ -257,16 +228,6 @@ class AdminController extends Controller
             $em->flush();
             return $this->redirectToRoute('event', array('eid' => $event->getEid()));
         }
-
-        $acquisitionAssignmentForm = $this->createForm(
-            EventAcquisitionType::class,
-            $event,
-            array(
-                'action' => $this->generateUrl(
-                    'event_acquisition_assignment', array('eid' => $event->getEid())
-                ),
-            )
-        );
     
         $groupCount      = 0;
         $detectingsCount = 0;
@@ -295,7 +256,6 @@ class AdminController extends Controller
                 'participantsCount'         => $participantsCount,
                 'employeeCount'             => $employeeCount,
                 'form'                      => $form->createView(),
-                'acquisitionAssignmentForm' => $acquisitionAssignmentForm->createView()
             ]
         );
     }
