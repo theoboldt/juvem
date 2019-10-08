@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ viand.name }} (Einheit bearbeiten){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': viand.name, 'subtitle': 'Lebensmittel bearbeiten'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_viands_list') }}">Lebensmittel</a></li>
+      <li><a href="{{ path('meals_viands_detail', {id: viand.id}) }}">{{ viand.name }}</a></li>
+      <li class="active">Lebensmittel bearbeiten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12 col-sm-8">
+        {{ form_row(form.name) }}
+      </div>
+      <div class="col-xs-12 col-sm-4">
+        {{ form_row(form.defaultUnit) }}
+      </div>
+      <div class="col-xs-12">
+        {{ form_row(form.properties) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Änderungen speichern" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}

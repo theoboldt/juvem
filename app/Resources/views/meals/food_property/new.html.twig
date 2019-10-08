@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Einheit erstellen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Eigenschaft', 'subtitle': 'erstellen'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_properties_list') }}">Eigenschaften von Lebensmitteln</a></li>
+      <li class="active">Eigenschaft erstellen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+        <p class="help-block">
+          Positiv/Inklusiv-Bezeichnung der Eigenschaft die ein Lebensmittel haben kann.
+          Beispielsweise trifft auf das Lebensmittel <code>Milch</code> die Eigenschaft <code>enthält Laktose</code> zu.
+          Negativ/Exklusiv-Bezeichnungen wie bspw. <code>laktosefrei</code> für <code>Mandelmilch</code> sollten strikt
+          vermieden werden.
+        </p>
+      </div>
+    </div>
+
+    <div class="row ">
+      <div class="col-xs-12">
+        <h4>Ausschluss-Begriff</h4>
+        <p class="help-block">
+          Verträgt ein Teilnehmer oder Mitarbeiter diese Eigenschaft nicht, würde er seine Ernährung dementsprechend
+          bezeichnen. Der entsprechende Begriff sollte hier verwendet werden.
+      </div>
+      <div class="col-xs-12 col-sm-10">
+        <label>Begriff</label>
+        {{ form_widget(form.exclusionTerm) }}
+        {{ form_errors(form.exclusionTerm) }}
+        <p class="help-block">
+          Für jemand, der keine Laktose verträgt, wäre der passende Begriff hier <code>laktosefrei</code>.
+        </p>
+      </div>
+      <div class="col-xs-12 col-sm-2">
+        <label>Abkürzung</label>
+        {{ form_widget(form.exclusionTermShort) }}
+        {{ form_errors(form.exclusionTermShort) }}
+        <p class="help-block">
+          Abkürzung für den Ausschluss, für laktosefrei bspw. <code>lf</code>.
+        </p>
+      </div>
+      <div class="col-xs-12">
+        <label>Beschreibung</label>
+        {{ form_widget(form.exclusionTermDescription) }}
+        {{ form_errors(form.exclusionTermDescription) }}
+        <p class="help-block">
+          Eine im Formular passende Auswahlmöglichkeit für die Besonderheit der Ernährung für jemand, der keine Laktose
+          verträgt, wäre  <code>ernährt sich laktosefrei</code>.
+        </p>
+      </div>
+
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Eigenschaft erstellen" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Einheit erstellen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Lebensmittel', 'subtitle': 'erstellen'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_viands_list') }}">Lebensmittel verwalten</a></li>
+      <li class="active">Lebensmittel erstellen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12 col-sm-8">
+        {{ form_row(form.name) }}
+      </div>
+      <div class="col-xs-12 col-sm-4">
+        {{ form_row(form.defaultUnit) }}
+      </div>
+      <div class="col-xs-12">
+        {{ form_row(form.properties) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Lebensmittel erstellen" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ foodProperty.name }} (Einheit){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': foodProperty.name, 'subtitle': 'Eigenschaft'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_properties_list') }}">Eigenschaften von Lebensmitteln</a></li>
+      <li class="active">{{ foodProperty.name }} (Eigenschaft)</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <a href="{{ path('meals_property_edit', {'id': foodProperty.id }) }}"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 col-md-6">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Name</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">{{ foodProperty.name }}</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Ausschluss-Begriff</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">{{ foodProperty.exclusionTerm }} {% if foodProperty.exclusionTermShort %}<i>({{ foodProperty.exclusionTermShort }})</i>{% endif %}</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Ausschluss-Beschreibung</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">{{ foodProperty.exclusionTermDescription }}</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

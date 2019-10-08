@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Einheit erstellen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Einheit', 'subtitle': 'erstellen'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_units_list') }}">Einheiten</a></li>
+      <li class="active">Einheit erstellen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12 col-sm-10">
+        {{ form_row(form.name) }}
+      </div>
+      <div class="col-xs-12 col-sm-2">
+        {{ form_row(form.short) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Einheit erstellen" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}

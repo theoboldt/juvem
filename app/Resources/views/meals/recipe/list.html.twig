@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rezepte verwalten{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Rezepte', 'subtitle': 'verwalten'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li class="active">Rezepte verwalten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="bootstrap-table-toolbar" class="form-inline">
+          <div class="form-group">
+            <a class="btn btn-primary" href="{{ path('meals_recipes_new') }}">{{ 'plus'|glyph }} Neu</a>
+          </div>
+        </div>
+        <table id="recipesList" class="table table-striped table-remote-content" data-id-field="bid"
+               data-toggle="table" data-cache="false" data-pagination="true"
+               data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+               data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+               data-show-filter="true" data-search="true"
+               data-url="{{ path('meals_recipes_list_data') }}">
+          <thead>
+          <tr>
+            <th data-field="id" data-sortable="true" data-visible="false">#</th>
+            <th data-field="title" data-sortable="true" data-order="asc">Titel</th>
+            <th data-field="properties" data-sortable="false">Eigenschaften</th>
+            <th data-field="description">Zubereitung</th>
+          </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
