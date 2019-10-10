@@ -120,11 +120,32 @@ class Recipe implements HasFoodPropertiesAssignedInterface
     }
     
     /**
-     * @return RecipeIngredient[]|Collection
+     * @return RecipeIngredient[]|array
      */
     public function getIngredients()
     {
-        return $this->ingredients;
+        $ingredients = $this->ingredients->toArray();
+        usort(
+            $ingredients, function (RecipeIngredient $a, RecipeIngredient $b) {
+            $aViand = $a->getViand()->getName();
+            $bViand = $b->getViand()->getName();
+            if ($aViand === $bViand) {
+                $aUnit = $a->getUnit()->getName();
+                $bUnit = $b->getUnit()->getName();
+                if ($aUnit === $bUnit) {
+                    $aAmount = $a->getAmount();
+                    $bAmount = $b->getAmount();
+                    if ($aAmount === $bAmount) {
+                        return 0;
+                    }
+                    return ($aAmount < $bAmount) ? -1 : 1;
+                }
+                return strnatcasecmp($aUnit, $bUnit);
+            }
+            return strnatcasecmp($aViand, $bViand);
+        }
+        );
+        return $ingredients;
     }
     
     /**
