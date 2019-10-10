@@ -22,9 +22,10 @@ class RecipeRepository extends EntityRepository
     public function find($id, $lockMode = null, $lockVersion = null)
     {
         $qb = $this->createQueryBuilder('recipe');
-        $qb->select('recipe', 'ingredients', 'viand', 'properties')
+        $qb->select('recipe', 'ingredients', 'viand', 'properties', 'unit')
            ->leftJoin('recipe.ingredients', 'ingredients')
            ->leftJoin('ingredients.viand', 'viand')
+           ->leftJoin('ingredients.unit', 'unit')
            ->leftJoin('viand.properties', 'properties')
            ->andWhere($qb->expr()->eq('recipe.id', ':id'))
            ->setParameter('id', $id);
