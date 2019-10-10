@@ -89,7 +89,8 @@ class RecipeController extends Controller
             'meals/recipe/detail.html.twig',
             [
                 'recipe'               => $recipe,
-                'unassignedProperties' => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe)
+                'unassignedProperties' => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe),
+                'accumulatedIngredients' => $this->get('app.food_service')->accumulatedIngredients($recipe),
             ]
         );
     }

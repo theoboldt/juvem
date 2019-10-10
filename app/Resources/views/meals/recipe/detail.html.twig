@@ -35,7 +35,8 @@
           <span class="label label-primary">{{ property.name }}</span>
         {% endfor %}
         {% for property in unassignedProperties %}
-          <span class="label label-default" title="{{ property.exclusionTermDescription }}">{{ property.exclusionTerm }}</span>
+          <span class="label label-default"
+                title="{{ property.exclusionTermDescription }}">{{ property.exclusionTerm }}</span>
         {% endfor %}
       </div>
       <div class="col-xs-12">
@@ -75,6 +76,44 @@
         </table>
       </div>
 
+      <div class="col-xs-12">
+        <h2>Kalkulation</h2>
+        <p>Kalkulation für mehrere Personen.</p>
+        <table class="table table-striped">
+          <thead style="font-weight: bold;">
+          <tr>
+            <td>Lebensmittel</td>
+            <td class="text-right">Menge p<span class="hidden-sm">ro </span>P<span class="hidden-sm">erson</span></td>
+            <td>Menge</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for accumulatedIngredient in accumulatedIngredients %}
+            {% for occasion in accumulatedIngredient.occasions %}
+              <tr>
+                <td>
+                  {{ accumulatedIngredient.viand.name }}
+                </td>
+              <td class="text-right">
+                {{ occasion.amount|replace({'.': ",", "," : "'"}) }} <abbr
+                    style="display: inline-block; min-width: 37px; text-align: left;"
+                    title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+              </td>
+                <td>
+                  <span data-per-person="{{ occasion.amount }}">?</span>
+                  <abbr
+                    style="display: inline-block; min-width: 37px; text-align: left;"
+                    title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+          </tbody>
+
+
+        </table>
+
+      </div>
 
     </div>
   </div>

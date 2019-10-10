@@ -90,4 +90,24 @@ class FoodService
     }
     
     
+    /**
+     * Get all accumulated ingredients
+     *
+     * @param Recipe $recipe
+     * @return array|AccumulatedIngredient[]
+     */
+    public function accumulatedIngredients(Recipe $recipe): array
+    {
+        $accumulated = [];
+        foreach ($recipe->getIngredients() as $ingredient) {
+            if (!isset($accumulated[$ingredient->getId()])) {
+                $accumulated[$ingredient->getId()] = AccumulatedIngredient::createForRecipeIngredient($ingredient);
+            } else {
+                $accumulated[$ingredient->getId()]->addRecipeIngredient($ingredient);
+            }
+        }
+        return $accumulated;
+    }
+    
+    
 }
