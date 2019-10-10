@@ -25,8 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="recipe")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Meals\RecipeRepository")
  */
-class Recipe
+class Recipe implements HasFoodPropertiesAssignedInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
     

@@ -34,6 +34,9 @@
         {% for property in recipe.properties %}
           <span class="label label-primary">{{ property.name }}</span>
         {% endfor %}
+        {% for property in unassignedProperties %}
+          <span class="label label-default" title="{{ property.exclusionTermDescription }}">{{ property.exclusionTerm }}</span>
+        {% endfor %}
       </div>
       <div class="col-xs-12">
         <h2>Zutaten</h2>
@@ -62,6 +65,11 @@
               <td>{{ ingredient.description }}</td>
             </tr>
           {% endfor %}
+          {% if recipe.ingredients|length == 0 %}
+            <tr>
+              <td colspan="4" class="text-center">(keine Zutaten eingetragen)</td>
+            </tr>
+          {% endif %}
           </tbody>
         </table>
       </div>

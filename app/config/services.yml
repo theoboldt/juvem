@@ -183,6 +183,11 @@ services:
     app.exception_controller:
         class: AppBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
+    app.food_service:
+        class: AppBundle\Entity\Meals\FoodService
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
     app.exception_listener:
         class: AppBundle\EventListeners\ExceptionListener
         tags:

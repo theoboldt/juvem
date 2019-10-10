@@ -50,14 +50,18 @@ class RecipeController extends Controller
     {
         $repository = $this->getDoctrine()->getRepository(Recipe::class);
         $recipeList = $repository->findAll();
-        
-        $result = [];
+        $result     = [];
         /** @var Recipe $recipe */
         foreach ($recipeList as $recipe) {
             $properties = [];
             foreach ($recipe->getProperties() as $property) {
                 $properties[] = '<span class="label label-primary">' . $property->getName() . '</span>';
             }
+            $notAssigned = $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe);
+            foreach ($notAssigned as $property) {
+                $properties[] = '<span class="label label-default">' . $property->getExclusionTerm() . '</span>';
+            }
+            
             $description = (mb_strlen($recipe->getCookingInstructions()) < 100)
                 ? $recipe->getCookingInstructions()
                 : substr($recipe->getCookingInstructions(), 0, 97) . '...';
@@ -81,7 +85,13 @@ class RecipeController extends Controller
      */
     public function detailAction(Recipe $recipe)
     {
-        return $this->render('meals/recipe/detail.html.twig', ['recipe' => $recipe]);
+        return $this->render(
+            'meals/recipe/detail.html.twig',
+            [
+                'recipe'               => $recipe,
+                'unassignedProperties' => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe)
+            ]
+        );
     }
     
     /**

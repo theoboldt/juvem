@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="food_property")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @ORM\Entity(repositoryClass="FoodPropertyRepository")
  */
 class FoodProperty
 {
