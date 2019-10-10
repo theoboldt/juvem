@@ -54,8 +54,9 @@
             <tr>
               <td>{{ ingredient.viand.name }}</td>
               <td class="text-right">
-                {{ ingredient.amount }} <abbr style="display: inline-block; min-width: 37px; text-align: left;"
-                                              title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
+                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }} <abbr
+                    style="display: inline-block; min-width: 37px; text-align: left;"
+                    title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
               </td>
               <td>
                 {% for property in ingredient.viand.properties %}
