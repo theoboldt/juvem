@@ -100,10 +100,11 @@ class FoodService
     {
         $accumulated = [];
         foreach ($recipe->getIngredients() as $ingredient) {
-            if (!isset($accumulated[$ingredient->getId()])) {
-                $accumulated[$ingredient->getId()] = AccumulatedIngredient::createForRecipeIngredient($ingredient);
+            $viandId = $ingredient->getViand()->getId();
+            if (!isset($accumulated[$viandId])) {
+                $accumulated[$viandId] = AccumulatedIngredient::createForRecipeIngredient($ingredient);
             } else {
-                $accumulated[$ingredient->getId()]->addRecipeIngredient($ingredient);
+                $accumulated[$viandId]->addRecipeIngredient($ingredient);
             }
         }
         return $accumulated;

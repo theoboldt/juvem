@@ -30,7 +30,9 @@
         </div>
       {% endif %}
       <div class="col-xs-12">
-        <h2>Eigenschaften</h2>
+        <h2 id="recipe-properties">Eigenschaften</h2>
+        <p>Die Eigenschaften des Rezeptes ergeben sich aus denen aller zugehörigen <a href="#ingredients-section">Zutaten</a>.
+        </p>
         {% for property in recipe.properties %}
           <span class="label label-primary">{{ property.name }}</span>
         {% endfor %}
@@ -40,7 +42,14 @@
         {% endfor %}
       </div>
       <div class="col-xs-12">
-        <h2>Zutaten</h2>
+        <h2 id="ingredients-section">Zutaten</h2>
+        <p>
+          Diesem Rezept sind die folgenden <a href="{{ path('meals_viands_list') }}">Lebensmittel</a> als Zutaten
+          zugewiesen. Lebensmittel können mehrfach auftauchen, wenn sie zu unterschiedlichen Teilen des Gerichts
+          gehören und deren Faktor daher einzeln eingestellt veränderbar sein sollte, beispielsweise wenn in einem
+          Rezept Zucker für Teig und Zucker für eine Glasur verwendet werden soll. Das sollte dann durch einen Hinweis
+          klar gemacht werden.
+        </p>
         <table class="table table-striped">
           <thead style="font-weight: bold;">
           <tr>
@@ -55,7 +64,7 @@
             <tr>
               <td>{{ ingredient.viand.name }}</td>
               <td class="text-right">
-                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }} <abbr
+                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
                     style="display: inline-block; min-width: 37px; text-align: left;"
                     title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
               </td>
@@ -78,7 +87,22 @@
 
       <div class="col-xs-12">
         <h2>Kalkulation</h2>
-        <p>Kalkulation für mehrere Personen.</p>
+        <div class="row">
+          <div class="col-xs-10 col-lg-11">
+            <p>
+              Aus der Liste der <a href="#ingredients-section">Zutaten</a> ergibt sich in Abhängigkeit von der Anzahl
+              der Personen, für die das Gericht bestimmt ist die benötigte Menge pro Zutat. Kommen Zutaten in der selben
+              Einheit mehrmals in der Zutatenliste vor, werden die Mengen hier summiert.
+            </p>
+          </div>
+          <div class="col-xs-2 col-lg-1">
+            <div class="form-group">
+              <label for="calculationPersonCount">Personen</label>
+              <input type="text" class="form-control" id="calculationPersonCount" placeholder="?">
+            </div>
+          </div>
+
+        </div>
         <table class="table table-striped">
           <thead style="font-weight: bold;">
           <tr>
@@ -94,16 +118,15 @@
                 <td>
                   {{ accumulatedIngredient.viand.name }}
                 </td>
-              <td class="text-right">
-                {{ occasion.amount|replace({'.': ",", "," : "'"}) }} <abbr
-                    style="display: inline-block; min-width: 37px; text-align: left;"
-                    title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
-              </td>
+                <td class="text-right">
+                  {{ occasion.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
+                      style="display: inline-block; min-width: 37px; text-align: left;"
+                      title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                </td>
                 <td>
-                  <span data-per-person="{{ occasion.amount }}">?</span>
-                  <abbr
-                    style="display: inline-block; min-width: 37px; text-align: left;"
-                    title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                  <span class="calculationAmountSum" data-per-person="{{ occasion.amount }}">?</span>&nbsp;<abbr
+                      style="display: inline-block; min-width: 37px; text-align: left;"
+                      title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
                 </td>
               </tr>
             {% endfor %}
