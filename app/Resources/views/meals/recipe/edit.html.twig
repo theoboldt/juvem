@@ -1,0 +1,110 @@
+{% import _self as m %}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recipe.title }} (Rezept bearbeiten){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Rezept bearbeiten'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
+      <li><a href="{{ path('meals_recipes_detail', {id: recipe.id}) }}">{{ recipe.title }}</a></li>
+      <li class="active">Rezept bearbeiten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_row(form.title) }}
+      </div>
+      <div class="col-xs-12">
+        {{ form_row(form.cookingInstructions) }}
+      </div>
+
+      {% macro prototypeIngredientUse(formElement) %}
+        <div class="panel panel-default prototype-element">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-xs-10 col-sm-8">
+                <h4 class="panel-title">Zutat</h4>
+              </div>
+              <div class="col-xs-2 col-sm-4 text-right">
+                <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                   title="Zutat entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Zutat entfernen</span></a>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12 col-sm-4">
+                <div class="form-group {% if not formElement.viand.vars.valid %}has-error{% endif %}">
+                  {{ form_label(formElement.viand) }}
+                  {{ form_widget(formElement.viand) }}
+                  {{ form_errors(formElement.viand) }}
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-4">
+                <div class="form-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
+                  {{ form_label(formElement.description) }}
+                  {{ form_widget(formElement.description) }}
+                  {{ form_errors(formElement.description) }}
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-2">
+                <div class="form-group {% if not formElement.amount.vars.valid %}has-error{% endif %}">
+                  <label class="control-label">Menge p<span class="hidden-sm">ro </span>P<span
+                        class="hidden-sm">erson</span></label>
+                  {{ form_widget(formElement.amount) }}
+                  {{ form_errors(formElement.amount) }}
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-2">
+                {{ form_label(formElement.unit) }}
+                <div class="input-group {% if not formElement.unit.vars.valid %}has-error{% endif %}">
+                  {{ form_widget(formElement.unit) }}
+                </div>
+                {{ form_errors(formElement.unit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endmacro %}
+      <div class="col-xs-12">
+
+        <div class="ingredients prototype-container"
+             data-prototype="{{ m.prototypeIngredientUse(form.ingredients.vars.prototype, false)|e('html_attr') }}">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <div class="prototype-elements">
+                  {% for ingredient in form.ingredients %}
+                    {{ m.prototypeIngredientUse(ingredient) }}
+                  {% endfor %}
+                  {% if form.ingredients|length == 0 %}
+                    {{ form_row(form.ingredients) }}
+                  {% endif %}
+                </div>
+                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Zutat hinzufügen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Änderungen speichern" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}

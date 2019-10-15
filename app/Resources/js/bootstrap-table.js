@@ -346,5 +346,35 @@ $(function () {
     $('#attendanceColumnListTable').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey('columns/' + row.column_id);
     });
+
+    /**
+     *MEALS QUANTITY UNIT: Jump to quantity unit details
+     */
+    $('#quantityUnitList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.id);
+    });
+
+    /**
+     *MEALS RECIPES: Jump to recipe details
+     */
+    $('#recipesList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.id);
+    });
+
+    /**
+     *MEALS VIANDS: Jump to viand details
+     */
+    $('#viandList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.id);
+    });
+
+    /**
+     *MEALS FOOD PROPERTIES: Jump to property details
+     */
+    $('#foodPropertyList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.id);
+    });
+
+
 })
 ;

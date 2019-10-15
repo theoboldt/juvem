@@ -23,7 +23,7 @@ use JMS\Serializer\Annotation as Serialize;
 trait CreatorTrait
 {
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="uid", onDelete="SET NULL")
      *
      * @Serialize\Expose

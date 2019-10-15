@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ viand.name }} (Einheit){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': viand.name, 'subtitle': 'Lebensmittel'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_viands_list') }}">Lebensmittel</a></li>
+      <li class="active">{{ viand.name }} (Lebensmittel)</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <a href="{{ path('meals_viands_edit', {'id': viand.id }) }}"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 col-md-6">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Name</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">{{ viand.name }}</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Standard-Einheit</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">
+                {% if viand.hasDefaultUnit() %}
+                  {{ viand.defaultUnit.name }}
+                {% else %}
+                  <i>(keine)</i>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Eigenschaften</label>
+            <div class="col-sm-8">
+              <p class="form-control-static">
+                {% for property in viand.properties %}
+                  <span class="label label-primary">{{ property.name }}</span>
+                {% endfor %}
+                {% if viand.properties|length == 0 %}
+                  <i>(keine zugewiesen)</i>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

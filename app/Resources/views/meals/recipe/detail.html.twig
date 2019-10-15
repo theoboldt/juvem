@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recipe.title }} (Rezept){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Rezept'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
+      <li class="active">{{ recipe.title }} (Rezept)</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <a href="{{ path('meals_recipes_edit', {'id': recipe.id }) }}"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      {% if recipe.cookingInstructions %}
+        <div class="col-xs-12">
+          <h2>Zubereitung</h2>
+          {{ recipe.cookingInstructions|markdown }}
+        </div>
+      {% endif %}
+      <div class="col-xs-12">
+        <h2 id="recipe-properties">Eigenschaften</h2>
+        <p>Die Eigenschaften des Rezeptes ergeben sich aus denen aller zugehörigen <a href="#ingredients-section">Zutaten</a>.
+        </p>
+        {% for property in recipe.properties %}
+          <span class="label label-primary">{{ property.name }}</span>
+        {% endfor %}
+        {% for property in unassignedProperties %}
+          <span class="label label-default"
+                title="{{ property.exclusionTermDescription }}">{{ property.exclusionTerm }}</span>
+        {% endfor %}
+      </div>
+      <div class="col-xs-12">
+        <h2 id="ingredients-section">Zutaten</h2>
+        <p>
+          Diesem Rezept sind die folgenden <a href="{{ path('meals_viands_list') }}">Lebensmittel</a> als Zutaten
+          zugewiesen. Lebensmittel können mehrfach auftauchen, wenn sie zu unterschiedlichen Teilen des Gerichts
+          gehören und deren Faktor daher einzeln eingestellt veränderbar sein sollte, beispielsweise wenn in einem
+          Rezept Zucker für Teig und Zucker für eine Glasur verwendet werden soll. Das sollte dann durch einen Hinweis
+          klar gemacht werden.
+        </p>
+        <table class="table table-striped">
+          <thead style="font-weight: bold;">
+          <tr>
+            <td>Lebensmittel</td>
+            <td class="text-right">Menge p<span class="hidden-sm">ro </span>P<span class="hidden-sm">erson</span></td>
+            <td>Eigenschaften</td>
+            <td>Hinweise</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for ingredient in recipe.ingredients %}
+            <tr>
+              <td>{{ ingredient.viand.name }}</td>
+              <td class="text-right">
+                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
+                    style="display: inline-block; min-width: 37px; text-align: left;"
+                    title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
+              </td>
+              <td>
+                {% for property in ingredient.viand.properties %}
+                  <span class="label label-primary">{{ property.name }}</span>
+                {% endfor %}
+              </td>
+              <td>{{ ingredient.description }}</td>
+            </tr>
+          {% endfor %}
+          {% if recipe.ingredients|length == 0 %}
+            <tr>
+              <td colspan="4" class="text-center">(keine Zutaten eingetragen)</td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-xs-12">
+        <h2>Kalkulation</h2>
+        <div class="row">
+          <div class="col-xs-10 col-lg-11">
+            <p>
+              Aus der Liste der <a href="#ingredients-section">Zutaten</a> ergibt sich in Abhängigkeit von der Anzahl
+              der Personen, für die das Gericht bestimmt ist die benötigte Menge pro Zutat. Kommen Zutaten in der selben
+              Einheit mehrmals in der Zutatenliste vor, werden die Mengen hier summiert.
+            </p>
+          </div>
+          <div class="col-xs-2 col-lg-1">
+            <div class="form-group">
+              <label for="calculationPersonCount">Personen</label>
+              <input type="text" class="form-control" id="calculationPersonCount" placeholder="?">
+            </div>
+          </div>
+
+        </div>
+        <table class="table table-striped">
+          <thead style="font-weight: bold;">
+          <tr>
+            <td>Lebensmittel</td>
+            <td class="text-right">Menge p<span class="hidden-sm">ro </span>P<span class="hidden-sm">erson</span></td>
+            <td>Menge</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for accumulatedIngredient in accumulatedIngredients %}
+            {% for occasion in accumulatedIngredient.occasions %}
+              <tr>
+                <td>
+                  {{ accumulatedIngredient.viand.name }}
+                </td>
+                <td class="text-right">
+                  {{ occasion.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
+                      style="display: inline-block; min-width: 37px; text-align: left;"
+                      title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                </td>
+                <td>
+                  <span class="calculationAmountSum" data-per-person="{{ occasion.amount }}">?</span>&nbsp;<abbr
+                      style="display: inline-block; min-width: 37px; text-align: left;"
+                      title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+          </tbody>
+
+
+        </table>
+
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

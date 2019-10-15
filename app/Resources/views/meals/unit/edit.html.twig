@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ unit.name }} (Einheit bearbeiten){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': unit.name, 'subtitle': 'Einheit bearbeiten'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_units_list') }}">Einheiten</a></li>
+      <li><a href="{{ path('meals_units_detail', {id: unit.id}) }}">{{ unit.name }}</a></li>
+      <li class="active">Einheit bearbeiten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row ">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12 col-sm-10">
+        {{ form_row(form.name) }}
+      </div>
+      <div class="col-xs-12 col-sm-2">
+        {{ form_row(form.short) }}
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-xs-12">
+        <input type="submit" value="Änderungen speichern" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+
+  </div>
+{% endblock %}
