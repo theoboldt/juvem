@@ -20,40 +20,40 @@ use AppBundle\Entity\Event;
 
 class InvoiceManager
 {
-    
+
     /**
      * Entity manager
      *
      * @var EntityManagerInterface
      */
     private $em;
-    
+
     /**
      * PaymentManager
      *
      * @var PaymentManager
      */
     private $paymentManager;
-    
+
     /**
      * Path to invoice repository
      *
      * @var string
      */
     private $invoiceBasePath;
-    
+
     /**
      * The user currently logged in
      *
      * @var User|null
      */
     protected $user = null;
-    
+
     const PLACEHOLDER_PARTICIPANT_NAME        = 'participantName';
     const PLACEHOLDER_INVOICE_ROW_TYPE        = 'invoiceRowType';
     const PLACEHOLDER_INVOICE_ROW_DESCRIPTION = 'invoiceRowDescription';
     const PLACEHOLDER_INVOICE_ROW_VALUE       = 'invoiceRowValue';
-    
+
     const PLACEHOLDER_PID                            = 'pid';
     const PLACEHOLDER_SALUTION                       = 'salution';
     const PLACEHOLDER_NAME_FIRST                     = 'nameFirst';
@@ -61,12 +61,13 @@ class InvoiceManager
     const PLACEHOLDER_ADDRESS_STREET                 = 'addressStreet';
     const PLACEHOLDER_ADDRESS_ZIP                    = 'addressZip';
     const PLACEHOLDER_ADDRESS_CITY                   = 'addressCity';
+    const PLACEHOLDER_EMAIL                          = 'email';
     const PLACEHOLDER_INVOICE_NUMBER                 = 'invoiceNumber';
     const PLACEHOLDER_INVOICE_ROW_SUM                = 'invoiceRowSum';
     const PLACEHOLDER_EVENT_TITLE                    = 'eventTitle';
     const PLACEHOLDER_PARTICIPANT_NAMES_COMBINED     = 'participantNamesCombined';
     const PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW = 'invoiceRowSumEuroCentsRaw';
-    
+
     /**
      * InvoiceManager constructor.
      *
@@ -89,7 +90,7 @@ class InvoiceManager
             $this->user = $tokenStorage->getToken()->getUser();
         }
     }
-    
+
     /**
      * @return InvoiceRepository
      */
@@ -97,8 +98,8 @@ class InvoiceManager
     {
         return $this->em->getRepository(Invoice::class);
     }
-    
-    
+
+
     /**
      * Get list of all @see Invoice for transmitted Participation
      *
@@ -109,7 +110,7 @@ class InvoiceManager
     {
         return $this->repository()->findByEvent($event);
     }
-    
+
     /**
      * Get list of all @see Invoice for transmitted Participation
      *
@@ -120,7 +121,7 @@ class InvoiceManager
     {
         return $this->repository()->findByParticipation($participation);
     }
-    
+
     /**
      * Calculate new @see Invoice
      *
@@ -139,13 +140,13 @@ class InvoiceManager
             }
         }
         $templateProcessor = new TemplateProcessor($templatePath);
-        
+
         $toPayValue = $this->paymentManager->getToPayValueForParticipation($participation, false);
         $invoice    = new Invoice($participation, $toPayValue);
         $invoice->setCreatedBy($this->user);
         $this->em->persist($invoice);
         $this->em->flush();
-        
+
         $sumCents = 0;
         $elements = [];
         foreach ($participation->getParticipants() as $participant) {
@@ -174,9 +175,9 @@ class InvoiceManager
                     $type        = 'Unbekannt';
                     $description = 'Unbekannt';
                 }
-                
+
                 $sumCents += $summand->getValue(false);
-                
+
                 $elements[] = [
                     'participant' => $participant->fullname(),
                     'value'       => number_format($summand->getValue(true), 2, ',', '.') . ' €',
@@ -192,10 +193,10 @@ class InvoiceManager
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_TYPE . '#' . $i, $element['description']);
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_DESCRIPTION . '#' . $i, $element['type']);
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_VALUE . '#' . $i, $element['value']);
-        
+
             ++$i;
         }
-    
+
         $search  = [
             self::PLACEHOLDER_PID,
             self::PLACEHOLDER_SALUTION,
@@ -204,6 +205,7 @@ class InvoiceManager
             self::PLACEHOLDER_ADDRESS_STREET,
             self::PLACEHOLDER_ADDRESS_ZIP,
             self::PLACEHOLDER_ADDRESS_CITY,
+            self::PLACEHOLDER_EMAIL,
             self::PLACEHOLDER_INVOICE_NUMBER,
             self::PLACEHOLDER_INVOICE_ROW_SUM,
             self::PLACEHOLDER_EVENT_TITLE,
@@ -226,14 +228,14 @@ class InvoiceManager
             $sumCents,
         ];
         $templateProcessor->setValue($search, $replace);
-        
-        
+
+
         $this->ensureInvoiceDirectoryExists($invoice);
         $templateProcessor->saveAs($this->getInvoiceFilePath($invoice));
-        
+
         return $invoice;
     }
-    
+
     /**
      * Ensure that directory for invoice file exists
      *
@@ -253,7 +255,7 @@ class InvoiceManager
         }
         return false;
     }
-    
+
     /**
      * Determine if file exists
      *
@@ -265,7 +267,7 @@ class InvoiceManager
         $path = $this->getInvoiceFilePath($invoice);
         return file_exists($path) && is_readable($path);
     }
-    
+
     /**
      * Get path to @see Invoice file
      *
@@ -282,7 +284,7 @@ class InvoiceManager
             strtolower($invoice->getInvoiceNumber())
         );
     }
-    
+
     /**
      * Get path to template file
      *
@@ -292,6 +294,6 @@ class InvoiceManager
     {
         return $this->invoiceBasePath . '/template.docx';
     }
-    
-    
+
+
 }
