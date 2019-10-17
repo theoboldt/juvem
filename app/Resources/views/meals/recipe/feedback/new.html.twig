@@ -3,12 +3,12 @@
 {% block title %}{{ recipe.title }} (Rezept){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Feedback erfassen'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Rückmeldung erfassen'} %}
     {% block breadcrumb %}
       <li>Rezepte</li>
       <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
       <li><a href="{{ path('meals_recipes_detail', {'id': recipe.id}) }}">{{ recipe.title }}</a></li>
-      <li class="active">Feedback erfassen</li>
+      <li class="active">Rückmeldung erfassen</li>
     {% endblock %}
   {% endembed %}
 
@@ -143,7 +143,7 @@
       </div>
 
       <div class="col-xs-12">
-        <input type="submit" value="Feedback erfassen" class="btn btn-primary navbar-btn"/>
+        <input type="submit" value="Rückmeldung erfassen" class="btn btn-primary navbar-btn"/>
       </div>
       {{ form_end(form) }}
     </div>
