@@ -12,6 +12,7 @@
 namespace AppBundle\Form\Meal;
 
 
+use AppBundle\Entity\Meals\Recipe;
 use AppBundle\Entity\Meals\RecipeFeedback;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,10 +20,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RecipeItemFeedbackChoiceType extends ChoiceType
 {
+    const FIELD_RECIPE = 'recipe';
     
     const AMOUNT_NULL       = '';
     const AMOUNT_NULL_LABEL = 'keine Angabe';
     
+    /**
+     * {@inheritDoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $choices = [
@@ -41,8 +46,15 @@ class RecipeItemFeedbackChoiceType extends ChoiceType
         parent::buildForm($builder, $options);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
+        $resolver->setRequired(self::FIELD_RECIPE);
+        $resolver->setAllowedTypes(self::FIELD_RECIPE, [Recipe::class, 'null']);
+        $resolver->setDefault(self::FIELD_RECIPE, null);
+        
         parent::configureOptions($resolver);
         $resolver->setDefaults(
             [

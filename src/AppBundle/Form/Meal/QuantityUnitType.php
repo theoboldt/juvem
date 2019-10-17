@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Form;
+namespace AppBundle\Form\Meal;
 
 use AppBundle\Entity\Meals\QuantityUnit;
 use Symfony\Component\Form\AbstractType;
@@ -18,6 +18,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class QuantityUnitType extends AbstractType
 {
+    /**
+     * {@inheritDoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         
@@ -38,6 +41,9 @@ class QuantityUnitType extends AbstractType
         );
     }
     
+    /**
+     * {@inheritDoc}
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(

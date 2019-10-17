@@ -87,37 +87,47 @@
               {{ form_widget(form.feedbackGlobal) }}
             </td>
           </tr>
-          {% for fieldName,formField in form %}
-            {% if fieldName starts with 'feedbackIngredient_' %}
-              <tr>
-                <td><b>{{ form_label(formField) }}</b>
-                  {% if formField.vars.attr.dataDescription is defined %}<br>
-                    <span class="description">{{ formField.vars.attr.dataDescription }}</span>
+
+          {% for fieldName,formField in form.feedback %}
+            <tr>
+              {% if recipe.hasIngredient(formField.vars.data.recipeIngredientId) %}
+                {% set ingredient = recipe.getIngredient(formField.vars.data.recipeIngredientId) %}
+                {% set originalUnit = units[formField.vars.data.unitIdOriginal] %}
+                <td><b>{{ ingredient.viand.name }}</b>
+                  {% if ingredient.description %}<br>
+                    <span class="description">{{ ingredient.description }}</span>
                   {% endif %}
                 </td>
                 <td class="text-right">
-                  {{ formField.vars.attr.dataAmountOriginal|replace({'.': ",", "," : "'"}) }}&nbsp;
+                  {{ formField.vars.data.amountOriginal|replace({'.': ",", "," : "'"}) }}&nbsp;
                   <abbr class="unit"
-                        title="{{ formField.vars.attr.dataUnitName }}">{{ formField.vars.attr.dataUnitShort }}</abbr>
+                        title="{{ originalUnit.name }}">{{ originalUnit.short }}</abbr>
                 </td>
                 <td>
-                  {{ form_widget(formField.children.feedback) }}
+                  {{ form_widget(formField.ingredientFeedback) }}
+
+                  {{ form_row(formField.recipeIngredientId) }}
+                  {{ form_row(formField.amountOriginal) }}
+                  {{ form_row(formField.unitIdOriginal) }}
+                  {{ form_row(formField.unitIdCorrected) }}
                 </td>
                 <td>
                   <div class="form-inline">
                     <div class="form-group">
                       <div class="input-group">
-                        {{ form_widget(formField.children.correctedAmount, {'attr': {placeholder: formField.vars.attr.dataAmountOriginal|replace({'.': ",", "," : "'"})}}) }}
+                        {{ form_widget(formField.amountCorrected, {'attr': {placeholder: formField.vars.data.amountOriginal|replace({'.': ",", "," : "'"})}}) }}
                         <div class="input-group-addon">
                           <abbr class="unit"
-                                title="{{ formField.vars.attr.dataUnitName }}">{{ formField.vars.attr.dataUnitShort }}</abbr>
+                                title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
                         </div>
                       </div>
                     </div>
                   </div>
                 </td>
-              </tr>
-            {% endif %}
+              {% else %}
+                <td colspan="4">(gelöschte Zutat)</td>
+              {% endif %}
+            </tr>
           {% endfor %}
 
           {% if recipe.ingredients|length == 0 %}
@@ -129,6 +139,7 @@
         </table>
 
         {{ form_rest(form) }}
+
       </div>
 
       <div class="col-xs-12">

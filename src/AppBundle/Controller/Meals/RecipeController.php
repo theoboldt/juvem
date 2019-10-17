@@ -11,6 +11,7 @@
 namespace AppBundle\Controller\Meals;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Meals\QuantityUnit;
 use AppBundle\Entity\Meals\Recipe;
 use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
@@ -146,8 +147,14 @@ class RecipeController extends Controller
     public function newFeedbackAction(Request $request, Recipe $recipe): Response
     {
         $feedback = new RecipeFeedback($recipe);
-        $form     = $this->createForm(MealFeedbackType::class, $feedback);
-
+        
+        $form  = $this->createForm(MealFeedbackType::class, $feedback);
+        $units = [];
+        /** @var QuantityUnit $unit */
+        foreach ($this->getDoctrine()->getRepository(QuantityUnit::class)->findAll() as $unit) {
+            $units[$unit->getId()] = $unit;
+        };
+        
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
@@ -155,6 +162,10 @@ class RecipeController extends Controller
             if ($this->getUser() instanceof User) {
                 $feedback->setCreatedBy($this->getUser());
             }
+            $this->addFlash(
+                'success',
+                'Die Rückmeldung wurde erfasst.'
+            );
             $em->persist($feedback);
             $em->flush();
             
@@ -164,6 +175,7 @@ class RecipeController extends Controller
         return $this->render(
             'meals/recipe/feedback/new.html.twig',
             [
+                'units'  => $units,
                 'recipe' => $recipe,
                 'form'   => $form->createView(),
             ]
@@ -192,7 +204,11 @@ class RecipeController extends Controller
             $em->persist($recipe);
             $em->flush();
             
-            return $this->redirectToRoute('meals_recipes_list');
+            $this->addFlash(
+                'success',
+                'Das Rezept wurde erfasst.'
+            );
+            return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
         }
         
         return $this->render(

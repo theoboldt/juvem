@@ -12,7 +12,7 @@ namespace AppBundle\Controller\Meals;
 
 use AppBundle\Entity\Meals\QuantityUnit;
 use AppBundle\Entity\User;
-use AppBundle\Form\QuantityUnitType;
+use AppBundle\Form\Meal\QuantityUnitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

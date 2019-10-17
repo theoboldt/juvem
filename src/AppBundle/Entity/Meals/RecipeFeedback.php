@@ -131,9 +131,9 @@ class RecipeFeedback
      */
     public function __construct(Recipe $recipe, ?Event $event = null)
     {
-        $this->recipe      = $recipe;
-        $this->event       = $event;
-        $this->createdAt   = new \DateTime();
+        $this->recipe    = $recipe;
+        $this->event     = $event;
+        $this->createdAt = new \DateTime();
         $this->setDate(new \DateTime());
     }
     
@@ -282,28 +282,20 @@ class RecipeFeedback
      */
     public function getFeedback($create = false): array
     {
+        $create       = true; //always true
         $feedbackList = [];
         foreach ($this->feedback as $feedback) {
-            $feedbackList[$feedback['iid']] = new RecipeIngredientFeedback(
-                $feedback['iid'],
-                $feedback['originalAmount'],
-                $feedback['uid'],
-                $feedback['feedback'],
-                $feedback['correctedAmount'],
-            );
+            $feedbackList[$feedback['iid']] = RecipeIngredientFeedback::createFromArray($feedback);
         }
         $recipe = $this->getRecipe();
         if ($create && $recipe) {
             foreach ($recipe->getIngredients() as $ingredient) {
                 if (!isset($feedbackList[$ingredient->getId()])) {
-                    $feedbackList[$ingredient->getId()] = new RecipeIngredientFeedback(
-                        $ingredient->getId(),
-                        $ingredient->getAmount(),
-                        $ingredient->getUnit()->getId(),
-                        null
-                    );
+                    $ingredientFeedback                 = RecipeIngredientFeedback::createFromIngredient($ingredient);
+                    $feedbackList[$ingredient->getId()] = $ingredientFeedback;
                 }
             }
+            $this->setFeedback(array_values($feedbackList));
         }
         
         return array_values($feedbackList);

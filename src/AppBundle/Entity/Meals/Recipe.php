@@ -119,6 +119,23 @@ class Recipe implements HasFoodPropertiesAssignedInterface
         return $this;
     }
     
+    
+    /**
+     * Determine if ingredient is assigned
+     *
+     * @param int $ingredientId
+     * @return bool
+     */
+    public function hasIngredient(int $ingredientId): bool
+    {
+        foreach ($this->ingredients as $ingredient) {
+            if ($ingredient->getId() === $ingredientId) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Find ingredient by id
      *
@@ -127,7 +144,6 @@ class Recipe implements HasFoodPropertiesAssignedInterface
      */
     public function getIngredient(int $ingredientId): RecipeIngredient
     {
-        
         foreach ($this->ingredients as $ingredient) {
             if ($ingredient->getId() === $ingredientId) {
                 return $ingredient;

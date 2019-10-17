@@ -27,52 +27,97 @@ class RecipeIngredientFeedback implements \JsonSerializable
      *
      * @var float
      */
-    private $originalAmount;
+    private $amountOriginal;
     
     /**
-     * Id of unit of amount
+     * Id of unit of amount of original
      *
      * @var int
      */
-    private $unitId;
+    private $unitIdOriginal;
     
     /**
      * Feedback for this ingredient
      *
      * @var int|null
      */
-    protected $feedback = RecipeFeedback::AMOUNT_OK;
-    
+    protected $ingredientFeedback = RecipeFeedback::AMOUNT_OK;
     
     /**
      * If set, corrected recommended amount value
      *
      * @var null|float
      */
-    private $correctedAmount = null;
+    private $amountCorrected = null;
+    
+    /**
+     * Id of unit of amount of correction
+     *
+     * @var int
+     */
+    private $unitIdCorrected;
+    
+    /**
+     * Create new instance from array
+     *
+     * @param array $feedback Array Data
+     * @return RecipeIngredientFeedback
+     */
+    public static function createFromArray(array $feedback): RecipeIngredientFeedback
+    {
+        return new self(
+            $feedback['iid'],
+            $feedback['amountOriginal'],
+            $feedback['uidOriginal'],
+            $feedback['ingredientFeedback'],
+            $feedback['amountCorrected'],
+            $feedback['uidCorrected'],
+        );
+    }
+    
+    /**
+     * Create new instance for Ingredient
+     *
+     * @param RecipeIngredient $ingredient
+     * @return RecipeIngredientFeedback
+     */
+    public static function createFromIngredient(RecipeIngredient $ingredient): RecipeIngredientFeedback
+    {
+        return new self(
+            $ingredient->getId(),
+            $ingredient->getAmount(),
+            $ingredient->getUnit()->getId(),
+            null,
+            null,
+            null
+        );
+    }
     
     /**
      * RecipeIngredientFeedback constructor.
      *
      * @param int $recipeIngredientId
-     * @param float $originalAmount
-     * @param int $unitId
-     * @param null|int $feedback
-     * @param float|null $correctedAmount
+     * @param float $amountOriginal
+     * @param int $unitIdOriginal
+     * @param null|int $ingredientFeedback
+     * @param float|null $amountCorrected
+     * @param int|null $unitIdCorrected
      */
     public function __construct(
         int $recipeIngredientId,
-        float $originalAmount,
-        int $unitId,
-        ?int $feedback = RecipeFeedback::AMOUNT_OK,
-        ?float $correctedAmount = null
+        float $amountOriginal,
+        int $unitIdOriginal,
+        ?int $ingredientFeedback = RecipeFeedback::AMOUNT_OK,
+        ?float $amountCorrected = null,
+        ?int $unitIdCorrected = null
     )
     {
         $this->recipeIngredientId = $recipeIngredientId;
-        $this->originalAmount     = $originalAmount;
-        $this->unitId             = $unitId;
-        $this->feedback           = $feedback;
-        $this->correctedAmount    = $correctedAmount;
+        $this->amountOriginal     = $amountOriginal;
+        $this->unitIdOriginal     = $unitIdOriginal;
+        $this->ingredientFeedback = $ingredientFeedback;
+        $this->amountCorrected    = $amountCorrected;
+        $this->unitIdCorrected    = $unitIdCorrected;
     }
     
     /**
@@ -96,52 +141,52 @@ class RecipeIngredientFeedback implements \JsonSerializable
     /**
      * @return float
      */
-    public function getOriginalAmount(): float
+    public function getAmountOriginal(): float
     {
-        return $this->originalAmount;
+        return $this->amountOriginal;
     }
     
     /**
-     * @param float $originalAmount
+     * @param float $amountOriginal
      * @return RecipeIngredientFeedback
      */
-    public function setOriginalAmount(float $originalAmount): RecipeIngredientFeedback
+    public function setAmountOriginal(float $amountOriginal): RecipeIngredientFeedback
     {
-        $this->originalAmount = $originalAmount;
+        $this->amountOriginal = $amountOriginal;
         return $this;
     }
     
     /**
      * @return int
      */
-    public function getUnitId(): int
+    public function getUnitIdOriginal(): int
     {
-        return $this->unitId;
+        return $this->unitIdOriginal;
     }
     
     /**
-     * @param int $unitId
+     * @param int $unitIdOriginal
      * @return RecipeIngredientFeedback
      */
-    public function setUnitId(int $unitId): RecipeIngredientFeedback
+    public function setUnitIdOriginal(int $unitIdOriginal): RecipeIngredientFeedback
     {
-        $this->unitId = $unitId;
+        $this->unitIdOriginal = $unitIdOriginal;
         return $this;
     }
     
     /**
      * @return int|null
      */
-    public function getFeedback(): ?int
+    public function getIngredientFeedback(): ?int
     {
-        return $this->feedback;
+        return $this->ingredientFeedback;
     }
     
     /**
      * @param int|null $feedback
      * @return RecipeIngredientFeedback
      */
-    public function setFeedback($feedback): RecipeIngredientFeedback
+    public function setIngredientFeedback($feedback): RecipeIngredientFeedback
     {
         if (empty($feedback)) {
             $feedback = null;
@@ -149,25 +194,43 @@ class RecipeIngredientFeedback implements \JsonSerializable
             $feedback = (int)$feedback;
         }
         
-        $this->feedback = $feedback;
+        $this->ingredientFeedback = $feedback;
         return $this;
     }
     
     /**
      * @return float|null
      */
-    public function getCorrectedAmount(): ?float
+    public function getAmountCorrected(): ?float
     {
-        return $this->correctedAmount;
+        return $this->amountCorrected;
     }
     
     /**
-     * @param float|null $correctedAmount
+     * @param float|null $amountCorrected
      * @return RecipeIngredientFeedback
      */
-    public function setCorrectedAmount(?float $correctedAmount = null): RecipeIngredientFeedback
+    public function setAmountCorrected(?float $amountCorrected = null): RecipeIngredientFeedback
     {
-        $this->correctedAmount = $correctedAmount;
+        $this->amountCorrected = $amountCorrected;
+        return $this;
+    }
+    
+    /**
+     * @return null|int
+     */
+    public function getUnitIdCorrected(): ?int
+    {
+        return $this->unitIdCorrected;
+    }
+    
+    /**
+     * @param int $unitIdCorrected
+     * @return RecipeIngredientFeedback
+     */
+    public function setUnitIdCorrected(int $unitIdCorrected): RecipeIngredientFeedback
+    {
+        $this->unitIdCorrected = $unitIdCorrected;
         return $this;
     }
     
@@ -182,11 +245,12 @@ class RecipeIngredientFeedback implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'iid'             => $this->recipeIngredientId,
-            'originalAmount'  => $this->originalAmount,
-            'correctedAmount' => $this->correctedAmount,
-            'uid'             => $this->unitId,
-            'feedback'        => $this->feedback,
+            'iid'                => $this->recipeIngredientId,
+            'amountOriginal'     => $this->amountOriginal,
+            'uidOriginal'        => $this->unitIdOriginal,
+            'amountCorrected'    => $this->amountCorrected,
+            'uidCorrected'       => $this->unitIdCorrected,
+            'ingredientFeedback' => $this->ingredientFeedback,
         ];
     }
 }
