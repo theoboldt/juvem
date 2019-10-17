@@ -9,7 +9,7 @@
  */
 
 
-namespace AppBundle\Form;
+namespace AppBundle\Form\Meal;
 
 
 use AppBundle\Entity\Meals\RecipeIngredientFeedback;

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Form;
+namespace AppBundle\Form\Meal;
 
 use AppBundle\Entity\Meals\FoodProperty;
 use Symfony\Component\Form\AbstractType;

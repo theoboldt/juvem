@@ -269,7 +269,7 @@ services:
       tags:
         - form.type
 
-    AppBundle\Form\MealFeedbackType:
+    AppBundle\Form\Meal\MealFeedbackType:
         arguments:
             - "@doctrine.orm.entity_manager"
         tags:

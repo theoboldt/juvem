@@ -8,11 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Form;
+namespace AppBundle\Form\Meal;
 
 use AppBundle\Entity\Meals\Recipe;
-use AppBundle\Entity\Meals\RecipeIngredient;
-use AppBundle\Entity\Participation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;

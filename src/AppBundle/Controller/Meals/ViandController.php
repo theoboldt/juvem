@@ -12,7 +12,7 @@ namespace AppBundle\Controller\Meals;
 
 use AppBundle\Entity\Meals\Viand;
 use AppBundle\Entity\User;
-use AppBundle\Form\ViandType;
+use AppBundle\Form\Meal\ViandType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
