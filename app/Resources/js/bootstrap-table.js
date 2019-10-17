@@ -375,6 +375,12 @@ $(function () {
         openInNewTabOnMetaKey(row.id);
     });
 
+    /**
+     * MEALS FEEDBACK: Jump to feedback details
+     */
+    $('#recipeFeedbackList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey('feedback/' + row.id);
+    });
 
 })
 ;

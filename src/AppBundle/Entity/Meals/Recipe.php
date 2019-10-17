@@ -61,6 +61,12 @@ class Recipe implements HasFoodPropertiesAssignedInterface
     protected $ingredients;
     
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Meals\RecipeFeedback", mappedBy="recipe", cascade={"persist", "remove"})
+     * @var Collection|RecipeIngredient[]
+     */
+    protected $feedbacks;
+    
+    /**
      * Recipe constructor.
      *
      * @param string $title

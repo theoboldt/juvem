@@ -221,10 +221,21 @@ class RecipeFeedback
     }
     
     /**
-     * @return int
+     * @param bool $asLabel
+     * @return int|string
      */
-    public function getWeight(): int
+    public function getWeight($asLabel = false)
     {
+        if ($asLabel) {
+            switch ($this->weight) {
+                case self::WEIGHT_NONE:
+                    return self::WEIGHT_NONE_LABEL;
+                case self::WEIGHT_SINGLE:
+                    return self::WEIGHT_SINGLE_LABEL;
+                case self::WEIGHT_DOUBLE:
+                    return self::WEIGHT_DOUBLE_LABEL;
+            }
+        }
         return $this->weight;
     }
     
@@ -257,10 +268,25 @@ class RecipeFeedback
     }
     
     /**
-     * @return mixed
+     * @param bool $asLabel
+     * @return int|string|null
      */
-    public function getFeedbackGlobal()
+    public function getFeedbackGlobal($asLabel = false)
     {
+        if ($asLabel) {
+            switch ($this->feedbackGlobal) {
+                case self::AMOUNT_WAY_TOO_LESS:
+                    return self::AMOUNT_WAY_TOO_LESS_LABEL;
+                case self::AMOUNT_TOO_LESS:
+                    return self::AMOUNT_TOO_LESS_LABEL;
+                case self::AMOUNT_OK:
+                    return self::AMOUNT_OK_LABEL;
+                case self::AMOUNT_TOO_MUCH:
+                    return self::AMOUNT_TOO_MUCH_LABEL;
+                case self::AMOUNT_WAY_TOO_MUCH:
+                    return self::AMOUNT_WAY_TOO_MUCH_LABEL;
+            }
+        }
         return $this->feedbackGlobal;
     }
     
@@ -277,18 +303,16 @@ class RecipeFeedback
     /**
      * Get feedback list
      *
-     * @param bool $create
      * @return array|RecipeIngredientFeedback[]
      */
-    public function getFeedback($create = false): array
+    public function getFeedback(): array
     {
-        $create       = true; //always true
         $feedbackList = [];
         foreach ($this->feedback as $feedback) {
             $feedbackList[$feedback['iid']] = RecipeIngredientFeedback::createFromArray($feedback);
         }
         $recipe = $this->getRecipe();
-        if ($create && $recipe) {
+        if ($recipe) {
             foreach ($recipe->getIngredients() as $ingredient) {
                 if (!isset($feedbackList[$ingredient->getId()])) {
                     $ingredientFeedback                 = RecipeIngredientFeedback::createFromIngredient($ingredient);

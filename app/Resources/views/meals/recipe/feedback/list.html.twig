@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rückmeldungen verwalten ({{ recipe.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Rückmeldungen', 'subtitle': 'verwalten'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
+      <li><a href="{{ path('meals_recipes_detail', {'id': recipe.id}) }}">{{ recipe.title }}</a></li>
+      <li class="active">Rückmeldungen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="bootstrap-table-toolbar" class="form-inline">
+          <div class="form-group">
+            <a class="btn btn-primary" href="{{ path('meals_feedback_new', {'id': recipe.id }) }}">{{ 'plus'|glyph }}
+              Neu</a>
+          </div>
+        </div>
+        <table id="recipeFeedbackList" class="table table-striped table-remote-content" data-id-field="bid"
+               data-toggle="table" data-cache="false" data-pagination="true"
+               data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+               data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
+               data-show-filter="true" data-search="true"
+               data-url="{{ path('meals_feedback_list_data', {'id': recipe.id}) }}">
+          <thead>
+          <tr>
+            <th data-field="id" data-sortable="true" data-visible="false">#</th>
+            <th data-field="date" data-sortable="true" data-sorter="germanDateTimeSorter">Datum</th>
+            <th data-field="feedback_global" data-sortable="false">Einschätzung der Menge</th>
+            <th data-field="event" data-sortable="false">Veranstaltung</th>
+          </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

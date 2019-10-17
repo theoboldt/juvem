@@ -135,54 +135,6 @@ class RecipeController extends Controller
     }
     
     /**
-     * Collect new recipe feedback
-     *
-     * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
-     * @Route("/admin/meals/recipes/{id}/feedback/new", requirements={"id": "\d+"}, name="meals_feedback_new")
-     * @Security("has_role('ROLE_ADMIN')")
-     * @param Request $request
-     * @param Recipe $recipe
-     * @return Response
-     */
-    public function newFeedbackAction(Request $request, Recipe $recipe): Response
-    {
-        $feedback = new RecipeFeedback($recipe);
-        
-        $form  = $this->createForm(MealFeedbackType::class, $feedback);
-        $units = [];
-        /** @var QuantityUnit $unit */
-        foreach ($this->getDoctrine()->getRepository(QuantityUnit::class)->findAll() as $unit) {
-            $units[$unit->getId()] = $unit;
-        };
-        
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()
-                       ->getManager();
-            if ($this->getUser() instanceof User) {
-                $feedback->setCreatedBy($this->getUser());
-            }
-            $this->addFlash(
-                'success',
-                'Die Rückmeldung wurde erfasst.'
-            );
-            $em->persist($feedback);
-            $em->flush();
-            
-            return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
-        }
-        
-        return $this->render(
-            'meals/recipe/feedback/new.html.twig',
-            [
-                'units'  => $units,
-                'recipe' => $recipe,
-                'form'   => $form->createView(),
-            ]
-        );
-    }
-    
-    /**
      * Create a new acquisition attribute
      *
      * @Route("/admin/meals/recipes/new", name="meals_recipes_new")
