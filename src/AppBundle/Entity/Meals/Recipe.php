@@ -120,6 +120,24 @@ class Recipe implements HasFoodPropertiesAssignedInterface
     }
     
     /**
+     * Find ingredient by id
+     *
+     * @param int $ingredientId id of ingredient
+     * @return RecipeIngredient
+     */
+    public function getIngredient(int $ingredientId): RecipeIngredient
+    {
+        
+        foreach ($this->ingredients as $ingredient) {
+            if ($ingredient->getId() === $ingredientId) {
+                return $ingredient;
+            }
+        }
+        
+        throw new \InvalidArgumentException('Ingredient not found');
+    }
+    
+    /**
      * @return RecipeIngredient[]|array
      */
     public function getIngredients()

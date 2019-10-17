@@ -1,0 +1,26 @@
+{% block _meal_feedback_feedback_choice_widget %}
+  {{- block('_button_choice_widget') -}}
+{% endblock %}
+
+{% block _meal_feedback_feedback_ingredient_feedback_choice_widget %}
+  {{- block('_button_choice_widget') -}}
+{% endblock %}
+
+{% block _button_choice_widget %}
+  {% set type = type|default('choice') %}
+  {% if choices is defined %}
+    <div class="btn-group" data-toggle="buttons">
+      {% for choice in choices %}
+        <label class="btn btn-default {% if value == choice.value %}active{% endif %}"
+               {% if choice.attr.title is defined %}title="{{ choice.attr.title }}"
+               data-title="{{ choice.attr.title }}"{% endif %} data-toggle="tooltip" data-placement="top">
+          <input type="radio" name="{{ full_name }}" id="{{ id }}-{{ choice.value }}"
+                 {% if choice.value is defined %} value="{{ choice.value }}"{% endif %}
+                 {% if value == choice.value %}checked{% endif %}> <span
+              class="hidden-sm hidden-xs">{{ choice.label }}</span><span
+              class="visible-sm visible-xs">{% if choice.attr.short is defined %}{{ choice.attr.short }}{% else %}{{ choice.value }}{% endif %}</span>
+        </label>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

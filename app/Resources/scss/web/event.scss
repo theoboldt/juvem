@@ -336,6 +336,7 @@ input.input-formula, textarea.input-formula {
     filter: alpha(opacity=65);
     opacity: 0.65;
   }
+
   td.action {
     max-width: 40px;
   }
@@ -384,5 +385,30 @@ input.input-formula, textarea.input-formula {
   }
   100% {
     background-color: lighten($btn-primary-bg, 25%);
+  }
+}
+
+abbr.unit {
+  display: inline-block;
+  min-width: 37px;
+  text-align: left;
+  font-size: smaller;
+}
+
+.meals-container {
+
+  table thead td {
+    font-weight: bold;
+  }
+
+  td .description {
+    font-size: smaller;
+  }
+
+  .meal-feedback-input .btn, .input-group-addon {
+    padding: 6px;
+    @media (min-width: $screen-lg) {
+      padding: 6px 12px;
+    }
   }
 }

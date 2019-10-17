@@ -15,8 +15,12 @@
       <div class="col-xs-12">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
           <div class="btn-group" role="group">
-            <a href="{{ path('meals_recipes_edit', {'id': recipe.id }) }}"
-               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+            <a href="{{ path('meals_recipes_edit', {'id': recipe.id }) }}" title="Rezept bearbeiten"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Rezept bearbeiten</span></a>
+          </div>
+          <div class="btn-group" role="group">
+            <a href="{{ path('meals_feedback_new', {'id': recipe.id }) }}" title="Feedback erfassen"
+               class="btn btn-default">{{ 'cutlery'|glyph }} <span class="hidden-xs">Feedback erfassen</span></a>
           </div>
         </div>
       </div>

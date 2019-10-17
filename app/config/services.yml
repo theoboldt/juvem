@@ -268,3 +268,9 @@ services:
       autowire: true
       tags:
         - form.type
+
+    AppBundle\Form\MealFeedbackType:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        tags:
+            - { name: form.type}

@@ -10,10 +10,14 @@
 
 namespace AppBundle\Controller\Meals;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Meals\Recipe;
+use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
+use AppBundle\Form\MealFeedbackType;
 use AppBundle\Form\RecipeType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -88,8 +92,8 @@ class RecipeController extends Controller
         return $this->render(
             'meals/recipe/detail.html.twig',
             [
-                'recipe'               => $recipe,
-                'unassignedProperties' => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe),
+                'recipe'                 => $recipe,
+                'unassignedProperties'   => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe),
                 'accumulatedIngredients' => $this->get('app.food_service')->accumulatedIngredients($recipe),
             ]
         );
@@ -122,6 +126,43 @@ class RecipeController extends Controller
         
         return $this->render(
             'meals/recipe/edit.html.twig',
+            [
+                'recipe' => $recipe,
+                'form'   => $form->createView(),
+            ]
+        );
+    }
+    
+    /**
+     * Collect new recipe feedback
+     *
+     * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
+     * @Route("/admin/meals/recipes/{id}/feedback/new", requirements={"id": "\d+"}, name="meals_feedback_new")
+     * @Security("has_role('ROLE_ADMIN')")
+     * @param Request $request
+     * @param Recipe $recipe
+     * @return Response
+     */
+    public function newFeedbackAction(Request $request, Recipe $recipe): Response
+    {
+        $feedback = new RecipeFeedback($recipe);
+        $form     = $this->createForm(MealFeedbackType::class, $feedback);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()
+                       ->getManager();
+            if ($this->getUser() instanceof User) {
+                $feedback->setCreatedBy($this->getUser());
+            }
+            $em->persist($feedback);
+            $em->flush();
+            
+            return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
+        }
+        
+        return $this->render(
+            'meals/recipe/feedback/new.html.twig',
             [
                 'recipe' => $recipe,
                 'form'   => $form->createView(),

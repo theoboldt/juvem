@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recipe.title }} (Rezept){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Feedback erfassen'} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
+      <li><a href="{{ path('meals_recipes_detail', {'id': recipe.id}) }}">{{ recipe.title }}</a></li>
+      <li class="active">Feedback erfassen</li>
+    {% endblock %}
+  {% endembed %}
+
+  {% form_theme form 'form/button_choice_type_fields.html.twig' %}
+
+  <div class="container meals-container">
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Wenn du dieses Gericht bei einer Aktion gekocht hast, vermerke jetzt für wie viele Personen du gekocht hast
+          und für wie treffsicher du die Angaben der (einzelnen) Zutaten einschätzt. So kann die Kalkulationsempfehlung
+          dieses Rezepts für zukünftige Mahlzeiten verbessert werden.</p>
+      </div>
+      <div class="col-xs-12">
+        <h2 id="ingredients-section">Probe</h2>
+        <div class="row">
+          <div class="col-xs-12 col-sm-8 col-lg-8">
+            {{ form_label(form.weight) }}
+            {{ form_errors(form.weight) }}
+            <p class="help-block">Gib hier eine ehrliche Einschätzung zu deiner Probe - für wie repräsentativ hältst du
+              sie?</p>
+            {{ form_widget(form.weight) }}
+          </div>
+          <div class="col-xs-12 col-sm-4 col-lg-4">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12">
+                {{ form_label(form.event) }}
+                {{ form_errors(form.event) }}
+                {{ form_widget(form.event) }}
+                <p class="help-block">Bei welcher Veranstaltung wurde das Rezept verwendet?</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-6 col-sm-12">
+                {{ form_label(form.date) }}
+                {{ form_errors(form.date) }}
+                {{ form_widget(form.date) }}
+                <p class="help-block">An welchem Tag wurde das Rezept verwendet?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-2">
+            {{ form_label(form.peopleCount) }}
+            {{ form_errors(form.peopleCount) }}
+            {{ form_widget(form.peopleCount) }}
+            <p class="help-block">Für wie viel Personen wurde gekocht?</p>
+          </div>
+          <div class="col-xs-12 col-sm-10">
+            {{ form_label(form.comment) }}
+            {{ form_errors(form.comment) }}
+            {{ form_widget(form.comment) }}
+            <p class="help-block">Ist etwas besonders erwähnenswert?</p>
+          </div>
+        </div>
+
+        <h2 id="ingredients-section">Einschätzung der Mengenangaben</h2>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <td>Lebensmittel</td>
+            <td class="text-right"><abbr title="Kalkulierte">Kalk.</abbr> M<span
+                  class="hidden-sm hidden-xs">en</span>g<span class="hidden-sm hidden-xs">e</span> <abbr
+                  title="pro Person">p.P.</abbr></td>
+            <td>Einschätzung<span class="hidden-sm hidden-xs"> der Mengenangabe</span></td>
+            <td>Neue <abbr title="Kalkulation">Kalk.</abbr> <abbr title="pro Person">p.P.</abbr></td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td colspan="2">
+              <b><i>Insgesamt</i></b>
+            </td>
+            <td colspan="2" class="meal-feedback-input">
+              {{ form_widget(form.feedbackGlobal) }}
+            </td>
+          </tr>
+          {% for fieldName,formField in form %}
+            {% if fieldName starts with 'feedbackIngredient_' %}
+              <tr>
+                <td><b>{{ form_label(formField) }}</b>
+                  {% if formField.vars.attr.dataDescription is defined %}<br>
+                    <span class="description">{{ formField.vars.attr.dataDescription }}</span>
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  {{ formField.vars.attr.dataAmountOriginal|replace({'.': ",", "," : "'"}) }}&nbsp;
+                  <abbr class="unit"
+                        title="{{ formField.vars.attr.dataUnitName }}">{{ formField.vars.attr.dataUnitShort }}</abbr>
+                </td>
+                <td>
+                  {{ form_widget(formField.children.feedback) }}
+                </td>
+                <td>
+                  <div class="form-inline">
+                    <div class="form-group">
+                      <div class="input-group">
+                        {{ form_widget(formField.children.correctedAmount, {'attr': {placeholder: formField.vars.attr.dataAmountOriginal|replace({'.': ",", "," : "'"})}}) }}
+                        <div class="input-group-addon">
+                          <abbr class="unit"
+                                title="{{ formField.vars.attr.dataUnitName }}">{{ formField.vars.attr.dataUnitShort }}</abbr>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+
+          {% if recipe.ingredients|length == 0 %}
+            <tr>
+              <td colspan="4" class="text-center">(keine Zutaten eingetragen)</td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+
+        {{ form_rest(form) }}
+      </div>
+
+      <div class="col-xs-12">
+        <input type="submit" value="Feedback erfassen" class="btn btn-primary navbar-btn"/>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+{% endblock %}
