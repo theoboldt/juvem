@@ -59,7 +59,9 @@ class IngredientAccumulatedFeedback extends BasicFeedbackBasedFeedback implement
             }
             foreach ($recipeFeedback->getFeedback() as $ingredientFeedback) {
                 if ($this->ingredientId === $ingredientFeedback->getRecipeIngredientId()) {
-                    
+                    if ($ingredientFeedback->getIngredientFeedback() === null) {
+                        continue;
+                    }
                     switch ($ingredientFeedback->getIngredientFeedback()) {
                         case RecipeFeedback::AMOUNT_WAY_TOO_LESS:
                             $this->wayTooLess += ($factor);
