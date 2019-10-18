@@ -75,7 +75,7 @@ abstract class BasicAccumulatedFeedback implements AccumulatedFeedbackProviderIn
             $this->getTooLess(),
             $this->getOk(),
             $this->getTooMuch(),
-            $this->getWayTooMuch(),
+            $this->getWayTooMuch()
         );
     }
     
