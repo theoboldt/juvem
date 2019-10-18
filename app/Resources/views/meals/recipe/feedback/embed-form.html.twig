@@ -1,0 +1,134 @@
+<div class="row">
+  <div class="col-xs-12">
+    <p>Wenn du dieses Gericht bei einer Aktion gekocht hast, vermerke jetzt für wie viele Personen du gekocht hast
+      und für wie treffsicher du die Angaben der (einzelnen) Zutaten einschätzt. So kann die Kalkulationsempfehlung
+      dieses Rezepts für zukünftige Mahlzeiten verbessert werden.</p>
+  </div>
+  <div class="col-xs-12">
+    <h2 id="ingredients-section">Probe</h2>
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-lg-8">
+        {{ form_label(form.weight) }}
+        {{ form_errors(form.weight) }}
+        <p class="help-block">Gib hier eine ehrliche Einschätzung zu deiner Probe - für wie repräsentativ hältst du
+          sie?</p>
+        {{ form_widget(form.weight) }}
+      </div>
+      <div class="col-xs-12 col-sm-4 col-lg-4">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12">
+            {{ form_label(form.event) }}
+            {{ form_errors(form.event) }}
+            {{ form_widget(form.event) }}
+            <p class="help-block">Bei welcher Veranstaltung wurde das Rezept verwendet?</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-12">
+            {{ form_label(form.date) }}
+            {{ form_errors(form.date) }}
+            {{ form_widget(form.date) }}
+            <p class="help-block">An welchem Tag wurde das Rezept verwendet?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 col-sm-2">
+        {{ form_label(form.peopleCount) }}
+        {{ form_errors(form.peopleCount) }}
+        {{ form_widget(form.peopleCount) }}
+        <p class="help-block">Für wie viel Personen wurde gekocht?</p>
+      </div>
+      <div class="col-xs-12 col-sm-10">
+        {{ form_label(form.comment) }}
+        {{ form_errors(form.comment) }}
+        {{ form_widget(form.comment) }}
+        <p class="help-block">Ist etwas besonders erwähnenswert?</p>
+      </div>
+    </div>
+
+    <h2 id="ingredients-section">Einschätzung der Mengenangaben</h2>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <td>Lebensmittel</td>
+        <td class="text-right"><abbr title="Kalkulierte">Kalk.</abbr> M<span
+              class="hidden-sm hidden-xs">en</span>g<span class="hidden-sm hidden-xs">e</span> <abbr
+              title="pro Person">p.P.</abbr></td>
+        <td>Einschätzung<span class="hidden-sm hidden-xs"> der Mengenangabe</span></td>
+        <td>Neue <abbr title="Kalkulation">Kalk.</abbr> <abbr title="pro Person">p.P.</abbr></td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td colspan="2">
+          <b><i>Insgesamt</i></b>
+        </td>
+        <td colspan="2" class="meal-feedback-input">
+          {{ form_widget(form.feedbackGlobal) }}
+        </td>
+      </tr>
+
+      {% for fieldName,formField in form.feedback %}
+        <tr>
+          {% set originalUnit = units[formField.vars.data.unitIdOriginal] %}
+          {% if formField.vars.data.unitIdCorrected %}
+            {% set correctedUnit = units[formField.vars.data.unitIdCorrected] %}
+          {% else %}
+            {% set correctedUnit = null %}
+          {% endif %}
+          {% if recipe.hasIngredient(formField.vars.data.recipeIngredientId) %}
+            {% set ingredient = recipe.getIngredient(formField.vars.data.recipeIngredientId) %}
+            <td><b>{{ ingredient.viand.name }}</b>
+              {% if ingredient.description %}<br>
+                <span class="description">{{ ingredient.description }}</span>
+              {% endif %}
+            </td>
+          {% else %}
+            {% set ingredient = null %}
+            <td><i>(gelöschte Zutat #{{ formField.vars.data.recipeIngredientId }})</i></td>
+          {% endif %}
+
+          <td class="text-right">
+            {{ formField.vars.data.amountOriginal|replace({'.': ",", "," : "'"}) }}&nbsp;
+            <abbr class="unit"
+                  title="{{ originalUnit.name }}">{{ originalUnit.short }}</abbr>
+          </td>
+          <td>
+            {{ form_widget(formField.ingredientFeedback) }}
+
+            {{ form_row(formField.recipeIngredientId) }}
+            {{ form_row(formField.amountOriginal) }}
+            {{ form_row(formField.unitIdOriginal) }}
+            {{ form_row(formField.unitIdCorrected) }}
+          </td>
+          <td>
+            <div class="form-inline">
+              <div class="form-group">
+                <div class="input-group">
+                  {{ form_widget(formField.amountCorrected, {'attr': {placeholder: formField.vars.data.amountOriginal|replace({'.': ",", "," : "'"})}}) }}
+                  <div class="input-group-addon">
+                    {% if correctedUnit %}
+                      <abbr class="unit" title="{{ correctedUnit.name }}">{{ correctedUnit.short }}</abbr>
+                    {% else %}
+                      <i>?</i>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if recipe.ingredients|length == 0 %}
+        <tr>
+          <td colspan="4" class="text-center">(keine Zutaten eingetragen)</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+    {{ form_rest(form) }}
+  </div>
+</div>

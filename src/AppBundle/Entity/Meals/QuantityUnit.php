@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="quantity_unit")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @ORM\Entity(repositoryClass="QuantityUnitRepository")
  */
 class QuantityUnit
 {

@@ -291,6 +291,15 @@ class RecipeFeedback
     }
     
     /**
+     * Get feedback translated
+     *
+     * @return string
+     */
+    public function getFeedbackGlobalLabel() {
+        return self::formatFeedback($this->feedbackGlobal);
+    }
+    
+    /**
      * @param mixed $feedbackGlobal
      * @return RecipeFeedback
      */
@@ -349,5 +358,26 @@ class RecipeFeedback
         $this->feedback[$feedback->getRecipeIngredientId()] = $feedback->jsonSerialize();
     }
     
+ 
     
+    /**
+     * @param int|null $feedback
+     * @return string
+     */
+    public static function formatFeedback(?int $feedback): string
+    {
+        switch ($feedback) {
+            case self::AMOUNT_WAY_TOO_LESS:
+                return self::AMOUNT_WAY_TOO_LESS_LABEL;
+            case self::AMOUNT_TOO_LESS:
+                return self::AMOUNT_TOO_LESS_LABEL;
+            case self::AMOUNT_OK:
+                return self::AMOUNT_OK_LABEL;
+            case self::AMOUNT_TOO_MUCH:
+                return self::AMOUNT_TOO_MUCH_LABEL;
+            case self::AMOUNT_WAY_TOO_MUCH:
+                return self::AMOUNT_WAY_TOO_MUCH_LABEL;
+        }
+        return (string)$feedback;
+    }
 }

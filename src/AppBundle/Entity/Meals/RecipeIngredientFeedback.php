@@ -182,6 +182,16 @@ class RecipeIngredientFeedback implements \JsonSerializable
         return $this->ingredientFeedback;
     }
     
+    
+    /**
+     * Get feedback translated
+     *
+     * @return string
+     */
+    public function getIngredientFeedbackLabel(): string {
+        return RecipeFeedback::formatFeedback($this->ingredientFeedback);
+    }
+    
     /**
      * @param int|null $feedback
      * @return RecipeIngredientFeedback

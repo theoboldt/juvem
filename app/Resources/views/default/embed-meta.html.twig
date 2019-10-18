@@ -1,0 +1,15 @@
+<p class="meta">
+  Erstellt von <a
+      href="{{ path('user_detail', {uid: entity.createdBy.uid}) }}">{{ entity.createdBy.fullname }}</a>
+  am {{ entity.createdAt.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE_TIME')) }}
+  {%- if entity.modifiedBy or entity.modifiedAt -%}
+  , bearbeitet
+  {% if entity.modifiedBy %}
+    von <a
+      href="{{ path('user_detail', {uid: entity.modifiedBy.uid}) }}">{{ entity.modifiedBy.fullname }}</a>
+  {% endif %}
+  {% if entity.modifiedAt %}
+    am {{ entity.createdAt.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE_TIME')) }}
+  {% endif %}
+  {% endif -%}.
+</p>

@@ -1,14 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ recipe.title }} (Rezept){% endblock %}
+{% block title %}{{ title }} bearbeiten{% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': recipe.title, 'subtitle': 'Rückmeldung erfassen'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': title, 'subtitle': 'Rückmeldung bearbeiten'} %}
     {% block breadcrumb %}
       <li>Rezepte</li>
       <li><a href="{{ path('meals_recipes_list') }}">Rezepte</a></li>
       <li><a href="{{ path('meals_recipes_detail', {'id': recipe.id}) }}">{{ recipe.title }}</a></li>
-      <li class="active">Rückmeldung erfassen</li>
+      <li><a href="{{ path('meals_feedback_detail', {'fid': feedback.id, 'rid': recipe.id}) }}">{{ title }}</a></li>
+      <li class="active">Rückmeldung bearbeiten</li>
     {% endblock %}
   {% endembed %}
 
@@ -18,7 +19,7 @@
     {% embed 'meals/recipe/feedback/embed-form.html.twig' with {'form': form} %}
     {% endembed %}
     <div class="col-xs-12">
-      <input type="submit" value="Rückmeldung erfassen" class="btn btn-primary navbar-btn"/>
+      <input type="submit" value="Änderungen speichern" class="btn btn-primary navbar-btn"/>
     </div>
     {{ form_end(form) }}
   </div>

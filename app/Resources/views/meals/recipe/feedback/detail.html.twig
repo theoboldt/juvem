@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ recipe.title }} (Rezept){% endblock %}
+{% block title %}Rückmeldung erfassen ({{ recipe.title }}){% endblock %}
 
 {% block body %}
   {% embed 'common/header/base-page-header.html.twig' with {'title': title, 'subtitle': recipe.title} %}
@@ -12,83 +12,125 @@
     {% endblock %}
   {% endembed %}
 
-  <div class="container">
-
-    <div class="row">
-      <div class="col-xs-12 col-sm-4">
-        <div class="form-horizontal">
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Einschätzung</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{{ feedback.getFeedbackGlobal(true) }}</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Probe</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{{ feedback.getWeight(true) }}</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Datum</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{{ feedback.date.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Veranstaltung</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{% if feedback.event %}{{ feedback.event.title }}{% else %}
-                  <i>(keine)</i>{% endif %}</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Personen</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{{ feedback.peopleCount }} Personen</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Hinweis</label>
-            <div class="col-sm-8">
-              <p class="form-control-static">{% if feedback.comment %}{{ feedback.comment }}{% else %}
-                  <i>(keiner)</i>{% endif %}</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-8">
-        <h2 id="ingredients-section">Einschätzung der Mengenangaben</h2>
-        <table class="table table-striped">
-          <thead>
-          <tr>
-            <td>Lebensmittel</td>
-            <td class="text-right"><abbr title="Kalkulierte">Kalk.</abbr> M<span
-                  class="hidden-sm hidden-xs">en</span>g<span class="hidden-sm hidden-xs">e</span> <abbr
-                  title="pro Person">p.P.</abbr></td>
-            <td>Einschätzung<span class="hidden-sm hidden-xs"> der Mengenangabe</span></td>
-            <td>Neue <abbr title="Kalkulation">Kalk.</abbr> <abbr title="pro Person">p.P.</abbr></td>
-          </tr>
-          </thead>
-          <tbody>
-          {% for feedbackIngredient in feedback.feedback %}
-            <tr>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+  <div class="container meals-container">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="btn-toolbar" role="toolbar">
+        <a href="{{ path('meals_recipes_detail', {'id': recipe.id }) }}"
+           class="btn btn-default">{{ 'book'|glyph }} zum Rezept</a>
+        <a href="{{ path('meals_feedback_edit', {'fid': feedback.id, 'rid': recipe.id}) }}"
+           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
       </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="row">
+        <div class="col-xs-12 col-sm-4">
+          <h3 id="ingredients-section">Probe</h3>
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Einschätzung</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{{ feedback.getFeedbackGlobal(true) }}</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Wertung</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{{ feedback.getWeight(true) }}</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Datum</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{{ feedback.date.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Veranstaltung</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{% if feedback.event %}{{ feedback.event.title }}{% else %}
+                    <i>(keine)</i>{% endif %}</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Personen</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{{ feedback.peopleCount }} Personen</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Hinweis</label>
+              <div class="col-sm-8">
+                <p class="form-control-static">{% if feedback.comment %}{{ feedback.comment }}{% else %}
+                    <i>(keiner)</i>{% endif %}</p>
+              </div>
+            </div>
 
-
-    <div class="row">
-      <div class="col-xs-12">
-
-
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-8">
+          <h3 id="ingredients-section">Einschätzung der Mengenangaben</h3>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <td>Lebensmittel</td>
+              <td class="text-right"><abbr title="Kalkulierte">Kalk.</abbr> M<span
+                    class="hidden-sm hidden-xs">en</span>g<span class="hidden-sm hidden-xs">e</span> <abbr
+                    title="pro Person">p.P.</abbr></td>
+              <td>Einschätzung<span class="hidden-sm hidden-xs"> der Mengenangabe</span></td>
+              <td>Neue <abbr title="Kalkulation">Kalk.</abbr> <abbr title="pro Person">p.P.</abbr></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for feedbackIngredient in feedback.feedback %}
+              <tr>
+                {% set originalUnit = units[feedbackIngredient.unitIdOriginal] %}
+                {% if recipe.hasIngredient(feedbackIngredient.recipeIngredientId) %}
+                  {% set ingredient = recipe.getIngredient(feedbackIngredient.recipeIngredientId) %}
+                  <td><b>{{ ingredient.viand.name }}</b>
+                    {% if ingredient.description %}<br>
+                      <span class="description">{{ ingredient.description }}</span>
+                    {% endif %}
+                  </td>
+                {% else %}
+                  <td><i>Zutat #{{ feedbackIngredient.recipeIngredientId }}</i></td>
+                  {% set ingredient = null %}
+                {% endif %}
+                <td class="text-right">
+                  {{ feedbackIngredient.amountOriginal|replace({'.': ",", "," : "'"}) }}&nbsp;
+                  <abbr class="unit" title="{{ originalUnit.name }}">{{ originalUnit.short }}</abbr>
+                </td>
+                <td>
+                  {{ feedbackIngredient.ingredientFeedbackLabel }}
+                </td>
+                <td>
+                  {% if feedbackIngredient.amountCorrected is not null %}
+                    {{ feedbackIngredient.amountCorrected|replace({'.': ",", "," : "'"}) }}&nbsp;
+                    {% if feedbackIngredient.unitIdCorrected is not null %}
+                      {% set correctedUnit = units[feedbackIngredient.unitIdCorrected] %}
+                      <abbr class="unit"
+                            title="{{ correctedUnit.name }}">{{ correctedUnit.short }}</abbr>
+                    {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            {% if feedback.feedback|length == 0 %}
+              <tr>
+                <td colspan="4" class="text-center">(keine Zutaten eingetragen)</td>
+              </tr>
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="col-xs-12">
-      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      {% embed 'default/embed-meta.html.twig' with {'entity': feedback} %}{% endembed %}
     </div>
   </div>
 

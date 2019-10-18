@@ -82,52 +82,72 @@ class RecipeFeedbackController extends Controller
     public function detailAction(Recipe $recipe, RecipeFeedback $feedback)
     {
         
-        $title = 'Rückmeldung vom ' . $feedback->getDate()->format(Event::DATE_FORMAT_DATE);
-        $event = $feedback->getEvent();
-        if ($event) {
-            $title .= '(' . $event->getTitle() . ')';
-        }
-        
         return $this->render(
             'meals/recipe/feedback/detail.html.twig',
             [
-                'title'    => $title,
+                'title'    => $this->feedbackTitle($feedback),
                 'recipe'   => $recipe,
+                'units'    => $this->getDoctrine()->getRepository(QuantityUnit::class)->findAllKeyed(),
                 'feedback' => $feedback,
             ]
         );
     }
     
     /**
-     * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
-     * @Route("/admin/meals/recipes/{id}/edit", requirements={"id": "\d+"}, name="meals_recipes_edit")
+     * Get feedback title
+     *
+     * @param RecipeFeedback $feedback
+     * @return string
+     */
+    private function feedbackTitle(RecipeFeedback $feedback): string
+    {
+        $title = 'Rückmeldung vom ' . $feedback->getDate()->format(Event::DATE_FORMAT_DATE);
+        $event = $feedback->getEvent();
+        if ($event) {
+            $title .= ' (' . $event->getTitle() . ')';
+        }
+        
+        return $title;
+    }
+    
+    /**
+     * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
+     * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
+     * @Route("/admin/meals/recipes/{rid}/feedback/{fid}/edit", requirements={"rid": "\d+","fid": "\d+"}, name="meals_feedback_edit")
      * @Security("has_role('ROLE_ADMIN')")
      * @param Request $request
      * @param Recipe $recipe
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(Request $request, Recipe $recipe)
+    public function editAction(Request $request, RecipeFeedback $feedback, Recipe $recipe)
     {
-        $form = $this->createForm(RecipeType::class, $recipe);
+        $form = $this->createForm(MealFeedbackType::class, $feedback);
         
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             if ($this->getUser() instanceof User) {
-                $recipe->setModifiedBy($this->getUser());
+                $feedback->setModifiedBy($this->getUser());
             }
-            $em->persist($recipe);
+            $em->persist($feedback);
             $em->flush();
             
+            $this->addFlash(
+                'success',
+                'Die Änderungen an der Rückmeldung wurde erfasst.'
+            );
             return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
         }
         
         return $this->render(
-            'meals/recipe/edit.html.twig',
+            'meals/recipe/feedback/edit.html.twig',
             [
-                'recipe' => $recipe,
-                'form'   => $form->createView(),
+                'title'    => $this->feedbackTitle($feedback),
+                'units'    => $this->getDoctrine()->getRepository(QuantityUnit::class)->findAllKeyed(),
+                'recipe'   => $recipe,
+                'feedback' => $feedback,
+                'form'     => $form->createView(),
             ]
         );
     }
@@ -145,13 +165,7 @@ class RecipeFeedbackController extends Controller
     public function newAction(Request $request, Recipe $recipe): Response
     {
         $feedback = new RecipeFeedback($recipe);
-        
-        $form  = $this->createForm(MealFeedbackType::class, $feedback);
-        $units = [];
-        /** @var QuantityUnit $unit */
-        foreach ($this->getDoctrine()->getRepository(QuantityUnit::class)->findAll() as $unit) {
-            $units[$unit->getId()] = $unit;
-        };
+        $form     = $this->createForm(MealFeedbackType::class, $feedback);
         
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -173,7 +187,7 @@ class RecipeFeedbackController extends Controller
         return $this->render(
             'meals/recipe/feedback/new.html.twig',
             [
-                'units'  => $units,
+                'units'  => $this->getDoctrine()->getRepository(QuantityUnit::class)->findAllKeyed(),
                 'recipe' => $recipe,
                 'form'   => $form->createView(),
             ]
