@@ -11,8 +11,10 @@
 namespace AppBundle\Controller\Meals;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Meals\IngredientAccumulatedFeedback;
 use AppBundle\Entity\Meals\QuantityUnit;
 use AppBundle\Entity\Meals\Recipe;
+use AppBundle\Entity\Meals\RecipeAccumulatedGlobalFeedback;
 use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\MealFeedbackType;
@@ -90,10 +92,21 @@ class RecipeController extends Controller
      */
     public function detailAction(Recipe $recipe)
     {
+        $feedbackItems = $this->getDoctrine()->getRepository(RecipeFeedback::class)->findBy(
+            ['recipe' => $recipe->getId()]
+        );
+        
+        $ingredientFeedback = [];
+        foreach ($recipe->getIngredients() as $ingredient) {
+            $ingredientFeedback[$ingredient->getId()] = new IngredientAccumulatedFeedback($feedbackItems, $ingredient);
+        }
+        
         return $this->render(
             'meals/recipe/detail.html.twig',
             [
                 'recipe'                 => $recipe,
+                'globalFeedback'         => new RecipeAccumulatedGlobalFeedback($feedbackItems, $recipe),
+                'ingredientFeedback'     => $ingredientFeedback,
                 'unassignedProperties'   => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe),
                 'accumulatedIngredients' => $this->get('app.food_service')->accumulatedIngredients($recipe),
             ]

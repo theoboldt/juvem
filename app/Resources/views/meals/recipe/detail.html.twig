@@ -10,7 +10,7 @@
       <li class="active">{{ recipe.title }} (Rezept)</li>
     {% endblock %}
   {% endembed %}
-  <div class="container">
+  <div class="container meals-container">
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
@@ -44,7 +44,7 @@
           {{ recipe.cookingInstructions|markdown }}
         </div>
       {% endif %}
-      <div class="col-xs-12">
+      <div class="col-xs-12 col-sm-8 col-md-9">
         <h2 id="recipe-properties">Eigenschaften</h2>
         <p>Die Eigenschaften des Rezeptes ergeben sich aus denen aller zugehörigen <a href="#ingredients-section">Zutaten</a>.
         </p>
@@ -56,8 +56,15 @@
                 title="{{ property.exclusionTermDescription }}">{{ property.exclusionTerm }}</span>
         {% endfor %}
       </div>
-      <div class="col-xs-12">
-        <h2 id="ingredients-section">Zutaten</h2>
+      <div class="col-xs-12 col-sm-4 col-md-3">
+        <h2 id="recipe-properties">Rückmeldung</h2>
+        <p>
+          {% embed 'meals/recipe/feedback/embed-feedback-bars.html.twig' with {'feedback': globalFeedback} %}
+          {% endembed %}
+        </p>
+      </div>
+      <div class="col-xs-12" id="ingredients-section">
+        <h2>Zutaten</h2>
         <p>
           Diesem Rezept sind die folgenden <a href="{{ path('meals_viands_list') }}">Lebensmittel</a> als Zutaten
           zugewiesen. Lebensmittel können mehrfach auftauchen, wenn sie zu unterschiedlichen Teilen des Gerichts
@@ -70,6 +77,7 @@
           <tr>
             <td>Lebensmittel</td>
             <td class="text-right">Menge p<span class="hidden-sm">ro </span>P<span class="hidden-sm">erson</span></td>
+            <td>Rückmeldung</td>
             <td>Eigenschaften</td>
             <td>Hinweise</td>
           </tr>
@@ -79,9 +87,12 @@
             <tr>
               <td>{{ ingredient.viand.name }}</td>
               <td class="text-right">
-                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
-                    style="display: inline-block; min-width: 37px; text-align: left;"
+                {{ ingredient.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr class="unit"
                     title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
+              </td>
+              <td class="ingredient-feedback-cell">
+                {% embed 'meals/recipe/feedback/embed-feedback-bars.html.twig' with {'feedback': ingredientFeedback[ingredient.id]} %}
+                {% endembed %}
               </td>
               <td>
                 {% for property in ingredient.viand.properties %}
@@ -134,8 +145,7 @@
                   {{ accumulatedIngredient.viand.name }}
                 </td>
                 <td class="text-right" style="max-width: 140px;">
-                  {{ occasion.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr
-                      style="display: inline-block; min-width: 37px; text-align: left;"
+                  {{ occasion.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr class="unit"
                       title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
                 </td>
                 <td class="text-right" style="max-width: 140px;">

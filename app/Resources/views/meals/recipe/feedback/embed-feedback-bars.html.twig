@@ -1,0 +1,24 @@
+<div class="ingredient-feedback">
+  {% if feedback.total %}
+    <div class="feedback-2" data-toggle="tooltip"
+         style="height: {{ ((feedback.wayTooLess/feedback.max)*28)+2 }}px;"
+         data-title="{{ feedback.wayTooLess }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist viel zu wenig"
+    ></div>
+    <div class="feedback-1" data-toggle="tooltip"
+         style="height: {{ ((feedback.tooLess/feedback.max)*28)+2 }}px;"
+         data-title="{{ feedback.tooLess }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist zu wenig"
+    ></div>
+    <div class="feedback0" data-toggle="tooltip"
+         style="height: {{ ((feedback.ok/feedback.max)*28)+2 }}px"
+         data-title="{{ feedback.ok }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist angemessen"
+    ></div>
+    <div class="feedback1" data-toggle="tooltip"
+         style="height: {{ ((feedback.tooMuch/feedback.max)*28)+2 }}px"
+         data-title="{{ feedback.tooMuch }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist zu viel"
+    ></div>
+    <div class="feedback2" data-toggle="tooltip"
+         style="height: {{ ((feedback.wayTooMuch/feedback.max)*28)+2 }}px"
+         data-title="{{ feedback.wayTooMuch }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist viel zu viel"
+    ></div>
+  {% endif %}
+</div>
