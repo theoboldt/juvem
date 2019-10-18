@@ -20,5 +20,7 @@
          style="height: {{ ((feedback.wayTooMuch/feedback.max)*28)+2 }}px"
          data-title="{{ feedback.wayTooMuch }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist viel zu viel"
     ></div>
+  {% else %}
+      <span data-toggle="tooltip" title="Noch keine Rückmeldung erfasst">-</span>
   {% endif %}
 </div>
