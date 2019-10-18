@@ -37,15 +37,15 @@ class RecipeIngredientFeedbackType extends AbstractType implements DataMapperInt
         $builder
             ->add(
                 'recipeIngredientId',
-                HiddenType::class,
+                HiddenType::class
                 )
             ->add(
                 'amountOriginal',
-                HiddenType::class,
+                HiddenType::class
                 )
             ->add(
                 'unitIdOriginal',
-                HiddenType::class,
+                HiddenType::class
                 )
             ->add(
                 'ingredientFeedback',
