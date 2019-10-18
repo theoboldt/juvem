@@ -71,7 +71,7 @@ class RecipeIngredientFeedback implements \JsonSerializable
             $feedback['uidOriginal'] ?? null,
             $feedback['ingredientFeedback'] ?? null,
             $feedback['amountCorrected'] ?? null,
-            $feedback['uidCorrected'] ?? null,
+            $feedback['uidCorrected'] ?? null
         );
     }
     
