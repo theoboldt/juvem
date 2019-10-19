@@ -38,7 +38,7 @@ class RecipeFeedbackController extends Controller
     {
         return $this->render('meals/recipe/feedback/list.html.twig', ['recipe' => $recipe]);
     }
-    
+
     /**
      * Data provider for event list grid
      *
@@ -50,29 +50,30 @@ class RecipeFeedbackController extends Controller
     {
         $repository   = $this->getDoctrine()->getRepository(RecipeFeedback::class);
         $feedbackList = $repository->findBy(['recipe' => $recipe->getId()], ['date' => 'DESC']);
-        
+
         $result = [];
         /** @var RecipeFeedback $feedback */
         foreach ($feedbackList as $feedback) {
-            
+
             $eventContent = null;
             $event        = $feedback->getEvent();
             if ($event) {
                 $eventUrl = $this->get('router')->generate('event', ['eid' => $event->getEid()]);
-                
+
                 $eventContent = '<a href="' . $eventUrl . '" target="_blank">' . $event->getTitle() . '</a>';
             }
             $result[] = [
                 'id'              => $feedback->getId(),
                 'date'            => $feedback->getDate()->format(Event::DATE_FORMAT_DATE),
                 'feedback_global' => $feedback->getFeedbackGlobal(true),
+                'weight'          => $feedback->getWeight(true),
                 'event'           => $eventContent,
             ];
         }
-        
+
         return new JsonResponse($result);
     }
-    
+
     /**
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
      * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
@@ -81,7 +82,7 @@ class RecipeFeedbackController extends Controller
      */
     public function detailAction(Recipe $recipe, RecipeFeedback $feedback)
     {
-        
+
         return $this->render(
             'meals/recipe/feedback/detail.html.twig',
             [
@@ -92,7 +93,7 @@ class RecipeFeedbackController extends Controller
             ]
         );
     }
-    
+
     /**
      * Get feedback title
      *
@@ -106,10 +107,10 @@ class RecipeFeedbackController extends Controller
         if ($event) {
             $title .= ' (' . $event->getTitle() . ')';
         }
-        
+
         return $title;
     }
-    
+
     /**
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
      * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
@@ -122,9 +123,9 @@ class RecipeFeedbackController extends Controller
     public function editAction(Request $request, RecipeFeedback $feedback, Recipe $recipe)
     {
         $form = $this->createForm(MealFeedbackType::class, $feedback);
-        
+
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             if ($this->getUser() instanceof User) {
@@ -132,14 +133,14 @@ class RecipeFeedbackController extends Controller
             }
             $em->persist($feedback);
             $em->flush();
-            
+
             $this->addFlash(
                 'success',
                 'Die Änderungen an der Rückmeldung wurde erfasst.'
             );
             return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
         }
-        
+
         return $this->render(
             'meals/recipe/feedback/edit.html.twig',
             [
@@ -151,7 +152,7 @@ class RecipeFeedbackController extends Controller
             ]
         );
     }
-    
+
     /**
      * Collect new recipe feedback
      *
@@ -166,7 +167,7 @@ class RecipeFeedbackController extends Controller
     {
         $feedback = new RecipeFeedback($recipe);
         $form     = $this->createForm(MealFeedbackType::class, $feedback);
-        
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
@@ -180,10 +181,10 @@ class RecipeFeedbackController extends Controller
             );
             $em->persist($feedback);
             $em->flush();
-            
+
             return $this->redirectToRoute('meals_recipes_detail', ['id' => $recipe->getId()]);
         }
-        
+
         return $this->render(
             'meals/recipe/feedback/new.html.twig',
             [

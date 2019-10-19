@@ -21,6 +21,7 @@
          data-title="{{ feedback.wayTooMuch }} von {{ feedback.probeCount }} habe zurückgemeldet die Mengenangabe ist viel zu viel"
     ></div>
   {% else %}
-      <span data-toggle="tooltip" title="Noch keine Rückmeldung erfasst">-</span>
+    {% block msgNoFeedback %}
+    {% endblock %}
   {% endif %}
 </div>

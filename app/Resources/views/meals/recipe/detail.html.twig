@@ -57,11 +57,23 @@
         {% endfor %}
       </div>
       <div class="col-xs-12 col-sm-4 col-md-3">
-        <h2 id="recipe-properties">Rückmeldung</h2>
-        <p>
+        <h2 id="recipe-properties">
+          {% if globalFeedback.probeCount > 1 %}
+            {{ globalFeedback.probeCount }} Rückmeldungen
+          {% else %}
+            Rückmeldung
+          {% endif %}
+        </h2>
+        <div class="feedback-lg">
           {% embed 'meals/recipe/feedback/embed-feedback-bars.html.twig' with {'feedback': globalFeedback} %}
+            {% block msgNoFeedback %}
+              <p>
+                <i style="font-size: small;">Es sind noch keine Rückmeldungen erfasst. Jetzt die erste <a
+                      href="{{ path('meals_feedback_new', {'id': recipe.id }) }}">Rückmeldung hinzufügen</a>.</i>
+              </p>
+            {% endblock %}
           {% endembed %}
-        </p>
+        </div>
       </div>
       <div class="col-xs-12" id="ingredients-section">
         <h2>Zutaten</h2>
@@ -88,10 +100,13 @@
               <td>{{ ingredient.viand.name }}</td>
               <td class="text-right">
                 {{ ingredient.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr class="unit"
-                    title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
+                                                                                  title="{{ ingredient.unit.name }}">{{ ingredient.unit.short }}</abbr>
               </td>
               <td class="ingredient-feedback-cell">
                 {% embed 'meals/recipe/feedback/embed-feedback-bars.html.twig' with {'feedback': ingredientFeedback[ingredient.id]} %}
+                  {%- block msgNoFeedback -%}
+                    <span data-toggle="tooltip" title="Noch keine Rückmeldung erfasst">-</span>
+                  {%- endblock -%}
                 {% endembed %}
               </td>
               <td>
@@ -146,7 +161,7 @@
                 </td>
                 <td class="text-right" style="max-width: 140px;">
                   {{ occasion.amount|replace({'.': ",", "," : "'"}) }}&nbsp;<abbr class="unit"
-                      title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
+                                                                                  title="{{ occasion.unit.short }}">{{ occasion.unit.short }}</abbr>
                 </td>
                 <td class="text-right" style="max-width: 140px;">
                   <span class="calculationAmountSum" data-per-person="{{ occasion.amount }}">?</span>&nbsp;<abbr
