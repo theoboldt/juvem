@@ -197,29 +197,32 @@
                 </div>
             </div>
             <div class="col-xs-12 hidden-print">
-                {% if is_granted('employees_edit', event) -%}
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
-                        {% if employee.deletedAt %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }} wiederherstellen…
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb…
-                            </button>
-                        {% endif %}
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPayment">
+                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Aufwandsentschädigung</span>
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPayment">
-                        {{ 'credit-card'|glyph }}<span class="hidden-xs"> Aufwandsentschädigung</span>
-                    </button>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalMoveEmployee">
-                        {{ 'arrow-right'|glyph }} Mitarbeiter verschieben…
-                    </button>
+                    {% if is_granted('employees_edit', event) -%}
+                        <div class="btn-group" role="group" aria-label="Daten bearbeiten">
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModalMoveEmployee">
+                                {{ 'arrow-right'|glyph }} Mitarbeiter verschieben…
+                            </button>
+                            {% if employee.deletedAt %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="restore">
+                                    {{ 'repeat'|glyph }} wiederherstellen…
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="delete">
+                                    {{ 'trash'|glyph }} in Papierkorb…
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif -%}
                 </div>
-                {% endif -%}
             </div>
         </div>
         <div class="row">
