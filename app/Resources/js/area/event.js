@@ -564,4 +564,27 @@ $(function () {
             }
         });
     });
+
+    jQuery('.accordion').each(function () {
+        var el = jQuery(this),
+            elId = el.attr('id'),
+            accordionItemKey = userSettings.get('accordion-' + elId, null),
+            accordionItemEl;
+
+        if (accordionItemKey) {
+            accordionItemEl = jQuery('#' + accordionItemKey);
+            accordionItemEl.collapse('show');
+        }
+        el.on('hide.bs.collapse', function (e) {
+            userSettings.set('accordion-' + elId, null);
+        });
+        el.on('shown.bs.collapse', function (e) {
+            var accordionId = jQuery(this).attr('id'),
+            itemEl = jQuery(e.target),
+            itemId = itemEl.attr('id');
+
+            userSettings.set('accordion-' + accordionId, itemId);
+        })
+    });
+
 });
