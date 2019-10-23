@@ -132,29 +132,25 @@ $(function () {
                 fetchDataAndCache('Aktualisiere', 'Aktuellere Daten werden jetzt vom Server geladen...', false);
             });
         },
+        tableSettingIdentifier = function (table, prefix, suffix) {
+            var id = table.attr('id'),
+                subId = table.data('sub-id');
+
+            return prefix + '.' + id + '.' + (subId ? subId : '0') + '.' + suffix;
+        },
         /**
          * GLOBAL: Bootstrap table on page which provides filters
          */
         handleTableFilters = function (table) {
-
             var tableFilterList = {},
-                id = table.attr('id'),
-                subId = table.data('sub-id'),
-                queryParams = [],
-                tableSettingsIdentifier;
-
-            if (subId) {
-                tableSettingsIdentifier = 'tableFilter.' + id + '.' + subId + '.';
-            } else {
-                tableSettingsIdentifier = 'tableFilter.' + id + '.';
-            }
+                queryParams = [];
 
             $('#bootstrap-table-toolbar .dropup[data-property]').each(function () {
                 var dropup = $(this),
                     options = dropup.find('ul li a'),
                     property = dropup.data('property'),
                     indexDefault = dropup.data('default'),
-                    settingIdentifier = tableSettingsIdentifier + property,
+                    settingIdentifier = tableSettingIdentifier(table, 'tableFilter', property),
                     indexTarget = userSettings.get(settingIdentifier, indexDefault);
 
                 if (!$.isNumeric(indexTarget) || options.length <= indexTarget) {
@@ -212,15 +208,52 @@ $(function () {
                 tableFilterList[property] = filter;
                 dropup.find('button .description').text(text);
                 table.bootstrapTable('filterBy', tableFilterList);
-                userSettings.set(tableSettingsIdentifier + property, index);
+                userSettings.set(tableSettingIdentifier(table, 'tableFilter', property), index);
             });
 
         },
+        /**
+         * GLOBAL: Apply stored column setting for table
+         */
+        handleColumnSettings = function (table) {
+            var tableSettingsIdentifier = tableSettingIdentifier(table, 'tableColumns', 'visible'),
+                columns = table.bootstrapTable('getOptions').columns;
+
+            if (!columns.length || columns.length !== 1) {
+                return;
+            }
+            columns = columns[0];
+
+            if (userSettings.has(tableSettingsIdentifier)) {
+                var columnShow = userSettings.get(tableSettingsIdentifier, []);
+
+                $.each(columns, function (index, column) {
+                    if (!columnShow.includes(column.field)) {
+                        table.bootstrapTable('hideColumn', column.field);
+                    } else {
+                        table.bootstrapTable('showColumn', column.field);
+                    }
+                });
+            }
+
+            table.on('column-switch.bs.table', function (e, dataIndex) {
+                var columnConfiguration = table.bootstrapTable('getVisibleColumns'),
+                    columns = [];
+
+                $.each(columnConfiguration, function (index, column) {
+                    columns.push(column.field);
+                });
+
+                userSettings.set(tableSettingsIdentifier, columns);
+            });
+        },
+
         handleRemoteTables = function () {
             $('.table-remote-content').each(function () {
                 var table = $(this);
                 handleTableFilters(table);
                 handleFetchTable(table);
+                handleColumnSettings(table);
             });
         }();
 
