@@ -328,41 +328,36 @@
                         <div id="payment" class="panel-collapse collapse" role="tabpanel"
                              aria-labelledby="headingTwo">
                             <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <table class="table table-striped table-condensed">
-                                            <thead>
-                                            <tr>
-                                                <td class=" text-right">Betrag</td>
-                                                <td>Feld</td>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for summand in summands %}
-                                                <tr>
-                                                    <td class="value text-right">
-                                                        {{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€
-                                                    </td>
-                                                    {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
-                                                        <td>{{ summand.attribute.managementTitle }}</td>
-                                                    {% else %}
-                                                        <td><code>{{ summand.type }}</code></td>
-                                                    {% endif %}
-                                                </tr>
-                                            {% endfor %}
-                                            </tbody>
-                                            <tfoot>
-                                            <tr class="total">
-                                                <td class="value text-right">
-                                                    {{ summandsTotal|number_format(2, ',', ".") }}&nbsp;€
-                                                </td>
-                                                <td colspan="2"><b>Summe</b></td>
-                                            </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <td class=" text-right">Betrag</td>
+                                        <td>Feld</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for summand in summands %}
+                                        <tr>
+                                            <td class="value text-right">
+                                                {{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€
+                                            </td>
+                                            {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
+                                                <td>{{ summand.attribute.managementTitle }}</td>
+                                            {% else %}
+                                                <td><code>{{ summand.type }}</code></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr class="total">
+                                        <td class="value text-right">
+                                            {{ summandsTotal|number_format(2, ',', ".") }}&nbsp;€
+                                        </td>
+                                        <td colspan="2"><b>Summe</b></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
                             </div>
                         </div>
                     </div>
