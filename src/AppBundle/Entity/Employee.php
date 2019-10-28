@@ -97,6 +97,13 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     protected $assignedUser;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Employee")
+     * @ORM\JoinColumn(name="predecessor_gid", referencedColumnName="gid", onDelete="SET NULL")
+     * @var Employee|null
+     */
+    protected $predecessor = null;
+    
+    /**
      * Employee constructor.
      *
      * @param Event|null $event Related event
@@ -234,6 +241,32 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     {
         return $this->assignedUser;
     }
+    
+    /**
+     * @return bool
+     */
+    public function hasPredecessor(): bool
+    {
+        return $this->predecessor !== null;
+    }
+    
+    /**
+     * @return null|Employee
+     */
+    public function getPredecessor(): ?Employee
+    {
+        return $this->predecessor;
+    }
+    
+    /**
+     * @param null|Employee $predecessor
+     * @return Employee
+     */
+    public function setPredecessor(?Employee $predecessor)
+    {
+        $this->predecessor = $predecessor;
+        return $this;
+    }
 
     /**
      * Create a new employee for transmitted event based on data of given employee
@@ -258,6 +291,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
         $employee->setAddressCountry($employeePrevious->getAddressCountry());
         $employee->setEmail($employeePrevious->getEmail());
         $employee->setSalutation($employeePrevious->getSalutation());
+        $employee->setPredecessor($employeePrevious);
 
         if ($copyPrivateFields) {
             $employee->setAssignedUser($employeePrevious->getAssignedUser());

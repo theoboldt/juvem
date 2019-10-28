@@ -17,14 +17,16 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
+use AppBundle\Form\ImportEmployeesType;
 use AppBundle\Form\MoveEmployeeType;
-use AppBundle\Form\MoveParticipationType;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\Payment\PaymentManager;
+use AppBundle\Security\EventVoter;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -253,7 +255,143 @@ class EmployeeController extends Controller
             ]
         );
     }
-
+   
+    /**
+     * Page for importing employee
+     *
+     * @Route("/admin/event/{eid}/employee/import", requirements={"eid": "\d+"}, methods={"GET"}, name="admin_employee_import_proposals")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('employees_edit', event)")
+     */
+    public function importProposalsAction(Event $event): Response
+    {
+        //fetch all events for related data
+        $this->getDoctrine()->getRepository(Event::class)->findAll();
+        
+        $targetEventId          = $event->getEid();
+        $excludePredecessorList = [];
+        $employees              = [];
+        /** @var Employee $employee */
+    
+        foreach ($this->getDoctrine()->getRepository(Employee::class)->findBy(['deletedAt' => null]) as $employee) {
+            if ($employee->getEvent()->getEid() === $targetEventId) {
+                if ($employee->hasPredecessor()) {
+                    $excludePredecessorList[] = $employee->getPredecessor()->getGid();
+                }
+                $excludePredecessorList[] = $targetEventId;
+                continue;
+            }
+            if ($this->get('security.authorization_checker')
+                     ->isGranted(EventVoter::EMPLOYEES_READ, $employee->getEvent())
+            ) {
+                $employees[$employee->getGid()] = $employee;
+            }
+            if ($employee->hasPredecessor()) {
+                $predecessorId = $employee->getPredecessor()->getGid();
+                if (isset($employees[$predecessorId])) {
+                    unset($employees[$predecessorId]); //only accept the latest version of an employee
+                }
+            }
+        }
+        $employees = $this->removeExcludedPredecessors($employees, $excludePredecessorList);
+        
+        return $this->render(
+            'event/admin/employee/import-proposals.html.twig',
+            [
+                'event'     => $event,
+                'employees' => $employees,
+            ]
+        );
+    }
+    
+    
+    /**
+     * Remove employees because of their predecessor connection
+     *
+     * @see importProposalsAction()
+     * @param array $employeeList
+     * @param array $excludePredecessorList
+     * @return array
+     */
+    private function removeExcludedPredecessors(array $employeeList, array $excludePredecessorList)
+    {
+        $changed = false;
+        /** @var Employee $employee */
+        foreach ($employeeList as $employeeId => $employee) {
+            if (in_array($employeeId, $excludePredecessorList)) {
+                $excludePredecessorList[] = $employeeId;
+                if ($employee->hasPredecessor()) {
+                    $excludePredecessorList[] = $employee->getPredecessor()->getGid();
+                }
+                unset($employeeList[$employeeId]);
+                $changed = true;
+            }
+        }
+        
+        if ($changed) {
+            return $this->removeExcludedPredecessors($employeeList, $excludePredecessorList);
+        }
+        return $employeeList;
+    }
+    
+    /**
+     * Page for importing employee
+     *
+     * @Route("/admin/event/{eid}/employee/import", requirements={"eid": "\d+"}, methods={"POST"}, name="admin_employee_import")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('employees_edit', event)")
+     */
+    public function importAction(Event $event, Request $request): Response
+    {
+        $proposals         = array_keys($request->get('employee_proposals', []));
+        $proposedEmployees = $this->getDoctrine()->getRepository(Employee::class)->findByIdList($proposals);
+        $employees         = [];
+        /** @var Employee $employee */
+        foreach ($proposedEmployees as $employee) {
+            if ($this->isGranted('employees_read', $employee->getEvent())) {
+                $employees[] = Employee::createFromTemplateForEvent($employee, $event, true);
+            }
+        }
+    
+        $import = new EmployeeImportDto($event, $employees);
+        $form   = $this->createForm(
+            ImportEmployeesType::class,
+            $import,
+            [
+                EmployeeType::EVENT_OPTION => $event
+            ]
+        );
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $employees = $form->get('employees')->getData();
+            $em        = $this->getDoctrine()->getManager();
+            foreach ($employees as $employee) {
+                $em->persist($employee);
+            }
+            $em->flush();
+            $this->addFlash(
+                'success',
+                sprintf('%d Mitarbeiter importiert', count($employees))
+            );
+            
+            return $this->redirectToRoute(
+                'admin_event_employee_list',
+                [
+                    'eid' => $event->getEid()
+                ]
+            );
+        }
+        
+        return $this->render(
+            'event/admin/employee/import-form.html.twig',
+            [
+                'form'  => $form->createView(),
+                'event' => $event,
+                'acquisitionFields' => $event->getAcquisitionAttributes(false, false, true, true, true),
+            ]
+        );
+    }
     /**
      * Page for editing employee
      *

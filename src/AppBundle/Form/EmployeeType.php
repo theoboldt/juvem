@@ -11,6 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\Employee;
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -18,11 +19,14 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EmployeeType extends AbstractType
 {
     use AcquisitionAttributeIncludingTypeTrait;
+
+    const EVENT_OPTION = 'event';
 
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
@@ -40,9 +44,15 @@ class EmployeeType extends AbstractType
             'attr'       => ['class' => 'checkbox-smart'],
             'label_attr' => ['class' => 'control-label'],
         ];
-        /** @var Participation $participation */
-        $participation = $options['data'];
-
+    
+        if (isset($options[self::EVENT_OPTION])) {
+            $event = $options[self::EVENT_OPTION];
+        } else {
+            /** @var Employee $employee */
+            $employee = $options['data'];
+            $event    = $employee->getEvent();
+        }
+    
         $builder
             ->add(
                 'salutation',
@@ -82,7 +92,6 @@ class EmployeeType extends AbstractType
 
             );
 
-        $event      = $participation->getEvent();
         $attributes = $event->getAcquisitionAttributes(
             false, false, true, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
         );
@@ -102,10 +111,20 @@ class EmployeeType extends AbstractType
         $resolver->setRequired(self::ACQUISITION_FIELD_PRIVATE);
         $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PRIVATE, 'bool');
 
+        $resolver->setDefault(self::EVENT_OPTION, null);
+        $resolver->setAllowedTypes(self::EVENT_OPTION, [Event::class, 'null']);
+    
         $resolver->setDefaults(
             [
                 'data_class'         => Employee::class,
                 'cascade_validation' => true,
+                'empty_data'         => function (FormInterface $form) {
+                    $event = null;
+                    if ($form->getConfig()->hasOption(self::EVENT_OPTION)) {
+                        $event = $form->getConfig()->getOption(self::EVENT_OPTION);
+                    }
+                    return new Employee($event);
+                },
             ]
         );
     }
