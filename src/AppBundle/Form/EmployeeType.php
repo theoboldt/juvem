@@ -10,11 +10,8 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\Transformer\AcquisitionAttributeFilloutTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
