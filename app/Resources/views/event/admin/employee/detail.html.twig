@@ -131,53 +131,6 @@
             {{ form_end(formAssignUser) }}
         </div>
     </div>
-    <div class="modal fade" id="dialogPayment" tabindex="-1" role="dialog" aria-labelledby="dialogPaymentLabel"
-         data-token="{{ csrf_token('Employee' ~ 'payment' ) }}">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
-                                aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="dialogPriceConfigurationLabel">Aufwandsentschädigung</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <table class="table table-striped table-condensed">
-                                <thead>
-                                <tr>
-                                    <td class=" text-right">Betrag</td>
-                                    <td>Feld</td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for summand in summands %}
-                                    <tr>
-                                        <td class="value text-right">{{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€</td>
-                                        {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
-                                            <td>{{ summand.attribute.managementTitle }}</td>
-                                        {% else %}
-                                            <td><code>{{ summand.type }}</code></td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                                <tfoot>
-                                    <tr class="total">
-                                        <td class="value text-right">{{ summandsTotal|number_format(2, ',', ".") }}&nbsp;€</td>
-                                        <td colspan="2"><b>Summe</b></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="container participation-panels collapse-breadcrumb-header">
         <div class="row">
             <div class="col-xs-12">
@@ -197,29 +150,30 @@
                 </div>
             </div>
             <div class="col-xs-12 hidden-print">
-                {% if is_granted('employees_edit', event) -%}
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group" role="group">
-                        {% if employee.deletedAt %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }} wiederherstellen…
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb…
-                            </button>
-                        {% endif %}
+                        <a class="btn btn-default" role="button" data-toggle="collapse" href="#accordionPayment" aria-expanded="false" aria-controls="collapseExample">{{ 'credit-card'|glyph }}<span class="hidden-xs"> Aufwandsentschädigung</span></a>
                     </div>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPayment">
-                        {{ 'credit-card'|glyph }}<span class="hidden-xs"> Aufwandsentschädigung</span>
-                    </button>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalMoveEmployee">
-                        {{ 'arrow-right'|glyph }} Mitarbeiter verschieben…
-                    </button>
+                    {% if is_granted('employees_edit', event) -%}
+                        <div class="btn-group" role="group" aria-label="Daten bearbeiten">
+                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                    data-target="#dialogModalMoveEmployee">
+                                {{ 'arrow-right'|glyph }} Mitarbeiter verschieben…
+                            </button>
+                            {% if employee.deletedAt %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="restore">
+                                    {{ 'repeat'|glyph }} wiederherstellen…
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="delete">
+                                    {{ 'trash'|glyph }} in Papierkorb…
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif -%}
                 </div>
-                {% endif -%}
             </div>
         </div>
         <div class="row">
@@ -357,6 +311,56 @@
                         </div>
                     </div>
                     {% endif -%}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="panel-group accordion" id="accordionEmployeeDetail" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="accordionPaymentHeader">
+                            <h3 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                   href="#accordionPayment" aria-expanded="false" aria-controls="accordionPayment">
+                                    Aufwandsentschädigung
+                                </a>
+                            </h3>
+                        </div>
+                        <div id="accordionPayment" class="panel-collapse collapse" role="tabpanel"
+                             aria-labelledby="accordionPaymentHeader">
+                            <div class="panel-body">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <td class=" text-right">Betrag</td>
+                                        <td>Feld</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for summand in summands %}
+                                        <tr>
+                                            <td class="value text-right">
+                                                {{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€
+                                            </td>
+                                            {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
+                                                <td>{{ summand.attribute.managementTitle }}</td>
+                                            {% else %}
+                                                <td><code>{{ summand.type }}</code></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr class="total">
+                                        <td class="value text-right">
+                                            {{ summandsTotal|number_format(2, ',', ".") }}&nbsp;€
+                                        </td>
+                                        <td colspan="2"><b>Summe</b></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

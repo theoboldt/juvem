@@ -4,72 +4,7 @@
         {{ form_errors(form) }}
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-12 col-sm-6">
-        <div class="row">
-            <div class="col-xs-12 col-sm-4">
-                {{ form_row(form.salutation) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_row(form.nameFirst) }}
-            </div>
-            <div class="col-xs-12">
-                {{ form_row(form.nameLast) }}
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-6">
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_row(form.addressStreet) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-3">
-                {{ form_row(form.addressZip) }}
-            </div>
-            <div class="col-xs-12 col-sm-9">
-                {{ form_row(form.addressCity) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_row(form.addressCountry) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_row(form.email) }}
-            </div>
-        </div>
-    </div>
-</div>
-{% embed 'event/admin/employee/embed-form-phone-numbers.html.twig' with {'formPhoneNumbers': form.phoneNumbers, 'labelAddNumber': 'Telefonnummer hinzufügen'} %}{% endembed %}
-<div class="row" style="margin-top:15px;">
-    {% for fieldName,formField in form %}
-        {% if fieldName starts with 'acq_field_' %}
-            <div class="col-xs-12 col-sm-6">
-                <div class="form-group acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
-                    {{ form_label(formField) }}
-                    {%- set acquisitionField = acquisitionFields[fieldName] -%}
-                    {% if not acquisitionField.isPublic %}
-                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Datenerfassung angezeigt') }}
-                    {%- endif -%}
-                    {% if acquisitionField.formDescription %}
-                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
-                                data-content="{{ acquisitionField.formDescription }}">
-                            <span class="glyphicon glyphicon-question-sign"></span>
-                        </button>
-                    {% endif %}
-                    {{ form_widget(formField) }}
-                    {{ form_errors(formField) }}
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
-</div>
+{% embed 'event/admin/employee/embed-form-employee.html.twig' with {'formEmployee': form} %}{% endembed %}
 <div class="row">
     <div class="col-xs-12">
         <input type="submit" class="btn btn-primary navbar-btn" value="{% block submit %}{% endblock %}"/>

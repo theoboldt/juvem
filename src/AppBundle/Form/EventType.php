@@ -17,6 +17,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -50,7 +51,7 @@ class EventType extends AbstractType
             ->add('title', TextType::class, array('label' => 'Titel'))
             ->add(
                 'description', TextareaType::class,
-                array('label' => 'Beschreibung', 'attr' => array('aria-describedby' => 'help-description'))
+                ['label' => 'Beschreibung', 'attr' => ['aria-describedby' => 'help-description', 'class' => 'markdown-editable']]
             )
             ->add(
                 'descriptionMeta', TextareaType::class,

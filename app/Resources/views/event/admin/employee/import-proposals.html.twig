@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mitarbeiter importieren ({{ event.title }})
+{% endblock %}
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Mitarbeiter', 'subtitle': 'importieren'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter</a></li>
+      <li class="active">Mitarbeiter importieren</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+
+    <form method="post" name="proposals">
+      <div class="row">
+        <div class="col-xs-12">
+          <table class="table table-striped table-condensed">
+            <thead>
+            <tr>
+              <td></td>
+              <td>Name</td>
+              <td>Adresse</td>
+              <td>E-Mail</td>
+              <td>Telefon</td>
+              <td>Veranstaltung</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employee in employees %}
+              <tr>
+                <td>
+                  <input type="checkbox" name="employee_proposals[{{ employee.gid }}]" id="employee_proposals[{{ employee.gid }}]"/>
+                </td>
+                <td><label style="cursor: pointer;" for="employee_proposals[{{ employee.gid }}]">{{ employee.nameLast }}
+                    , {{ employee.nameFirst }}</label></td>
+                <td>{{ employee.address }}</td>
+                <td><a href="mailto:{{ employee.email }}">{{ employee.email }}</a></td>
+                <td>
+                  {% for phoneNumber in employee.phoneNumbers %}
+                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}"
+                       {% if phoneNumber.description %}title="{{ phoneNumber.description }}"{% endif %}
+                    >{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
+                  {% endfor %}
+                </td>
+                <td>
+                  <a href="{{ path('event', {'eid': employee.event.eid}) }}"
+                     target="_blank">{{ employee.event.title }}</a>
+                </td>
+              </tr>
+            {% endfor %}
+            {% if employees|length == 0 %}
+              <tr>
+                <td colspan="6" class="text-center">(keine Mitarbeiter für Import qualifiziert)</td>
+              </tr>
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-xs-12">
+          <input type="submit" class="btn btn-primary navbar-btn" value="Import vorbereiten..."/>
+        </div>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

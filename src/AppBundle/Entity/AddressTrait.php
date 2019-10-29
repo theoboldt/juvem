@@ -129,4 +129,23 @@ trait AddressTrait
     {
         $this->addressCountry = $addressCountry;
     }
+    
+    /**
+     * Get textual address
+     *
+     * @return string
+     */
+    public function getAddress(): string
+    {
+        $address = sprintf(
+            '%s, %s %s',
+            $this->getAddressStreet(),
+            $this->getAddressZip(),
+            $this->getAddressCity()
+        );
+        if ($this->getAddressCountry() !== Event::DEFAULT_COUNTRY) {
+            $address .= ' ('.$this->getAddressCountry().')';
+        }
+        return $address;
+    }
 }

@@ -38,6 +38,7 @@ module.exports = function (grunt) {
                     'node_modules/jquery/dist/jquery.js',
                     'node_modules/jquery-storage-api/jquery.storageapi.js',
                     'node_modules/jquery-number/jquery.number.js',
+                    'node_modules/easymde/dist/easymde.min.js',
                     '<%= resourcesPath %>/js/lib/jquery.filedrop.js',
                     '<%= resourcesPath %>/js/lib/jquery.visible.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
@@ -91,6 +92,7 @@ module.exports = function (grunt) {
             },
             distCssWeb: {
                 src: [
+                    'node_modules/easymde/dist/easymde.min.css',
                     'app/cache/dep/bootstrap-table-sass.css',
                     'app/cache/dep/all-sass.css',
                     'node_modules/vis-network/dist/vis-network.css',

@@ -54,6 +54,29 @@ class EmployeeRepository extends EntityRepository
 
         return $query->execute();
     }
+    
+    /**
+     * Find all employees by transmitted ids
+     *
+     * @param array|int[] $idList List of employee ids
+     * @return array|Employee[]
+     */
+    public function findByIdList(array $idList): array
+    {
+        $qb = $this->createQueryBuilder('g')
+                   ->select(['g', 'f', 'a', 'pn'])
+                   ->leftJoin('g.acquisitionAttributeFillouts', 'f')
+                   ->leftJoin('f.attribute', 'a')
+                   ->leftJoin('g.phoneNumbers', 'pn')
+                   ->orderBy('g.nameFirst, g.nameLast', 'ASC');
+        
+        $qb->andWhere("g.gid IN(:employeeList)")
+           ->setParameter('employeeList', $idList);
+        
+        $query = $qb->getQuery();
+        
+        return $query->execute();
+    }
 
     /**
      * Find related participants by comparing birthday (exact) and name (fuzzy)
