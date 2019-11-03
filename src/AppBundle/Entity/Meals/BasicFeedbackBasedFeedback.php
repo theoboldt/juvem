@@ -113,7 +113,15 @@ abstract class BasicFeedbackBasedFeedback extends BasicAccumulatedFeedback
     {
         return count($this->items);
     }
-    
+
+    /**
+     * @return RecipeFeedback[]|array
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
     /**
      * Process Feedback items
      *

@@ -1,4 +1,68 @@
-<div class="ingredient-feedback">
+{%- if feedback is instanceof('AppBundle\\Entity\\Meals\\RecipeAccumulatedGlobalFeedback') %}
+  {% set feedbackId = 'modalR'~feedback.recipe.id %}
+{%- elseif feedback is instanceof('AppBundle\\Entity\\Meals\\IngredientAccumulatedFeedback') %}
+  {% set feedbackId = 'modalR'~feedback.ingredient.id %}
+{% endif -%}
+<div class="modal fade" tabindex="-1" role="dialog" id="{{ feedbackId }}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">
+          {% if feedback is instanceof('AppBundle\\Entity\\Meals\\IngredientAccumulatedFeedback') %}
+            Rückmeldungen zu <i>{{ feedback.ingredient.viand.name }}</i> von
+            <i>{{ feedback.ingredient.recipe.title }}</i>
+          {% else %}
+            Rückmeldungen
+          {% endif %}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <td>Rückmeldung</td>
+            <td><abbr title="Personen">P.</abbr></td>
+            <td>Datum</td>
+            <td>Veranstaltung</td>
+            <td>Wertung</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for feedbackItem in feedback.items %}
+          {%- if feedback is instanceof('AppBundle\\Entity\\Meals\\IngredientAccumulatedFeedback') %}
+            {% set feedbackIngredientItem = feedbackItem.getFeedbackForIngredient(feedback.ingredient.id) %}
+          {% endif %}
+          <tr>
+            <td>
+              {%- if feedback is instanceof('AppBundle\\Entity\\Meals\\RecipeAccumulatedGlobalFeedback') %}
+                {{ feedbackItem.feedbackGlobalLabel }}
+              {%- elseif feedback is instanceof('AppBundle\\Entity\\Meals\\IngredientAccumulatedFeedback') %}
+                {{ feedbackIngredientItem.ingredientFeedbackLabel }}
+              {% endif %}
+            </td>
+            <td>{{ feedbackItem.peopleCount }}</td>
+            <td>{{ feedbackItem.date.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE')) }}</td>
+            <td>
+              {%- if feedbackItem.event -%}
+                <a href="{{ path('event', {'eid': feedbackItem.event.eid}) }}"
+                   target="_blank">{{ feedbackItem.event.title }}</a>
+              {%- else %}<i>(keine)</i>{% endif %}
+            </td>
+            <td>{{ feedbackItem.getWeight(true) }}</td>
+            {% endfor %}
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ingredient-feedback" data-toggle="modal" data-target="#{{ feedbackId }}">
   {% if feedback.total %}
     <div class="feedback-2" data-toggle="tooltip"
          style="height: {{ ((feedback.wayTooLess/feedback.max)*28)+2 }}px;"

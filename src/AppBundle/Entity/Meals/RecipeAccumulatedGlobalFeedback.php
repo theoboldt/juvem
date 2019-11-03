@@ -19,19 +19,19 @@ class RecipeAccumulatedGlobalFeedback extends BasicFeedbackBasedFeedback impleme
      * @var Recipe
      */
     public $recipe;
-    
+
     /**
      * IngredientAccumulatedFeedback constructor.
      *
      * @param RecipeFeedback[]|array $items
-     * @param Recipe $recipe
+     * @param Recipe                 $recipe
      */
     public function __construct(array $items, Recipe $recipe)
     {
         $this->recipe = $recipe;
         parent::__construct($items);
     }
-    
+
     /**
      * Process Feedback items
      */
@@ -42,7 +42,7 @@ class RecipeAccumulatedGlobalFeedback extends BasicFeedbackBasedFeedback impleme
         $this->ok         = 0;
         $this->tooMuch    = 0;
         $this->wayTooMuch = 0;
-        
+
         foreach ($this->items as $recipeFeedback) {
             $factor = $recipeFeedback->getWeight();
             if ($factor === 0) {
@@ -66,5 +66,13 @@ class RecipeAccumulatedGlobalFeedback extends BasicFeedbackBasedFeedback impleme
                     break;
             }
         }
+    }
+
+    /**
+     * @return Recipe
+     */
+    public function getRecipe(): Recipe
+    {
+        return $this->recipe;
     }
 }

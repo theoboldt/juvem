@@ -26,31 +26,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RecipeFeedback
 {
     use CreatedModifiedTrait, CreatorModifierTrait;
-    
+
     const WEIGHT_NONE       = 0;
     const WEIGHT_NONE_LABEL = 'Nicht werten';
-    
+
     const WEIGHT_SINGLE       = 1;
     const WEIGHT_SINGLE_LABEL = 'Normale Wertung';
-    
+
     const WEIGHT_DOUBLE       = 2;
     const WEIGHT_DOUBLE_LABEL = 'Doppelte Gewichtung';
-    
+
     const AMOUNT_WAY_TOO_LESS       = -2;
     const AMOUNT_WAY_TOO_LESS_LABEL = 'viel zu wenig';
-    
+
     const AMOUNT_TOO_LESS       = -1;
     const AMOUNT_TOO_LESS_LABEL = 'zu wenig';
-    
+
     const AMOUNT_OK       = 0;
     const AMOUNT_OK_LABEL = 'angemessen';
-    
+
     const AMOUNT_TOO_MUCH       = 1;
     const AMOUNT_TOO_MUCH_LABEL = 'zu viel';
-    
+
     const AMOUNT_WAY_TOO_MUCH       = 2;
     const AMOUNT_WAY_TOO_MUCH_LABEL = 'viel zu viel';
-    
+
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\Id
@@ -58,21 +58,21 @@ class RecipeFeedback
      * @var int|null
      */
     protected $id;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Meals\Recipe", inversedBy="feedbacks", cascade={"persist"})
      * @ORM\JoinColumn(name="rid", referencedColumnName="id", onDelete="cascade")
      * @var Recipe
      */
     protected $recipe;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Event", cascade={"persist"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="set null", nullable=true)
      * @var Event|null
      */
     protected $event = null;
-    
+
     /**
      * Amount of mouths fed with this recipe
      *
@@ -81,7 +81,7 @@ class RecipeFeedback
      * @var int
      */
     protected $peopleCount;
-    
+
     /**
      * Date of cooking or when feedback was generated
      *
@@ -91,7 +91,7 @@ class RecipeFeedback
      * @var \DateTime
      */
     protected $date;
-    
+
     /**
      * Weight factor of this feedback, zero for no weight
      *
@@ -100,13 +100,13 @@ class RecipeFeedback
      * @Assert\NotBlank()
      */
     protected $weight = self::WEIGHT_SINGLE;
-    
+
     /**
      * @ORM\Column(type="text", options={"default":""})
      * @var string
      */
     protected $comment = '';
-    
+
     /**
      * Global feedback for the recipe
      *
@@ -115,18 +115,18 @@ class RecipeFeedback
      * @Assert\NotBlank()
      */
     protected $feedbackGlobal = self::AMOUNT_OK;
-    
+
     /**
      * Complex feedback structure for each viand
      *
      * @ORM\Column(type="json_array", length=16777215, name="feedback")
      */
     protected $feedback = [];
-    
+
     /**
      * RecipeFeedback constructor.
      *
-     * @param Recipe $recipe
+     * @param Recipe     $recipe
      * @param null|Event $event
      */
     public function __construct(Recipe $recipe, ?Event $event = null)
@@ -136,8 +136,8 @@ class RecipeFeedback
         $this->createdAt = new \DateTime();
         $this->setDate(new \DateTime());
     }
-    
-    
+
+
     /**
      * @return int
      */
@@ -145,7 +145,7 @@ class RecipeFeedback
     {
         return $this->id;
     }
-    
+
     /**
      * @return Recipe
      */
@@ -153,7 +153,7 @@ class RecipeFeedback
     {
         return $this->recipe;
     }
-    
+
     /**
      * @param Recipe $recipe
      * @return RecipeFeedback
@@ -163,7 +163,7 @@ class RecipeFeedback
         $this->recipe = $recipe;
         return $this;
     }
-    
+
     /**
      * @return Event|null
      */
@@ -171,7 +171,7 @@ class RecipeFeedback
     {
         return $this->event;
     }
-    
+
     /**
      * @param Event|null $event
      * @return RecipeFeedback
@@ -181,7 +181,7 @@ class RecipeFeedback
         $this->event = $event;
         return $this;
     }
-    
+
     /**
      * @return null|int
      */
@@ -189,7 +189,7 @@ class RecipeFeedback
     {
         return $this->peopleCount;
     }
-    
+
     /**
      * @param int $peopleCount
      * @return RecipeFeedback
@@ -199,7 +199,7 @@ class RecipeFeedback
         $this->peopleCount = $peopleCount;
         return $this;
     }
-    
+
     /**
      * @return \DateTime
      */
@@ -208,7 +208,7 @@ class RecipeFeedback
         $this->date->setTime(10, 0, 0);
         return $this->date;
     }
-    
+
     /**
      * @param \DateTime $date
      * @return RecipeFeedback
@@ -219,7 +219,7 @@ class RecipeFeedback
         $this->date = $date;
         return $this;
     }
-    
+
     /**
      * @param bool $asLabel
      * @return int|string
@@ -238,7 +238,7 @@ class RecipeFeedback
         }
         return $this->weight;
     }
-    
+
     /**
      * @param int $weight
      * @return RecipeFeedback
@@ -248,7 +248,7 @@ class RecipeFeedback
         $this->weight = $weight;
         return $this;
     }
-    
+
     /**
      * @return string
      */
@@ -256,7 +256,7 @@ class RecipeFeedback
     {
         return $this->comment;
     }
-    
+
     /**
      * @param string $comment
      * @return RecipeFeedback
@@ -266,7 +266,7 @@ class RecipeFeedback
         $this->comment = $comment;
         return $this;
     }
-    
+
     /**
      * @param bool $asLabel
      * @return int|string|null
@@ -289,16 +289,17 @@ class RecipeFeedback
         }
         return $this->feedbackGlobal;
     }
-    
+
     /**
      * Get feedback translated
      *
      * @return string
      */
-    public function getFeedbackGlobalLabel() {
+    public function getFeedbackGlobalLabel()
+    {
         return self::formatFeedback($this->feedbackGlobal);
     }
-    
+
     /**
      * @param mixed $feedbackGlobal
      * @return RecipeFeedback
@@ -308,7 +309,7 @@ class RecipeFeedback
         $this->feedbackGlobal = $feedbackGlobal;
         return $this;
     }
-    
+
     /**
      * Get feedback list
      *
@@ -330,10 +331,27 @@ class RecipeFeedback
             }
             $this->setFeedback(array_values($feedbackList));
         }
-        
+
         return array_values($feedbackList);
     }
-    
+
+    /**
+     * Get feedback result
+     *
+     * @param int $ingredientId
+     * @return RecipeIngredientFeedback|null
+     */
+    public function getFeedbackForIngredient(int $ingredientId): ?RecipeIngredientFeedback
+    {
+        $feedbackList = $this->getFeedback();
+        foreach ($feedbackList as $feedback) {
+            if ($feedback->getRecipeIngredientId() === $ingredientId) {
+                return $feedback;
+            }
+        }
+        return null;
+    }
+
     /**
      * Set feedback items
      *
@@ -352,14 +370,12 @@ class RecipeFeedback
         $this->feedback = $feedbackList;
         return $this;
     }
-    
+
     public function addFeedback(RecipeIngredientFeedback $feedback)
     {
         $this->feedback[$feedback->getRecipeIngredientId()] = $feedback->jsonSerialize();
     }
-    
- 
-    
+
     /**
      * @param int|null $feedback
      * @return string

@@ -31,7 +31,7 @@ class IngredientAccumulatedFeedback extends BasicFeedbackBasedFeedback implement
      * IngredientAccumulatedFeedback constructor.
      *
      * @param RecipeFeedback[]|array $items
-     * @param RecipeIngredient $ingredient
+     * @param RecipeIngredient       $ingredient
      */
     public function __construct(array $items, RecipeIngredient $ingredient)
     {
@@ -50,7 +50,6 @@ class IngredientAccumulatedFeedback extends BasicFeedbackBasedFeedback implement
         $this->ok         = 0;
         $this->tooMuch    = 0;
         $this->wayTooMuch = 0;
-        
         
         foreach ($this->items as $recipeFeedback) {
             $factor = $recipeFeedback->getWeight();
@@ -82,5 +81,13 @@ class IngredientAccumulatedFeedback extends BasicFeedbackBasedFeedback implement
                 }
             }
         }
+    }
+
+    /**
+     * @return RecipeIngredient
+     */
+    public function getIngredient(): RecipeIngredient
+    {
+        return $this->ingredient;
     }
 }

@@ -423,6 +423,7 @@ abbr.unit {
   .ingredient-feedback {
     display: inline-block;
     vertical-align: text-bottom;
+    cursor: pointer;
 
     > div {
       bottom: 0;
