@@ -72,6 +72,7 @@ module.exports = function (grunt) {
                     '<%= resourcesPath %>/js/bootstrap-overrides.js',
                     '<%= resourcesPath %>/js/bootstrap-table.js',
                     '<%= resourcesPath %>/js/active-button.js',
+                    '<%= resourcesPath %>/js/markdown.js',
                     '<%= resourcesPath %>/js/area/acquisition_and_event.js',
                     '<%= resourcesPath %>/js/area/acquisition_only.js',
                     '<%= resourcesPath %>/js/area/attendance.js',
