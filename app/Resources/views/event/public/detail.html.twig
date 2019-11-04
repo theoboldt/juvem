@@ -31,7 +31,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-8">
-                <div itemprop="description">{{ event.getDescription|markdown }}</div>
+                <div itemprop="description">{{ event.getDescription|markdown_shifted }}</div>
                 <hr>
                 <p>
                     {% if is_granted('ROLE_ADMIN_EVENT') %}

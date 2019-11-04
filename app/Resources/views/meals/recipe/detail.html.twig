@@ -41,7 +41,7 @@
       {% if recipe.cookingInstructions %}
         <div class="col-xs-12">
           <h2>Zubereitung</h2>
-          {{ recipe.cookingInstructions|markdown }}
+          {{ recipe.cookingInstructions|markdown_shifted }}
         </div>
       {% endif %}
       <div class="col-xs-12 col-sm-8 col-md-9">

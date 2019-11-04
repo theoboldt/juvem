@@ -174,7 +174,7 @@
                         <span class="label label-primary" title="Eine eigene Rechnungsvorlage ist konfiguriert">Rechnungsvorlage</span>
                     {% endif %}
                 </p>
-                {{ event.getDescription|markdown }}
+                {{ event.getDescription|markdown_shifted }}
             </div>
             <div class="col-xs-12 col-sm-4">
                 <div class="row">

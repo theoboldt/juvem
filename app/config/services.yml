@@ -34,6 +34,13 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    app.twig_extension_heading_shifting_markdown:
+        class: AppBundle\Twig\Extension\HeadingShiftingMarkdownTwigExtension
+        arguments:
+            - '@markdown.parser.parser_manager'
+        public: false
+        tags:
+            - { name: twig.extension }
     app.participantsgrouped:
         class: AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped
         public: false
