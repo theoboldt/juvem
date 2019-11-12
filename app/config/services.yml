@@ -113,7 +113,7 @@ services:
         factory: ['AppBundle\PdfConverterService', create]
         public: true
         arguments:
-          - "%libreoffice_binary_path%"
+          - "%app.libreoffice_binary_path%"
           - "%app.tmp.root.path%"
           - "@logger"
     app.file_cache.event:
@@ -244,6 +244,7 @@ services:
         arguments:
             - "@app.payment.invoice_manager"
             - '@router'
+            - '@app.pdf_converter_service'
         tags:
             - { name: jms_serializer.event_subscriber}
     app.related_participants_finder:

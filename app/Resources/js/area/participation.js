@@ -74,7 +74,22 @@ $(function () {
                     } else {
                         creatorHtml = rowData.created_by.fullname;
                     }
-                    if (rowData.download_url) {
+
+                    if (rowData.download_url_pdf) {
+                        downloadBtnHtml = '<a href="' + rowData.download_url_pdf + '" target="_blank" class="btn btn-default btn-xs btn-download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download PDF</a>';
+
+                        downloadBtnHtml = '<div class="btn-group">\n' +
+                            '  <a href="' + rowData.download_url + '" title="Rechnugn als Word-Datei herunterladen" role="button" class="btn btn-default btn-xs btn-download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</a>\n' +
+                            '  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                            '    <span class="caret"></span>\n' +
+                            '    <span class="sr-only">Download Varianten</span>\n' +
+                            '  </button>\n' +
+                            '  <ul class="dropdown-menu">\n' +
+                            '    <li><a href="' + rowData.download_url + '"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Rechnung als Word-Datei herunterladen</a></li>\n' +
+                            '    <li><a href="' + rowData.download_url_pdf + '"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Rechnung zu PDF konvertieren und herunterladen</a></li>\n' +
+                            '  </ul>\n' +
+                            '</div>';
+                    } else if (rowData.download_url) {
                         downloadBtnHtml = '<a href="' + rowData.download_url + '" target="_blank" class="btn btn-default btn-xs btn-download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download</a>';
                     }
 

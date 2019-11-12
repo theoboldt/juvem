@@ -20,8 +20,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\InvalidTokenHttpException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -183,6 +185,52 @@ class AdminInvoiceController extends Controller
             $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename)
         );
 
+        return $response;
+    }
+    
+    /**
+     * Convert created invoice to PDF and provide download
+     *
+     * @Route("/admin/event/{eid}/participation/invoice/{id}/pdf/{filename}", requirements={"eid": "\d+","id": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="admin_invoice_download_pdf")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("invoice", class="AppBundle:Invoice", options={"id" = "id"})
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Invoice $invoice
+     * @param string $filename
+     * @return BinaryFileResponse
+     */
+    public function downloadInvoicePdfAction(Event $event, Invoice $invoice, string $filename): Response
+    {
+        if ($invoice->getParticipation()->getEvent()->getEid() !== $event->getEid()) {
+            throw new BadRequestHttpException('Incorrect invoice requested');
+        }
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+        
+        if (!$invoiceManager->hasFile($invoice)) {
+            throw new NotFoundHttpException('There is no file for transmitted invoice stored');
+        }
+        if (!$this->has('app.pdf_converter_service')) {
+            throw new BadRequestHttpException('PDF converter not configured');
+        }
+        $pdfConverter = $this->get('app.pdf_converter_service');
+        if (!$pdfConverter) {
+            throw new BadRequestHttpException('PDF converter unavailable');
+        }
+        
+        $path     = $invoiceManager->getInvoiceFilePath($invoice);
+        $tmp      = $pdfConverter->convert($path);
+        $response = new BinaryFileResponse($tmp);
+        $response->deleteFileAfterSend(true);
+        
+        $response->headers->set(
+            'Content-Type', 'application/pdf'
+        );
+        $response->headers->set(
+            'Content-Disposition',
+            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename)
+        );
+        
         return $response;
     }
 
