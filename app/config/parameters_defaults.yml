@@ -1,0 +1,9 @@
+parameters:
+    customization.app_title: Juvem
+    customization.organization_website: null
+    customization.organization_facebook: null
+    customization.juvem_website: null
+    customization.logo_website: null
+    juvimg.url: null
+    juvimg.password: null
+    app.libreoffice_binary_path: null
