@@ -326,15 +326,13 @@ class AdminInvoiceController extends Controller
     }
 
     /**
-     * Get list of @see Participation ids where new invoice should be created
-     *
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/invoice/{filter}.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
-     *                                                 name="event_invoice_download_package")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
-     * @return BinaryFileResponse
+     * Provide invoices list filtered by event and filter
+     * 
+     * @param Event  $event
+     * @param string $filter
+     * @return array
      */
-    public function downloadEventInvoicePackage(Event $event, $filter)
+    private function provideInvoices(Event $event, string $filter): array 
     {
         $invoiceManager   = $this->get('app.payment.invoice_manager');
         $invoicesComplete = $invoiceManager->getInvoicesForEvent($event);
@@ -359,6 +357,75 @@ class AdminInvoiceController extends Controller
                     throw new \InvalidArgumentException('Unknown filter ' . $filter . ' transmitted');
             }
         }
+        return $invoices;
+    }
+
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/invoice/{filter}_pdf.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
+     *                                                 name="event_invoice_download_package_pdf")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @return BinaryFileResponse
+     */
+    public function downloadEventInvoicePdfPackage(Event $event, string $filter): Response
+    {
+        if (!$this->has('app.pdf_converter_service')) {
+            throw new BadRequestHttpException('PDF converter not configured');
+        }
+        $pdfConverter = $this->get('app.pdf_converter_service');
+        if (!$pdfConverter) {
+            throw new BadRequestHttpException('PDF converter unavailable');
+        }
+        $invoiceManager = $this->get('app.payment.invoice_manager');
+
+        $invoices = $this->provideInvoices($event, $filter);
+
+        $tmpPath  = $this->getParameter('app.tmp.root.path');
+        $filePath = tempnam($tmpPath, 'invoice_package_');
+
+        $archive = new \ZipArchive();
+        if (!$archive->open($filePath, \ZipArchive::CREATE)) {
+            throw new \InvalidArgumentException('Failed to create ' . $tmpPath);
+        }
+
+        $convertedPaths = [];
+
+        /** @var Invoice $invoice */
+        foreach ($invoices as $invoice) {
+            $originalPath     = $invoiceManager->getInvoiceFilePath($invoice);
+            $convertedPath    = $pdfConverter->convert($originalPath);
+            $convertedPaths[] = $convertedPath;
+            $archive->addFile($convertedPath, $invoice->getInvoiceNumber() . '.pdf');
+        }
+        $archive->close();
+        foreach ($convertedPaths as $convertedPath) {
+            unlink($convertedPath);
+        }
+
+        $response = new BinaryFileResponse($filePath);
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $event->getTitle() . '_PDF_Rechnungen.zip'
+        );
+
+        $response->deleteFileAfterSend(true);
+        return $response;
+    }
+    
+    /**
+     * Get list of @see Participation ids where new invoice should be created
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/invoice/{filter}.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
+     *                                                 name="event_invoice_download_package")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @return BinaryFileResponse
+     */
+    public function downloadEventInvoicePackage(Event $event, string $filter)
+    {
+        $invoiceManager   = $this->get('app.payment.invoice_manager');
+
+        $invoices = $this->provideInvoices($event, $filter);
+        
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
 

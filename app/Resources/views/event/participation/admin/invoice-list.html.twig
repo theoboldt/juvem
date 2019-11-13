@@ -76,6 +76,9 @@
               </button>
               <ul class="dropdown-menu">
                 <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
+                {% if featurePdfConversion %}
+                  <li><a href="{{ path('event_invoice_download_package_pdf', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen zu PDF konvertieren und herunterladen (Zeitaufwändig)</a></li>
+                {% endif %}
                 <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}" class="btn-download">{{ 'compressed'|glyph }} Alle Rechnungen herunterladen</a></li>
               </ul>
 
