@@ -3,7 +3,6 @@
  * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-
 @import '../../../config/branding';
 
 $brand-primary: $brandPrimaryDark;
@@ -65,7 +64,12 @@ $icon-font-path: '../font/';
 @import 'cookiechoice';
 @import 'gallery';
 
-html, body {
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
   background-color: $brandPrimaryDark;
 }
 

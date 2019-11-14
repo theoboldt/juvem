@@ -5,6 +5,7 @@
 
 {% block title %}Beziehungsübersicht ({{ event.title }}){% endblock %}
 
+{% block bodytag %}style="background:white !important; "{% endblock %}
 {% block page %}
   <div class="container-fluid" id="network-container">
     <div class="row">
@@ -81,9 +82,9 @@
           </div>
         </div>
         <div class="col-xs-12">
-          <div id="vis-network" style="width: 100%; border: 1px solid lightgrey;"  data-token="{{ csrf_token('detecting' ~ event.eid ) }}"
-               data-eid="{{ event.eid }}" data-nodes="{{ nodes|json_encode() }}" data-edges="{{ edges|json_encode() }}" data-participation-edges="{{ participationEdges|json_encode() }}"
-          ></div>
+          <div id="vis-network" class="loading" data-token="{{ csrf_token('detecting' ~ event.eid ) }}" data-eid="{{ event.eid }}">
+            <span class="loading-text">Beziehungen werden geladen...</span>
+          </div>
         </div>
         <div class="col-xs-12">
           <div class="btn-toolbar" role="toolbar">

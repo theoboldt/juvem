@@ -110,6 +110,62 @@ class AdminParticipantsDependencyController extends Controller
         }
 
         $yearsOfLifeAvailable = [];
+
+        /** @var Participant $participant */
+        foreach ($participants as $participant) {
+            if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
+                continue;
+            }
+
+            $yearsOfLife                        = $participant->getYearsOfLifeAtEvent();
+            $yearsOfLifeAvailable[$yearsOfLife] = $yearsOfLife;
+        }
+
+        $yearsOfLifeAvailable = array_values($yearsOfLifeAvailable);
+        sort($yearsOfLifeAvailable);
+    
+        return $this->render(
+            'event/admin/participant_detecting/event-detecting-overview.html.twig',
+            [
+                'event'              => $event,
+                'statusFormatter'    => ParticipantStatus::formatter(),
+                'participants'       => $participants,
+                'attributes'         => $attributes,
+                'yearsOfLife'        => $yearsOfLifeAvailable,
+            ]
+        );
+    }
+    
+    
+    /**
+     * Get detailed data for detecting fields
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/dependencies/data.json", requirements={"eid": "\d+"}, name="event_admin_dependencies_data")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event     $event
+     * @return Response
+     */
+    public function participantDetectingDataAction(Event $event): Response {
+    $attributes = array_filter(
+            $event->getAcquisitionAttributes(false, true, true, true, true),
+            function ($attribute) {
+                if (!$attribute || ($attribute instanceof Attribute && $attribute->getDeletedAt())) {
+                    return false;
+                }
+                return true;
+            }
+        );
+    
+        $participationRepository     = $this->getDoctrine()->getRepository(Participation::class);
+        $participants                = [];
+        $participantsByParticipation = [];
+        /** @var Participant $participant */
+        foreach ($participationRepository->participantsList($event, null, true, true) as $participant) {
+            $participants[$participant->getId()] = $participant;
+            $participantsByParticipation[$participant->getParticipation()->getId()][$participant->getId()] = $participant;
+        }
+
         $nodes                = [];
         $edges                = [];
         $participationEdges   = [];
@@ -180,9 +236,8 @@ class AdminParticipantsDependencyController extends Controller
             if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
                 continue;
             }
-
-            $yearsOfLife                        = $participant->getYearsOfLifeAtEvent();
-            $yearsOfLifeAvailable[$yearsOfLife] = $yearsOfLife;
+    
+            $yearsOfLife = $participant->getYearsOfLifeAtEvent();
 
             $color   = sprintf(
                 'rgba(%s,%1.2f)',
@@ -285,20 +340,11 @@ class AdminParticipantsDependencyController extends Controller
             }
         }
 
-        $yearsOfLifeAvailable = array_values($yearsOfLifeAvailable);
-        sort($yearsOfLifeAvailable);
-    
-        return $this->render(
-            'event/admin/participant_detecting/event-detecting-overview.html.twig',
+        return new JsonResponse(
             [
-                'event'              => $event,
-                'statusFormatter'    => ParticipantStatus::formatter(),
-                'participants'       => $participants,
-                'attributes'         => $attributes,
                 'nodes'              => $nodes,
                 'edges'              => $edges,
                 'participationEdges' => $participationEdges,
-                'yearsOfLife'        => $yearsOfLifeAvailable,
             ]
         );
     }

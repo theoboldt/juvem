@@ -446,3 +446,14 @@ abbr.unit {
     }
   }
 }
+
+#vis-network {
+  width: 100%;
+  border: 1px solid lightgrey;
+
+  &.loading {
+    margin: auto;
+    padding: 125px;
+    text-align: center;
+  }
+}
