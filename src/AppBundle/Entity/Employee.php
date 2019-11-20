@@ -189,8 +189,10 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
      */
     public function addPhoneNumber(PhoneNumber $phoneNumber)
     {
-        $this->phoneNumbers[] = $phoneNumber;
-        $phoneNumber->setEmployee($this);
+        if (!$this->phoneNumbers->contains($phoneNumber)) {
+            $this->phoneNumbers->add($phoneNumber);
+            $phoneNumber->setEmployee($this);
+        }
 
         return $this;
     }
