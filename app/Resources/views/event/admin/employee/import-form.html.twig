@@ -21,6 +21,46 @@
     </div>
     <div class="row">
       <div class="col-xs-12">
+        <h3>Globale Änderungen</h3>
+        <p>Lege für alle zu importierenden Mitarbeiter bei den folgenden Feldern die folgenden Werte fest:</p>
+        <div class="row" id="import-employee-actions">
+          {% for acquisitionField in acquisitionFields %}
+            <div class="col-xs-12 col-sm-6">
+              <div class="form-group">
+                <label class="control-label">{{ acquisitionField.managementTitle }}</label>
+                {% if not acquisitionField.isPublic %}
+                  {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Datenerfassung angezeigt') }}
+                {%- endif -%}
+                {% if acquisitionField.formDescription %}
+                  <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"
+                          data-content="{{ acquisitionField.formDescription }}">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                {% endif %}
+                <br>
+                {% if acquisitionField.isChoiceType %}
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-apply-to-all" data-action="select" data-id=""
+                            data-bid="{{ acquisitionField.bid }}"><i>Nichts</i></button>
+                    {% for fieldChoice in acquisitionField.choiceOptions %}
+                      <button type="button" class="btn btn-default btn-apply-to-all"  data-toggle="tooltip" data-placement="bottom" title="{{ fieldChoice.getManagementTitle(true) }}" data-action="select"
+                              data-bid="{{ acquisitionField.bid }}"
+                              data-id="{{ fieldChoice.id }}">{{ fieldChoice.getShortTitle(true) }}</button>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                    <button type="button" class="btn btn-default btn-apply-to-all" data-bid="{{ acquisitionField.bid }}" data-action="clear">Eingabe löschen</button>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>Mitarbeiter</h3>
         {% macro prototypeEmployee(formElement, acquisitionFields) %}
           <div class="panel panel-default prototype-element">
             <div class="panel-heading">

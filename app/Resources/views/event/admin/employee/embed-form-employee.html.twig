@@ -45,7 +45,7 @@
     {% for fieldName,formField in formEmployee %}
         {% if fieldName starts with 'acq_field_' %}
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
+                <div class="form-group {{ fieldName }} acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
                     {{ form_label(formField) }}
                     {%- set acquisitionField = acquisitionFields[fieldName] -%}
                     {% if not acquisitionField.isPublic %}
