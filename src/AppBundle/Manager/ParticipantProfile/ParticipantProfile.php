@@ -221,7 +221,7 @@ class ParticipantProfile
         //comment style
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_COMMENT,
-            array_merge($defaultParagraphStyle, ['keepNext' => true])
+            array_merge($defaultParagraphStyle, ['keepNext' => false])
         );
 
         //list styles
