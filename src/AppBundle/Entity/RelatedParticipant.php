@@ -4,7 +4,7 @@
 namespace AppBundle\Entity;
 
 
-class RelatedParticipant
+class RelatedParticipant extends BaseRelatedHuman implements RelatedHumanInterface
 {
     /**
      * Full participant data
@@ -14,13 +14,6 @@ class RelatedParticipant
     private $participant;
     
     /**
-     * Usually event title, might contain year or even date if event title is ambiguous
-     *
-     * @var string|null
-     */
-    private $title;
-    
-    /**
      * RelatedParticipant constructor.
      *
      * @param Participant $participant
@@ -28,16 +21,6 @@ class RelatedParticipant
     public function __construct(Participant $participant)
     {
         $this->participant = $participant;
-    }
-    
-    /**
-     * Get event id
-     *
-     * @return int
-     */
-    public function getEid(): int
-    {
-        return $this->participant->getEvent()->getEid();
     }
     
     /**
@@ -61,14 +44,6 @@ class RelatedParticipant
     }
     
     /**
-     * @return Participant
-     */
-    public function getParticipant(): Participant
-    {
-        return $this->participant;
-    }
-    
-    /**
      * Get event
      *
      * @return Event
@@ -76,37 +51,6 @@ class RelatedParticipant
     public function getEvent(): Event
     {
         return $this->participant->getEvent();
-    }
-    
-    /**
-     * @return string
-     */
-    public function getTitle(): string
-    {
-        if ($this->title === null) {
-            return $this->participant->getEvent()->getTitle();
-        }
-        return $this->title;
-    }
-    
-    /**
-     * @param string|null $title
-     * @return RelatedParticipant
-     */
-    public function setTitle(?string $title): RelatedParticipant
-    {
-        $this->title = $title;
-        return $this;
-    }
-    
-    /**
-     * Determine if event is deleted
-     *
-     * @return bool
-     */
-    public function isEventDeleted(): bool
-    {
-        return $this->participant->getParticipation()->getEvent()->getDeletedAt() !== null;
     }
     
     /**
@@ -140,23 +84,13 @@ class RelatedParticipant
     }
     
     /**
-     * Get formatted event start date
-     *
-     * @return string
-     */
-    public function getEventDateFormatted(): string
-    {
-        return $this->participant->getParticipation()->getEvent()->getStartDate()->format(Event::DATE_FORMAT_DATE);
-    }
-    
-    /**
      * Get formatted participation date
      *
      * @return string
      */
-    public function getParticipationDateFormatted(): string
+    public function getCreatedDateFormatted(): string
     {
-        return $this->participant->getParticipation()->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
+        return $this->participant->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
     }
     
 }

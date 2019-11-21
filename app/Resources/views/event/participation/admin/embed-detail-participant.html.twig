@@ -76,7 +76,7 @@
             {% for relatedParticipant in similarParticipants[participant.aid] %}
                 <a class="{% if relatedParticipant.isDeleted %} participantdeleted{% endif %}{% if relatedParticipant.withdrawnOrRejected %} widthdrawnrejected{% endif %}{% if relatedParticipant.eventDeleted %} eventdeleted{% endif %}{% if relatedParticipant.confirmed %} confirmed{% endif %}"
                    data-toggle="tooltip"
-                   title="Veranstaltung: {{ relatedParticipant.getEventDateFormatted() }}{% if relatedParticipant.eventDeleted %} (gelöscht){% endif %}, Angemeldet: {{ relatedParticipant.getParticipationDateFormatted() }}
+                   title="Veranstaltung: {{ relatedParticipant.getEventDateFormatted() }}{% if relatedParticipant.eventDeleted %} (gelöscht){% endif %}, Angemeldet: {{ relatedParticipant.getCreatedDateFormatted() }}
 {% if relatedParticipant.isDeleted %} (gelöscht){% endif %}{% if relatedParticipant.withdrawnOrRejected %} (zurückgezogen/abgelehnt){% endif %}{% if relatedParticipant.confirmed %}(bestätigt){% endif %}
 
 "
