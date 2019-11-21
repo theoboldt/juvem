@@ -290,6 +290,11 @@ services:
       tags:
         - form.type
 
+    AppBundle\Form\EventEntityType:
+      autowire: true
+      tags:
+        - form.type
+
     AppBundle\Form\Meal\MealFeedbackType:
         arguments:
             - "@doctrine.orm.entity_manager"

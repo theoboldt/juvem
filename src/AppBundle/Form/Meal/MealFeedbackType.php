@@ -12,11 +12,9 @@
 namespace AppBundle\Form\Meal;
 
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Meals\Recipe;
 use AppBundle\Entity\Meals\RecipeFeedback;
-use AppBundle\Form\AcquisitionChoiceOptionType;
+use AppBundle\Form\EventEntityType;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -26,7 +24,6 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 
@@ -88,21 +85,12 @@ class MealFeedbackType extends AbstractType
             )
             ->add(
                 'event',
-                EntityType::class,
+                EventEntityType::class,
                 [
-                    'class'         => Event::class,
-                    'choice_label'  => 'title',
-                    'multiple'      => false,
-                    'expanded'      => false,
-                    'query_builder' => function (EventRepository $er) {
-                        return $er->createQueryBuilder('e')
-                                  ->where('e.deletedAt IS NULL')
-                                  ->addOrderBy('e.startDate', 'DESC')
-                                  ->addOrderBy('e.startTime', 'DESC')
-                                  ->addOrderBy('e.title');
-                    },
-                    'label'         => 'Veranstaltung',
-                    'required'      => false,
+                    'label'    => 'Veranstaltung',
+                    'required' => false,
+                    'multiple' => false,
+                    'expanded' => false,
                 ]
             )
             ->add(
