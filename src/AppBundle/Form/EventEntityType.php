@@ -96,8 +96,17 @@ class EventEntityType extends AbstractType implements DataTransformerInterface
                             
                             foreach ($result as $eid => $eventData) {
                                 $eventTitle = $eventData['title'];
+                                $year       = $eventData['startDate']->format('Y');
+                                
+                                
+                                if (strpos($eventTitle, $year) !== false) {
+                                    $date = $eventData['startDate']->format(Event::DATE_FORMAT_DATE);
+                                } else {
+                                    $date = $year;
+                                }
+                                
                                 if ($titles[$eventTitle] > 1) {
-                                    $eventTitle .= ' [' . $eventData['startDate']->format('Y') . ']';
+                                    $eventTitle .= ' [' . $date . ']';
                                 }
                                 yield $eventTitle => $eid;
                             }
