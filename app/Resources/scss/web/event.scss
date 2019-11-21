@@ -457,3 +457,17 @@ abbr.unit {
     text-align: center;
   }
 }
+
+.participant-additional-occurrences {
+  .participantdeleted {
+    color: #444;
+    text-decoration: line-through;
+  }
+  .widthdrawnrejected {
+    text-decoration: line-through;
+  }
+  .eventdeleted {
+    font-style: italic;
+    text-decoration: line-through;
+  }
+}

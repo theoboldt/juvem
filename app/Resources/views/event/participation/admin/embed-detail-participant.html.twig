@@ -69,14 +69,18 @@
         {% endif -%}
         {% if similarParticipants -%}
         <dt>Weitere Teilnahmen</dt>
-        <dd>
+        <dd class="participant-additional-occurrences">
             {% if similarParticipants[participant.aid]|length == 0 %}
                 <i>(keine Teilnahmen bei anderen Veranstaltungen)</i>
             {% endif %}
             {% for relatedParticipant in similarParticipants[participant.aid] %}
-                <a data-toggle="tooltip"
-                   title="Veranstaltung: {{ relatedParticipant.participation.event.startDate|date("d.m.Y") }}, Angemeldet: {{ relatedParticipant.participation.createdAt|date("d.m.Y h:i") }}"
-                   href="{{ path('event_participation_detail', {eid: relatedParticipant.participation.event.eid, pid: relatedParticipant.participation.pid}) }}">{{ relatedParticipant.participation.event.title }}</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
+                <a class="{% if relatedParticipant.isDeleted %} participantdeleted{% endif %}{% if relatedParticipant.withdrawnOrRejected %} widthdrawnrejected{% endif %}{% if relatedParticipant.eventDeleted %} eventdeleted{% endif %}{% if relatedParticipant.confirmed %} confirmed{% endif %}"
+                   data-toggle="tooltip"
+                   title="Veranstaltung: {{ relatedParticipant.getEventDateFormatted() }}{% if relatedParticipant.eventDeleted %} (gelöscht){% endif %}, Angemeldet: {{ relatedParticipant.getParticipationDateFormatted() }}
+{% if relatedParticipant.isDeleted %} (gelöscht){% endif %}{% if relatedParticipant.withdrawnOrRejected %} (zurückgezogen/abgelehnt){% endif %}{% if relatedParticipant.confirmed %}(bestätigt){% endif %}
+
+"
+                   href="{{ path('event_participation_detail', {eid: relatedParticipant.eid, pid: relatedParticipant.pid}) }}">{{ relatedParticipant.getTitle() }}</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
             {% endfor %}
         </dd>
         {% endif %}

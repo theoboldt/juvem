@@ -251,20 +251,44 @@ class ParticipationRepository extends EntityRepository
         $aid       = $baseParticipant->getAid();
         $firstName = trim($baseParticipant->getNameFirst());
         $lastName  = trim($baseParticipant->getNameLast());
-
-        $result = [];
-
+    
+        $relatedList = [];
+        $eventTitles = [
+            $baseParticipant->getEvent()->getTitle() => 1
+        ];
+    
         /** @var Participant $participant */
         foreach ($query->execute() as $participant) {
             if ($aid != $participant->getAid()
                 && levenshtein($firstName, trim($participant->getNameFirst())) < 5
                 && levenshtein($lastName, trim($participant->getNameLast())) < 5
             ) {
-                $result[] = $participant;
+                $relatedList[] = new RelatedParticipant($participant);
+                $eventTitle    = $participant->getEvent()->getTitle();
+                if (isset($eventTitles[$eventTitle])) {
+                    ++$eventTitles[$eventTitle];
+                } else {
+                    $eventTitles[$eventTitle] = 1;
+                }
             }
         }
-
-        return $result;
+    
+        /** @var RelatedParticipant $related */
+        foreach ($relatedList as $related) {
+            if ($eventTitles[$related->getTitle()] > 1) {
+                $eventTitle = $related->getTitle();
+                $year       = $related->getEvent()->getStartDate()->format('Y');
+            
+                if (strpos($eventTitle, $year) !== false) {
+                    $date = $related->getEvent()->getStartDate()->format(Event::DATE_FORMAT_DATE);
+                } else {
+                    $date = $year;
+                }
+                $related->setTitle($eventTitle . ' [' . $date . ']');
+            }
+        }
+    
+        return $relatedList;
     }
     
     /**
