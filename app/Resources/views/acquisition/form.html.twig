@@ -142,7 +142,7 @@
     </div>
 </div>
 {% macro prototypeChoice(formElement) %}
-    <div class="row" {% if formElement.vars.value and formElement.vars.value.deletedAt is not null %}style="display:none;"{% endif %}>
+    <div class="row" {% if formElement.vars.value and formElement.vars.value.isDeleted is not null %}style="display:none;"{% endif %}>
         <div class="col-xs-12">
             <div class="panel panel-default prototype-element">
                 <div class="panel-heading">

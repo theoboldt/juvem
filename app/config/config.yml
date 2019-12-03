@@ -113,14 +113,26 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
-        dql:
-            numeric_functions:
-                FLOOR: AppBundle\Query\MysqlFloor
-            datetime_functions:
-                CURDATE: AppBundle\Query\MysqlCurDate
-                DATEDIFF: AppBundle\Query\MysqlDateDiff
+        entity_managers:
+            default:
+                dql:
+                    numeric_functions:
+                        FLOOR: AppBundle\Query\MysqlFloor
+                    datetime_functions:
+                        CURDATE: AppBundle\Query\MysqlCurDate
+                        DATEDIFF: AppBundle\Query\MysqlDateDiff
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                auto_mapping: true
+                filters:
+                    softdeleteable:
+                        class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                        enabled: false
+
+stof_doctrine_extensions:
+    default_locale: en_US
+    orm:
+        default:
+            softdeleteable: true
 
 doctrine_migrations:
     dir_name: "%kernel.root_dir%/Migrations"

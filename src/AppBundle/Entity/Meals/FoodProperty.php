@@ -13,6 +13,7 @@ namespace AppBundle\Entity\Meals;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participant;
@@ -24,10 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="food_property")
  * @ORM\HasLifecycleCallbacks()
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="FoodPropertyRepository")
  */
-class FoodProperty
+class FoodProperty implements SoftDeleteableInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
     

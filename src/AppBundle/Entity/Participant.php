@@ -15,6 +15,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
@@ -30,9 +31,9 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Entity
  * @ORM\Table(name="participant")
  * @ORM\HasLifecycleCallbacks()
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface
+class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 

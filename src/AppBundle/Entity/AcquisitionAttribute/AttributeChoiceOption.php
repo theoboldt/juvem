@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -20,9 +21,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @AssertOnlyNumericManagementDescriptionsUsed()
  * @ORM\Entity
  * @ORM\Table(name="acquisition_attribute_choice_option")
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class AttributeChoiceOption
+class AttributeChoiceOption implements SoftDeleteableInterface
 {
     use SoftDeleteTrait;
 

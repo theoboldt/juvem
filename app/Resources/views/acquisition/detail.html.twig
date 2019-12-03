@@ -19,7 +19,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <h4 class="modal-title" id="dialogModalLabel">
-                            {% if acquisition.deletedAt %}
+                            {% if acquisition.isDeleted %}
                                 Feld aus Papierkorb nehmen
                             {% else %}
                                 Feld in Papierkorb verschieben
@@ -27,7 +27,7 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        {% if acquisition.deletedAt %}
+                        {% if acquisition.isDeleted %}
                             <p>Soll dieses Feld wirklich aus dem Papierkorb herausgeholt werden?</p>
                         {% else %}
                             <p>Soll dieses Feld wirklich in den Papierkorb verschoben werden?</p>
@@ -55,7 +55,7 @@
                         <a href="{{ path('acquisition_edit', {'bid': acquisition.bid }) }}"
                            class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
                     </div>
-                    {% if acquisition.deletedAt %}
+                    {% if acquisition.isDeleted %}
                         <button type="button" class="btn btn-default" data-toggle="modal"
                                 data-target="#dialogModal" data-action="restore">
                             {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen…</span>
@@ -138,12 +138,12 @@
                                         <li>
                                             <b>Kürzel:</b>
                                             <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
-                                            {% if choice.deletedAt is not null %}
+                                            {% if choice.isDeleted is not null %}
                                                 {{ 'trash'|glyph('Diese Option wurde gelöscht und kann nicht mehr ausgewählt werden.') }}
                                             {% endif %}
                                             <br>
                                             <b>Interner Titel:</b>
-                                            <span{% if choice.deletedAt %} class="deleted"{% endif %}>
+                                            <span{% if choice.isDeleted %} class="deleted"{% endif %}>
                                                     {% if choice.managementTitle %}
                                                         {{ choice.managementTitle }}
                                                     {% else %}
@@ -152,7 +152,7 @@
                                                 </span>
                                             <br>
                                             <b>Titel im Formular:</b>
-                                            <span{% if choice.deletedAt %} class="deleted"{% endif %}>
+                                            <span{% if choice.isDeleted %} class="deleted"{% endif %}>
                                                     {% if choice.formTitle %}
                                                         {{ choice.formTitle }}
                                                     {% else %}

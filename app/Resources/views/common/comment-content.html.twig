@@ -10,7 +10,7 @@
             geändert von <a
                 href="{{ path('user_detail', {uid: comment.modifiedBy.uid}) }}">{{ comment.modifiedBy|fullname }}</a>
             <span title="{{ comment.modifiedAt|date("d.m.Y h:i") }}"
-                  data-toggle="tooltip">{{ comment.modifiedAt|ago }}</span>{% endif %}{% if comment.deletedAt %},
+                  data-toggle="tooltip">{{ comment.modifiedAt|ago }}</span>{% endif %}{% if comment.isDeleted %},
                 gelöscht <span title="{{ comment.deletedAt|date("d.m.Y h:i") }}"
                                data-toggle="tooltip">{{ comment.deletedAt|ago }}</span>
             {% endif %}

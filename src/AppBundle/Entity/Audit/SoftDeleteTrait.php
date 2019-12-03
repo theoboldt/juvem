@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\Audit;
 
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
 trait SoftDeleteTrait
@@ -44,6 +45,15 @@ trait SoftDeleteTrait
         return $this->deletedAt;
     }
 
+    /**
+     * Determine if entity is deleted
+     *
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
+    }
 
 
 }

@@ -2,7 +2,7 @@
     {% if fillout.getSelectedChoices|length %}
         <ul>
             {% for choice in fillout.getSelectedChoices %}
-                <li {% if choice.deletedAt %}class="deleted"{% endif %}>
+                <li {% if choice.isDeleted %}class="deleted"{% endif %}>
                     <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
                     <span{% if choice.getManagementTitle(false) %} title="{{ choice.formTitle|e('html_attr') }}" data-toggle="tooltip" data-placement="top"{% endif %}>{{ choice.getManagementTitle(true) }}</span>
                 </li>

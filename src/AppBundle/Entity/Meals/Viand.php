@@ -13,6 +13,7 @@ namespace AppBundle\Entity\Meals;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,9 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="viand")
  * @ORM\HasLifecycleCallbacks()
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Viand implements HasFoodPropertiesAssignedInterface
+class Viand implements HasFoodPropertiesAssignedInterface, SoftDeleteableInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
     

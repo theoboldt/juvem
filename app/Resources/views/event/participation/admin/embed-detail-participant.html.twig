@@ -91,4 +91,5 @@
     {% if paymentManager -%}
         {{ paymentManager.getParticipantPaymentStatus(participant)|paymentLabel }}
     {%- endif %}
+    {% if participant.isDeleted %}<span class="label label-danger">gelöscht</span>{% endif %}
 </div>

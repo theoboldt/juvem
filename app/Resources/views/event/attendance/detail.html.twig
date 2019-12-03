@@ -154,7 +154,7 @@
                              data-bid="{{ attribute.bid }}" value=""> <i>Nichts</i>
                   </label>
                   {% for choice in attribute.choiceOptions %}
-                    {% if not choice.deletedAt %}
+                    {% if not choice.isDeleted %}
                       <label class="btn btn-sm navbar-btn btn-default"
                              title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' in '{{ choice.getManagementTitle(true) }}' eingeteilt sind"
                              data-toggle="tooltip" data-placement="top" data-trigger="hover"

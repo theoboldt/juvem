@@ -225,7 +225,7 @@ class AdminMultipleController extends Controller
                 '</span>';
             }
             $participantStatusText = $statusFormatter->formatMask($participantStatus);
-            if ($participant->getDeletedAt()) {
+            if ($participant->isDeleted()) {
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
             if ($paymentStatus) {

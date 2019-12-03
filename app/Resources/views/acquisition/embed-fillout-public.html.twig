@@ -2,7 +2,7 @@
     {% if fillout.getSelectedChoices|length %}
         <ul>
             {% for choice in fillout.getSelectedChoices %}
-                <li {% if choice.deletedAt %}class="deleted"{% endif %}>
+                <li {% if choice.isDeleted %}class="deleted"{% endif %}>
                     {{ choice.formTitle }}
                 </li>
             {% endfor %}

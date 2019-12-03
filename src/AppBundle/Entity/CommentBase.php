@@ -12,6 +12,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatorModifierTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -21,11 +22,11 @@ use JMS\Serializer\Annotation as Serialize;
 /**
  * Class CommentBase
  *
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  *
  * @package AppBundle\Entity
  */
-abstract class CommentBase
+abstract class CommentBase implements SoftDeleteableInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
 

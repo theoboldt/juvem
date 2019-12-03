@@ -16,6 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
@@ -32,11 +33,12 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Table(name="employee")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EmployeeRepository")
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface
+class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
+    
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }

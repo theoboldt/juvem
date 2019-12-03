@@ -73,6 +73,7 @@
             <div class="col-xs-9">
                 <div class="status-label-list">
                     {{ ' '|bitmask(participant.getStatus(true), statusFormatter) }}
+                    {% if participant.isDeleted %}<span class="label label-danger">gelöscht</span>{% endif %}
                 </div>
             </div>
             <div class="col-xs-12">
@@ -273,7 +274,7 @@
                                         <span>{{ comment.createdAt|date("d.m.Y h:i") }}</span>{% if comment.modifiedAt %},
                                         geändert von
                                         <i>{{ app.user.fullname(comment.modifiedBy.nameLast, comment.modifiedBy.nameFirst) }}</i>
-                                        <span>{{ comment.modifiedAt|date("d.m.Y h:i") }}</span>{% endif %}{% if comment.deletedAt %},
+                                        <span>{{ comment.modifiedAt|date("d.m.Y h:i") }}</span>{% endif %}{% if comment.isDeleted %},
                                             gelöscht <span>{{ comment.deletedAt|date("d.m.Y h:i") }}</span>
                                         {% endif %}
                                         zur Anmeldung

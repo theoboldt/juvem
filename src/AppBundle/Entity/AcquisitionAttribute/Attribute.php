@@ -11,6 +11,7 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
@@ -36,10 +37,10 @@ use JMS\Serializer\Annotation as Serialize;
  * @AssertValidFormula()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeRepository")
  * @ORM\Table(name="acquisition_attribute")
- * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\HasLifecycleCallbacks()
  */
-class Attribute
+class Attribute implements SoftDeleteableInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 
