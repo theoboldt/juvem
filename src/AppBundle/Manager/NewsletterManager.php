@@ -91,14 +91,7 @@ class NewsletterManager extends AbstractMailerAwareManager
         $content = null;
         foreach ($data as $area => $content) {
             $dataText[$area] = strip_tags($content);
-
-            $contentHtml = htmlentities($content);
-
-            if ($area == 'content') {
-                $contentHtml = str_replace(array("\n\n", "\r\r", "\r\n\r\n"), '</p><p>', $contentHtml);
-            }
-
-            $dataHtml[$area] = $contentHtml;
+            $dataHtml[$area] = $content;
         }
         unset($content);
 
@@ -142,7 +135,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $firstName = $assignedUser->getNameFirst();
                 }
 
-                $message = $this->mailGenerator->getMessage('general-raw', $dataBoth);
+                $message = $this->mailGenerator->getMessage('general-markdown', $dataBoth);
 
                 if ($assignedUser) {
                     $message->setTo(

@@ -26,9 +26,11 @@ class NewsletterMailType extends AbstractType
     {
         $builder
             ->add('subject', TextType::class, array('label' => 'Betreff'))
-            ->add('title', TextType::class, array('label' => 'Titel'))
-            ->add('lead', TextType::class, array('label' => 'Untertitel', 'required' => false))
-            ->add('content', TextareaType::class, array('label' => 'Hauptinhalt'))
+            ->add('title', TextType::class, array('label' => 'Titel', 'attr' => ['class' => 'form-control preview']))
+            ->add('lead', TextType::class, array('label' => 'Untertitel', 'required' => false, 'attr' => ['class' => 'form-control preview']))
+            ->add(
+                'content', TextareaType::class, ['label' => 'Hauptinhalt', 'attr' => ['class' => 'markdown-editable preview']]
+            )
             ->add(
                 'ageRangeBegin',
                 NumberType::class,

@@ -19,6 +19,7 @@ use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use AppBundle\InvalidTokenHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,7 +70,7 @@ class AdminController extends AbstractController
         $this->dieIfNewsletterNotEnabled();
         $repository             = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
         $subscriptionEntityList = $repository->findAll();
-        $subscriptionList       = array();
+        $subscriptionList       = [];
 
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptionEntityList as $subscription) {
@@ -80,12 +81,12 @@ class AdminController extends AbstractController
             if ($user) {
                 $userContent = sprintf(
                     '<a href="%s">%s</a>',
-                    $this->generateUrl('user_detail', array('uid' => $user->getUid())),
+                    $this->generateUrl('user_detail', ['uid' => $user->getUid()]),
                     $user->fullname()
                 );
             }
 
-            $subscriptionList[] = array(
+            $subscriptionList[] = [
                 'rid'           => $subscription->getRid(),
                 'is_enabled'    => (int)$subscription->getIsEnabled(),
                 'is_confirmed'  => (int)$subscription->getIsConfirmed(),
@@ -96,14 +97,14 @@ class AdminController extends AbstractController
                 'ageRangeEnd'   => $ageRangeEnd,
                 'ageRange'      => $this->renderView(
                     'newsletter/admin/age-range-progress.html.twig',
-                    array(
+                    [
                         'ageRangeBegin' => $ageRangeBegin,
                         'ageRangeEnd'   => $ageRangeEnd,
                         'ageRangeMin'   => NewsletterSubscription::AGE_RANGE_MIN,
                         'ageRangeMax'   => NewsletterSubscription::AGE_RANGE_MAX,
-                    )
-                )
-            );
+                    ]
+                ),
+            ];
         }
         return new JsonResponse($subscriptionList);
     }
@@ -134,7 +135,7 @@ class AdminController extends AbstractController
         $this->dieIfNewsletterNotEnabled();
         $repository           = $this->getDoctrine()->getRepository(Newsletter::class);
         $newsletterEntityList = $repository->findAll();
-        $newsletterList       = array();
+        $newsletterList       = [];
 
 
         foreach ($newsletterEntityList as $newsletter) {
@@ -142,7 +143,7 @@ class AdminController extends AbstractController
             $ageRangeEnd      = $newsletter->getAgeRangeEnd();
             $newsletterSentAt = $newsletter->getSentAt();
 
-            $newsletterList[] = array(
+            $newsletterList[] = [
                 'lid'           => $newsletter->getLid(),
                 'subject'       => $newsletter->getSubject(),
                 'sentAt'        => $newsletterSentAt ? $newsletterSentAt->format(
@@ -152,14 +153,14 @@ class AdminController extends AbstractController
                 'ageRangeEnd'   => $ageRangeEnd,
                 'ageRange'      => $this->renderView(
                     'newsletter/admin/age-range-progress.html.twig',
-                    array(
+                    [
                         'ageRangeBegin' => $ageRangeBegin,
                         'ageRangeEnd'   => $ageRangeEnd,
                         'ageRangeMin'   => NewsletterSubscription::AGE_RANGE_MIN,
                         'ageRangeMax'   => NewsletterSubscription::AGE_RANGE_MAX,
-                    )
-                )
-            );
+                    ]
+                ),
+            ];
         }
         return new JsonResponse($newsletterList);
     }
@@ -192,7 +193,7 @@ class AdminController extends AbstractController
 
         return $this->render(
             'newsletter/admin/subscription/details.html.twig',
-            array('form' => $form->createView(), 'subscription' => $subscription)
+            ['form' => $form->createView(), 'subscription' => $subscription]
         );
     }
 
@@ -207,13 +208,13 @@ class AdminController extends AbstractController
     public function subscriptionForceConfirmationAction(Request $request, NewsletterSubscription $subscription)
     {
         $this->dieIfNewsletterNotEnabled();
-        $token      = $request->get('_token');
-        $confirmed  = (int)$request->get('confirmed');
+        $token     = $request->get('_token');
+        $confirmed = (int)$request->get('confirmed');
 
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken('subscription-confirmation-'. $subscription->getRid())) {
+        if ($token != $csrf->getToken('subscription-confirmation-' . $subscription->getRid())) {
             throw new InvalidTokenHttpException();
         }
 
@@ -224,6 +225,7 @@ class AdminController extends AbstractController
 
         return new JsonResponse(['confirmed' => (int)$subscription->getIsConfirmed()]);
     }
+
     /**
      * Data provider for recipient count
      *
@@ -251,9 +253,9 @@ class AdminController extends AbstractController
 
         /** @var NewsletterSubscription $subscription */
         return new JsonResponse(
-            array(
-                'count' => $count
-            )
+            [
+                'count' => $count,
+            ]
         );
     }
 
@@ -350,6 +352,58 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @Route("/admin/newsletter/create_preview", name="newsletter_preview", methods={"GET", "POST"})
+     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @return Response
+     */
+    public function previewNewsletterAction(Request $request): Response
+    {
+        $this->dieIfNewsletterNotEnabled();
+
+        $newsletter = new Newsletter();
+        $form = $this->createForm(NewsletterMailType::class, $newsletter);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $title   = $newsletter->getTitle();
+            $lead    = $newsletter->getLead();
+            $content = $newsletter->getContent();
+        }  else {
+            $title   = 'Gute Nachrichten';
+            $lead    = 'Ein neuer Newsletter ist verfügbar!';
+            $content = "Text hier einfügen. Eine Leerzeile führt zu einem Absatz, ein einfacher Zeilenabsatz wird zusammengefasst werden. Text in zwei Sternchen einfassen, damit er **hervorgehoben** wird.\n\nMit besten Grüßen,\n\n*" .
+            $this->getParameter('customization.organization_name') . "*";
+        }
+
+        $data = [
+            'calltoactioncontent' => '',
+            'subject'             => 'Test',
+            'title'               => $title,
+            'lead'                => $lead,
+            'content'             => $content,
+        ];
+
+        $dataText = [];
+        $dataHtml = [];
+
+        $content = null;
+        foreach ($data as $area => $content) {
+            $dataText[$area] = strip_tags($content);
+            $dataHtml[$area] = $content;
+        }
+        unset($content);
+        
+        $dataBoth = [
+            'text' => $dataText,
+            'html' => $dataHtml,
+        ];
+
+        $message = $this->get('app.twig_mail_generator')->renderHtml('general-markdown', $dataBoth);
+        return new Response($message);
+    }
+
+    /**
      * Send newsletter
      *
      * @Route("/admin/newsletter/send_test", name="newsletter_send_test")
@@ -399,7 +453,14 @@ class AdminController extends AbstractController
     {
         $this->dieIfNewsletterNotEnabled();
         $newsletter = new Newsletter();
-        $form       = $this->createForm(NewsletterMailType::class, $newsletter);
+        $newsletter->setTitle('Gute Nachrichten');
+        $newsletter->setLead('Ein neuer Newsletter ist verfügbar!');
+        $newsletter->setContent(
+            "Text hier einfügen. Eine Leerzeile führt zu einem Absatz, ein einfacher Zeilenabsatz wird zusammengefasst werden. Text in zwei Sternchen einfassen, damit er **hervorgehoben** wird.\n\nMit besten Grüßen,\n\n*" .
+            $this->getParameter('customization.organization_name') . "*"
+        );
+
+        $form = $this->createForm(NewsletterMailType::class, $newsletter);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -411,12 +472,12 @@ class AdminController extends AbstractController
                 'Der Entwurf wurden gesichert'
             );
 
-            return $this->redirectToRoute('newsletter_edit', array('lid' => $newsletter->getLid()));
+            return $this->redirectToRoute('newsletter_edit', ['lid' => $newsletter->getLid()]);
         }
 
         return $this->render(
             'newsletter/admin/newsletter/new.html.twig',
-            array('form' => $form->createView(), 'newsletter' => $newsletter)
+            ['form' => $form->createView(), 'newsletter' => $newsletter]
         );
     }
 
@@ -444,12 +505,12 @@ class AdminController extends AbstractController
                 'Die Änderungen am Newsletter wurden gesichert'
             );
 
-            return $this->redirectToRoute('newsletter_edit', array('lid' => $newsletter->getLid()));
+            return $this->redirectToRoute('newsletter_edit', ['lid' => $newsletter->getLid()]);
         }
 
         return $this->render(
             'newsletter/admin/newsletter/edit.html.twig',
-            array('form' => $form->createView(), 'newsletter' => $newsletter)
+            ['form' => $form->createView(), 'newsletter' => $newsletter]
         );
     }
 }

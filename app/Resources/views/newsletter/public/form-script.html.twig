@@ -19,9 +19,10 @@
                 });
             }
             elAgingRangeSection.toggleClass('has-warning', showHints);
-        }();
+        };
+        addAgeRangeAlertIfRequired();
 
-        resetAlertsAddIfRequired = function () {
+        var resetAlertsAddIfRequired = function () {
             $(document).trigger("clear-alerts");
             addAgeRangeAlertIfRequired();
         };

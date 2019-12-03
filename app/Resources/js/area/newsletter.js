@@ -1,72 +1,55 @@
 $(function () {
-    var btnOpenSendModal = $('#openDialogSend');
+    var btnOpenSendModal = $('#openDialogSend'),
+        updateButton = $('*#mail-form-newsletter .btn-update-preview'),
+        updateScheduled = false;
 
     /**
      * NEWSLETTER: Email preview
      */
-    var updateMailPreview = function () {
-        var updateButton = $('*#mail-form-newsletter .btn-update-preview');
-        updateButton.prop('disabled', true);
-        var content = {
-                subject: $("#newsletter_mail_subject").val(),
-                title: $("#newsletter_mail_title").val(),
-                lead: $("#newsletter_mail_lead").val(),
-                content: $("#newsletter_mail_content").val()
-            },
-            preview = $('*#mail-template iframe').contents();
+    const updateMailPreview = function () {
+            if (updateScheduled === false) {
+                updateScheduled = true;
 
-        var replacePlaceholders = function (value) {
-            if (!value) {
-                return '';
+                updateButton.prop('disabled', true);
+                setTimeout(function () {
+                    updateScheduled = false;
+
+                    var form = $('#mail-form-newsletter form'),
+                        action = form.attr('action'),
+                        target = form.attr('target');
+
+                    form.attr('action', '/admin/newsletter/create_preview');
+                    form.attr('target', 'mail-template-iframe');
+
+                    form.submit();
+
+                    form.attr('action', action ? action : '');
+                    form.attr('target', target ? target : '');
+                    updateButton.prop('disabled', false);
+
+                    $('*#mail-template-iframe-panel .panel-heading').html($("#newsletter_mail_subject").val());
+                }, 500);
             }
-            return eHtml(value);
+        },
+        disableSend = function () {
+            btnOpenSendModal.toggleClass('disabled', true).prop(
+                'title',
+                'Bevor der Newsletter versandt werden kann, müssen alle Änderungen gespeichert werden.'
+            );
         };
+    $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
+    $('*#mail-form-newsletter input.preview, *#mail-form-newsletter textarea.preview').bind('input propertychange', updateMailPreview);
+    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea, *#mail-form-newsletter select').bind('input propertychange', disableSend);
 
-        $.each(content, function (key, value) {
-            value = replacePlaceholders(value);
-            switch (key) {
-                case 'content':
-                    value = value.replace(/\n\n/g, '</p><p>');
-                    break;
-                case 'subject':
-                    if (value == '') {
-                        value = '<em>Kein Betreff</em>';
-                    }
-                    break;
-            }
-
-            if (key == 'subject') {
-                $('*#mail-template-iframe-panel .panel-heading').html(value);
-            } else {
-                preview.find('#mail-part-' + key).html(value);
-            }
-        });
-        updateButton.prop('disabled', false);
-    };
-    updateMailPreviewAndDisableSend = function () {
+    updateButton.click(function () {
         updateMailPreview();
-        btnOpenSendModal.toggleClass('disabled', true).prop(
-            'title',
-            'Bevor der Newsletter versandt werden kann, müssen alle Änderungen gespeichert werden.'
-        );
-    };
-    $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreviewAndDisableSend);
-    $('*#mail-form-newsletter input, *#mail-form-newsletter textarea, *#mail-form-newsletter select').change(updateMailPreviewAndDisableSend);
-
-    if ($("#newsletter_mail_subject").val() != '' && $("#newsletter_mail_title").val() != ''
-        && $("#newsletter_mail_lead").val() != '' && $("#newsletter_mail_content").val() != ''
-    ) {
-        //if there is something inserted in the fields
-        $('iframe').on('load', function () {
-            updateMailPreview();
-        });
-    }
+    });
 
     /**
      * NEWSLETTER: Recipient count
      */
-    var updateRecipientCount = function () {
-        var textField = $('#affectedSubscription');
+    const updateRecipientCount = function () {
+        const textField = $('#affectedSubscription');
         textField.attr('class', 'loading-text');
 
         $.ajax({
@@ -96,7 +79,7 @@ $(function () {
     /**
      * NEWSLETTER: Send modal
      */
-    var btnSend = $('#sendMessageButton'),
+    const btnSend = $('#sendMessageButton'),
         updatePotentialRecipients = function () {
             var lid = btnSend.data('lid'),
                 listColEl = $('#new-recipient-list-description'),

@@ -1,11 +1,11 @@
-{{ form_start(form) }}
+{{ form_start(form, {attr: {'target': 'mail-template-iframe'}}) }}
 <div class="row">
     <div class="col-xs-12">
         <div class="btn-toolbar" role="toolbar">
             <button type="button" class="btn btn-default btn-update-preview">
                 {{ 'sunglasses'|glyph }} Vorschau aktualisieren
             </button>
-            <input type="submit" class="btn btn-primary" value="Speichern"/>
+            <input type="submit" class="btn btn-primary" value="Speichern" formaction="" formtarget="_self"/>
             <button type="button" id="openDialogSend" class="btn btn-default {% if not newsletter.lid %} disabled{% endif %}"
                     data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden…
             </button>
@@ -135,7 +135,7 @@
         <div class="panel panel-default" id="mail-template-iframe-panel">
             <div class="panel-heading">Betreff der E-Mail</div>
             <div class="panel-body">
-                <iframe src="{{ path('mail_template') }}"></iframe>
+                <iframe id="mail-template-iframe" name="mail-template-iframe" src="{{ path('newsletter_preview') }}"></iframe>
             </div>
         </div>
     </div>

@@ -71,7 +71,7 @@ class MailGenerator
         $template = $this->twig->loadTemplate($path); // Define your own schema
 
         $subject  = $template->renderBlock('subject', $parameters);
-        $bodyHtml = $template->renderBlock('body_html', $parameters);
+        $bodyHtml = $this->renderHtmlByPath($path, $parameters);
         $bodyText = $template->renderBlock('body_text', $parameters);
 
         $senderName = $organizationName . ' [' . $appTitle . ']';
@@ -88,6 +88,33 @@ class MailGenerator
                 ->addPart($bodyHtml, 'text/html');
 
         return $message;
+    }
+
+    /**
+     * Render HTML for transmitted template path
+     * 
+     * @param string $path
+     * @param array  $parameters
+     * @return string
+     */
+    public function renderHtmlByPath(string $path, array $parameters = []): string
+    {
+        /** @var Template $template */
+        $template = $this->twig->loadTemplate($path); // Define your own schema
+        $bodyHtml = $template->renderBlock('body_html', $parameters);
+        return $bodyHtml;
+    }
+
+    /**
+     * Render HTML for transmitted identifier
+     * 
+     * @param string $identifier
+     * @param array  $parameters
+     * @return string
+     */
+    public function renderHtml(string $identifier, array $parameters = []): string
+    {
+        return $this->renderHtmlByPath('mail/' . $identifier . '.email.twig', $parameters);
     }
 
     /**
