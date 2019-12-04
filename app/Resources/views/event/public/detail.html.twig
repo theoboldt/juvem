@@ -82,7 +82,7 @@
                 <div>
                     {% if event.imageFilename %}
                         <a href="{{ path('event_image_original', {'eid': event.eid}) }}" class="thumbnail">
-                            <div class="lazy-load-image"
+                            <div class="lazy-load-image" itemprop="image"
                                   data-alt="Poster-Abbildung wurde nicht geladen" data-title="Poster"
                                   data-src="{{ path('event_image',  {'eid': event.eid, 'width': 555, 'height': 555 }) }}">
                             </div>
