@@ -103,11 +103,10 @@
                 {% if event.price %}
                     <p class="event-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                         <label class="control-label" for="event-price-{{ event.eid }}">Preis:</label>
-                        <span>{{ event.price(true)|number_format(2) }} €</span>
-                        <span class="hidden" itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, '.', "") }}€</span>
-                        <span itemprop="priceCurrency" content="EUR"/>
+                        <span itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, ',', "") }}</span>&nbsp;<span itemprop="priceCurrency" content="EUR">€</span>
                         {% if event.isActive %}
-                            <a style="display: none;" itemprop="url" href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen</a>
+                            <a style="display: none;" itemprop="url" href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen ({{ event.title }})</a>
+                            <span itemprop="availability" href="http://schema.org/InStock"></span>
                         {% endif %}
                     </p>
                     <div>
