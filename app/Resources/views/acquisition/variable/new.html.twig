@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltungsspezifische Variable hinzufügen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltungsspezifische Variable', 'subtitle': 'hinzufügen'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
+      </li>
+      <li class="active">Veranstaltungsspezifische Variable hinzufügen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+      <div class="col-xs-12 col-md-9">
+        {{ form_row(form.description ) }}
+      </div>
+      <div class="col-xs-12 col-md-3{% if not form.defaultValue.vars.valid %} has-error{% endif %}">
+        {{ form_label(form.defaultValue) }}
+        {{ form_widget(form.defaultValue) }}
+        {{ form_errors(form.defaultValue) }}
+        <p class="help-block" id="help-default-value">Hier kann ein Wert konfiguriert werden, der dann in der Formel
+          verwendet wird wenn für eine Veranstaltung <u>kein</u> Wert eingestellt wurde.</p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+      {{ form_rest(form) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+      <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+        <div class="btn-group" role="group">
+          <input type="submit" value="Variable hinzufügen" class="btn btn-primary"/>
+        </div>
+      </div>
+    </div>
+    {{ form_end(form) }}
+  </div>
+{% endblock %}

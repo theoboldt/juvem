@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltungsspezifische Variable hinzufügen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltungsspezifische Variable', 'subtitle': 'Werte konfigurieren'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
+      </li>
+      <li class="active">Werte für {{ variable.formulaVariable }} konfigurieren</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+
+  </div>
+{% endblock %}
