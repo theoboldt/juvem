@@ -126,3 +126,9 @@ dd ul,
 .help-block ul.list-unstyled {
   color: $state-danger-text;
 }
+
+table.table.table-condensed {
+  thead tr td {
+    font-weight: bold;
+  }
+}

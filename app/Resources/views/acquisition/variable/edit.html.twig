@@ -1,14 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Veranstaltungsspezifische Variable hinzufügen{% endblock %}
+{% block title %}Variable bearbeiten ({{ variable.formulaVariable }}){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltungsspezifische Variable', 'subtitle': 'hinzufügen'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable ' ~ variable.formulaVariable  , 'subtitle': 'bearbeiten'} %}
     {% block breadcrumb %}
       <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
-      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
+      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
+      <li>Variablen</li>
+      <li>
+        <a href="{{ path('acquisition_variable_detail', {bid: acquisition.bid, vid: variable.id}) }}">{{ variable.formulaVariable }}</a>
       </li>
-      <li class="active">Veranstaltungsspezifische Variable hinzufügen</li>
+      <li class="active">Variable bearbeiten</li>
     {% endblock %}
   {% endembed %}
   <div class="container">

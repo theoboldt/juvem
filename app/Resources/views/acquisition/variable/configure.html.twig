@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Werte verwalten ({{ variable.formulaVariable }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable ' ~ variable.formulaVariable, 'subtitle': 'Werte verwalten'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
+      <li>Variablen</li>
+      <li>
+        <a href="{{ path('acquisition_variable_detail', {bid: acquisition.bid, vid: variable.id}) }}">{{ variable.formulaVariable }}</a>
+      </li>
+      <li class="active">Werte verwalten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Hier werden die Werte für die Variable <i>{{ variable.formulaVariable }}</i> beim Feld
+          <i>{{ acquisition.managementTitle }}</i> verwaltet.</p>
+        <p>
+          {% if variable.hasDefaultValue() %}
+            Da für diese Variable ein Standard-Wert festgelegt ist, wird in der Formel
+            <code>{{ variable.defaultValue|number_format(2, ',', "") }}</code>&nbsp;€ verwendet, wenn hier für eine Veranstaltung kein Wert eingegeben wird.
+          {% else %}
+            Für diese Variable ist kein Standard-Wert festgelegt, deshalb muss für jede Veranstaltung ein Wert eingegeben werden.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <table class="table table-striped table-condensed">
+          <thead>
+          <tr>
+            <td>Veranstaltung</td>
+            <td>Preis</td>
+            <td>Wert</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for fieldName,formEvent in form %}
+            {% if fieldName starts with 'event_' %}
+              <tr>
+                <td class="{% if not formEvent.vars.valid %} has-error{% endif %}">
+                  {{ form_label(formEvent) }}
+                  <a class="btn btn-default btn-xs btn-round"
+                     href="{{ path('event', {'eid': formEvent.vars.event.eid}) }}"
+                     target="_blank">
+                    <span class="glyphicon glyphicon-new-window"></span>
+                  </a>
+                </td>
+                <td>
+                  {% if formEvent.vars.event.price %}
+                    {{ formEvent.vars.event.price(true)|number_format(2, ',', "") }}&nbsp;€
+                  {% else %}
+                    <i>(keiner)</i>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="{% if not formEvent.vars.valid %} has-error{% endif %}">
+                    {% for fieldName,formField in formEvent %}
+                      {{ form_widget(formField) }}
+                      {{ form_errors(formField) }}
+                    {% endfor %}
+
+                    {{ form_errors(formEvent) }}
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_rest(form) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <input type="submit" value="Werte speichern" class="btn btn-primary"/>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+{% endblock %}

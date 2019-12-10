@@ -31,7 +31,7 @@ class EventSpecificVariableValue implements SoftDeleteableInterface
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event")
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      *
      * @var Event
@@ -40,7 +40,7 @@ class EventSpecificVariableValue implements SoftDeleteableInterface
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", inversedBy="values", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", inversedBy="values")
      * @ORM\JoinColumn(name="vid", referencedColumnName="id", onDelete="cascade")
      *
      * @var EventSpecificVariable
@@ -51,7 +51,7 @@ class EventSpecificVariableValue implements SoftDeleteableInterface
      * Value to use for this variable and event
      *
      * @ORM\Column(type="float", name="variable_value")
-     * @var float
+     * @var float|null
      */
     protected $value;
     
@@ -60,9 +60,9 @@ class EventSpecificVariableValue implements SoftDeleteableInterface
      *
      * @param Event $event
      * @param EventSpecificVariable $variable
-     * @param float $value
+     * @param float|null $value
      */
-    public function __construct(Event $event, EventSpecificVariable $variable, float $value)
+    public function __construct(Event $event, EventSpecificVariable $variable, ?float $value)
     {
         $this->event    = $event;
         $this->variable = $variable;
@@ -102,23 +102,25 @@ class EventSpecificVariableValue implements SoftDeleteableInterface
     public function setVariable(?EventSpecificVariable $variable): EventSpecificVariableValue
     {
         $this->variable = $variable;
-        $variable->addValue($this);
+        if ($variable) {
+            $variable->addValue($this);
+        }
         return $this;
     }
     
     /**
-     * @return float
+     * @return float|null
      */
-    public function getValue(): float
+    public function getValue(): ?float
     {
         return $this->value;
     }
     
     /**
-     * @param float $value
+     * @param float|null $value
      * @return EventSpecificVariableValue
      */
-    public function setValue(float $value): EventSpecificVariableValue
+    public function setValue(?float $value): EventSpecificVariableValue
     {
         $this->value = $value;
         return $this;

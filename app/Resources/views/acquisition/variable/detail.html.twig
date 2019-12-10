@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Veranstaltungsspezifische Variable hinzufügen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable ' ~ variable.formulaVariable, 'subtitle': 'Detailansicht'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
+      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
+      <li>Variablen</li>
+      <li class="active">{{ variable.formulaVariable }}</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <a href="{{ path('acquisition_variable_edit', {'bid': acquisition.bid, 'vid': variable.id }) }}"
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span
+                  class="hidden-xs">Bearbeiten</span></a>
+            <a href="{{ path('acquisition_variable_configure', {'bid': acquisition.bid, 'vid': variable.id }) }}"
+               class="btn btn-default">{{ 'equalizer'|glyph }} <span
+                  class="hidden-xs">Werte verwalten</span></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-md-9">
+        <h3>Beschreibung</h3>
+        <p>{{ variable.description }}</p>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-3">
+        <h3>Standard-Wert</h3>
+        <p>{{ variable.defaultValue }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>Werte</h3>
+        <p>Für die Veranstaltungen denen dieses Feld zugewiesen ist werden die folgenden Werte verwendet:</p>
+        <table class="table table-striped table-condensed table-form">
+          <thead>
+          <tr>
+            <td>Veranstaltung</td>
+            <td>Preis</td>
+            <td>Wert</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for event in events %}
+            <tr>
+              <td>
+                {{ event.title }}
+                <a class="btn btn-default btn-xs btn-round" href="{{ path('event', {'eid': event.eid}) }}"
+                   target="_blank">
+                  <span class="glyphicon glyphicon-new-window"></span>
+                </a>
+              </td>
+              <td>
+                {% if event.price %}
+                  {{ event.price(true)|number_format(2, ',', "") }}&nbsp;€
+                {% else %}
+                  <i>(keiner)</i>
+                {% endif %}
+              </td>
+              <td>
+                {% if values[event.eid] is defined %}
+                  <code>{{ values[event.eid] }}</code>
+                {% else %}
+                  <i>(keiner)</i>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

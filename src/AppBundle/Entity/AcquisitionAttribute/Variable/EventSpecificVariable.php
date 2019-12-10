@@ -45,7 +45,7 @@ class EventSpecificVariable
     protected $description;
     
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="eventSpecificVariables", cascade={"all"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="eventSpecificVariables", fetch="EAGER")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
      *
      * @var Attribute
@@ -55,7 +55,7 @@ class EventSpecificVariable
     /**
      * Contains the values for different events for this variable
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue", mappedBy="variable", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue", mappedBy="variable")
      */
     protected $values;
     
@@ -109,18 +109,18 @@ class EventSpecificVariable
     }
     
     /**
-     * @return EventSpecificVariable
+     * @return Attribute
      */
-    public function getAttribute(): EventSpecificVariable
+    public function getAttribute(): Attribute
     {
         return $this->attribute;
     }
     
     /**
-     * @param EventSpecificVariable $attribute
+     * @param Attribute $attribute
      * @return EventSpecificVariable
      */
-    public function setAttribute(EventSpecificVariable $attribute): EventSpecificVariable
+    public function setAttribute(Attribute $attribute): EventSpecificVariable
     {
         $this->attribute = $attribute;
         return $this;
@@ -176,6 +176,17 @@ class EventSpecificVariable
             }
         }
         return $this;
+    }
+    
+    /***
+     * Determine if this value exists
+     *
+     * @param EventSpecificVariableValue $value
+     * @return bool
+     */
+    public function hasValue(EventSpecificVariableValue $value): bool
+    {
+        return $this->values->contains($value);
     }
     
     /**

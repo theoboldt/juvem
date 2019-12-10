@@ -274,7 +274,13 @@
                                                     <i class="empty value-null"><span></span></i>
                                             {% endif %}
                                         </td>
-                                        <td>EDIT DELETE</td>
+                                        <td>
+                                            <a href="{{ path('acquisition_variable_detail', {'bid': acquisition.bid, 'vid': variable.id }) }}" title="Detailansicht öffnen"
+                                               class="btn btn-default btn-xs">{{ 'search'|glyph }} <span class="sr-only">Detailansicht</span></a>
+                                            <a href="{{ path('acquisition_variable_configure', {'bid': acquisition.bid, 'vid': variable.id }) }}" title="Werte verwalten"
+                                               class="btn btn-default btn-xs">{{ 'equalizer'|glyph }} <span class="sr-only">Werte verwalten</span></a>
+
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
