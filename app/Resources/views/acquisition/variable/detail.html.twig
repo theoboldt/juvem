@@ -12,6 +12,28 @@
     {% endblock %}
   {% endembed %}
   <div class="container">
+    <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog"
+         aria-labelledby="dialogModalLabel">
+      <div class="modal-dialog" role="document">
+        {{ form_start(form) }}
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="dialogModalLabel"></h4>
+          </div>
+          <div class="modal-body">
+            <p></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+            <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
@@ -23,6 +45,17 @@
                class="btn btn-default">{{ 'equalizer'|glyph }} <span
                   class="hidden-xs">Werte verwalten</span></a>
           </div>
+          {% if variable.isDeleted -%}
+            <button type="button" class="btn btn-default" data-toggle="modal"
+                    data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
+              {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen…</span>
+            </button>
+          {% else %}
+            <button type="button" class="btn btn-default" data-toggle="modal"
+                    data-target="#dialogModal" data-action="delete" title="in den Papierkorb verschieben">
+              {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
+            </button>
+          {%- endif -%}
         </div>
 
       </div>
@@ -83,4 +116,33 @@
     </div>
 
   </div>
+{% endblock %}
+{% block javascriptCustom %}
+  {% cspscript %}
+    <script>
+        jQuery(document).ready(function () {
+            $('#dialogModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget),
+                    action = button.data('action'),
+                    modal = $(this),
+                    title,
+                    question;
+
+                switch (action) {
+                    case 'delete':
+                        title = 'Variable in Papierkorb verschieben';
+                        question = 'Soll diese Variable wirklich in den Papierkorb verschoben werden?';
+                        break;
+                    case 'restore':
+                        title = 'Variable aus Papierkorb nehmen';
+                        question = 'Soll diese Variable wirklich aus dem Papierkorb herausgeholt werden?';
+                        break;
+                }
+                modal.find('.modal-title').text(title);
+                modal.find('.modal-body > p').text(question);
+                modal.find('input[name="form[action]"]').val(action);
+            });
+        });
+    </script>
+  {% endcspscript %}
 {% endblock %}

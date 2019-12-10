@@ -264,7 +264,7 @@
                             <tbody>
                             {% if acquisition.eventSpecificVariables|length %}
                                 {% for variable in acquisition.eventSpecificVariables %}
-                                    <tr>
+                                    <tr {% if variable.deleted %} class="cm-strikethrough" {% endif %}>
                                         <td><code>{{ variable.formulaVariable }}</code></td>
                                         <td>{{ variable.description }}</td>
                                         <td>

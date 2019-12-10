@@ -187,6 +187,39 @@ class AcquisitionVariableController extends Controller
     public function showEventValuesAction(Request $request, Attribute $attribute, EventSpecificVariable $variable
     ): Response
     {
+        $form = $this->createFormBuilder()
+                     ->add('action', HiddenType::class)
+                     ->getForm();
+        $em   = $this->getDoctrine()->getManager();
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $action = $form->get('action')->getData();
+            
+            switch ($action) {
+                case 'delete':
+                    $variable->setDeletedAt(new \DateTime());
+                    $this->addFlash(
+                        'success',
+                        'Die Variable wurde in den Papierkorb verschoben'
+                    );
+                    break;
+                case 'restore':
+                    $variable->setDeletedAt(null);
+                    $this->addFlash(
+                        'success',
+                        'Die Variable wurde wiederhergestellt'
+                    );
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown action transmitted');
+            }
+            $em->persist($variable);
+            $em->flush();
+            return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
+        }
+        
+        
         $events = $attribute->getEvents();
         /** @var EventSpecificVariableValue $value */
         $values = [];
@@ -199,6 +232,7 @@ class AcquisitionVariableController extends Controller
         return $this->render(
             'acquisition/variable/detail.html.twig',
             [
+                'form'        => $form->createView(),
                 'acquisition' => $attribute,
                 'variable'    => $variable,
                 'events'      => $events,
