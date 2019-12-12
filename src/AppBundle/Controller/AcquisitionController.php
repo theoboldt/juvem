@@ -61,6 +61,7 @@ class AcquisitionController extends Controller
                 'form_description'       => $attribute->getFormDescription(),
                 'formula_enabled'        => $attribute->isPriceFormulaEnabled() ? 'ja' : 'nein',
                 'formula'                => $attribute->getPriceFormula(),
+                'is_deleted'             => $attribute->isDeleted() ? 1 : 0,
             ];
         }
 
