@@ -93,23 +93,19 @@ class AcquisitionVariableController extends Controller
             $em->persist($variable);
             $em->flush();
             
-            $events = $attribute->getEvents();
             $this->addFlash(
                 'success',
                 'Variable wurde erstellt'
             );
-            if (count($events)) {
-                return $this->redirectToRoute(
-                    'acquisition_variable_configure', ['bid' => $attribute->getBid(), 'vid' => $variable->getId()]
-                );
-            }
+            return $this->redirectToRoute(
+                'admin_variable_configure', ['vid' => $variable->getId()]
+            );
         }
         
         return $this->render(
             'acquisition/variable/new.html.twig',
             [
-                'acquisition' => $attribute,
-                'form'        => $form->createView()
+                'form' => $form->createView()
             ]
         );
     }
@@ -141,16 +137,16 @@ class AcquisitionVariableController extends Controller
                 'success',
                 'Die Änderungen an der Variable wurden gespeichert'
             );
-                return $this->redirectToRoute(
-                    'admin_variable_configure', ['vid' => $variable->getId()]
-                );
+            return $this->redirectToRoute(
+                'admin_variable_configure', ['vid' => $variable->getId()]
+            );
         }
         
         return $this->render(
             'acquisition/variable/edit.html.twig',
             [
-                'variable'    => $variable,
-                'form'        => $form->createView()
+                'variable' => $variable,
+                'form'     => $form->createView()
             ]
         );
     }
@@ -248,7 +244,7 @@ class AcquisitionVariableController extends Controller
             $em->flush();
             return $this->redirectToRoute('admin_variable_list');
         }
-    
+        
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         $events          = $eventRepository->findAllOrderedByDate();
         /** @var EventSpecificVariableValue $value */
@@ -262,10 +258,10 @@ class AcquisitionVariableController extends Controller
         return $this->render(
             'acquisition/variable/detail.html.twig',
             [
-                'form'        => $form->createView(),
-                'variable'    => $variable,
-                'events'      => $events,
-                'values'      => $values
+                'form'     => $form->createView(),
+                'variable' => $variable,
+                'events'   => $events,
+                'values'   => $values
             ]
         );
     }
@@ -281,7 +277,7 @@ class AcquisitionVariableController extends Controller
     {
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         $events          = $eventRepository->findAllOrderedByDate();
-    
+        
         $form = $this->createForm(
             SpecifyEventSpecificVariableValuesForVariableType::class,
             null,
@@ -321,8 +317,8 @@ class AcquisitionVariableController extends Controller
         return $this->render(
             'acquisition/variable/configure.html.twig',
             [
-                'variable'    => $variable,
-                'form'        => $form->createView(),
+                'variable' => $variable,
+                'form'     => $form->createView(),
             ]
         );
     }
