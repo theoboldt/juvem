@@ -10,7 +10,6 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute\Variable;
 
-use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,13 +21,11 @@ use AppBundle\Entity\Event;
  * EventSpecificVariable
  *
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository")
- * @ORM\Table(name="acquisition_attribute_variable_event_value", indexes={@ORM\Index(name="deleted_at_idx", columns={"deleted_at"})})
+ * @ORM\Table(name="event_variable_value")
  * @ORM\HasLifecycleCallbacks()
  */
-class EventSpecificVariableValue implements SoftDeleteableInterface
+class EventSpecificVariableValue implements EventSpecificVariableValueInterface
 {
-    use SoftDeleteTrait;
-    
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event")

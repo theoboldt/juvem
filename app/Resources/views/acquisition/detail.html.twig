@@ -244,58 +244,6 @@
             <div class="col-xs-12 col-sm-6">
                 <div class="row">
                     <div class="col-xs-12">
-                        <h3>
-                            Veranstaltungsspezifische Variablen
-                            {% if not acquisition.isDeleted %}
-                                <a href="{{ path('acquisition_variable_new', {'bid': acquisition.bid }) }}"
-                                   class="btn btn-default">{{ 'plus'|glyph }} <span class="hidden-xs">Hinzufügen</span></a>
-                            {% endif %}
-                        </h3>
-                        <hr/>
-                        <table class="table table-striped table-condensed">
-                            <thead>
-                            <tr>
-                                <td>#</td>
-                                <td>Beschreibung</td>
-                                <td>Standardwert</td>
-                                <td></td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% if acquisition.eventSpecificVariables|length %}
-                                {% for variable in acquisition.eventSpecificVariables %}
-                                    <tr {% if variable.deleted %} class="cm-strikethrough" {% endif %}>
-                                        <td><code>{{ variable.formulaVariable }}</code></td>
-                                        <td>{{ variable.description }}</td>
-                                        <td>
-                                            {% if variable.hasDefaultValue() %}
-                                                {{ variable.defaultValue }}
-                                                {% else %}
-                                                    <i class="empty value-null"><span></span></i>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <a href="{{ path('acquisition_variable_detail', {'bid': acquisition.bid, 'vid': variable.id }) }}" title="Detailansicht öffnen"
-                                               class="btn btn-default btn-xs">{{ 'search'|glyph }} <span class="sr-only">Detailansicht</span></a>
-                                            <a href="{{ path('acquisition_variable_configure', {'bid': acquisition.bid, 'vid': variable.id }) }}" title="Werte verwalten"
-                                               class="btn btn-default btn-xs">{{ 'equalizer'|glyph }} <span class="sr-only">Werte verwalten</span></a>
-
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="4" class="text-center">(Keine)</td>
-                                </tr>
-                            {% endif %}
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-12">
                         <h3>Verwendung</h3>
                         <hr/>
 

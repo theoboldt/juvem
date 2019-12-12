@@ -13,6 +13,7 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Manager\Payment\ExpressionLanguageProvider;
 use Symfony\Component\ExpressionLanguage\Node\NameNode;
 use Symfony\Component\ExpressionLanguage\Node\Node;
@@ -47,22 +48,25 @@ class FormulaVariableResolver
      * @var array|int[]
      */
     private $fieldDependencies = [];
-
+    
     /**
      * FormulaVariableResolver constructor.
      *
      * @param ExpressionLanguageProvider $expressionLanguageProvider
-     * @param array|Attribute[]          $attributes Attributes
+     * @param array|Attribute[] $attributes                 Attributes
+     * @param array|EventSpecificVariable[] $eventVariables All {@see EventSpecificVariable} entities
      */
     public function __construct(
         ExpressionLanguageProvider $expressionLanguageProvider,
-        array $attributes
-    ) {
+        array $attributes,
+        array $eventVariables
+    )
+    {
         $this->attributes                 = $attributes;
-        $this->variableProvider           = new FormulaVariableProvider($attributes);
+        $this->variableProvider           = new FormulaVariableProvider($attributes, $eventVariables);
         $this->expressionLanguageProvider = $expressionLanguageProvider;
     }
-
+    
     /**
      * Get textual names of used variables
      *

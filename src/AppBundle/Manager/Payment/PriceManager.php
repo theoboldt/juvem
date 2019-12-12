@@ -15,6 +15,7 @@ namespace AppBundle\Manager\Payment;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
@@ -58,6 +59,20 @@ class PriceManager
      * @var array|null|Attribute[]
      */
     private $attributesCache = null;
+    
+    /**
+     * Cache for {@see EventSpecificVariable} entities from database
+     *
+     * @var array|null|EventSpecificVariable[]
+     */
+    private $eventVariablesCache = null;
+    
+    /**
+     * Cache for values for event specific variables
+     *
+     * @var array|array[]
+     */
+    private $eventVariableValueCache = [];
     
     /**
      * Price tag cache
@@ -323,8 +338,31 @@ class PriceManager
                 }
             }
             return 0; //related attribute is not assigned to this @see Event
+        } elseif ($variable instanceof EventSpecificVariable) {
+            return $this->getValueForEventVariable($variable, $fillout->getEvent());
         }
         throw new \InvalidArgumentException('Unknown variable type '.get_class($variable));
+    }
+    
+    /**
+     * Get the (cached) value for the transmitted event for a event specific variable
+     *
+     * @param EventSpecificVariable $variable Variable
+     * @param Event $event Related event
+     * @return float|int
+     */
+    private function getValueForEventVariable(EventSpecificVariable $variable, Event $event)
+    {
+        if (!isset($this->eventVariableValueCache[$variable->getId()])) {
+            $this->eventVariableValueCache[$variable->getId()] = [];
+        }
+        if (!isset($this->eventVariableValueCache[$variable->getId()][$event->getEid()])) {
+            $value = $variable->getValue($event, true);
+        
+            $this->eventVariableValueCache[$variable->getId()][$event->getEid()] = $value->getValue();
+        }
+    
+        return $this->eventVariableValueCache[$variable->getId()][$event->getEid()];
     }
     
     /**
@@ -352,8 +390,9 @@ class PriceManager
                     $formula = $relatedAttribute->getPriceFormula();
                     
                     if ($formula) {
-                        
-                        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $this->attributes());
+                        $resolver = new FormulaVariableResolver(
+                            $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
+                        );
                         $used     = $resolver->getUsedVariables($relatedAttribute);
                         $values   = [];
                         foreach ($used as $variable) {
@@ -392,7 +431,9 @@ class PriceManager
         if (!$formula) {
             return null;
         }
-        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $this->attributes());
+        $resolver = new FormulaVariableResolver(
+            $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
+        );
         $used     = $resolver->getUsedVariables($attribute);
         $values   = [];
         foreach ($used as $variable) {
@@ -417,6 +458,18 @@ class PriceManager
         return $this->attributesCache;
     }
     
+    /**
+     * Fetch cached variables
+     *
+     * @return array|EventSpecificVariable[]
+     */
+    private function eventVariables(): array
+    {
+        if ($this->eventVariablesCache === null) {
+            $this->eventVariablesCache = $this->em->getRepository(EventSpecificVariable::class)->findAll();
+        }
+        return $this->eventVariablesCache;
+    }
     /**
      * Fetch @see Attribute by transmitted bid (cached)
      *

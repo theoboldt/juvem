@@ -14,6 +14,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
+use AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository;
 use AppBundle\Entity\Event;
 use AppBundle\Form\AcquisitionAttribute\EventSpecificVariableType;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForVariableType;
@@ -36,16 +37,50 @@ class AcquisitionVariableController extends Controller
 {
     
     /**
-     * Create a new variable
-     *
-     * @Route("/admin/acquisition/{bid}/variable/new", requirements={"bid": "\d+"}, name="acquisition_variable_new")
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/variable/list", name="admin_variable_list", methods={"GET"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function newAction(Request $request, Attribute $attribute): Response
+    public function listAction(Request $request)
+    {
+        return $this->render('acquisition/variable/list.html.twig');
+    }
+    
+    /**
+     * Data provider for event list grid
+     *
+     * @Route("/admin/variable/list.json", name="admin_variable_list_data", methods={"GET"})
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function listDataAction(Request $request)
+    {
+        $repository         = $this->getDoctrine()->getRepository(EventSpecificVariable::class);
+        $variableEntityList = $repository->findAll();
+        
+        $variableList = [];
+        /** @var EventSpecificVariable $variable */
+        foreach ($variableEntityList as $variable) {
+            $variableList[] = [
+                'id'          => $variable->getId(),
+                'description' => $variable->getDescription(),
+                'variable'    => $variable->getFormulaVariable(),
+                'is_deleted'  => $variable->isDeleted() ? 1 : 0,
+            ];
+        }
+        
+        
+        return new JsonResponse($variableList);
+    }
+    
+    /**
+     * Create a new variable
+     *
+     * @Route("/admin/variable/new", name="admin_variable_new")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function newAction(Request $request): Response
     {
         $form = $this->createForm(
-            EventSpecificVariableType::class, null, [EventSpecificVariableType::FIELD_ATTRIBUTE => $attribute]
+            EventSpecificVariableType::class, null
         );
         
         $form->handleRequest($request);
@@ -82,15 +117,14 @@ class AcquisitionVariableController extends Controller
     /**
      * Edit a variable
      *
-     * @Route("/admin/acquisition/{bid}/variable/{vid}/edit", requirements={"bid": "\d+", "vid": "\d+"}, name="acquisition_variable_edit")
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/variable/{vid}/edit", requirements={"vid": "\d+"}, name="admin_variable_edit")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function editAction(Request $request, Attribute $attribute, EventSpecificVariable $variable): Response
+    public function editAction(Request $request, EventSpecificVariable $variable): Response
     {
         $form = $this->createForm(
-            EventSpecificVariableType::class, $variable, [EventSpecificVariableType::FIELD_ATTRIBUTE => $attribute]
+            EventSpecificVariableType::class, $variable
         );
         
         $form->handleRequest($request);
@@ -103,22 +137,18 @@ class AcquisitionVariableController extends Controller
             $em->persist($variable);
             $em->flush();
             
-            $events = $attribute->getEvents();
             $this->addFlash(
                 'success',
                 'Die Änderungen an der Variable wurden gespeichert'
             );
-            if (count($events)) {
                 return $this->redirectToRoute(
-                    'acquisition_variable_configure', ['bid' => $attribute->getBid(), 'vid' => $variable->getId()]
+                    'admin_variable_configure', ['vid' => $variable->getId()]
                 );
-            }
         }
         
         return $this->render(
             'acquisition/variable/edit.html.twig',
             [
-                'acquisition' => $attribute,
                 'variable'    => $variable,
                 'form'        => $form->createView()
             ]
@@ -133,6 +163,8 @@ class AcquisitionVariableController extends Controller
      */
     public function generateVariableConfigureWarningIfRequired(EventSpecificVariable $variable): void
     {
+        return;
+        //TODO
         if (!$variable->hasDefaultValue()) {
             $attribute = $variable->getAttribute();
             $events    = $attribute->getEvents();
@@ -179,13 +211,11 @@ class AcquisitionVariableController extends Controller
     /**
      * Configure values for all events where this variable is used
      *
-     * @Route("/admin/acquisition/{bid}/variable/{vid}", requirements={"bid": "\d+", "vid": "\d+"}, name="acquisition_variable_detail")
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/variable/{vid}", requirements={"vid": "\d+"}, name="admin_variable_detail")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function showEventValuesAction(Request $request, Attribute $attribute, EventSpecificVariable $variable
-    ): Response
+    public function showEventValuesAction(Request $request, EventSpecificVariable $variable): Response
     {
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
@@ -216,11 +246,11 @@ class AcquisitionVariableController extends Controller
             }
             $em->persist($variable);
             $em->flush();
-            return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
+            return $this->redirectToRoute('admin_variable_list');
         }
-        
-        
-        $events = $attribute->getEvents();
+    
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        $events          = $eventRepository->findAllOrderedByDate();
         /** @var EventSpecificVariableValue $value */
         $values = [];
         
@@ -233,7 +263,6 @@ class AcquisitionVariableController extends Controller
             'acquisition/variable/detail.html.twig',
             [
                 'form'        => $form->createView(),
-                'acquisition' => $attribute,
                 'variable'    => $variable,
                 'events'      => $events,
                 'values'      => $values
@@ -244,18 +273,22 @@ class AcquisitionVariableController extends Controller
     /**
      * Configure values for all events where this variable is used
      *
-     * @Route("/admin/acquisition/{bid}/variable/{vid}/configure", requirements={"bid": "\d+", "vid": "\d+"}, name="acquisition_variable_configure")
-     * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
+     * @Route("/admin/variable/{vid}/configure", requirements={"vid": "\d+"}, name="admin_variable_configure")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function configureEventValuesAction(Request $request, Attribute $attribute, EventSpecificVariable $variable
-    ): Response
+    public function configureEventValuesAction(Request $request, EventSpecificVariable $variable): Response
     {
+        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        $events          = $eventRepository->findAllOrderedByDate();
+    
         $form = $this->createForm(
             SpecifyEventSpecificVariableValuesForVariableType::class,
             null,
-            [SpecifyEventSpecificVariableValuesForVariableType::FIELD_VARIABLE => $variable]
+            [
+                SpecifyEventSpecificVariableValuesForVariableType::FIELD_VARIABLE => $variable,
+                SpecifyEventSpecificVariableValuesForVariableType::FIELD_EVENTS   => $events,
+            ]
         );
         
         $form->handleRequest($request);
@@ -281,14 +314,13 @@ class AcquisitionVariableController extends Controller
                 'Die Werte für die Veranstaltungen wurden gespeichert'
             );
             return $this->redirectToRoute(
-                'acquisition_variable_detail', ['bid' => $attribute->getBid(), 'vid' => $variable->getId()]
+                'admin_variable_detail', ['vid' => $variable->getId()]
             );
         }
         
         return $this->render(
             'acquisition/variable/configure.html.twig',
             [
-                'acquisition' => $attribute,
                 'variable'    => $variable,
                 'form'        => $form->createView(),
             ]

@@ -4,6 +4,8 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
+use AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RepositoryFormulaVariableProvider implements FormulaVariableProviderInterface
@@ -42,7 +44,8 @@ class RepositoryFormulaVariableProvider implements FormulaVariableProviderInterf
     {
         if ($this->provider === null) {
             $this->provider = new FormulaVariableProvider(
-                $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions()
+                $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions(),
+                $this->em->getRepository(EventSpecificVariable::class)->findAll(),
             );
         }
         return $this->provider;

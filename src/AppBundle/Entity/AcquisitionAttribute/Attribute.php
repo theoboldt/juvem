@@ -10,7 +10,6 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
-use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
@@ -140,15 +139,6 @@ class Attribute implements SoftDeleteableInterface
      *                                                                             mappedBy="attribute")
      */
     protected $fillouts;
-    
-    
-    /**
-     * Contains the variables related to this attribute
-     *
-     * @var Collection|array|EventSpecificVariable[]
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", cascade={"all"}, mappedBy="attribute")
-     */
-    protected $eventSpecificVariables;
 
     /**
      * Stores if attribute is public (and included in form or not)
@@ -189,7 +179,6 @@ class Attribute implements SoftDeleteableInterface
         $this->events                 = new ArrayCollection();
         $this->fillouts               = new ArrayCollection();
         $this->choiceOptions          = new ArrayCollection();
-        $this->eventSpecificVariables = new ArrayCollection();
     }
 
     /**
@@ -807,13 +796,5 @@ class Attribute implements SoftDeleteableInterface
      */
     public function getFormulaVariable() {
         return self::FORMULA_VARIABLE_PREFIX.$this->getBid();
-    }
-    
-    /**
-     * @return EventSpecificVariable[]|\Iterator
-     */
-    public function getEventSpecificVariables(): \Iterator
-    {
-        return $this->eventSpecificVariables->getIterator();
     }
 }

@@ -5,20 +5,15 @@
 {% block body %}
   {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable ' ~ variable.formulaVariable, 'subtitle': 'Werte verwalten'} %}
     {% block breadcrumb %}
-      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
-      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a></li>
-      <li>Variablen</li>
-      <li>
-        <a href="{{ path('acquisition_variable_detail', {bid: acquisition.bid, vid: variable.id}) }}">{{ variable.formulaVariable }}</a>
-      </li>
+      <li><a href="{{ path('admin_variable_list') }}">Variablen</a></li>
+      <li><a href="{{ path('admin_variable_detail', {vid: variable.id}) }}">{{ variable.formulaVariable }}</a></li>
       <li class="active">Werte verwalten</li>
     {% endblock %}
   {% endembed %}
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
-        <p>Hier werden die Werte für die Variable <i>{{ variable.formulaVariable }}</i> beim Feld
-          <i>{{ acquisition.managementTitle }}</i> verwaltet.</p>
+        <p>Hier werden die Werte für die Variable <i>{{ variable.formulaVariable }}</i> verwaltet.</p>
         <p>
           {% if variable.hasDefaultValue() %}
             Da für diese Variable ein Standard-Wert festgelegt ist, wird in der Formel
@@ -50,7 +45,7 @@
           {% for fieldName,formEvent in form %}
             {% if fieldName starts with 'event_' %}
               <tr>
-                <td class="{% if not formEvent.vars.valid %} has-error{% endif %}">
+                <td class="{% if not formEvent.vars.valid %} has-error{% endif %} {% if formEvent.vars.event.isDeleted() %}deleted{% endif %}">
                   {{ form_label(formEvent) }}
                   <a class="btn btn-default btn-xs btn-round"
                      href="{{ path('event', {'eid': formEvent.vars.event.eid}) }}"

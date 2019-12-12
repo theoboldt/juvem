@@ -10,8 +10,9 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute\Variable;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\Event;
+use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -22,10 +23,10 @@ use JMS\Serializer\Annotation as Serialize;
  * EventSpecificVariable
  *
  * @ORM\Entity(repositoryClass="AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository")
- * @ORM\Table(name="acquisition_attribute_variable_event", indexes={@ORM\Index(name="deleted_at_idx", columns={"deleted_at"})})
+ * @ORM\Table(name="event_variable", indexes={@ORM\Index(name="deleted_at_idx", columns={"deleted_at"})})
  * @ORM\HasLifecycleCallbacks()
  */
-class EventSpecificVariable
+class EventSpecificVariable implements FormulaVariableInterface
 {
     use SoftDeleteTrait;
     
@@ -45,14 +46,6 @@ class EventSpecificVariable
     protected $description;
     
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AcquisitionAttribute\Attribute", inversedBy="eventSpecificVariables", fetch="EAGER")
-     * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
-     *
-     * @var Attribute
-     */
-    protected $attribute;
-    
-    /**
      * Contains the values for different events for this variable
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue", mappedBy="variable")
@@ -70,13 +63,11 @@ class EventSpecificVariable
     /**
      * EventSpecificVariable constructor.
      *
-     * @param Attribute $attribute
      * @param string $description
      * @param float|null $defaultValue
      */
-    public function __construct(Attribute $attribute, string $description = '', ?float $defaultValue = null)
+    public function __construct(string $description = '', ?float $defaultValue = null)
     {
-        $this->attribute    = $attribute;
         $this->description  = $description;
         $this->defaultValue = $defaultValue;
         $this->values       = new ArrayCollection();
@@ -109,21 +100,28 @@ class EventSpecificVariable
     }
     
     /**
-     * @return Attribute
+     * Get value for transmitted event
+     *
+     * @param Event $event                   Desired event
+     * @param bool $useDefaultIfNotSpecified If set to true and default is specified, default is provided
+     * @return EventSpecificVariableValueInterface
      */
-    public function getAttribute(): Attribute
+    public function getValue(Event $event, bool $useDefaultIfNotSpecified): EventSpecificVariableValueInterface
     {
-        return $this->attribute;
-    }
-    
-    /**
-     * @param Attribute $attribute
-     * @return EventSpecificVariable
-     */
-    public function setAttribute(Attribute $attribute): EventSpecificVariable
-    {
-        $this->attribute = $attribute;
-        return $this;
+        /** @var EventSpecificVariableValue $value */
+        foreach ($this->values as $value) {
+            if ($value->getEvent()->getEid() === $event->getEid()) {
+                return $value;
+            }
+        }
+        if ($useDefaultIfNotSpecified) {
+            if ($this->hasDefaultValue()) {
+                return new EventSpecificVariableDefaultValue($this);
+            }
+            
+            throw new NoDefaultValueSpecifiedException($this);
+        }
+        throw new NoValueSpecifiedException($this);
     }
     
     /**
@@ -226,5 +224,29 @@ class EventSpecificVariable
     public function getFormulaVariable()
     {
         return self::FORMULA_VARIABLE_PREFIX . $this->getId();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getName(): string
+    {
+        return $this->getFormulaVariable();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function isNummeric(): bool
+    {
+        return true;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function isBoolean(): bool
+    {
+        return false;
     }
 }

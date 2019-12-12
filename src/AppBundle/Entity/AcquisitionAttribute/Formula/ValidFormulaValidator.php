@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\AcquisitionAttribute\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Manager\Payment\ExpressionLanguageProvider;
 use AppBundle\Manager\Payment\PriceSummand\Formula\CircularDependencyDetectedException;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableResolver;
@@ -65,9 +66,12 @@ class ValidFormulaValidator extends ConstraintValidator
         }
         //even when fetching via doctrine, current formula attribute is already using new formula
         $attributes = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
-
+        $eventVariables = $this->em->getRepository(EventSpecificVariable::class)->findAll();
+    
         $expressionLanguage = $this->expressionLanguageProvider->provide();
-        $resolver           = new FormulaVariableResolver($this->expressionLanguageProvider, $attributes);
+        $resolver           = new FormulaVariableResolver(
+            $this->expressionLanguageProvider, $attributes, $eventVariables
+        );
 
         $formula = $value->getPriceFormula();
         try {

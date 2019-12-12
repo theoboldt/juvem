@@ -23,6 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class SpecifyEventSpecificVariableValuesForVariableType extends AbstractType
 {
     const FIELD_VARIABLE = 'variable';
+    const FIELD_EVENTS   = 'events';
     
     /**
      * {@inheritdoc}
@@ -31,17 +32,15 @@ class SpecifyEventSpecificVariableValuesForVariableType extends AbstractType
     {
         /** @var EventSpecificVariable $variable */
         $variable = $options[self::FIELD_VARIABLE];
-    
-        $attribute = $variable->getAttribute();
-        $events    = $attribute->getEvents();
-    
+        $events   = $options[self::FIELD_EVENTS];
+        
         /** @var Event $event */
         foreach ($events as $event) {
-        
+            
             $data = null;
             $eid  = $event->getEid();
             $vid  = $variable->getId();
-        
+            
             $values = $variable->getValues();
             /** @var EventSpecificVariableValue $value */
             foreach ($values as $value) {
@@ -52,7 +51,7 @@ class SpecifyEventSpecificVariableValuesForVariableType extends AbstractType
                     break;
                 }
             }
-        
+            
             $builder
                 ->add(
                     'event_' . $event->getEid(),
@@ -77,6 +76,9 @@ class SpecifyEventSpecificVariableValuesForVariableType extends AbstractType
     {
         $resolver->setRequired(self::FIELD_VARIABLE);
         $resolver->setAllowedTypes(self::FIELD_VARIABLE, EventSpecificVariable::class);
+        
+        $resolver->setRequired(self::FIELD_EVENTS);
+        $resolver->setAllowedTypes(self::FIELD_EVENTS, 'array');
     }
     
     /**
@@ -89,7 +91,8 @@ class SpecifyEventSpecificVariableValuesForVariableType extends AbstractType
         $view->vars = array_merge(
             $view->vars,
             [
-                self::FIELD_VARIABLE => $options[self::FIELD_VARIABLE]
+                self::FIELD_VARIABLE => $options[self::FIELD_VARIABLE],
+                self::FIELD_EVENTS   => $options[self::FIELD_EVENTS]
             ]
         );
     }

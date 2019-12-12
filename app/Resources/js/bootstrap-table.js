@@ -283,6 +283,13 @@ $(function () {
     });
 
     /**
+     * VARIABLES: Admin variable list table
+     */
+    $('#variableListTable').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.id);
+    });
+
+    /**
      * EVENT: Admin event list table
      */
     $('#eventListTable').on('click-row.bs.table', function (e, row, $element) {
