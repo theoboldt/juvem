@@ -5,7 +5,7 @@
 {% block body %}
 <section>
 <article>
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Detailansicht'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li class="active">{{ event.title }}</li>

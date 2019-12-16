@@ -3,7 +3,7 @@
 {% block title %}Veranstaltung bearbeiten{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltung', 'subtitle': 'bearbeiten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'bearbeiten'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>

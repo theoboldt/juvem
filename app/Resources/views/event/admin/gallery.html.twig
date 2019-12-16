@@ -7,7 +7,7 @@
              data-upload-target="{{ path('event_gallery_admin_upload', {'eid': event.eid}) }}"
              data-token="{{ csrf_token('gallery-upload-' ~ event.eid) }}">
         <article>
-            {% embed 'common/header/base-page-header.html.twig' with {'title': 'Bildergalerie', 'subtitle': 'Veranstaltung'} %}
+            {% embed 'common/header/base-page-header.html.twig' with {'title': 'Bildergalerie', 'subtitle': event.title} %}
                 {% block breadcrumb %}
                     <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                     <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
