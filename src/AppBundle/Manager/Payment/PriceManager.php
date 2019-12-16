@@ -52,6 +52,11 @@ class PriceManager
      * @var EntityManagerInterface
      */
     private $em;
+
+    /**
+     * @var FormulaVariableResolver|null
+     */
+    private $resolver;
     
     /**
      * Cache for @see Attribute entities from database
@@ -390,10 +395,7 @@ class PriceManager
                     $formula = $relatedAttribute->getPriceFormula();
                     
                     if ($formula) {
-                        $resolver = new FormulaVariableResolver(
-                            $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
-                        );
-                        $used     = $resolver->getUsedVariables($relatedAttribute);
+                        $used     = $this->resolver()->getUsedVariables($relatedAttribute);
                         $values   = [];
                         foreach ($used as $variable) {
                             $values[$variable->getName()] = $this->resolveVariable(
@@ -431,10 +433,7 @@ class PriceManager
         if (!$formula) {
             return null;
         }
-        $resolver = new FormulaVariableResolver(
-            $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
-        );
-        $used     = $resolver->getUsedVariables($attribute);
+        $used     = $this->resolver()->getUsedVariables($attribute);
         $values   = [];
         foreach ($used as $variable) {
             $values[$variable->getName()] = $this->resolveVariable(
@@ -491,5 +490,19 @@ class PriceManager
     {
         return $this->expressionLanguageProvider->provide();
     }
-
+    
+    /**
+     * Provide cached formula variable resolver
+     *
+     * @return FormulaVariableResolver
+     */
+    private function resolver(): FormulaVariableResolver
+    {
+        if (!$this->resolver) {
+            $this->resolver = new FormulaVariableResolver(
+                $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
+            );
+        }
+        return $this->resolver;
+    }
 }
