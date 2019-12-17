@@ -449,7 +449,7 @@ class PriceManager
      *
      * @return array|Attribute[]
      */
-    private function attributes(): array
+    public function attributesWithFormula(): array
     {
         if ($this->attributesCache === null) {
             $this->attributesCache = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
@@ -477,7 +477,7 @@ class PriceManager
      */
     private function attribute(int $bid): Attribute
     {
-        $attributes = $this->attributes();
+        $attributes = $this->attributesWithFormula();
         return $attributes[$bid];
     }
 
@@ -496,11 +496,11 @@ class PriceManager
      *
      * @return FormulaVariableResolver
      */
-    private function resolver(): FormulaVariableResolver
+    public function resolver(): FormulaVariableResolver
     {
         if (!$this->resolver) {
             $this->resolver = new FormulaVariableResolver(
-                $this->expressionLanguageProvider, $this->attributes(), $this->eventVariables()
+                $this->expressionLanguageProvider, $this->attributesWithFormula(), $this->eventVariables()
             );
         }
         return $this->resolver;

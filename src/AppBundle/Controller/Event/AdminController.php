@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
@@ -256,6 +257,54 @@ class AdminController extends Controller
                 'participantsCount'         => $participantsCount,
                 'employeeCount'             => $employeeCount,
                 'form'                      => $form->createView(),
+            ]
+        );
+    }
+    
+    /**
+     * Show variables for event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/variable", requirements={"eid": "\d+"}, name="admin_event_variable", methods={"GET"})
+     * @Security("has_role('ROLE_ADMIN_EVENT', event)")
+     * @return Response
+     */
+    public function showEventVariablesAction(Event $event): Response
+    {
+        $variableRepository = $this->getDoctrine()->getRepository(EventSpecificVariable::class);
+    
+        $priceManager     = $this->get('app.price_manager');
+        $attributes       = $priceManager->attributesWithFormula();
+        $variableResolver = $priceManager->resolver();
+        
+        $variableUse = [];
+        foreach ($attributes as $attribute) {
+            foreach ($variableResolver->getUsedVariables($attribute) as $attributeVariable) {
+                if ($attributeVariable instanceof EventSpecificVariable) {
+                    $variableUse[ $attributeVariable->getId() ][] = $attribute;
+                }
+            }
+        }
+        
+        
+        $variableEntities = $variableRepository->findAllNotDeleted();
+        
+        $variables = [];
+    
+        $values = $variableRepository->findAllValuesForEvent($event);
+        foreach ($variableEntities as $variable) {
+            $variables[] = [
+                'variable'   => $variable,
+                'value'      => $values[$variable->getId()] ?? null,
+                'attributes' => $variableUse[$variable->getId()] ?? [],
+            ];
+        }
+
+        return $this->render(
+            'event/admin/variable-detail.html.twig',
+            [
+                'event' => $event,
+                'variables' => $variables,
             ]
         );
     }
