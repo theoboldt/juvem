@@ -44,6 +44,8 @@
                 {% if variableDetails.attributes|length %}
                   {% for attribute in variableDetails.attributes %}
                     <a href="{{ path('acquisition_detail', {bid: attribute.bid}) }}">{{ attribute.managementTitle }}</a>
+                    {%- if not loop.last %},
+                    {% endif %}
                   {% endfor %}
                 {% else %}
                   <i>(nie)</i>
