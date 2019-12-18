@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Variablen ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Werte verwalten', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('admin_event_variable', {'eid': event.eid }) }}">Variablen</a></li>
+      <li class="active">Werte verwalten</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <input type="submit" value="Werte speichern" class="btn btn-primary"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <table class="table table-striped table-condensed">
+          <thead>
+          <tr>
+            <td>Beschreibung</td>
+            <td>Standard</td>
+            <td>Wert</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for fieldName,formEvent in form %}
+            {% if fieldName starts with 'variable_' %}
+              <tr>
+                <td class="{% if not formEvent.vars.valid %} has-error{% endif %} {% if formEvent.vars.event.isDeleted() %}deleted{% endif %}">
+                  {{ form_label(formEvent) }}
+                  <a class="btn btn-default btn-xs btn-round"
+                     href="{{ path('event', {'eid': formEvent.vars.event.eid}) }}"
+                     target="_blank">
+                    <span class="glyphicon glyphicon-new-window"></span>
+                  </a>
+                </td>
+                <td>
+                  {% if formEvent.vars.variable.hasDefaultValue() %}
+                    <code>{{ formEvent.vars.variable.defaultValue|number_format(2, ',', "") }}</code>
+                  {% else %}
+                    <i>(keiner)</i>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="{% if not formEvent.vars.valid %} has-error{% endif %}">
+                    {% for fieldName,formField in formEvent %}
+                      {{ form_widget(formField) }}
+                      {{ form_errors(formField) }}
+                    {% endfor %}
+                    {{ form_errors(formEvent) }}
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_rest(form) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <input type="submit" value="Werte speichern" class="btn btn-primary"/>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+
+
+  </div>
+{% endblock %}

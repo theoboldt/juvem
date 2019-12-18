@@ -29,6 +29,38 @@ class VariableRepository extends EntityRepository
     }
     
     /**
+     *
+     *
+     * @param Event $event
+     * @param EventSpecificVariable $variable
+     * @param bool $createIfNotExists
+     * @return EventSpecificVariableValue|null
+     */
+    public function findForVariableAndEvent(Event $event, EventSpecificVariable $variable, bool $createIfNotExists
+    ): ?EventSpecificVariableValue
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('value')
+           ->from(EventSpecificVariableValue::class, 'value')
+           ->andWhere($qb->expr()->eq('value.variable', $variable->getId()))
+           ->andWhere($qb->expr()->eq('value.event', $event->getEid()))
+           ->setMaxResults(1);
+        
+        $result = $qb->getQuery()->execute();
+        
+        if (!count($result)) {
+            if ($createIfNotExists) {
+                return new EventSpecificVariableValue($event, $variable, null);
+            } else {
+                return null;
+            }
+        }
+        $value = reset($result);
+        
+        return $value;
+    }
+    
+    /**
      * Find all variable values for transmitted {@see Event}
      *
      * @param Event $event

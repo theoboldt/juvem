@@ -13,6 +13,13 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+            <a href="{{ path('admin_event_variable_configure', {'eid': event.eid }) }}"
+               class="btn btn-primary">{{ 'equalizer'|glyph }} <span
+                  class="hidden-xs">Werte verwalten</span></a>
+        </div>
+      </div>
+      <div class="col-xs-12">
         <p>Dieser Veranstaltung sind die folgenden <a href="{{ path('admin_variable_list') }}">Variablen</a> und
           entsprechende Werte zugewiesen:</p>
       </div>
