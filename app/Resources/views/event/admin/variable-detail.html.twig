@@ -14,9 +14,11 @@
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          {% if variables|length %}
             <a href="{{ path('admin_event_variable_configure', {'eid': event.eid }) }}"
                class="btn btn-primary">{{ 'equalizer'|glyph }} <span
                   class="hidden-xs">Werte verwalten</span></a>
+          {% endif %}
         </div>
       </div>
       <div class="col-xs-12">
@@ -60,6 +62,11 @@
               </td>
             </tr>
           {% endfor %}
+          {% if variables|length == 0 %}
+            <tr>
+              <td colspan="3" class="text-center">(Keine Variablen zugewiesen)</td>
+            </tr>
+          {% endif %}
           </tbody>
         </table>
       </div>
