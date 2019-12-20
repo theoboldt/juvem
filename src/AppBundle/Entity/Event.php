@@ -913,7 +913,7 @@ class Event implements SoftDeleteableInterface
      *
      * @param int $bid The id of the field
      * @return Attribute             The field
-     * @throws  \OutOfBoundsException           If Requested field was not found
+     * @throws  EventAcquisitionAttributeUnavailableException If Requested field was not found
      */
     public function getAcquisitionAttribute($bid)
     {
@@ -923,7 +923,7 @@ class Event implements SoftDeleteableInterface
                 return $acquisitionAttribute;
             }
         }
-        throw new \OutOfBoundsException('Requested field was not found');
+        throw new EventAcquisitionAttributeUnavailableException('Requested field was not found');
     }
 
 
