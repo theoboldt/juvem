@@ -45,7 +45,7 @@ class RepositoryFormulaVariableProvider implements FormulaVariableProviderInterf
         if ($this->provider === null) {
             $this->provider = new FormulaVariableProvider(
                 $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions(),
-                $this->em->getRepository(EventSpecificVariable::class)->findAll(),
+                $this->em->getRepository(EventSpecificVariable::class)->findAll()
             );
         }
         return $this->provider;
