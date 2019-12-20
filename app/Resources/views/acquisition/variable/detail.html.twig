@@ -66,7 +66,13 @@
       </div>
       <div class="col-xs-12 col-sm-4 col-md-3">
         <h3>Standard-Wert</h3>
-        <p>{{ variable.defaultValue }}</p>
+        <p>
+          {% if variable.hasDefaultValue() %}
+            <code>{{ variable.defaultValue }}</code>
+          {% else %}
+            <i>(keiner)</i>
+          {% endif %}
+        </p>
       </div>
     </div>
 
