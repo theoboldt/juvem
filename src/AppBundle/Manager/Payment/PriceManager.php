@@ -15,7 +15,9 @@ namespace AppBundle\Manager\Payment;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
+use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
@@ -362,7 +364,15 @@ class PriceManager
             $this->eventVariableValueCache[$variable->getId()] = [];
         }
         if (!isset($this->eventVariableValueCache[$variable->getId()][$event->getEid()])) {
-            $value = $variable->getValue($event, true);
+            try {
+                $value = $variable->getValue($event, true);
+            } catch (NoDefaultValueSpecifiedException $e) {
+                throw new CalculationImpossibleException(
+                    'Variable used in formula but no value configured and no default assigned',
+                    0,
+                    $e
+                );
+            }
         
             $this->eventVariableValueCache[$variable->getId()][$event->getEid()] = $value->getValue();
         }
