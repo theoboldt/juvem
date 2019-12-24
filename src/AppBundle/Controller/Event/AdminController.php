@@ -15,10 +15,10 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
-use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForVariableType;
 use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
@@ -280,9 +280,19 @@ class AdminController extends Controller
         $priceManager     = $this->get('app.price_manager');
         $attributes       = $priceManager->attributesWithFormula();
         $variableResolver = $priceManager->resolver();
-        
-        $variableUse = [];
+
+        $variableUse    = [];
+        $usedAttributes = [];
         foreach ($attributes as $attribute) {
+            try {
+                $eventHasAttribute = (bool)$event->getAcquisitionAttribute($attribute->getBid());
+            } catch (EventAcquisitionAttributeUnavailableException $e) {
+                $eventHasAttribute = false;
+            }
+            if ($eventHasAttribute) {
+                $usedAttributes[$attribute->getBid()] = $attribute;
+            }
+            
             foreach ($variableResolver->getUsedVariables($attribute) as $attributeVariable) {
                 if ($attributeVariable instanceof EventSpecificVariable) {
                     $variableUse[$attributeVariable->getId()][] = $attribute;
@@ -291,15 +301,37 @@ class AdminController extends Controller
         }
         
         $variableEntities = $variableRepository->findAllNotDeleted();
-        
-        $variables = [];
+        $variables        = [];
         
         $values = $variableRepository->findAllValuesForEvent($event);
         foreach ($variableEntities as $variable) {
+            $variableValue      = $values[$variable->getId()] ?? null;
+            $variableAttributes = $variableUse[$variable->getId()] ?? [];
+
+            if ($variableValue === null) {
+                foreach ($variableAttributes as $attribute) {
+                    $this->addFlash(
+                        'warning',
+                        sprintf(
+                            'Die Variable <code>%s</code> (<i>%s</i>) wird in der Formel des Feldes <a href="%s">%s</a> verwendet. Obwohl für diese Variable kein Standardwert konfiguriert wurde, ist für diese Veranstaltungen kein Werte eingestellt. Sie sollten die umgehend die <a href="%s">Werte für Variablen konfigurieren</a>.',
+                            $variable->getFormulaVariable(),
+                            $variable->getDescription(),
+                            $this->generateUrl(
+                                'acquisition_detail', ['bid' => $attribute->getBid()]
+                            ),
+                            $attribute->getManagementTitle(),
+                            $this->generateUrl(
+                                'admin_event_variable_configure', ['eid' => $event->getEid()]
+                            )
+                        )
+                    );
+                }
+            }
+            
             $variables[] = [
                 'variable'   => $variable,
-                'value'      => $values[$variable->getId()] ?? null,
-                'attributes' => $variableUse[$variable->getId()] ?? [],
+                'value'      => $variableValue,
+                'attributes' => $variableAttributes,
             ];
         }
         
