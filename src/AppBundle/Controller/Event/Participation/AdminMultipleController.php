@@ -299,6 +299,8 @@ class AdminMultipleController extends Controller
                 if ($paymentImpossible) {
                     $paymentPrice
                         = '<span class="label label-danger" title="Der Preis dieses Teilnehmers kann nicht berechnet werden. Die Variablen sollten geprüft werden.">unbekannt</span>';
+                    
+                    $participantEntry['payment_to_pay'] = $paymentPrice;
                 }
 
                 $participantEntry['payment_price'] = $paymentPrice;
