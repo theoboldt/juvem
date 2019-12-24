@@ -68,12 +68,14 @@ class ParticipantType extends AbstractType
             ->add(
                 'birthday',
                 DateType::class,
-                ['label'    => 'Geburtsdatum',
-                 'years'    => range(Date('Y') - 30, Date('Y') - 3),
-                 //                      'widget' => 'single_text',
-                 //                      'format' => 'yyyy-MM-dd',
-                 'format'   => 'dd.MM.yyyy',
-                 'required' => true,
+                [
+                    'label'    => 'Geburtsdatum',
+                    'years'    => range(Date('Y') - 35, Date('Y') - 3),
+                    //                      'widget' => 'single_text',
+                    //                      'format' => 'yyyy-MM-dd',
+                    'format'   => 'dd.MM.yyyy',
+                    'required' => true,
+                    'attr'     => ['class' => 'form-date']
                 ]
             )
             ->add(
