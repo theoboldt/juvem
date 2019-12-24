@@ -304,11 +304,12 @@ class AdminController extends Controller
         $variables        = [];
         
         $values = $variableRepository->findAllValuesForEvent($event);
+        /** @var EventSpecificVariable $variable */
         foreach ($variableEntities as $variable) {
             $variableValue      = $values[$variable->getId()] ?? null;
             $variableAttributes = $variableUse[$variable->getId()] ?? [];
 
-            if ($variableValue === null) {
+            if ($variableValue === null && !$variable->hasDefaultValue()) {
                 foreach ($variableAttributes as $attribute) {
                     $this->addFlash(
                         'warning',
