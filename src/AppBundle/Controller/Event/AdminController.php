@@ -12,11 +12,14 @@ namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
+use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
+use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
@@ -261,6 +264,63 @@ class AdminController extends Controller
                 'participantsCount'         => $participantsCount,
                 'employeeCount'             => $employeeCount,
                 'form'                      => $form->createView(),
+            ]
+        );
+    }
+    
+    /**
+     * Detail page for one single event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/payment_summary.json", requirements={"eid": "\d+"}, name="event_payment_summary")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     */
+    public function EventPaymentSummaryAction(Request $request, Event $event): Response
+    {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participants            = $participationRepository->participantsList($event, null, true, true);
+        $paymentManager          = $this->get('app.payment_manager');
+    
+        $priceTotal = 0;
+        $toPayTotal = 0;
+        try {
+            foreach ($participants as $participant) {
+                $price = $paymentManager->getPriceForParticipant($participant, false);
+                if ($price !== null) {
+                    $priceTotal += $price;
+                }
+                $toPay = $paymentManager->getToPayValueForParticipant($participant, false);
+                if ($toPay !== null) {
+                    $toPayTotal += $toPay;
+                }
+            }
+        
+        } catch (CalculationImpossibleException $e) {
+            if ($e->getPrevious() instanceof NoDefaultValueSpecifiedException) {
+                $message
+                    = 'Preis kann nicht berechnet werden, da in Formeln veranstaltungsspezifische Variablen verwendet werden, für die kein Wert für diese Veranstaltung festgelgt ist und für die kein Standard-Wert konfiguriert ist. Die Variablen-Werte sollten überprüft werden.';
+            } else {
+                $message = 'Preis kann nicht berechnet werden';
+            }
+            return new JsonResponse(
+                [
+                    'success' => false,
+                    'message' => $message
+                ]
+            );
+        }
+    
+        return new JsonResponse(
+            [
+                'success'      => true,
+                'price_total'  => [
+                    'cents' => $priceTotal,
+                    'euros' => number_format($priceTotal / 100, 2, ',', " "),
+                ],
+                'to_pay_total' => [
+                    'cents' => $toPayTotal,
+                    'euros' => number_format($toPayTotal / 100, 2, ',', " "),
+                ]
             ]
         );
     }

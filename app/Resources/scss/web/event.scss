@@ -475,3 +475,12 @@ abbr.unit {
     text-decoration: line-through;
   }
 }
+
+#infoEventPaymentSummary {
+  max-height: 0;
+  overflow: hidden;
+  &.load {
+    @include transition(max-height 0.6s ease-out);
+    max-height: 600px;
+  }
+}

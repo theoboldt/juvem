@@ -587,4 +587,28 @@ $(function () {
         })
     });
 
+    const paymentSummaryEl = jQuery('#infoEventPaymentSummary');
+    if (paymentSummaryEl.length) {
+        $.ajax({
+            type: 'GET',
+            url: '/admin/event/' + paymentSummaryEl.data('eid') + '/payment_summary.json',
+            success: function (response) {
+                var html = '';
+                if (response.success) {
+                    html = '<p>geplanter Umsatz: ' + response.price_total.euros + '&nbsp;€</p>';
+                    html += '<p>Offener Zahlungsbetrag: ' + response.to_pay_total.euros + '&nbsp;€</p>';
+
+                } else {
+                    if (response.message) {
+                        html = '<div class="alert alert-danger" role="alert">' + eHtml(response.message) + '</div>';
+                    }
+                }
+
+                paymentSummaryEl.find('div').html(html);
+                paymentSummaryEl.attr('class', 'load');
+            }
+        });
+    }
+
+
 });

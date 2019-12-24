@@ -275,6 +275,14 @@
 
                         {% endif %}
                     </div>
+                    {% if event.price %}
+                    <div class="col-xs-12">
+                        <div id="infoEventPaymentSummary" data-eid="{{ event.eid }}">
+                            <h4>Zahlungen</h4>
+                            <div></div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
