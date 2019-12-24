@@ -38,7 +38,7 @@
           {% for variableDetails in variables %}
             <tr>
               <td>
-                {{ variableDetails.variable.description }}
+                <a href="{{ path('admin_variable_detail', {'vid': variableDetails.variable.id}) }}">{{ variableDetails.variable.description }}</a>
               </td>
               <td>
                 {% if variableDetails.value %}
