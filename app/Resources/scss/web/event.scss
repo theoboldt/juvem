@@ -82,6 +82,10 @@ div.help-block > p {
   margin: 0 0 5px;
 }
 
+table tr td.deleted label {
+  text-decoration: line-through;
+}
+
 input.input-formula, textarea.input-formula, .btn-formula-variable span, tbody .formula-cell {
   font-family: monospace;
 }

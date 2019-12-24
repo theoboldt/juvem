@@ -5,6 +5,7 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
@@ -22,11 +23,18 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
     const VARIABLE_VALUE_NOT_EMPTY = 'valueNotEmpty';
 
     /**
-     * All @see Attribute entities with their related options
+     * All {@see Attribute} entities with their related options
      *
      * @var array|Attribute[]
      */
     private $attributes;
+    
+    /**
+     * All {@see EventSpecificVariable} entities
+     *
+     * @var array|EventSpecificVariable[]
+     */
+    private $eventVariables;
 
     /**
      * Caches all variables which can be used in related field
@@ -48,15 +56,17 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
      * @var array|FormulaVariableInterface[]
      */
     private $choiceVariableCache = [];
-
+    
     /**
      * FormulaVariableProvider constructor.
      *
-     * @param array|Attribute[] $attributes Related attributes
+     * @param array|Attribute[] $attributes                 Related attributes
+     * @param array|EventSpecificVariable[] $eventVariables All {@see EventSpecificVariable} entities
      */
-    public function __construct(array $attributes)
+    public function __construct(array $attributes, array $eventVariables)
     {
-        $this->attributes = $attributes;
+        $this->attributes     = $attributes;
+        $this->eventVariables = $eventVariables;
     }
 
     /**
@@ -70,6 +80,11 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
         $bid = $attribute->getBid();
         if (!isset($this->fieldVariablesCache[$bid])) {
             $this->fieldVariablesCache[$bid] = [];
+    
+            foreach ($this->eventVariables as $variable) {
+                $this->addFieldVariableToCache($variable, $bid);
+            }
+            
             foreach ($this->getAttributeVariableNames($attribute) as $variable) {
                 $this->addFieldVariableToCache($variable, $bid);
             }

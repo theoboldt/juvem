@@ -1,30 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Werte verwalten ({{ variable.formulaVariable }}){% endblock %}
+{% block title %}Variablen ({{ event.title }}){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable ' ~ variable.formulaVariable, 'subtitle': 'Werte verwalten'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Werte verwalten', 'subtitle': event.title} %}
     {% block breadcrumb %}
-      <li><a href="{{ path('admin_variable_list') }}">Variablen</a></li>
-      <li><a href="{{ path('admin_variable_detail', {vid: variable.id}) }}">{{ variable.formulaVariable }}</a></li>
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('admin_event_variable', {'eid': event.eid }) }}">Variablen</a></li>
       <li class="active">Werte verwalten</li>
     {% endblock %}
   {% endembed %}
   <div class="container">
+    {{ form_start(form) }}
+
     <div class="row">
       <div class="col-xs-12">
-        <p>Hier werden die Werte für die Variable <i>{{ variable.formulaVariable }}</i> verwaltet.</p>
-        <p>
-          {% if variable.hasDefaultValue() %}
-            Da für diese Variable ein Standard-Wert festgelegt ist, wird in der Formel
-            <code>{{ variable.defaultValue|number_format(2, ',', "") }}</code>&nbsp;€ verwendet, wenn hier für eine Veranstaltung kein Wert eingegeben wird.
-          {% else %}
-            Für diese Variable ist kein Standard-Wert festgelegt, deshalb muss für jede Veranstaltung ein Wert eingegeben werden.
-          {% endif %}
-        </p>
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <input type="submit" value="Werte speichern" class="btn btn-primary"/>
+          </div>
+        </div>
       </div>
     </div>
-    {{ form_start(form) }}
+
     <div class="row">
       <div class="col-xs-12">
         {{ form_errors(form) }}
@@ -36,14 +35,14 @@
         <table class="table table-striped table-condensed">
           <thead>
           <tr>
-            <td>Veranstaltung</td>
-            <td>Preis</td>
+            <td>Beschreibung</td>
+            <td>Standard</td>
             <td>Wert</td>
           </tr>
           </thead>
           <tbody>
           {% for fieldName,formEvent in form %}
-            {% if fieldName starts with 'event_' %}
+            {% if fieldName starts with 'variable_' %}
               <tr>
                 <td class="{% if not formEvent.vars.valid %} has-error{% endif %} {% if formEvent.vars.event.isDeleted() %}deleted{% endif %}">
                   {{ form_label(formEvent) }}
@@ -54,8 +53,8 @@
                   </a>
                 </td>
                 <td>
-                  {% if formEvent.vars.event.price %}
-                    {{ formEvent.vars.event.price(true)|number_format(2, ',', "") }}&nbsp;€
+                  {% if formEvent.vars.variable.hasDefaultValue() %}
+                    <code>{{ formEvent.vars.variable.defaultValue|number_format(2, ',', "") }}</code>
                   {% else %}
                     <i>(keiner)</i>
                   {% endif %}
@@ -66,7 +65,6 @@
                       {{ form_widget(formField) }}
                       {{ form_errors(formField) }}
                     {% endfor %}
-
                     {{ form_errors(formEvent) }}
                   </div>
                 </td>
@@ -77,7 +75,6 @@
         </table>
       </div>
     </div>
-
 
     <div class="row">
       <div class="col-xs-12">
@@ -94,5 +91,7 @@
       </div>
       {{ form_end(form) }}
     </div>
+
+
   </div>
 {% endblock %}

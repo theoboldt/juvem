@@ -300,3 +300,10 @@ services:
             - "@doctrine.orm.entity_manager"
         tags:
             - { name: form.type}
+
+    AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType:
+      arguments:
+        - "@doctrine.orm.entity_manager"
+      tags:
+        - form.type
+

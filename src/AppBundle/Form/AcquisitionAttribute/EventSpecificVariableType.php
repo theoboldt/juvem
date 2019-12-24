@@ -49,14 +49,8 @@ class EventSpecificVariableType extends AbstractType
     
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired(self::FIELD_ATTRIBUTE);
-        $resolver->setAllowedTypes(self::FIELD_ATTRIBUTE, Attribute::class);
         $resolver->setDefaults(
             [
-                'empty_data' => function (FormInterface $form) {
-                    $attribute = $form->getConfig()->getOption(self::FIELD_ATTRIBUTE);
-                    return new EventSpecificVariable($attribute);
-                },
                 'data_class' => EventSpecificVariable::class,
             ]
         );

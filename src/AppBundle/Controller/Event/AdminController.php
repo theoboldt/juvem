@@ -12,9 +12,13 @@ namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
+use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
@@ -23,6 +27,7 @@ use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -259,6 +264,146 @@ class AdminController extends Controller
             ]
         );
     }
+    
+    /**
+     * Show variables for event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/variable", requirements={"eid": "\d+"}, name="admin_event_variable", methods={"GET"})
+     * @Security("has_role('ROLE_ADMIN_EVENT', event)")
+     * @return Response
+     */
+    public function showEventVariablesAction(Event $event): Response
+    {
+        $variableRepository = $this->getDoctrine()->getRepository(EventSpecificVariable::class);
+        
+        $priceManager     = $this->get('app.price_manager');
+        $attributes       = $priceManager->attributesWithFormula();
+        $variableResolver = $priceManager->resolver();
+
+        $variableUse    = [];
+        $usedAttributes = [];
+        foreach ($attributes as $attribute) {
+            try {
+                $eventHasAttribute = (bool)$event->getAcquisitionAttribute($attribute->getBid());
+            } catch (EventAcquisitionAttributeUnavailableException $e) {
+                $eventHasAttribute = false;
+            }
+            if ($eventHasAttribute) {
+                $usedAttributes[$attribute->getBid()] = $attribute;
+            }
+            
+            foreach ($variableResolver->getUsedVariables($attribute) as $attributeVariable) {
+                if ($attributeVariable instanceof EventSpecificVariable) {
+                    $variableUse[$attributeVariable->getId()][] = $attribute;
+                }
+            }
+        }
+        
+        $variableEntities = $variableRepository->findAllNotDeleted();
+        $variables        = [];
+        
+        $values = $variableRepository->findAllValuesForEvent($event);
+        foreach ($variableEntities as $variable) {
+            $variableValue      = $values[$variable->getId()] ?? null;
+            $variableAttributes = $variableUse[$variable->getId()] ?? [];
+
+            if ($variableValue === null) {
+                foreach ($variableAttributes as $attribute) {
+                    $this->addFlash(
+                        'warning',
+                        sprintf(
+                            'Die Variable <code>%s</code> (<i>%s</i>) wird in der Formel des Feldes <a href="%s">%s</a> verwendet. Obwohl für diese Variable kein Standardwert konfiguriert wurde, ist für diese Veranstaltungen kein Werte eingestellt. Sie sollten die umgehend die <a href="%s">Werte für Variablen konfigurieren</a>.',
+                            $variable->getFormulaVariable(),
+                            $variable->getDescription(),
+                            $this->generateUrl(
+                                'acquisition_detail', ['bid' => $attribute->getBid()]
+                            ),
+                            $attribute->getManagementTitle(),
+                            $this->generateUrl(
+                                'admin_event_variable_configure', ['eid' => $event->getEid()]
+                            )
+                        )
+                    );
+                }
+            }
+            
+            $variables[] = [
+                'variable'   => $variable,
+                'value'      => $variableValue,
+                'attributes' => $variableAttributes,
+            ];
+        }
+        
+        return $this->render(
+            'event/admin/variable-detail.html.twig',
+            [
+                'event'     => $event,
+                'variables' => $variables,
+            ]
+        );
+    }
+    
+    /**
+     * Configure all variables for a single event
+     *
+     * @Route("/admin/event/{eid}/variable/configure", requirements={"eid": "\d+"}, name="admin_event_variable_configure")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @param Event $event
+     * @return Response
+     */
+    public function configureEventVariablesAction(Request $request, Event $event): Response
+    {
+        $variableRepository = $this->getDoctrine()->getRepository(EventSpecificVariable::class);
+        
+        $form = $this->createForm(
+            SpecifyEventSpecificVariableValuesForEventType::class,
+            null,
+            [
+                SpecifyEventSpecificVariableValuesForEventType::FIELD_EVENT => $event,
+            ]
+        );
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            
+            /** @var Form $formElement */
+            foreach ($form as $formElement) {
+                /** @var EventSpecificVariableValue $variableValue */
+                $variableValue = $formElement->getData();
+                
+                if ($variableValue->getValue() !== null) {
+                    $em->persist($variableValue);
+                } else {
+                    $value = $variableRepository->findForVariableAndEvent($event, $variableValue->getVariable(), false);
+                    if ($value) {
+                        $em->remove($variableValue);
+                    }
+                }
+            }
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Die Werte für die Variablen wurden gespeichert'
+            );
+            return $this->redirectToRoute(
+                'admin_event_variable', ['eid' => $event->getEid()]
+            );
+        }
+        
+        return $this->render(
+            'event/admin/variable-configure.html.twig',
+            [
+                'event' => $event,
+                'form'  => $form->createView(),
+            ]
+        );
+    }
+    
 
     /**
      * Detail page for one single event

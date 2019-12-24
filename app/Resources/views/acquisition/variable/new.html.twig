@@ -1,14 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Veranstaltungsspezifische Variable hinzufügen{% endblock %}
+{% block title %}Variable hinzufügen{% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Veranstaltungsspezifische Variable', 'subtitle': 'hinzufügen'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variable', 'subtitle': 'hinzufügen'} %}
     {% block breadcrumb %}
-      <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
-      <li><a href="{{ path('acquisition_detail', {bid: acquisition.bid}) }}">{{ acquisition.managementTitle }}</a>
-      </li>
-      <li class="active">Veranstaltungsspezifische Variable hinzufügen</li>
+      <li><a href="{{ path('admin_variable_list') }}">Variablen</a></li>
+      <li class="active">Variable hinzufügen</li>
     {% endblock %}
   {% endembed %}
   <div class="container">
@@ -29,12 +27,12 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+      <div class="col-xs-12 col-lg-10">
         {{ form_rest(form) }}
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+      <div class="col-xs-12 col-lg-10">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
           <div class="btn-group" role="group">
             <input type="submit" value="Variable hinzufügen" class="btn btn-primary"/>

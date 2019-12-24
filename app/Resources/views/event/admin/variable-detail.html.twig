@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Variablen ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Variablen', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Variablen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          {% if variables|length %}
+            <a href="{{ path('admin_event_variable_configure', {'eid': event.eid }) }}"
+               class="btn btn-primary">{{ 'equalizer'|glyph }} <span
+                  class="hidden-xs">Werte verwalten</span></a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-xs-12">
+        <p>Dieser Veranstaltung sind die folgenden <a href="{{ path('admin_variable_list') }}">Variablen</a> und
+          entsprechende Werte zugewiesen:</p>
+      </div>
+      <div class="col-xs-12">
+        <table class="table table-striped table-condensed table-form">
+          <thead>
+          <tr>
+            <td>Beschreibung</td>
+            <td>Wert</td>
+            <td>Verwendung in Feldern</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for variableDetails in variables %}
+            <tr>
+              <td>
+                {{ variableDetails.variable.description }}
+              </td>
+              <td>
+                {% if variableDetails.value %}
+                  <code>
+                    {{ variableDetails.value.value|number_format(2, ',', "") }}
+                  </code>
+                {% else %}
+                  <i>(keiner)</i>
+                {% endif %}
+              </td>
+              <td>
+                {% if variableDetails.attributes|length %}
+                  {% for attribute in variableDetails.attributes %}
+                    <a href="{{ path('acquisition_detail', {bid: attribute.bid}) }}">{{ attribute.managementTitle }}</a>
+                    {%- if not loop.last %},
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <i>(nie)</i>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          {% if variables|length == 0 %}
+            <tr>
+              <td colspan="3" class="text-center">(Keine Variablen zugewiesen)</td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

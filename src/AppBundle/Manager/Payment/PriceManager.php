@@ -15,6 +15,9 @@ namespace AppBundle\Manager\Payment;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
+use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
+use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
@@ -51,6 +54,11 @@ class PriceManager
      * @var EntityManagerInterface
      */
     private $em;
+
+    /**
+     * @var FormulaVariableResolver|null
+     */
+    private $resolver;
     
     /**
      * Cache for @see Attribute entities from database
@@ -58,6 +66,20 @@ class PriceManager
      * @var array|null|Attribute[]
      */
     private $attributesCache = null;
+    
+    /**
+     * Cache for {@see EventSpecificVariable} entities from database
+     *
+     * @var array|null|EventSpecificVariable[]
+     */
+    private $eventVariablesCache = null;
+    
+    /**
+     * Cache for values for event specific variables
+     *
+     * @var array|array[]
+     */
+    private $eventVariableValueCache = [];
     
     /**
      * Price tag cache
@@ -323,8 +345,39 @@ class PriceManager
                 }
             }
             return 0; //related attribute is not assigned to this @see Event
+        } elseif ($variable instanceof EventSpecificVariable) {
+            return $this->getValueForEventVariable($variable, $fillout->getEvent());
         }
         throw new \InvalidArgumentException('Unknown variable type '.get_class($variable));
+    }
+    
+    /**
+     * Get the (cached) value for the transmitted event for a event specific variable
+     *
+     * @param EventSpecificVariable $variable Variable
+     * @param Event $event Related event
+     * @return float|int
+     */
+    private function getValueForEventVariable(EventSpecificVariable $variable, Event $event)
+    {
+        if (!isset($this->eventVariableValueCache[$variable->getId()])) {
+            $this->eventVariableValueCache[$variable->getId()] = [];
+        }
+        if (!isset($this->eventVariableValueCache[$variable->getId()][$event->getEid()])) {
+            try {
+                $value = $variable->getValue($event, true);
+            } catch (NoDefaultValueSpecifiedException $e) {
+                throw new CalculationImpossibleException(
+                    'Variable used in formula but no value configured and no default assigned',
+                    0,
+                    $e
+                );
+            }
+        
+            $this->eventVariableValueCache[$variable->getId()][$event->getEid()] = $value->getValue();
+        }
+    
+        return $this->eventVariableValueCache[$variable->getId()][$event->getEid()];
     }
     
     /**
@@ -352,9 +405,7 @@ class PriceManager
                     $formula = $relatedAttribute->getPriceFormula();
                     
                     if ($formula) {
-                        
-                        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $this->attributes());
-                        $used     = $resolver->getUsedVariables($relatedAttribute);
+                        $used     = $this->resolver()->getUsedVariables($relatedAttribute);
                         $values   = [];
                         foreach ($used as $variable) {
                             $values[$variable->getName()] = $this->resolveVariable(
@@ -392,8 +443,7 @@ class PriceManager
         if (!$formula) {
             return null;
         }
-        $resolver = new FormulaVariableResolver($this->expressionLanguageProvider, $this->attributes());
-        $used     = $resolver->getUsedVariables($attribute);
+        $used     = $this->resolver()->getUsedVariables($attribute);
         $values   = [];
         foreach ($used as $variable) {
             $values[$variable->getName()] = $this->resolveVariable(
@@ -409,7 +459,7 @@ class PriceManager
      *
      * @return array|Attribute[]
      */
-    private function attributes(): array
+    public function attributesWithFormula(): array
     {
         if ($this->attributesCache === null) {
             $this->attributesCache = $this->em->getRepository(Attribute::class)->findAllWithFormulaAndOptions();
@@ -418,6 +468,18 @@ class PriceManager
     }
     
     /**
+     * Fetch cached variables
+     *
+     * @return array|EventSpecificVariable[]
+     */
+    private function eventVariables(): array
+    {
+        if ($this->eventVariablesCache === null) {
+            $this->eventVariablesCache = $this->em->getRepository(EventSpecificVariable::class)->findAll();
+        }
+        return $this->eventVariablesCache;
+    }
+    /**
      * Fetch @see Attribute by transmitted bid (cached)
      *
      * @param int $bid ID
@@ -425,7 +487,7 @@ class PriceManager
      */
     private function attribute(int $bid): Attribute
     {
-        $attributes = $this->attributes();
+        $attributes = $this->attributesWithFormula();
         return $attributes[$bid];
     }
 
@@ -438,5 +500,19 @@ class PriceManager
     {
         return $this->expressionLanguageProvider->provide();
     }
-
+    
+    /**
+     * Provide cached formula variable resolver
+     *
+     * @return FormulaVariableResolver
+     */
+    public function resolver(): FormulaVariableResolver
+    {
+        if (!$this->resolver) {
+            $this->resolver = new FormulaVariableResolver(
+                $this->expressionLanguageProvider, $this->attributesWithFormula(), $this->eventVariables()
+            );
+        }
+        return $this->resolver;
+    }
 }

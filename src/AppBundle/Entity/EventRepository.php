@@ -204,6 +204,23 @@ class EventRepository extends EntityRepository
     }
     
     /**
+     * Fetch all events reverse ordered by date
+     *
+     * @param bool $excludeDeleted  Set to true to exclude deleted @see Event s
+     * @return array
+     */
+    public function findAllOrderedByDate($excludeDeleted = false)
+    {
+         $qb = $this->createQueryBuilder('e')
+                   ->orderBy('e.startDate', 'DESC');
+         if ($excludeDeleted) {
+             $qb->andWhere('e.deletedAt IS NULL');
+         }
+        return $qb->getQuery()->execute();
+    }
+    
+    
+    /**
      * Fetch all events ordered by title
      *
      * @return array|int[]

@@ -14,6 +14,7 @@ use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Controller\Event\Gallery\GalleryPublicController;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
@@ -228,8 +229,14 @@ class AdminMultipleController extends Controller
             if ($participant->isDeleted()) {
                 $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
             }
+            $paymentImpossible = false;
             if ($paymentStatus) {
-                $participantStatusText .= ' ' . PaymentInformation::provideLabel($paymentStatus);
+                try {
+                    $participantStatusText .= ' ' . PaymentInformation::provideLabel($paymentStatus);
+                } catch (CalculationImpossibleException $e) {
+                    $paymentImpossible     = true;
+                    $participantStatusText .= ' <span class="label label-warning" title="Der Preis dieses Teilnehmers kann nicht berechnet werden. Die Variablen sollten geprüft werden.">Preis unbekannt</span>';
+                }
             }
             $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
             $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
@@ -257,33 +264,44 @@ class AdminMultipleController extends Controller
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];
-    
+
             if ($includePayment) {
-                $price = $paymentStatus->getPrice(true);
-    
-                if ($paymentStatus->isInactive()) {
-                    $toPay = '';
-                    if ($paymentStatus->getPaymentSum(false) < 0) {
-                        $toPay = number_format($paymentStatus->getPaymentSum(true), 2, ',', '.') . '&nbsp;€';
+                try {
+                    $price = $paymentStatus->getPrice(true);
+
+                    if ($paymentStatus->isInactive()) {
+                        $toPay = '';
+                        if ($paymentStatus->getPaymentSum(false) < 0) {
+                            $toPay = number_format($paymentStatus->getPaymentSum(true), 2, ',', '.') . '&nbsp;€';
+                        }
+                        $toPay .= ' <i title="Keine Zahlung nötig da inaktiv">inaktiv</i>';
+
+                        $participantEntry['payment_to_pay'] = $toPay;
+                    } else {
+                        $toPay                              = $paymentStatus->getToPayValue(true);
+                        $participantEntry['payment_to_pay'] = $paymentStatus->isFree()
+                            ? '<i>nichts</i>'
+                            : number_format($toPay, 2, ',', '.') . '&nbsp;€';
                     }
-                    $toPay .= ' <i title="Keine Zahlung nötig da inaktiv">inaktiv</i>';
-                    $participantEntry['payment_to_pay'] = $toPay;
-                } else {
-                    $toPay = $paymentStatus->getToPayValue(true);
-                    $participantEntry['payment_to_pay'] = $paymentStatus->isFree()
-                        ? '<i>nichts</i>'
-                        : number_format($toPay, 2, ',', '.') . '&nbsp;€';
+                    $paymentPrice = $paymentStatus->hasPriceSet()
+                        ? number_format($price, 2, ',', '.') . '&nbsp;€'
+                        : '<i>keiner</i>';
+                    if ($paymentStatus->isInactive()) {
+                        $paymentPrice = '<i>' . $paymentPrice . '</i>';
+                    }
+
+                    $participantEntry['is_paid'] = (int)($paymentStatus->isPaid());
+
+                } catch (CalculationImpossibleException $e) {
+                    $paymentImpossible = true;
                 }
-                $paymentPrice = $paymentStatus->hasPriceSet()
-                    ? number_format($price, 2, ',', '.') . '&nbsp;€'
-                    : '<i>keiner</i>';
-                if ($paymentStatus->isInactive()) {
-                    $paymentPrice = '<i>'.$paymentPrice.'</i>';
+
+                if ($paymentImpossible) {
+                    $paymentPrice
+                        = '<span class="label label-danger" title="Der Preis dieses Teilnehmers kann nicht berechnet werden. Die Variablen sollten geprüft werden.">unbekannt</span>';
                 }
-                
-                $participantEntry['payment_price']  = $paymentPrice;
-                
-                $participantEntry['is_paid'] = (int)($paymentStatus->isPaid());
+
+                $participantEntry['payment_price'] = $paymentPrice;
             }
 
             /** @var Fillout $fillout */

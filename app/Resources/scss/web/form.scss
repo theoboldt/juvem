@@ -132,3 +132,11 @@ table.table.table-condensed {
     font-weight: bold;
   }
 }
+
+@media (max-width: $screen-sm-max) {
+  .form-date > .form-control {
+    width: auto;
+    display: inline;
+  }
+}
+
