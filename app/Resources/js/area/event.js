@@ -589,25 +589,58 @@ $(function () {
 
     const paymentSummaryEl = jQuery('#infoEventPaymentSummary');
     if (paymentSummaryEl.length) {
-        $.ajax({
-            type: 'GET',
-            url: '/admin/event/' + paymentSummaryEl.data('eid') + '/payment_summary.json',
-            success: function (response) {
-                var html = '';
-                if (response.success) {
-                    html = '<p>geplanter Umsatz: ' + response.price_total.euros + '&nbsp;€</p>';
-                    html += '<p>Offener Zahlungsbetrag: ' + response.to_pay_total.euros + '&nbsp;€</p>';
+        const loadPaymentSummary = function () {
+            const btnReload = paymentSummaryEl.find('button');
+            paymentSummaryEl.toggleClass('loading', true);
+            btnReload.toggleClass('disabled', true);
+            $.ajax({
+                type: 'GET',
+                url: '/admin/event/' + paymentSummaryEl.data('eid') + '/payment_summary.json',
+                success: function (response) {
+                    paymentSummaryEl.toggleClass('loading', false);
+                    btnReload.toggleClass('disabled', false);
+                    var html = '';
+                    if (response.success) {
+                        html += '<div class="progress">';
+                        html += '  <div class="progress-bar" role="progressbar" title="Bezahlt" aria-valuenow="'
+                            + response.paid_volume.euros + '&nbsp;€'
+                            + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.paid + '%;"> ' + Math.round(response.paid_volume.cents / 100) + '&nbsp;€</div>';
 
-                } else {
-                    if (response.message) {
-                        html = '<div class="alert alert-danger" role="alert">' + eHtml(response.message) + '</div>';
+                        if (response.bars.additional) {
+                            html += '  <div class="progress-bar bar-alt" role="progressbar" title="Überzahlung" aria-valuenow="'
+                                + response.additional_volume.euros + '&nbsp;€'
+                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.additional + '%;"> ' + Math.round(response.additional_volume.cents / 100) + '&nbsp;€</div>';
+                        }
+                        if (response.bars.missing > 10) {
+                            html += '  <div class="progress-bar bar-transparent" role="progressbar" title="Offene Zahlungen" aria-valuenow="'
+                                + response.missing_volume.euros + '&nbsp;€'
+                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.missing + '%;"> ' + Math.round(response.missing_volume.cents / 100) + '&nbsp;€</div>';
+                        }
+
+                        html += '</div>';
+
+                        html += '<p>';
+                        html += 'Durch den Preis wird ein Umsatz von <b>' + response.expected_volume.euros + '&nbsp;€</b> erwartet. ';
+                        if (response.additional_volume.cents) {
+                            html += 'Der Umsatz wird sich durch Überzahlung um weitere <b>' + response.additional_volume.euros + '&nbsp;€</b> erhöhen. ';
+                        }
+                        html += 'Es werden noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response.missing_volume.euros + '&nbsp;€</b> erwartet. ';
+                        html += '</p>';
+
+                    } else {
+                        if (response.message) {
+                            html = '<div class="alert alert-danger" role="alert">' + eHtml(response.message) + '</div>';
+                        }
                     }
-                }
 
-                paymentSummaryEl.find('div').html(html);
-                paymentSummaryEl.attr('class', 'load');
-            }
-        });
+                    paymentSummaryEl.find('div').html(html);
+                    paymentSummaryEl.attr('class', 'load');
+                }
+            });
+        };
+        loadPaymentSummary();
+        paymentSummaryEl.find('button').on('click', loadPaymentSummary);
+
     }
 
 

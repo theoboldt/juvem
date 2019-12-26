@@ -275,26 +275,31 @@ class AdminController extends Controller
      * @Route("/admin/event/{eid}/payment_summary.json", requirements={"eid": "\d+"}, name="event_payment_summary")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      */
-    public function EventPaymentSummaryAction(Request $request, Event $event): Response
+    public function eventPaymentSummaryAction(Request $request, Event $event): Response
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event, null, true, true);
         $paymentManager          = $this->get('app.payment_manager');
-    
-        $priceTotal = 0;
-        $toPayTotal = 0;
+
+        $expectedVolume   = 0;
+        $additionalVolume = 0;
+        $missingVolume    = 0;
+        
         try {
             foreach ($participants as $participant) {
                 $price = $paymentManager->getPriceForParticipant($participant, false);
                 if ($price !== null) {
-                    $priceTotal += $price;
+                    $expectedVolume += $price;
                 }
                 $toPay = $paymentManager->getToPayValueForParticipant($participant, false);
                 if ($toPay !== null) {
-                    $toPayTotal += $toPay;
+                    if ($toPay < 0) {
+                        $additionalVolume += -1*$toPay;
+                    } else {
+                        $missingVolume += $toPay;
+                    }
                 }
             }
-        
         } catch (CalculationImpossibleException $e) {
             if ($e->getPrevious() instanceof NoDefaultValueSpecifiedException) {
                 $message
@@ -309,18 +314,36 @@ class AdminController extends Controller
                 ]
             );
         }
-    
+
+        $totalVolume        = $expectedVolume + $additionalVolume;
+        $barPaidShare       = ($totalVolume - ($missingVolume + $additionalVolume)) / $totalVolume;
+        $barMissingShare    = $missingVolume / $totalVolume;
+        $barAdditionalShare = $additionalVolume / $totalVolume;
+
         return new JsonResponse(
             [
-                'success'      => true,
-                'price_total'  => [
-                    'cents' => $priceTotal,
-                    'euros' => number_format($priceTotal / 100, 2, ',', " "),
+                'success'           => true,
+                'bars'              => [
+                    'paid'       => round($barPaidShare*100, 2),
+                    'missing'    => round($barMissingShare*100, 2),
+                    'additional' => round($barAdditionalShare*100, 2),
                 ],
-                'to_pay_total' => [
-                    'cents' => $toPayTotal,
-                    'euros' => number_format($toPayTotal / 100, 2, ',', " "),
-                ]
+                'paid_volume'       => [
+                    'cents' => ($totalVolume - $missingVolume),
+                    'euros' => number_format(($totalVolume - $missingVolume) / 100, 2, ',', "'"),
+                ],
+                'expected_volume'   => [
+                    'cents' => $expectedVolume,
+                    'euros' => number_format($expectedVolume / 100, 2, ',', "'"),
+                ],
+                'additional_volume' => [
+                    'cents' => $additionalVolume,
+                    'euros' => number_format($additionalVolume / 100, 2, ',', "'"),
+                ],
+                'missing_volume'    => [
+                    'cents' => $missingVolume,
+                    'euros' => number_format($missingVolume / 100, 2, ',', "'"),
+                ],
             ]
         );
     }
