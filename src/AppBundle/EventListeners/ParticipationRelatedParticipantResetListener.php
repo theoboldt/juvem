@@ -11,15 +11,7 @@
 
 namespace AppBundle\EventListeners;
 
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
-use AppBundle\Entity\Event;
-use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\ParticipantDetectingType;
-use AppBundle\Manager\RelatedParticipantsLocker;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 
 class ParticipationRelatedParticipantResetListener extends AbstractRelatedParticipantResetListener
