@@ -53,6 +53,7 @@ class AdminSingleController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
 
+        /** @var Participation $participation */
         $participation = $participationRepository->findDetailed($request->get('pid'));
         if (!$participation) {
             throw new BadRequestHttpException('Requested participation event not found');
