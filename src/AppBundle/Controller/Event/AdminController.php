@@ -19,6 +19,7 @@ use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedExcept
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
@@ -286,7 +287,11 @@ class AdminController extends Controller
         $missingVolume    = 0;
         
         try {
+            /** @var Participant $participant */
             foreach ($participants as $participant) {
+                if (!$participant->isConfirmed()) {
+                    continue;
+                }
                 $price = $paymentManager->getPriceForParticipant($participant, false);
                 if ($price !== null) {
                     $expectedVolume += $price;
@@ -310,12 +315,20 @@ class AdminController extends Controller
             return new JsonResponse(
                 [
                     'success' => false,
-                    'message' => $message
+                    'message' => ['severity' => 'danger', 'content' => $message],
                 ]
             );
         }
 
-        $totalVolume        = $expectedVolume + $additionalVolume;
+        $totalVolume = $expectedVolume + $additionalVolume;
+        if (round($totalVolume, 4) == 0.0) {
+            return new JsonResponse(
+                [
+                    'success' => false,
+                    'message' => ['severity' => 'info', 'content' => 'Keine Zahlungen erwartet.'],
+                ]
+            );
+        }
         $barPaidShare       = ($totalVolume - ($missingVolume + $additionalVolume)) / $totalVolume;
         $barMissingShare    = $missingVolume / $totalVolume;
         $barAdditionalShare = $additionalVolume / $totalVolume;
@@ -431,7 +444,8 @@ class AdminController extends Controller
     /**
      * Configure all variables for a single event
      *
-     * @Route("/admin/event/{eid}/variable/configure", requirements={"eid": "\d+"}, name="admin_event_variable_configure")
+     * @Route("/admin/event/{eid}/variable/configure", requirements={"eid": "\d+"},
+     *                                                 name="admin_event_variable_configure")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request
@@ -702,7 +716,8 @@ class AdminController extends Controller
      * Update specific age and date of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
-     * @Route("/admin/event/{eid}/update-specific-age", requirements={"eid": "\d+"}, name="event_admin_update_specific_age")
+     * @Route("/admin/event/{eid}/update-specific-age", requirements={"eid": "\d+"},
+     *                                                  name="event_admin_update_specific_age")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @param Event   $event

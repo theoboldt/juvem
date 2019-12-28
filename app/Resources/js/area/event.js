@@ -628,8 +628,10 @@ $(function () {
                         html += '</p>';
 
                     } else {
-                        if (response.message) {
-                            html = '<div class="alert alert-danger" role="alert">' + eHtml(response.message) + '</div>';
+                        if (response.message.content) {
+                            html = '<div class="alert alert-'
+                                + eHtml(response.message.severity)
+                                + '" role="alert">' + eHtml(response.message.content) + '</div>';
                         }
                     }
 
