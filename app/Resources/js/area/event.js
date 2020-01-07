@@ -628,9 +628,9 @@ $(function () {
                             html += 'Dabei sind bereits <b>' + response.additional_volume.euros + '&nbsp;€</b> Überzahlung berücksichtigt. ';
                         }
                         if (response.missing_volume.cents === 0) {
-                            html += 'Es werden keine weiteren Zahlungen mehr erwartet. ';
+                            html += 'Es sind keine Zahlungen mehr offen. ';
                         } else {
-                            html += 'Es werden noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> erwartet. ';
+                            html += 'Es werden noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> offen. ';
                         }
                         html += '</p>';
 
