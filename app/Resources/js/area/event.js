@@ -630,7 +630,7 @@ $(function () {
                         if (response.missing_volume.cents === 0) {
                             html += 'Es sind keine Zahlungen mehr offen. ';
                         } else {
-                            html += 'Es werden noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> offen. ';
+                            html += 'Es sind noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> offen. ';
                         }
                         html += '</p>';
 
