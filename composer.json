@@ -56,7 +56,6 @@
         "twig/twig": "^2",
         "knplabs/knp-time-bundle": "^1.7",
         "yellowskies/qr-code-bundle": "^1.2",
-        "ocramius/proxy-manager": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "phpoffice/phpword": "^0.17",
