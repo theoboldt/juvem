@@ -44,7 +44,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminController extends Controller
 {
-
+    
     /**
      * Page for list of events
      *
@@ -56,14 +56,14 @@ class AdminController extends Controller
         $repository      = $this->getDoctrine()->getRepository(Event::class);
         $eventListFuture = $repository->findEidListFutureEvents();
         $eventListPast   = $repository->findEidListPastEvents();
-
+        
         return $this->render(
             'event/admin/list.html.twig',
-            array(
+            [
                 'eventListFuture' => $eventListFuture,
                 'eventListPast'   => $eventListPast,
                 'eventList'       => array_merge($eventListFuture, $eventListPast),
-            )
+            ]
         );
     }
     
@@ -81,29 +81,29 @@ class AdminController extends Controller
         $eventEntityList = $repository->findAllWithCounts(
             true, true, !$this->isGranted('ROLE_ADMIN_EVENT_GLOBAL') ? $this->getUser() : null
         );
-
+        
         $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
-
-        $eTagData = '';
+        
+        $eTagData     = '';
         $eTagModified = new \DateTime('2000-01-01');
-
-        $eventList = array();
+        
+        $eventList = [];
         /** @var Event $event */
         foreach ($eventEntityList as $event) {
-            $eventStatus    = '';
-
+            $eventStatus = '';
+            
             if ($event->isVisible()) {
                 $eventStatus .= sprintf($glyphicon, 'eye-open');
             } else {
                 $eventStatus .= sprintf($glyphicon, 'eye-close');
             }
-
+            
             if ($event->isActive()) {
                 $eventStatus .= sprintf($glyphicon, 'folder-open');
             } else {
                 $eventStatus .= sprintf($glyphicon, 'folder-close');
             }
-
+            
             $eventStartDate = $event->getStartDate()->format(Event::DATE_FORMAT_DATE);
             if ($event->hasEndDate()) {
                 $eventEndDate = $event->getEndDate()->format(Event::DATE_FORMAT_DATE);
@@ -118,8 +118,8 @@ class AdminController extends Controller
             } elseif ($event->hasStartTime()) {
                 $eventEndDate .= ' ' . $event->getStartTime()->format(Event::DATE_FORMAT_TIME);
             }
-
-            $eventList[] = array(
+            
+            $eventList[] = [
                 'eid'                    => $event->getEid(),
                 'is_deleted'             => $event->getDeletedAt() ? 1 : 0,
                 'is_visible'             => (int)$event->isVisible(),
@@ -131,8 +131,8 @@ class AdminController extends Controller
                 'participants_confirmed' => $event->getParticipantsConfirmedCount(),
                 'participants'           => $event->getParticipantsCount(),
                 'status'                 => $eventStatus,
-            );
-    
+            ];
+            
             $eTagData .= sprintf(
                 '-%d.%d.%d.%s-', $event->getEid(), $event->getParticipantsConfirmedCount(),
                 $event->getParticipantsCount(), $eventStatus
@@ -141,20 +141,20 @@ class AdminController extends Controller
                 $eTagModified = $event->getModifiedAt();
             }
         }
-    
+        
         if ($request->isMethod(Request::METHOD_HEAD)) {
             $response = new Response();
         } else {
             $response = new JsonResponse($eventList);
         }
-    
-        $eTag = sha1($eTagData.$eTagModified->format('r'));
+        
+        $eTag = sha1($eTagData . $eTagModified->format('r'));
         $response->setEtag($eTag)
                  ->setLastModified($eTagModified);
-    
+        
         return $response;
     }
-
+    
     /**
      * Edit page for one single event
      *
@@ -166,19 +166,19 @@ class AdminController extends Controller
     {
         $this->denyAccessUnlessGranted('edit', $event);
         $form = $this->createForm(EventType::class, $event);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
-
+            
             $em->persist($event);
             $em->flush();
-
-            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
+            
+            return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render(
             'event/admin/edit.html.twig',
             [
@@ -188,7 +188,7 @@ class AdminController extends Controller
             ]
         );
     }
-
+    
     /**
      * Detail page for one single event
      *
@@ -205,15 +205,15 @@ class AdminController extends Controller
         $genderDistribution = $repository->participantsGenderDistribution($event);
         $participantsCount  = $repository->participantsCount($event);
         $employeeCount      = $repository->employeeCount($event);
-
+        
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
                      ->getForm();
-
+        
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $action = $form->get('action')->getData();
-
+            
             switch ($action) {
                 case 'delete':
                     $event->setDeletedAt(new \DateTime());
@@ -235,9 +235,9 @@ class AdminController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($event);
             $em->flush();
-            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
+            return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
         }
-    
+        
         $groupCount      = 0;
         $detectingsCount = 0;
         /** @var Attribute $attribute */
@@ -251,20 +251,20 @@ class AdminController extends Controller
                     break;
             }
         }
-    
+        
         return $this->render(
             'event/admin/detail.html.twig',
             [
-                'event'                     => $event,
-                'groupCount'                => $groupCount,
-                'detectingsCount'           => $detectingsCount,
-                'pageDescription'           => $event->getDescriptionMeta(true),
-                'ageDistribution'           => $ageDistribution,
-                'ageDistributionMax'        => $ageDistributionMax,
-                'genderDistribution'        => $genderDistribution,
-                'participantsCount'         => $participantsCount,
-                'employeeCount'             => $employeeCount,
-                'form'                      => $form->createView(),
+                'event'              => $event,
+                'groupCount'         => $groupCount,
+                'detectingsCount'    => $detectingsCount,
+                'pageDescription'    => $event->getDescriptionMeta(true),
+                'ageDistribution'    => $ageDistribution,
+                'ageDistributionMax' => $ageDistributionMax,
+                'genderDistribution' => $genderDistribution,
+                'participantsCount'  => $participantsCount,
+                'employeeCount'      => $employeeCount,
+                'form'               => $form->createView(),
             ]
         );
     }
@@ -279,9 +279,9 @@ class AdminController extends Controller
     public function eventPaymentSummaryAction(Request $request, Event $event): Response
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participants            = $participationRepository->participantsList($event, null, true, true);
+        $participants            = $participationRepository->participantsList($event, null, false, false);
         $paymentManager          = $this->get('app.payment_manager');
-
+        
         $expectedVolume   = 0;
         $additionalVolume = 0;
         $missingVolume    = 0;
@@ -299,7 +299,7 @@ class AdminController extends Controller
                 $toPay = $paymentManager->getToPayValueForParticipant($participant, false);
                 if ($toPay !== null) {
                     if ($toPay < 0) {
-                        $additionalVolume += -1*$toPay;
+                        $additionalVolume += -1 * $toPay;
                     } else {
                         $missingVolume += $toPay;
                     }
@@ -319,7 +319,7 @@ class AdminController extends Controller
                 ]
             );
         }
-
+        
         $totalVolume = $expectedVolume + $additionalVolume;
         if (round($totalVolume, 4) == 0.0) {
             return new JsonResponse(
@@ -332,16 +332,20 @@ class AdminController extends Controller
         $barPaidShare       = ($totalVolume - ($missingVolume + $additionalVolume)) / $totalVolume;
         $barMissingShare    = $missingVolume / $totalVolume;
         $barAdditionalShare = $additionalVolume / $totalVolume;
-
+        
         return new JsonResponse(
             [
                 'success'           => true,
                 'bars'              => [
-                    'paid'       => round($barPaidShare*100, 2),
-                    'missing'    => round($barMissingShare*100, 2),
-                    'additional' => round($barAdditionalShare*100, 2),
+                    'paid'       => round($barPaidShare * 100, 2),
+                    'missing'    => round($barMissingShare * 100, 2),
+                    'additional' => round($barAdditionalShare * 100, 2),
                 ],
                 'paid_volume'       => [
+                    'cents' => ($totalVolume - $missingVolume - $additionalVolume),
+                    'euros' => number_format(($totalVolume - $missingVolume - $additionalVolume) / 100, 2, ',', "'"),
+                ],
+                'paid_total_volume' => [
                     'cents' => ($totalVolume - $missingVolume),
                     'euros' => number_format(($totalVolume - $missingVolume) / 100, 2, ',', "'"),
                 ],
@@ -376,7 +380,7 @@ class AdminController extends Controller
         $priceManager     = $this->get('app.price_manager');
         $attributes       = $priceManager->attributesWithFormula();
         $variableResolver = $priceManager->resolver();
-
+        
         $variableUse    = [];
         $usedAttributes = [];
         foreach ($attributes as $attribute) {
@@ -404,7 +408,7 @@ class AdminController extends Controller
         foreach ($variableEntities as $variable) {
             $variableValue      = $values[$variable->getId()] ?? null;
             $variableAttributes = $variableUse[$variable->getId()] ?? [];
-
+            
             if ($variableValue === null && !$variable->hasDefaultValue()) {
                 foreach ($variableAttributes as $attribute) {
                     $this->addFlash(
@@ -502,7 +506,7 @@ class AdminController extends Controller
         );
     }
     
-
+    
     /**
      * Detail page for one single event
      *
@@ -513,24 +517,24 @@ class AdminController extends Controller
     public function sendParticipantsEmailAction(Request $request, Event $event)
     {
         $form = $this->createForm(EventMailType::class);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+            $data      = $form->getData();
             $recipient = $data['recipient'];
             unset($data['recipient']);
-
+            
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailEventParticipants($data, $event, $recipient);
             $this->addFlash(
                 'info',
                 'Die Benachrichtigungs-Emails wurden versandt'
             );
-
-            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
+            
+            return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render(
             'event/admin/mail.html.twig',
             [
@@ -539,7 +543,7 @@ class AdminController extends Controller
             ]
         );
     }
-
+    
     /**
      * Detail page for one single event
      *
@@ -550,7 +554,7 @@ class AdminController extends Controller
     {
         return $this->render('mail/notify-participants.html.twig');
     }
-
+    
     /**
      * Create a new event
      *
@@ -562,15 +566,15 @@ class AdminController extends Controller
         $event = new Event();
         $event->setStartDate(new \DateTime('today'));
         $event->setEndDate(new \DateTime('tomorrow'));
-
+        
         $form = $this->createForm(EventType::class, $event);
-
+        
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
-
+            
             $em->persist($event);
             if ($this->getUser()) {
                 /** @var User $user */
@@ -586,16 +590,16 @@ class AdminController extends Controller
                 }
             }
             $em->flush();
-
-            return $this->redirectToRoute('event', array('eid' => $event->getEid()));
+            
+            return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
         }
-
+        
         return $this->render(
             'event/admin/new.html.twig',
             ['form' => $form->createView()]
         );
     }
-
+    
     /**
      * Handler for subscription button
      *
@@ -607,7 +611,7 @@ class AdminController extends Controller
         $token    = $request->get('_token');
         $eid      = $request->get('eid');
         $valueNew = $request->get('valueNew');
-
+        
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('Eventsubscribe' . $eid)) {
@@ -619,7 +623,7 @@ class AdminController extends Controller
         if (!$event) {
             throw new NotFoundHttpException('Could not find requested event');
         }
-
+        
         if ($valueNew) {
             $event->addSubscriber($this->getUser());
         } else {
@@ -628,10 +632,10 @@ class AdminController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($event);
         $em->flush();
-
+        
         return new Response('', Response::HTTP_NO_CONTENT);
     }
-
+    
     /**
      * Access uploaded image
      *
@@ -642,14 +646,14 @@ class AdminController extends Controller
     {
         $uploadManager = $this->get('app.upload_image_manager');
         $image         = $uploadManager->fetch($filename);
-
+        
         if (!$image->exists()) {
             throw new NotFoundHttpException('Requested image not found');
         }
-
+        
         return ImageResponse::createFromRequest($image, $request);
     }
-
+    
     /**
      * Manage User assignments of events
      *
@@ -657,15 +661,15 @@ class AdminController extends Controller
      * @Route("/admin/event/{eid}/users", requirements={"eid": "\d+"}, name="event_user_admin")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request
-     * @param Event   $event
+     * @param Event $event
      * @return Response
      */
     public function manageUserAssignmentsAction(Request $request, Event $event)
     {
         $this->denyAccessUnlessGranted('edit', $event);
         $originalAssignments = new ArrayCollection();
-        $em = $this->getDoctrine()->getManager();
-
+        $em                  = $this->getDoctrine()->getManager();
+        
         $formAddUsers = $this->createForm(EventAddUserAssignmentsType::class, null, ['event' => $event]);
         $formAddUsers->handleRequest($request);
         if ($formAddUsers->isSubmitted() && $formAddUsers->isValid()) {
@@ -685,7 +689,7 @@ class AdminController extends Controller
         foreach ($event->getUserAssignments() as $assignment) {
             $originalAssignments->add($assignment);
         }
-
+        
         $form = $this->createForm(EventUserAssignmentsType::class, $event);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -701,7 +705,7 @@ class AdminController extends Controller
                 'Änderungen an den Zuweisungen gespeichert'
             );
         }
-
+        
         return $this->render(
             'event/admin/user-assignment.html.twig',
             [
@@ -711,7 +715,7 @@ class AdminController extends Controller
             ]
         );
     }
-
+    
     /**
      * Update specific age and date of an event
      *
@@ -720,30 +724,30 @@ class AdminController extends Controller
      *                                                  name="event_admin_update_specific_age")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
      * @param Request $request
-     * @param Event   $event
+     * @param Event $event
      * @return JsonResponse
      */
     public function updateSpecificAgeAction(Request $request, Event $event)
     {
         $token = $request->get('_token');
-
+        
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
         if ($token != $csrf->getToken('filter-specific-age-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
-
+        
         $em = $this->getDoctrine()->getManager();
-
-        $specificAge = (int)$request->get('specificAge');
+        
+        $specificAge  = (int)$request->get('specificAge');
         $specificDate = new \DateTime($request->get('specificDate'));
         $specificDate->setTime(10, 0, 0);
-
+        
         $event->setSpecificAge($specificAge);
         $event->setSpecificDate($specificDate);
         $em->persist($event);
         $em->flush();
-
+        
         return new JsonResponse(['']);
     }
 }

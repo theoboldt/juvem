@@ -85,7 +85,7 @@ $(function () {
             $.each(proposals, function (field, fieldProposals) {
                 $('[data-typeahead-source="' + field + '"]').each(function () {
                     var el = $(this);
-                    el.attr('autocomplete', 'off');
+                    el.attr('autocomplete', 'custom');
                     el.typeahead({source: fieldProposals});
                 });
             })

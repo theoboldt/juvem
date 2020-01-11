@@ -602,29 +602,36 @@ $(function () {
                     var html = '';
                     if (response.success) {
                         html += '<div class="progress">';
-                        html += '  <div class="progress-bar" role="progressbar" title="Bezahlt" aria-valuenow="'
+                        html += '  <div class="progress-bar" role="progressbar" data-toggle="tooltip" data-title="Umsatz durch Preise: '
+                            + response.paid_volume.euros + '&nbsp;€" aria-valuenow="'
                             + response.paid_volume.euros + '&nbsp;€'
-                            + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.paid + '%;"> ' + Math.round(response.paid_volume.cents / 100) + '&nbsp;€</div>';
+                            + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.paid + '%;"><span>' + Math.round(response.paid_volume.cents / 100) + '&nbsp;€</span></div>';
 
                         if (response.bars.additional) {
-                            html += '  <div class="progress-bar bar-alt" role="progressbar" title="Überzahlung" aria-valuenow="'
+                            html += '  <div class="progress-bar bar-alt" role="progressbar" data-toggle="tooltip" data-title="Zusätzlicher Umsatz durch Überzahlung: '
+                                + response.additional_volume.euros + '&nbsp;€" aria-valuenow="'
                                 + response.additional_volume.euros + '&nbsp;€'
-                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.additional + '%;"> ' + Math.round(response.additional_volume.cents / 100) + '&nbsp;€</div>';
+                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.additional + '%;"><span>' + Math.round(response.additional_volume.cents / 100) + '&nbsp;€</span></div>';
                         }
                         if (response.bars.missing > 10) {
-                            html += '  <div class="progress-bar bar-transparent" role="progressbar" title="Offene Zahlungen" aria-valuenow="'
+                            html += '  <div class="progress-bar bar-transparent" role="progressbar" data-toggle="tooltip" data-title="Offene Zahlungen: '
+                                + response.missing_volume.euros + '&nbsp;€" aria-valuenow="'
                                 + response.missing_volume.euros + '&nbsp;€'
-                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.missing + '%;"> ' + Math.round(response.missing_volume.cents / 100) + '&nbsp;€</div>';
+                                + '" aria-valuemin="0" aria-valuemax="' + response.expected_volume.euros + '" style="width: ' + response.bars.missing + '%;"><span>' + Math.round(response.missing_volume.cents / 100) + '&nbsp;€</span></div>';
                         }
 
                         html += '</div>';
 
                         html += '<p>';
-                        html += 'Durch den Preis wird ein Umsatz von <b>' + response.expected_volume.euros + '&nbsp;€</b> erwartet. ';
+                        html += 'Es wird ein Umsatz <abbr title="in Höhe von">i.H.v.</abbr> von <b>' + response.expected_volume.euros + '&nbsp;€</b> erwartet. ';
                         if (response.additional_volume.cents) {
-                            html += 'Der Umsatz wird sich durch Überzahlung um weitere <b>' + response.additional_volume.euros + '&nbsp;€</b> erhöhen. ';
+                            html += 'Dabei sind bereits <b>' + response.additional_volume.euros + '&nbsp;€</b> Überzahlung berücksichtigt. ';
                         }
-                        html += 'Es werden noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response.missing_volume.euros + '&nbsp;€</b> erwartet. ';
+                        if (response.missing_volume.cents === 0) {
+                            html += 'Es sind keine Zahlungen mehr offen. ';
+                        } else {
+                            html += 'Es sind noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> offen. ';
+                        }
                         html += '</p>';
 
                     } else {
@@ -636,6 +643,7 @@ $(function () {
                     }
 
                     paymentSummaryEl.find('div').html(html);
+                    paymentSummaryEl.find('[data-toggle="tooltip"]').tooltip({placement: 'top'});
                     paymentSummaryEl.attr('class', 'load');
                 }
             });
