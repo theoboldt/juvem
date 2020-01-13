@@ -325,6 +325,10 @@ input.input-formula, textarea.input-formula {
       display: none;
     }
 
+    .column .btn.active {
+      opacity: inherit;
+    }
+
     .attendance-list-toolbar .btn,
     .navbar .btn,
     .btn.btn-never-lock-if-active.active,
