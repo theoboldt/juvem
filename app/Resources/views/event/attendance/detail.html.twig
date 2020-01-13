@@ -11,6 +11,7 @@
       <li class="active">{{ list.title }} ausfüllen</li>
     {% endblock %}
   {% endembed %}
+  <div id="attendanceFilloutPage" class="locked">
   <div class="modal fade" tabindex="-1" role="dialog" id="modalComment">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -24,8 +25,8 @@
                     data-token="{{ csrf_token('attendance-comment'~list.tid) }}"></textarea>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
-          <button type="button" class="btn btn-primary">Änderungen speichern</button>
+          <button type="button" class="btn btn-default btn-never-lock" data-dismiss="modal">Schließen</button>
+          <button type="button" class="btn btn-primary hide-if-locked">Änderungen speichern</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -61,9 +62,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+          <button type="button" class="btn btn-default btn-never-lock" data-dismiss="modal">Schließen</button>
           <a href="{{ path('event_attendance_fillout_export', {eid: event.eid, tid: list.tid}) }}"
-             class="btn btn-primary" target="_blank">
+             class="btn btn-primary btn-never-lock" target="_blank">
             Export erstellen
           </a>
         </div>
@@ -74,23 +75,31 @@
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar attendance-list-toolbar" role="toolbar">
-          <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
-             class="btn btn-primary">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
-          {% if list.startDate %}
-          <a href="{{ path('event_attendance_followup', {eid: event.eid, tid: list.tid}) }}"
-             class="btn btn-default">{{ 'share-alt'|glyph }}<span class="hidden-xs"> Nachfolger erstellen...</span></a>
-          {% endif %}
+          <div class="btn-group">
+            <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
+               class="btn btn-default">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+            {% if list.startDate %}
+              <a href="{{ path('event_attendance_followup', {eid: event.eid, tid: list.tid}) }}"
+                 class="btn btn-default">{{ 'share-alt'|glyph }}<span class="hidden-xs"> Nachfolger erstellen...</span></a>
+            {% endif %}
+          </div>
+          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalExport">
+            {{ 'export'|glyph }} <span class="hidden-xs">Exportieren...</span>
+          </button>
           <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#attendance-filters"
                   aria-expanded="false" aria-controls="attendance-filters">
             {{ 'filter'|glyph }}<span class="hidden-xs"> Filter </span><span class="caret"></span>
-          </button>
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalExport">
-            {{ 'export'|glyph }} <span class="hidden-xs">Exportieren...</span>
           </button>
           <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
             <label class="btn btn-info">
               <input type="checkbox" autocomplete="off"> {{ 'repeat'|glyph }} <span
                   class="hidden-xs">aktuell halten</span>
+            </label>
+          </div>
+          <div class="btn-group" data-toggle="buttons" title="Modus zum Ausfüllen aktivieren/deaktivieren" id="toggleEditableMode">
+            <label class="btn btn-primary">
+              <input type="checkbox" autocomplete="off"> {{ 'edit'|glyph }} <span
+                  class="hidden-xs">Ausfüllmodus</span>
             </label>
           </div>
           <div class="btn-group" data-toggle="buttons" title="Automatisch aktualisieren" id="autoRefresh">
@@ -255,7 +264,7 @@
                       </label>
                     {% endfor %}
                   </div>
-                  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalComment"
+                  <button type="button" class="btn btn-default btn-never-lock-if-active" data-toggle="modal" data-target="#modalComment"
                           id="choice_{{ participant.aid }}_{{ column.columnId }}_comment" data-comment="">
                     {{ 'comment'|glyph }}
                   </button>
@@ -269,5 +278,6 @@
         </table>
       </div>
     </div>
+  </div>
   </div>
 {% endblock %}

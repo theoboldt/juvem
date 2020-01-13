@@ -314,6 +314,26 @@ input.input-formula, textarea.input-formula {
   }
 }
 
+#attendanceFilloutPage {
+  &.locked {
+    .btn {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .hide-if-locked {
+      display: none;
+    }
+
+    .attendance-list-toolbar .btn,
+    .navbar .btn,
+    .btn.btn-never-lock-if-active.active,
+    .btn.btn-never-lock {
+      cursor: pointer;
+      opacity: inherit;
+    }
+  }
+}
 
 #attendanceList {
   .btn.active {
@@ -344,6 +364,7 @@ input.input-formula, textarea.input-formula {
   td.action {
     max-width: 40px;
   }
+
 
   tbody {
     tr td {

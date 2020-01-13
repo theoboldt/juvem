@@ -1,5 +1,7 @@
 $(function () {
     var attendanceList = $('#attendanceList'),
+        elContainer = $('#attendanceFilloutPage'),
+        elEditableMode = $('#toggleEditableMode'),
         elAutoRefresh = $('#autoRefresh'),
         listId = attendanceList.data('list-id'),
         autoRefreshInterval = false,
@@ -86,8 +88,20 @@ $(function () {
                 clearInterval(autoRefreshInterval);
             }
         });
+        elEditableMode.click(function () {
+            var checkbox = $(this).find('input'),
+                oldValue = checkbox.prop('checked'),
+                newValue = !oldValue;
 
-        $('.btn-column-all').click(function () {
+            elContainer.toggleClass('locked', !newValue);
+        });
+
+        $('.btn-column-all').click(function (event) {
+            if (elContainer.hasClass('locked')) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;  //do nothing if not editable
+            }
             var el = $(this),
                 columnId = el.data('column-id'),
                 choiceId = el.data('choice-id');
@@ -177,6 +191,11 @@ $(function () {
             if (cause === 'caused-by-refresh' || cause === 'caused-by-batch') {
                 return;
             }
+            if (elContainer.hasClass('locked')) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;  //do nothing if not editable
+            }
             const el = $(this);
             queuedUpdates.push(el);
             el.toggleClass('preview', true);
@@ -188,7 +207,10 @@ $(function () {
                 elInput = $('#modalCommentContent'),
                 columnId = btn.parents('td').data('column-id'),
                 aid = btn.parents('tr').data('aid');
-            if (btn.hasClass('disabled')) {
+            if (btn.hasClass('disabled')
+                || (elContainer.hasClass('locked') && !btn.hasClass('active'))
+            ) {
+                debugger
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 return false;
@@ -199,7 +221,12 @@ $(function () {
             elInput.data('column-id', columnId);
             elInput.focus();
 
-            $('#modalComment .btn-primary').click(function () {
+            $('#modalComment .btn-primary').click(function (event) {
+                if (elContainer.hasClass('locked')) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    return;  //do nothing if not editable
+                }
                 var elInput = $('#modalCommentContent'),
                     newComment = elInput.val();
                 $('#modalComment').modal('hide');
