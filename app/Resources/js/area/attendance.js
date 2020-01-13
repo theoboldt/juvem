@@ -95,7 +95,7 @@ $(function () {
 
             elContainer.toggleClass('locked', !newValue);
         });
-
+        elEditableMode.tooltip();
         $('.btn-column-all').click(function (event) {
             if (elContainer.hasClass('locked')) {
                 event.preventDefault();
@@ -192,6 +192,8 @@ $(function () {
                 return;
             }
             if (elContainer.hasClass('locked')) {
+                elEditableMode.tooltip('show');
+
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 return;  //do nothing if not editable
