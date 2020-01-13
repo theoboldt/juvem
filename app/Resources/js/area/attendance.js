@@ -210,7 +210,6 @@ $(function () {
             if (btn.hasClass('disabled')
                 || (elContainer.hasClass('locked') && !btn.hasClass('active'))
             ) {
-                debugger
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 return false;
