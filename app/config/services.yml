@@ -119,11 +119,11 @@ services:
     app.file_cache.event:
         class: AppBundle\Cache\FileCache
         arguments:
-          - "%kernel.root_dir%/cache/%kernel.environment%/fc/event"
+          - "%app.cache.environment.path%/fc/event"
     app.file_cache.gallery:
         class: AppBundle\Cache\FileCache
         arguments:
-          - "%kernel.root_dir%/cache/%kernel.environment%/fc/gallery"
+          - "%app.cache.environment.path%/fc/gallery"
     app.upload_image_manager:
         class: AppBundle\Manager\UploadImageManager
         arguments: ['@app.file_cache.event', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'event_image', '@logger', '@?app.juvimg.service']
@@ -173,7 +173,7 @@ services:
     app.payment.expression_language_provider:
         class: AppBundle\Manager\Payment\ExpressionLanguageProvider
         arguments:
-            - "%kernel.root_dir%/cache/%kernel.environment%/fc/payment"
+            - "%app.cache.environment.path%/fc/payment"
     app.price_manager:
         class: AppBundle\Manager\Payment\PriceManager
         arguments:
@@ -271,6 +271,12 @@ services:
         arguments:
             - 'AppBundle:Participation'
 
+    app.repository.open_street_map_element:
+        class: AppBundle\Entity\OpenStreetMapElementRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:LocationDescription'
+
     AppBundle\Security\EventVoter:
       autowire: true
       tags:
@@ -306,4 +312,15 @@ services:
         - "@doctrine.orm.entity_manager"
       tags:
         - form.type
+
+    AppBundle\Manager\Geo\NominatimAddressResolver:
+        arguments:
+            - "%app.cache.nominatim_last_access.path%"
+
+    app.geo.address_resolver:
+        class: AppBundle\Manager\Geo\AddressResolver
+        arguments:
+            - '@AppBundle\Manager\Geo\NominatimAddressResolver'
+            - '@app.repository.open_street_map_element'
+        public: true
 

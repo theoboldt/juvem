@@ -11,6 +11,9 @@ parameters:
     locale: de
     app.database.configuration.path: "%kernel.root_dir%/config/.my.cnf"
     app.tmp.root.path: "%kernel.root_dir%/../tmp"
+    app.cache.root.path: "%kernel.root_dir%/cache"
+    app.cache.environment.path: "%app.cache.root.path%/%kernel.environment%"
+    app.cache.nominatim_last_access.path: "%app.cache.environment.path%/nominatim_last_access"
     app.web.root.path: "%kernel.root_dir%/../web"
     app.data.root.path: "%kernel.root_dir%/../data"
     app.data.invoice.path: "%app.data.root.path%/invoice"

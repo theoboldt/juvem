@@ -18,6 +18,7 @@ use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,7 +35,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, SoftDeleteableInterface
+class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, SoftDeleteableInterface, AddressAwareInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {

@@ -15,6 +15,7 @@ use AppBundle\Entity\AttendanceList\AttendanceList;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Manager\Geo\AddressAwareInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,7 +33,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
  */
-class Event implements SoftDeleteableInterface
+class Event implements SoftDeleteableInterface, AddressAwareInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, AddressTrait;
 

@@ -11,6 +11,8 @@
 namespace AppBundle\Entity;
 
 
+use AppBundle\Manager\Geo\AddressResolver;
+
 trait AddressTrait
 {
     
@@ -31,8 +33,7 @@ trait AddressTrait
      * @Assert\NotBlank()
      */
     protected $addressZip;
-
-
+    
     /**
      * Related country
      *
@@ -40,8 +41,7 @@ trait AddressTrait
      * @Assert\NotBlank()
      */
     protected $addressCountry = Event::DEFAULT_COUNTRY; //configuring default
-
-
+    
     /**
      * Set addressStreet
      *
@@ -147,5 +147,33 @@ trait AddressTrait
             $address .= ' ('.$this->getAddressCountry().')';
         }
         return $address;
+    }
+    
+    /**
+     * Determine if an address is specified
+     *
+     * @return bool
+     */
+    public function isAddressSpecified(): bool
+    {
+        return ($this->getAddressZip() && $this->getAddressCity() && $this->getAddressCountry());
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getAddressStreetName(): ?string
+    {
+        $street = $this->getAddressStreet();
+        return $street ? AddressResolver::extractStreetName($street) : null;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getAddressStreetNumber(): ?string
+    {
+        $street = $this->getAddressStreet();
+        return $street ? AddressResolver::extractStreetNumber($street) : null;
     }
 }
