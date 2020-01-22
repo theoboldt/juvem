@@ -223,7 +223,7 @@ class NominatimAddressResolver implements AddressResolverInterface
     public function provideCoordinates(AddressAwareInterface $item): ?CoordinatesAwareInterface
     {
         $place = $this->fetchPlaceBySearch($item);
-        dump($place);
+
         if ($place->isFound()) {
             return $this->fetchEnrichedPlaceByDetails($place);
         } else {
