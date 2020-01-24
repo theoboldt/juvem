@@ -10,8 +10,8 @@
 
 namespace AppBundle\Manager\Geo;
 
-use AppBundle\Entity\LocationDescription;
-use AppBundle\Entity\LocationDescriptionRepository;
+use AppBundle\Entity\Geo\LocationDescription;
+use AppBundle\Entity\Geo\LocationDescriptionRepository;
 
 class AddressResolver implements AddressResolverInterface
 {
@@ -25,7 +25,7 @@ class AddressResolver implements AddressResolverInterface
     /**
      * Osm Repository
      *
-     * @var LocationDescriptionRepository
+     * @var \AppBundle\Entity\Geo\LocationDescriptionRepository
      */
     private $repository;
     
@@ -33,7 +33,7 @@ class AddressResolver implements AddressResolverInterface
      * AddressResolver constructor.
      *
      * @param AddressResolverInterface $resolver
-     * @param LocationDescriptionRepository $repository
+     * @param \AppBundle\Entity\Geo\LocationDescriptionRepository $repository
      */
     public function __construct(AddressResolverInterface $resolver, LocationDescriptionRepository $repository)
     {

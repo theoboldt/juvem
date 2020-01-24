@@ -8,8 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\Geo;
 
+use AppBundle\Entity\Event;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use Doctrine\ORM\EntityRepository;
 
