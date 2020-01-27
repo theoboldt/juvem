@@ -2,10 +2,10 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Registrierung bestätigen{% endblock %}
+{% block title %}Registrierung bestätigen ({{ customization.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Registrierung bestätigen', 'subtitle': 'Juvem'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Registrierung bestätigen', 'subtitle': customization.title} %}
         {% block breadcrumb %}
             <li class="active">Registrierung bestätigen</li>
         {% endblock %}

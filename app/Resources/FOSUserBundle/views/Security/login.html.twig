@@ -2,10 +2,10 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Veranstaltung{% endblock %}
+{% block title %}Anmeldung ({{ customization.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Juvem', 'subtitle': 'Anmeldung'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': customization.title} %}
         {% block breadcrumb %}
             <li class="active">Anmeldung</li>
         {% endblock %}
@@ -55,6 +55,11 @@
                         <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}"
                                class="btn btn-primary"/>
                     </form>
+                </div>
+                <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+                        <hr />
+                    <p><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></p>
+                    <p><a href="{{ path('fos_user_resetting_request') }}">Passwort vergessen/zurücksetzen</a></p>
                 </div>
             </div>
         </div>

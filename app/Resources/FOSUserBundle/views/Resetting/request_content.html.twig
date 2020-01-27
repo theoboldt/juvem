@@ -5,7 +5,7 @@
 {% block title %}Passwort zurücksetzten{% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Passwort zurücksetzten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Passwort zurücksetzten', 'subtitle': customization.title} %}
         {% block breadcrumb %}
             <li class="active">Passwort zurücksetzten</li>
         {% endblock %}
@@ -25,7 +25,9 @@
                 <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
                     <div class="form-group">
                         <label for="username">E-Mail</label>
-                        <input type="text" id="username" name="username" required="required" class="form-control" />
+                        <input type="text" id="username" name="username" required="required" class="form-control"/>
+                        <p class="help-block">Wenn Sie ein Benutzerkonto angelegt haben, wird an die angegebene E-Mail
+                            Adresse eine E-Mail verschickt, mit der Sie ein neues Passwort vergeben können.</p>
                     </div>
                 </div>
             </div>
