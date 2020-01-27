@@ -71,7 +71,7 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      * @param float $locationLongitude
      * @return CurrentWeather
      */
-    public function createDetailedForLocation(
+    public static function createDetailedForLocation(
         array $details, float $locationLatitude, float $locationLongitude
     ): CurrentWeather
     {
@@ -156,7 +156,7 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     public function getWeather(): array
     {
         $result = [];
-        foreach ($this->details['main']['weather'] as $weather) {
+        foreach ($this->details['weather'] as $weather) {
             $result[] = new OpenWeatherWeatherCondition($weather);
         }
         return $result;

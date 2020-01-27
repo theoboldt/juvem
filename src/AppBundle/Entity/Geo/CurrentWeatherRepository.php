@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\Geo;
 
+use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -28,6 +29,27 @@ class CurrentWeatherRepository extends EntityRepository
         $em = $this->getEntityManager();
         $em->persist($weatherInfo);
         $em->flush();
+    }
+    
+    /**
+     * Find weather by coordinates
+     *
+     * @param CoordinatesAwareInterface $aware
+     * @return CurrentWeather|null
+     */
+    public function findByCoordinates(CoordinatesAwareInterface $aware): ?CurrentWeather
+    {
+        $longitude = round($aware->getLocationLongitude(), 2);
+        $latitude  = round($aware->getLocationLatitude(), 2);
+        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('w')
+           ->from(CurrentWeather::class, 'w')
+           ->andWhere($qb->expr()->eq('ROUND(w.locationLongitude, 2)', $longitude))
+           ->andWhere($qb->expr()->eq('ROUND(w.locationLatitude, 2)', $latitude));
+        
+        $result = $qb->getQuery()->getResult();
+        return count($result) ? $result[0] : null;
     }
     
 }

@@ -12,6 +12,7 @@ namespace AppBundle\Manager\Weather;
 
 
 use AppBundle\Entity\Geo\ClimaticInformationInterface;
+use AppBundle\Entity\Geo\CurrentWeather;
 use AppBundle\Entity\Geo\CurrentWeatherRepository;
 use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 
@@ -33,12 +34,12 @@ class WeatherProvider implements WeatherProviderInterface
     /**
      * AddressResolver constructor.
      *
-     * @param WeatherProviderInterface $resolver
+     * @param WeatherProviderInterface $provider
      * @param CurrentWeatherRepository $repository
      */
     public function __construct(WeatherProviderInterface $provider, CurrentWeatherRepository $repository)
     {
-        $this->prov       = $provider;
+        $this->provider   = $provider;
         $this->repository = $repository;
     }
     
@@ -47,6 +48,14 @@ class WeatherProvider implements WeatherProviderInterface
      */
     public function provideCurrentWeather(CoordinatesAwareInterface $item): ?ClimaticInformationInterface
     {
-        // TODO: Implement provideCurrentWeather() method.
+        $weather = $this->repository->findByCoordinates($item);
+        if (!$weather) {
+            $info = $this->provider->provideCurrentWeather($item);
+            if ($info instanceof CurrentWeather) {
+                $this->repository->persist($info);
+            }
+            return $info;
+        }
+        return $weather;
     }
 }

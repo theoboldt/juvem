@@ -275,13 +275,13 @@ services:
         class: AppBundle\Entity\Geo\LocationDescriptionRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
-            - 'AppBundle:LocationDescription'
+            - 'AppBundle:Geo\LocationDescription'
 
     app.repository.weather_current:
         class: AppBundle\Entity\Geo\CurrentWeatherRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
-            - 'AppBundle:CurrentWeather'
+            - 'AppBundle\Entity\Geo\CurrentWeather'
 
     AppBundle\Security\EventVoter:
       autowire: true
@@ -332,7 +332,7 @@ services:
 
     AppBundle\Manager\Weather\OpenweathermapWeatherProvider:
         arguments:
-            - ""
+            - "%app.geo.openweathermap.api_key%"
 
     app.geo.weather_provider:
         class: AppBundle\Manager\Weather\WeatherProvider

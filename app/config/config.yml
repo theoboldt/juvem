@@ -111,6 +111,8 @@ doctrine:
         #   2. Uncomment database_path in parameters.yml.dist
         #   3. Uncomment next line:
         #     path:     "%database_path%"
+        mapping_types:
+            enum: string
         types:
             phone_number: Misd\PhoneNumberBundle\Doctrine\DBAL\Types\PhoneNumberType
 
@@ -121,6 +123,7 @@ doctrine:
                 dql:
                     numeric_functions:
                         FLOOR: AppBundle\Query\MysqlFloor
+                        ROUND: AppBundle\Query\MysqlRound
                     datetime_functions:
                         CURDATE: AppBundle\Query\MysqlCurDate
                         DATEDIFF: AppBundle\Query\MysqlDateDiff

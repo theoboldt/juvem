@@ -46,7 +46,7 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
         if (!is_array($apiKeys)) {
             explode(';', $apiKeys);
         }
-        $this->apiKeys = $apiKeys;
+        $this->apiKeys = [$apiKeys];
     }
     
     /**
@@ -56,7 +56,7 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
      */
     private function provideApiKey(): string
     {
-        return array_rand($this->apiKeys);
+        return $this->apiKeys[array_rand($this->apiKeys)];
     }
     
     
@@ -112,6 +112,8 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
         if ($data === null) {
             throw new \InvalidArgumentException('Failed to fetch address info: ' . json_last_error_msg());
         }
-        return new CurrentWeather($data);
+        return CurrentWeather::createDetailedForLocation(
+            $data, $item->getLocationLatitude(), $item->getLocationLongitude()
+        );
     }
 }
