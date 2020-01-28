@@ -48,7 +48,7 @@ class WeatherProvider implements WeatherProviderInterface
      */
     public function provideCurrentWeather(CoordinatesAwareInterface $item): ?ClimaticInformationInterface
     {
-        if ($item->isLocationProvided()) {
+        if (!$item->isLocationProvided()) {
             return null;
         }
         $weather = $this->repository->findByCoordinates($item);
