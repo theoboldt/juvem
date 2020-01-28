@@ -29,4 +29,11 @@ interface CoordinatesAwareInterface
      * @todo type hint add when using PHP 7.4
      */
     public function getLocationLongitude();
+    
+    /**
+     * Determine if this item actually provides location or if any of the items is null
+     *
+     * @return bool
+     */
+    public function isLocationProvided(): bool;
 }

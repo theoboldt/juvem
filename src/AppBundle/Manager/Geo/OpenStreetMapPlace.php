@@ -31,4 +31,13 @@ class OpenStreetMapPlace extends OpenStreetMapElement implements CoordinatesAwar
         return $data['lon'] ?? null;
     }
     
+    /**
+     * @inheritDoc
+     */
+    public function isLocationProvided(): bool
+    {
+        return $this->getLocationLatitude() && $this->getLocationLongitude();
+    }
+
+    
 }

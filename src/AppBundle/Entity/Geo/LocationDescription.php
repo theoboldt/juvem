@@ -361,6 +361,14 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     /**
      * @inheritDoc
      */
+    public function isLocationProvided(): bool
+    {
+        return $this->getLocationLatitude() && $this->getLocationLongitude();
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function isAddressSpecified(): bool
     {
         return ($this->getAddressZip() && $this->getAddressCity() && $this->getAddressCountry());

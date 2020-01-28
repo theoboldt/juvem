@@ -72,6 +72,14 @@ class DetailedOpenStreetMapPlace extends OpenStreetMapPlace
     }
     
     /**
+     * @inheritDoc
+     */
+    public function isLocationProvided(): bool
+    {
+        return $this->getLocationLatitude() && $this->getLocationLongitude();
+    }
+
+    /**
      * Get addresses elements
      *
      * @return array|OpenStreetMapElement[]

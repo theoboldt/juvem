@@ -163,6 +163,14 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     /**
      * @inheritDoc
      */
+    public function isLocationProvided(): bool
+    {
+        return $this->getLocationLatitude() && $this->getLocationLongitude();
+    }
+    
+    /**
+     * @inheritDoc
+     */
     public function getTemperature(): float
     {
         return (float)$this->details['main']['temp'];
