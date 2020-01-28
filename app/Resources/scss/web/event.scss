@@ -541,3 +541,11 @@ abbr.unit {
   }
 
 }
+
+.compact-form-group .form-group {
+  margin-bottom: 5px;
+
+  .checkbox {
+    margin: 0;
+  }
+}

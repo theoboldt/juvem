@@ -289,7 +289,31 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface
      * @Assert\Type("\DateTime")
      */
     protected $specificDate = null;
-
+    
+    /**
+     * Set to true if address should be shown to public users
+     *
+     * @ORM\Column(type="boolean", name="is_show_address")
+     * @var bool
+     */
+    protected $isShowAddress = false;
+    
+    /**
+     * Set to true if map should be shown to public users
+     *
+     * @ORM\Column(type="boolean", name="is_show_map")
+     * @var bool
+     */
+    protected $isShowMap = false;
+   
+    /**
+     * Set to true if weather info should be shown to public users
+     *
+     * @ORM\Column(type="boolean", name="is_show_weather")
+     * @var bool
+     */
+    protected $isShowWeather = false;
+    
     /**
      * CONSTRUCTOR
      */
@@ -1155,16 +1179,6 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface
     }
     
     /**
-     * Determine if weather data should be shown if place available
-     *
-     * @return bool
-     */
-    public function isWeatherEnabled(): bool
-    {
-        return true;
-    }
-
-    /**
      * Set descriptionMeta
      *
      * @param string $descriptionMeta
@@ -1305,5 +1319,53 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface
     public function getEmployees(): array
     {
         return $this->employees->toArray();
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isShowAddress(): bool
+    {
+        return $this->isShowAddress;
+    }
+    
+    /**
+     * @param bool $isShowAddress
+     */
+    public function setIsShowAddress(bool $isShowAddress): void
+    {
+        $this->isShowAddress = $isShowAddress;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isShowMap(): bool
+    {
+        return $this->isShowMap;
+    }
+    
+    /**
+     * @param bool $isShowMap
+     */
+    public function setIsShowMap(bool $isShowMap): void
+    {
+        $this->isShowMap = $isShowMap;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isShowWeather(): bool
+    {
+        return $this->isShowWeather;
+    }
+    
+    /**
+     * @param bool $isShowWeather
+     */
+    public function setIsShowWeather(bool $isShowWeather): void
+    {
+        $this->isShowWeather = $isShowWeather;
     }
 }

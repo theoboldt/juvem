@@ -155,6 +155,21 @@ class EventType extends AbstractType
                 ]
             )
             ->add(
+                'isShowAddress',
+                CheckboxType::class,
+                ['label' => 'Adresse öffentlich anzeigen', 'mapped' => true, 'required' => false]
+            )
+            ->add(
+                'isShowMap',
+                CheckboxType::class,
+                ['label' => 'Karte anzeigen', 'mapped' => true, 'required' => false]
+            )
+            ->add(
+                'isShowWeather',
+                CheckboxType::class,
+                ['label' => 'Wetterdaten anzeigen', 'mapped' => true, 'required' => false]
+            )
+            ->add(
                 'hasConfirmationMessage', CheckboxType::class,
                 array_merge($smartCheckbox, array('label' => 'Bestätigungs-Text'))
             )

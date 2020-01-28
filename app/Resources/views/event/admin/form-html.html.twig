@@ -326,7 +326,7 @@
             </div>
             <div class="col-xs-12">
                 <h4 class="control-label">Veranstaltungsort</h4>
-                <p class="help-block">Kann ein Feld nicht korrekt befüllt werden, leer lassen. Wird vor allem für Hervorhebung in Suchergebnissen verwendet.</p>
+                <p class="help-block">Kann ein Feld nicht korrekt befüllt werden, leer lassen. Wird vor allem für Hervorhebung in Suchergebnissen oder für Wetterdaten verwendet.</p>
             </div>
             <div class="col-xs-12">
                 {{ form_label(form.addressTitle) }}
@@ -349,6 +349,11 @@
         <div class="row">
             <div class="col-xs-12">
                 {{ form_row(form.addressCountry) }}
+            </div>
+            <div class="col-xs-12 compact-form-group">
+                {{ form_row(form.isShowAddress) }}
+                {{ form_row(form.isShowMap) }}
+                {{ form_row(form.isShowWeather) }}
             </div>
         </div>
         <div class="row">

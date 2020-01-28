@@ -285,6 +285,11 @@
                         </div>
                     </div>
                     {% endif %}
+                    {% if event.showWeather %}
+                        <div class="col-xs-12">
+                            <div id="weather-current" data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
