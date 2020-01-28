@@ -117,8 +117,8 @@
                       </p>
                     </div>
                   </div>
-                  {% if event.showAddress and (event.addressTitle or event.addressStreet or event.addressCity) %}
-                    <div class="row">
+                  <div class="row">
+                    {% if event.showAddress and (event.addressTitle or event.addressStreet or event.addressCity) %}
                       <div class="col-xs-12">
                         <label class="control-label" style="margin-bottom: 2px;">Veranstaltungsort</label>
                         <div class="location" itemprop="location" itemscope itemtype="https://schema.org/Place">
@@ -137,14 +137,14 @@
                           </address>
                         </div>
                       </div>
-                      {% if event.showWeather %}
-                        <div class="col-xs-12">
-                          <div id="weather-current"
-                               data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
-                        </div>
-                      {% endif %}
-                    </div>
-                  {% endif %}
+                    {% endif %}
+                    {% if event.showWeather %}
+                      <div class="col-xs-12">
+                        <div id="weather-current"
+                             data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
+                      </div>
+                    {% endif %}
+                  </div>
                 {% endif %}
                 <div style="display: none;">
                     <a itemprop="url" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">{{ event.title }}</a>
