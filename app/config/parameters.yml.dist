@@ -41,6 +41,9 @@ parameters:
     juvimg.url: ~
     juvimg.password: ~
 
+    app.libreoffice_binary_path: ~
+    app.geo.openweathermap.api_key: ~
+
     # Website host address should be defined in order to be able to generate links from console
     router.request_context.host: ~
     # Scheme should be defined in order to be able to generate links from console
