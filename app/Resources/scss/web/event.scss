@@ -530,3 +530,14 @@ abbr.unit {
     color: #222;
   }
 }
+
+.event-meta {
+  label {
+    font-size: 106%;
+  }
+
+  i.owf {
+    color: $brand-primary;
+  }
+
+}

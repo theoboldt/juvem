@@ -22,6 +22,14 @@ module.exports = function (grunt) {
                         src: '**',
                         dest: 'web/font/',
                         filter: 'isFile'
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'node_modules/owfont/fonts/',
+                        src: '**',
+                        dest: 'web/font/',
+                        filter: 'isFile'
                     }
                 ]
             }
@@ -107,6 +115,12 @@ module.exports = function (grunt) {
                     'app/cache/dep/all-sass-print.css'
                 ],
                 dest: 'web/css/print.css'
+            },
+            distCssOwfont: {
+                src: [
+                    '<%= resourcesPath %>/css/lib/owfont-regular.css'
+                ],
+                dest: 'web/css/owfont.css'
             }
         },
 
@@ -166,6 +180,15 @@ module.exports = function (grunt) {
                 },
                 src: 'web/css/print.css',
                 dest:'web/css/print.min.css'
+            },
+            owfont: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1,
+                    sourceMap: false
+                },
+                src: 'web/css/owfont.css',
+                dest: 'web/css/owfont.min.css'
             }
         },
 
@@ -207,8 +230,8 @@ module.exports = function (grunt) {
         'deploy',
         [
             'clean:font', 'copy',
-            'clean:dep', 'clean:css', 'sass', 'concat:distCssWeb', 'concat:distCssPrint', 'cssmin',
-            'clean:js', 'concat:distWebJs', 'concat:distCssPrint', 'uglify',
+            'clean:dep', 'clean:css', 'sass', 'concat:distCssWeb', 'concat:distCssPrint', 'concat:distCssOwfont', 'cssmin',
+            'clean:js', 'concat:distWebJs', 'concat:distCssPrint', 'concat:distCssOwfont', 'uglify',
             'clean:dep'
         ]
     );

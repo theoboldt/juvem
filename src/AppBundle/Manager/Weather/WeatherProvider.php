@@ -49,12 +49,20 @@ class WeatherProvider implements WeatherProviderInterface
     public function provideCurrentWeather(CoordinatesAwareInterface $item): ?ClimaticInformationInterface
     {
         $weather = $this->repository->findByCoordinates($item);
-        if (!$weather) {
-            $info = $this->provider->provideCurrentWeather($item);
-            if ($info instanceof CurrentWeather) {
-                $this->repository->persist($info);
+        if ($weather) {
+            $validityLimit = new \DateTime('now', $weather->getCreatedAt()->getTimezone());
+            $validityLimit->modify('-1 hour');
+            
+            if ($weather->getCreatedAt() < $validityLimit) {
+                $this->repository->remove($weather);
+                $weather = null;
             }
-            return $info;
+        }
+        if (!$weather) {
+            $weather = $this->provider->provideCurrentWeather($item);
+            if ($weather instanceof CurrentWeather) {
+                $this->repository->persist($weather);
+            }
         }
         return $weather;
     }

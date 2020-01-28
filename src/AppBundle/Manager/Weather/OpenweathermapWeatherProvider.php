@@ -43,10 +43,12 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
      */
     public function __construct($apiKeys)
     {
-        if (!is_array($apiKeys)) {
-            explode(';', $apiKeys);
+        if (!empty($apiKeys)) {
+            if (!is_array($apiKeys)) {
+                explode(';', $apiKeys);
+            }
+            $this->apiKeys = [$apiKeys];
         }
-        $this->apiKeys = [$apiKeys];
     }
     
     /**
@@ -59,6 +61,15 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
         return $this->apiKeys[array_rand($this->apiKeys)];
     }
     
+    /**
+     * Determine if api keys are configured
+     *
+     * @return bool
+     */
+    public function providesApiKeys(): bool
+    {
+        return count($this->apiKeys);
+    }
     
     /**
      * Configures the Guzzle client for juvimg service
@@ -95,6 +106,9 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
      */
     public function provideCurrentWeather(CoordinatesAwareInterface $item): ?ClimaticInformationInterface
     {
+        if (!$this->providesApiKeys()) {
+            return null;
+        }
         $response = $this->client()->get(
             '/data/2.5/weather',
             [
@@ -113,7 +127,7 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
             throw new \InvalidArgumentException('Failed to fetch address info: ' . json_last_error_msg());
         }
         return CurrentWeather::createDetailedForLocation(
-            $data, $item->getLocationLatitude(), $item->getLocationLongitude()
+            CurrentWeather::PROVIDER_OPENWEATHERMAP, $data, $item->getLocationLatitude(), $item->getLocationLongitude()
         );
     }
 }

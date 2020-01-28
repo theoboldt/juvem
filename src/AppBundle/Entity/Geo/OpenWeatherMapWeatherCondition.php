@@ -11,7 +11,7 @@
 namespace AppBundle\Entity\Geo;
 
 
-class OpenWeatherWeatherCondition implements WeatherConditionInterface, \JsonSerializable
+class OpenWeatherMapWeatherCondition implements WeatherConditionInterface, \JsonSerializable
 {
     
     /**
@@ -22,7 +22,7 @@ class OpenWeatherWeatherCondition implements WeatherConditionInterface, \JsonSer
     private $data;
     
     /**
-     * OpenWeatherWeatherCondition constructor
+     * OpenWeatherMapWeatherCondition constructor
      *
      * @link https://openweathermap.org/weather-conditions
      * @param array $data

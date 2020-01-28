@@ -580,8 +580,8 @@ $(function () {
         });
         el.on('shown.bs.collapse', function (e) {
             var accordionId = jQuery(this).attr('id'),
-            itemEl = jQuery(e.target),
-            itemId = itemEl.attr('id');
+                itemEl = jQuery(e.target),
+                itemId = itemEl.attr('id');
 
             userSettings.set('accordion-' + accordionId, itemId);
         })
@@ -630,7 +630,7 @@ $(function () {
                         if (response.missing_volume.cents === 0) {
                             html += 'Es sind keine Zahlungen mehr offen. ';
                         } else {
-                            html += 'Es sind noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response .missing_volume.euros + '&nbsp;€</b> offen. ';
+                            html += 'Es sind noch Zahlungen <abbr title="in Höhe von">i.H.v.</abbr> <b>' + response.missing_volume.euros + '&nbsp;€</b> offen. ';
                         }
                         html += '</p>';
 
@@ -650,8 +650,36 @@ $(function () {
         };
         loadPaymentSummary();
         paymentSummaryEl.find('button').on('click', loadPaymentSummary);
-
     }
 
+    var weatherCurrentEl = $('#weather-current');
+    if (weatherCurrentEl) {
+        window.ensureOwfontLoad();
+        $.ajax({
+            url: weatherCurrentEl.data('source'),
+            success: function (response) {
+                if (response.weather && response.weather.length) {
+                    var html = '<label class="control-label">Wetter (aktuell)</label>' +
+                        '<p>';
+                    if (response.weather.length === 1) {
+                        html += '<i class="owf owf-' + response.weather[0].id + ' owf-2x owf-pull-left owf-border"></i>';
+                        html += response.weather[0].description + '; ';
+                    } else {
+                        var htmlWeatherDescriptions = [];
+                        $.each(response.weather, function (key, weather) {
+                            html += '<i class="owf owf-' + weather.id + ' owf-2x owf-pull-left owf-border"></i>';
+                            htmlWeatherDescriptions.push(weather.description);
+                        });
+                        html += htmlWeatherDescriptions.join(', ') + '; ';
+                    }
+                    html += ' <span title="Temperatur" style="color:#222;">' + String(response.temperature).replace('.', ',') + '°C</span>' +
+                        '<br>' +
+                        '  <abbr title="Relative">Rel.</abbr> Luftfeuchtigkeit: ' + response.humidity_relative + '&nbsp;%' +
+                        ' </p>';
+                    weatherCurrentEl.html(html);
+                }
+            },
+        });
+    }
 
 });

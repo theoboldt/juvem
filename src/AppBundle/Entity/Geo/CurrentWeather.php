@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationInterface
 {
+    const PROVIDER_OPENWEATHERMAP = 'openweathermap';
     
     use CreatedTrait;
     
@@ -35,6 +36,15 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      * @var int
      */
     private $id;
+    
+    /**
+     * Weather data provider
+     *
+     * @ORM\Column(type="string", name="provider", columnDefinition="ENUM('openweathermap')")
+     *
+     * @var string
+     */
+    private $provider;
     
     /**
      * Location latitude if already fetched
@@ -66,16 +76,17 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     /**
      * Create detailed with location info
      *
-     * @param array $details
+     * @param string $provider Data provider
+     * @param array $details   Detailed data
      * @param float $locationLatitude
      * @param float $locationLongitude
      * @return CurrentWeather
      */
     public static function createDetailedForLocation(
-        array $details, float $locationLatitude, float $locationLongitude
+        string $provider, array $details, float $locationLatitude, float $locationLongitude
     ): CurrentWeather
     {
-        $weather = new self($details);
+        $weather = new self($provider, $details);
         $weather->setLocation($locationLatitude, $locationLongitude);
         return $weather;
     }
@@ -83,12 +94,35 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     /**
      * CurrentWeather constructor.
      *
+     * @param string $provider
      * @param array $details
      */
-    public function __construct(array $details)
+    public function __construct(string $provider, array $details)
     {
-        $this->details = $details;
+        $this->provider = $provider;
+        $this->details  = $details;
         $this->setCreatedAtNow();
+    }
+    
+    /**
+     * @return string
+     */
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+    
+    /**
+     * @return CurrentWeatherDetails|OpenWeatherMapCurrentWeatherDetails
+     */
+    public function getDetails(): CurrentWeatherDetails
+    {
+        switch ($this->getProvider()) {
+            case self::PROVIDER_OPENWEATHERMAP:
+                return new OpenWeatherMapCurrentWeatherDetails($this->details);
+            default:
+                return new CurrentWeatherDetails($this->details);
+        }
     }
     
     /**
@@ -157,7 +191,14 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     {
         $result = [];
         foreach ($this->details['weather'] as $weather) {
-            $result[] = new OpenWeatherWeatherCondition($weather);
+            switch ($this->getProvider()) {
+                case self::PROVIDER_OPENWEATHERMAP:
+                    $item = new OpenWeatherMapWeatherCondition($weather);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown weather provider');
+            }
+            $result[] = $item;
         }
         return $result;
     }

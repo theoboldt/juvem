@@ -24,12 +24,25 @@ class CurrentWeatherRepository extends EntityRepository
      *
      * @param CurrentWeather $weatherInfo
      */
-    public function persist(CurrentWeather $weatherInfo)
+    public function persist(CurrentWeather $weatherInfo): void
     {
         $em = $this->getEntityManager();
         $em->persist($weatherInfo);
         $em->flush();
     }
+    
+    /**
+     * Remove location element
+     *
+     * @param CurrentWeather $weatherInfo
+     */
+    public function remove(CurrentWeather $weatherInfo): void
+    {
+        $em = $this->getEntityManager();
+        $em->remove($weatherInfo);
+        $em->flush();
+    }
+    
     
     /**
      * Find weather by coordinates

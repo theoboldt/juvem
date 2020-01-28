@@ -11,6 +11,9 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Geo\CurrentWeather;
+use AppBundle\Entity\Geo\OpenWeatherMapCurrentWeatherDetails;
+use AppBundle\Entity\Geo\OpenWeatherMapWeatherCondition;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,25 +76,30 @@ class LocationController extends Controller
         
         $addressResolver = $this->get('app.geo.address_resolver');
         $coordinates     = $addressResolver->provideCoordinates($event);
-        
+    
         if ($coordinates) {
             $weatherProvider = $this->get('app.geo.weather_provider');
             $climate         = $weatherProvider->provideCurrentWeather($coordinates);
-            
-            $weather = [];
-            foreach ($climate->getWeather() as $weatherCondition) {
-                $weather[] = [
-                    'description' => $weatherCondition->getDescription(),
+            if ($climate) {
+                $weatherList = [];
+                foreach ($climate->getWeather() as $weatherCondition) {
+                    $weather = [
+                        'description' => $weatherCondition->getDescription(),
+                    ];
+                    if ($weatherCondition instanceof OpenWeatherMapWeatherCondition) {
+                        $weather['id']   = $weatherCondition->getId();
+                        $weather['icon'] = $weatherCondition->getIcon();
+                    }
+                    $weatherList[] = $weather;
+                }
+                $data = [
+                    'pressure'          => $climate->getPressure(),
+                    'humidity_relative' => $climate->getRelativeHumidity(),
+                    'temperature'       => $climate->getTemperature(),
+                    'weather'           => $weatherList
                 ];
+                $response->setData($data);
             }
-            $data = [
-                'pressure'          => $climate->getPressure(),
-                'humidity_relative' => $climate->getRelativeHumidity(),
-                'temperature'       => $climate->getTemperature(),
-                'weather'           => $weather
-            ];
-            
-            $response->setData($data);
         }
         
         return $response;
