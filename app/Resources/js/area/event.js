@@ -653,7 +653,7 @@ $(function () {
     }
 
     var weatherCurrentEl = $('#weather-current');
-    if (weatherCurrentEl) {
+    if (weatherCurrentEl.length) {
         window.ensureOwfontLoad();
         $.ajax({
             url: weatherCurrentEl.data('source'),
