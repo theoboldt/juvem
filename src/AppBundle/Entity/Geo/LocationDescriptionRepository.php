@@ -72,7 +72,7 @@ class LocationDescriptionRepository extends EntityRepository
     public function findOneByAddress(AddressAwareInterface $address): ?LocationDescription
     {
         return $this->findOneByTextualAddress(
-            $address->getAddressStreetName(),
+            (string)$address->getAddressStreetName(),
             (string)$address->getAddressStreetNumber(),
             $address->getAddressCity(),
             $address->getAddressZip(),
