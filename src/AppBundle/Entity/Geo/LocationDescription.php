@@ -126,7 +126,7 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     {
         $item = new self();
         $item->setAddress(
-            $address->getAddressStreetName(),
+            (string)$address->getAddressStreetName(),
             (string)$address->getAddressStreetNumber(),
             $address->getAddressCity(),
             $address->getAddressZip(),
