@@ -37,7 +37,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, AddressTrait;
 
-    const DATE_FORMAT_DATE      = 'd.m.y';
+    const DATE_FORMAT_DATE      = 'd.m.Y';
     const DATE_FORMAT_TIME      = 'H:i';
     const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
 
@@ -1152,6 +1152,16 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface
     public function getAddressTitle()
     {
         return $this->addressTitle;
+    }
+    
+    /**
+     * Determine if weather data should be shown if place available
+     *
+     * @return bool
+     */
+    public function isWeatherEnabled(): bool
+    {
+        return true;
     }
 
     /**

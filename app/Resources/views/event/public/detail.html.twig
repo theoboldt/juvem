@@ -4,7 +4,7 @@
 
 {% block body %}
 <section>
-    <article itemscope itemtype="http://schema.org/Event">
+    <article itemscope itemtype="https://schema.org/Event">
     {% embed 'common/header/base-page-header.html.twig' with {'title': event.title, 'subtitle': 'Veranstaltung'} %}
         {% block breadcrumb %}
             <li class="active">{{ event.title }}</li>
@@ -55,26 +55,24 @@
                     {% endif %}
                 </p>
             </div>
-            <div class="col-xs-12 col-sm-4">
-                {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
-                <p>
-                    {% if event.isActive() %}
-                        <span class="label label-primary">Aktiv</span>
-                    {% else %}
-                        <span class="label label-default">Inaktiv</span>
-                    {% endif %}
-                    {% if event.isVisible() %}
-                        <span class="label label-primary">Sichtbar</span>
-                    {% else %}
-                        <span class="label label-default">Versteckt</span>
-                    {% endif %}
-                </p>
-                {% endif %}
+            <div class="col-xs-12 col-sm-4 event-meta">
                 <p>
                     {{ 'calendar'|glyph }} {{ event|eventStartDate }}
                     {% if event.hasEndDate or event.hasEndTime %}
                         - {{ event|eventEndDate }}
                     {% endif %}
+                  {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
+                      {% if event.isActive() %}
+                          <span class="label label-primary">Aktiv</span>
+                      {% else %}
+                          <span class="label label-default">Inaktiv</span>
+                      {% endif %}
+                      {% if event.isVisible() %}
+                          <span class="label label-primary">Sichtbar</span>
+                      {% else %}
+                          <span class="label label-default">Versteckt</span>
+                      {% endif %}
+                  {% endif %}
                 </p>
                 {% if event.ageRange %}
                     <p itemprop="typicalAgeRange">{{ event.ageRange }} Jahre</p>
@@ -101,31 +99,52 @@
                     {% endif %}
                 </div>
                 {% if event.price %}
-                    <p class="event-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      <p class="event-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                         <label class="control-label" for="event-price-{{ event.eid }}">Preis:</label>
-                        <span itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}" id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, ',', "") }}</span>&nbsp;<span itemprop="priceCurrency" content="EUR">€</span>
-                        <a style="display: none;" itemprop="url" href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen ({{ event.title }})</a>
+                        <span itemprop="price" content="{{ event.price(true)|number_format(2, '.', "") }}"
+                              id="event-price-{{ event.eid }}">{{ event.price(true)|number_format(2, ',', "") }}</span>&nbsp;<span
+                            itemprop="priceCurrency" content="EUR">€</span>
+                        <a style="display: none;" itemprop="url"
+                           href="{{ path('event_public_participate', {'eid': event.eid }) }}">Teilnehmen
+                          ({{ event.title }})</a>
                         {% if event.isActive %}
-                            <span itemprop="availability" href="http://schema.org/InStock"></span>
-                        {%  elseif (not event.hasEndDate() and date(event.startDate) < date()) or date(event.endDate) < date() %}
-                            <span itemprop="availability" href="http://schema.org/Discontinued"></span>
+                          <span itemprop="availability" href="https://schema.org/InStock"></span>
+                        {% elseif (not event.hasEndDate() and date(event.startDate) < date()) or date(event.endDate) < date() %}
+                          <span itemprop="availability" href="https://schema.org/Discontinued"></span>
                         {% endif %}
-                    </p>
-                    <div>
-                        {% if event.addressTitle or event.addressStreet or event.addressCity %}
-                        <label class="control-label">Ort:</label>
-                        <div class="location" itemprop="location" itemscope itemtype="http://schema.org/Place">
-                            <address>
-                                {% if event.addressTitle %}<strong itemprop="name">{{ event.addressTitle }}</strong><br>{% endif %}
-                                <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                    {% if event.addressStreet %}{% if not event.addressTitle %}<strong>{% endif %}<span itemprop="streetAddress">{{ event.addressStreet }}</span>{% if not event.addressTitle %}</strong>{% endif %}<br>{% endif %}
-                                    <span itemprop="postalCode">{{ event.addressZip }}</span> <span itemprop="addressLocality">{{ event.addressCity }}</span>
-                                    <br><span itemprop="addressCountry" {% if event.addressCountry == constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}style="visibility: hidden;"{% endif %}>{{ event.addressCountry }}</span>
-                                </span>
-                            </address>
-                        </div>
-                        {% endif %}
+                      </p>
                     </div>
+                  </div>
+                  {% if event.addressTitle or event.addressStreet or event.addressCity %}
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <label class="control-label" style="margin-bottom: 2px;">Veranstaltungsort</label>
+                        <div class="location" itemprop="location" itemscope itemtype="https://schema.org/Place">
+                          <address>
+                            {% if event.addressTitle %}<strong itemprop="name">{{ event.addressTitle }}</strong>
+                              <br>{% endif %}
+                            <span itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                              {% if event.addressStreet %}{% if not event.addressTitle %}<strong>{% endif %}<span
+                                    itemprop="streetAddress">{{ event.addressStreet }}</span>{% if not event.addressTitle %}</strong>{% endif %}
+                                <br>{% endif %}
+                              <span itemprop="postalCode">{{ event.addressZip }}</span> <span
+                                  itemprop="addressLocality">{{ event.addressCity }}</span>
+                              <br><span itemprop="addressCountry"
+                                        {% if event.addressCountry == constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}style="display: none;"{% endif %}>{{ event.addressCountry }}</span>
+                          </span>
+                          </address>
+                        </div>
+                      </div>
+                      {% if event.weatherEnabled %}
+                        <div class="col-xs-12">
+                          <div id="weather-current"
+                               data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
                 {% endif %}
                 <div style="display: none;">
                     <a itemprop="url" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">{{ event.title }}</a>

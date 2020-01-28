@@ -300,4 +300,14 @@ $(function () {
 
         return modes;
     };
+
+    window.ensureOwfontIsLoad = false;
+    window.ensureOwfontLoad = function() {
+        if (window.ensureOwfontIsLoad) {
+            return;
+        }
+        window.ensureOwfontIsLoad = true;
+        var owfontHref = $("meta[name='stylesheet-owfont']").attr('content');
+        $("head").append("<link href='" + owfontHref + "' rel='stylesheet' type='text/css'>");
+    };
 });

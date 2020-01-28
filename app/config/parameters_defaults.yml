@@ -7,3 +7,4 @@ parameters:
     juvimg.url: null
     juvimg.password: null
     app.libreoffice_binary_path: null
+    app.geo.openweathermap.api_key: null

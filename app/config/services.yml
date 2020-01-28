@@ -272,10 +272,16 @@ services:
             - 'AppBundle:Participation'
 
     app.repository.open_street_map_element:
-        class: AppBundle\Entity\OpenStreetMapElementRepository
+        class: AppBundle\Entity\Geo\LocationDescriptionRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
-            - 'AppBundle:LocationDescription'
+            - 'AppBundle:Geo\LocationDescription'
+
+    app.repository.weather_current:
+        class: AppBundle\Entity\Geo\CurrentWeatherRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle\Entity\Geo\CurrentWeather'
 
     AppBundle\Security\EventVoter:
       autowire: true
@@ -322,5 +328,16 @@ services:
         arguments:
             - '@AppBundle\Manager\Geo\NominatimAddressResolver'
             - '@app.repository.open_street_map_element'
+        public: true
+
+    AppBundle\Manager\Weather\OpenweathermapWeatherProvider:
+        arguments:
+            - "%app.geo.openweathermap.api_key%"
+
+    app.geo.weather_provider:
+        class: AppBundle\Manager\Weather\WeatherProvider
+        arguments:
+            - '@AppBundle\Manager\Weather\OpenweathermapWeatherProvider'
+            - '@app.repository.weather_current'
         public: true
 
