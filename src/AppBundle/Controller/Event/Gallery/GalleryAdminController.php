@@ -147,12 +147,12 @@ class GalleryAdminController extends BaseGalleryController
             //extract title from iptc data
             if (isset($info['APP13'])) {
                 $iptc        = iptcparse($info['APP13']);
-                $iptcCaption = str_replace("\000", "", $iptc["2#120"][0]);
                 if (isset($iptc["1#090"]) && $iptc["1#090"][0] == "\x1B%G") {
+                    $iptcCaption = str_replace("\000", "", $iptc["2#120"][0]);
                     $iptcCaption = utf8_decode($iptcCaption);
                 }
-                $iptcTitle = str_replace("\000", "", $iptc["2#105"][0]);
                 if (isset($iptc["2#105"]) && $iptc["2#105"][0] == "\x1B%G") {
+                    $iptcTitle = str_replace("\000", "", $iptc["2#105"][0]);
                     $iptcTitle = utf8_decode($iptcTitle);
                 }
             }
