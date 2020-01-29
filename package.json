@@ -25,7 +25,6 @@
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
     "justified-layout": "^3",
-    "keycharm": "^0.2",
     "lodash": "^4.17",
     "masonry-layout": "^4.2",
     "merge": ">=1.2.1",
@@ -33,8 +32,6 @@
     "npm": "^6.13.7",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
-    "vis-data": "^6.2",
-    "vis-network": "^7.3",
-    "vis-util": "1.1"
+    "vis-network": "^5.4"
   }
 }
