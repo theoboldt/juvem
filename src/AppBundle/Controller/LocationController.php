@@ -95,7 +95,7 @@ class LocationController extends Controller
                 $data = [
                     'pressure'          => $climate->getPressure(),
                     'humidity_relative' => $climate->getRelativeHumidity(),
-                    'temperature'       => $climate->getTemperature(),
+                    'temperature'       => round($climate->getTemperature()),
                     'weather'           => $weatherList
                 ];
                 $response->setData($data);
