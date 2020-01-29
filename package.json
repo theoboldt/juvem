@@ -4,14 +4,14 @@
   "private": true,
   "devDependencies": {
     "grunt": "^1.0.4",
-    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-clean": "^2.0",
     "grunt-contrib-concat": "^1.0",
     "grunt-contrib-copy": "^1.0",
-    "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-cssmin": "^3.0",
+    "grunt-contrib-jshint": "^2.1",
     "grunt-contrib-sass": "^1.0",
     "grunt-contrib-uglify-es": "^3.3",
-    "grunt-contrib-watch": "^1.1.0"
+    "grunt-contrib-watch": "^1.1"
   },
   "dependencies": {
     "bootstrap-3-typeahead": "^4.0",
@@ -24,13 +24,14 @@
     "jquery-number": "^2.1",
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
-    "justified-layout": "^2.1.2",
-    "lodash": "^4.17.15",
+    "justified-layout": "^3",
+    "lodash": "^4.17",
     "masonry-layout": "^4.2",
     "merge": ">=1.2.1",
-    "npm": "^6.13.6",
+    "moment": "^2.24",
+    "npm": "^6.13.7",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
-    "tar": "^4.4.13",
+    "tar": "^4.4",
     "vis-network": "^5.4.1"
   }
 }
