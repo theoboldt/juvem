@@ -59,9 +59,9 @@ trait CreatedModifiedTrait
     /**
      * Get modifiedAt
      *
-     * @return \DateTime
+     * @return \DateTimeInterface|null
      */
-    public function getModifiedAt()
+    public function getModifiedAt(): ?\DateTimeInterface
     {
         return $this->modifiedAt;
     }

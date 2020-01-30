@@ -13,6 +13,10 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatorModifierTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -24,7 +28,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Table(name="employee_comment")
  * @ORM\HasLifecycleCallbacks()
  */
-class EmployeeComment extends CommentBase
+class EmployeeComment extends CommentBase implements ProvidesModifiedInterface, ProvidesCreatedInterface, ProvidesCreatorInterface, ProvidesModifierInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
 

@@ -14,6 +14,10 @@ namespace AppBundle\Entity\Meals;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,7 +29,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class RecipeIngredient implements SoftDeleteableInterface
+class RecipeIngredient implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, ProvidesCreatorInterface, ProvidesModifierInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
     

@@ -12,6 +12,10 @@ namespace AppBundle\Entity\Meals;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="QuantityUnitRepository")
  */
-class QuantityUnit implements SoftDeleteableInterface
+class QuantityUnit implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, ProvidesCreatorInterface, ProvidesModifierInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, CreatorModifierTrait;
     

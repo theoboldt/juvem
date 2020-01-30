@@ -11,6 +11,8 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\Event;
@@ -40,7 +42,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\HasLifecycleCallbacks()
  */
-class Attribute implements SoftDeleteableInterface
+class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 

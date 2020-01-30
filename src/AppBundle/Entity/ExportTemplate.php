@@ -12,6 +12,10 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="export_template")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ExportTemplateRepository")
  */
-class ExportTemplate
+class ExportTemplate implements ProvidesModifiedInterface, ProvidesCreatedInterface, ProvidesCreatorInterface, ProvidesModifierInterface
 {
     use CreatedModifiedTrait, CreatorModifierTrait;
     

@@ -48,11 +48,11 @@ trait CreatorModifierTrait
     }
 
     /**
-     * Get modifiedBy
+     * Get modifier
      *
-     * @return User
+     * @return User|null
      */
-    public function getModifiedBy()
+    public function getModifiedBy(): ?User
     {
         return $this->modifiedBy;
     }

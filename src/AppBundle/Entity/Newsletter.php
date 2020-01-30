@@ -11,6 +11,8 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -22,7 +24,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="newsletter")
  */
-class Newsletter extends NewsletterAbstract
+class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use CreatedModifiedTrait;
 

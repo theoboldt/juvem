@@ -11,6 +11,8 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -25,7 +27,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  */
-class User extends BaseUser
+class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use CreatedModifiedTrait, HumanTrait;
 

@@ -13,6 +13,10 @@ namespace AppBundle\Entity\Meals;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\CreatorModifierTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use AppBundle\Entity\Event;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -23,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="recipe_feedback")
  * @ORM\HasLifecycleCallbacks()
  */
-class RecipeFeedback
+class RecipeFeedback implements ProvidesModifiedInterface, ProvidesCreatedInterface, ProvidesCreatorInterface, ProvidesModifierInterface
 {
     use CreatedModifiedTrait, CreatorModifierTrait;
 

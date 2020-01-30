@@ -12,6 +12,8 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedTrait;
 use AppBundle\Entity\Audit\CreatorTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serialize;
@@ -22,7 +24,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Serialize\ExclusionPolicy("all")
  * @Serialize\ReadOnly()
  */
-class ParticipantPaymentEvent
+class ParticipantPaymentEvent implements ProvidesCreatedInterface, ProvidesCreatorInterface
 {
     use CreatedTrait, CreatorTrait;
 

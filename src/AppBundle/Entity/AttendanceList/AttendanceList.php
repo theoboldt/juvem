@@ -11,6 +11,8 @@
 namespace AppBundle\Entity\AttendanceList;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,7 +26,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list")
  */
-class AttendanceList
+class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use CreatedModifiedTrait;
 

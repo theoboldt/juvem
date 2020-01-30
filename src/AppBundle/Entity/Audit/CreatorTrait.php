@@ -47,11 +47,11 @@ trait CreatorTrait
     }
 
     /**
-     * Get createdBy
+     * Get creator
      *
      * @return User|null
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?User
     {
         return $this->createdBy;
     }

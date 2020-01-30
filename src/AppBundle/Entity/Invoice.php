@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\Audit\CreatedTrait;
 use AppBundle\Entity\Audit\CreatorTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesCreatorInterface;
 use JMS\Serializer\Annotation as Serialize;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -19,7 +21,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="participation_invoice")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\InvoiceRepository")
  */
-class Invoice
+class Invoice implements ProvidesCreatedInterface, ProvidesCreatorInterface
 {
     
     use CreatedTrait, CreatorTrait;

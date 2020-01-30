@@ -15,6 +15,8 @@ use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Form\EntityHavingFilloutsInterface;
@@ -35,7 +37,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, SoftDeleteableInterface, AddressAwareInterface
+class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {

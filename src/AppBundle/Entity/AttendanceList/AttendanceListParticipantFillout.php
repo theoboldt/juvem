@@ -11,6 +11,8 @@
 namespace AppBundle\Entity\AttendanceList;
 
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
+use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -22,7 +24,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Table(name="attendance_list_participant_fillout")
  * @ORM\Entity(repositoryClass="AttendanceListFilloutParticipantRepository")
  */
-class AttendanceListParticipantFillout
+class AttendanceListParticipantFillout implements ProvidesModifiedInterface, ProvidesCreatedInterface
 {
     use CreatedModifiedTrait;
 
