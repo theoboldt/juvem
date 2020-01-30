@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Geo\CurrentWeather;
 use AppBundle\Entity\Geo\OpenWeatherMapCurrentWeatherDetails;
@@ -69,6 +70,7 @@ class LocationController extends Controller
     public function currentWeatherInformationAction(Request $request, Event $event): Response
     {
         $response = new JsonResponse([]);
+        $response->setMaxAge(30 * 60);
         if ($this->isRequestLastModifiedResponse($event, $request, $response)) {
             $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
             return $response;
@@ -93,11 +95,19 @@ class LocationController extends Controller
                     $weatherList[] = $weather;
                 }
                 $data = [
-                    'pressure'          => $climate->getPressure(),
-                    'humidity_relative' => $climate->getRelativeHumidity(),
-                    'temperature'       => round($climate->getTemperature()),
-                    'weather'           => $weatherList
+                    'pressure'               => $climate->getPressure(),
+                    'humidity_relative'      => $climate->getRelativeHumidity(),
+                    'temperature'            => round($climate->getTemperature()),
+                    'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
+                    'weather'                => $weatherList,
                 ];
+                if ($climate instanceof ProvidesCreatedInterface) {
+                    $datsCreatedAt = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
+                    $datsCreatedAt .= ' um ';
+                    $datsCreatedAt .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
+                     $data['created_at'] = $datsCreatedAt;
+                }
+    
                 $response->setData($data);
             }
         }

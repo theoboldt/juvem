@@ -540,6 +540,12 @@ abbr.unit {
     color: $brand-primary;
   }
 
+  #weather-current > label {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
 }
 
 .compact-form-group .form-group {

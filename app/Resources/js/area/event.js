@@ -659,24 +659,39 @@ $(function () {
             url: weatherCurrentEl.data('source'),
             success: function (response) {
                 if (response.weather && response.weather.length) {
-                    var html = '<label class="control-label">Wetter (aktuell)</label>' +
+                    var htmlTemperature = '<span ' +
+                        'data-title="Gefühlte Temperatur: ' +
+                        String(response.temperature_feels_like).replace('.', ',') +
+                        ' °C"' +
+                        ' style="color:#222;">' + String(response.temperature).replace('.', ',') + '°C</span>';
+
+                    var html = '<label ';
+                    if (response.created_at) {
+                        html += 'data-title="Aktuelle Wetterdaten vom ' + response.created_at + '"';
+                    }
+                    html += 'class="control-label">Wetter (aktuell)</label>' +
                         '<p>';
+
                     if (response.weather.length === 1) {
-                        html += '<i class="owf owf-' + response.weather[0].id + ' owf-2x owf-pull-left owf-border"></i>';
-                        html += response.weather[0].description + '; ';
+                        html += '<i class="owf owf-' + response.weather[0].id + ' owf-2x owf-pull-left owf-border" data-title="'+response.weather[0].description+'"></i>';
+                        html += htmlTemperature + ', ';
+                        html += response.weather[0].description;
                     } else {
                         var htmlWeatherDescriptions = [];
                         $.each(response.weather, function (key, weather) {
-                            html += '<i class="owf owf-' + weather.id + ' owf-2x owf-pull-left owf-border"></i>';
+                            html += '<i class="owf owf-' + weather.id + ' owf-2x owf-pull-left owf-border" data-title="'+weather.description+'"></i>';
                             htmlWeatherDescriptions.push(weather.description);
                         });
                         html += htmlWeatherDescriptions.join(', ') + '; ';
+                        html += ' ' + htmlTemperature;
                     }
-                    html += ' <span title="Temperatur" style="color:#222;">' + String(response.temperature).replace('.', ',') + '°C</span>' +
-                        '<br>' +
-                        '  <abbr title="Relative">Rel.</abbr> Luftfeuchtigkeit: ' + response.humidity_relative + '&nbsp;%' +
-                        ' </p>';
+
+                    html += ' </p>';
+
                     weatherCurrentEl.html(html);
+                    $('#weather-current [data-title]').tooltip({
+                        container: 'body'
+                    });
                 }
             },
         });

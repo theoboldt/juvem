@@ -21,6 +21,14 @@ interface ClimaticInformationInterface
      */
     public function getTemperature(): float;
     
+    
+    /**
+     * Get feels like temperature in °C
+     *
+     * @return float
+     */
+    public function getTemperatureFeelsLike(): float;
+    
     /**
      * Get pressure level
      *

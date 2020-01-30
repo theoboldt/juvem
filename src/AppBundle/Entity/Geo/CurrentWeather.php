@@ -12,6 +12,7 @@ namespace AppBundle\Entity\Geo;
 
 
 use AppBundle\Entity\Audit\CreatedTrait;
+use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="weather_current")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Geo\CurrentWeatherRepository")
  */
-class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationInterface
+class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationInterface, ProvidesCreatedInterface
 {
     const PROVIDER_OPENWEATHERMAP = 'openweathermap';
     
@@ -174,6 +175,14 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     public function getTemperature(): float
     {
         return (float)$this->details['main']['temp'];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getTemperatureFeelsLike(): float
+    {
+        return (float)$this->details['main']['feels_like'];
     }
     
     /**

@@ -275,6 +275,9 @@
 
                         {% endif %}
                     </div>
+                    <div class="col-xs-12">
+                    {% embed 'event/public/embed-event-meta.html.twig' with {'event': event} %}{% endembed %}
+                    </div>
                     {% if event.price %}
                     <div class="col-xs-12">
                         <div id="infoEventPaymentSummary" data-eid="{{ event.eid }}">
@@ -284,11 +287,6 @@
                             <div></div>
                         </div>
                     </div>
-                    {% endif %}
-                    {% if event.showWeather %}
-                        <div class="col-xs-12">
-                            <div id="weather-current" data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
-                        </div>
                     {% endif %}
                 </div>
             </div>
