@@ -14,11 +14,13 @@ namespace AppBundle\Manager\Weather;
 
 use AppBundle\Entity\Geo\ClimaticInformationInterface;
 use AppBundle\Entity\Geo\CurrentWeather;
+use AppBundle\Entity\Geo\MeteorologicalForecastInterface;
+use AppBundle\Entity\Geo\WeatherForecast;
 use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
-class OpenweathermapWeatherProvider implements WeatherProviderInterface
+class OpenweathermapMeteorologicalProvider implements WeatherCurrentProviderInterface, WeatherForecastProviderInterface
 {
     const BASE_URI = 'https://api.openweathermap.org';
     
@@ -37,7 +39,7 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
     private $client;
     
     /**
-     * OpenweathermapWeatherProvider constructor.
+     * OpenweathermapMeteorologicalProvider constructor.
      *
      * @param string|array|string[] $apiKeys
      */
@@ -128,6 +130,57 @@ class OpenweathermapWeatherProvider implements WeatherProviderInterface
         }
         return CurrentWeather::createDetailedForLocation(
             CurrentWeather::PROVIDER_OPENWEATHERMAP, $data, $item->getLocationLatitude(), $item->getLocationLongitude()
+        );
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function provideForecastWeather(
+        CoordinatesAwareInterface $item, \DateTimeInterface $begin, \DateTimeInterface $end
+    ): ?MeteorologicalForecastInterface
+    {
+        if (!$this->providesApiKeys()) {
+            return null;
+        }
+        
+        $validityLimitBegin = new \DateTime('now');
+        $validityLimitBegin->setTime(23, 59, 59);
+        
+        if ($end < $validityLimitBegin) {
+            //requested period is completely in past, so no forecast is possible
+            return null;
+        }
+        
+        $validityLimitEnd = new \DateTime('now');
+        $validityLimitEnd->setTime(0, 0, 0);
+        $validityLimitEnd->modify('+5 days');
+        
+        if ($begin > $validityLimitEnd) {
+            //requested period ends before end of possible forecast
+            return null;
+        }
+        
+        $response = $this->client()->get(
+            '/data/2.5/forecast',
+            [
+                RequestOptions::QUERY => [
+                    'appid' => $this->provideApiKey(),
+                    'lat'   => $item->getLocationLatitude(),
+                    'lon'   => $item->getLocationLongitude(),
+                    'units' => 'metric',
+                    'lang'  => 'de',
+                ]
+            ]
+        );
+        $result   = $response->getBody()->getContents();
+        $data     = json_decode($result, true);
+        if ($data === null) {
+            throw new \InvalidArgumentException('Failed to fetch address info: ' . json_last_error_msg());
+        }
+        
+        return WeatherForecast::createDetailedForLocation(
+            WeatherForecast::PROVIDER_OPENWEATHERMAP, $data, $item->getLocationLatitude(), $item->getLocationLongitude()
         );
     }
 }

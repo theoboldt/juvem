@@ -14,14 +14,13 @@ namespace AppBundle\Manager\Weather;
 use AppBundle\Entity\Geo\ClimaticInformationInterface;
 use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 
-interface WeatherProviderInterface
+interface WeatherCurrentProviderInterface
 {
     /**
-     * Provide object providing climatic information for currrent weather
+     * Provide object providing climatic information for current weather
      *
      * @param CoordinatesAwareInterface $item Coordinate aware object
      * @return ClimaticInformationInterface|null Climatic information provider if available
      */
     public function provideCurrentWeather(CoordinatesAwareInterface $item): ?ClimaticInformationInterface;
-    
 }

@@ -655,41 +655,84 @@ $(function () {
     var weatherCurrentEl = $('#weather-current');
     if (weatherCurrentEl.length) {
         window.ensureOwfontLoad();
+
+        const createTemperatureHtml = function (temperatureAware) {
+                return '<span ' +
+                    'data-title="Gefühlte Temperatur: ' +
+                    String(temperatureAware.temperature_feels_like).replace('.', ',') +
+                    ' °C"' +
+                    ' style="color:#222;">' + String(temperatureAware.temperature).replace('.', ',') + '°C</span>';
+            },
+            createWeatherHtml = function (weatherAware, htmlTemperature, size, useText) {
+                var html = '';
+
+                if (weatherAware.length === 1) {
+                    html += '<i class="owf owf-' + weatherAware[0].id + ' owf-' + size + 'x owf-pull-left owf-border" data-title="' + weatherAware[0].description + '"></i>';
+                    html += htmlTemperature;
+                    if (useText) {
+                        html += ', ' + weatherAware[0].description;
+                    }
+                } else {
+                    var htmlWeatherDescriptions = [];
+                    $.each(weatherAware, function (key, weather) {
+                        html += '<i class="owf owf-' + weather.id + ' owf-' + size + 'x owf-pull-left owf-border" data-title="' + weather.description + '"></i>';
+                        htmlWeatherDescriptions.push(weather.description);
+                    });
+                    if (useText) {
+                        html += htmlWeatherDescriptions.join(', ') + '; ';
+                    }
+                    html += ' ' + htmlTemperature;
+                }
+
+                return html;
+            };
+
         $.ajax({
             url: weatherCurrentEl.data('source'),
             success: function (response) {
-                if (response.weather && response.weather.length) {
-                    var htmlTemperature = '<span ' +
-                        'data-title="Gefühlte Temperatur: ' +
-                        String(response.temperature_feels_like).replace('.', ',') +
-                        ' °C"' +
-                        ' style="color:#222;">' + String(response.temperature).replace('.', ',') + '°C</span>';
+                if (response.current.weather && response.current.weather.length) {
+                    var htmlTemperature = createTemperatureHtml(response.current);
 
                     var html = '<label ';
-                    if (response.created_at) {
-                        html += 'data-title="Aktuelle Wetterdaten vom ' + response.created_at + '"';
+                    if (response.current.created_at) {
+                        html += 'data-title="Aktuelle Wetterdaten vom ' + response.current.created_at + '"';
                     }
                     html += 'class="control-label">Wetter (aktuell)</label>' +
                         '<p>';
 
-                    if (response.weather.length === 1) {
-                        html += '<i class="owf owf-' + response.weather[0].id + ' owf-2x owf-pull-left owf-border" data-title="'+response.weather[0].description+'"></i>';
-                        html += htmlTemperature + ', ';
-                        html += response.weather[0].description;
-                    } else {
-                        var htmlWeatherDescriptions = [];
-                        $.each(response.weather, function (key, weather) {
-                            html += '<i class="owf owf-' + weather.id + ' owf-2x owf-pull-left owf-border" data-title="'+weather.description+'"></i>';
-                            htmlWeatherDescriptions.push(weather.description);
-                        });
-                        html += htmlWeatherDescriptions.join(', ') + '; ';
-                        html += ' ' + htmlTemperature;
-                    }
+                    html += createWeatherHtml(response.current.weather, htmlTemperature, 2, true);
 
                     html += ' </p>';
 
                     weatherCurrentEl.html(html);
                     $('#weather-current [data-title]').tooltip({
+                        container: 'body'
+                    });
+                }
+                if (response.forecast) {
+                    var htmlRows = '';
+
+                    $.each(response.forecast, function (date, details) {
+                        htmlRows += '<tr>';
+                        htmlRows += '<td class="d">' + details.date_day + '<br>' + details.date_month + '</td>';
+
+                        $.each(details.hourly, function (hour, hourDetails) {
+                            if (hourDetails.temperature) {
+                                var htmlTemperature = createTemperatureHtml(hourDetails);
+
+                                htmlRows += '<td>';
+                                htmlRows += createWeatherHtml(hourDetails.weather, htmlTemperature, 1, false);
+
+                                htmlRows += '</td>';
+                            } else {
+                                htmlRows += '<td class="e"></td>';
+                            }
+                        });
+
+                        htmlRows += '</tr>';
+                    });
+                    $('#weather-forecast').html('<table class="table">' + htmlRows + '</table>');
+                    $('#weather-forecast [data-title]').tooltip({
                         container: 'body'
                     });
                 }

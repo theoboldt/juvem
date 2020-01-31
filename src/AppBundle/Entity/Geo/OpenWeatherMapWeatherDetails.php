@@ -12,7 +12,7 @@
 namespace AppBundle\Entity\Geo;
 
 
-class OpenWeatherMapCurrentWeatherDetails extends CurrentWeatherDetails
+class OpenWeatherMapWeatherDetails extends WeatherDetails
 {
 
 }

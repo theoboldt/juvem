@@ -10,10 +10,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Controller\Event\Gallery\GalleryPublicController;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Geo\CurrentWeather;
-use AppBundle\Entity\Geo\OpenWeatherMapCurrentWeatherDetails;
+use AppBundle\Entity\Geo\ClimaticInformationInterface;
 use AppBundle\Entity\Geo\OpenWeatherMapWeatherCondition;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,13 +59,140 @@ class LocationController extends Controller
     }
     
     /**
+     * Extract weather information for json
+     *
+     * @param ClimaticInformationInterface $climate
+     * @return array
+     */
+    private static function extractWeatherList(ClimaticInformationInterface $climate)
+    {
+        $weatherList = [];
+        foreach ($climate->getWeather() as $weatherCondition) {
+            $weather = [
+                'description' => $weatherCondition->getDescription(),
+            ];
+            if ($weatherCondition instanceof OpenWeatherMapWeatherCondition) {
+                $weather['id']   = $weatherCondition->getId();
+                $weather['icon'] = $weatherCondition->getIcon();
+            }
+            $weatherList[] = $weather;
+        }
+        return $weatherList;
+    }
+    
+    
+    /**
      * Get event current weather
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/event/{eid}/weather_current.json", requirements={"eid": "\d+"}, name="event_weather_current")
+     * @Route("/event/{eid}/meteorologocial_information.json", requirements={"eid": "\d+"}, name="event_meteorological")
      * @param Request $request
      * @param Event $event
      * @return JsonResponse
+     */
+    public function meteorologicalInformationAction(Request $request, Event $event): Response
+    {
+        $response = new JsonResponse([]);
+        $response->setMaxAge(30 * 60);
+        if ($this->isRequestLastModifiedResponse($event, $request, $response)) {
+            $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
+            return $response;
+        }
+        
+        $addressResolver = $this->get('app.geo.address_resolver');
+        $coordinates     = $addressResolver->provideCoordinates($event);
+        
+        $data = [
+            'current'  => [],
+            'forecast' => [],
+        ];
+        if ($coordinates) {
+            $weatherProvider = $this->get('app.geo.weather_provider');
+            $climate         = $weatherProvider->provideCurrentWeather($coordinates);
+            if ($climate) {
+                $weatherList     = $this->extractWeatherList($climate);
+                $data['current'] = [
+                    'pressure'               => $climate->getPressure(),
+                    'humidity_relative'      => $climate->getRelativeHumidity(),
+                    'temperature'            => round($climate->getTemperature()),
+                    'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
+                    'weather'                => $weatherList,
+                ];
+                if ($climate instanceof ProvidesCreatedInterface) {
+                    $dataCreatedAt      = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
+                    $dataCreatedAt      .= ' um ';
+                    $dataCreatedAt      .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
+                    $data['created_at'] = $dataCreatedAt;
+                }
+            }
+            
+            $begin = clone $event->getStartDate();
+            $begin->setTime(0, 0, 0);
+            $end = clone $event->getEndDate();
+            $end->setTime(23, 59, 59);
+            
+            $forecast = $weatherProvider->provideForecastWeather($coordinates, $begin, $end);
+            if ($forecast) {
+                $dataForecasts = [];
+                
+                $timesAvailable = [];
+                foreach ($forecast->getElements() as $climate) {
+                    $climateDate = $climate->getDate();
+                    $climateDay  = $climateDate->format(Event::DATE_FORMAT_DATE);
+                    $climateHour = (int)$climateDate->format('H');
+                    if ($climateHour < 4 || $climateHour > 22) {
+                        continue; //exclude these hours from result
+                    }
+                    
+                    $weatherList                  = $this->extractWeatherList($climate);
+                    $climateTime                  = $climateDate->format(Event::DATE_FORMAT_TIME);
+                    $timesAvailable[$climateTime] = $climateTime;
+                    
+                    if (!isset($dataForecasts[$climateDay])) {
+                        
+                        $dataForecasts[$climateDay] = [
+                            'date'       => $climateDay,
+                            'date_day'   => (int)$climateDate->format('d'),
+                            'date_month' => substr(
+                                GalleryPublicController::convertMonthNumber((int)$climateDate->format('m')), 0, 3
+                            ),
+                            'hourly'     => [],
+                        ];
+                    }
+                    $dataForecasts[$climateDay]['hourly'][$climateTime] = [
+                        'temperature'            => round($climate->getTemperature()),
+                        'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
+                        'weather'                => $weatherList,
+                    ];
+                }
+                foreach (array_keys($dataForecasts) as $date) {
+                    foreach ($timesAvailable as $time) {
+                        if (!isset($dataForecasts[$date]['hourly'][$time])) {
+                            $dataForecasts[$date]['hourly'][$time] = new \ArrayObject();
+                            ksort($dataForecasts[$date]['hourly']);
+                        }
+                    }
+                }
+                
+                
+                $data['forecast'] = $dataForecasts;
+            }
+            $response->setData($data);
+        }
+        
+        return $response;
+    }
+    
+    
+    /**
+     * Get event current weather
+     *
+     * @param Request $request
+     * @param Event $event
+     * @return JsonResponse
+     * @deprecated
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/event/{eid}/weather_current.json", requirements={"eid": "\d+"}, name="event_weather_current")
      */
     public function currentWeatherInformationAction(Request $request, Event $event): Response
     {
@@ -78,23 +205,13 @@ class LocationController extends Controller
         
         $addressResolver = $this->get('app.geo.address_resolver');
         $coordinates     = $addressResolver->provideCoordinates($event);
-    
+        
         if ($coordinates) {
             $weatherProvider = $this->get('app.geo.weather_provider');
             $climate         = $weatherProvider->provideCurrentWeather($coordinates);
             if ($climate) {
-                $weatherList = [];
-                foreach ($climate->getWeather() as $weatherCondition) {
-                    $weather = [
-                        'description' => $weatherCondition->getDescription(),
-                    ];
-                    if ($weatherCondition instanceof OpenWeatherMapWeatherCondition) {
-                        $weather['id']   = $weatherCondition->getId();
-                        $weather['icon'] = $weatherCondition->getIcon();
-                    }
-                    $weatherList[] = $weather;
-                }
-                $data = [
+                $weatherList = $this->extractWeatherList($climate);
+                $data        = [
                     'pressure'               => $climate->getPressure(),
                     'humidity_relative'      => $climate->getRelativeHumidity(),
                     'temperature'            => round($climate->getTemperature()),
@@ -102,12 +219,12 @@ class LocationController extends Controller
                     'weather'                => $weatherList,
                 ];
                 if ($climate instanceof ProvidesCreatedInterface) {
-                    $datsCreatedAt = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
-                    $datsCreatedAt .= ' um ';
-                    $datsCreatedAt .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
-                     $data['created_at'] = $datsCreatedAt;
+                    $datsCreatedAt      = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
+                    $datsCreatedAt      .= ' um ';
+                    $datsCreatedAt      .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
+                    $data['created_at'] = $datsCreatedAt;
                 }
-    
+                
                 $response->setData($data);
             }
         }

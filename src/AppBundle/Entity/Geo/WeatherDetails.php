@@ -12,7 +12,7 @@
 namespace AppBundle\Entity\Geo;
 
 
-class CurrentWeatherDetails implements \JsonSerializable
+class WeatherDetails implements \JsonSerializable
 {
     /**
      * @var array
@@ -20,7 +20,7 @@ class CurrentWeatherDetails implements \JsonSerializable
     protected $details;
     
     /**
-     * CurrentWeatherDetails constructor.
+     * WeatherDetails constructor.
      *
      * @param array $details
      */

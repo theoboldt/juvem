@@ -21,10 +21,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="weather_current")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Geo\CurrentWeatherRepository")
+ * @ORM\Table(name="weather_forecast")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Geo\MeteorologyForecastRepository")
  */
-class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationInterface, ProvidesCreatedInterface
+class WeatherForecast implements CoordinatesAwareInterface, ProvidesCreatedInterface, MeteorologicalForecastInterface, \IteratorAggregate
 {
     const PROVIDER_OPENWEATHERMAP = 'openweathermap';
     
@@ -46,6 +46,24 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      * @var string
      */
     private $provider;
+    
+    /**
+     * This forecast begins at
+     *
+     * @ORM\Column(type="datetime", name="valid_since")
+     *
+     * @var \DateTimeInterface
+     */
+    protected $validSince;
+    
+    /**
+     * Last date of forecast
+     *
+     * @ORM\Column(type="datetime", name="valid_until")
+     *
+     * @var \DateTimeInterface
+     */
+    protected $validUntil;
     
     /**
      * Location latitude if already fetched
@@ -81,14 +99,16 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      * @param array $details   Detailed data
      * @param float $locationLatitude
      * @param float $locationLongitude
-     * @return CurrentWeather
+     * @return WeatherForecast
      */
     public static function createDetailedForLocation(
         string $provider, array $details, float $locationLatitude, float $locationLongitude
-    ): CurrentWeather
+    ): WeatherForecast
     {
         $weather = new self($provider, $details);
         $weather->setLocation($locationLatitude, $locationLongitude);
+        $weather->getValidSince(); //calculate validity
+        $weather->getValidUntil(); //calculate validity
         return $weather;
     }
     
@@ -144,8 +164,8 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      */
     public function getLocationLatitude(): ?float
     {
-        if ($this->locationLatitude === null && isset($this->details['coord']['lat'])) {
-            $this->locationLatitude = (float)$this->details['coord']['lat'];
+        if ($this->locationLatitude === null && isset($this->details['city']['coord']['lat'])) {
+            $this->locationLatitude = (float)$this->details['city']['coord']['lat'];
         }
         return $this->locationLatitude;
     }
@@ -155,10 +175,28 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
      */
     public function getLocationLongitude(): ?float
     {
-        if ($this->locationLongitude === null && isset($this->details['coord']['lon'])) {
-            $this->locationLongitude = (float)$this->details['coord']['lon'];
+        if ($this->locationLongitude === null && isset($this->details['city']['coord']['lon'])) {
+            $this->locationLongitude = (float)$this->details['city']['coord']['lon'];
         }
         return null;
+    }
+    
+    /**
+     * Get forecast elements
+     *
+     * @return \Traversable
+     */
+    public function getElements(): \Traversable
+    {
+        switch ($this->getProvider()) {
+            case self::PROVIDER_OPENWEATHERMAP:
+                foreach ($this->details['list'] as $forecastElementData) {
+                    yield new WeatherForecastElementOpenWeatherMap($forecastElementData);
+                }
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown forecast provider');
+        }
     }
     
     /**
@@ -170,65 +208,43 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     }
     
     /**
-     * @inheritDoc
+     * Get begin of validity of forecast information
+     *
+     * @return \DateTimeInterface
      */
-    public function getTemperature(): float
+    public function getValidSince(): \DateTimeInterface
     {
-        return (float)$this->details['main']['temp'];
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function getTemperatureFeelsLike(): float
-    {
-        return (float)$this->details['main']['feels_like'];
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function getPressure(): int
-    {
-        return (int)$this->details['main']['pressure'];
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function getRelativeHumidity(): int
-    {
-        return (int)$this->details['main']['humidity'];
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function getWeather(): array
-    {
-        $result = [];
-        foreach ($this->details['weather'] as $weather) {
-            switch ($this->getProvider()) {
-                case self::PROVIDER_OPENWEATHERMAP:
-                    $item = new OpenWeatherMapWeatherCondition($weather);
-                    break;
-                default:
-                    throw new \InvalidArgumentException('Unknown weather provider');
-            }
-            $result[] = $item;
+        if (!$this->validSince) {
+            $elements = iterator_to_array($this->getElements());
+            /** @var ClimaticInformationInterface $first */
+            $first            = reset($elements);
+            $this->validSince = $first->getDate(new \DateTimeZone(date_default_timezone_get()));
         }
-        return $result;
+        
+        return $this->validSince;
+    }
+    
+    /**
+     * Get end of validity of forecast information
+     *
+     * @return \DateTimeInterface
+     */
+    public function getValidUntil(): \DateTimeInterface
+    {
+        if (!$this->validUntil) {
+            $elements = iterator_to_array($this->getElements());
+            /** @var ClimaticInformationInterface $first */
+            $last             = end($elements);
+            $this->validUntil = $last->getDate(new \DateTimeZone(date_default_timezone_get()));
+        }
+        return $this->validUntil;
     }
     
     /**
      * @inheritDoc
      */
-    public function getDate(\DateTimeZone $timeZone = null): \DateTimeInterface
+    public function getIterator()
     {
-        $date = new \DateTime('@' . (int)$this->details['dt'], new \DateTimeZone('UTC'));
-        if ($timeZone) {
-            $date->setTimezone($timeZone);
-        }
-        return $date;
+        return $this->getElements();
     }
 }

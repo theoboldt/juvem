@@ -39,15 +39,21 @@
     {% if event.showWeather %}
       <div class="col-xs-6 col-sm-12 col-md-5 col-lg-5">
         <div id="weather-current"
-             data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
+             data-source="{{ path('event_meteorological', {'eid': event.eid}) }}"></div>
       </div>
     {% endif %}
   {% else %}
     {% if event.showWeather %}
       <div class="col-xs-12">
         <div id="weather-current"
-             data-source="{{ path('event_weather_current', {'eid': event.eid}) }}"></div>
+             data-source="{{ path('event_meteorological', {'eid': event.eid}) }}"></div>
       </div>
     {% endif %}
+  {% endif %}
+  {% if event.showWeather %}
+    <div class="col-xs-12">
+      <div id="weather-forecast"
+           data-source="{{ path('event_meteorological', {'eid': event.eid}) }}"></div>
+    </div>
   {% endif %}
 </div>
