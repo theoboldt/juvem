@@ -133,49 +133,44 @@ class LocationController extends Controller
             
             $forecast = $weatherProvider->provideForecastWeather($coordinates, $begin, $end);
             if ($forecast) {
-                $dataForecasts = [];
+                $forecastResult = [];
+                $forecastDays   = [];
+                $forecastTimes  = [];
                 
-                $timesAvailable = [];
                 foreach ($forecast->getElements() as $climate) {
                     $climateDate = $climate->getDate();
-                    $climateDay  = $climateDate->format(Event::DATE_FORMAT_DATE);
                     $climateHour = (int)$climateDate->format('H');
                     if ($climateHour < 4 || $climateHour > 22) {
                         continue; //exclude these hours from result
                     }
+    
+                    $weatherList = $this->extractWeatherList($climate);
+                    $climateTime = $climateDate->format(Event::DATE_FORMAT_TIME);
+                    $climateDay  = $climateDate->format('d') . ' ' . substr(
+                            GalleryPublicController::convertMonthNumber((int)$climateDate->format('m')), 0, 3
+                        );
+
+                    $forecastTimes[$climateTime] = $climateTime;
+                    $forecastDays[$climateDay] = $climateDay;
                     
-                    $weatherList                  = $this->extractWeatherList($climate);
-                    $climateTime                  = $climateDate->format(Event::DATE_FORMAT_TIME);
-                    $timesAvailable[$climateTime] = $climateTime;
-                    
-                    if (!isset($dataForecasts[$climateDay])) {
-                        
-                        $dataForecasts[$climateDay] = [
-                            'date'       => $climateDay,
-                            'date_day'   => (int)$climateDate->format('d'),
-                            'date_month' => substr(
-                                GalleryPublicController::convertMonthNumber((int)$climateDate->format('m')), 0, 3
-                            ),
-                            'hourly'     => [],
-                        ];
-                    }
-                    $dataForecasts[$climateDay]['hourly'][$climateTime] = [
+                    $forecastResult[$climateTime][$climateDay] = [
                         'temperature'            => round($climate->getTemperature()),
                         'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
                         'weather'                => $weatherList,
                     ];
                 }
-                foreach (array_keys($dataForecasts) as $date) {
-                    foreach ($timesAvailable as $time) {
-                        if (!isset($dataForecasts[$date]['hourly'][$time])) {
-                            $dataForecasts[$date]['hourly'][$time] = new \ArrayObject();
-                            ksort($dataForecasts[$date]['hourly']);
+    
+                foreach ($forecastResult as $time => $days) {
+                    foreach ($forecastDays as $forecastDay) {
+                        if (!isset($forecastResult[$time][$forecastDay])) {
+                            $forecastResult[$time][$forecastDay] = new \ArrayObject();
                         }
+                        ksort($forecastResult[$time]);
                     }
                 }
+                ksort($forecastResult);
                 
-                
-                $data['forecast'] = $dataForecasts;
+                $data['forecast'] = $forecastResult;
             }
             $response->setData($data);
         }

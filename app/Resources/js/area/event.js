@@ -710,18 +710,32 @@ $(function () {
                     });
                 }
                 if (response.forecast) {
-                    var htmlRows = '';
+                    var htmlRows = '',
+                        headerWritten = false;
 
-                    $.each(response.forecast, function (date, details) {
+                    $.each(response.forecast, function (time, days) {
+
+                        if (!headerWritten) {
+                            htmlRows += '<thead>';
+                            htmlRows += '<tr>';
+                            htmlRows += '<td>&nbsp;</td>';
+                            $.each(days, function (dayDescriptor, climatic) {
+                                htmlRows += '<td>' + dayDescriptor + '</td>';
+                            });
+                            htmlRows += '</tr>';
+                            htmlRows += '</thead>';
+                            headerWritten = true;
+                        }
+
                         htmlRows += '<tr>';
-                        htmlRows += '<td class="d">' + details.date_day + '<br>' + details.date_month + '</td>';
+                        htmlRows += '<td class="d">' + time + '</td>';
 
-                        $.each(details.hourly, function (hour, hourDetails) {
-                            if (hourDetails.temperature) {
-                                var htmlTemperature = createTemperatureHtml(hourDetails);
+                        $.each(days, function (day, climatic) {
+                            if (climatic.temperature === 0 || climatic.temperature) {
+                                var htmlTemperature = createTemperatureHtml(climatic);
 
                                 htmlRows += '<td>';
-                                htmlRows += createWeatherHtml(hourDetails.weather, htmlTemperature, 1, false);
+                                htmlRows += createWeatherHtml(climatic.weather, htmlTemperature, 1, false);
 
                                 htmlRows += '</td>';
                             } else {
