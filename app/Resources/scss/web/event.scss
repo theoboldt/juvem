@@ -552,6 +552,9 @@ abbr.unit {
         font-size: 70%;
       }
       @media (min-width: $screen-md-min) {
+        td {
+          border-width: 2px;
+        }
         font-size: 90%;
       }
       @media (max-width: $screen-xs-max) {
