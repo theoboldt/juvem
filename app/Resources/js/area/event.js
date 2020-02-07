@@ -716,7 +716,7 @@ $(function () {
                         container: 'body'
                     });
                 }
-                if (response.forecast) {
+                if (response.forecast_available) {
                     var htmlRows = '',
                         headerWritten = false;
 

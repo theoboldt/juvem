@@ -180,8 +180,9 @@ class LocationController extends Controller
                     }
                 }
                 ksort($forecastResult);
-                
-                $data['forecast'] = $forecastResult;
+    
+                $data['forecast']           = $forecastResult;
+                $data['forecast_available'] = (bool)count($forecastResult);
             }
             $response->setData($data);
         }
