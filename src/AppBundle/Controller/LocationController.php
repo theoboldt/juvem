@@ -134,7 +134,7 @@ class LocationController extends Controller
             $forecast = $weatherProvider->provideForecastWeather($coordinates, $begin, $end);
             if ($forecast) {
                 $forecastResult = [];
-                $forecastDays   = [];
+                $climateDates   = [];
                 $forecastTimes  = [];
                 
                 foreach ($forecast->getElements() as $climate) {
@@ -143,27 +143,38 @@ class LocationController extends Controller
                     if ($climateHour < 4 || $climateHour > 22) {
                         continue; //exclude these hours from result
                     }
-    
+                    
                     $weatherList = $this->extractWeatherList($climate);
                     $climateTime = $climateDate->format(Event::DATE_FORMAT_TIME);
-                    $climateDay  = $climateDate->format('d') . ' ' . substr(
+                    $climateDay  = [
+                        'day'   => (int)$climateDate->format('j'),
+                        'month' => substr(
                             GalleryPublicController::convertMonthNumber((int)$climateDate->format('m')), 0, 3
-                        );
-
-                    $forecastTimes[$climateTime] = $climateTime;
-                    $forecastDays[$climateDay] = $climateDay;
-                    
-                    $forecastResult[$climateTime][$climateDay] = [
-                        'temperature'            => round($climate->getTemperature()),
-                        'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
-                        'weather'                => $weatherList,
+                        )
                     ];
+                    $climateDate = $climateDate->format('Y-m-d');
+                    
+                    $forecastTimes[$climateTime] = $climateTime;
+                    $climateDates[$climateDate]  = $climateDay;
+                    
+                    if (!isset($forecastResult[$climateTime][$climateDate])) {
+                        $forecastResult[$climateTime][$climateDate] = [
+                            'date'     => $climateDay,
+                            'forecast' => [
+                                'temperature'            => round($climate->getTemperature()),
+                                'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
+                                'weather'                => $weatherList,
+                            ],
+                        ];
+                    }
                 }
-    
+                
                 foreach ($forecastResult as $time => $days) {
-                    foreach ($forecastDays as $forecastDay) {
-                        if (!isset($forecastResult[$time][$forecastDay])) {
-                            $forecastResult[$time][$forecastDay] = new \ArrayObject();
+                    foreach ($climateDates as $climateDate => $climateDay) {
+                        if (!isset($forecastResult[$time][$climateDate])) {
+                            $forecastResult[$time][$climateDate] = [
+                                'date' => $climateDay, 'forecast' => new \ArrayObject()
+                            ];
                         }
                         ksort($forecastResult[$time]);
                     }
