@@ -697,7 +697,7 @@ $(function () {
         $.ajax({
             url: weatherCurrentEl.data('source'),
             success: function (response) {
-                if (response.current.weather && response.current.weather.length) {
+                if (response && response.current && response.current.weather && response.current.weather.length) {
                     var htmlTemperature = createTemperatureHtml(response.current);
 
                     var html = '<label ';
@@ -716,7 +716,7 @@ $(function () {
                         container: 'body'
                     });
                 }
-                if (response.forecast_available) {
+                if (response && response.forecast_available) {
                     var htmlRows = '',
                         headerWritten = false;
 
