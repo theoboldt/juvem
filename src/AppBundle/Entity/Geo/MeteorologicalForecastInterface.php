@@ -12,7 +12,8 @@
 namespace AppBundle\Entity\Geo;
 
 
-interface MeteorologicalForecastInterface extends \Traversable
+interface MeteorologicalForecastInterface
+    // extends \Traversable TODO implement traversable for PHP 7.4
 {
     
     /**
