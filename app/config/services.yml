@@ -277,11 +277,17 @@ services:
         arguments:
             - 'AppBundle:Geo\LocationDescription'
 
-    app.repository.weather_current:
+    app.repository.meterological_current:
         class: AppBundle\Entity\Geo\CurrentWeatherRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
-            - 'AppBundle\Entity\Geo\CurrentWeather'
+            - 'AppBundle:Geo\CurrentWeather'
+
+    app.repository.meterological_forecast:
+        class: AppBundle\Entity\Geo\MeteorologyForecastRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:Geo\WeatherForecast'
 
     AppBundle\Security\EventVoter:
       autowire: true
@@ -330,14 +336,15 @@ services:
             - '@app.repository.open_street_map_element'
         public: true
 
-    AppBundle\Manager\Weather\OpenweathermapWeatherProvider:
+    AppBundle\Manager\Weather\OpenweathermapMeteorologicalProvider:
         arguments:
             - "%app.geo.openweathermap.api_key%"
 
     app.geo.weather_provider:
-        class: AppBundle\Manager\Weather\WeatherProvider
+        class: AppBundle\Manager\Weather\MeteorologicalProvider
         arguments:
-            - '@AppBundle\Manager\Weather\OpenweathermapWeatherProvider'
-            - '@app.repository.weather_current'
+            - '@AppBundle\Manager\Weather\OpenweathermapMeteorologicalProvider'
+            - '@app.repository.meterological_current'
+            - '@app.repository.meterological_forecast'
         public: true
 

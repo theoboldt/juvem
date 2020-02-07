@@ -655,41 +655,115 @@ $(function () {
     var weatherCurrentEl = $('#weather-current');
     if (weatherCurrentEl.length) {
         window.ensureOwfontLoad();
+
+        const createTemperatureHtml = function (temperatureAware) {
+                return '<span ' +
+                    'data-title="Gefühlte Temperatur: ' +
+                    String(temperatureAware.temperature_feels_like).replace('.', ',') +
+                    ' °C"' +
+                    ' style="color:#222;">' + String(temperatureAware.temperature).replace('.', ',') + '°C</span>';
+            },
+            createWeatherHtml = function (weatherAware, htmlTemperature, size, useText, defaultCls) {
+                var html = '';
+                if (!defaultCls) {
+                    defaultCls = 'owf owf-pull-left owf-border';
+                }
+
+                if (weatherAware.length === 1) {
+                    html += '<span class="w">';
+                    html += '<i class="owf-' + weatherAware[0].id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weatherAware[0].description + '"></i>';
+                    html += '</span>';
+                    html += '<span class="t">' + htmlTemperature + '</span>';
+                    if (useText) {
+                        html += ', ' + weatherAware[0].description;
+                    }
+                } else {
+                    var htmlWeatherDescriptions = [];
+                    html += '<span class="w">';
+                    $.each(weatherAware, function (key, weather) {
+                        html += '<i class="owf-' + weather.id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weather.description + '"></i>';
+                        htmlWeatherDescriptions.push(weather.description);
+                    });
+                    if (useText) {
+                        html += htmlWeatherDescriptions.join(', ') + '; ';
+                    }
+                    html += '</span>';
+                    html += ' <span class="t">' + htmlTemperature + '</span>';
+                }
+
+                return html;
+            };
+
         $.ajax({
             url: weatherCurrentEl.data('source'),
             success: function (response) {
-                if (response.weather && response.weather.length) {
-                    var htmlTemperature = '<span ' +
-                        'data-title="Gefühlte Temperatur: ' +
-                        String(response.temperature_feels_like).replace('.', ',') +
-                        ' °C"' +
-                        ' style="color:#222;">' + String(response.temperature).replace('.', ',') + '°C</span>';
+                if (response.current.weather && response.current.weather.length) {
+                    var htmlTemperature = createTemperatureHtml(response.current);
 
                     var html = '<label ';
-                    if (response.created_at) {
-                        html += 'data-title="Aktuelle Wetterdaten vom ' + response.created_at + '"';
+                    if (response.current.created_at) {
+                        html += 'data-title="Aktuelle Wetterdaten vom ' + response.current.created_at + '"';
                     }
                     html += 'class="control-label">Wetter (aktuell)</label>' +
                         '<p>';
 
-                    if (response.weather.length === 1) {
-                        html += '<i class="owf owf-' + response.weather[0].id + ' owf-2x owf-pull-left owf-border" data-title="'+response.weather[0].description+'"></i>';
-                        html += htmlTemperature + ', ';
-                        html += response.weather[0].description;
-                    } else {
-                        var htmlWeatherDescriptions = [];
-                        $.each(response.weather, function (key, weather) {
-                            html += '<i class="owf owf-' + weather.id + ' owf-2x owf-pull-left owf-border" data-title="'+weather.description+'"></i>';
-                            htmlWeatherDescriptions.push(weather.description);
-                        });
-                        html += htmlWeatherDescriptions.join(', ') + '; ';
-                        html += ' ' + htmlTemperature;
-                    }
+                    html += createWeatherHtml(response.current.weather, htmlTemperature, 2, true);
 
                     html += ' </p>';
 
                     weatherCurrentEl.html(html);
                     $('#weather-current [data-title]').tooltip({
+                        container: 'body'
+                    });
+                }
+                if (response.forecast) {
+                    var htmlRows = '',
+                        headerWritten = false;
+
+                    $.each(response.forecast, function (time, days) {
+
+                        if (!headerWritten) {
+                            htmlRows += '<thead>';
+                            htmlRows += '<tr>';
+                            htmlRows += '<td class="e">&nbsp;</td>';
+                            $.each(days, function (day, climatic) {
+                                htmlRows += '<td>' +
+                                    '<div>' + climatic.date.day + '.</div>' +
+                                    '<div class="m">' + climatic.date.month + '</div>' +
+                                    '</td>';
+                            });
+                            htmlRows += '</tr>';
+                            htmlRows += '</thead>';
+                            htmlRows += '<tbody>';
+                            headerWritten = true;
+                        }
+
+                        htmlRows += '<tr>';
+                        htmlRows += '<td class="d">' + time + '</td>';
+
+                        $.each(days, function (day, climatic) {
+                            if (climatic.forecast.temperature === 0 || climatic.forecast.temperature) {
+                                var htmlTemperature = createTemperatureHtml(climatic.forecast);
+
+                                htmlRows += '<td>';
+                                htmlRows += '<div>';
+                                htmlRows += createWeatherHtml(
+                                    climatic.forecast.weather, htmlTemperature, climatic.forecast.weather.length > 1 ? 2 : 3, false, 'owf'
+                                );
+
+                                htmlRows += '</div>';
+                                htmlRows += '</td>';
+                            } else {
+                                htmlRows += '<td class="e"></td>';
+                            }
+                        });
+
+                        htmlRows += '</tr>';
+                    });
+                    htmlRows += '</tbody>';
+
+                    $('#weather-forecast').html('<label class="control-label">Wettervorhersage</label><table>' + htmlRows + '</table>');
+                    $('#weather-forecast [data-title]').tooltip({
                         container: 'body'
                     });
                 }

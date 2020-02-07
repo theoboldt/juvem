@@ -21,7 +21,6 @@ interface ClimaticInformationInterface
      */
     public function getTemperature(): float;
     
-    
     /**
      * Get feels like temperature in °C
      *
@@ -49,5 +48,13 @@ interface ClimaticInformationInterface
      * @return array|WeatherConditionInterface[]
      */
     public function getWeather(): array;
+    
+    /**
+     * Provides the timestamp for which this climatic information is valid for
+     *
+     * @param \DateTimeZone|null $timeZone If transmitted date will be converted to provided time zone
+     * @return \DateTimeInterface
+     */
+    public function getDate(\DateTimeZone $timeZone = null): \DateTimeInterface;
     
 }
