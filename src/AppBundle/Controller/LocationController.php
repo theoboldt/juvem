@@ -103,8 +103,9 @@ class LocationController extends Controller
         $coordinates     = $addressResolver->provideCoordinates($event);
         
         $data = [
-            'current'  => [],
-            'forecast' => [],
+            'current'            => [],
+            'forecast'           => [],
+            'forecast_available' => false,
         ];
         if ($coordinates) {
             $weatherProvider = $this->get('app.geo.weather_provider');
@@ -180,7 +181,7 @@ class LocationController extends Controller
                     }
                 }
                 ksort($forecastResult);
-    
+                
                 $data['forecast']           = $forecastResult;
                 $data['forecast_available'] = (bool)count($forecastResult);
             }
