@@ -126,10 +126,14 @@ class LocationController extends Controller
                     $data['created_at'] = $dataCreatedAt;
                 }
             }
-            
+
             $begin = clone $event->getStartDate();
             $begin->setTime(0, 0, 0);
-            $end = clone $event->getEndDate();
+            if ($event->hasEndDate()) {
+                $end = clone $event->getEndDate();
+            } else {
+                $end = clone $begin;
+            }
             $end->setTime(23, 59, 59);
             
             $forecast = $weatherProvider->provideForecastWeather($coordinates, $begin, $end);
