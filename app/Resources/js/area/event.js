@@ -739,7 +739,7 @@ $(function () {
                         }
 
                         htmlRows += '<tr>';
-                        htmlRows += '<td class="d">' + time + '</td>';
+                        htmlRows += '<td class="d"><span>' + time + '</span></td>';
 
                         $.each(days, function (day, climatic) {
                             if (climatic.forecast.temperature === 0 || climatic.forecast.temperature) {

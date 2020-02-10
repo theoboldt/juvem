@@ -537,7 +537,7 @@ abbr.unit {
   }
 
   i.owf {
-    color: $brand-primary;
+    color: darken($breadcrumb-bg, 10%);
   }
 
   #weather-current > label {
@@ -561,14 +561,16 @@ abbr.unit {
         font-size: 90%;
       }
 
+      color: $breadcrumb-color;
       overflow: hidden;
       width: 100%;
 
 
       tbody {
+
         td {
           > div {
-            background: lighten($brandPrimaryDark, 44%);
+            background: lighten($breadcrumb-bg, 12%);
             position: relative;
             min-height: 40px;
           }
@@ -596,20 +598,21 @@ abbr.unit {
       }
 
       .d {
+        text-align: right;
         padding: 2px;
-        background: lighten($brandPrimaryDark, 41%);
+        background: lighten($breadcrumb-bg, 6%);
       }
 
       thead {
         div {
           padding: 2px;
-          background: lighten($brandPrimaryDark, 41%);
+          background: lighten($breadcrumb-bg, 7%);
           text-align: center;
         }
 
         div.m {
-          background: $brandPrimaryDark;
-          color: white;
+          background: $breadcrumb-bg;
+          color: $breadcrumb-active-color;
         }
       }
     }
