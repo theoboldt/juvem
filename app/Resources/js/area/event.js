@@ -771,4 +771,92 @@ $(function () {
         });
     }
 
+    $('#modalChangeTracking').on('show.bs.modal', function (event) {
+        var buttonEl = $(event.relatedTarget),
+            modalEl = $(this);
+
+        $.ajax({
+            url: buttonEl.data('list-url'),
+            success: function (response) {
+                if (response && response.changes) {
+                    var html = '',
+                        htmlRow,
+                        operation;
+                    $.each(response.changes, function (index, change) {
+                        htmlRow = '<tr>';
+
+                        switch (change.operation) {
+                            case 'create':
+                                operation = 'Erstellen';
+                                break;
+                            case 'update':
+                                operation = 'Bearbeiten';
+                                break;
+                            case 'delete':
+                                operation = 'Löschen';
+                                break;
+                            case 'trash':
+                                operation = 'Papierkorb';
+                                break;
+                            case 'restore':
+                                operation = 'Wiederherstellen';
+                                break;
+                            default:
+                                operation = change.operation;
+                                break;
+                        }
+                        htmlRow += '<td>' + change.occurrence_date + '</td>';
+                        htmlRow += '<td>' + operation + '</td>';
+
+                        htmlRow += '<td>';
+                        if (change.responsible_user) {
+                            if (change.responsible_user && change.responsible_user.id) {
+                                htmlRow += '<a href="/admin/user/' + change.responsible_user.id + '">' + change.responsible_user.fullname + '</a>';
+                            } else {
+                                htmlRow += change.responsible_user.fullname;
+                            }
+                        } else {
+                            htmlRow += '<i class="empty no-one"></i>';
+                        }
+                        htmlRow += '</td>';
+
+                        htmlRow += '<td>';
+
+                        if (change.changes && typeof change.changes === 'object') {
+                            htmlRow += '<ul>';
+                            $.each(change.changes, function (attribute, versions) {
+                                htmlRow += '<li> <label>' + attribute + '</label>: ';
+
+                                htmlRow += '<span class="before">';
+                                if (versions[0]) {
+                                    htmlRow += versions[0];
+                                } else {
+                                    htmlRow += '<i class="empty empty-none"></i>';
+                                }
+                                htmlRow += '</span>';
+                                htmlRow += '&nbsp;&rarr;&nbsp;';
+                                htmlRow += '<span class="after">';
+                                if (versions[1]) {
+                                    htmlRow += versions[1];
+                                } else {
+                                    htmlRow += '<i class="empty empty-none"></i>';
+                                }
+                                htmlRow += '</span>';
+
+                                htmlRow += '</li>';
+                            });
+                            htmlRow += '</ul>';
+                        }
+                        htmlRow += '</td>';
+
+                        htmlRow += '</tr>';
+                        html += htmlRow;
+                    });
+
+
+                    $('#modalChangeTracking table tbody').html(html);
+                }
+            }
+        });
+    });
 });

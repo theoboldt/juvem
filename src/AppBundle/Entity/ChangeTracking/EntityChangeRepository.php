@@ -44,14 +44,26 @@ class EntityChangeRepository extends EntityRepository
      */
     public function findAllByEntity(SupportsChangeTrackingInterface $entity): array
     {
+        return $this->findAllByClassAndId(get_class($entity), $entity->getId());
+    }
+    
+    /**
+     * Find all changes by related class name and related entityid
+     *
+     * @param string $relatedClassName Class name
+     * @param int $relatedEntityId     Entity id
+     * @return array|EntityChange[]
+     */
+    public function findAllByClassAndId(string $relatedClassName, int $relatedEntityId): array
+    {
         $qb = $this->createQueryBuilder('c');
         $qb->select(['c', 'u'])
            ->leftJoin('c.responsibleUser', 'u')
            ->andWhere('c.relatedId = :relatedId')
            ->andWhere('c.relatedClass = :relatedClass');
         
-        $qb->setParameter('relatedId', $entity->getId())
-           ->setParameter('relatedClass', get_class($entity));
+        $qb->setParameter('relatedId', $relatedEntityId)
+           ->setParameter('relatedClass', $relatedClassName);
         
         return $qb->getQuery()->execute();
     }

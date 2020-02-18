@@ -1,3 +1,5 @@
+i.empty.no-one,
+i.empty.empty-none,
 i.empty.no-special,
 i.empty.value-null,
 i.empty.no-selection {
@@ -14,4 +16,11 @@ i.empty.value-null span:after {
 
 i.empty.no-selection span:after {
   content: '(Keine Auswahl)';
+}
+
+i.empty.no-one:after {
+  content: '(niemand)';
+}
+i.empty.empty-none:after {
+  content: '(nichts)';
 }

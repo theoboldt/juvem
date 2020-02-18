@@ -72,7 +72,6 @@ class ChangeTrackingButton extends AbstractExtension
                 ]
             ),
         ];
-        
     }
     
     /**
@@ -88,13 +87,56 @@ class ChangeTrackingButton extends AbstractExtension
         } else {
             $changes = $this->repository->countAllByEntity($entity);
         }
-        
         if ($changes === 0) {
-            return '<span class="btn btn-default disabled" title="Änderungen verfolgen"><span class="glyphicon glyphicon-road"  aria-hidden="true"></span> <span class="hidden-xs">Keine Änderungen</span></span>';
+            return '<span class="btn btn-default disabled" title="Änderungsverlauf untersuchen"><span class="glyphicon glyphicon-road"  aria-hidden="true"></span> <span class="hidden-xs">Keine Änderungen</span></span>';
         } else {
-           
-            return '<span class="btn btn-default disabled" title="Änderungen verfolgen"><span class="glyphicon glyphicon-road"  aria-hidden="true"></span> <span class="hidden-xs">' .
-                   $changes . '&nbsp;Änderung' . (($changes > 1) ? 'en' : '') . '</span></span>';
+            $modalHtml = <<<HTML
+<div class="modal fade" tabindex="-1" role="dialog" id="modalChangeTracking">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Änderungsverlauf</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Zeitpunkt</th>
+              <th>Operation</th>
+              <th>Benutzer</th>
+              <th>Änderungen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+HTML;
+            
+            $url = $this->router->generate(
+                'admin_change_overview',
+                [
+                    'entityId'        => $entity->getId(),
+                    'classDescriptor' => EntityChangeRepository::convertClassNameForRoute(get_class($entity))
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            return $modalHtml .
+                   '<button class="btn btn-default"' .
+                   ' data-toggle="modal" data-target="#modalChangeTracking"' .
+                   ' data-list-url="' . $url . '"' .
+                   ' title="Änderungsverlauf untersuchen">' .
+                   '<span class="glyphicon glyphicon-road" aria-hidden="true"></span> <span class="hidden-xs">' .
+                   $changes . '&nbsp;Änderung' . (($changes > 1) ? 'en' : '') .
+                   '</span></button>';
         }
     }
     

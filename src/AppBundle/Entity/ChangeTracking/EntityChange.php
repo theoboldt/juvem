@@ -14,6 +14,7 @@ use AppBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
@@ -31,6 +32,8 @@ class EntityChange implements \Countable
     const OPERATION_RESTORE = 'restore';
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="integer", name="cid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -53,6 +56,8 @@ class EntityChange implements \Countable
     /**
      * Change operation, one of 'create', 'update', 'delete', 'trash', 'restore'
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="string", name="operation", columnDefinition="ENUM('create', 'update', 'delete', 'trash', 'restore')")
      * @var string
      */
@@ -78,8 +83,10 @@ class EntityChange implements \Countable
     /**
      * Timestamp when change happened
      *
-     * @var \DateTime
+     * @Serialize\Expose
+     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
      * @ORM\Column(type="datetime", name="occurrence_date")
+     * @var \DateTime
      */
     protected $occurrenceDate;
     

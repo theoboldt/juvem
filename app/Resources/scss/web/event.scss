@@ -627,3 +627,13 @@ abbr.unit {
     margin: 0;
   }
 }
+
+#modalChangeTracking {
+  .before, .after {
+    color: #333;
+  }
+  .before i, .after i {
+    color: #444;
+  }
+
+}
