@@ -92,6 +92,7 @@
                        class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
                     <a href="{{ path('admin_event_variable', {'eid': event.eid }) }}"
                        class="btn btn-default" title="Veranstaltungsspezifische Variablen verwalten">{{ 'equalizer'|glyph }} <span class="hidden-xs">Variablen</span></a>
+                    {{ event|changeTrackingButton }}
                     {%- if is_granted('edit', event) -%}
                         <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
                            class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>

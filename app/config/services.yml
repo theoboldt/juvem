@@ -289,6 +289,12 @@ services:
         arguments:
             - 'AppBundle:Geo\WeatherForecast'
 
+    app.repository.entity_change:
+        class: AppBundle\Entity\ChangeTracking\EntityChangeRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:ChangeTracking\EntityChange'
+
     AppBundle\Security\EventVoter:
       autowire: true
       tags:
@@ -361,3 +367,12 @@ services:
               event: preRemove
             - name: 'doctrine.event_listener'
               event: postFlush
+
+    AppBundle\Twig\Extension\ChangeTrackingButton:
+        arguments:
+            - '@app.repository.entity_change'
+            - '@security.authorization_checker'
+            - '@router'
+        public: false
+        tags:
+            - { name: twig.extension }
