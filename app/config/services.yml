@@ -348,3 +348,16 @@ services:
             - '@app.repository.meterological_forecast'
         public: true
 
+    AppBundle\EventListeners\ChangeTrackingListener:
+        arguments:
+            - '@security.token_storage'
+            - '@logger'
+        tags:
+            - name: 'doctrine.event_listener'
+              event: onFlush
+            - name: 'doctrine.event_listener'
+              event: preUpdate
+            - name: 'doctrine.event_listener'
+              event: preRemove
+            - name: 'doctrine.event_listener'
+              event: postFlush

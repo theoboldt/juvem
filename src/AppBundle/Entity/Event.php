@@ -17,6 +17,9 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,35 +38,35 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
  */
-class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface
+class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, AddressTrait;
-
+    
     const DATE_FORMAT_DATE      = 'd.m.Y';
     const DATE_FORMAT_TIME      = 'H:i';
     const DATE_FORMAT_DATE_TIME = 'd.m.y H:i';
-
+    
     const DEFAULT_COUNTRY = 'Deutschland';
-
+    
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $eid;
-
+    
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      */
     protected $title;
-
+    
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
      */
     protected $description;
-
+    
     /**
      * @ORM\Column(type="text", length=160, name="description_meta", nullable=true)
      * @Assert\Length(
@@ -72,19 +75,19 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * )
      */
     protected $descriptionMeta;
-
+    
     /**
      * @ORM\Column(type="text", name="confirmation_message", nullable=true)
      */
     protected $confirmationMessage = null;
-
+    
     /**
      * @ORM\Column(type="date", name="start_date")
      * @Assert\NotBlank()
      * @Assert\Type("\DateTime")
      */
     protected $startDate;
-
+    
     /**
      * Defines the start time of the event. May be null for so called full day events
      *
@@ -92,34 +95,34 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @Assert\Type("\DateTime")
      */
     protected $startTime;
-
+    
     /**
      * @ORM\Column(type="date", name="end_date", nullable=true)
      * @Assert\Type("\DateTime")
      */
     protected $endDate;
-
+    
     /**
      * @ORM\Column(type="time", name="end_time", nullable=true)
      * @Assert\Type("\DateTime")
      */
     protected $endTime;
-
+    
     /**
      * @ORM\Column(type="boolean", name="is_active")
      */
     protected $isActive;
-
+    
     /**
      * @ORM\Column(type="boolean", name="is_visible")
      */
     protected $isVisible;
-
+    
     /**
      * @ORM\Column(type="boolean", name="is_auto_confirm")
      */
     protected $isAutoConfirm;
-
+    
     /**
      * @Assert\Regex(
      *     pattern="/(\d+-\d+)|(\d[-]{0,1})|([-]{0,1}\d)|/",
@@ -129,41 +132,41 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @ORM\Column(type="string", length=8, nullable=true)
      */
     protected $ageRange;
-
+    
     /**
      * Contains the events price, in EURO CENT (instead of euro)
      *
      * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
      */
     protected $price;
-
+    
     /**
      * @ORM\Column(type="string", length=128, name="address_title", nullable=true)
      */
     protected $addressTitle;
-
+    
     /**
      * @ORM\Column(type="string", length=128, name="address_street", nullable=true)
      */
     protected $addressStreet;
-
+    
     /**
      * @ORM\Column(type="string", length=128, name="address_city", nullable=true)
      */
     protected $addressCity;
-
+    
     /**
      * @ORM\Column(type="string", length=16, name="address_zip", nullable=true)
      */
     protected $addressZip;
-
+    
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageFilename")
      *
      * @var File|null
      */
     private $imageFile;
-
+    
     /**
      * @ORM\Column(type="string", length=255, name="image_filename", nullable=true)
      *
@@ -182,7 +185,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @var Vich\UploadableField|File|null
      */
     private $invoiceTemplateFile;
-
+    
     /**
      * @ORM\Column(type="string", length=255, name="invoice_template_filename", nullable=true)
      *
@@ -201,28 +204,28 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * )
      */
     protected $acquisitionAttributes;
-
+    
     /**
      * Contains the participations assigned to this event
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Participation", mappedBy="event", cascade={"remove"})
      */
     protected $participations;
-
+    
     /**
      * Contains the employees
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Employee", mappedBy="event", cascade={"remove"})
      */
     protected $employees;
-
+    
     /**
      * Contains the gallery images assigned to this event
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\GalleryImage", mappedBy="event", cascade={"remove"})
      */
     protected $galleryImages;
-
+    
     /**
      * Set to true if gallery link sharing is enabled
      *
@@ -230,7 +233,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @var bool
      */
     protected $isGalleryLinkSharing = false;
-
+    
     /**
      * Contains the list of attendance lists assigned to the event
      *
@@ -238,35 +241,35 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @var Collection
      */
     protected $attendanceLists;
-
+    
     /**
      * Able to store the amount of participations which are not withdrawn nor deleted
      *
      * @var int|null
      */
     protected $participantsCount = null;
-
+    
     /**
      * Able to store the amount of participations are not withdrawn nor deleted but confirmed
      *
      * @var int|null
      */
     protected $participantsConfirmedCount = null;
-
+    
     /**
      * @var Collection|User[]
      *
      * @ORM\ManyToMany(targetEntity="User", mappedBy="subscribedEvents")
      */
     protected $subscribers;
-
+    
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\EventUserAssignment", mappedBy="event", cascade={"persist",
      *                                                                     "remove"})
      * @var Collection|EventUserAssignment[]
      */
     protected $userAssignments;
-
+    
     /**
      * If defined and number of participants is equal or greater than threadshold, waiting list warning is displayed
      *
@@ -274,7 +277,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true)
      */
     protected $waitingListThreshold = null;
-
+    
     /**
      * Configuration for specific age filter, defines specific age
      *
@@ -282,7 +285,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @ORM\Column(type="integer", name="specific_age", options={"unsigned":true}, nullable=true)
      */
     protected $specificAge = null;
-
+    
     /**
      * Configuration for specific age at date filter, defines specific date
      *
@@ -307,7 +310,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @var bool
      */
     protected $isShowMap = false;
-   
+    
     /**
      * Set to true if weather info should be shown to public users
      *
@@ -328,7 +331,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->subscribers           = new ArrayCollection();
         $this->userAssignments       = new ArrayCollection();
     }
-
+    
     /**
      * Get eid
      *
@@ -338,7 +341,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->eid;
     }
-
+    
     /**
      * Set title
      *
@@ -349,10 +352,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setTitle($title)
     {
         $this->title = $title;
-
+        
         return $this;
     }
-
+    
     /**
      * Get title
      *
@@ -362,7 +365,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->title;
     }
-
+    
     /**
      * Set description
      *
@@ -373,10 +376,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setDescription($description)
     {
         $this->description = $description;
-
+        
         return $this;
     }
-
+    
     /**
      * Get description
      *
@@ -386,7 +389,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->description;
     }
-
+    
     /**
      * Set startDate
      *
@@ -397,10 +400,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setStartDate($startDate)
     {
         $this->startDate = $startDate;
-
+        
         return $this;
     }
-
+    
     /**
      * Get startDate
      *
@@ -410,7 +413,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->startDate;
     }
-
+    
     /**
      * Set startTime
      *
@@ -421,10 +424,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setStartTime($startTime)
     {
         $this->startTime = $startTime;
-
+        
         return $this;
     }
-
+    
     /**
      * Get startTime
      *
@@ -434,18 +437,18 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->startTime;
     }
-
+    
     /**
      * Returns true if a start time is set
      *
-     * @param  bool|null $value Value which not actually processed
+     * @param bool|null $value Value which not actually processed
      * @return bool
      */
     public function hasStartTime($value = null)
     {
         return (bool)$this->startTime;
     }
-
+    
     /**
      * Set endDate
      *
@@ -456,10 +459,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setEndDate($endDate)
     {
         $this->endDate = $endDate;
-
+        
         return $this;
     }
-
+    
     /**
      * Get endDate
      *
@@ -469,19 +472,19 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->endDate;
     }
-
+    
     /**
      * Returns true if a end date is set
      *
-     * @param  bool|null $value Value which not actually processed
+     * @param bool|null $value Value which not actually processed
      * @return bool
      */
     public function hasEndDate($value = null)
     {
         return (bool)$this->endDate;
     }
-
-
+    
+    
     /**
      * Set endTime
      *
@@ -492,10 +495,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setEndTime($endTime)
     {
         $this->endTime = $endTime;
-
+        
         return $this;
     }
-
+    
     /**
      * Get endTime
      *
@@ -505,19 +508,19 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->endTime;
     }
-
+    
     /**
      * Returns true if a end time is set
      *
-     * @param  bool|null $value Value which not actually processed
+     * @param bool|null $value Value which not actually processed
      * @return bool
      */
     public function hasEndTime($value = null)
     {
         return (bool)$this->endTime;
     }
-
-
+    
+    
     /**
      * Set isActive
      *
@@ -528,10 +531,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-
+        
         return $this;
     }
-
+    
     /**
      * Get isActive
      *
@@ -541,7 +544,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isActive;
     }
-
+    
     /**
      * Set isVisible
      *
@@ -552,10 +555,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsVisible($isVisible)
     {
         $this->isVisible = $isVisible;
-
+        
         return $this;
     }
-
+    
     /**
      * Get isVisible
      *
@@ -565,7 +568,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isVisible;
     }
-
+    
     /**
      * Get isActive
      *
@@ -575,7 +578,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isActive;
     }
-
+    
     /**
      * Get isVisible
      *
@@ -585,7 +588,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isVisible;
     }
-
+    
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
      * of 'UploadedFile' is injected into this setter to trigger the  update. If this
@@ -598,14 +601,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setImageFile(File $image = null)
     {
         $this->imageFile = $image;
-
+        
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->modifiedAt = new \DateTime('now');
         }
     }
-
+    
     /**
      * @return File
      */
@@ -621,7 +624,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->imageFilename = $imageFilename;
     }
-
+    
     /**
      * @return string
      */
@@ -642,14 +645,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setInvoiceTemplateFile(File $template = null)
     {
         $this->invoiceTemplateFile = $template;
-
+        
         if ($template) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->modifiedAt = new \DateTime('now');
         }
     }
-
+    
     /**
      * @return File
      */
@@ -673,7 +676,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->invoiceTemplateFilename = $invoiceTemplateFilename;
     }
-
+    
     
     /**
      * Add participation
@@ -685,10 +688,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function addParticipation(\AppBundle\Entity\Participation $participation)
     {
         $this->participations[] = $participation;
-
+        
         return $this;
     }
-
+    
     /**
      * Remove participation
      *
@@ -698,7 +701,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->participations->removeElement($participation);
     }
-
+    
     /**
      * Get participations
      *
@@ -708,7 +711,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->participations;
     }
-
+    
     /**
      * Add galleryImage
      *
@@ -719,10 +722,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function addGalleryImage(GalleryImage $galleryImage)
     {
         $this->galleryImages[] = $galleryImage;
-
+        
         return $this;
     }
-
+    
     /**
      * Remove galleryImage
      *
@@ -732,7 +735,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->galleryImages->removeElement($galleryImage);
     }
-
+    
     /**
      * Get galleryImages
      *
@@ -742,7 +745,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->galleryImages;
     }
-
+    
     /**
      * @return mixed
      */
@@ -750,7 +753,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->getIsGalleryLinkSharing();
     }
-
+    
     /**
      * @return mixed
      */
@@ -758,7 +761,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isGalleryLinkSharing;
     }
-
+    
     /**
      * @param mixed $isGalleryLinkSharing
      * @return Event
@@ -768,12 +771,13 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->isGalleryLinkSharing = $isGalleryLinkSharing;
         return $this;
     }
-
+    
     /**
-     * Count @see Participant entites, which fulfill filter, assigned to this entity via @see Participation
+     * Count @param callable $filter Filter to check
      *
-     * @param callable $filter Filter to check
      * @return int             Amount of participants
+     * @see Participant entites, which fulfill filter, assigned to this entity via @see Participation
+     *
      */
     private function countParticipantsByFilter(callable $filter)
     {
@@ -784,10 +788,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
             $participations = $participation->getParticipants()->filter($filter);
             $count          += $participations->count();
         }
-
+        
         return $count;
     }
-
+    
     /**
      * Get value of amount of participations not withdrawn nor deleted
      *
@@ -805,10 +809,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
                 }
             );
         }
-
+        
         return $this->participantsCount;
     }
-
+    
     /**
      * Get value of amount of participations not withdrawn nor deleted but not confirmed
      *
@@ -827,10 +831,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
                 }
             );
         }
-
+        
         return $this->participantsConfirmedCount;
     }
-
+    
     /**
      * Get value of amount of participations not withdrawn nor deleted but confirmed
      *
@@ -840,7 +844,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->getParticipantsCount() - $this->getParticipantsConfirmedCount();
     }
-
+    
     /**
      * Set value of amount of participations
      *
@@ -852,7 +856,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->participantsCount = $participantsCount;
         return $this;
     }
-
+    
     /**
      * Set value of amount of participations
      *
@@ -864,7 +868,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->participantsConfirmedCount = $participantsConfirmedCount;
         return $this;
     }
-
+    
     /**
      * Add an acquisition attribute assignment to this event
      *
@@ -875,10 +879,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function addAcquisitionAttribute(AcquisitionAttribute\Attribute $acquisitionAttribute)
     {
         $this->acquisitionAttributes[] = $acquisitionAttribute;
-
+        
         return $this;
     }
-
+    
     /**
      * Remove an acquisition attribute assignment from this event
      *
@@ -888,7 +892,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->acquisitionAttributes->removeElement($acquisitionAttribute);
     }
-
+    
     /**
      * Get acquisition attributes assigned to this event
      *
@@ -905,7 +909,8 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         bool $includeEmployeeFields = true,
         bool $includePrivate = true,
         bool $includePublic = true
-    ) {
+    )
+    {
         if ($includeParticipationFields
             && $includeParticipantFields
             && $includeEmployeeFields
@@ -914,7 +919,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
             return $this->acquisitionAttributes;
         }
         $acquisitionAttributes = [];
-
+        
         /** @var Attribute $acquisitionAttribute */
         foreach ($this->acquisitionAttributes as $acquisitionAttribute) {
             if (
@@ -931,10 +936,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
                 $acquisitionAttributes[$acquisitionAttribute->getName()] = $acquisitionAttribute;
             }
         }
-
+        
         return $acquisitionAttributes;
     }
-
+    
     /**
      * Get acquisition attribute with given bid assigned to this event
      *
@@ -952,8 +957,8 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         }
         throw new EventAcquisitionAttributeUnavailableException('Requested field was not found');
     }
-
-
+    
+    
     /**
      * Set confirmationMessage
      *
@@ -964,10 +969,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setConfirmationMessage($confirmationMessage)
     {
         $this->confirmationMessage = $confirmationMessage;
-
+        
         return $this;
     }
-
+    
     /**
      * Get confirmationMessage
      *
@@ -978,7 +983,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return (bool)$this->confirmationMessage;
     }
-
+    
     /**
      * Get confirmationMessage
      *
@@ -988,8 +993,8 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->confirmationMessage;
     }
-
-
+    
+    
     /**
      * Set isAutoConfirm
      *
@@ -1000,10 +1005,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsAutoConfirm($isAutoConfirm)
     {
         $this->isAutoConfirm = $isAutoConfirm;
-
+        
         return $this;
     }
-
+    
     /**
      * Get isAutoConfirm
      *
@@ -1013,7 +1018,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->isAutoConfirm;
     }
-
+    
     /**
      * Add attendanceList
      *
@@ -1024,10 +1029,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function addAttendanceList(AttendanceList $attendanceList)
     {
         $this->attendanceLists[] = $attendanceList;
-
+        
         return $this;
     }
-
+    
     /**
      * Remove attendanceList
      *
@@ -1037,7 +1042,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->attendanceLists->removeElement($attendanceList);
     }
-
+    
     /**
      * Get attendanceLists
      *
@@ -1047,7 +1052,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->attendanceLists;
     }
-
+    
     /**
      * Add subscriber
      *
@@ -1062,7 +1067,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         }
         return $this;
     }
-
+    
     /**
      * Remove subscriber
      *
@@ -1077,7 +1082,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         }
         return $this;
     }
-
+    
     /**
      * Get subscribers
      *
@@ -1087,7 +1092,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->subscribers;
     }
-
+    
     /**
      * Find out if event is subscribed by
      *
@@ -1098,7 +1103,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return ($this->subscribers->contains($subscriber));
     }
-
+    
     /**
      * @return EventUserAssignment[]|Collection
      */
@@ -1106,7 +1111,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->userAssignments;
     }
-
+    
     /**
      * Set ageRange
      *
@@ -1117,10 +1122,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setAgeRange($ageRange)
     {
         $this->ageRange = $ageRange;
-
+        
         return $this;
     }
-
+    
     /**
      * Get ageRange
      *
@@ -1130,7 +1135,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->ageRange;
     }
-
+    
     /**
      * Set price
      *
@@ -1141,21 +1146,21 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setPrice($price)
     {
         $this->price = $price;
-
+        
         return $this;
     }
-
+    
     /**
      * Get price
      *
-     * @param bool $inEuro  If set to true, resulting price is returned in EURO instead of EURO CENT
+     * @param bool $inEuro If set to true, resulting price is returned in EURO instead of EURO CENT
      * @return string
      */
     public function getPrice($inEuro = false)
     {
-        return $inEuro ? $this->price/100 : $this->price;
+        return $inEuro ? $this->price / 100 : $this->price;
     }
-
+    
     /**
      * Set addressTitle
      *
@@ -1166,10 +1171,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setAddressTitle($addressTitle)
     {
         $this->addressTitle = $addressTitle;
-
+        
         return $this;
     }
-
+    
     /**
      * Get addressTitle
      *
@@ -1190,28 +1195,28 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setDescriptionMeta($descriptionMeta)
     {
         $this->descriptionMeta = $descriptionMeta;
-
+        
         return $this;
     }
-
+    
     /**
      * Get description used for meta tags and short descriptions
      *
      * @param bool $useDescriptionExcerptAsFallback If set to true and @see $descriptionMeta is empty an excerpt of
-     *                                              @see $description is returned
      * @return string
+     * @see $description is returned
      */
     public function getDescriptionMeta($useDescriptionExcerptAsFallback = false)
     {
         if ($useDescriptionExcerptAsFallback && !$this->descriptionMeta) {
             if (mb_strlen($this->description) > 156) {
-                return mb_substr($this->description, 0, 154).'…';
+                return mb_substr($this->description, 0, 154) . '…';
             }
             return $this->descriptionMeta;
         }
         return $this->descriptionMeta;
     }
-
+    
     /**
      * Defined threshold for waiting list
      *
@@ -1221,7 +1226,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->waitingListThreshold;
     }
-
+    
     /**
      * Determine if threshold for waiting list specified
      *
@@ -1232,7 +1237,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->waitingListThreshold !== null;
     }
-
+    
     /**
      * Define threshold for waiting list
      *
@@ -1244,7 +1249,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->waitingListThreshold = $waitingListThreshold;
         return $this;
     }
-
+    
     /**
      * Get configuration for specific age filter, defines specific age
      *
@@ -1254,7 +1259,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->specificAge;
     }
-
+    
     /**
      * Set configuration for specific age filter, defines specific age
      *
@@ -1266,7 +1271,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->specificAge = $specificAge;
         return $this;
     }
-
+    
     /**
      * Get configuration for specific age at date filter, defines specific date
      *
@@ -1276,7 +1281,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         return $this->specificDate;
     }
-
+    
     /** Set configuration for specific age at date filter, defines specific date
      *
      * @param \DateTime|null $specificDate
@@ -1287,8 +1292,8 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->specificDate = $specificDate;
         return $this;
     }
-
-
+    
+    
     /**
      * Add employee
      *
@@ -1299,10 +1304,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function addEmployee(Employee $employee)
     {
         $this->employees[] = $employee;
-
+        
         return $this;
     }
-
+    
     /**
      * Remove employee
      *
@@ -1312,7 +1317,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     {
         $this->employees->removeElement($employee);
     }
-
+    
     /**
      * Get employees
      *
@@ -1369,5 +1374,37 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsShowWeather(bool $isShowWeather): void
     {
         $this->isShowWeather = $isShowWeather;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getId(): ?int
+    {
+        return $this->getEid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return [];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        return $this->getTitle() . ' [' . $this->getEid() . ']';
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getEid();
     }
 }
