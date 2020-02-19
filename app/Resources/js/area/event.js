@@ -854,7 +854,7 @@ $(function () {
                                     htmlRow += '<span class="before">';
                                     htmlRow += formatValue(attributeChange.before);
                                     htmlRow += '</span>';
-                                    htmlRow += '&nbsp;&rarr;&nbsp;';
+                                    htmlRow += ' &rarr; ';
                                     htmlRow += '<span class="after">';
                                     htmlRow += formatValue(attributeChange.after);
                                     htmlRow += '</span>';
