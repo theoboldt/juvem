@@ -12,8 +12,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
-use AppBundle\Entity\Event;
-use AppBundle\Security\EventVoter;
 use AppBundle\SerializeJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,10 +44,7 @@ class EntityChangeTrackingController extends Controller
             throw new NotFoundHttpException('Failed to find related entity');
         }
         
-        $securityAttribute = 'READ';
-        if ($relatedEntity instanceof Event) {
-            $securityAttribute = EventVoter::READ;
-        }
+        $securityAttribute = 'read';
         if (!$this->get('security.authorization_checker')->isGranted($securityAttribute, $relatedEntity)) {
             throw new AccessDeniedHttpException('Requested change list for incorrect entity');
         }
