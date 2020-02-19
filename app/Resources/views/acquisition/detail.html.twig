@@ -69,6 +69,7 @@
                             {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen…</span>
                         </button>
                     {% endif %}
+
                 </div>
                 <div class="form-horizontal">
 
@@ -142,7 +143,7 @@
                                         <li>
                                             <b>Kürzel:</b>
                                             <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
-                                            {% if choice.isDeleted is not null %}
+                                            {% if choice.isDeleted %}
                                                 {{ 'trash'|glyph('Diese Option wurde gelöscht und kann nicht mehr ausgewählt werden.') }}
                                             {% endif %}
                                             <br>
