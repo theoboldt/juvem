@@ -1397,7 +1397,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      */
     public function getChangeTrackingStorableRepresentation()
     {
-        return $this->getTitle() . ' [' . $this->getEid() . ']';
+        return sprintf('%s [%d]', $this->getTitle(), $this->getEid());
     }
     
     /**

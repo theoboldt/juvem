@@ -12,6 +12,7 @@ namespace AppBundle\Entity\ChangeTracking;
 
 
 use AppBundle\Entity\User;
+use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 
 class ScheduledEntityChange implements \Countable
 {
@@ -34,7 +35,14 @@ class ScheduledEntityChange implements \Countable
      *
      * @var array
      */
-    protected $changes = [];
+    protected $attributeChanges = [];
+    
+    /**
+     * List of collection changes
+     *
+     * @var array
+     */
+    protected $collectionChanges = [];
     
     /**
      * If this action was performed by a user, then it is linked here
@@ -69,11 +77,33 @@ class ScheduledEntityChange implements \Countable
     }
     
     /**
+     * @return SupportsChangeTrackingInterface
+     */
+    public function getEntity(): SupportsChangeTrackingInterface
+    {
+        return $this->entity;
+    }
+    
+    /**
+     * Determine if a related can be provided
+     *
+     * @return bool
+     */
+    public function hasRelatedId(): bool
+    {
+        return $this->entity->getId() !== null;
+    }
+    
+    /**
      * @return int
      */
     public function getRelatedId(): int
     {
-        return $this->entity->getId();
+        $id = $this->entity->getId();
+        if ($id === null) {
+            throw new \InvalidArgumentException('An id can not yet be provided');
+        }
+        return $id;
     }
     
     /**
@@ -107,17 +137,44 @@ class ScheduledEntityChange implements \Countable
      * @param string|int|float|null $before Value before change
      * @param string|int|float|null $after  Value after change
      */
-    public function addChange(string $property, $before, $after): void
+    public function addAttributeChange(string $property, $before, $after): void
     {
-        $this->changes[$property] = [$before, $after];
+        $this->attributeChanges[$property] = [$before, $after];
     }
     
     /**
      * @return array
      */
-    public function getChanges(): array
+    public function getAttributeChanges(): array
     {
-        return $this->changes;
+        return $this->attributeChanges;
+    }
+    
+    /**
+     * Register a collection change
+     *
+     * @param string $property             Property to change
+     * @param string $operation            Action code, either {@see EntityCollectionChange::OPERATION_INSERT}
+     *                                     or {@see EntityCollectionChange::OPERATION_INSERT}
+     * @param string $relatedClassName     Class name of related object
+     * @param null|int $relatedId          Id of related entity
+     * @param string|int|float|null $value Textual entity identifier
+     */
+    public function addCollectionChange(
+        string $property, string $operation, string $relatedClassName, ?int $relatedId, $value
+    ): void
+    {
+        $this->collectionChanges[$property][$operation][] = [
+            'class' => $relatedClassName, 'id' => $relatedId, 'name' => $value
+        ];
+    }
+    
+    /**
+     * @return array
+     */
+    public function getCollectionChanges(): array
+    {
+        return $this->collectionChanges;
     }
     
     /**
@@ -149,6 +206,6 @@ class ScheduledEntityChange implements \Countable
      */
     public function count()
     {
-        return count($this->changes);
+        return count($this->attributeChanges);
     }
 }

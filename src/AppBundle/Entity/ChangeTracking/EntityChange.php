@@ -66,10 +66,18 @@ class EntityChange implements \Countable
     /**
      * List of attribute changes
      *
-     * @ORM\Column(type="json_array", length=16777215, name="changes", nullable=false)
+     * @ORM\Column(type="json_array", length=16777215, name="attribute_changes", nullable=false)
      * @var array
      */
-    protected $changes = [];
+    protected $attributeChanges = [];
+    
+    /**
+     * List of collection changes
+     *
+     * @ORM\Column(type="json_array", length=16777215, name="collection_changes", nullable=false)
+     * @var array
+     */
+    protected $collectionChanges = [];
     
     /**
      * If this action was performed by a user, then it is linked here
@@ -104,7 +112,8 @@ class EntityChange implements \Countable
             $scheduled->getOperation(),
             $scheduled->getResponsibleUser(),
             $scheduled->getOccurrenceDate(),
-            $scheduled->getChanges()
+            $scheduled->getAttributeChanges(),
+            $scheduled->getCollectionChanges()
         );
     }
     
@@ -116,7 +125,8 @@ class EntityChange implements \Countable
      * @param string $operation
      * @param User|null $responsibleUser
      * @param \DateTime|null $occurrenceDate
-     * @param array $changes
+     * @param array $attributeChanges
+     * @param array $collectionChanges
      */
     public function __construct(
         int $relatedId,
@@ -124,15 +134,17 @@ class EntityChange implements \Countable
         string $operation,
         ?User $responsibleUser = null,
         ?\DateTime $occurrenceDate = null,
-        array $changes = []
+        array $attributeChanges = [],
+        array $collectionChanges = []
     )
     {
-        $this->relatedId       = $relatedId;
-        $this->relatedClass    = $relatedClass;
-        $this->operation       = $operation;
-        $this->changes         = $changes;
-        $this->responsibleUser = $responsibleUser;
-        $this->occurrenceDate  = $occurrenceDate ?: new \DateTime();
+        $this->relatedId         = $relatedId;
+        $this->relatedClass      = $relatedClass;
+        $this->operation         = $operation;
+        $this->attributeChanges  = $attributeChanges;
+        $this->collectionChanges = $collectionChanges;
+        $this->responsibleUser   = $responsibleUser;
+        $this->occurrenceDate    = $occurrenceDate ?: new \DateTime();
     }
     
     /**
@@ -188,10 +200,26 @@ class EntityChange implements \Countable
      *
      * @return \Traversable|EntityAttributeChange[]
      */
-    public function getChanges(): \Traversable
+    public function getAttributeChanges(): \Traversable
     {
-        foreach ($this->changes as $attribute => $value) {
+        foreach ($this->attributeChanges as $attribute => $value) {
             yield new EntityAttributeChange($attribute, $value[0], $value[1]);
+        }
+    }
+    
+    /**
+     * Get all changes of attributes (f any)
+     *
+     * @return \Traversable|EntityAttributeChange[]
+     */
+    public function getCollectionChanges(): \Traversable
+    {
+        foreach ($this->collectionChanges as $attribute => $operations) {
+            foreach ($operations as $operation => $details) {
+                yield new EntityCollectionChange(
+                    $attribute, $operation, $details['class'], $details['id'], $details['name']
+                );
+            }
         }
     }
     
@@ -200,6 +228,6 @@ class EntityChange implements \Countable
      */
     public function count()
     {
-        return count($this->changes);
+        return count($this->attributeChanges);
     }
 }

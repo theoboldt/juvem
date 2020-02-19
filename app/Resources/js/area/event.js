@@ -781,32 +781,41 @@ $(function () {
                 if (response && response.changes) {
                     var html = '',
                         htmlRow,
-                        operation;
+                        operation,
+                        glyph;
                     $.each(response.changes, function (index, change) {
                         htmlRow = '<tr>';
 
                         switch (change.operation) {
                             case 'create':
                                 operation = 'Erstellen';
+                                glyph = 'plus';
                                 break;
                             case 'update':
                                 operation = 'Bearbeiten';
+                                glyph = 'pencil';
                                 break;
                             case 'delete':
                                 operation = 'Löschen';
+                                glyph = 'remove';
                                 break;
                             case 'trash':
                                 operation = 'Papierkorb';
+                                glyph = 'trash';
                                 break;
                             case 'restore':
                                 operation = 'Wiederherstellen';
+                                glyph = 'repeat';
                                 break;
                             default:
                                 operation = change.operation;
+                                glyph = 'question-sign';
                                 break;
                         }
                         htmlRow += '<td>' + change.occurrence_date + '</td>';
-                        htmlRow += '<td>' + operation + '</td>';
+                        htmlRow += '<td>' +
+                            '<span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true" title="' + operation + '"></span>' +
+                            '</td>';
 
                         htmlRow += '<td>';
                         if (change.responsible_user) {
@@ -822,29 +831,58 @@ $(function () {
 
                         htmlRow += '<td>';
 
-                        if (change.changes && typeof change.changes === 'object') {
+                        if ((change.attribute_changes && typeof change.attribute_changes === 'object')
+                            || (change.collection_changes && typeof change.collection_changes === 'object')
+                        ) {
                             htmlRow += '<ul>';
-                            $.each(change.changes, function (attribute, versions) {
-                                htmlRow += '<li> <label>' + attribute + '</label>: ';
+                            if (change.attribute_changes && typeof change.attribute_changes === 'object') {
+                                $.each(change.attribute_changes, function (attribute, versions) {
+                                    htmlRow += '<li> <label>' + eHtml(attribute) + '</label>: ';
 
-                                htmlRow += '<span class="before">';
-                                if (versions[0]) {
-                                    htmlRow += versions[0];
-                                } else {
-                                    htmlRow += '<i class="empty empty-none"></i>';
-                                }
-                                htmlRow += '</span>';
-                                htmlRow += '&nbsp;&rarr;&nbsp;';
-                                htmlRow += '<span class="after">';
-                                if (versions[1]) {
-                                    htmlRow += versions[1];
-                                } else {
-                                    htmlRow += '<i class="empty empty-none"></i>';
-                                }
-                                htmlRow += '</span>';
+                                    htmlRow += '<span class="before">';
+                                    if (versions[0]) {
+                                        htmlRow += '<code>' + eHtml(versions[0]) + '</code>';
+                                    } else {
+                                        htmlRow += '<i class="empty empty-none"></i>';
+                                    }
+                                    htmlRow += '</span>';
+                                    htmlRow += '&nbsp;&rarr;&nbsp;';
+                                    htmlRow += '<span class="after">';
+                                    if (versions[1]) {
+                                        htmlRow += '<code>' + eHtml(versions[1]) + '</code>';
+                                    } else {
+                                        htmlRow += '<i class="empty empty-none"></i>';
+                                    }
+                                    htmlRow += '</span>';
 
-                                htmlRow += '</li>';
-                            });
+                                    htmlRow += '</li>';
+                                });
+                            }
+
+                            if (change.collection_changes && typeof change.collection_changes === 'object') {
+                                $.each(change.collection_changes, function (attribute, operations) {
+                                    htmlRow += '<li> <label>' + eHtml(attribute) + '</label>';
+                                    htmlRow += '<ul>';
+                                    $.each(operations, function (operation, items) {
+                                        $.each(items, function (index, item) {
+                                            htmlRow += '<li>';
+                                            htmlRow += '<code>' + item.name + '</code> ';
+                                            switch (operation) {
+                                                case 'insert':
+                                                    htmlRow += 'hinzugefügt';
+                                                    break;
+                                                case 'delete':
+                                                    htmlRow += 'entfernt';
+                                                    break;
+                                            }
+                                            htmlRow += '</li>';
+                                        });
+                                    });
+                                    htmlRow += '</ul>';
+                                    htmlRow += '</li>';
+                                });
+                            }
+
                             htmlRow += '</ul>';
                         }
                         htmlRow += '</td>';

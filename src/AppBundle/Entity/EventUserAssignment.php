@@ -10,13 +10,14 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="event_user_assignment")
  */
-class EventUserAssignment
+class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentationInterface
 {
     /**
      * @ORM\Id
@@ -177,6 +178,28 @@ class EventUserAssignment
         $this->allowedToManageParticipants = $allowedToManageParticipants;
         return $this;
     }
-
-
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        $name = '';
+        $user = $this->getUser();
+        if ($user) {
+            $name .= sprintf('%s [%d]', $user->fullname(), $user->getId());
+        } else {
+            $name .= '(unknown)';
+        }
+        $name .= ' @ ';
+        
+        $event = $this->getEvent();
+        if ($user) {
+            $name .= sprintf('%s [%d]', $event->getTitle(), $event->getId());
+        } else {
+            $name .= '(unknown)';
+        }
+        return $name;
+    }
+    
 }

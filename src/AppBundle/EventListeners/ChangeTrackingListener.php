@@ -12,6 +12,7 @@ namespace AppBundle\EventListeners;
 
 
 use AppBundle\Entity\ChangeTracking\EntityChange;
+use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 use AppBundle\Entity\ChangeTracking\ScheduledEntityChange;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
@@ -21,6 +22,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\PersistentCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -56,7 +58,6 @@ class ChangeTrackingListener
         $this->tokenStorage = $tokenStorage;
         $this->logger       = $logger;
         $this->changes      = new \SplQueue();
-        $this->changes->setIteratorMode(\SplDoublyLinkedList::IT_MODE_DELETE);
     }
     
     /**
@@ -72,7 +73,10 @@ class ChangeTrackingListener
         }
         $changes = $args->getEntityChangeSet();
         
-        $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
+        $change = $this->getScheduledChangeForEntity($entity);
+        if (!$change) {
+            $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
+        }
         if (array_key_exists('deletedAt', $changes)) {
             $change->setOperation(
                 ($changes['deletedAt'][1] === null)
@@ -97,7 +101,7 @@ class ChangeTrackingListener
             }
             
             if ($comparableBefore !== $comparableAfter) {
-                $change->addChange(
+                $change->addAttributeChange(
                     $attribute,
                     $this->getStorableRepresentation($attribute, $entity, $values[0]),
                     $this->getStorableRepresentation($attribute, $entity, $values[1])
@@ -140,10 +144,10 @@ class ChangeTrackingListener
                 $this->changes->enqueue($change);
             }
         }
+        unset($entity);
         
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof SupportsChangeTrackingInterface) {
-                //not actually expected
                 $change = $this->createChangeTrackingEntity(
                     $entity,
                     EntityChange::OPERATION_DELETE
@@ -151,6 +155,75 @@ class ChangeTrackingListener
                 $this->changes->enqueue($change);
             }
         }
+        unset($entity);
+        
+        /** @var PersistentCollection $collection */
+        foreach ($uow->getScheduledCollectionUpdates() as $collection) {
+            $entity = $collection->getOwner();
+            if (!$entity instanceof SupportsChangeTrackingInterface) {
+                continue;
+            }
+            $change   = $this->getScheduledChangeForEntity($entity);
+            $schedule = false;
+            if (!$change) {
+                $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
+            }
+            
+            $mapping = $collection->getMapping();
+            if (!isset($mapping['fieldName'])) {
+                $this->logger->warning(
+                    'Collection of owner {ownerClass}:{ownerId} did not provide a fieldName in mapping',
+                    [
+                        'ownerClass' => get_class($collection->getOwner()),
+                        'ownerId'    => $collection->getOwner()->getId(),
+                    ]
+                );
+                continue;
+            }
+            $property = $mapping['fieldName'];
+            foreach ($collection->getDeleteDiff() as $related) {
+                $schedule = true;
+                $this->integrateCollectionChange(
+                    $change, $entity, $property, EntityCollectionChange::OPERATION_DELETE, $related
+                );
+            }
+            foreach ($collection->getInsertDiff() as $related) {
+                $schedule = true;
+                $this->integrateCollectionChange(
+                    $change, $entity, $property, EntityCollectionChange::OPERATION_INSERT, $related
+                );
+            }
+            if ($schedule) {
+                $this->changes->enqueue($change);
+            }
+        }
+    }
+    
+    /**
+     * Track a collection change
+     *
+     * @param ScheduledEntityChange $change           Change bucket to register collection change at
+     * @param SupportsChangeTrackingInterface $entity Main entity (collection owner)
+     * @param string $property                        Collection property name of main entity
+     * @param string $operation                       Collection change operation
+     * @param mixed $related                          Related collection item
+     */
+    private function integrateCollectionChange(
+        ScheduledEntityChange $change,
+        SupportsChangeTrackingInterface $entity,
+        string $property,
+        string $operation,
+        $related
+    )
+    {
+        $change->addCollectionChange(
+            $property,
+            $operation,
+            get_class($related),
+            ($related instanceof SupportsChangeTrackingInterface) ? $related->getId() : null,
+            $this->getStorableRepresentation($property . ':collection', $entity, $related)
+        );
+        
     }
     
     /**
@@ -162,7 +235,8 @@ class ChangeTrackingListener
     {
         $persisted = false;
         /** @var ScheduledEntityChange $scheduled */
-        foreach ($this->changes as $scheduled) {
+        while (!$this->changes->isEmpty()) {
+            $scheduled = $this->changes->dequeue();
             $change    = EntityChange::createFromScheduledChange($scheduled);
             $persisted = true;
             $args->getEntityManager()->persist($change);
@@ -229,12 +303,23 @@ class ChangeTrackingListener
     private function getStorableRepresentation(string $attribute, SupportsChangeTrackingInterface $entity, $value)
     {
         if ($value instanceof SpecifiesChangeTrackingStorableRepresentationInterface) {
-            return $value->getComparableRepresentation();
+            return $value->getChangeTrackingStorableRepresentation();
         } elseif ($value instanceof \DateTimeInterface) {
             return $value->format(DATE_ATOM);
         } elseif (is_object($value)) {
             if (method_exists($value, '__toString')) {
                 return $value->__toString();
+            } elseif (method_exists($value, 'getId')) {
+                $this->logger->warning(
+                    'Used id for tracking of {attribute} of entity {entityClass}:{entityId} {valueClass}',
+                    [
+                        'attribute'   => $attribute,
+                        'valueClass'  => get_class($value),
+                        'entityClass' => get_class($entity),
+                        'entityId'    => $entity->getId(),
+                    ]
+                );
+                return $value->getId();
             } else {
                 $this->logger->error(
                     'No storable representation for attribute {attribute} of entity {entityClass}:{entityId} {valueClass} available',
@@ -252,6 +337,29 @@ class ChangeTrackingListener
         }
         
         return $value;
+    }
+    
+    /**
+     * Find the scheduled change object for transmitted entity
+     *
+     * @param SupportsChangeTrackingInterface $entity Entity to look out for related change item
+     * @return ScheduledEntityChange|null Scheduled change item if found
+     */
+    private function getScheduledChangeForEntity(SupportsChangeTrackingInterface $entity): ?ScheduledEntityChange
+    {
+        $id    = $entity->getId();
+        $class = get_class($entity);
+        /** @var ScheduledEntityChange $change */
+        foreach ($this->changes as $change) {
+            if ($change->getRelatedClass() === $class
+                && ($id !== null && $change->hasRelatedId() && $id === $change->getRelatedId())
+                && ($entity === $change->getEntity())
+            ) {
+                return $change;
+            }
+        }
+        
+        return null;
     }
     
     /**

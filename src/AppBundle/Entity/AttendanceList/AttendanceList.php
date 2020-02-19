@@ -13,6 +13,7 @@ namespace AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,7 +27,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list")
  */
-class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterface
+class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
 {
     use CreatedModifiedTrait;
 
@@ -261,5 +262,12 @@ class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterf
     {
         return $this->fillouts;
     }
-
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        return sprintf('%s [%d]', $this->getTitle(), $this->getTid());
+    }
 }

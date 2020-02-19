@@ -103,7 +103,7 @@ class ChangeTrackingButton extends AbstractExtension
           <thead>
             <tr>
               <th>Zeitpunkt</th>
-              <th>Operation</th>
+              <th><abrr title="Operation">O</abrr></th>
               <th>Benutzer</th>
               <th>Änderungen</th>
             </tr>

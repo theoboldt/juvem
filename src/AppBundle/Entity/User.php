@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -27,7 +28,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  */
-class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface
+class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
 {
     use CreatedModifiedTrait, HumanTrait;
 
@@ -346,5 +347,13 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     public function setIsExcludeHelpTabindex(bool $isExcludeHelpTabindex): void
     {
         $this->isExcludeHelpTabindex = $isExcludeHelpTabindex;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        return sprintf('%s [%d]', $this->fullname(), $this->getId());
     }
 }
