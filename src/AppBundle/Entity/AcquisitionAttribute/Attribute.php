@@ -15,7 +15,9 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\BankAccountType;
@@ -43,7 +45,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\HasLifecycleCallbacks()
  */
-class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
+class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 
@@ -807,5 +809,29 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     public function getChangeTrackingStorableRepresentation()
     {
         return sprintf('%s [%d]', $this->getManagementTitle(), $this->getBid());
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getBid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getId(): ?int
+    {
+        return $this->getBid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return ['fieldOptions'];
     }
 }
