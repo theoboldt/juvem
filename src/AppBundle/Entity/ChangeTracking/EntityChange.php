@@ -17,6 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
 
 /**
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
  * @ORM\Entity
  * @ORM\Table(name="entity_change", indexes={
  *     @ORM\Index(name="index_related", columns={"related_id", "related_class"})
@@ -82,6 +84,7 @@ class EntityChange implements \Countable
     /**
      * If this action was performed by a user, then it is linked here
      *
+     * @Serialize\Expose
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL", nullable=true)
      * @var User|null
@@ -196,6 +199,17 @@ class EntityChange implements \Countable
     }
     
     /**
+     * @Serialize\Expose
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("attribute_changes")
+     * @return array
+     */
+    public function getAttributeChangesAsArray(): array
+    {
+        return iterator_to_array($this->getAttributeChanges());
+    }
+    
+    /**
      * Get all changes of attributes (f any)
      *
      * @return \Traversable|EntityAttributeChange[]
@@ -208,6 +222,17 @@ class EntityChange implements \Countable
     }
     
     /**
+     * @Serialize\Expose
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("collection_changes")
+     * @return array
+     */
+    public function getCollectionChangesAsArray(): array
+    {
+        return iterator_to_array($this->getCollectionChanges());
+    }
+    
+    /**
      * Get all changes of attributes (f any)
      *
      * @return \Traversable|EntityAttributeChange[]
@@ -215,10 +240,16 @@ class EntityChange implements \Countable
     public function getCollectionChanges(): \Traversable
     {
         foreach ($this->collectionChanges as $attribute => $operations) {
-            foreach ($operations as $operation => $details) {
-                yield new EntityCollectionChange(
-                    $attribute, $operation, $details['class'], $details['id'], $details['name']
-                );
+            foreach ($operations as $operation => $items) {
+                foreach ($items as $item) {
+                    if (!isset($item['class']) || !isset($item['name'])) {
+                        throw new \RuntimeException('Information missing');
+                    }
+                    yield new EntityCollectionChange(
+                        $attribute, $operation, $item['class'], $item['id'] ?? null, $item['name']
+                    );
+                    
+                }
             }
         }
     }

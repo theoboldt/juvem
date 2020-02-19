@@ -831,25 +831,25 @@ $(function () {
 
                         htmlRow += '<td>';
 
-                        if ((change.attribute_changes && typeof change.attribute_changes === 'object')
-                            || (change.collection_changes && typeof change.collection_changes === 'object')
+                        if ((change.attribute_changes && change.attribute_changes.length)
+                            || (change.collection_changes && change.collection_changes.length)
                         ) {
-                            htmlRow += '<ul>';
-                            if (change.attribute_changes && typeof change.attribute_changes === 'object') {
-                                $.each(change.attribute_changes, function (attribute, versions) {
-                                    htmlRow += '<li> <label>' + eHtml(attribute) + '</label>: ';
+                            htmlRow += '<ul>    ';
+                            if (change.attribute_changes.length) {
+                                $.each(change.attribute_changes, function (index, attributeChange) {
+                                    htmlRow += '<li> <label>' + eHtml(attributeChange.attribute) + '</label>: ';
 
                                     htmlRow += '<span class="before">';
-                                    if (versions[0]) {
-                                        htmlRow += '<code>' + eHtml(versions[0]) + '</code>';
+                                    if (attributeChange.before) {
+                                        htmlRow += '<code>' + eHtml(attributeChange.before) + '</code>';
                                     } else {
                                         htmlRow += '<i class="empty empty-none"></i>';
                                     }
                                     htmlRow += '</span>';
                                     htmlRow += '&nbsp;&rarr;&nbsp;';
                                     htmlRow += '<span class="after">';
-                                    if (versions[1]) {
-                                        htmlRow += '<code>' + eHtml(versions[1]) + '</code>';
+                                    if (attributeChange.after) {
+                                        htmlRow += '<code>' + eHtml(attributeChange.after) + '</code>';
                                     } else {
                                         htmlRow += '<i class="empty empty-none"></i>';
                                     }
@@ -859,26 +859,18 @@ $(function () {
                                 });
                             }
 
-                            if (change.collection_changes && typeof change.collection_changes === 'object') {
-                                $.each(change.collection_changes, function (attribute, operations) {
-                                    htmlRow += '<li> <label>' + eHtml(attribute) + '</label>';
-                                    htmlRow += '<ul>';
-                                    $.each(operations, function (operation, items) {
-                                        $.each(items, function (index, item) {
-                                            htmlRow += '<li>';
-                                            htmlRow += '<code>' + item.name + '</code> ';
-                                            switch (operation) {
-                                                case 'insert':
-                                                    htmlRow += 'hinzugefügt';
-                                                    break;
-                                                case 'delete':
-                                                    htmlRow += 'entfernt';
-                                                    break;
-                                            }
-                                            htmlRow += '</li>';
-                                        });
-                                    });
-                                    htmlRow += '</ul>';
+                            if (change.collection_changes.length) {
+                                $.each(change.collection_changes, function (index, collectionChange) {
+                                    htmlRow += '<li> <label>' + eHtml(collectionChange.attribute) + '</label>: ';
+                                    htmlRow += '<code>' + collectionChange.value + '</code> ';
+                                    switch (collectionChange.operation) {
+                                        case 'insert':
+                                            htmlRow += 'hinzugefügt';
+                                            break;
+                                        case 'delete':
+                                            htmlRow += 'entfernt';
+                                            break;
+                                    }
                                     htmlRow += '</li>';
                                 });
                             }

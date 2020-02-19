@@ -10,12 +10,21 @@
 
 namespace AppBundle\Entity\ChangeTracking;
 
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * EntityAttributeChange
+ *
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ */
 class EntityAttributeChange
 {
     /**
      * Attribute name of attribute which changed
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var string
      */
     private $attribute;
@@ -23,6 +32,8 @@ class EntityAttributeChange
     /**
      * Value of attribute before change happened
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var string|null|int|float|array
      */
     private $before;
@@ -30,6 +41,8 @@ class EntityAttributeChange
     /**
      * Value of attribute after change happened
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var string|null|int|float|array
      */
     private $after;

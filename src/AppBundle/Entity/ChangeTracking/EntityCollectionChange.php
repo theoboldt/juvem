@@ -10,7 +10,14 @@
 
 namespace AppBundle\Entity\ChangeTracking;
 
+use JMS\Serializer\Annotation as Serialize;
 
+/**
+ * EntityCollectionChange
+ *
+ * @Serialize\ExclusionPolicy("all")
+ * @Serialize\ReadOnly()
+ */
 class EntityCollectionChange
 {
     
@@ -20,6 +27,8 @@ class EntityCollectionChange
     /**
      * Attribute name of attribute which changed
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var string
      */
     private $attribute;
@@ -27,6 +36,8 @@ class EntityCollectionChange
     /**
      * Operation code, either {@see self::OPERATION_INSERT} or {@see self::OPERATION_DELETE}
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var string
      */
     private $operation;
@@ -49,6 +60,8 @@ class EntityCollectionChange
     /**
      * Textual Identifier for changed element
      *
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @var float|int|string|null
      */
     private $value;
