@@ -88,7 +88,8 @@ class ChangeTrackingListener
         }
         
         foreach ($changes as $attribute => $values) {
-            if ($attribute === 'deletedAt' || $attribute === 'modifiedAt') {
+            if ($attribute === 'deletedAt' || $attribute === 'modifiedAt'
+                || in_array($attribute, $entity::getExcludedAttributes())) {
                 //do not treat deletedAt changes as update
                 continue;
             }
@@ -181,6 +182,9 @@ class ChangeTrackingListener
                 continue;
             }
             $property = $mapping['fieldName'];
+            if (in_array($property, $entity::getExcludedAttributes())) {
+                continue;
+            }
             foreach ($collection->getDeleteDiff() as $related) {
                 $schedule = true;
                 $this->integrateCollectionChange(
