@@ -831,6 +831,18 @@ $(function () {
 
                         htmlRow += '<td>';
 
+                        var formatValue = function (value) {
+                            if (value === true) {
+                                return 'ja';
+                            } else if (value === false) {
+                                return 'nein';
+                            } else if (value === null || value === undefined) {
+                                return '<i class="empty empty-none"></i>';
+                            } else {
+                                return '<code>' + eHtml(value) + '</code>';
+                            }
+                        };
+
                         if ((change.attribute_changes && change.attribute_changes.length)
                             || (change.collection_changes && change.collection_changes.length)
                         ) {
@@ -840,19 +852,11 @@ $(function () {
                                     htmlRow += '<li> <label>' + eHtml(attributeChange.attribute) + '</label>: ';
 
                                     htmlRow += '<span class="before">';
-                                    if (attributeChange.before) {
-                                        htmlRow += '<code>' + eHtml(attributeChange.before) + '</code>';
-                                    } else {
-                                        htmlRow += '<i class="empty empty-none"></i>';
-                                    }
+                                    htmlRow += formatValue(attributeChange.before);
                                     htmlRow += '</span>';
                                     htmlRow += '&nbsp;&rarr;&nbsp;';
                                     htmlRow += '<span class="after">';
-                                    if (attributeChange.after) {
-                                        htmlRow += '<code>' + eHtml(attributeChange.after) + '</code>';
-                                    } else {
-                                        htmlRow += '<i class="empty empty-none"></i>';
-                                    }
+                                    htmlRow += formatValue(attributeChange.after);
                                     htmlRow += '</span>';
 
                                     htmlRow += '</li>';
@@ -876,6 +880,21 @@ $(function () {
                             }
 
                             htmlRow += '</ul>';
+                        } else {
+                            switch (change.operation) {
+                                case 'create':
+                                    htmlRow += 'Erstellt';
+                                    break;
+                                case 'delete':
+                                    htmlRow += 'Gelöscht';
+                                    break;
+                                case 'trash':
+                                    htmlRow += 'In den Papierkorb gelegt';
+                                    break;
+                                case 'restore':
+                                    htmlRow += 'Aus dem Papierkorb wiederhergestellt';
+                                    break;
+                            }
                         }
                         htmlRow += '</td>';
 

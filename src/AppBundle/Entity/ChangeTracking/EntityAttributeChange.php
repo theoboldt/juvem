@@ -33,7 +33,6 @@ class EntityAttributeChange
      * Value of attribute before change happened
      *
      * @Serialize\Expose
-     * @Serialize\Type("string")
      * @var string|null|int|float|array
      */
     private $before;
@@ -42,7 +41,6 @@ class EntityAttributeChange
      * Value of attribute after change happened
      *
      * @Serialize\Expose
-     * @Serialize\Type("string")
      * @var string|null|int|float|array
      */
     private $after;
