@@ -175,6 +175,7 @@ class ParticipationRepository extends EntityRepository
             $qb->andWhere('p.deletedAt IS NULL');
         }
 
+        //intentionally not result but must be fetched as well
         $participations = $qb->getQuery()->execute();
 
         return $result;
@@ -341,6 +342,73 @@ class ParticipationRepository extends EntityRepository
             $queryResult = $qb->execute();
             while ($row = $queryResult->fetch()) {
                 $result[$column][] = $row[$column];
+            }
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Get info list of participants searched by term
+     *
+     * @param string $term Search term to use in name fields
+     * @return array|array Result
+     */
+    public function findParticipantsByName(string $term): array
+    {
+        $term = '%' . trim($term, " \t\n\r\0\x0B%") . '%';
+        
+        $qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
+        $qb->select(
+            [
+                'a.aid', 'a.pid', 'a.name_first', 'a.name_last', 'a.birthday', 'e.eid AS event_eid',
+                'e.title AS event_title', 'e.start_date AS event_date'
+            ]
+        )
+           ->from('participant', 'a')
+           ->innerJoin('a', 'participation', 'p', 'a.pid = p.pid')
+           ->innerJoin('a', 'event', 'e', 'p.eid = e.eid')
+           ->orWhere("CONCAT(a.name_first, ' ', a.name_last) LIKE :term")
+           ->orWhere("CONCAT(a.name_last, ' ', a.name_first) LIKE :term")
+           ->orderBy('a.created_at', 'DESC')
+           ->setParameter('term', $term);
+        $rawResult = $qb->execute()->fetchAll();
+    
+        $resultGrouped = [];
+        foreach ($rawResult as $row) {
+            $rowBirthday       = new \DateTime($row['birthday'] . ' 10:00');
+            $row['birthday']   = $rowBirthday->format(Event::DATE_FORMAT_DATE);
+            $rowEventDate      = new \DateTime($row['event_date'] . ' 10:00');
+            $row['event_date'] = $rowEventDate->format(Event::DATE_FORMAT_DATE);
+            $row['event_year'] = (int)$rowEventDate->format('Y');
+        
+            $resultGrouped[$row['name_last']][$row['name_first']][$row['birthday']][] = $row;
+        }
+        $result = [];
+        foreach ($resultGrouped as $lastName => $firstNames) {
+            foreach ($firstNames as $firstName => $birthdays) {
+                foreach ($birthdays as $birthday => $items) {
+                    $aids     = array_map(
+                        function ($element) {
+                            return (int)$element['aid'];
+                        },
+                        $items
+                    );
+                    $pids     = array_map(
+                        function ($element) {
+                            return (int)$element['pid'];
+                        },
+                        $items
+                    );
+                    $result[] = [
+                        'name_last'  => $lastName,
+                        'name_first' => $firstName,
+                        'birthday'   => $birthday,
+                        'items'      => $items,
+                        'aids'       => $aids,
+                        'pids'       => $pids,
+                    ];
+                }
             }
         }
         

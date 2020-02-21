@@ -397,4 +397,144 @@ $(function () {
         });
     });
 
+    var modalEl = $('#modalPrefillAdmin')
+    findParticipantEl = $('#prefillFindParticipant'),
+        findParticipationEl = $('#prefillFindParticipation');
+    $('#prefillFindParticipation button').on('click', function (e) {
+        findParticipationEl.hide();
+        findParticipantEl.show();
+        modalEl.find('.modal-title span').html('1');
+    });
+
+    $('#prefillFindParticipant button').on('click', function (e) {
+        e.preventDefault();
+        var buttonEl = $(this),
+            inputEl = $('#prefillFindParticipant input');
+        if (buttonEl.hasClass('disabled')) {
+            return;
+        }
+        buttonEl.toggleClass('disabled', true);
+        inputEl.toggleClass('disabled', true);
+        inputEl.attr('disabled', 'true');
+
+        $.ajax({
+            url: 'create/prefill-participants',
+            data: {
+                _token: modalEl.data('token'),
+                term: inputEl.val()
+            },
+            success: function (result) {
+                var participantResultEl = findParticipantEl.find('.list-group');
+                participantResultEl.html('');
+
+                if (result.list && result.list.length) {
+                    var html = '';
+                    $.each(result.list, function (key, row) {
+                        html += '<div class="list-group-item" data-pids="' + row.pids.join(';') + '">';
+                        html += ' <div class="list-group-item-text">';
+                        html += '  <div class="row">';
+                        html += '   <div class="col-xs-12 col-sm-5">';
+                        html += '    <h4 class="list-group-item-heading">';
+                        html += eHtml(row.name_last) + ', ' + eHtml(row.name_first);
+                        html += '</h4>';
+                        html += '    <p>' + row.birthday + '</p>';
+                        html += '   </div>';
+                        html += '   <div class="col-xs-12 col-sm-7">';
+                        html += '    <ul>';
+
+                        $.each(row.items, function (key, item) {
+                            html += '     <li>';
+                            html += '<a href="../../' + item.event_eid + '/participation/' + item.pid + '" target="_blank">';
+                            html += eHtml(item.event_title);
+                            html += '</a> (' + item.event_date + ')';
+                            html += '     </li>';
+                        });
+
+                        html += '    </ul>';
+                        html += '   </div>';
+                        html += '  </div>';
+                        html += ' </div>';
+
+                        html += '</div>';
+                    });
+
+                    participantResultEl.html(html);
+                } else {
+                    participantResultEl.html('<i>Keine passenden Einträge gefunden.</i>');
+                }
+
+                $('#prefillFindParticipant .list-group-item').on('click', function (e) {
+                    if (e.target.nodeName === 'A') {
+                        return; //link clicked
+                    }
+                    findParticipantEl.hide();
+                    findParticipationEl.show();
+                    modalEl.find('.modal-title span').html('2');
+
+                    var participationResultEl = findParticipationEl.find('.list-group');
+                    participationResultEl.html('<i class="loading-text">(Anmeldungen werden herausgesucht...)</i>');
+                    $.ajax({
+                        url: 'create/prefill-participations',
+                        data: {
+                            _token: modalEl.data('token'),
+                            pids: $(this).data('pids')
+                        },
+                        success: function (result) {
+                            participationResultEl.html('');
+
+                            if (result.list && result.list.length) {
+                                var html = '';
+                                $.each(result.list, function (key, participation) {
+                                    html += '<div class="list-group-item" data-pid="' + participation.pid + '">';
+                                    html += ' <div class="list-group-item-text">';
+                                    html += '  <h4 class="list-group-item-heading">';
+                                    html += eHtml(participation.event_title);
+                                    html += '</h4>';
+                                    html += '  <div class="row">';
+                                    html += '   <div class="col-xs-12 col-sm-5">';
+                                    html += '    <h5>Anmeldung</h5>';
+                                    html += '    <p>';
+                                    html += eHtml(participation.name_last) + ', ' + eHtml(participation.name_first);
+                                    html += '<br>';
+                                    html += eHtml(participation.address_street) + '<br>';
+                                    html += eHtml(participation.address_zip) + ' ' + eHtml(participation.address_city) + '<br>';
+                                    html += '</p>';
+                                    html += '   </div>';
+                                    html += '   <div class="col-xs-12 col-sm-7">';
+                                    html += '    <h5>Teilnehmer</h5>';
+                                    html += '    <ul>';
+                                    $.each(participation.participants, function (key, participant) {
+                                        html += '     <li>';
+                                        html += eHtml(participant.name_last) + ', ' + eHtml(participant.name_first);
+                                        html += '     </li>';
+                                    });
+
+                                    html += '    </ul>';
+                                    html += '   </div>';
+                                    html += '  </div>';
+                                    html += ' </div>';
+
+                                    html += '</div>';
+                                });
+
+                                participationResultEl.html(html);
+                            } else {
+                                participationResultEl.html('<i>Keine passenden Einträge gefunden.</i>');
+                            }
+
+                        },
+                        error: function (response) {
+                            participationResultEl.html('<i>Die Anmeldungen konnten nicht geladen werden.</i>');
+                        }
+                    });
+                });
+            },
+            complete: function () {
+                buttonEl.toggleClass('disabled', false);
+                inputEl.toggleClass('disabled', false);
+                inputEl.removeAttr('disabled');
+            }
+        });
+    });
+
 });

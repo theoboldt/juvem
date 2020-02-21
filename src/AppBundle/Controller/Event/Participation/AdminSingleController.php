@@ -313,6 +313,88 @@ class AdminSingleController extends Controller
             ]
         );
     }
+    
+    /**
+     * Lookup participants for query
+     *
+     * @Route("/admin/event/{eid}/participation/create/prefill-participants", requirements={"eid": "\d+"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @param Event $event
+     * @param Request $request
+     * @return Response
+     */
+    public function lookupPrefillQualifiedParticipantsAction(Event $event, Request $request)
+    {
+        $token = $request->get('_token');
+        $term  = (string)$request->get('term');
+        
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('prefill-' . $event->getEid())) {
+            throw new InvalidTokenHttpException();
+        }
+        $repository = $this->getDoctrine()->getRepository(Participation::class);
+        $result     = $repository->findParticipantsByName($term);
+        
+        return new JsonResponse(['list' => $result]);
+    }
+    
+    /**
+     * Lookup participations for list of pids
+     *
+     * @Route("/admin/event/{eid}/participation/create/prefill-participations", requirements={"eid": "\d+"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @param Event $event
+     * @param Request $request
+     * @return Response
+     */
+    public function lookupPrefillParticipationsAction(Event $event, Request $request)
+    {
+        $token = $request->get('_token');
+        $pids  = explode(';', $request->get('pids', ''));
+        
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
+        $csrf = $this->get('security.csrf.token_manager');
+        if ($token != $csrf->getToken('prefill-' . $event->getEid())) {
+            throw new InvalidTokenHttpException();
+        }
+    
+        $repository = $this->getDoctrine()->getRepository(Participation::class);
+        $result     = [];
+        foreach ($pids as $pid) {
+            /** @var Participation $participation */
+            $participation = $repository->findDetailed((int)$pid);
+    
+            $participants = [];
+            /** @var Participant $participant */
+            foreach ($participation->getParticipants() as $participant) {
+                $participants[] = [
+                    'name_last'  => $participant->getNameLast(),
+                    'name_first' => $participant->getNameFirst(),
+                    'birthday'   => $participant->getBirthday()->format(Event::DATE_FORMAT_DATE)
+                ];
+            }
+    
+            $result[] = [
+                'pid'            => $participation->getPid(),
+                'event_title'    => $participation->getEvent()->getTitle() . ' [' .
+                                    $participation->getEvent()->getStartDate()->format(Event::DATE_FORMAT_DATE).']',
+                'name_last'      => $participation->getNameLast(),
+                'name_first'     => $participation->getNameFirst(),
+                'address_street' => $participation->getAddressStreet(),
+                'address_city'   => $participation->getAddressCity(),
+                'address_zip'    => $participation->getAddressZip(),
+                'created_at'     => $participation->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
+                'participants'   => $participants,
+                'phone_numbers'  => count($participation->getPhoneNumbers())
+            ];
+        }
+        
+        
+        return new JsonResponse(['list' => $result]);
+    }
 
     /**
      * Page edit an participation

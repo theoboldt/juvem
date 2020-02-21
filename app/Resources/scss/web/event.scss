@@ -632,8 +632,16 @@ abbr.unit {
   .before, .after {
     color: #333;
   }
+
   .before i, .after i {
     color: #444;
   }
 
+}
+
+#prefillFindParticipant {
+  .list-group-item:hover {
+    cursor: pointer;
+    background: #eee;
+  }
 }
