@@ -342,7 +342,7 @@ class BootstrapGlyph extends AbstractExtension
 
         $attributes = [];
 
-        $attributes[]       = 'class="glyphicon glyphicon-' . $glyph.'""';
+        $attributes[]       = 'class="glyphicon glyphicon-' . $glyph.'"';
         $attributes[] = 'aria-hidden="true"';
         if ($title) {
             $attributes[] = 'title="'.$title.'"';
