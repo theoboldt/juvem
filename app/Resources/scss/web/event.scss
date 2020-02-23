@@ -536,14 +536,16 @@ abbr.unit {
     font-size: 106%;
   }
 
-  i.owf {
-    color: darken($breadcrumb-bg, 10%);
-  }
+  #weather-current {
+    & > label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
 
-  #weather-current > label {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+    .owf {
+      color: $brandPrimaryDark;
+    }
   }
 
   #weather-forecast {
@@ -561,16 +563,19 @@ abbr.unit {
         font-size: 90%;
       }
 
-      color: $breadcrumb-color;
+      color: #222;
       overflow: hidden;
       width: 100%;
 
+      i.owf {
+        color: lighten($brandPrimaryDark, 25%);
+      }
 
       tbody {
 
         td {
           > div {
-            background: lighten($breadcrumb-bg, 12%);
+            background: transparentize($breadcrumb-bg, 0.5);
             position: relative;
             min-height: 40px;
           }
@@ -600,19 +605,22 @@ abbr.unit {
       .d {
         text-align: right;
         padding: 2px;
-        background: lighten($breadcrumb-bg, 6%);
+      }
+
+      .t {
+        color: black;
       }
 
       thead {
         div {
           padding: 2px;
-          background: lighten($breadcrumb-bg, 7%);
+          background: transparentize($breadcrumb-bg, 0.8);
           text-align: center;
         }
 
         div.m {
-          background: $breadcrumb-bg;
-          color: $breadcrumb-active-color;
+          background: $navbar-inverse-bg;
+          color: $navbar-inverse-color;
         }
       }
     }
