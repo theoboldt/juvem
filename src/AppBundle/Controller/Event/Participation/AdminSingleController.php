@@ -39,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AdminSingleController extends Controller
 {
@@ -313,11 +314,68 @@ class AdminSingleController extends Controller
             ]
         );
     }
+
+    /**
+     * Create new participation form and prefill with transmitted pid 
+     * 
+     * @Route("/admin/event/{eid}/participation/create/from/{pid}", requirements={"eid": "\d+","pid": "\d+"}, name="admin_participation_create_prefill")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("source", class="AppBundle:Participation", options={"id" = "pid"})
+     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @param Event         $event
+     * @param Participation $source
+     * @param Request       $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function prefillParticipationCreateAction(Event $event, Participation $source, Request $request) {
+        $participation = Participation::createFromTemplateForEvent($source, $event, true);
+
+        $form = $this->createForm(
+            ParticipationBaseType::class,
+            $participation,
+            [
+                ParticipationBaseType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipationBaseType::ACQUISITION_FIELD_PRIVATE => true,
+            ]
+        );
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \AppBundle\Entity\User $user */
+            $user = $this->getUser();
+
+            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
+                $participation, $user
+            );
+
+            return $this->redirectToRoute(
+                'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $managedParticipation->getPid()]
+            );
+        }
+
+        $user           = $this->getUser();
+        $participations = [];
+        if ($user) {
+            $participations = $user->getAssignedParticipations();
+        }
+
+        return $this->render(
+            'event/participation/admin/add-participation.html.twig',
+            [
+                'event'                          => $event,
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, false, true, true),
+                'participations'                 => $participations,
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, false, true, true),
+                'form'                           => $form->createView(),
+            ]
+        );
+        
+    }
     
     /**
      * Lookup participants for query
      *
-     * @Route("/admin/event/{eid}/participation/create/prefill-participants", requirements={"eid": "\d+"})
+     * @Route("/admin/event/{eid}/participation/create/prefill-participants", requirements={"eid": "\d+"}, name="admin_lookup_participants")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
      * @param Event $event
@@ -336,6 +394,18 @@ class AdminSingleController extends Controller
         }
         $repository = $this->getDoctrine()->getRepository(Participation::class);
         $result     = $repository->findParticipantsByName($term);
+
+        foreach ($result as &$participant) {
+            foreach ($participant['items'] as &$item) {
+                $item['link'] = $this->generateUrl(
+                    'event_participation_detail',
+                    ['eid' => $item['event_eid'], 'pid' => $item['pid']],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+            }
+        }
+        unset($participant);
+        unset($item);
         
         return new JsonResponse(['list' => $result]);
     }
@@ -343,7 +413,7 @@ class AdminSingleController extends Controller
     /**
      * Lookup participations for list of pids
      *
-     * @Route("/admin/event/{eid}/participation/create/prefill-participations", requirements={"eid": "\d+"})
+     * @Route("/admin/event/{eid}/participation/create/prefill-participations", requirements={"eid": "\d+"}, name="admin_lookup_participations")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
      * @param Event $event
@@ -376,11 +446,11 @@ class AdminSingleController extends Controller
                     'birthday'   => $participant->getBirthday()->format(Event::DATE_FORMAT_DATE)
                 ];
             }
-    
+
             $result[] = [
                 'pid'            => $participation->getPid(),
                 'event_title'    => $participation->getEvent()->getTitle() . ' [' .
-                                    $participation->getEvent()->getStartDate()->format(Event::DATE_FORMAT_DATE).']',
+                                    $participation->getEvent()->getStartDate()->format(Event::DATE_FORMAT_DATE) . ']',
                 'name_last'      => $participation->getNameLast(),
                 'name_first'     => $participation->getNameFirst(),
                 'address_street' => $participation->getAddressStreet(),
@@ -388,7 +458,12 @@ class AdminSingleController extends Controller
                 'address_zip'    => $participation->getAddressZip(),
                 'created_at'     => $participation->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME),
                 'participants'   => $participants,
-                'phone_numbers'  => count($participation->getPhoneNumbers())
+                'phone_numbers'  => count($participation->getPhoneNumbers()),
+                'link'           => $this->generateUrl(
+                    'admin_participation_create_prefill',
+                    ['eid' => $event->getEid(), 'pid' => $participation->getPid()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
             ];
         }
         

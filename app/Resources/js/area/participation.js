@@ -406,9 +406,9 @@ $(function () {
         modalEl.find('.modal-title span').html('1');
     });
 
-    $('#prefillFindParticipant button').on('click', function (e) {
+    const prefillActionFn = function (e) {
         e.preventDefault();
-        var buttonEl = $(this),
+        const buttonEl = $('#prefillFindParticipant .btn-primary'),
             inputEl = $('#prefillFindParticipant input');
         if (buttonEl.hasClass('disabled')) {
             return;
@@ -418,7 +418,7 @@ $(function () {
         inputEl.attr('disabled', 'true');
 
         $.ajax({
-            url: 'create/prefill-participants',
+            url: buttonEl.data('link-participants'),
             data: {
                 _token: modalEl.data('token'),
                 term: inputEl.val()
@@ -444,7 +444,7 @@ $(function () {
 
                         $.each(row.items, function (key, item) {
                             html += '     <li>';
-                            html += '<a href="../../' + item.event_eid + '/participation/' + item.pid + '" target="_blank">';
+                            html += '<a href="' + item.link + '" target="_blank">';
                             html += eHtml(item.event_title);
                             html += '</a> (' + item.event_date + ')';
                             html += '     </li>';
@@ -474,7 +474,7 @@ $(function () {
                     var participationResultEl = findParticipationEl.find('.list-group');
                     participationResultEl.html('<i class="loading-text">(Anmeldungen werden herausgesucht...)</i>');
                     $.ajax({
-                        url: 'create/prefill-participations',
+                        url: buttonEl.data('link-participations'),
                         data: {
                             _token: modalEl.data('token'),
                             pids: $(this).data('pids')
@@ -485,7 +485,7 @@ $(function () {
                             if (result.list && result.list.length) {
                                 var html = '';
                                 $.each(result.list, function (key, participation) {
-                                    html += '<div class="list-group-item" data-pid="' + participation.pid + '">';
+                                    html += '<a class="list-group-item"     data-pid="' + participation.pid + '" href="' + participation.link + '">';
                                     html += ' <div class="list-group-item-text">';
                                     html += '  <h4 class="list-group-item-heading">';
                                     html += eHtml(participation.event_title);
@@ -514,7 +514,7 @@ $(function () {
                                     html += '  </div>';
                                     html += ' </div>';
 
-                                    html += '</div>';
+                                    html += '</a>';
                                 });
 
                                 participationResultEl.html(html);
@@ -535,6 +535,8 @@ $(function () {
                 inputEl.removeAttr('disabled');
             }
         });
-    });
+    };
+    $('#prefillFindParticipant .btn-primary').on('click', prefillActionFn); 
+    $('#prefillFindParticipant form').on('submit', prefillActionFn);
 
 });
