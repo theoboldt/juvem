@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ImageResponse
@@ -24,17 +25,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ImageResponse extends BinaryFileResponse
 {
     /**
-     * Check @see Request and determine if not modified or image response should be sent
+     * Check @param UploadImage $image Image to provide
      *
-     * @param UploadImage $image   Image to provide
-     * @param Request     $request Request
+     * @param Request $request Request
      * @return Response|ImageResponse
+     * @see Request and determine if not modified or image response should be sent
+     *
      */
     public static function createFromRequest(
         UploadImage $image,
         Request $request
-    )
-    {
+    ) {
         $response = new Response('', Response::HTTP_NOT_MODIFIED);
         self::setCacheHeaders($image, $response);
 
@@ -54,11 +55,13 @@ class ImageResponse extends BinaryFileResponse
      */
     private static function setCacheHeaders(UploadImage $image, Response $response)
     {
-        $response->setEtag($image->getETag())
-                 ->setLastModified($image->getMTime())
-                 ->setMaxAge(14 * 24 * 60 * 60)
-                 ->setPublic();
-        $response->headers->set('Content-Type', $image->getType(true));
+        if ($image->exists()) {
+            $response->setEtag($image->getETag())
+                     ->setLastModified($image->getMTime())
+                     ->setMaxAge(14 * 24 * 60 * 60)
+                     ->setPublic();
+            $response->headers->set('Content-Type', $image->getType(true));
+        }
     }
 
     /**
@@ -68,6 +71,9 @@ class ImageResponse extends BinaryFileResponse
      */
     public function __construct(UploadImage $image)
     {
+        if (!$image->exists()) {
+            throw new NotFoundHttpException('Image "'.$image->getPath().'" not found');
+        }
         parent::__construct($image->getPath(), Response::HTTP_OK, [], true, null, false, false);
         self::setCacheHeaders($image, $this);
     }

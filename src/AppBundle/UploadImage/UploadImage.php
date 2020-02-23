@@ -72,7 +72,11 @@ class UploadImage
      */
     public function getMTime()
     {
-        return \DateTime::createFromFormat('U', filemtime($this->path));
+        if ($this->exists()) {
+            return \DateTime::createFromFormat('U', filemtime($this->path));
+        } else {
+            return new \DateTime('2000-01-01');
+        }
     }
 
     /**
