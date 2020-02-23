@@ -122,6 +122,18 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/new")
+     * @Route("/v2")
+     * @Route("/v1")
+     * @Route("/wp1")
+     * @Route("/temp")
+     * @Route("/tmp")
+     * @Route("/home")
+     * @Route("/demo")
+     * @Route("/backup")
+     * @Route("/site")
+     * @Route("/main")
+     * @Route("/Old")
      * @Route("/m")
      * @Route("/mobile")
      * @Route("/index.php")
