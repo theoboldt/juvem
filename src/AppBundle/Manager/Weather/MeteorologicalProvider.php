@@ -85,27 +85,36 @@ class MeteorologicalProvider implements WeatherCurrentProviderInterface, Weather
         }
         return $weather;
     }
-    
+
     /**
      * @inheritDoc
      */
     public function provideForecastWeather(
-        CoordinatesAwareInterface $item, \DateTimeInterface $begin, \DateTimeInterface $end
-    ): ?MeteorologicalForecastInterface
-    {
+        CoordinatesAwareInterface $item,
+        \DateTimeInterface $begin,
+        \DateTimeInterface $end
+    ): ?MeteorologicalForecastInterface {
         if (!$item->isLocationProvided()) {
             return null;
         }
         $forecast = $this->meteorologyRepositoryForecast->findByCoordinatesAndBeginningValidity($item, $begin, $end);
         if ($forecast) {
-            return $forecast;
+            $validityLimit = new \DateTime('now', $forecast->getCreatedAt()->getTimezone());
+            $validityLimit->modify('-1 day');
+
+            if ($forecast->getCreatedAt() < $validityLimit) {
+                $this->meteorologyRepositoryForecast->remove($forecast);
+                $forecast = null;
+            }
         }
-        $forecast = $this->openWeatherMapProvider->provideForecastWeather($item, $begin, $end);
-        
-        if ($forecast instanceof WeatherForecast) {
-            $this->meteorologyRepositoryForecast->persist($forecast);
+        if (!$forecast) {
+            $forecast = $this->openWeatherMapProvider->provideForecastWeather($item, $begin, $end);
+
+            if ($forecast instanceof WeatherForecast) {
+                $this->meteorologyRepositoryForecast->persist($forecast);
+            }
         }
-        
+
         return $forecast;
     }
 }
