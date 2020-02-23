@@ -123,7 +123,7 @@ class LocationController extends Controller
                     $dataCreatedAt      = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
                     $dataCreatedAt      .= ' um ';
                     $dataCreatedAt      .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
-                    $data['created_at'] = $dataCreatedAt;
+                    $data['current']['created_at'] = $dataCreatedAt;
                 }
             }
 
