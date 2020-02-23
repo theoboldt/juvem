@@ -100,7 +100,7 @@ class MeteorologicalProvider implements WeatherCurrentProviderInterface, Weather
         $forecast = $this->meteorologyRepositoryForecast->findByCoordinatesAndBeginningValidity($item, $begin, $end);
         if ($forecast) {
             $validityLimit = new \DateTime('now', $forecast->getCreatedAt()->getTimezone());
-            $validityLimit->modify('-1 day');
+            $validityLimit->modify('-8 hour');
 
             if ($forecast->getCreatedAt() < $validityLimit) {
                 $this->meteorologyRepositoryForecast->remove($forecast);
