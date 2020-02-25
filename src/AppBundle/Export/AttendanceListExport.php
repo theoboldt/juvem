@@ -121,8 +121,18 @@ class AttendanceListExport extends Export
         foreach ($this->lists as $list) {
             $titles[]   = $list->getTitle();
         }
-        $sheet->setTitle(implode(', ', $titles));
-        
+    
+        $title = implode(', ', $titles);
+        if (mb_strlen($title) >= 31) {
+            $titleLengthEvenly = mb_strlen($title) / (count($titles) ?: 1);
+            $titles            = [];
+            foreach ($this->lists as $list) {
+                $titles[] = mb_substr($list->getTitle(), 0, $titleLengthEvenly);
+            }
+            $title = mb_substr(implode(';', $titles), 0, 31);
+        }
+        $sheet->setTitle($title);
+    
         parent::process();
     }
     
