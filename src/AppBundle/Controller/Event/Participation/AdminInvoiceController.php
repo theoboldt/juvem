@@ -15,6 +15,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
+use AppBundle\ResponseHelper;
 use AppBundle\SerializeJsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -177,12 +178,10 @@ class AdminInvoiceController extends Controller
         }
 
         $response = new BinaryFileResponse($invoiceManager->getInvoiceFilePath($invoice));
-        $response->headers->set(
-            'Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        );
-        $response->headers->set(
-            'Content-Disposition',
-            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename)
+        ResponseHelper::configureAttachment(
+            $response,
+            $filename,
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
 
         return $response;
@@ -223,12 +222,10 @@ class AdminInvoiceController extends Controller
         $response = new BinaryFileResponse($tmp);
         $response->deleteFileAfterSend(true);
         
-        $response->headers->set(
-            'Content-Type', 'application/pdf'
-        );
-        $response->headers->set(
-            'Content-Disposition',
-            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename)
+        ResponseHelper::configureAttachment(
+            $response,
+            $filename,
+            'application/pdf'
         );
         
         return $response;
@@ -254,13 +251,10 @@ class AdminInvoiceController extends Controller
             }
             $response = new BinaryFileResponse($invoiceManager->getInvoiceTemplatePath());
         }
-    
-        $response->headers->set(
-            'Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        );
-        $response->headers->set(
-            'Content-Disposition',
-            $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'template.docx')
+        ResponseHelper::configureAttachment(
+            $response,
+            'template.docx',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
     
         return $response;
@@ -327,12 +321,12 @@ class AdminInvoiceController extends Controller
 
     /**
      * Provide invoices list filtered by event and filter
-     * 
+     *
      * @param Event  $event
      * @param string $filter
      * @return array
      */
-    private function provideInvoices(Event $event, string $filter): array 
+    private function provideInvoices(Event $event, string $filter): array
     {
         $invoiceManager   = $this->get('app.payment.invoice_manager');
         $invoicesComplete = $invoiceManager->getInvoicesForEvent($event);

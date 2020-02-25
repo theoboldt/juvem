@@ -24,6 +24,7 @@ use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\ParticipantProfile\Configuration as WordConfiguration;
+use AppBundle\ResponseHelper;
 use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -72,12 +73,11 @@ class AdminMultipleExportController extends Controller
                 $export->write('php://output');
             }
         );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Teilnehmer.xlsx'
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' - Teilnehmer.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -106,12 +106,11 @@ class AdminMultipleExportController extends Controller
                 $export->write('php://output');
             }
         );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Anmeldungen.xlsx'
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' - Anmeldungen.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -138,12 +137,11 @@ class AdminMultipleExportController extends Controller
                 $export->write('php://output');
             }
         );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Teilnehmer.xlsx'
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' - Teilnehmer.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -173,12 +171,11 @@ class AdminMultipleExportController extends Controller
                 $export->write('php://output');
             }
         );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $event->getTitle() . ' - Anmeldungen.xlsx'
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' - Anmeldungen.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -378,13 +375,16 @@ class AdminMultipleExportController extends Controller
                 $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                 break;
         }
-
-        $response->headers->set('Content-Type', $mime);
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+        if (isset($mime) && $mime !== null) {
+            ResponseHelper::configureContentType(
+                $response,
+                $mime
+            );
+        }
+        ResponseHelper::configureDisposition(
+            $response,
             $filename
         );
-        $response->headers->set('Content-Disposition', $d);
 
         //ensure file deleted after request
         $this->get('event_dispatcher')->addListener(
@@ -424,13 +424,16 @@ class AdminMultipleExportController extends Controller
         }
 
         $response = new BinaryFileResponse($result['path']);
-
-        $response->headers->set('Content-Type', $mime);
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+        if (isset($mime) && $mime !== null) {
+            ResponseHelper::configureContentType(
+                $response,
+                $mime
+            );
+        }
+        ResponseHelper::configureDisposition(
+            $response,
             $result['name']
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
@@ -704,13 +707,14 @@ class AdminMultipleExportController extends Controller
         $generator = $this->get('app.participant.profile_generator');
         $path      = $generator->generate($participants, $processedConfiguration);
         $response  = new BinaryFileResponse($path);
-
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            preg_replace('/[^a-zA-Z0-9\-\._ ]/','', $event->getTitle().' Profile.docx')
+    
+        ResponseHelper::configureAttachment(
+            $response,
+            preg_replace(
+                '/[^a-zA-Z0-9\-\._ ]/', '', $event->getTitle() . ' Profile.docx'
+            ),
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         //ensure file deleted after request
         $this->get('event_dispatcher')->addListener(

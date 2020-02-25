@@ -22,6 +22,7 @@ use AppBundle\Export\AttendanceListExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\ResponseHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -419,12 +420,11 @@ class AdminAttendanceListController extends Controller
                 $export->write('php://output');
             }
         );
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $d = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $list->getTitle() . ' - Anwesenheitsliste.xlsx'
+        ResponseHelper::configureAttachment(
+            $response,
+            $list->getTitle() . ' - Anwesenheitsliste.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
-        $response->headers->set('Content-Disposition', $d);
 
         return $response;
     }
