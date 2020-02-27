@@ -482,19 +482,21 @@ $(function () {
                         finishInvoiceCreation(false);
                         return;
                     }
-                    var participation = participations.pop(), //extract first element
-                        onComplete = function onComplete(rawResponse) {
-                            updateProgressBar(participationsTotal - participations.length);
-                            if (rawResponse.status !== 200 && !modalInvoiceCreateVisible) {
-                                finishInvoiceCreation(true, participationsDone);
-                            } else if (participations.length) {
-                                participation = participations.pop();
-                                performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
-                            } else {
-                                finishInvoiceCreation(false, participationsDone);
-                            }
-                        };
-                    performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
+                    if (participations.length) {
+                        var participation = participations.pop(), //extract first element
+                            onComplete = function onComplete(rawResponse) {
+                                updateProgressBar(participationsTotal - participations.length);
+                                if (rawResponse.status !== 200 && !modalInvoiceCreateVisible) {
+                                    finishInvoiceCreation(true, participationsDone);
+                                } else if (participations.length) {
+                                    participation = participations.pop();
+                                    performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
+                                } else {
+                                    finishInvoiceCreation(false, participationsDone);
+                                }
+                            };
+                        performInvoiceCreationRequest(participation.pid, participation.token, onComplete);
+                    }
                 }
             },
             error: function () {
