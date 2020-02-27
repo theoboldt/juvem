@@ -376,10 +376,13 @@ class AdminInvoiceController extends Controller
 
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
-
-        $archive = new \ZipArchive();
-        if (!$archive->open($filePath, \ZipArchive::CREATE)) {
-            throw new \InvalidArgumentException('Failed to create ' . $tmpPath);
+        unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
+    
+        $archive    = new \ZipArchive();
+        $openResult = $archive->open($filePath, \ZipArchive::CREATE);
+        touch($filePath); // after zip file was opened, create file again in order to keep the lock
+        if ($openResult !== true) {
+            throw new \InvalidArgumentException('Failed to create "' . $tmpPath . '" error code ' . $openResult);
         }
 
         $convertedPaths = [];
@@ -422,10 +425,13 @@ class AdminInvoiceController extends Controller
         
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
-
-        $archive = new \ZipArchive();
-        if (!$archive->open($filePath, \ZipArchive::CREATE)) {
-            throw new \InvalidArgumentException('Failed to create ' . $tmpPath);
+        unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
+    
+        $archive    = new \ZipArchive();
+        $openResult = $archive->open($filePath, \ZipArchive::CREATE);
+        touch($filePath); // after zip file was opened, create file again in order to keep the lock
+        if ($openResult !== true) {
+            throw new \InvalidArgumentException('Failed to create "' . $tmpPath . '" error code ' . $openResult);
         }
         /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
@@ -442,8 +448,8 @@ class AdminInvoiceController extends Controller
         $this->get('event_dispatcher')->addListener(
             KernelEvents::TERMINATE,
             function (PostResponseEvent $event) use ($filePath) {
+                usleep(100);
                 if (file_exists($filePath)) {
-                    usleep(100);
                     unlink($filePath);
                 }
             }
