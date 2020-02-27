@@ -359,7 +359,7 @@ class AdminInvoiceController extends Controller
      * @Route("/admin/event/{eid}/invoice/{filter}_pdf.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package_pdf")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
-     * @return BinaryFileResponse
+     * @return Response
      */
     public function downloadEventInvoicePdfPackage(Event $event, string $filter): Response
     {
@@ -373,6 +373,9 @@ class AdminInvoiceController extends Controller
         $invoiceManager = $this->get('app.payment.invoice_manager');
 
         $invoices = $this->provideInvoices($event, $filter);
+        if (!count($invoices)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
 
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
@@ -415,13 +418,16 @@ class AdminInvoiceController extends Controller
      * @Route("/admin/event/{eid}/invoice/{filter}.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package")
      * @Security("has_role('ROLE_ADMIN_EVENT')")
-     * @return BinaryFileResponse
+     * @return Response
      */
     public function downloadEventInvoicePackage(Event $event, string $filter)
     {
         $invoiceManager   = $this->get('app.payment.invoice_manager');
 
         $invoices = $this->provideInvoices($event, $filter);
+        if (!count($invoices)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
         
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
