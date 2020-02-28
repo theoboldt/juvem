@@ -158,6 +158,12 @@ services:
             - '@app.payment_manager'
             - "%app.data.invoice.path%"
             - '@security.token_storage'
+    app.payment.invoice_pdf_provider:
+        class: AppBundle\Manager\Invoice\InvoicePdfProvider
+        arguments:
+            - '@app.payment.invoice_manager'
+            - "%app.data.invoice.path%"
+            - '@app.pdf_converter_service'
     app.payment_manager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:

@@ -85,8 +85,8 @@ $(function () {
                             '    <span class="sr-only">Download Varianten</span>\n' +
                             '  </button>\n' +
                             '  <ul class="dropdown-menu">\n' +
-                            '    <li><a href="' + rowData.download_url + '"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Rechnung als Word-Datei herunterladen</a></li>\n' +
-                            '    <li><a href="' + rowData.download_url_pdf + '"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Rechnung zu PDF konvertieren und herunterladen</a></li>\n' +
+                            '    <li><a href="' + rowData.download_url + '"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Rechnung als Word-Dokument herunterladen</a></li>\n' +
+                            '    <li><a href="' + rowData.download_url_pdf + '"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Rechnung als PDF-Dokument herunterladen</a></li>\n' +
                             '  </ul>\n' +
                             '</div>';
                     } else if (rowData.download_url) {
@@ -536,7 +536,7 @@ $(function () {
             }
         });
     };
-    $('#prefillFindParticipant .btn-primary').on('click', prefillActionFn); 
+    $('#prefillFindParticipant .btn-primary').on('click', prefillActionFn);
     $('#prefillFindParticipant form').on('submit', prefillActionFn);
 
 });

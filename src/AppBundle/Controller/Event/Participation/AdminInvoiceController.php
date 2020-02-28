@@ -15,6 +15,7 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
+use AppBundle\Manager\Invoice\PdfConverterUnavailableException;
 use AppBundle\ResponseHelper;
 use AppBundle\SerializeJsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -205,29 +206,26 @@ class AdminInvoiceController extends Controller
             throw new BadRequestHttpException('Incorrect invoice requested');
         }
         $invoiceManager = $this->get('app.payment.invoice_manager');
-        
+    
         if (!$invoiceManager->hasFile($invoice)) {
             throw new NotFoundHttpException('There is no file for transmitted invoice stored');
         }
-        if (!$this->has('app.pdf_converter_service')) {
-            throw new BadRequestHttpException('PDF converter not configured');
-        }
-        $pdfConverter = $this->get('app.pdf_converter_service');
-        if (!$pdfConverter) {
-            throw new BadRequestHttpException('PDF converter unavailable');
-        }
+        $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
+        try {
+            $path = $pdfProvider->getFile($invoice);
         
-        $path     = $invoiceManager->getInvoiceFilePath($invoice);
-        $tmp      = $pdfConverter->convert($path);
-        $response = new BinaryFileResponse($tmp);
-        $response->deleteFileAfterSend(true);
-        
+        } catch (PdfConverterUnavailableException $e) {
+            throw new BadRequestHttpException('PDF converter unavailable', $e);
+        }
+    
+        $response = new BinaryFileResponse($path);
+    
         ResponseHelper::configureAttachment(
             $response,
             $filename,
             'application/pdf'
         );
-        
+    
         return $response;
     }
 
@@ -370,7 +368,6 @@ class AdminInvoiceController extends Controller
         if (!$pdfConverter) {
             throw new BadRequestHttpException('PDF converter unavailable');
         }
-        $invoiceManager = $this->get('app.payment.invoice_manager');
 
         $invoices = $this->provideInvoices($event, $filter);
         if (!count($invoices)) {
@@ -388,26 +385,29 @@ class AdminInvoiceController extends Controller
             throw new \InvalidArgumentException('Failed to create "' . $tmpPath . '" error code ' . $openResult);
         }
 
-        $convertedPaths = [];
-
+        $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
+    
         /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
-            $originalPath     = $invoiceManager->getInvoiceFilePath($invoice);
-            $convertedPath    = $pdfConverter->convert($originalPath);
-            $convertedPaths[] = $convertedPath;
+            try {
+                $convertedPath = $pdfProvider->getFile($invoice);
+            } catch (PdfConverterUnavailableException $e) {
+                $archive->close();
+                unlink($filePath);
+                throw new BadRequestHttpException('PDF converter unavailable', $e);
+            }
             $archive->addFile($convertedPath, $invoice->getInvoiceNumber() . '.pdf');
         }
         $archive->close();
-        foreach ($convertedPaths as $convertedPath) {
-            unlink($convertedPath);
-        }
 
         $response = new BinaryFileResponse($filePath);
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $event->getTitle() . '_PDF_Rechnungen.zip'
-        );
-
         $response->deleteFileAfterSend(true);
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' PDF-Rechnungen.zip',
+            'application/pdf'
+        );
+        
         return $response;
     }
     
