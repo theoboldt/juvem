@@ -78,6 +78,9 @@ class PdfConverterService
      */
     public function convert(string $input): string
     {
+        if (!is_readable($input) || is_dir($input)) {
+            throw new InputFileNotFoundException(sprintf('Input file "%s" missing', $input));
+        }
         
         $cli = sprintf(
             '%s --headless --convert-to pdf:writer_pdf_Export -env:UserInstallation=file://%s/LibreOffice_Conversion_${USER} --outdir %s %s',
