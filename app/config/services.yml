@@ -164,6 +164,10 @@ services:
             - '@app.payment.invoice_manager'
             - "%app.data.invoice.path%"
             - '@app.pdf_converter_service'
+    app.payment.invoice_mailer:
+        class: AppBundle\Manager\Invoice\InvoiceMailer
+        arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager', '@app.payment.invoice_manager', '@app.payment.invoice_pdf_provider']
+        public: true
     app.payment_manager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
@@ -324,6 +328,12 @@ services:
       autowire: true
       tags:
         - form.type
+    
+    AppBundle\Form\InvoiceMailingType:
+      autowire: true
+      tags:
+        - form.type
+
 
     AppBundle\Form\Meal\MealFeedbackType:
         arguments:

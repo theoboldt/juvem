@@ -61,6 +61,16 @@ class Invoice implements ProvidesCreatedInterface, ProvidesCreatorInterface
     private $sum;
     
     /**
+     * Is set to true if this invoice was already sent via mail
+     *
+     * @Serialize\Expose
+     * @Serialize\Type("bool")
+     * @ORM\Column(name="is_sent", type="boolean", options={"unsigned":true,"default":0})
+     * @var bool
+     */
+    protected $isSent = false;
+    
+    /**
      * Invoice constructor.
      *
      * @param Participation $participation
@@ -145,5 +155,21 @@ class Invoice implements ProvidesCreatedInterface, ProvidesCreatorInterface
     public function getParticipation()
     {
         return $this->participation;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSent(): bool
+    {
+        return $this->isSent;
+    }
+
+    /**
+     * @param bool $isSent
+     */
+    public function setIsSent(bool $isSent): void
+    {
+        $this->isSent = $isSent;
     }
 }

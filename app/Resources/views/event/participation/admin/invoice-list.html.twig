@@ -61,25 +61,79 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="dialogModalInvoiceSend" tabindex="-1" role="dialog"
+       aria-labelledby="dialogModalInvoiceSendLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        {{ form_start(formInvoiceMailing) }}
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="dialogModalInvoiceCreateLabel">Rechnungen verschicken</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              <p>Die Rechnungen können so per E-Mail verschickt werden. Es empfiehlt sich, zuvor für alle Anmeldungen
+                Rechnungen erstellen zu lassen. Wenn noch keine Rechungen erstellt wurden, werden sie hiermit nicht
+                erstellt.</p>
+              <p>Nachrichten wegen Anmeldungen die ausschließlich abgelehnte, zurückgezogene oder gelöschte Teilnehmer
+                enthält werden nicht verschickt.</p>
+              {{ form_rest(formInvoiceMailing) }}
+              {{ form_row(formInvoiceMailing.message) }}
+              <p class="help-block" id="invoiceMailingMessageHelp">
+                Inhalt der E-Mail Nachricht. Dabei können folgende Platzhalter verwendet werden:
+              </p>
+              <dl>
+                <dt>{PARTICIPATION_SALUTATION}</dt>
+                <dd>Anrede der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>,
+                  <code>Herr</code>)
+                </dd>
+                <dt>{PARTICIPATION_NAME_LAST}</dt>
+                <dd>Nachname der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
+                <dt>{EVENT_TITLE}</dt>
+                <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+          <input type="submit" class="btn btn-primary" value="Rechnungen verschicken" />
+        </div>
+        {{ form_end(formInvoiceMailing) }}
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-md-12">
         <div id="bootstrap-table-toolbar" class="form-inline">
           <div class="form-group">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate" >{{ 'credit-card'|glyph }} Rechnungen erstellen…</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate"
+                    title="Rechnungen erstellen...">{{ 'credit-card'|glyph }} Erstellen…
+            </button>
+            <button class="btn btn-default" data-toggle="modal" data-target="#dialogModalInvoiceSend"
+                    title="Rechnungen verschicken">{{ 'envelope'|glyph }} Verschicken…
+            </button>
             <div class="btn-group" role="group">
-              <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn btn-default btn-download">{{ 'compressed'|glyph }} herunterladen</a>
+              <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}"
+                 class="btn btn-default btn-download">{{ 'compressed'|glyph }} herunterladen</a>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                       aria-haspopup="true" aria-expanded="false">
                   <span class="caret"></span>
                   <span class="sr-only">Menü erweitern</span>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}"
+                       class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen herunterladen</a></li>
                 {% if featurePdfConversion %}
-                  <li><a href="{{ path('event_invoice_download_package_pdf', {eid: event.eid, filter: 'current'}) }}" class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen als PDF herunterladen (kann Zeitaufwändig sein)</a></li>
+                  <li><a href="{{ path('event_invoice_download_package_pdf', {eid: event.eid, filter: 'current'}) }}"
+                         class="btn-download">{{ 'compressed'|glyph }} Aktuellste Rechnungen als PDF herunterladen (kann
+                      Zeitaufwändig sein)</a></li>
                 {% endif %}
-                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}" class="btn-download">{{ 'compressed'|glyph }} Alle Rechnungen herunterladen</a></li>
+                <li><a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'all'}) }}"
+                       class="btn-download">{{ 'compressed'|glyph }} Alle Rechnungen herunterladen</a></li>
               </ul>
 
             </div>
@@ -90,7 +144,8 @@
           </div>
         </div>
         <table id="invoiceListTable" class="table table-striped table-remote-content" data-eid="{{ event.eid }}"
-               data-unique-id="index" data-id-field="index" data-toggle="table" data-cache="false" data-pagination="true"
+               data-unique-id="index" data-id-field="index" data-toggle="table" data-cache="false"
+               data-pagination="true"
                data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
                data-search-align="right" data-toolbar="#bootstrap-table-toolbar" data-striped="true"
                data-show-filter="true" data-search="true" data-page-size="25" data-sub-id="e{{ event.eid }}"

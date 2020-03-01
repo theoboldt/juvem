@@ -15,6 +15,8 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
+use AppBundle\Form\InvoiceMailingType;
+use AppBundle\Manager\Invoice\InvoiceMailingConfiguration;
 use AppBundle\Manager\Invoice\PdfConverterUnavailableException;
 use AppBundle\ResponseHelper;
 use AppBundle\SerializeJsonResponse;
@@ -25,7 +27,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -37,15 +38,59 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class AdminInvoiceController extends Controller
 {
     /**
-     * Page for list of invoices of an event
+     * List invoices of an event
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoices", requirements={"eid": "\d+"}, name="event_invoices_list")
-     * @Security("is_granted('participants_read', event)")
+     * @Security("is_granted('participants_edit', event)")
      */
-    public function listParticipantsAction(Event $event)
+    public function listInvoicesAction(Request $request, Event $event)
     {
-        return $this->render('event/participation/admin/invoice-list.html.twig', ['event' => $event]);
+        $invoiceMailing = new InvoiceMailingConfiguration($event);
+        $invoiceMailing->setMessage(
+            sprintf(
+                'Sehr geehrte/r {PARTICIPATION_SALUTATION} {PARTICIPATION_NAME_LAST},
+
+
+anbei erhalten Sie die Rechnung für die Veranstaltung "{EVENT_TITLE}".
+
+
+Mit freundlichen Grüßen,
+
+%s', $this->getParameter('customization.organization_name')
+            )
+        );
+
+        $form = $this->createForm(
+            InvoiceMailingType::class, $invoiceMailing, [InvoiceMailingType::EVENT_FIELD => $event]
+        );
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $invoices = $this->provideInvoices($event, 'current');
+            $mailer   = $this->get('app.payment.invoice_mailer');
+            $sent     = $mailer->mailInvoices($invoiceMailing, $invoices);
+
+            if (count($invoices) === $sent) {
+                $this->addFlash(
+                    'success',
+                    sprintf('%d Nachrichten wurden versand', $sent)
+                );
+            } else {
+                $this->addFlash(
+                    'warning',
+                    sprintf('Für %d Rechnungen wurden %d Nachrichten versand', count($invoices), $sent)
+                );
+            }
+
+            return $this->redirectToRoute('event_invoices_list', ['eid' => $event->getEid()]);
+        }
+
+        return $this->render(
+            'event/participation/admin/invoice-list.html.twig',
+            ['event' => $event, 'formInvoiceMailing' => $form->createView()]
+        );
     }
 
     /**
@@ -187,7 +232,7 @@ class AdminInvoiceController extends Controller
 
         return $response;
     }
-    
+
     /**
      * Convert created invoice to PDF and provide download
      *
@@ -195,9 +240,9 @@ class AdminInvoiceController extends Controller
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("invoice", class="AppBundle:Invoice", options={"id" = "id"})
      * @Security("is_granted('participants_read', event)")
-     * @param Event $event
+     * @param Event   $event
      * @param Invoice $invoice
-     * @param string $filename
+     * @param string  $filename
      * @return BinaryFileResponse
      */
     public function downloadInvoicePdfAction(Event $event, Invoice $invoice, string $filename): Response
@@ -206,26 +251,26 @@ class AdminInvoiceController extends Controller
             throw new BadRequestHttpException('Incorrect invoice requested');
         }
         $invoiceManager = $this->get('app.payment.invoice_manager');
-    
+
         if (!$invoiceManager->hasFile($invoice)) {
             throw new NotFoundHttpException('There is no file for transmitted invoice stored');
         }
         $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
         try {
             $path = $pdfProvider->getFile($invoice);
-        
+
         } catch (PdfConverterUnavailableException $e) {
             throw new BadRequestHttpException('PDF converter unavailable', $e);
         }
-    
+
         $response = new BinaryFileResponse($path);
-    
+
         ResponseHelper::configureAttachment(
             $response,
             $filename,
             'application/pdf'
         );
-    
+
         return $response;
     }
 
@@ -254,7 +299,7 @@ class AdminInvoiceController extends Controller
             'template.docx',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         );
-    
+
         return $response;
     }
 
@@ -377,7 +422,7 @@ class AdminInvoiceController extends Controller
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
         unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
-    
+
         $archive    = new \ZipArchive();
         $openResult = $archive->open($filePath, \ZipArchive::CREATE);
         touch($filePath); // after zip file was opened, create file again in order to keep the lock
@@ -386,7 +431,7 @@ class AdminInvoiceController extends Controller
         }
 
         $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
-    
+
         /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
             try {
@@ -407,10 +452,10 @@ class AdminInvoiceController extends Controller
             $event->getTitle() . ' PDF-Rechnungen.zip',
             'application/pdf'
         );
-        
+
         return $response;
     }
-    
+
     /**
      * Get list of @see Participation ids where new invoice should be created
      *
@@ -422,17 +467,17 @@ class AdminInvoiceController extends Controller
      */
     public function downloadEventInvoicePackage(Event $event, string $filter)
     {
-        $invoiceManager   = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->get('app.payment.invoice_manager');
 
         $invoices = $this->provideInvoices($event, $filter);
         if (!count($invoices)) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
-        
+
         $tmpPath  = $this->getParameter('app.tmp.root.path');
         $filePath = tempnam($tmpPath, 'invoice_package_');
         unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
-    
+
         $archive    = new \ZipArchive();
         $openResult = $archive->open($filePath, \ZipArchive::CREATE);
         touch($filePath); // after zip file was opened, create file again in order to keep the lock
