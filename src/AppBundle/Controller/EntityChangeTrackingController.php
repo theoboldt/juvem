@@ -12,6 +12,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
+use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
+use AppBundle\Security\EventVoter;
 use AppBundle\SerializeJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,9 +47,17 @@ class EntityChangeTrackingController extends Controller
             throw new NotFoundHttpException('Failed to find related entity');
         }
         
+        $securityChecker   = $this->get('security.authorization_checker');
         $securityAttribute = 'read';
-        if (!$this->get('security.authorization_checker')->isGranted($securityAttribute, $relatedEntity)) {
-            throw new AccessDeniedHttpException('Requested change list for incorrect entity');
+        
+        if ($relatedEntity instanceof Participation || $relatedEntity instanceof Participant) {
+            if (!$securityChecker->isGranted(EventVoter::PARTICIPANTS_READ, $relatedEntity->getEvent())) {
+                throw new AccessDeniedHttpException('Requested change list for participant/participation');
+            }
+        } else {
+            if (!$securityChecker->isGranted($securityAttribute, $relatedEntity)) {
+                throw new AccessDeniedHttpException('Requested change list for incorrect entity');
+            }
         }
         
         $changes = $repository->findAllByClassAndId($className, $entityId);
