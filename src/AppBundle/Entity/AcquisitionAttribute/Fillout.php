@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
@@ -30,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="acquisition_attribute_fillout")
  */
-class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
+class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
 {
     /**
      * @ORM\Column(type="integer", name="oid")
@@ -390,5 +391,22 @@ class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackin
     public static function getExcludedAttributes(): array
     {
         return [];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingAttributeConverters(): array
+    {
+        return [
+            'value' => function ($value) {
+                $formatted = self::convertRawValueForField($this->attribute, $value);
+                if ($value) {
+                    return $formatted->getTextualValue();
+                } else {
+                    return $value;
+                }
+            }
+        ];
     }
 }

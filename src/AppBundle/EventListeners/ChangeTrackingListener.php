@@ -14,6 +14,7 @@ namespace AppBundle\EventListeners;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 use AppBundle\Entity\ChangeTracking\ScheduledEntityChange;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
@@ -99,6 +100,14 @@ class ChangeTrackingListener
             if (is_float($comparableBefore) || is_float($comparableAfter)) {
                 $comparableBefore = ($comparableBefore === null) ?: round($comparableBefore, 10);
                 $comparableAfter  = ($comparableAfter === null) ?: round($comparableAfter, 10);
+            }
+            foreach ($values as $key => $value) {
+                if ($entity instanceof SpecifiesChangeTrackingAttributeConvertersInterface) {
+                    $converters = $entity->getChangeTrackingAttributeConverters();
+                    if (isset($converters[$attribute])) {
+                        $values[$key] = $result = call_user_func($converters[$attribute], $values[$key]);
+                    }
+                }
             }
             
             if ($comparableBefore !== $comparableAfter) {
