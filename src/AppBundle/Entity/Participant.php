@@ -19,6 +19,9 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,7 +38,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface
+class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 
@@ -588,5 +591,29 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             'nichts bekannt!',
         ];
         return empty($value) || in_array(trim(mb_strtolower($value)), $acceptedAsEmpty);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getAid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        return sprintf('%s @ %s [%d]', $this->fullname(), $this->getEvent()->getTitle(), $this->getAid());
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return ['comments', 'paymentEvents', 'basePrice'];
     }
 }

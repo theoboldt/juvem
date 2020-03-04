@@ -10,6 +10,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumber as AssertPhoneNumber;
@@ -19,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="phone_number")
  */
-class PhoneNumber
+class PhoneNumber implements SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
 {
     /**
      * @ORM\Column(type="integer", name="nid")
@@ -172,5 +175,47 @@ class PhoneNumber
     public function getEmployee()
     {
         return $this->employee;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getId(): ?int
+    {
+        return $this->getNid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return [];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getNid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        $number = $this->getNumber();
+        if ($number instanceof \libphonenumber\PhoneNumber) {
+            return sprintf(
+                'C%s N%s [%d]',
+                $number->hasCountryCode() ? $number->getCountryCode() : '-',
+                $number->getNationalNumber(),
+                $this->getNid()
+            );
+        } else {
+            return sprintf('%s [%d]', $number, $this->getNid());
+        }
     }
 }
