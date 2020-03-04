@@ -60,7 +60,8 @@ class EntityChangeRepository extends EntityRepository
         $qb->select(['c', 'u'])
            ->leftJoin('c.responsibleUser', 'u')
            ->andWhere('c.relatedId = :relatedId')
-           ->andWhere('c.relatedClass = :relatedClass');
+           ->andWhere('c.relatedClass = :relatedClass')
+           ->orderBy('c.occurrenceDate', 'DESC');
         
         $qb->setParameter('relatedId', $relatedEntityId)
            ->setParameter('relatedClass', $relatedClassName);
