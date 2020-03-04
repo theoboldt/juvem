@@ -188,13 +188,13 @@ class ChangeTrackingListener
             foreach ($collection->getDeleteDiff() as $related) {
                 $schedule = true;
                 $this->integrateCollectionChange(
-                    $change, $entity, $property, EntityCollectionChange::OPERATION_DELETE, $related
+                    $change, $property, EntityCollectionChange::OPERATION_DELETE, $related
                 );
             }
             foreach ($collection->getInsertDiff() as $related) {
                 $schedule = true;
                 $this->integrateCollectionChange(
-                    $change, $entity, $property, EntityCollectionChange::OPERATION_INSERT, $related
+                    $change, $property, EntityCollectionChange::OPERATION_INSERT, $related
                 );
             }
             if ($schedule) {
@@ -207,25 +207,21 @@ class ChangeTrackingListener
      * Track a collection change
      *
      * @param ScheduledEntityChange $change           Change bucket to register collection change at
-     * @param SupportsChangeTrackingInterface $entity Main entity (collection owner)
      * @param string $property                        Collection property name of main entity
      * @param string $operation                       Collection change operation
      * @param mixed $related                          Related collection item
      */
     private function integrateCollectionChange(
         ScheduledEntityChange $change,
-        SupportsChangeTrackingInterface $entity,
         string $property,
         string $operation,
         $related
     )
     {
-        $change->addCollectionChange(
+        $change->scheduleCollectionChange(
             $property,
             $operation,
-            get_class($related),
-            ($related instanceof SupportsChangeTrackingInterface) ? $related->getId() : null,
-            $this->getStorableRepresentation($property . ':collection', $entity, $related)
+            $related
         );
         
     }

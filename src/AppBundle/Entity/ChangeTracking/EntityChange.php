@@ -242,13 +242,16 @@ class EntityChange implements \Countable
         foreach ($this->collectionChanges as $attribute => $operations) {
             foreach ($operations as $operation => $items) {
                 foreach ($items as $item) {
-                    if (!isset($item['class']) || !isset($item['name'])) {
-                        throw new \RuntimeException('Information missing');
+                    if (!isset($item['class'])) {
+                        throw new \RuntimeException('Class is not specified at change entry');
                     }
                     yield new EntityCollectionChange(
-                        $attribute, $operation, $item['class'], $item['id'] ?? null, $item['name']
+                        $attribute,
+                        $operation,
+                        $item['class'],
+                        $item['id'] ?? null,
+                        $item['name'] ?? '{UNKNOWN_NAME} '.($item['id'] ?? '{UNKNOWN_ID}')
                     );
-                    
                 }
             }
         }

@@ -24,6 +24,16 @@ class ScheduledEntityChange implements \Countable
     private $entity;
     
     /**
+     * Related entity id
+     *
+     * Related entity id; must be read before commit in case of delete events, must be read after commit in case
+     * of insert events
+     *
+     * @var int|null
+     */
+    private $entityId;
+    
+    /**
      * Change operation, one of 'create', 'update', 'delete', 'trash', 'restore'
      *
      * @var string
@@ -70,7 +80,10 @@ class ScheduledEntityChange implements \Countable
         SupportsChangeTrackingInterface $entity, string $operation, ?User $responsibleUser, ?\DateTime $occurrenceDate
     )
     {
-        $this->entity          = $entity;
+        $this->entity = $entity;
+        if ($this->entity->getId() !== null) {
+            $this->entityId = $this->entity->getId();
+        }
         $this->operation       = $operation;
         $this->responsibleUser = $responsibleUser;
         $this->occurrenceDate  = $occurrenceDate ?: new \DateTime();
@@ -91,7 +104,7 @@ class ScheduledEntityChange implements \Countable
      */
     public function hasRelatedId(): bool
     {
-        return $this->entity->getId() !== null;
+        return $this->entityId !== null || $this->entity->getId() !== null;
     }
     
     /**
@@ -99,11 +112,13 @@ class ScheduledEntityChange implements \Countable
      */
     public function getRelatedId(): int
     {
-        $id = $this->entity->getId();
-        if ($id === null) {
-            throw new \InvalidArgumentException('An id can not yet be provided');
+        if ($this->entityId === null) {
+            $this->entityId = $this->entity->getId();
+            if ($this->entityId === null) {
+                throw new \InvalidArgumentException('An id can not yet be provided');
+            }
         }
-        return $id;
+        return $this->entityId;
     }
     
     /**
@@ -156,25 +171,59 @@ class ScheduledEntityChange implements \Countable
      * @param string $property             Property to change
      * @param string $operation            Action code, either {@see EntityCollectionChange::OPERATION_INSERT}
      *                                     or {@see EntityCollectionChange::OPERATION_INSERT}
-     * @param string $relatedClassName     Class name of related object
-     * @param null|int $relatedId          Id of related entity
-     * @param string|int|float|null $value Textual entity identifier
+     * @param object $related              Related entity
      */
-    public function addCollectionChange(
-        string $property, string $operation, string $relatedClassName, ?int $relatedId, $value
+    public function scheduleCollectionChange(
+        string $property, string $operation, $related
     ): void
     {
-        $this->collectionChanges[$property][$operation][] = [
-            'class' => $relatedClassName, 'id' => $relatedId, 'name' => $value
+        $data = [
+            'class' => get_class($related),
+            'object' => $related
         ];
+        if ($related instanceof SupportsChangeTrackingInterface || method_exists($related, 'getId')) {
+            $data['id'] = $related->getId();
+        }
+        if ($related instanceof SpecifiesChangeTrackingStorableRepresentationInterface) {
+            $data['name'] = $related->getChangeTrackingStorableRepresentation();
+        }
+        $this->collectionChanges[$property][$operation][] = $data;
     }
     
     /**
+     * Walk through collection changes and lazy fetch ids if not yet fetched
+     *
      * @return array
      */
     public function getCollectionChanges(): array
     {
-        return $this->collectionChanges;
+        $collectionChanges = [];
+        foreach ($this->collectionChanges as $property => $operations) {
+            foreach ($operations as $operation => $changes) {
+                foreach ($changes as $change) {
+                    if (!isset($change['id'])
+                        && ($change['object'] instanceof SupportsChangeTrackingInterface
+                            || method_exists($change['object'], 'getId'))) {
+                        $change['id'] = $change['object']->getId();
+                        unset($change['name']);
+                    }
+                    if (empty($change['name'])) {
+                        if ($change['object'] instanceof SpecifiesChangeTrackingStorableRepresentationInterface) {
+                            $change['name'] = $change['object']->getChangeTrackingStorableRepresentation();
+                        } else {
+                            $change['name'] = sprintf('%s [%d]', $change['class'], $change['id']);
+                        }
+                    }
+                    $collectionChanges[$property][$operation][] = [
+                        'class' => $change['class'],
+                        'id'    => $change['id'],
+                        'name'  => $change['name'],
+                    ];
+                }
+            
+            }
+        }
+        return $collectionChanges;
     }
     
     /**
