@@ -181,7 +181,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      *
      * @param \DateTime $deletedAt
      *
-     * @return Event
+     * @return Participation
      */
     public function setDeletedAt($deletedAt)
     {
@@ -204,11 +204,12 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     {
         return $this->pid;
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId(): ?int
+    {
         return $this->getPid();
     }
 
@@ -411,7 +412,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      *
      * @return Event
      */
-    public function getEvent()
+    public function getEvent(): ?Event
     {
         return $this->event;
     }

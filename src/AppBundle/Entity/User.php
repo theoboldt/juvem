@@ -136,7 +136,7 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
      * @see getUid()
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->getUid();
     }

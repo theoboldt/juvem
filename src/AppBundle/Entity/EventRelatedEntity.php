@@ -19,6 +19,6 @@ interface EventRelatedEntity
      *
      * @return Event|null
      */
-    public function getEvent();
+    public function getEvent(): ?Event;
 
 }

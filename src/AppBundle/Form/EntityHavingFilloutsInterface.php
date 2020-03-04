@@ -24,9 +24,9 @@ interface EntityHavingFilloutsInterface
     /**
      * Get entity id related to entities namespace
      *
-     * @return int
+     * @return int|null
      */
-    public function getId();
+    public function getId(): ?int;
     
     /**
      * Remove fillout

@@ -45,14 +45,14 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
-
+    
     /**
      * @ORM\Column(type="integer", name="gid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $gid;
-
+    
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="employees", cascade={"all"})
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
@@ -60,33 +60,33 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
      * @var Event
      */
     protected $event;
-
+    
     /**
      * @ORM\Column(type="string", length=64, name="salutation")
      * @Assert\NotBlank()
      */
     protected $salutation;
-
+    
     /**
      * @ORM\Column(type="string", length=128, name="email")
      * @Assert\NotBlank()
      */
     protected $email;
-
+    
     /**
      * Contains the phone numbers assigned to this employee
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\PhoneNumber", cascade={"all"}, mappedBy="employee")
      */
     protected $phoneNumbers;
-
+    
     /**
      * Contains the comments assigned
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\EmployeeComment", cascade={"all"}, mappedBy="employee")
      */
     protected $comments;
-
+    
     /**
      * Contains the participants assigned to this employee
      *
@@ -94,13 +94,13 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
      *     cascade={"all"}, mappedBy="employee")
      */
     protected $acquisitionAttributeFillouts;
-
+    
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedEmployees")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
      */
     protected $assignedUser;
-
+    
     /**
      * @ORM\ManyToOne(targetEntity="Employee")
      * @ORM\JoinColumn(name="predecessor_gid", referencedColumnName="gid", onDelete="SET NULL")
@@ -116,14 +116,14 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     public function __construct(Event $event = null)
     {
         $this->acquisitionAttributeFillouts = new ArrayCollection();
-
+        
         $this->phoneNumbers = new ArrayCollection();
         $this->comments     = new ArrayCollection();
         $this->modifiedAt   = new \DateTime();
         $this->createdAt    = new \DateTime();
         $this->event        = $event;
     }
-
+    
     /**
      * Get employee id
      *
@@ -133,11 +133,12 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     {
         return $this->gid;
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId(): ?int
+    {
         return $this->getGid();
     }
 
@@ -219,7 +220,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
      *
      * @return Event|null
      */
-    public function getEvent()
+    public function getEvent(): ?Event
     {
         return $this->event;
     }

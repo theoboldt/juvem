@@ -83,7 +83,7 @@ trait BirthdayTrait
     /**
      * Expected to have event assigned
      *
-     * @return Event
+     * @return Event|null
      */
-    abstract function getEvent(): Event;
+    abstract function getEvent(): ?Event;
 }

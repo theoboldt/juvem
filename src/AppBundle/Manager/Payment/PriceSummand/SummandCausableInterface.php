@@ -19,14 +19,14 @@ interface SummandCausableInterface
     /**
      * Get entity id related to entities namespace
      *
-     * @return int
+     * @return int|null
      */
-    public function getId();
+    public function getId(): ?int;
     
     /**
      * Get related event
      *
      * @return Event|null
      */
-    public function getEvent();
+    public function getEvent(): ?Event;
 }

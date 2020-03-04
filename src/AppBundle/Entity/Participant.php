@@ -167,11 +167,12 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return $this->aid;
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId(): ?int
+    {
         return $this->getAid();
     }
 
@@ -329,7 +330,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      *
      * @return \AppBundle\Entity\Event|null
      */
-    public function getEvent()
+    public function getEvent(): ?Event
     {
         $participation = $this->getParticipation();
         if (!$participation) {
