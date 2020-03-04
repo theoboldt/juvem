@@ -19,6 +19,7 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
@@ -38,7 +39,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
+class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 
@@ -615,5 +616,18 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     public static function getExcludedAttributes(): array
     {
         return ['comments', 'paymentEvents', 'basePrice'];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingAttributeConverters(): array
+    {
+        return [
+            'status' => function ($value) {
+                $status = new ParticipantStatus($value);
+                return implode(', ', $status->getActiveList(true));
+            }
+        ];
     }
 }
