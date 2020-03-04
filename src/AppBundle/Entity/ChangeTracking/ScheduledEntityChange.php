@@ -210,13 +210,15 @@ class ScheduledEntityChange implements \Countable
                     if (empty($change['name'])) {
                         if ($change['object'] instanceof SpecifiesChangeTrackingStorableRepresentationInterface) {
                             $change['name'] = $change['object']->getChangeTrackingStorableRepresentation();
-                        } else {
+                        } elseif (isset($change['id'])) {
                             $change['name'] = sprintf('%s [%d]', $change['class'], $change['id']);
+                        } else {
+                            $change['name'] = sprintf('%s [?]', $change['class']);
                         }
                     }
                     $collectionChanges[$property][$operation][] = [
                         'class' => $change['class'],
-                        'id'    => $change['id'],
+                        'id'    => $change['id'] ?? null,
                         'name'  => $change['name'],
                     ];
                 }
