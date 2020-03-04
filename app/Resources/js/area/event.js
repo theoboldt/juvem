@@ -776,6 +776,8 @@ $(function () {
     $('#modalChangeTracking').on('show.bs.modal', function (event) {
         var buttonEl = $(event.relatedTarget),
             modalEl = $(this);
+            modalEl.find('h4 small').html('');
+            modalEl.find('table tbody').html('<tr><td colspan="4" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
 
         $.ajax({
             url: buttonEl.data('list-url'),
@@ -785,6 +787,10 @@ $(function () {
                         htmlRow,
                         operation,
                         glyph;
+
+                    if (response.title) {
+                        modalEl.find('h4 small').html(eHtml(response.title));
+                    }
                     $.each(response.changes, function (index, change) {
                         htmlRow = '<tr>';
 
@@ -904,8 +910,7 @@ $(function () {
                         html += htmlRow;
                     });
 
-
-                    $('#modalChangeTracking table tbody').html(html);
+                    modalEl.find('table tbody').html(html);
                 }
             }
         });

@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Security\EventVoter;
@@ -62,6 +63,12 @@ class EntityChangeTrackingController extends Controller
         
         $changes = $repository->findAllByClassAndId($className, $entityId);
         
-        return new SerializeJsonResponse(['changes' => $changes]);
+        $result = ['changes' => $changes];
+        
+        if ($relatedEntity instanceof SpecifiesChangeTrackingStorableRepresentationInterface) {
+            $result['title'] = $relatedEntity->getChangeTrackingStorableRepresentation();
+        }
+        
+        return new SerializeJsonResponse($result);
     }
 }

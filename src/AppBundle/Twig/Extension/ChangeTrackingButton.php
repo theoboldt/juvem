@@ -61,6 +61,17 @@ class ChangeTrackingButton extends AbstractExtension
     {
         return [
             new TwigFilter(
+                'insertTrackingModal',
+                [
+                    $this,
+                    'insertTrackingModal'
+                ],
+                [
+                    'pre_escape' => 'html',
+                    'is_safe'    => ['html']
+                ]
+            ),
+            new TwigFilter(
                 'changeTrackingButton',
                 [
                     $this,
@@ -71,32 +82,34 @@ class ChangeTrackingButton extends AbstractExtension
                     'is_safe'    => ['html']
                 ]
             ),
+            new TwigFilter(
+                'smallChangeTrackingButton',
+                [
+                    $this,
+                    'smallChangeTrackingButton'
+                ],
+                [
+                    'pre_escape' => 'html',
+                    'is_safe'    => ['html']
+                ]
+            ),
         ];
     }
     
     /**
-     * Generate button for changes
+     * Provide the modal Html
      *
-     * @param SupportsChangeTrackingInterface $entity
      * @return string
      */
-    public function changeTrackingButton(SupportsChangeTrackingInterface $entity): string
+    public function insertTrackingModal(): string
     {
-        if ($this->authorizationChecker->isGranted('READ', $entity)) {
-            $changes = 0;
-        } else {
-            $changes = $this->repository->countAllByEntity($entity);
-        }
-        if ($changes === 0) {
-            return '<span class="btn btn-default disabled" title="Änderungsverlauf untersuchen"><span class="glyphicon glyphicon-road"  aria-hidden="true"></span> <span class="hidden-xs">Keine Änderungen</span></span>';
-        } else {
-            $modalHtml = <<<HTML
+        return <<<HTML
 <div class="modal fade" tabindex="-1" role="dialog" id="modalChangeTracking">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Änderungsverlauf</h4>
+        <h4 class="modal-title">Änderungsverlauf <small></small></h4>
       </div>
       <div class="modal-body">
         <table class="table table-striped">
@@ -120,6 +133,49 @@ class ChangeTrackingButton extends AbstractExtension
   </div>
 </div>
 HTML;
+    }
+    
+    /**
+     * Generate button for changes in specified size
+     *
+     * @param SupportsChangeTrackingInterface $entity
+     * @param string|null $size
+     * @param bool $includeModal If set to true, modal is included. Use this, if this tracking button is the only one
+     *                           on the page
+     * @return string
+     */
+    private function changeTrackingButtonWithSize(
+        SupportsChangeTrackingInterface $entity, ?string $size, bool $includeModal = true
+    ): string
+    {
+        if ($this->authorizationChecker->isGranted('READ', $entity)) {
+            $changes = 0;
+        } else {
+            $changes = $this->repository->countAllByEntity($entity);
+        }
+        switch ($size) {
+            case 'xs':
+                $btnClass = 'btn btn-default btn-xs';
+                $btnTitle = '';
+                break;
+            default:
+                $btnClass = 'btn btn-default';
+                if ($changes) {
+                    $btnTitle = ' <span class="hidden-xs">' .
+                                $changes . '&nbsp;Änderung' . (($changes > 1) ? 'en' : '') .
+                                '</span>';
+                } else {
+                    $btnTitle = '<span class="hidden-xs">Keine Änderungen</span>';
+                }
+                break;
+        }
+        
+        
+        if ($changes === 0) {
+            return '<span class="' . $btnClass .
+                   ' disabled" title="Änderungsverlauf untersuchen (Keine Änderungen)"><span class="glyphicon glyphicon-road" aria-hidden="true"></span> ' .
+                   $btnTitle . '</span>';
+        } else {
             
             $url = $this->router->generate(
                 'admin_change_overview',
@@ -129,15 +185,45 @@ HTML;
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
-            return $modalHtml .
-                   '<button class="btn btn-default"' .
-                   ' data-toggle="modal" data-target="#modalChangeTracking"' .
-                   ' data-list-url="' . $url . '"' .
-                   ' title="Änderungsverlauf untersuchen">' .
-                   '<span class="glyphicon glyphicon-road" aria-hidden="true"></span> <span class="hidden-xs">' .
-                   $changes . '&nbsp;Änderung' . (($changes > 1) ? 'en' : '') .
-                   '</span></button>';
+            
+            $result = '';
+            if ($includeModal) {
+                $result .= $this->insertTrackingModal();
+            }
+            $result .= '<button class="' . $btnClass . '"' .
+                       ' data-toggle="modal" data-target="#modalChangeTracking"' .
+                       ' data-list-url="' . $url . '"' .
+                       ' title="Änderungsverlauf untersuchen">' .
+                       '<span class="glyphicon glyphicon-road" aria-hidden="true"></span>' . $btnTitle . '</button>';
+            return $result;
         }
+    }
+    
+    /**
+     * Generate button for changes in default size
+     *
+     * @param SupportsChangeTrackingInterface $entity
+     * @param bool $includeModal If set to true, modal is included. Use this, if this tracking button is the only one
+     *                           on the page
+     * @return string
+     */
+    public function changeTrackingButton(SupportsChangeTrackingInterface $entity, bool $includeModal = true): string
+    {
+        return $this->changeTrackingButtonWithSize($entity, null, $includeModal);
+    }
+    
+    /**
+     * Generate button for changes in small size
+     *
+     * @param SupportsChangeTrackingInterface $entity
+     * @param bool $includeModal If set to true, modal is included. Use this, if this tracking button is the only one
+     *                           on the page
+     * @return string
+     */
+    public function smallChangeTrackingButton(SupportsChangeTrackingInterface $entity, bool $includeModal = true
+    ): string
+    {
+        return $this->changeTrackingButtonWithSize($entity, 'xs', $includeModal);
     }
     
     /**
