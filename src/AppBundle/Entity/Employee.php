@@ -20,6 +20,10 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
@@ -38,7 +42,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EmployeeRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface
+class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     
@@ -127,9 +131,9 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
     /**
      * Get employee id
      *
-     * @return int
+     * @return int|null
      */
-    public function getGid(): int
+    public function getGid(): ?int
     {
         return $this->gid;
     }
@@ -329,5 +333,37 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
         }
 
         return $employee;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingAttributeConverters(): array
+    {
+        return [];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getGid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        return sprintf('%s @ %s [%d]', $this->fullname(), $this->getEvent()->getTitle(), $this->getGid());
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return [];
     }
 }
