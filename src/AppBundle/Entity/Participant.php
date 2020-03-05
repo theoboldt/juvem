@@ -203,15 +203,28 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     public function getGender($formatted = false)
     {
         if ($formatted) {
-            switch ($this->gender) {
-                case self::TYPE_GENDER_FEMALE:
-                    return self::LABEL_GENDER_FEMALE;
-                case self::TYPE_GENDER_MALE:
-                    return self::LABEL_GENDER_MALE;
-            }
+            return self::formatGender($this->gender);
+        } else {
+            return $this->gender;
         }
-
-        return $this->gender;
+    }
+    
+    /**
+     * Format gender code
+     *
+     * @param int $genderCode
+     * @return string
+     */
+    public static function formatGender(int $genderCode): string
+    {
+        switch ($genderCode) {
+            case self::TYPE_GENDER_FEMALE:
+                return self::LABEL_GENDER_FEMALE;
+            case self::TYPE_GENDER_MALE:
+                return self::LABEL_GENDER_MALE;
+            default:
+                throw new \InvalidArgumentException(sprintf('Unknown code "%s" transmitted', $genderCode));
+        }
     }
 
     /**
@@ -626,6 +639,13 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         return [
             'status' => function ($value) {
                 $status = new ParticipantStatus($value);
+                return implode(', ', $status->getActiveList(true));
+            },
+            'gender' => function ($value) {
+                return self::formatGender($value);
+            },
+            'food'   => function ($value) {
+                $status = new ParticipantFood($value);
                 return implode(', ', $status->getActiveList(true));
             }
         ];
