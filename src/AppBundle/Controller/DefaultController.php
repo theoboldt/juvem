@@ -169,6 +169,7 @@ class DefaultController extends Controller
      * @Route("/LICENSE")
      * @Route("/license")
      * @Route("/license.md")
+     * @Route("/.env")
      * @return Response
      */
     public function licenseRedirectAction(): Response
