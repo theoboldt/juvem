@@ -12,8 +12,11 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
+use AppBundle\ResponseHelper;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -158,6 +161,73 @@ class DefaultController extends Controller
     public function unsupportedAction()
     {
         return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+    
+    /**
+     * License redirect
+     *
+     * @Route("/LICENSE")
+     * @Route("/license")
+     * @Route("/license.md")
+     */
+    public function licenseRedirectAction()
+    {
+        $this->redirectToRoute('app_license');
+    }
+    
+    /**
+     * License text action
+     *
+     * @Route("/license.txt", name="app_license")
+     */
+    public function licenseAction(): Response
+    {
+        return $this->provideTextFileContentIfExists($this->get('kernel')->getRootDir() . '/../LICENSE');
+    }
+    
+    /**
+     * Readme redirect
+     *
+     * @Route("/README")
+     * @Route("/readme.txt")
+     * @Route("/README.md")
+     */
+    public function readmeRedirectAction()
+    {
+        $this->redirectToRoute('app_license');
+    }
+    
+    /**
+     * Readme text action
+     *
+     * @Route("/readme.md", name="app_license")
+     */
+    public function readmeAction(): Response
+    {
+        return $this->provideTextFileContentIfExists($this->get('kernel')->getRootDir() . '/../README.md');
+    }
+    
+    /**
+     * Create a http response for transmitted file or not found
+     *
+     * @param string $path
+     * @return BinaryFileResponse
+     * @throws NotFoundHttpException
+     */
+    private function provideTextFileContentIfExists(string $path)
+    {
+        if (file_exists($path) && is_readable($path)) {
+            $response = new BinaryFileResponse($path);
+            
+            ResponseHelper::configureAttachment(
+                $response,
+                basename($path),
+                'text/plain'
+            );
+            return $response;
+        } else {
+            throw new NotFoundHttpException('File not found');
+        }
     }
 
     /**
