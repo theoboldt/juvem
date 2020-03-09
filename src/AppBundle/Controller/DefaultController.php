@@ -169,16 +169,18 @@ class DefaultController extends Controller
      * @Route("/LICENSE")
      * @Route("/license")
      * @Route("/license.md")
+     * @return Response
      */
-    public function licenseRedirectAction()
+    public function licenseRedirectAction(): Response
     {
-        $this->redirectToRoute('app_license');
+        return $this->redirectToRoute('app_license');
     }
     
     /**
      * License text action
      *
      * @Route("/license.txt", name="app_license")
+     * @return Response
      */
     public function licenseAction(): Response
     {
@@ -191,16 +193,18 @@ class DefaultController extends Controller
      * @Route("/README")
      * @Route("/readme.txt")
      * @Route("/README.md")
+     * @return Response
      */
-    public function readmeRedirectAction()
+    public function readmeRedirectAction(): Response
     {
-        $this->redirectToRoute('app_license');
+        return $this->redirectToRoute('app_license');
     }
     
     /**
      * Readme text action
      *
      * @Route("/readme.md", name="app_license")
+     * @return Response
      */
     public function readmeAction(): Response
     {
