@@ -120,7 +120,8 @@ class EntityChangeRepository extends EntityRepository
         $qb = $this->createQueryBuilder('c');
         $qb->select(['c', 'u'])
            ->leftJoin('c.responsibleUser', 'u')
-           ->orderBy('c.occurrenceDate', 'DESC');
+           ->addOrderBy('c.occurrenceDate', 'DESC')
+           ->addOrderBy('c.relatedClass', 'ASC');
         return $qb;
     }
     
