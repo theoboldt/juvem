@@ -10,7 +10,10 @@
 
 namespace AppBundle\Entity\ChangeTracking;
 
+use AppBundle\Entity\EntityHavingPhoneNumbersInterface;
+use AppBundle\Form\EntityHavingFilloutsInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * EmployeeRepository
@@ -37,17 +40,6 @@ class EntityChangeRepository extends EntityRepository
     }
     
     /**
-     * Find all changes for transmitted tracked entity
-     *
-     * @param SupportsChangeTrackingInterface $entity
-     * @return array|EntityChange[]
-     */
-    public function findAllByEntity(SupportsChangeTrackingInterface $entity): array
-    {
-        return $this->findAllByClassAndId(get_class($entity), $entity->getId());
-    }
-    
-    /**
      * Find all changes by related class name and related entityid
      *
      * @param string $relatedClassName Class name
@@ -56,17 +48,81 @@ class EntityChangeRepository extends EntityRepository
      */
     public function findAllByClassAndId(string $relatedClassName, int $relatedEntityId): array
     {
-        $qb = $this->createQueryBuilder('c');
-        $qb->select(['c', 'u'])
-           ->leftJoin('c.responsibleUser', 'u')
-           ->andWhere('c.relatedId = :relatedId')
-           ->andWhere('c.relatedClass = :relatedClass')
-           ->orderBy('c.occurrenceDate', 'DESC');
+        $qb = $this->createdDefaultQueryBuilder();
+        $qb->andWhere('c.relatedId = :relatedId')
+           ->andWhere('c.relatedClass = :relatedClass');
         
         $qb->setParameter('relatedId', $relatedEntityId)
            ->setParameter('relatedClass', $relatedClassName);
         
         return $qb->getQuery()->execute();
+    }
+    
+    /**
+     * Find all for specified entity and include related fetches as specified
+     *
+     * @param SupportsChangeTrackingInterface $entity Entity to fetch
+     * @return array|EntityChange[]
+     */
+    public function findAllByEntity(SupportsChangeTrackingInterface $entity): array
+    {
+        $qb        = $this->createdDefaultQueryBuilder();
+        $parameter = 0;
+        if ($entity instanceof EntityHavingFilloutsInterface) {
+            /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
+            foreach ($entity->getAcquisitionAttributeFillouts() as $fillout) {
+                $this->addRelatedFetchToQueryBuilder($qb, $fillout, $parameter);
+                $qb->orWhere('c.relatedId = :relatedId AND c.relatedClass = :relatedClass');
+            }
+        }
+        if ($entity instanceof EntityHavingPhoneNumbersInterface) {
+            /** @var \AppBundle\Entity\PhoneNumber $number */
+            foreach ($entity->getPhoneNumbers() as $number) {
+                $this->addRelatedFetchToQueryBuilder($qb, $number, $parameter);
+                $qb->orWhere('c.relatedId = :relatedId AND c.relatedClass = :relatedClass');
+            }
+        }
+        
+        $qb->orWhere('c.relatedId = :relatedId AND c.relatedClass = :relatedClass');
+        $qb->setParameter('relatedId', $entity->getId())
+           ->setParameter('relatedClass', get_class($entity));
+        
+        return $qb->getQuery()->execute();
+    }
+    
+    /**
+     * Add related fetch to query builder
+     *
+     * @param QueryBuilder $qb                        Query builder
+     * @param SupportsChangeTrackingInterface $entity Entity to add to fetch
+     * @param int $parameterNumber                    Parameter number as reference, will be incremented after adding the parameter
+     */
+    private function addRelatedFetchToQueryBuilder(
+        QueryBuilder $qb, SupportsChangeTrackingInterface $entity, int &$parameterNumber
+    ): void
+    {
+        $parameterId    = 'id_' . $parameterNumber;
+        $parameterClass = 'class_' . $parameterNumber;
+        
+        $qb->setParameter($parameterId, $entity->getId());
+        $qb->setParameter($parameterClass, get_class($entity));
+        $qb->orWhere('c.relatedId = :' . $parameterId . ' AND c.relatedClass = :' . $parameterClass);
+        $parameterNumber++;
+    }
+    
+    /**
+     * Provide default query builder
+     *
+     * @return QueryBuilder
+     */
+    private function createdDefaultQueryBuilder(): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select(['c', 'u'])
+           ->leftJoin('c.responsibleUser', 'u')
+           ->addOrderBy('c.occurrenceDate', 'DESC')
+           ->addOrderBy('c.relatedClass', 'ASC');
+        return $qb;
     }
     
     /**

@@ -13,6 +13,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Security\EventVoter;
@@ -50,9 +51,13 @@ class EntityChangeTrackingController extends Controller
         
         $securityChecker   = $this->get('security.authorization_checker');
         $securityAttribute = 'read';
-        
+    
         if ($relatedEntity instanceof Participation || $relatedEntity instanceof Participant) {
             if (!$securityChecker->isGranted(EventVoter::PARTICIPANTS_READ, $relatedEntity->getEvent())) {
+                throw new AccessDeniedHttpException('Requested change list for participant/participation');
+            }
+        } elseif ($relatedEntity instanceof Employee) {
+            if (!$securityChecker->isGranted(EventVoter::EMPLOYEES_READ, $relatedEntity->getEvent())) {
                 throw new AccessDeniedHttpException('Requested change list for participant/participation');
             }
         } else {
@@ -61,7 +66,7 @@ class EntityChangeTrackingController extends Controller
             }
         }
         
-        $changes = $repository->findAllByClassAndId($className, $entityId);
+        $changes = $repository->findAllByEntity($relatedEntity);
         
         $result = ['changes' => $changes];
         

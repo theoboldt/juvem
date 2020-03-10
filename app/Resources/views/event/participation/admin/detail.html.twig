@@ -3,6 +3,7 @@
 {% block title %}Anmeldung ({{ event.title }}){% endblock %}
 
 {% block body %}
+    {{ ''|insertTrackingModal }}
     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
     <div class="modal fade" id="dialogModalComment" tabindex="-1" role="dialog" aria-labelledby="dialogModalCommentLabel">
         <div class="modal-dialog" role="document">
@@ -505,6 +506,7 @@
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
                             {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung</span>
                         </button>
+                        {{ participation|changeTrackingButton(false) }}
                     </div>
                     <div class="btn-group" role="group">
                         {% if participation.isDeleted %}
@@ -691,6 +693,7 @@
                                           data-comment-class="AppBundle\Entity\ParticipantComment"
                                           data-related-id="{{ participant.aid }}">{{ commentManager.countForParticipant(participant) }}
                                     </span> {{ 'comment'|glyph }}</button>
+                                    {{ participant|smallChangeTrackingButton(false) }}
                                     {% endif -%}
                                 </div>
                             </div>

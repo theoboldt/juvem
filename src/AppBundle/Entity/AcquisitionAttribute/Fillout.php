@@ -10,6 +10,10 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -27,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\Table(name="acquisition_attribute_fillout")
  */
-class Fillout
+class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
 {
     /**
      * @ORM\Column(type="integer", name="oid")
@@ -344,5 +348,65 @@ class Fillout
             default:
                 return new FilloutValue($attribute, $rawValue);
         }
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getComparableRepresentation()
+    {
+        return $this->getOid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingStorableRepresentation()
+    {
+        if ($this->participation) {
+            $related = 'P' . $this->participation->getPid();
+        } elseif ($this->participant) {
+            $related = 'A' . $this->participant->getAid();
+        } elseif ($this->employee) {
+            $related = 'G' . $this->employee->getGid();
+        } else {
+            $related = '?';
+        }
+        return sprintf(
+            'Fillout for %s @ %s [%d]', $this->getAttribute()->getManagementTitle(), $related, $this->getOid()
+        );
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getId(): ?int
+    {
+        return $this->getOid();
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public static function getExcludedAttributes(): array
+    {
+        return [];
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getChangeTrackingAttributeConverters(): array
+    {
+        return [
+            'value' => function ($value) {
+                $formatted = self::convertRawValueForField($this->attribute, $value);
+                if ($value) {
+                    return $formatted->getTextualValue();
+                } else {
+                    return $value;
+                }
+            }
+        ];
     }
 }

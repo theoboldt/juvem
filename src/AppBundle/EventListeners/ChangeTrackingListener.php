@@ -14,6 +14,7 @@ namespace AppBundle\EventListeners;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 use AppBundle\Entity\ChangeTracking\ScheduledEntityChange;
+use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
@@ -74,7 +75,10 @@ class ChangeTrackingListener
         $changes = $args->getEntityChangeSet();
         
         $change = $this->getScheduledChangeForEntity($entity);
-        if (!$change) {
+        if ($change) {
+            $isScheduled = true;
+        } else {
+            $isScheduled = false;
             $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
         }
         if (array_key_exists('deletedAt', $changes)) {
@@ -100,8 +104,21 @@ class ChangeTrackingListener
                 $comparableBefore = ($comparableBefore === null) ?: round($comparableBefore, 10);
                 $comparableAfter  = ($comparableAfter === null) ?: round($comparableAfter, 10);
             }
+            if (is_string($comparableAfter) && is_int($comparableBefore)
+                || is_int($comparableAfter) && is_string($comparableBefore)) {
+                $comparableBefore = (string)$comparableBefore;
+                $comparableAfter  = (string)$comparableBefore;
+            }
             
             if ($comparableBefore !== $comparableAfter) {
+                foreach ($values as $key => $value) {
+                    if ($entity instanceof SpecifiesChangeTrackingAttributeConvertersInterface) {
+                        $converters = $entity->getChangeTrackingAttributeConverters();
+                        if (isset($converters[$attribute])) {
+                            $values[$key] = $result = call_user_func($converters[$attribute], $values[$key]);
+                        }
+                    }
+                }
                 $change->addAttributeChange(
                     $attribute,
                     $this->getStorableRepresentation($attribute, $entity, $values[0]),
@@ -109,7 +126,7 @@ class ChangeTrackingListener
                 );
             }
         }
-        if (count($change) || $change->getOperation() !== EntityChange::OPERATION_UPDATE) {
+        if (!$isScheduled && (count($change) || $change->getOperation() !== EntityChange::OPERATION_UPDATE)) {
             $this->changes->enqueue($change);
         }
     }
@@ -166,8 +183,11 @@ class ChangeTrackingListener
             }
             $change   = $this->getScheduledChangeForEntity($entity);
             $schedule = false;
-            if (!$change) {
-                $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
+            if ($change) {
+                $isAlreadyScheduled = true;
+            } else {
+                $isAlreadyScheduled = false;
+                $change             = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
             }
             
             $mapping = $collection->getMapping();
@@ -197,7 +217,7 @@ class ChangeTrackingListener
                     $change, $property, EntityCollectionChange::OPERATION_INSERT, $related
                 );
             }
-            if ($schedule) {
+            if (!$isAlreadyScheduled && $schedule) {
                 $this->changes->enqueue($change);
             }
         }
