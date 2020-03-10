@@ -106,7 +106,7 @@ input.input-formula, textarea.input-formula {
 
 #modalHistory {
   table.loading {
-    height: 0px;
+    height: 0;
   }
 
   table {
@@ -645,6 +645,9 @@ abbr.unit {
     color: #444;
   }
 
+  table.single-class .col-class {
+    display: none;
+  }
 }
 
 #prefillFindParticipant {

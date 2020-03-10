@@ -75,7 +75,10 @@ class ChangeTrackingListener
         $changes = $args->getEntityChangeSet();
         
         $change = $this->getScheduledChangeForEntity($entity);
-        if (!$change) {
+        if ($change) {
+            $isScheduled = true;
+        } else {
+            $isScheduled = false;
             $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
         }
         if (array_key_exists('deletedAt', $changes)) {
@@ -123,7 +126,7 @@ class ChangeTrackingListener
                 );
             }
         }
-        if (count($change) || $change->getOperation() !== EntityChange::OPERATION_UPDATE) {
+        if (!$isScheduled && (count($change) || $change->getOperation() !== EntityChange::OPERATION_UPDATE)) {
             $this->changes->enqueue($change);
         }
     }
@@ -180,8 +183,11 @@ class ChangeTrackingListener
             }
             $change   = $this->getScheduledChangeForEntity($entity);
             $schedule = false;
-            if (!$change) {
-                $change = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
+            if ($change) {
+                $isAlreadyScheduled = true;
+            } else {
+                $isAlreadyScheduled = false;
+                $change             = $this->createChangeTrackingEntity($entity, EntityChange::OPERATION_UPDATE);
             }
             
             $mapping = $collection->getMapping();
@@ -211,7 +217,7 @@ class ChangeTrackingListener
                     $change, $property, EntityCollectionChange::OPERATION_INSERT, $related
                 );
             }
-            if ($schedule) {
+            if (!$isAlreadyScheduled && $schedule) {
                 $this->changes->enqueue($change);
             }
         }

@@ -777,7 +777,7 @@ $(function () {
         var buttonEl = $(event.relatedTarget),
             modalEl = $(this);
             modalEl.find('h4 small').html('');
-            modalEl.find('table tbody').html('<tr><td colspan="4" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
+            modalEl.find('table tbody').html('<tr><td colspan="5" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
 
         $.ajax({
             url: buttonEl.data('list-url'),
@@ -786,13 +786,39 @@ $(function () {
                     var html = '',
                         htmlRow,
                         operation,
-                        glyph;
+                        glyph,
+                        singleRelatedClass = true,
+                        previousRelatedClass = '';
+
+                    const classNameLabel = function (className) {
+                        switch (className) {
+                            case 'AppBundle\\Entity\\Participation':
+                                return 'Anmeldung';
+                            case 'AppBundle\\Entity\\Participant':
+                                return 'Teilnehmer/In';
+                            case 'AppBundle\\Entity\\PhoneNumber':
+                                return 'Telefonnummer';
+                            case 'AppBundle\\Entity\\AcquisitionAttribute\\Fillout':
+                                return 'Feldantwort';
+                            case 'AppBundle\\Entity\\Employee':
+                                return 'Mitarbeiter/In';
+                            default:
+                                return '<i>' + className + '</i>';
+                        }
+                    };
 
                     if (response.title) {
                         modalEl.find('h4 small').html(eHtml(response.title));
                     }
                     $.each(response.changes, function (index, change) {
                         htmlRow = '<tr>';
+
+                        if (previousRelatedClass !== '' && previousRelatedClass !== change.related_class) {
+                            singleRelatedClass = false;
+                        }
+                        console.log(previousRelatedClass);
+                        console.log(change.related_class);
+                        previousRelatedClass = change.related_class;
 
                         switch (change.operation) {
                             case 'create':
@@ -820,12 +846,14 @@ $(function () {
                                 glyph = 'question-sign';
                                 break;
                         }
-                        htmlRow += '<td>' + change.occurrence_date + '</td>';
+
+                        htmlRow += '<td class="small">' + change.occurrence_date + '</td>';
+                        htmlRow += '<td class="small col-class">' + classNameLabel(change.related_class) + '</td>';
                         htmlRow += '<td>' +
                             '<span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true" title="' + operation + '"></span>' +
                             '</td>';
 
-                        htmlRow += '<td>';
+                        htmlRow += '<td class="small">';
                         if (change.responsible_user) {
                             if (change.responsible_user && change.responsible_user.id) {
                                 htmlRow += '<a href="/admin/user/' + change.responsible_user.id + '">' + change.responsible_user.fullname + '</a>';
@@ -911,6 +939,7 @@ $(function () {
                     });
 
                     modalEl.find('table tbody').html(html);
+                    modalEl.find('table').toggleClass('single-class', singleRelatedClass);
                 }
             }
         });

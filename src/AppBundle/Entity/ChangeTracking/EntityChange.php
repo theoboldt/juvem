@@ -35,7 +35,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
-     * @Serialize\Type("string")
+     * @Serialize\Type("int")
      * @ORM\Column(type="integer", name="cid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -44,12 +44,16 @@ class EntityChange implements \Countable
     private $id;
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("int")
      * @ORM\Column(type="integer", name="related_id")
      * @var int
      */
     private $relatedId;
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="string", name="related_class", length=255)
      * @var string
      */
@@ -95,7 +99,7 @@ class EntityChange implements \Countable
      * Timestamp when change happened
      *
      * @Serialize\Expose
-     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
+     * @Serialize\Type("DateTime<'d.m.Y H:i:s'>")
      * @ORM\Column(type="datetime", name="occurrence_date")
      * @var \DateTime
      */
@@ -200,6 +204,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
+     * @Serialize\Type("array")
      * @Serialize\VirtualProperty()
      * @Serialize\SerializedName("attribute_changes")
      * @return array
@@ -223,6 +228,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
+     * @Serialize\Type("array")
      * @Serialize\VirtualProperty()
      * @Serialize\SerializedName("collection_changes")
      * @return array

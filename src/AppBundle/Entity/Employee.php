@@ -42,7 +42,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EmployeeRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
+class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, EntityHavingPhoneNumbersInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     
@@ -185,7 +185,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Sum
      *
      * @return array
      */
-    public function getPhoneNumbers(): array
+    public function getPhoneNumbers()
     {
         return $this->phoneNumbers->toArray();
     }

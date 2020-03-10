@@ -66,7 +66,7 @@ class EntityChangeTrackingController extends Controller
             }
         }
         
-        $changes = $repository->findAllByClassAndId($className, $entityId);
+        $changes = $repository->findAllByEntity($relatedEntity);
         
         $result = ['changes' => $changes];
         
