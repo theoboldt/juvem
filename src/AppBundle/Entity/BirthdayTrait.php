@@ -29,8 +29,10 @@ trait BirthdayTrait
      */
     public function setBirthday($birthday)
     {
-        $birthday = clone $birthday;
-        $birthday->setTime(10, 00);
+        if ($birthday) {
+            $birthday = clone $birthday;
+            $birthday->setTime(10, 00);
+        }
         $this->birthday = $birthday;
 
         return $this;
@@ -43,7 +45,9 @@ trait BirthdayTrait
      */
     public function getBirthday()
     {
-        $this->birthday->setTime(10, 00);
+        if ($this->birthday) {
+            $this->birthday->setTime(10, 00);
+        }
         return $this->birthday;
     }
 
