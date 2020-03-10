@@ -52,6 +52,8 @@ class EntityChange implements \Countable
     private $relatedId;
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
      * @ORM\Column(type="string", name="related_class", length=255)
      * @var string
      */
@@ -97,7 +99,7 @@ class EntityChange implements \Countable
      * Timestamp when change happened
      *
      * @Serialize\Expose
-     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
+     * @Serialize\Type("DateTime<'d.m.Y H:i:s'>")
      * @ORM\Column(type="datetime", name="occurrence_date")
      * @var \DateTime
      */
@@ -174,18 +176,6 @@ class EntityChange implements \Countable
     public function getRelatedClass(): string
     {
         return $this->relatedClass;
-    }
-    
-    /**
-     * @Serialize\Expose
-     * @Serialize\Type("string")
-     * @Serialize\VirtualProperty()
-     * @Serialize\SerializedName("related_class")
-     * @return string
-     */
-    public function getRelatedClassForRoute(): string
-    {
-        return EntityChangeRepository::convertClassNameForRoute($this->relatedClass);
     }
     
     /**
