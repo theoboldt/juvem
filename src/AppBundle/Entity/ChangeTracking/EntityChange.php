@@ -35,7 +35,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
-     * @Serialize\Type("string")
+     * @Serialize\Type("int")
      * @ORM\Column(type="integer", name="cid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -44,6 +44,8 @@ class EntityChange implements \Countable
     private $id;
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("int")
      * @ORM\Column(type="integer", name="related_id")
      * @var int
      */
@@ -175,6 +177,18 @@ class EntityChange implements \Countable
     }
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("string")
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("related_class")
+     * @return string
+     */
+    public function getRelatedClassForRoute(): string
+    {
+        return EntityChangeRepository::convertClassNameForRoute($this->relatedClass);
+    }
+    
+    /**
      * @return string
      */
     public function getOperation(): string
@@ -200,6 +214,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
+     * @Serialize\Type("array")
      * @Serialize\VirtualProperty()
      * @Serialize\SerializedName("attribute_changes")
      * @return array
@@ -223,6 +238,7 @@ class EntityChange implements \Countable
     
     /**
      * @Serialize\Expose
+     * @Serialize\Type("array")
      * @Serialize\VirtualProperty()
      * @Serialize\SerializedName("collection_changes")
      * @return array

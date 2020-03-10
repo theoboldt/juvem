@@ -116,13 +116,14 @@ class ChangeTrackingButton extends AbstractExtension
           <thead>
             <tr>
               <th>Zeitpunkt</th>
+              <th class="col-class">Typ</th>
               <th><abrr title="Operation">O</abrr></th>
               <th>Benutzer</th>
               <th>Details</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td colspan="4" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>
+            <tr><td colspan="5" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>
           </tbody>
         </table>
       </div>

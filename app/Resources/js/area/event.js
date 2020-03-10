@@ -777,7 +777,7 @@ $(function () {
         var buttonEl = $(event.relatedTarget),
             modalEl = $(this);
             modalEl.find('h4 small').html('');
-            modalEl.find('table tbody').html('<tr><td colspan="4" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
+            modalEl.find('table tbody').html('<tr><td colspan="5" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
 
         $.ajax({
             url: buttonEl.data('list-url'),
@@ -786,13 +786,22 @@ $(function () {
                     var html = '',
                         htmlRow,
                         operation,
-                        glyph;
+                        glyph,
+                        singleRelatedClass = true,
+                        previousRelatedClass = '',
+                        relatedClassName;
 
                     if (response.title) {
                         modalEl.find('h4 small').html(eHtml(response.title));
                     }
                     $.each(response.changes, function (index, change) {
                         htmlRow = '<tr>';
+
+                        if (previousRelatedClass !== '' && previousRelatedClass !== change.related_class) {
+                            singleRelatedClass = false;
+                            debugger
+                        }
+                        previousRelatedClass = change.related_class;
 
                         switch (change.operation) {
                             case 'create':
@@ -820,7 +829,19 @@ $(function () {
                                 glyph = 'question-sign';
                                 break;
                         }
-                        htmlRow += '<td>' + change.occurrence_date + '</td>';
+                        switch (change.related_class) {
+                            case 'AppBundle.Entity.Participation':
+                                relatedClassName = 'Anmeldung';
+                                break;
+                            case 'AppBundle.Entity.Participant':
+                                relatedClassName = 'Teilnehmer/In';
+                                break;
+                            default:
+                                relatedClassName = 'change.occurrence_date';
+                                break;
+                        }
+                        htmlRow += '<td>' + relatedClassName + '</td>';
+                        htmlRow += '<td class="col-class">' + change.related_class + '</td>';
                         htmlRow += '<td>' +
                             '<span class="glyphicon glyphicon-' + glyph + '" aria-hidden="true" title="' + operation + '"></span>' +
                             '</td>';
@@ -911,6 +932,7 @@ $(function () {
                     });
 
                     modalEl.find('table tbody').html(html);
+                    modalEl.find('table').toggleClass('single-class', singleRelatedClass);
                 }
             }
         });
