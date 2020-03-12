@@ -209,6 +209,8 @@ class EventType extends AbstractType
                     'label'         => 'Bei Anmeldungen zu erfassende Felder',
                 ]
             )
+            ->add('linkTitle', TextType::class, array('label' => 'Link-Titel (Spezial-Link)'))
+            ->add('linkUrl', TextType::class, array('label' => 'Link-URL (Spezial-Link)'))
             ->add('save', SubmitType::class);
 
         $builder->addEventListener(

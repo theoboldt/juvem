@@ -90,8 +90,6 @@
                 </div>
             </div>
         </div>
-
-
         <div class="row">
             <div class="col-xs-12">
                 <div class="form-group">
@@ -104,7 +102,25 @@
                 </div>
             </div>
         </div>
-
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                    {{ form_label(form.linkTitle) }}
+                    {{ form_widget(form.linkTitle) }}
+                    {{ form_errors(form.linkTitle) }}
+                    {{ form_widget(form.linkTitle) }}
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                    {{ form_label(form.linkUrl) }}
+                    {{ form_widget(form.linkUrl) }}
+                    {{ form_errors(form.linkUrl) }}
+                    {{ form_widget(form.linkUrl) }}
+            </div>
+            <div class="col-xs-12">
+                <p class="help-block" id="help-special-link">Vor allem wenn die Anmeldung auf einem externen Portal und nicht in dieser Juvem-Installation durchgeführt wird, kann hier ein spezieller Link zu einer Fremden Website konfigurtiert werden.
+                Nur wenn ein (kurzer) Titel für den Link und die URL (mit Protokoll) konfiguriert ist, wird ein entsprechender Knopf angezeigt.
+                </p>
+            </div>
+        </div>
     </div>
     <div class="col-xs-12 col-sm-4">
         <div class="row">
@@ -365,4 +381,5 @@
             </div>
         </div>
     </div>
+    {#<div class="col-xs-12">{{ form_rest(form) }}</div>#}
 </div>

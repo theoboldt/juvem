@@ -178,6 +178,14 @@
                     {% endif %}
                 </p>
                 {{ event.getDescription|markdown_shifted }}
+                <hr />
+                <p>
+                    {% if event.hasLink() %}
+                        Link: <a href="{{ event.linkUrl }}" target="_blank" rel="noopener">{{ event.linkTitle }}</a>
+                    {% else %}
+                        <i>(Kein Link)</i>
+                    {% endif %}
+                </p>
             </div>
             <div class="col-xs-12 col-sm-4">
                 <div class="row">

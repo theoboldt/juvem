@@ -320,6 +320,20 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     protected $isShowWeather = false;
     
     /**
+     * Specifies title for a customer defined link url for an additional button for an event
+     *
+     * @ORM\Column(type="string", length=32, name="link_title", nullable=true)
+     */
+    protected $linkTitle = null;
+    
+    /**
+     * Specifies a customer defined link url for an additional button for an event
+     *
+     * @ORM\Column(type="string", length=255, name="link_url", nullable=true)
+     */
+    protected $linkUrl = null;
+    
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -1374,6 +1388,48 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsShowWeather(bool $isShowWeather): void
     {
         $this->isShowWeather = $isShowWeather;
+    }
+    
+    /**
+     * @return null
+     */
+    public function getLinkTitle()
+    {
+        return $this->linkTitle;
+    }
+    
+    /**
+     * @param null $linkTitle
+     */
+    public function setLinkTitle($linkTitle): void
+    {
+        $this->linkTitle = $linkTitle;
+    }
+    
+    /**
+     * @return null
+     */
+    public function getLinkUrl()
+    {
+        return $this->linkUrl;
+    }
+    
+    /**
+     * @param null $linkUrl
+     */
+    public function setLinkUrl($linkUrl): void
+    {
+        $this->linkUrl = $linkUrl;
+    }
+    
+    /**
+     * If a link title and link url is specified, only then link is actually expected
+     *
+     * @return bool
+     */
+    public function hasLink(): bool
+    {
+        return !empty($this->linkTitle) && !empty($this->linkUrl);
     }
     
     /**

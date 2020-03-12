@@ -115,6 +115,11 @@
                                             <a role="button"
                                                href="{{ path('event_public_detail', {'eid': event.eid }) }}"
                                                class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
+                                            {% if event.hasLink() %}
+                                                <a role="button" href="{{ event.linkUrl }}" rel="noopener"
+                                                   target="_blank"
+                                                   class="btn btn-default glyphicon-size-75">{{ event.linkTitle }} {{ 'new-window'|glyph }}</a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
