@@ -872,6 +872,8 @@ $(function () {
                                 return 'ja';
                             } else if (value === false) {
                                 return 'nein';
+                            } else if (value === '') {
+                                return '<i class="empty empty-empty"></i>';
                             } else if (value === null || value === undefined) {
                                 return '<i class="empty empty-none"></i>';
                             } else {

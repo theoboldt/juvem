@@ -1,4 +1,5 @@
 i.empty.no-one,
+i.empty.empty-empty,
 i.empty.empty-none,
 i.empty.no-special,
 i.empty.value-null,
@@ -23,4 +24,7 @@ i.empty.no-one:after {
 }
 i.empty.empty-none:after {
   content: '(nichts)';
+}
+i.empty.empty-empty:after {
+  content: '(leer)';
 }
