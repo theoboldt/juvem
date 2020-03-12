@@ -107,7 +107,7 @@ class ChangeTrackingListener
             if (is_string($comparableAfter) && is_int($comparableBefore)
                 || is_int($comparableAfter) && is_string($comparableBefore)) {
                 $comparableBefore = (string)$comparableBefore;
-                $comparableAfter  = (string)$comparableBefore;
+                $comparableAfter  = (string)$comparableAfter;
             }
             
             if ($comparableBefore !== $comparableAfter) {
