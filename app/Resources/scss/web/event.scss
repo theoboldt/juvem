@@ -265,7 +265,16 @@ input.input-formula, textarea.input-formula {
     margin: 0;
   }
 
-  .row .col-xs-12 {
+  .btn-toolbar .btn-group, .btn-toolbar .btn-group-vertical, .btn-toolbar > .btn {
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
+  .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .btn-group-vertical, .btn-toolbar > .input-group {
+    margin-left: 3px;
+  }
+
+  & > .row > .col-xs-12 > .col-xs-12,
+  & > .row > .col-xs-12 {
     padding: 0;
   }
 
