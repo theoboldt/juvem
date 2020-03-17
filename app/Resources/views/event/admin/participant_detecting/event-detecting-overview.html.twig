@@ -9,7 +9,7 @@
 {% block page %}
   <div class="container-fluid" id="network-container">
     <div class="row">
-      <div class="col-xs-12">
+      <div class="col-xs-12" style="padding: 0;">
 
         {% for participant in participants %}
           <div class="modal fade" id="modalParticipant{{ participant.aid }}" tabindex="-1">
@@ -21,11 +21,9 @@
                   <h4 class="modal-title">{{ participant|fullname }}</h4>
                 </div>
                 <div class="modal-body">
-                  <div class="container">
                   <div class="row">
                     {% include 'event/participation/admin/embed-detail-participant.html.twig' with {'participant': participant, 'event': event, 'paymentManager': null, 'similarParticipants': null} %}
                   </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                   <a class="btn btn-default" target="_blank"
