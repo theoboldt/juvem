@@ -17,13 +17,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -210,7 +210,7 @@ class EventType extends AbstractType
                 ]
             )
             ->add('linkTitle', TextType::class, array('label' => 'Link-Titel (Spezial-Link)'))
-            ->add('linkUrl', TextType::class, array('label' => 'Link-URL (Spezial-Link)'))
+            ->add('linkUrl', UrlType::class, array('label' => 'Link-URL (Spezial-Link)'))
             ->add('save', SubmitType::class);
 
         $builder->addEventListener(
