@@ -84,7 +84,19 @@ class ParticipationManager extends AbstractMailerAwareManager
      */
     public function mailParticipationConfirmed(ParticipationEntity $participation, Event $event)
     {
+        $now = new \DateTime('now');
         $this->mailEventParticipation('participation-confirm', $participation, $event);
+        $this->em->transactional(
+            function (EntityManager $em) use ($participation, $now) {
+                /** @var Participant $participant */
+                foreach ($participation->getParticipants() as $participant) {
+                    $participant->setConfirmationSentAt($now);
+                }
+                
+                $em->persist($participation);
+                $em->flush();
+            }
+        );
     }
 
     /**

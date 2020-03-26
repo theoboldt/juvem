@@ -460,6 +460,26 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         }
         return true;
     }
+    
+    /**
+     * Get all different confirmation sent dates for all participants if applicable
+     *
+     * @return array|\DateTime[]
+     */
+    public function getAllDifferentConfirmationSentAt(): array
+    {
+        $dates = [];
+        /** @var Participant $participant */
+        foreach ($this->participants as $participant) {
+            $sent = $participant->getConfirmationSentAt();
+            if ($sent) {
+                $dates[$sent->format('U')] = clone $sent;
+            }
+        }
+        
+        return array_values($dates);
+    }
+
 
     /**
      * Set conformation value for all related participants

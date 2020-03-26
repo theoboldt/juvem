@@ -140,6 +140,16 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     protected $paymentEvents;
 
     /**
+     * Stores the date information about when the confirmation notification was sent the last time
+     *
+     * @var \DateTime|null
+     * @ORM\Column(type="datetime", name="confirmation_sent_at", nullable=true)
+     * @Serialize\Expose
+     * @Serialize\Type("DateTime<'d.m.Y H:i'>")
+     */
+    protected $confirmationSentAt = null;
+    
+    /**
      * Constructor
      *
      * @param Participation $participation  Related participation
@@ -605,6 +615,26 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             'nichts bekannt!',
         ];
         return empty($value) || in_array(trim(mb_strtolower($value)), $acceptedAsEmpty);
+    }
+    
+    /**
+     * Get date information about when the confirmation notification was sent the last time
+     *
+     * @return \DateTime|null
+     */
+    public function getConfirmationSentAt(): ?\DateTime
+    {
+        return $this->confirmationSentAt;
+    }
+    
+    /**
+     * Set date information about when the confirmation notification was sent the last time
+     *
+     * @param \DateTime|null $confirmationSentAt
+     */
+    public function setConfirmationSentAt(?\DateTime $confirmationSentAt): void
+    {
+        $this->confirmationSentAt = $confirmationSentAt;
     }
     
     /**
