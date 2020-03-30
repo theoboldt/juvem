@@ -610,24 +610,9 @@
                                 </dt>
                                 <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
                             {% endfor %}
-                            <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
+                            <dt title=
+                                "Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
                             <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
-                            <dt title="Datum des Versands der Benachrichtigung über Bestätigung" data-toggle="tooltip" data-placement="right">Bestätigungsnachricht</dt>
-                            <dd>
-                                {% set participationNotificationDates = participation.allDifferentConfirmationSentAt %}
-                                {% if participationNotificationDates|length  %}
-                                    {% for notificationDate in participationNotificationDates %}
-                                        {% if notificationDate|date("U") == "946717200" %}
-                                            <span title="Die Bestätigung wurde versand, als das Datum der Benachrichtigung noch nicht gespeichert wurde" data-toggle="tooltip" data-placement="top">unbekannt</span>
-                                        {% else %}
-                                            {{ notificationDate|date("d.m.Y H:i") }}
-                                        {% endif %}
-                                        {%- if not loop.last %}, {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <i>(nie)</i>
-                                {% endif %}
-                            </dd>
                             <dt title="Ist die Anmeldung mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
                                 data-toggle="tooltip" data-placement="right">
                                 Benutzerkonto
