@@ -496,7 +496,7 @@
                                         <i class="hidden-xs">{{ confirmedParticipants|humansgrouped() }}</i> zurücknehmen</a></li>
                                 {#<li role="separator" class="divider"></li>#}
                                 {% endif %}
-                                {#<li><a href="#">Selektiv bestätigen…</a></li>#}
+                                {#<li><a href="#">Selektiv bestätigen <span class="caret-right"></span></a></li>#}
                             </ul>
                         </div>
                         {% if participation.rejected %}
@@ -522,7 +522,7 @@
                             </button>
                         {% endif %}
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
-                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung</span>
+                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung <span class="caret-right"></span></span>
                         </button>
                         {{ participation|changeTrackingButton(false) }}
                     </div>
@@ -539,7 +539,7 @@
                             </button>
                         {% endif %}
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalMoveParticipation">
-                            {{ 'arrow-right'|glyph }} Anmeldung verschieben…
+                            {{ 'arrow-right'|glyph }} <span class="hidden-xs">Anmeldung</span> verschieben <span class="caret-right"></span>
                         </button>
                     </div>
                 </div>

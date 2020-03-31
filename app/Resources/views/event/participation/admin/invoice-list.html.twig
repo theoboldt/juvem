@@ -111,10 +111,10 @@
         <div id="bootstrap-table-toolbar" class="form-inline">
           <div class="form-group">
             <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate"
-                    title="Rechnungen erstellen...">{{ 'credit-card'|glyph }} Erstellen…
+                    title="Rechnungen erstellen...">{{ 'credit-card'|glyph }} Erstellen… <span class="caret-right"></span>
             </button>
             <button class="btn btn-default" data-toggle="modal" data-target="#dialogModalInvoiceSend"
-                    title="Rechnungen verschicken">{{ 'envelope'|glyph }} Verschicken…
+                    title="Rechnungen verschicken">{{ 'envelope'|glyph }} Verschicken… <span class="caret-right"></span>
             </button>
             <div class="btn-group" role="group">
               <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}"
