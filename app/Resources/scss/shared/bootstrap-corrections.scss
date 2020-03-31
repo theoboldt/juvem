@@ -50,6 +50,7 @@
     .btn {
       @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
     }
+
     .btn.btn-xs {
       @include button-size($padding-xs-vertical, $padding-xs-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
     }
@@ -64,4 +65,9 @@
 
 .glyphicon-size-75 span.glyphicon {
   font-size: 75%;
+}
+
+.btn-toolbar > .btn-group > .btn-group {
+  margin-top: 0;
+  margin-bottom: 0;
 }
