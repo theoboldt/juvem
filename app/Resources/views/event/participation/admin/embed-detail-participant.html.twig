@@ -77,9 +77,7 @@
                 <a class="{% if relatedParticipant.isDeleted %} participantdeleted{% endif %}{% if relatedParticipant.withdrawnOrRejected %} widthdrawnrejected{% endif %}{% if relatedParticipant.eventDeleted %} eventdeleted{% endif %}{% if relatedParticipant.confirmed %} confirmed{% endif %}"
                    data-toggle="tooltip"
                    title="Veranstaltung: {{ relatedParticipant.getEventDateFormatted() }}{% if relatedParticipant.eventDeleted %} (gelöscht){% endif %}, Angemeldet: {{ relatedParticipant.getCreatedDateFormatted() }}
-{% if relatedParticipant.isDeleted %} (gelöscht){% endif %}{% if relatedParticipant.withdrawnOrRejected %} (zurückgezogen/abgelehnt){% endif %}{% if relatedParticipant.confirmed %}(bestätigt){% endif %}
-
-"
+{% if relatedParticipant.isDeleted %} (gelöscht){% endif %}{% if relatedParticipant.withdrawnOrRejected %} (zurückgezogen/abgelehnt){% endif %}{% if relatedParticipant.confirmed %}(bestätigt){% endif %}"
                    href="{{ path('event_participation_detail', {eid: relatedParticipant.eid, pid: relatedParticipant.pid}) }}">{{ relatedParticipant.getTitle() }}</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
             {% endfor %}
         </dd>
