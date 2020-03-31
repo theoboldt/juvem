@@ -183,11 +183,18 @@ class AdminSingleController extends Controller
             $phoneNumberList[] = $phoneNumber;
         }
         $commentManager = $this->container->get('app.comment_manager');
-
-        $similarParticipants = [];
+    
+        $similarParticipants     = [];
+        $unconfirmedParticipants = [];
+        $confirmedParticipants   = [];
         /** @var Participant $participant */
         foreach ($participation->getParticipants() as $participant) {
             $similarParticipants[$participant->getAid()] = $participationRepository->relatedParticipants($participant);
+            if ($participant->isConfirmed()) {
+                $confirmedParticipants[] = $participant;
+            } else {
+                $unconfirmedParticipants[] = $participant;
+            }
         }
 
         /** @var PaymentManager $paymentManager */
@@ -200,62 +207,100 @@ class AdminSingleController extends Controller
         $paymentSuggestions          = $paymentSuggestionsManager->paymentSuggestionsForParticipation(
             $participant->getParticipation()
         );
-
+    
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
-                'commentManager'      => $commentManager,
-                'paymentManager'      => $paymentManager,
-                'priceSuggestions'    => $priceSuggestions,
-                'paymentSuggestions'  => $paymentSuggestions,
-                'event'               => $event,
-                'participation'       => $participation,
-                'similarParticipants' => $similarParticipants,
-                'foodFormatter'       => $foodFormatter,
-                'statusFormatter'     => $statusFormatter,
-                'phoneNumberList'     => $phoneNumberList,
-                'formAction'          => $formAction->createView(),
-                'formAssignUser'      => $formUser->createView(),
-                'formRelated'         => $formRelated->createView(),
-                'formMoveParticipation' => $formMoveParticipation->createView(),
+                'commentManager'          => $commentManager,
+                'paymentManager'          => $paymentManager,
+                'priceSuggestions'        => $priceSuggestions,
+                'paymentSuggestions'      => $paymentSuggestions,
+                'event'                   => $event,
+                'participation'           => $participation,
+                'similarParticipants'     => $similarParticipants,
+                'confirmedParticipants'   => $confirmedParticipants,
+                'unconfirmedParticipants' => $unconfirmedParticipants,
+                'foodFormatter'           => $foodFormatter,
+                'statusFormatter'         => $statusFormatter,
+                'phoneNumberList'         => $phoneNumberList,
+                'formAction'              => $formAction->createView(),
+                'formAssignUser'          => $formUser->createView(),
+                'formRelated'             => $formRelated->createView(),
+                'formMoveParticipation'   => $formMoveParticipation->createView(),
             ]
         );
     }
-
+    
     /**
-     * Detail page for one single event
      *
-     * @Route("/admin/event/participation/confirm", name="event_participation_confirm_mail")
+     * @Route("/admin/event/participation-confirmation/{pid}/{action}/{token}",
+     *     requirements={"pid": "\d+", "token":"[a-zA-Z0-9_-]+", "confirm": "(confirm|confirmnotify|unconfirm)"},
+     *     name="admin_participation_confirm",
+     *     methods={"GET"}
+     * )
+     * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Participation $participation
+     * @param string $action Either confirm, confirmnotify or unconfirm
+     * @param string $token
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function participationConfirmAction(Request $request)
+    public function participationConfirmationManagementAction(
+        Participation $participation, string $action, string $token
+    )
     {
-        $token = $request->get('_token');
-        $pid   = $request->get('pid');
-
+        $participation = $this->validateParticipantsAccessAndLoad($participation);
+        
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
         $csrf = $this->get('security.csrf.token_manager');
-        if ($token != $csrf->getToken($pid)) {
+        if ($token != $csrf->getToken('confirmation'.$participation->getPid())) {
             throw new InvalidTokenHttpException();
         }
+    
+        $em = $this->getDoctrine()->getManager();
+        /** @var Participant $participant */
+        foreach ($participation->getParticipants() as $participant) {
+            /** @var ParticipantStatus $status */
+            $status = $participant->getStatus(true);
+            if ($action === 'confirm' || $action === 'confirmnotify') {
+                $status->enable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
+            } elseif ($action === 'unconfirm') {
+                $status->disable(ParticipantStatus::TYPE_STATUS_CONFIRMED);
+            }
+            $participant->setStatus($status);
+            $em->persist($participant);
+        }
+        $em->flush();
+    
+        if ($action === 'confirmnotify') {
+            $participationManager = $this->get('app.participation_manager');
+            $participationManager->mailParticipationConfirmed($participation, $participation->getEvent());
+        }
 
+        return $this->redirectToRoute(
+            'event_participation_detail',
+            ['eid' => $participation->getEvent()->getEid(), 'pid' => $participation->getPid()]
+        );
+    }
+    
+    /**
+     * Check if participants edit access is granted, and fetch detailed participation entity
+     *
+     * @param Participation $participation Simple entity
+     * @return Participation               Detailed entity
+     */
+    private function validateParticipantsAccessAndLoad(Participation $participation): Participation
+    {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-
-        $participation = $participationRepository->findOneBy(array('pid' => $request->get('pid')));
+        
+        /** @var Participation $participation */
+        $participation = $participationRepository->findDetailed($participation->getPid());
         if (!$participation) {
             throw new BadRequestHttpException('Requested participation event not found');
         }
-        $event = $participation->getEvent();
-        $this->denyAccessUnlessGranted('participants_edit', $event);
-
-        $participationManager = $this->get('app.participation_manager');
-        $participationManager->mailParticipationConfirmed($participation, $event);
-
-        return new JsonResponse(
-            array(
-                'success' => true,
-            )
-        );
+        
+        $this->denyAccessUnlessGranted('participants_edit', $participation->getEvent());
+        return $participation;
     }
 
     /**
@@ -316,8 +361,8 @@ class AdminSingleController extends Controller
     }
 
     /**
-     * Create new participation form and prefill with transmitted pid 
-     * 
+     * Create new participation form and prefill with transmitted pid
+     *
      * @Route("/admin/event/{eid}/participation/create/from/{pid}", requirements={"eid": "\d+","pid": "\d+"}, name="admin_participation_create_prefill")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("source", class="AppBundle:Participation", options={"id" = "pid"})

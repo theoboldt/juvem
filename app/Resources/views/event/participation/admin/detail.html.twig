@@ -474,6 +474,31 @@
                         {% endif %}
                     </div>
                     <div class="btn-group" role="group">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">{{ 'check'|glyph }}
+                                Bestätigung… <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% if unconfirmedParticipants|length %}
+                                    <li><a href="{{ path('admin_participation_confirm', {'pid': participation.pid, 'token': csrf_token('confirmation' ~ participation.pid), 'action': 'confirmnotify'}) }}">
+                                            <i class="hidden-xs">{{ unconfirmedParticipants|humansgrouped() }}</i> bestätigen &
+                                            benachrichtigen</a></li>
+                                    <li><a href="{{ path('admin_participation_confirm', {'pid': participation.pid, 'token': csrf_token('confirmation' ~ participation.pid), 'action': 'confirm'}) }}">
+                                            <i class="hidden-xs">{{ unconfirmedParticipants|humansgrouped() }}</i>
+                                            bestätigen (nicht benachrichtigen)</a></li>
+                                <li role="separator" class="divider"></li>
+                                {% endif %}
+                                {% if confirmedParticipants|length %}
+                                <li>
+                                    <a href="{{ path('admin_participation_confirm', {'pid': participation.pid, 'token': csrf_token('confirmation' ~ participation.pid), 'action': 'unconfirm'}) }}">
+                                        Bestätigung für
+                                        <i class="hidden-xs">{{ confirmedParticipants|humansgrouped() }}</i> zurücknehmen</a></li>
+                                {#<li role="separator" class="divider"></li>#}
+                                {% endif %}
+                                {#<li><a href="#">Selektiv bestätigen…</a></li>#}
+                            </ul>
+                        </div>
                         {% if participation.rejected %}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="rereject">
@@ -496,13 +521,6 @@
                                 {{ 'share-alt'|glyph }} zurückziehen…
                             </button>
                         {% endif %}
-                        <button type="button" class="btn btn-default" data-element="activebutton"
-                                data-entity="Participation"
-                                data-property="isConfirmed" data-entity-id="{{ participation.pid }}"
-                                data-token="{{ csrf_token('Participation' ~ 'isConfirmed' ~ participation.pid ) }}"
-                                data-button-enable-label="Bestätigen & benachrichtigen" data-button-enable-glyph="ok"
-                                data-button-disable-label="Bestätigung zurücknehmen"
-                                data-button-disable-glyph="remove">{{ 'option-horizontal'|glyph }}</button>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
                             {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung</span>
                         </button>
@@ -777,51 +795,6 @@
                 modal.find('.modal-title').text(title);
                 modal.find('.modal-body > p').text(question);
                 modal.find('input[name="form[action]"]').val(action);
-            });
-            $('[data-property="isConfirmed"]').on('juvem.activeButton.success', function (event, button, response) {
-                if (response.value !== null) {
-                    $('.status-label-list .option-{{ constant('AppBundle\\BitMask\\ParticipantStatus::TYPE_STATUS_CONFIRMED') }}').each(function (i, el) {
-                        el = $(el);
-                        if (response.value) {
-                            el.text('bestätigt');
-                            el.addClass('label-primary');
-                            el.removeClass('label-default');
-                        } else {
-                            el.text('unbestätigt');
-                            el.addClass('label-default');
-                            el.removeClass('label-primary');
-                        }
-                    });
-                    if (response.value) {
-                        $(button).html('{{ 'ok'|glyph }} Bestätigung <i>(E-Mail wird versandt...)</i>');
-                        $(button).addClass('disabled');
-                        $.ajax({
-                            type: 'POST',
-                            url: '{{ path('event_participation_confirm_mail') }}',
-                            data: {
-                                _token: '{{ csrf_token(participation.pid) }}',
-                                pid: '{{ participation.pid }}'
-                            },
-                            datatype: 'json',
-                            success: function (response) {
-                                $(document).trigger('add-alerts', {
-                                    message: 'Die Eltern wurden per E-Mail über die Bestätigung benachrichtigt.',
-                                    priority: 'success'
-                                });
-                            },
-                            error: function (response) {
-                                $(document).trigger('add-alerts', {
-                                    message: 'Beim Versenden der E-Mail Benachrichtigung ist ein Fehler aufgetreten!',
-                                    priority: 'error'
-                                });
-                            },
-                            complete: function (response) {
-                                $(button).html('{{ 'remove'|glyph }} Bestätigung zurücknehmen');
-                                $(button).removeClass('disabled');
-                            }
-                        });
-                    }
-                }
             });
         });
     </script>

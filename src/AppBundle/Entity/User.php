@@ -28,7 +28,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  */
-class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
+class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface, HumanInterface
 {
     use CreatedModifiedTrait, HumanTrait;
 

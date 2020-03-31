@@ -10,6 +10,7 @@
 
 namespace AppBundle\Twig\Extension;
 
+use AppBundle\Entity\HumanInterface;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use Twig\Environment;
@@ -25,7 +26,7 @@ use Twig\TwigFilter;
  */
 class ParticipationsParticipantsNamesGrouped extends AbstractExtension
 {
-
+    
     /**
      * {@inheritdoc}
      */
@@ -35,6 +36,11 @@ class ParticipationsParticipantsNamesGrouped extends AbstractExtension
             new TwigFilter(
                 'participantsgrouped',
                 [$this, 'participationParticipantsNamesGrouped'],
+                ['pre_escape' => 'html', 'is_safe' => ['html'], 'needs_environment' => true]
+            ),
+            new TwigFilter(
+                'humansgrouped',
+                [$this, 'humanNamesGrouped'],
                 ['pre_escape' => 'html', 'is_safe' => ['html'], 'needs_environment' => true]
             ),
         ];
@@ -52,17 +58,43 @@ class ParticipationsParticipantsNamesGrouped extends AbstractExtension
         Environment $env, Participation $participation, $noHtml = false
     )
     {
-        $groups = [];
         /** @var Participant $participant */
-
+        
         if ($noHtml) {
             $template = '%1$s';
         } else {
             $template = '<span title="%1$s %2$s" data-toggle="tooltip">%1$s</span>';
         }
-    
+        
         return self::combinedParticipantsNames(
             $participation, $template, function ($value) use ($env) {
+            return twig_escape_filter($env, $value);
+        }
+        );
+    }
+    
+    /**
+     * Get humans names grouped by last names
+     *
+     * @param Environment $env               Twig environment in order to escape names @see twig_escape_filter()
+     * @param array|HumanInterface[] $people Humans which are to be  processed
+     * @param bool $noHtml                   Default false, set to true to not use html markup
+     * @return string
+     */
+    public function humanNamesGrouped(
+        Environment $env, array $people, $noHtml = false
+    )
+    {
+        /** @var Participant $participant */
+        
+        if ($noHtml) {
+            $template = '%1$s';
+        } else {
+            $template = '<span title="%1$s %2$s" data-toggle="tooltip">%1$s</span>';
+        }
+        
+        return self::combineNames(
+            $people, $template, function ($value) use ($env) {
             return twig_escape_filter($env, $value);
         }
         );
@@ -80,12 +112,33 @@ class ParticipationsParticipantsNamesGrouped extends AbstractExtension
         Participation $participation, string $template = '%1$s', callable $textFilter = null
     )
     {
-        foreach ($participation->getParticipants() as $participant) {
-            $lastName = $participant->getNameLast();
+        /** @var array|Participant[] $participants */
+        $participants = $participation->getParticipants()->toArray();
+        return self::combineNames($participants, $template, $textFilter);
+    }
+    
+    /**
+     * Combine multiple human name and group by last names (for shorter texts)
+     *
+     * @param array|HumanInterface[] $people Humans to extract names
+     * @param string $template               Template for each name
+     * @param callable|null $textFilter      Filter to apply to first name and last name
+     * @return string
+     */
+    public static function combineNames(array $people, string $template = '%1$s', callable $textFilter = null)
+    {
+        $groups = [];
+        
+        /** @var HumanInterface $human */
+        foreach ($people as $human) {
+            if (!$human instanceof HumanInterface) {
+                throw new \InvalidArgumentException('Unsupported class transmitted');
+            }
+            $lastName = $human->getNameLast();
             if (is_callable($textFilter)) {
                 $lastName = $textFilter($lastName);
             }
-            $firstName = $participant->getNameFirst();
+            $firstName = $human->getNameFirst();
             if (is_callable($textFilter)) {
                 $firstName = $textFilter($firstName);
             }
@@ -99,8 +152,7 @@ class ParticipationsParticipantsNamesGrouped extends AbstractExtension
         }
         return implode('; ', $groupsCombined);
     }
-
-
+    
     /**
      * {@inheritdoc}
      */
