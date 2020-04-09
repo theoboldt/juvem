@@ -39,3 +39,4 @@
 !/tmp/.gitkeep
 .DS_Store
 /backup/
+/phpunit.xml
