@@ -185,6 +185,7 @@ fos_user:
     firewall_name: main
     user_class: AppBundle\Entity\User
     from_email:
+        address:        "%mailer_address%"
         sender_name:    "%customization.organization_name%"
     registration:
         form:
