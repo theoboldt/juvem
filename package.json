@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "grunt": "^1.0.4",
+    "grunt": "^1.1.0",
     "grunt-contrib-clean": "^2.0",
     "grunt-contrib-concat": "^1.0",
     "grunt-contrib-copy": "^1.0",
@@ -16,8 +16,8 @@
   "dependencies": {
     "bootstrap-3-typeahead": "^4.0",
     "bootstrap-sass": "^3.4.1",
-    "bootstrap-table": "^1.15.5",
-    "easymde": "^2.9.0",
+    "bootstrap-table": "^1.16.0",
+    "easymde": "^2.10.1",
     "ekko-lightbox": "^5.3.0",
     "imagesloaded": "^4.1",
     "jquery": "^3.4.1",
