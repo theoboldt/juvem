@@ -42,3 +42,7 @@ monolog:
             level: debug
         console:
             type:  console
+
+fos_user:
+    from_email:
+        address:        "%mailer_user%"

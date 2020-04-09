@@ -40,3 +40,7 @@ monolog:
         #chromephp:
         #    type:   chromephp
         #    level:  info
+
+fos_user:
+    from_email:
+        address:        "%mailer_user%"
