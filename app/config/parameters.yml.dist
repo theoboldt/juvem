@@ -25,7 +25,7 @@ parameters:
 
     customization.app_title: ~
     customization.theme_color: ~
-    customization.organization_name: ~
+    customization.organization_name: "Juvem Organisation"
     customization.organization_address_street: ~
     customization.organization_address_postal_code: ~
     customization.organization_address_postal_locality: ~
