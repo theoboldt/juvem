@@ -14,3 +14,7 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+fos_user:
+    from_email:
+        address:        "%mailer_user%"
