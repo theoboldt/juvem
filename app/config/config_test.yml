@@ -17,4 +17,4 @@ swiftmailer:
 
 fos_user:
     from_email:
-        address:        "user@example.com"
+        address:        "%mailer_user%"
