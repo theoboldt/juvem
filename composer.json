@@ -68,6 +68,7 @@
         "symfony/web-server-bundle": "^3.3"
     },
     "scripts": {
+        "test": "bin/phpunit",
         "symfony-scripts": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
