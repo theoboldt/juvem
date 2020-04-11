@@ -86,6 +86,7 @@ twig:
         version: "%app.version%"
         appTitle: "%customization.app_title%"
         assetJsIntegrity: "%app.version.integrity.js%"
+        assetJsVisIntegrity: "%app.version.integrity.js-vis%"
         customization: "@app.twig_global_customization"
         kernelRootDir: "%kernel.root_dir%"
         featureNewsletter: "%feature.newsletter%"

@@ -102,3 +102,6 @@
     </div>
   </div>
 {% endblock %}
+{% block javascriptCustom %}
+  <script src="{{ asset('js/vis-network.min.js', 'js') }}" integrity="sha256-{{ assetJsVisIntegrity }}"></script>
+{% endblock %}

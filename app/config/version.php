@@ -20,3 +20,4 @@ $container->setParameter('app.version.hash.js', $fileRevision('js/all.min.js'));
 $container->setParameter('app.version.hash.css', $fileRevision('css/all.min.css'));
 
 $container->setParameter('app.version.integrity.js', base64_encode($fileRevision('js/all.min.js', true)));
+$container->setParameter('app.version.integrity.js-vis', base64_encode($fileRevision('js/vis-network.min.js', true)));

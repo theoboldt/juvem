@@ -32,6 +32,19 @@ module.exports = function (grunt) {
                         filter: 'isFile'
                     }
                 ]
+            },
+            jsvis: {
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'node_modules/vis-network/dist',
+                        src: 'vis-network.min.*',
+                        dest: 'web/js/',
+                        filter: 'isFile'
+                    }
+                ]
+
             }
         },
 
@@ -73,7 +86,6 @@ module.exports = function (grunt) {
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     'node_modules/imagesloaded/imagesloaded.pkgd.js',
                     'node_modules/justified-layout/dist/justified-layout.js',
-                    'node_modules/vis-network/dist/vis-network.js',
                     '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
                     '<%= resourcesPath %>/js/tools.js',
                     '<%= resourcesPath %>/js/storage.js',
@@ -170,7 +182,7 @@ module.exports = function (grunt) {
                     sourceMap: false
                 },
                 src: 'web/css/all.css',
-                dest:'web/css/all.min.css'
+                dest: 'web/css/all.min.css'
             },
             print: {
                 options: {
@@ -179,7 +191,7 @@ module.exports = function (grunt) {
                     sourceMap: false
                 },
                 src: 'web/css/print.css',
-                dest:'web/css/print.min.css'
+                dest: 'web/css/print.min.css'
             },
             owfont: {
                 options: {
@@ -229,9 +241,9 @@ module.exports = function (grunt) {
     grunt.registerTask(
         'deploy',
         [
-            'clean:font', 'copy',
+            'clean:font', 'copy:font',
             'clean:dep', 'clean:css', 'sass', 'concat:distCssWeb', 'concat:distCssPrint', 'concat:distCssOwfont', 'cssmin',
-            'clean:js', 'concat:distWebJs', 'concat:distCssPrint', 'concat:distCssOwfont', 'uglify',
+            'clean:js', 'concat:distWebJs', 'copy:jsvis', 'concat:distCssPrint', 'concat:distCssOwfont', 'uglify',
             'clean:dep'
         ]
     );
