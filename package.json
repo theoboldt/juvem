@@ -20,7 +20,7 @@
     "easymde": "^2.10.1",
     "ekko-lightbox": "^5.3.0",
     "imagesloaded": "^4.1",
-    "jquery": "3.4.1",
+    "jquery": "^3.4",
     "jquery-number": "^2.1",
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
