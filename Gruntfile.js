@@ -39,7 +39,7 @@ module.exports = function (grunt) {
                         expand: true,
                         flatten: true,
                         cwd: 'node_modules/vis-network/dist',
-                        src: 'vis-network.min.*',
+                        src: 'vis-network.min.j*',
                         dest: 'web/js/',
                         filter: 'isFile'
                     }
