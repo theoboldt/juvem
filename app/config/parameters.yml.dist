@@ -6,7 +6,7 @@ parameters:
     database_port:     ~
     database_name:     juvem
     database_user:     root
-    database_password: ~
+    database_password: juvem
     # You should uncomment this if you want use pdo_sqlite
     # database_path: "%kernel.root_dir%/data.db3"
 
@@ -14,7 +14,7 @@ parameters:
     mailer_address:    'noreply@example.com'
     mailer_host:       127.0.0.1
     mailer_user:       ~
-    mailer_password:   juvem
+    mailer_password:   ~
     mailer_admin:      ~
 
     # A secret key that's used to generate certain security-related tokens
