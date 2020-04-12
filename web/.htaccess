@@ -104,3 +104,7 @@ DirectoryIndex app.php
 <ifModule mod_headers.c>
         Header append x-frame-options "SAMEORIGIN"
 </ifModule>
+
+<filesMatch "^(android-chrome-.*|apple-touch.*|favicon-.*|mstile-.*|safari-.*)\.(png|ico|svg)$">
+Header set Cache-Control "max-age=2628000, public"
+</filesMatch>
