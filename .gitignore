@@ -27,10 +27,13 @@
 /.sass-cache
 /web/css/*
 !web/css/.gitkeep
+!web/css/.htaccess
 /web/font/*
 !web/font/.gitkeep
+!web/font/.htaccess
 /web/js/*
 !web/js/.gitkeep
+!web/js/.htaccess
 /data/invoice/*
 !/data/invoice/.gitkeep
 /data/uploads/*
