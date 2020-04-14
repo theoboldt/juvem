@@ -24,6 +24,13 @@
                 {{ form_row(form.email) }}
                 {{ form_row(form.plainPassword.first) }}
                 {{ form_row(form.plainPassword.second) }}
+                <div class="form-group{% if not form.stringCount.vars.valid %} has-error{% endif %}">
+                    {{ form_label(form.stringCount) }}
+                    <p class="help-block">Bitte zählen Sie die sechs Gitarren-Saiten die im folgenden Bild zu sehen sind.
+                        Auf diese Weise stellen wir sicher, dass das Registrierungsformular nicht von Maschienen ausgefüllt wird.</p>
+                    {{ form_widget(form.stringCount) }}
+                    {{ form_errors(form.stringCount) }}
+                </div>
             </div>
         </div>
         <div class="row">
