@@ -59,7 +59,10 @@ jobs:
       - name: Copy testing parameters config
         run: cp app/config/parameters.yml.test app/config/parameters.yml
       
-      - name: Copy testing parameters config
+      - name: Add line for database port config in config file
+        run: 'echo "    database_port:     " >> app/config/parameters.yml'
+            
+      - name: Insert port number in config file
         run: echo "${{ job.services.mysql.ports['3306'] }}" >> app/config/parameters.yml
       
       - name: Install Composer dependencies

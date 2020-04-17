@@ -33,4 +33,3 @@ parameters:
     router.request_context.host: null
     router.request_context.scheme: null
     feature.newsletter: true
-    database_port:     
