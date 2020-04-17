@@ -1,0 +1,36 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: 127.0.0.1
+    database_name: juvem
+    database_user: root
+    database_password: juvem
+    mailer_transport: smtp
+    mailer_address: noreply@example.com
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    mailer_admin: null
+    secret: abc5321e96ee8b50967e6796b9eb9f05d466762265e539
+    cron_secret: 3bc5321e96ee8b50967e6796b9eb9f05d466762265e53e
+    customization.app_title: null
+    customization.theme_color: null
+    customization.organization_name: 'Juvem Organisation'
+    customization.organization_address_street: null
+    customization.organization_address_postal_code: null
+    customization.organization_address_postal_locality: null
+    customization.organization_number_phone: null
+    customization.organization_number_fax: null
+    customization.organization_email: null
+    customization.privacy_responsible: null
+    customization.organization_website: null
+    customization.organization_facebook: null
+    customization.juvem_website: null
+    customization.logo_website: null
+    juvimg.url: null
+    juvimg.password: null
+    app.libreoffice_binary_path: null
+    app.geo.openweathermap.api_key: null
+    router.request_context.host: null
+    router.request_context.scheme: null
+    feature.newsletter: true
+    database_port:     
