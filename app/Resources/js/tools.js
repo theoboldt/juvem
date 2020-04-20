@@ -310,4 +310,14 @@ $(function () {
         var owfontHref = $("meta[name='stylesheet-owfont']").attr('content');
         $("head").append("<link href='" + owfontHref + "' rel='stylesheet' type='text/css'>");
     };
+
+    $('.btn-value-preset').click(function () {
+        var el = $(this),
+            targetId = el.data('target-id'),
+            value = el.data('value');
+        if (targetId && $('#' + targetId)) {
+            $('#' + targetId).val(value);
+        }
+    });
+
 });

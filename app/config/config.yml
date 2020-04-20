@@ -39,6 +39,9 @@ framework:
             css:
                 version: "%app.version.hash.css%"
                 version_format: "%%s?h%%s"
+            img:
+                version: "%app.version.hash.css%"
+                version_format: "%%s?h%%s"
     #esi:             ~
     translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"

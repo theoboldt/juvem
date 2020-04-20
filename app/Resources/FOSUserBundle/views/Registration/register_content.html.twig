@@ -5,39 +5,53 @@
 {% block title %}Registrierung ({{ customization.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Registrierung', 'subtitle': customization.title} %}
-        {% block breadcrumb %}
-            <li class="active">Registrierung</li>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
-        <div class="row">
-            <div class="col-xs-12">
-                {{ form_errors(form) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
-                {{ form_row(form.nameFirst) }}
-                {{ form_row(form.nameLast) }}
-                {{ form_row(form.email) }}
-                {{ form_row(form.plainPassword.first) }}
-                {{ form_row(form.plainPassword.second) }}
-                <div class="form-group{% if not form.stringCount.vars.valid %} has-error{% endif %}">
-                    {{ form_label(form.stringCount) }}
-                    <p class="help-block">Bitte zählen Sie die sechs Gitarren-Saiten die im folgenden Bild zu sehen sind.
-                        Auf diese Weise stellen wir sicher, dass das Registrierungsformular nicht von Maschienen ausgefüllt wird.</p>
-                    {{ form_widget(form.stringCount) }}
-                    {{ form_errors(form.stringCount) }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
-                <input type="submit" class="btn btn-primary" value="{{ 'registration.submit'|trans }}"/>
-            </div>
-        </div>
-        {{ form_end(form) }}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Registrierung', 'subtitle': customization.title} %}
+    {% block breadcrumb %}
+      <li class="active">Registrierung</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+  {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+  <div class="row">
+    <div class="col-xs-12">
+      {{ form_errors(form) }}
     </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+      {{ form_row(form.nameFirst) }}
+      {{ form_row(form.nameLast) }}
+      {{ form_row(form.email) }}
+      {{ form_row(form.plainPassword.first) }}
+      {{ form_row(form.plainPassword.second) }}
+      <div class="form-group{% if not form.stringCount.vars.valid %} has-error{% endif %}">
+        {{ form_label(form.stringCount) }}
+        <p class="help-block">Bitte zählen Sie die fünf Gitarren-Saiten, die im folgenden Bild zu sehen sind, und geben
+          Sie die Anzahl als Ziffer in das darunter befindliche Formularfeld ein.
+          <img src="{{ asset('img/guitar.jpg', 'img') }}" alt="Gitarren-Saiten, insgesamt fünf an der Zahl"
+               class="img-thumbnail">
+        </p>
+        <div class="btn-group btn-group-justified" role="group" aria-label="Optionen für Saiten-Formularfeld"
+             style="margin-bottom: 3px;">
+          {% for i in range(1, 9) %}
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default btn-value-preset"
+                      data-target-id="fos_user_registration_form_stringCount" data-value="{{ i }}">{{ i }}</button>
+            </div>
+          {% endfor %}
+        </div>
+        {{ form_widget(form.stringCount) }}
+        {{ form_errors(form.stringCount) }}
+        <p class="help-block">Auf diese Weise stellen wir sicher, dass das Registrierungsformular nicht von Maschienen
+          ausgefüllt wird. Sollte dies für Sie nicht möglich sein, nehmen Sie bitte <a href="{{ path('imprint') }}">Kontakt</a>
+          zu uns auf.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
+        <input type="submit" class="btn btn-primary" value="{{ 'registration.submit'|trans }}"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+  </div>
 {% endblock body %}

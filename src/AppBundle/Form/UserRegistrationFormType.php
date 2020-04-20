@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -42,15 +43,15 @@ class UserRegistrationFormType extends AbstractType
                     'constraints' => [
                         new NotBlank(
                             [
-                                'message' => 'Bitte zählen Sie Saiten im Bild und geben Sie deren Anzahl in das Eingabefeld ein.'
-                            
+                                'message' => 'Bitte zählen Sie die Saiten im Bild und geben Sie deren Anzahl in das Eingabefeld ein.',
+                                'groups'  => [Constraint::DEFAULT_GROUP, 'AppBundleRegistration']
                             ]
-                        
                         ),
                         new EqualTo(
                             [
-                                'value'   => 6,
-                                'message' => 'Bitte zählen Sie die sechs Saiten erneut und geben Sie deren Anzahl nummerisch in das Eingabefeld ein.'
+                                'value'   => 5,
+                                'message' => 'Bitte zählen Sie die fünf Saiten erneut und geben Sie deren Anzahl nummerisch in das Eingabefeld ein.',
+                                'groups'  => [Constraint::DEFAULT_GROUP, 'AppBundleRegistration']
                             ]
                         )
                     ]
