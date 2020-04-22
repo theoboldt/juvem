@@ -90,6 +90,7 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/ads.txt")
      * @Route("/css/all.css.map")
      * @Route("/js/all.js.map")
      * @Route("/css/all.min.css.map")
