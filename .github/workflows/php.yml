@@ -60,7 +60,7 @@ jobs:
         run: cp app/config/parameters.yml.test app/config/parameters.yml
       
       - name: Insert database port number in config file
-        run: echo     database_port${{':'}}     ${{ job.services.mysql.ports['3306'] }}" >> app/config/parameters.yml
+        run: echo "     database_port${{':'}}     ${{ job.services.mysql.ports['3306'] }}" >> app/config/parameters.yml
       
       - name: Echo config file
         run: 'cat app/config/parameters.yml'
