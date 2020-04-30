@@ -73,4 +73,9 @@ jobs:
           php bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
 
       - name: Run Tests
-        run: php bin/phpunit --coverage-text
+        run: php bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover.xml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: phpunit-result-clover
+          path: ./phpunit-result-clover.xml
