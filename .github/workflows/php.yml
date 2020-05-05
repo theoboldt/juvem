@@ -79,3 +79,12 @@ jobs:
         with:
           name: phpunit-result-clover
           path: ./phpunit-result-clover.xml
+
+      - name: Upload coverage to Codecov  
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./phpunit-result-clover.xml
+          flags: unittests
+          name: clover-coverage
+          fail_ci_if_error: false
