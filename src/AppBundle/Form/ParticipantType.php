@@ -52,6 +52,7 @@ class ParticipantType extends AbstractType
                 'nameLast',
                 TextType::class,
                 ['label' => 'Nachname', 'required' => true]
+/*            
             )
             ->add(
                 'gender',
@@ -113,6 +114,7 @@ class ParticipantType extends AbstractType
                         'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE,
                     ],
                 ]
+*/
             );
 
         /** @var Participation $participation */
@@ -128,7 +130,7 @@ class ParticipantType extends AbstractType
             isset($options['data']) ? $options['data'] : null
         );
 
-        $builder->get('food')->addModelTransformer(new FoodTransformer());
+//        $builder->get('food')->addModelTransformer(new FoodTransformer());
     }
 
     /**

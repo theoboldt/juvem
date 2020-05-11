@@ -93,6 +93,7 @@
                         </div>
                     {% endif %}
                 {% endfor %}
+                {#
                 <div class="row">
                     <div class="col-xs-12">
                         <label class="control-label">Telefonnummern</label>
@@ -182,6 +183,7 @@
                         </button>
                     </div>
                 </div>
+                #}
 
                 <hr/>
 
@@ -231,6 +233,7 @@
                                         {{ form_row(formElement.nameLast) }}
                                     </div>
                                 </div>
+{#
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-6">
                                         {{ form_row(formElement.birthday) }}
@@ -278,6 +281,7 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-6">
                                     </div>
+                                    
                                     {% for fieldName,formField in formElement %}
                                         {% if fieldName starts with 'acq_field_' %}
                                             <div class="col-xs-12">
@@ -286,6 +290,7 @@
                                         {% endif %}
                                     {% endfor %}
                                 </div>
+                                #}
                             </div>
                         </div>
                     {% endmacro %}
@@ -369,6 +374,7 @@
                         </div>
                     </div>
                 </div>
+                {#
                 {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-content') %}
                     <div class="row">
                         <div class="col-xs-12">
@@ -393,6 +399,7 @@
                         </div>
                     </div>
                 {% endif %}
+                #}
                 <hr/>
 
                 <div class="row">

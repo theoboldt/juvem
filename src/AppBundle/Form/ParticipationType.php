@@ -30,7 +30,7 @@ class ParticipationType extends ParticipationBaseType
                 'mapped'      => false,
             ]
         );
-
+/*
         $builder->add(
             'acceptConditionsOfTravel',
             CheckboxType::class,
@@ -41,5 +41,6 @@ class ParticipationType extends ParticipationBaseType
                 'mapped'      => false
             ]
         );
+*/
     }
 }

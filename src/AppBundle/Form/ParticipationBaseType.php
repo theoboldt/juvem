@@ -89,7 +89,8 @@ class ParticipationBaseType extends AbstractType
                     'attr'     => ['data-typeahead-source' => 'address_country']
                 ]
             )
-            ->add('email', EmailType::class, ['label' => 'E-Mail', 'required' => true])
+            ->add('email', EmailType::class, ['label' => 'E-Mail'/*, 'required' => true*/])
+            /*
             ->add(
                 'phoneNumbers',
                 CollectionType::class,
@@ -102,6 +103,7 @@ class ParticipationBaseType extends AbstractType
                     'required'     => true
                 ]
             )
+            */
             ->add(
                 'participants',
                 CollectionType::class,
