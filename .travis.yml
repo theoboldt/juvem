@@ -14,12 +14,13 @@ php:
 
 env:
     matrix:
-        - COMPOSER_PARAM="update --prefer-source --prefer-lowest"
-        - COMPOSER_PARAM="update --prefer-source"
+        - COMPOSER_PARAM="update --prefer-source --no-progress --no-suggest --prefer-lowest"
+        - COMPOSER_PARAM="update --prefer-source --no-progress --no-suggest"
+        - COMPOSER_PARAM="install --no-progress --no-suggest --prefer-dist --optimize-autoloader"
 
 before_script:
     - composer selfupdate
-    - composer $COMPOSER_PARAM
+    - COMPOSER_MEMORY_LIMIT=-1 composer $COMPOSER_PARAM
 
 script:
   - bin/phpunit --coverage-clover=coverage.clover
