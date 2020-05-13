@@ -10,10 +10,27 @@
 
 namespace Tests\Controller;
 
+use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        $kernel = static::bootKernel();
+        /** @var EntityManager $doctrine */
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        /** @var Connection $connection */
+        $connection = $em->getConnection();
+        try {
+            $connection->exec('SELECT 1 FROM flash');
+        } catch (\Exception $e) {
+            system('php ' . __DIR__ . '/../../app/console doctrine:database:create -q -n');
+        }
+        system('php ' . __DIR__ . '/../../app/console doctrine:schema:update --force -q -n');
+    }
+
     public function testAvailabilityHomepage()
     {
         $client = static::createClient();
