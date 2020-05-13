@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -23,7 +23,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals(
             200, $client->getResponse()->getStatusCode()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Veranstaltung', $crawler->filter('#page-body h1')->text()
         );
     }
@@ -37,7 +37,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals(
             200, $client->getResponse()->getStatusCode()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Datenschutzerklärung', $crawler->filter('#page-body h1')
                                             ->text()
         );
@@ -52,7 +52,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals(
             200, $client->getResponse()->getStatusCode()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Impressum', $crawler->filter('#page-body h1')->text()
         );
     }
