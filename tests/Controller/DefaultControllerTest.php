@@ -73,5 +73,22 @@ class DefaultControllerTest extends WebTestCase
             'Impressum', $crawler->filter('#page-body h1')->text()
         );
     }
-
+    
+    public function testSitemapPage(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/sitemap.xml');
+        
+        $this->assertEquals(
+            200, $client->getResponse()->getStatusCode()
+        );
+        $response = $client->getResponse();
+        $this->assertEquals('application/xml', $response->headers->get('Content-Type'));
+        
+        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(newsletter)/m', $response->getContent());
+        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(login)/m', $response->getContent());
+        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(register)(\/{0,1})/m', $response->getContent());
+        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(conditions-of-travel)/m', $response->getContent());
+    }
+    
 }

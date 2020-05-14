@@ -305,13 +305,22 @@ class DefaultController extends Controller
             }
             $pages[] = $page;
         }
+        
+        $response = new Response(
+            '',
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/xml'
+            ]
+        );
 
         return $this->render(
             'sitemap.xml.twig',
             [
                 'pages'           => $pages,
                 'lastModHomePage' => $eventLastModified,
-            ]
+            ],
+            $response
         );
     }
     
