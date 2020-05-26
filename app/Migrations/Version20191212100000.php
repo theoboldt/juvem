@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20191212100000 extends AbstractMigration
 {
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Variables are now no longer related to attributes';
     }

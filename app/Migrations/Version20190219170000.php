@@ -14,7 +14,7 @@ final class Version20190219170000 extends AbstractMigration implements Container
 {
     use ContainerAwareTrait;
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Move uploads directory into data folder';
     }

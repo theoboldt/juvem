@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20190426100000 extends AbstractMigration
 {
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add possibility to store country of an participation/employee/event';
     }

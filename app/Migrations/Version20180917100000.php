@@ -18,13 +18,13 @@ final class Version20180917100000 extends AbstractMigration implements Container
 
     use ContainerAwareTrait;
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Introduce more complex choice options';
     }
 
 
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
 
         $this->connection->exec(
@@ -149,7 +149,7 @@ final class Version20180917100000 extends AbstractMigration implements Container
         }
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $qbC = $this->connection->createQueryBuilder();
         $qbC->select(['id', 'bid', 'form_title'])

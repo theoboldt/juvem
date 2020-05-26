@@ -13,7 +13,7 @@ final class Version20181227150000 extends AbstractMigration
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add fields to store price formula';
     }

@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20190717171821 extends AbstractMigration
 {
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Increase fillout value size';
     }

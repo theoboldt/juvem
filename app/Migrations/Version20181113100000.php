@@ -13,7 +13,7 @@ final class Version20181113100000 extends AbstractMigration
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add storage for employees';
     }

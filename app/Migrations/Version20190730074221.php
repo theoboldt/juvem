@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20190730074221 extends AbstractMigration
 {
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Convert attendance list into more customizable form';
     }

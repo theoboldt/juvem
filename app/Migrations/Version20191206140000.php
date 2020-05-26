@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20191206140000 extends AbstractMigration
 {
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add storage for formula event specific variables';
     }

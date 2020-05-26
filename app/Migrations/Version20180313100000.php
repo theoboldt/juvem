@@ -4,7 +4,7 @@ namespace Application\Migrations;
 
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -13,19 +13,19 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 /**
  * Introduce and calculate to pay values for participants
  */
-class Version20180313100000 extends AbstractMigration implements ContainerAwareInterface
+final class Version20180313100000 extends AbstractMigration implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Introduce and calculate to pay values for participants';
     }
 
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->connection->executeQuery('ALTER TABLE participant ADD to_pay INT DEFAULT NULL');
 
@@ -51,7 +51,7 @@ class Version20180313100000 extends AbstractMigration implements ContainerAwareI
         $this->addSql('SELECT 1');
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE participant DROP to_pay');
     }

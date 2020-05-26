@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20181110230000 extends AbstractMigration
 {
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Introduce field to enable empoloyee acquisition for fields';
     }

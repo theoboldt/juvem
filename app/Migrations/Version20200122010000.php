@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200122010000 extends AbstractMigration
 {
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add cache for location descriptor elements';
     }

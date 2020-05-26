@@ -2,29 +2,29 @@
 
 namespace Application\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
  * Payment event value is now no longer nullable
  */
-class Version20180301100000 extends AbstractMigration
+final class Version20180301100000 extends AbstractMigration
 {
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Payment event value is now no longer nullable';
     }
 
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE participant_payment_event CHANGE price_value price_value INT NOT NULL');
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE participant_payment_event CHANGE price_value price_value INT DEFAULT NULL');
     }

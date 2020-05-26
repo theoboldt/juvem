@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181112200000 extends AbstractMigration
 {
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add fields to store specfic age and date for special participants list';
     }

@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20191007150000 extends AbstractMigration
 {
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add fields used to store recipes';
     }

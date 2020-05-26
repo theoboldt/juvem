@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20190503070000 extends AbstractMigration
 {
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Add possibility to override invoice template per event';
     }

@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 final class Version20191024000000 extends AbstractMigration
 {
     
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Provide field for parent employee';
     }

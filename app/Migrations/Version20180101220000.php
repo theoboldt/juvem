@@ -3,7 +3,7 @@
 namespace Application\Migrations;
 
 use AppBundle\Entity\Participant;
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -11,14 +11,14 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 /**
  * Remove all textual info text which should be regarded as empty
  */
-class Version20180101220000 extends AbstractMigration implements ContainerAwareInterface
+final class Version20180101220000 extends AbstractMigration implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Remove all textual info text which should be regarded as empty';
     }
@@ -26,7 +26,7 @@ class Version20180101220000 extends AbstractMigration implements ContainerAwareI
     /**
      * {@inheritdoc}
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
 
@@ -66,7 +66,7 @@ class Version20180101220000 extends AbstractMigration implements ContainerAwareI
     /**
      * {@inheritdoc}
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $this->throwIrreversibleMigrationException('Once the info is changed, it can not be reverted');
 

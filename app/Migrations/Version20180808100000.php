@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 final class Version20180808100000 extends AbstractMigration implements ContainerAwareInterface {
     use ContainerAwareTrait;
     
-    public function up(Schema $schema) {
+    public function up(Schema $schema): void {
         $this->addSql('SELECT 1');
         $this->connection->exec(
             'ALTER TABLE gallery_image ADD width INT UNSIGNED NOT NULL, ADD height INT UNSIGNED NOT NULL'
@@ -47,7 +47,7 @@ final class Version20180808100000 extends AbstractMigration implements Container
         $this->write(sprintf('Updated %d images, removed %d orphaned', $updated, $deleted));
     }
     
-    public function down(Schema $schema) {
+    public function down(Schema $schema): void {
         $this->addSql('ALTER TABLE gallery_image DROP width, DROP height');
     }
 }
