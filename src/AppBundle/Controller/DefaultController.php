@@ -158,6 +158,7 @@ class DefaultController extends Controller
      * @Route("/crossdomain.xml")
      * @Route("/clientaccesspolicy.xml")
      * @Route("/.well-known/assetlinks.json")
+     * @Route("/asset-manifest.json")
      */
     public function unsupportedAction()
     {
