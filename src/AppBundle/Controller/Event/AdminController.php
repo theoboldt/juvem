@@ -272,6 +272,26 @@ class AdminController extends Controller
     /**
      * Detail page for one single event
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
+     * @Route("/admin/event/{eid}/location", requirements={"eid": "\d+"}, name="event_participants_location")
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @return Response
+     */
+    public function locationEventAction(Event $event): Response
+    {
+        return $this->render(
+            'event/admin/participant-location-distribution.html.twig',
+            [
+                'event' => $event,
+            ]
+        );
+    }
+    
+    
+    /**
+     * Detail page for one single event
+     *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/payment_summary.json", requirements={"eid": "\d+"}, name="event_payment_summary")
      * @Security("has_role('ROLE_ADMIN_EVENT')")

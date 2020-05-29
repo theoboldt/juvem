@@ -54,6 +54,7 @@
                                 <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
                                 {%- endif %}
                                 <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
+                                <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer-Herkunft untersuchen</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren…</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken (alt)</a></li>

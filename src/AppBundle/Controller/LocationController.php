@@ -14,8 +14,14 @@ use AppBundle\Controller\Event\Gallery\GalleryPublicController;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Geo\ClimaticInformationInterface;
+use AppBundle\Entity\Geo\LocationDescription;
 use AppBundle\Entity\Geo\OpenWeatherMapWeatherCondition;
+use AppBundle\Entity\Participant;
+use AppBundle\Entity\Participation;
+use AppBundle\Manager\Geo\AddressResolverInterface;
+use AppBundle\Manager\Geo\DetailedOpenStreetMapPlace;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,6 +30,120 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LocationController extends Controller
 {
+    
+    /**
+     * Get participants location distribution
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
+     * @Route("/admin/event/{eid}/participants-location.json", requirements={"eid": "\d+"}, name="event_participants_location_data")
+     * @Security("is_granted('participants_read', event)")
+     * @param Request $request
+     * @param Event $event
+     * @return JsonResponse
+     */
+    public function participantsLocationDistribution(Event $event): Response
+    {
+        /** @var AddressResolverInterface $addressResolver */
+        $addressResolver = $this->get('app.geo.address_resolver');
+        
+        $locations = [];
+        $unknown   = 0;
+        
+        /** @var Participation $participation */
+        foreach ($event->getParticipations() as $participation) {
+            $location = $addressResolver->provideCoordinates($participation);
+            
+            /** @var Participant $participant */
+            foreach ($participation->getParticipants() as $participant) {
+                if ($participant->isConfirmed() && !$participant->isWithdrawn() && !$participant->isRejected()) {
+                    if ($location->isLocationProvided()) {
+                        $locations[] = $location;
+                    } else {
+                        ++$unknown;
+                    }
+                }
+            }
+        }
+        
+        $locationsByCity = [];
+        
+        foreach ($locations as $location) {
+            $locationCity = strtolower($location->getAddressZip() . $location->getAddressCity());
+            if (!isset($locationsByCity[$locationCity])) {
+                $locationsByCity[$locationCity] = [
+                    'city'            => $location->getAddressCity(),
+                    'zip'             => $location->getAddressZip(),
+                    'administratives' => [],
+                    'occurrences'     => 0,
+                ];
+            }
+            ++$locationsByCity[$locationCity]['occurrences'];
+            
+            if ($location instanceof LocationDescription && $location->hasDetails()) {
+                $place               = new DetailedOpenStreetMapPlace($location->getDetails());
+                $placeAdministrative = $place->getNextAdministrativeAddress();
+                
+                $name = $placeAdministrative->getLocalName();
+                if (!isset($locationsByCity[$locationCity]['administratives'][$name])) {
+                    $locationsByCity[$locationCity]['administratives'][$name] = 0;
+                }
+                ++$locationsByCity[$locationCity]['administratives'][$name];
+            }
+        }
+    
+    
+        /**
+         * Compare occurrences
+         *
+         * @param array $a
+         * @param array $b
+         * @return int
+         */
+        $compareOccurrencesCount = function (array $a, array $b): int {
+            if ($a['occurrences'] === $b['occurrences']) {
+                if ($a['name'] !== $b['name']) {
+                    return ($a['name'] > $b['name']) ? 1 : -1;
+                }
+                return 0;
+            }
+            return ($a['occurrences'] > $b['occurrences']) ? -1 : 1;
+        };
+    
+        $max    = 0;
+        $total  = 0;
+        $result = [];
+        foreach ($locationsByCity as $city) {
+            $children = [];
+            $total    += $city['occurrences'];
+            if ($city['occurrences'] > $max) {
+                $max = $city['occurrences'];
+            }
+        
+            foreach ($city['administratives'] as $administrative => $occurrences) {
+                $children[] = [
+                    'name'        => $administrative,
+                    'occurrences' => $occurrences,
+                ];
+            }
+            usort($children, $compareOccurrencesCount);
+        
+            $result[] = [
+                'name'        => $city['zip'] . ' ' . $city['city'],
+                'occurrences' => $city['occurrences'],
+                'children'    => $children
+            ];
+        }
+        $result[] = [
+            'name'        => 'Unbekannt',
+            'occurrences' => $unknown,
+            'children'    => []
+        ];
+        usort($result, $compareOccurrencesCount);
+        
+        
+        return new JsonResponse(['distribution' => $result, 'total' => $total, 'max' => $max]);
+    }
+    
     /**
      * Get event coordinates
      *
@@ -120,13 +240,13 @@ class LocationController extends Controller
                     'weather'                => $weatherList,
                 ];
                 if ($climate instanceof ProvidesCreatedInterface) {
-                    $dataCreatedAt      = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
-                    $dataCreatedAt      .= ' um ';
-                    $dataCreatedAt      .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
+                    $dataCreatedAt                 = $climate->getCreatedAt()->format(Event::DATE_FORMAT_DATE);
+                    $dataCreatedAt                 .= ' um ';
+                    $dataCreatedAt                 .= $climate->getCreatedAt()->format(Event::DATE_FORMAT_TIME);
                     $data['current']['created_at'] = $dataCreatedAt;
                 }
             }
-
+            
             $begin = clone $event->getStartDate();
             $begin->setTime(0, 0, 0);
             if ($event->hasEndDate()) {

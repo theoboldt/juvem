@@ -269,6 +269,7 @@ input.input-formula, textarea.input-formula {
     margin-top: 1px;
     margin-bottom: 1px;
   }
+
   .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .btn-group-vertical, .btn-toolbar > .input-group {
     margin-left: 3px;
   }
@@ -663,5 +664,38 @@ abbr.unit {
   .list-group-item:hover {
     cursor: pointer;
     background: #eee;
+  }
+}
+
+#participantsLocationDistribution {
+  table {
+    tr.sub td {
+      display: none;
+    }
+
+    &.detailed {
+      tr.sub td {
+        display: table-cell;
+      }
+    }
+
+    tr.main td {
+      font-weight: bold;
+      font-size: 105%;
+    }
+
+    td.number {
+      text-align: right;
+    }
+
+    tr.sub {
+      td {
+        opacity: 0.95;
+      }
+
+      td:first-child {
+        padding-left: 25px;
+      }
+    }
   }
 }

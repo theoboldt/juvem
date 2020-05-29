@@ -116,6 +116,29 @@ class OpenStreetMapElement implements \JsonSerializable
     }
     
     /**
+     * Get OSM place type like suburb, city, locality, municipality, neighourhood, harmlet
+     *
+     * @link https://wiki.openstreetmap.org/wiki/OSM_Inspector/Views/Places
+     * @return string|null
+     */
+    public function getPlaceType(): ?string
+    {
+        $data = $this->getFirst();
+        return $data['place_type'] ?? null;
+    }
+    
+    /**
+     * Get local name of item
+     *
+     * @return string|null
+     */
+    public function getLocalName(): ?string
+    {
+        $data = $this->getFirst();
+        return $data['localname'] ?? null;
+    }
+    
+    /**
      * @inheritDoc
      */
     public function jsonSerialize()

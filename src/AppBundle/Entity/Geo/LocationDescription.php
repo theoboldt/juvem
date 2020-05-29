@@ -37,7 +37,7 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     /**
      * OSM Id or null if not found
      *
-     * @ORM\Column(type="integer", name="osm_id", nullable=true)
+     * @ORM\Column(type="bigint", name="osm_id", nullable=true)
      *
      * @var int|null
      */

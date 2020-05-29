@@ -776,8 +776,8 @@ $(function () {
     $('#modalChangeTracking').on('show.bs.modal', function (event) {
         var buttonEl = $(event.relatedTarget),
             modalEl = $(this);
-            modalEl.find('h4 small').html('');
-            modalEl.find('table tbody').html('<tr><td colspan="5" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
+        modalEl.find('h4 small').html('');
+        modalEl.find('table tbody').html('<tr><td colspan="5" class="loading-text text-center">(Änderungsverlauf wird geladen)</td></tr>');
 
         $.ajax({
             url: buttonEl.data('list-url'),
@@ -946,4 +946,73 @@ $(function () {
             }
         });
     });
+
+    var participantsLocationDistributionEl = $('#participantsLocationDistribution');
+    if (participantsLocationDistributionEl) {
+        var tbody = participantsLocationDistributionEl.find('table tbody');
+        participantsLocationDistributionEl.find('.btn').click(function () {
+            var el = $(this);
+            if (el.hasClass('disabled')) {
+                return;
+            }
+            participantsLocationDistributionEl.find('table').toggleClass('detailed', el.attr('id') === 'detail-detailed');
+        });
+        $.ajax({
+            type: 'GET',
+            url: participantsLocationDistributionEl.data('url'),
+            success: function (response) {
+                if (!response.distribution) {
+                    tbody.html(
+                        '<tr>' +
+                        ' <td colspan="3">' +
+                        '  <i>Die Daten konnten nicht geladen werden.</i>' +
+                        ' </td>' +
+                        '</tr>'
+                    );
+                    return;
+                }
+                participantsLocationDistributionEl.find('.btn').removeClass('disabled');
+                var html = '';
+                $.each(response.distribution, function (key, location) {
+                    var name = eHtml(location.name);
+                    if (name === 'Unbekannt') {
+                        name = '<i>Unbekannt</i>';
+                    }
+                    html += '<tr class="main">';
+                    html += '<td>' + name + '</td>';
+                    html += '<td class="number">' + location.occurrences + '</td>';
+
+                    html += '<td>';
+                    if (response.max) {
+                        var percentage = ((location.occurrences / response.max) * 100);
+                        html += ' <div class="progress" style="margin-bottom: 0; min-width: 200px;">';
+                        html += '  <div class="progress-bar" role="progressbar" aria-valuenow="' + location.occurrences + '" aria-valuemin="0" aria-valuemax="' + response.max + '" style="width: ' + percentage + '%;">' +
+                            location.occurrences;
+                        html += '</div>';
+                    }
+                    html += '</td>';
+
+                    html += '</tr>';
+
+                    if (location.children.length) {
+                        //possibly solve as recursive call
+                        $.each(location.children, function (key, locationChild) {
+                            html += '<tr class="sub">';
+                            html += '<td>' + locationChild.name + '</td>';
+                            html += '<td class="number">' + locationChild.occurrences + '</td>';
+                            html += '<td></td>';
+                            html += '</tr>';
+                        });
+                    }
+
+                });
+                tbody.html(html);
+            },
+            error: function () {
+                tbody.html('');
+            }
+        });
+    }
+
+
 });
