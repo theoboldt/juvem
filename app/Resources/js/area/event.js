@@ -980,12 +980,13 @@ $(function () {
                     $.each(items, function (key, item) {
                         if (item.n !== 'Unbekannt') {
                             result = false;
-                            return false;
                         }
                         if (item.c && item.c.length) {
-                            return allBelowUnknown(item.c);
+                            result = allBelowUnknown(item.c);
                         }
-
+                        if (!result) {
+                            return false;
+                        }
                     });
                     return result;
                 }
