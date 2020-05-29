@@ -303,11 +303,59 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     }
     
     /**
+     * Determine if addresstags specified
+     *
+     * @return bool
+     */
+    public function hasAddressTags(): bool
+    {
+        return is_array($this->getAddressTags());
+    }
+    
+    /**
+     * Access addresstags if any specified
+     *
+     * @return array|null
+     */
+    private function getAddressTags(): ?array
+    {
+        if ($this->hasDetails()) {
+            if (isset($this->details['addresstags']) && count($this->details['addresstags'])) {
+                return $this->details['addresstags'];
+            }
+            foreach ($this->details as $detail) {
+                if (isset($detail['addresstags']) && count($detail['addresstags'])) {
+                    return $detail['addresstags'];
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * @return string|null
      */
     public function getAddressStreetName(): ?string
     {
         return $this->addressStreetName;
+    }
+    
+    /**
+     * Get street name of addresstags if any specified
+     *
+     * @param bool $useFallback If set to true and no specific addresstag value is stored, falls back to global value if set to true
+     * @return string|null
+     */
+    public function getAddressTagsStreetName(bool $useFallback = false): ?string
+    {
+        $tags = $this->getAddressTags();
+        if ($tags && isset($tags['street'])) {
+            return $tags['street'];
+        }
+        if ($useFallback) {
+            return $this->getAddressStreetName();
+        }
+        return null;
     }
     
     /**
@@ -319,11 +367,47 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     }
     
     /**
+     * Get street number of addresstags if any specified
+     *
+     * @param bool $useFallback If set to true and no specific addresstag value is stored, falls back to global value if set to true
+     * @return string|null
+     */
+    public function getAddressTagsStreetNumber(bool $useFallback = false): ?string
+    {
+        $tags = $this->getAddressTags();
+        if ($tags && isset($tags['housenumber'])) {
+            return $tags['housenumber'];
+        }
+        if ($useFallback) {
+            return $this->getAddressStreetNumber();
+        }
+        return null;
+    }
+    
+    /**
      * @return string|null
      */
     public function getAddressCity(): ?string
     {
         return $this->addressCity;
+    }
+    
+    /**
+     * Get city name of addresstags if any specified
+     *
+     * @param bool $useFallback If set to true and no specific addresstag value is stored, falls back to global value if set to true
+     * @return string|null
+     */
+    public function getAddressTagsCity(bool $useFallback = false): ?string
+    {
+        $tags = $this->getAddressTags();
+        if ($tags && isset($tags['city'])) {
+            return $tags['city'];
+        }
+        if ($useFallback) {
+            return $this->getAddressCity();
+        }
+        return null;
     }
     
     /**
@@ -335,11 +419,47 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     }
     
     /**
+     * Get zip code of addresstags if any specified
+     *
+     * @param bool $useFallback If set to true and no specific addresstag value is stored, falls back to global value if set to true
+     * @return string|null
+     */
+    public function getAddressTagsZip(bool $useFallback = false): ?string
+    {
+        $tags = $this->getAddressTags();
+        if ($tags && isset($tags['postcode'])) {
+            return $tags['postcode'];
+        }
+        if ($useFallback) {
+            return $this->getAddressZip();
+        }
+        return null;
+    }
+    
+    /**
      * @return string|null
      */
     public function getAddressCountry(): ?string
     {
         return $this->addressCountry;
+    }
+    
+    /**
+     * Get country code of addresstags if any specified
+     *
+     * @param bool $useFallback If set to true and no specific addresstag value is stored, falls back to global value if set to true
+     * @return string|null
+     */
+    public function getAddressTagsCountry(bool $useFallback = false): ?string
+    {
+        $tags = $this->getAddressTags();
+        if ($tags && isset($tags['country'])) {
+            return $tags['country'];
+        }
+        if ($useFallback) {
+            return $this->getAddressCountry();
+        }
+        return null;
     }
     
     /**
@@ -365,7 +485,7 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     {
         return $this->getLocationLatitude() && $this->getLocationLongitude();
     }
-
+    
     /**
      * @inheritDoc
      */

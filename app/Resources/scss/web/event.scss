@@ -669,19 +669,54 @@ abbr.unit {
 
 #participantsLocationDistribution {
   table {
-    tr.sub td {
+    tbody td {
       display: none;
     }
 
-    &.detailed {
-      tr.sub td {
+    &.level0 {
+      tr.level0 td {
         display: table-cell;
       }
     }
 
-    tr.main td {
-      font-weight: bold;
-      font-size: 105%;
+    &.level1 {
+      tr.level0 td,
+      tr.level1 td {
+        display: table-cell;
+      }
+    }
+
+    &.level2 {
+      tr.level0 td,
+      tr.level1 td,
+      tr.level2 td {
+        display: table-cell;
+      }
+    }
+
+    &.level3 {
+      tr.level0 td,
+      tr.level1 td,
+      tr.level2 td,
+      tr.level3 td {
+        display: table-cell;
+      }
+    }
+
+    &.level4 {
+      tr.level0 td,
+      tr.level1 td,
+      tr.level2 td,
+      tr.level3 td,
+      tr.level4 td {
+        display: table-cell;
+      }
+    }
+
+    &.level5 {
+      tr td {
+        display: table-cell;
+      }
     }
 
     td.number {
@@ -695,6 +730,51 @@ abbr.unit {
 
       td:first-child {
         padding-left: 25px;
+      }
+    }
+
+    tr.level0 td {
+      font-size: 105%;
+    }
+
+    tr.level1 td {
+      font-size: 103%;
+
+      &:first-child {
+        padding-left: 25px;
+      }
+    }
+
+    tr.level2 td {
+      font-size: 102%;
+
+      &:first-child {
+        padding-left: 35px;
+      }
+    }
+
+    tr.level3 td {
+      font-size: 100%;
+      font-weight: bold;
+
+      &:first-child {
+        padding-left: 50px;
+      }
+    }
+
+    tr.level4 td {
+      font-size: 90%;
+
+      &:first-child {
+        padding-left: 65px;
+      }
+    }
+
+    tr.level5 td {
+      font-size: 85%;
+
+      &:first-child {
+        padding-left: 80px;
       }
     }
   }

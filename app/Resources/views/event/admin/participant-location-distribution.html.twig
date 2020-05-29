@@ -13,21 +13,37 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
-        <p>Die folgende Tabelle gibt Aufschluss darüber, woher die bestätigten Teilnehmer stammen.</p>
+        <p>
+          Die folgende Tabelle gibt Aufschluss darüber, woher die bestätigten Teilnehmer stammen.
+          Durch die Granularitäts-Schalter können die einzelnen Gruppierungen weiter aufgeschlüsselt werden.
+        </p>
       </div>
       <div class="col-xs-12" id="participantsLocationDistribution"
            data-url="{{ url('event_participants_location_data', {'eid': event.eid}) }}">
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active disabled" id="detail-rough">
-              <input type="radio" name="detail" id="rough" checked> Grob
+            <label class="btn btn-default disabled" id="levels">
+              <input type="radio" name="detail" id="level0"> Nationen
             </label>
             <label class="btn btn-default disabled" id="detail-detailed">
-              <input type="radio" name="detail" id="detailed"> Fein
+              <input type="radio" name="detail" id="level1"> Länder
+            </label>
+            <label class="btn btn-default disabled" id="detail-detailed">
+              <input type="radio" name="detail" id="level2"> Kreise
+            </label>
+            <label class="btn btn-default disabled active" id="detail-detailed">
+              <input type="radio" name="detail" id="level3" checked> Städte
+            </label>
+            <label class="btn btn-default disabled" id="detail-detailed">
+              <input type="radio" name="detail" id="level4"> Teile
+            </label>
+            <label class="btn btn-default disabled" id="detail-detailed">
+              <input type="radio" name="detail" id="level5"> Bezirke
             </label>
           </div>
         </div>
-        <table class="table table-striped table-condensed">
+
+        <table class="table table-striped table-condensed level3">
           <thead>
           <tr>
             <td>Ort</td>
@@ -36,7 +52,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr class="level0">
             <td class="loading-text" colspan="3">
               <i>Die Anmeldungsdaten werden untersucht, die Herkunftsverteilung wird vorbereitet...</i>
             </td>

@@ -955,7 +955,9 @@ $(function () {
             if (el.hasClass('disabled')) {
                 return;
             }
-            participantsLocationDistributionEl.find('table').toggleClass('detailed', el.attr('id') === 'detail-detailed');
+            for (var i = 0; i <= 5; ++i) {
+                participantsLocationDistributionEl.find('table').toggleClass('level' + i, el.find('input').attr('id') === 'level' + i);
+            }
         });
         $.ajax({
             type: 'GET',
@@ -972,40 +974,54 @@ $(function () {
                     return;
                 }
                 participantsLocationDistributionEl.find('.btn').removeClass('disabled');
-                var html = '';
-                $.each(response.distribution, function (key, location) {
-                    var name = eHtml(location.name);
-                    if (name === 'Unbekannt') {
-                        name = '<i>Unbekannt</i>';
-                    }
-                    html += '<tr class="main">';
-                    html += '<td>' + name + '</td>';
-                    html += '<td class="number">' + location.occurrences + '</td>';
 
-                    html += '<td>';
-                    if (response.max) {
-                        var percentage = ((location.occurrences / response.max) * 100);
-                        html += ' <div class="progress" style="margin-bottom: 0; min-width: 200px;">';
-                        html += '  <div class="progress-bar" role="progressbar" aria-valuenow="' + location.occurrences + '" aria-valuemin="0" aria-valuemax="' + response.max + '" style="width: ' + percentage + '%;">' +
-                            location.occurrences;
-                        html += '</div>';
-                    }
-                    html += '</td>';
+                const allBelowUnknown = function (items) {
+                    var result = true;
+                    $.each(items, function (key, item) {
+                        if (item.n !== 'Unbekannt') {
+                            result = false;
+                            return false;
+                        }
+                        if (item.c && item.c.length) {
+                            return allBelowUnknown(item.c);
+                        }
 
-                    html += '</tr>';
+                    });
+                    return result;
+                }
 
-                    if (location.children.length) {
-                        //possibly solve as recursive call
-                        $.each(location.children, function (key, locationChild) {
-                            html += '<tr class="sub">';
-                            html += '<td>' + locationChild.name + '</td>';
-                            html += '<td class="number">' + locationChild.occurrences + '</td>';
-                            html += '<td></td>';
-                            html += '</tr>';
-                        });
-                    }
+                const flatten = function (items, level) {
+                    var result = '';
 
-                });
+                    $.each(items, function (key, item) {
+                        var name = eHtml(item.n);
+
+                        if (name === 'Unbekannt') {
+                            name = '<i>Unbekannt</i>';
+                        }
+                        result += '<tr class="level' + level + '">';
+                        result += '<td>' + name + '</td>';
+                        result += '<td class="number">' + item.o + '</td>';
+
+                        result += '<td>';
+                        if (response.total) {
+                            var percentage = ((item.o / response.total) * 100);
+                            result += ' <div class="progress" style="margin-bottom: 0; min-width: 200px;">';
+                            result += '  <div class="progress-bar" role="progressbar" aria-valuenow="' + item.o + '" aria-valuemin="0" aria-valuemax="' + response.total + '" style="width: ' + percentage + '%;">';
+                            result += ((percentage > 5) ? item.o : '');
+                            result += '</div>';
+                        }
+                        result += '</td>';
+
+                        if (item.c && item.c.length && !allBelowUnknown(item.c)) {
+                            result += flatten(item.c, level + 1);
+                        }
+                    });
+
+                    return result;
+                };
+
+                var html = flatten(response.distribution, 0, response.total);
                 tbody.html(html);
             },
             error: function () {

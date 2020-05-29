@@ -31,6 +31,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class LocationController extends Controller
 {
     
+    const LABEL_UNKNOWN = 'Unbekannt';
+    
     /**
      * Get participants location distribution
      *
@@ -46,7 +48,8 @@ class LocationController extends Controller
         /** @var AddressResolverInterface $addressResolver */
         $addressResolver = $this->get('app.geo.address_resolver');
         
-        $locations = [];
+        $postcodes = [];
+        $chain     = [];
         $unknown   = 0;
         
         /** @var Participation $participation */
@@ -57,7 +60,124 @@ class LocationController extends Controller
             foreach ($participation->getParticipants() as $participant) {
                 if ($participant->isConfirmed() && !$participant->isWithdrawn() && !$participant->isRejected()) {
                     if ($location->isLocationProvided()) {
-                        $locations[] = $location;
+                        $details   = $location->getDetails();
+                        $addresses = [];
+                        if (isset($details['address'])) {
+                            $addresses = $details['address'];
+                        } else {
+                            foreach ($details as $detail) {
+                                $addresses = $detail['address'];
+                            }
+                        }
+                        
+                        $country       = $addresses['country'] ?? self::LABEL_UNKNOWN;
+                        $state         = $addresses['state'] ?? self::LABEL_UNKNOWN;
+                        $boundary      = $addresses['county'] ?? self::LABEL_UNKNOWN;
+                        $city          = $addresses['town'] ?? self::LABEL_UNKNOWN;
+                        $village       = $addresses['town'] ?? self::LABEL_UNKNOWN;
+                        $neighbourhood = $addresses['neighbourhood'] ?? self::LABEL_UNKNOWN;
+                        
+                        $postcode = $location->getAddressTagsZip(true);
+                        foreach (array_reverse($addresses) as $address) {
+                            if (!isset($address['type'])) {
+                                continue;
+                            }
+                            $localname = $address['localname'];
+                            switch ($address['type']) {
+                                case 'postcode':
+                                    $postcode = $localname;
+                                    break;
+                                case 'country':
+                                    $country = $localname;
+                                    break;
+                                case 'administrative':
+                                    if ($address['place_type'] === 'state') {
+                                        $state = $localname;
+                                    } else {
+                                        $a = 1;
+                                        if ($address['class'] === 'boundary') {
+                                            if ($address['rank_address'] < 13) {
+                                                $boundary = $localname;
+                                            } elseif (in_array($address['place_type'], ['village', 'town', 'city'])) {
+                                                if ($village !== self::LABEL_UNKNOWN
+                                                    || (isset($village['rank_address'])
+                                                        && $address['rank_address'] < $village['rank_address'])
+                                                ) {
+                                                    $village = $address;
+                                                }
+                                                $city = $localname;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case 'neighbourhood':
+                                    if ($address['class'] === 'place') {
+                                        $neighbourhood = $localname;
+                                    }
+                                    break;
+                                case 'hamlet':
+                                    if (empty($neighbourhood)) {
+                                        $neighbourhood = $localname;
+                                    }
+                                    break;
+                                case 'village':
+                                    if ($address['class'] === 'place') {
+                                        if ($village !== self::LABEL_UNKNOWN
+                                            || (isset($village['rank_address']) &&
+                                                $address['rank_address'] < $village['rank_address'])
+                                        ) {
+                                            $village = $address;
+                                        }
+                                    }
+                                    break;
+                                
+                            }
+                        }
+                        if (is_array($village)) {
+                            $village = $village['localname'];
+                        }
+                        if ($village === self::LABEL_UNKNOWN) {
+                            $village = $city;
+                        }
+                        
+                        if (!isset($chain[$country])) {
+                            $chain[$country] = self::initializeElement($country);
+                        }
+                        ++$chain[$country]['o'];
+                        
+                        if (!isset($chain[$country]['c'][$state])) {
+                            $chain[$country]['c'][$state] = self::initializeElement($state);
+                        }
+                        ++$chain[$country]['c'][$state]['o'];
+                        
+                        if (!isset($chain[$country]['c'][$state]['c'][$boundary])) {
+                            $chain[$country]['c'][$state]['c'][$boundary] = self::initializeElement($boundary);
+                        }
+                        ++$chain[$country]['c'][$state]['c'][$boundary]['o'];
+                        
+                        if (!isset($chain[$country]['c'][$state]['c'][$boundary]['c'][$city])) {
+                            $chain[$country]['c'][$state]['c'][$boundary]['c'][$city] = self::initializeElement(
+                                $city
+                            );
+                        }
+                        ++$chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['o'];
+                        
+                        if (!isset($chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village])) {
+                            $chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village]
+                                = self::initializeElement($village);
+                        }
+                        ++$chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village]['o'];
+                        
+                        if ($neighbourhood) {
+                            if (!isset($chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village]['c'][$neighbourhood])) {
+                                $chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village]['c'][$neighbourhood]
+                                    = self::initializeElement($neighbourhood);
+                            }
+                            ++$chain[$country]['c'][$state]['c'][$boundary]['c'][$city]['c'][$village]['c'][$neighbourhood]['o'];
+                        }
+                        
+                        $postcodes[] = $postcodes ?: $location->getAddressTagsZip(true);
+                        
                     } else {
                         ++$unknown;
                     }
@@ -65,33 +185,6 @@ class LocationController extends Controller
             }
         }
         
-        $locationsByCity = [];
-        
-        foreach ($locations as $location) {
-            $locationCity = strtolower($location->getAddressZip() . $location->getAddressCity());
-            if (!isset($locationsByCity[$locationCity])) {
-                $locationsByCity[$locationCity] = [
-                    'city'            => $location->getAddressCity(),
-                    'zip'             => $location->getAddressZip(),
-                    'administratives' => [],
-                    'occurrences'     => 0,
-                ];
-            }
-            ++$locationsByCity[$locationCity]['occurrences'];
-            
-            if ($location instanceof LocationDescription && $location->hasDetails()) {
-                $place               = new DetailedOpenStreetMapPlace($location->getDetails());
-                $placeAdministrative = $place->getNextAdministrativeAddress();
-                
-                $name = $placeAdministrative->getLocalName();
-                if (!isset($locationsByCity[$locationCity]['administratives'][$name])) {
-                    $locationsByCity[$locationCity]['administratives'][$name] = 0;
-                }
-                ++$locationsByCity[$locationCity]['administratives'][$name];
-            }
-        }
-    
-    
         /**
          * Compare occurrences
          *
@@ -100,48 +193,60 @@ class LocationController extends Controller
          * @return int
          */
         $compareOccurrencesCount = function (array $a, array $b): int {
-            if ($a['occurrences'] === $b['occurrences']) {
-                if ($a['name'] !== $b['name']) {
-                    return ($a['name'] > $b['name']) ? 1 : -1;
+            if ($a['o'] === $b['o']) {
+                if ($a['n'] !== $b['n']) {
+                    return ($a['n'] > $b['n']) ? 1 : -1;
                 }
                 return 0;
             }
-            return ($a['occurrences'] > $b['occurrences']) ? -1 : 1;
+            return ($a['o'] > $b['o']) ? -1 : 1;
         };
-    
-        $max    = 0;
-        $total  = 0;
-        $result = [];
-        foreach ($locationsByCity as $city) {
-            $children = [];
-            $total    += $city['occurrences'];
-            if ($city['occurrences'] > $max) {
-                $max = $city['occurrences'];
-            }
         
-            foreach ($city['administratives'] as $administrative => $occurrences) {
-                $children[] = [
-                    'name'        => $administrative,
-                    'occurrences' => $occurrences,
-                ];
-            }
-            usort($children, $compareOccurrencesCount);
+        $chain[self::LABEL_UNKNOWN]      = self::initializeElement(self::LABEL_UNKNOWN);
+        $chain[self::LABEL_UNKNOWN]['o'] = $unknown;
         
-            $result[] = [
-                'name'        => $city['zip'] . ' ' . $city['city'],
-                'occurrences' => $city['occurrences'],
-                'children'    => $children
-            ];
+        $max = 0;
+        $total = 0;
+        foreach ($chain as &$countries) {
+            $total += $countries['o'];
+            usort($countries['c'], $compareOccurrencesCount);
+            foreach ($countries['c'] as &$states) {
+                usort($states['c'], $compareOccurrencesCount);
+                foreach ($states['c'] as &$boundaries) {
+                    usort($boundaries['c'], $compareOccurrencesCount);
+                    foreach ($boundaries['c'] as &$cities) {
+                        if ($cities['o'] > $max) {
+                            $max = $cities['o'];
+                        }
+                        usort($cities['c'], $compareOccurrencesCount);
+                        foreach ($cities['c'] as &$villages) {
+                            usort($villages['c'], $compareOccurrencesCount);
+                            foreach ($villages['c'] as &$neighbourhoods) {
+                                usort($neighbourhoods['c'], $compareOccurrencesCount);
+                            }
+                        }
+                    }
+                }
+            }
         }
-        $result[] = [
-            'name'        => 'Unbekannt',
-            'occurrences' => $unknown,
-            'children'    => []
+        unset($countries, $state, $boundary, $cities, $villages, $neighbourhoods);
+        
+        return new JsonResponse(['distribution' => array_values($chain), 'total' => $total, 'max' => $max]);
+    }
+    
+    /**
+     * Initialize a chain element
+     *
+     * @param string $name
+     * @return array
+     */
+    private static function initializeElement(string $name): array
+    {
+        return [
+            'n' => $name,
+            'o' => 0,
+            'c' => [],
         ];
-        usort($result, $compareOccurrencesCount);
-        
-        
-        return new JsonResponse(['distribution' => $result, 'total' => $total, 'max' => $max]);
     }
     
     /**

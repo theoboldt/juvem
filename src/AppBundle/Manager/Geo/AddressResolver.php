@@ -17,6 +17,8 @@ class AddressResolver implements AddressResolverInterface
 {
     const REGEX_STREET_NUMBER = '/(?P<street>.*?)(?P<number>\d+.*)/';
     
+    const REGEX_NUMBER_STREET = '/(?P<number>\d+)(?:[\s\.]*)(?P<street>.*)/';
+    
     /**
      * @var AddressResolverInterface
      */
@@ -42,6 +44,48 @@ class AddressResolver implements AddressResolverInterface
     }
     
     /**
+     * Extract street name and number using best regex
+     *
+     * @param string $streetAndNumber
+     * @return array|null[]|string[]
+     */
+    private static function matchStreetAndNumberBest(string $streetAndNumber): array
+    {
+        $street = null;
+        $number = null;
+        if (preg_match(self::REGEX_STREET_NUMBER, $streetAndNumber, $result)) {
+            $street = self::trims($result['street']);
+            $number = self::trims($result['number']);
+        }
+
+        if (empty($street) || empty($number)) {
+            //try using alternate regex
+            if (preg_match(self::REGEX_NUMBER_STREET, $streetAndNumber, $result)) {
+                $alternateStreet = self::trims($result['street']);
+                $alternateNumber = self::trims($result['number']);
+
+                if (!empty($alternateStreet) && !empty($alternateNumber)) {
+                    $street = $alternateStreet;
+                    $number = $alternateNumber;
+                }
+            }
+        }
+        
+        return ['street' => $street, 'number' => $number];
+    }
+    
+    /**
+     * Trim according to requirements
+     *
+     * @param string $content
+     * @return string
+     */
+    private static function trims(string $content): string
+    {
+        return trim($content, " \t\n\r\0\x0B;,");
+    }
+    
+    /**
      * Extract street from combined street and street number snipped
      *
      * @param string $streetAndNumber Street and number snippet
@@ -49,15 +93,8 @@ class AddressResolver implements AddressResolverInterface
      */
     public static function extractStreetName(string $streetAndNumber): string
     {
-        if (preg_match(self::REGEX_STREET_NUMBER, $streetAndNumber, $result)) {
-            $street = trim($result['street'], " \t\n\r\0\x0B;,");
-            if (empty($street)) {
-                return $streetAndNumber;
-            } else {
-                return $street;
-            }
-        }
-        return $streetAndNumber;
+        $result = self::matchStreetAndNumberBest($streetAndNumber);
+        return $result['street'] ?? $streetAndNumber;
     }
     
     /**
@@ -68,15 +105,8 @@ class AddressResolver implements AddressResolverInterface
      */
     public static function extractStreetNumber(string $streetAndNumber): ?string
     {
-        if (preg_match(self::REGEX_STREET_NUMBER, $streetAndNumber, $result)) {
-            $number = trim($result['number'], " \t\n\r\0\x0B;,");
-            if (empty($number)) {
-                return null;
-            } else {
-                return $number;
-            }
-        }
-        return null;
+        $result = self::matchStreetAndNumberBest($streetAndNumber);
+        return $result['number'] ?? null;
     }
     
     /**
