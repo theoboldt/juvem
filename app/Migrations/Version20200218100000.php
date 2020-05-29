@@ -18,7 +18,7 @@ final class Version20200218100000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(
-            "CREATE TABLE entity_change (cid INT AUTO_INCREMENT NOT NULL, uid INT DEFAULT NULL, related_id INT NOT NULL, related_final class VARCHAR(255) NOT NULL, operation ENUM('create', 'update', 'delete', 'trash', 'restore'), changes JSON NOT NULL COMMENT '(DC2Type:json_array)', occurrence_date DATETIME NOT NULL, INDEX IDX_849A40AD539B0606 (uid), INDEX index_related (related_id, related_final class), PRIMARY KEY(cid)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB"
+            "CREATE TABLE entity_change (cid INT AUTO_INCREMENT NOT NULL, uid INT DEFAULT NULL, related_id INT NOT NULL, related_class VARCHAR(255) NOT NULL, operation ENUM('create', 'update', 'delete', 'trash', 'restore'), changes JSON NOT NULL COMMENT '(DC2Type:json_array)', occurrence_date DATETIME NOT NULL, INDEX IDX_849A40AD539B0606 (uid), INDEX index_related (related_id, related_class), PRIMARY KEY(cid)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB"
         );
         
         $this->addSql(
