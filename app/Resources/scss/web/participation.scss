@@ -189,3 +189,14 @@
 .acquisition-attribute.field-symfony-component-form-extension-core-type-numbertype input {
   max-width: 100px;
 }
+
+.scrollspy-panels .scrollspy-panel {
+  .panel-body {
+    padding: 0;
+
+    div.scroll {
+      margin: 0;
+      padding: 15px;
+    }
+  }
+}
