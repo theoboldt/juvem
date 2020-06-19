@@ -10,6 +10,8 @@
 /app/config/imprint-content.html.twig
 /app/config/conditions-of-travel-content.html.twig
 /app/config/conditions-of-travel-scrollspy.html.twig
+/app/config/conditions-corona-content.html.twig
+/app/config/conditions-corona-scrollspy.html.twig
 /bin/
 /build/
 /composer.phar

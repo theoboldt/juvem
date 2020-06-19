@@ -328,12 +328,17 @@ services:
       autowire: true
       tags:
         - form.type
-    
+
     AppBundle\Form\InvoiceMailingType:
       autowire: true
       tags:
         - form.type
 
+    AppBundle\Form\ParticipationType:
+      arguments:
+        - "%kernel.root_dir%"
+      tags:
+        - form.type
 
     AppBundle\Form\Meal\MealFeedbackType:
         arguments:

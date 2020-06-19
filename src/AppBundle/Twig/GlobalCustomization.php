@@ -281,6 +281,26 @@ class GlobalCustomization
     }
 
     /**
+     * HTML markup for corona page content
+     *
+     * @return string
+     */
+    public function legalConditionsCoronaContent(): string
+    {
+        return $this->renderCustomizedIfAvailable('conditions-corona-content');
+    }
+
+    /**
+     * HTML markup for corona page content
+     *
+     * @return string
+     */
+    public function legalConditionsCoronaScrollspy(): string
+    {
+        return $this->renderCustomizedIfAvailable('conditions-corona-scrollspy');
+    }
+
+    /**
      * Render defined template, use customized override in config folder if defined
      *
      * @see isCustomizationAvailable()
