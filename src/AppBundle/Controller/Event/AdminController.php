@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
@@ -21,6 +22,7 @@ use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
@@ -31,6 +33,8 @@ use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -238,8 +242,9 @@ class AdminController extends Controller
             return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
         }
         
-        $groupCount      = 0;
-        $detectingsCount = 0;
+        $groupCount       = 0;
+        $detectingsCount  = 0;
+        $numberFieldCount = 0;
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes() as $attribute) {
             switch ($attribute->getFieldType()) {
@@ -248,6 +253,11 @@ class AdminController extends Controller
                     break;
                 case \AppBundle\Form\ParticipantDetectingType::class:
                     ++$detectingsCount;
+                    break;
+                case \Symfony\Component\Form\Extension\Core\Type\NumberType::class:
+                    if (!$attribute->isPublic()) {
+                        ++$numberFieldCount;
+                    }
                     break;
             }
         }
@@ -258,6 +268,7 @@ class AdminController extends Controller
                 'event'              => $event,
                 'groupCount'         => $groupCount,
                 'detectingsCount'    => $detectingsCount,
+                'numberFieldCount'   => $numberFieldCount,
                 'pageDescription'    => $event->getDescriptionMeta(true),
                 'ageDistribution'    => $ageDistribution,
                 'ageDistributionMax' => $ageDistributionMax,
@@ -770,4 +781,127 @@ class AdminController extends Controller
         
         return new JsonResponse(['']);
     }
+    
+    /**
+     * Generate order
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/order", requirements={"eid": "\d+"}, name="event_admin_order")
+     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @param Event $event Related event
+     * @param Request $request
+     * @return Response
+     */
+    public function createOrderAction(Event $event, Request $request)
+    {
+        $formBuilder = $this->createFormBuilder();
+        
+        $choices = [];
+        
+        
+        /** @var Attribute $attribute */
+        foreach ($event->getAcquisitionAttributes() as $attribute) {
+            if ($attribute->getFieldType() === \Symfony\Component\Form\Extension\Core\Type\NumberType::class
+                && !$attribute->isPublic()
+            ) {
+                $choices[$attribute->getManagementTitle()] = $attribute->getBid();
+            }
+        }
+        $formBuilder->add(
+            'attribute', ChoiceType::class, ['label' => 'Feld', 'choices' => $choices]
+        );
+        $formBuilder->add(
+            'reset', CheckboxType::class,
+            ['label' => 'Vorhandene Reihenfolge zurücksetzen und überschreiben', 'required' => false]
+        );
+        
+        $form = $formBuilder->getForm();
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $attributeBid = $form->get('attribute')->getData();
+            $reset        = $form->get('reset')->getData();
+            
+            $attribute = $event->getAcquisitionAttribute($attributeBid);
+            /** @var ParticipationRepository $participationRepository */
+            $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+            
+            if ($attribute->getUseAtParticipant()) {
+                $elements = $participationRepository->participantsList($event, null, true, true);
+                $this->updateFilloutOrder($elements, $attributeBid, $reset);
+                $this->addFlash(
+                    'success',
+                    'Reihenfolge für Teilnehmer für das Feld <i>' . htmlspecialchars($attribute->getManagementTitle()) .
+                    '</i> festgelegt'
+                );
+            }
+            if ($attribute->getUseAtParticipation()) {
+                $elements = $participationRepository->participationsList($event, false, true, null);
+                $this->updateFilloutOrder($elements, $attributeBid, $reset);
+                $this->addFlash(
+                    'success',
+                    'Reihenfolge für Anmeldungen für das Feld <i>' .
+                    htmlspecialchars($attribute->getManagementTitle()) . '</i> festgelegt'
+                );
+            }
+            
+            if ($attribute->getUseAtEmployee()) {
+                $this->addFlash(
+                    'warning',
+                    'Reihenfolgen für Betreuer können noch nicht festgelegt werden'
+                );
+            }
+            
+            return $this->redirectToRoute('event_admin_order', ['eid' => $event->getEid()]);
+        }
+        
+        return $this->render(
+            'event/admin/create-order.html.twig',
+            [
+                'event' => $event,
+                'form'  => $form->createView(),
+            ]
+        );
+    }
+    
+    /**
+     * Update fillout order
+     *
+     * @param array $elements
+     * @param int $attributeBid
+     * @param bool $reset
+     * @return int
+     */
+    private function updateFilloutOrder(array $elements, int $attributeBid, bool $reset): int
+    {
+        $valueMax = 0;
+        /** @var FilloutTrait $element */
+        foreach ($elements as $element) {
+            $fillout = $element->getAcquisitionAttributeFillout($attributeBid, true);
+            $value   = $fillout->getValue()->getTextualValue();
+            
+            if ($reset) {
+                $fillout->setValue('');
+            } elseif (!empty($value) && $value > $valueMax) {
+                $valueMax = $value;
+            }
+        }
+        
+        $em = $this->getDoctrine()->getManager();
+        
+        shuffle($elements);
+        $index = ($valueMax + 1);
+        foreach ($elements as $element) {
+            $fillout = $element->getAcquisitionAttributeFillout($attributeBid, true);
+            if (empty($fillout->getValue()->getTextualValue())) {
+                $fillout->setValue($index++);
+                $em->persist($fillout);
+            }
+        }
+        
+        $em->flush();
+        
+        return $index - 1;
+    }
+    
 }

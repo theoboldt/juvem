@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reihenfolge festlegen ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Reihenfolge festlegen', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Reihenfolge festlegen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Für die Anmeldungen, Teilnehmer oder Mitarbeiter kann hier eine zufällige Reihenfolge erstellt und festgelegt werden.</p>
+        <p>Die Reihenfolge bleibt nach ihrer Erstellung konstant. Sie kann in Felder vom Typ <i>Eingabefeld (Ganzzahl)</i>,
+          die nicht öffentlich erfasst werden, geschrieben werden.</p>
+        <p>Wird <i>Vorhandene Reihenfolge zurücksetzen und überschreiben</i> aktiviert, werden alle im Feld bereits vorhandenen Werte gelöscht. Andernfalls wird zunächst der höchtste vorhandene Index-Wert ermittelt, und für alle Elemente für die bisher noch kein zufälliger Index vergeben wurde ein Wert vergeben.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_rest(form) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <input type="submit" value="Reihenfolge festlegen" class="btn btn-primary"/>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+
+
+  </div>
+{% endblock %}
