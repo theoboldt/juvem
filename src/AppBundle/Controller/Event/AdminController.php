@@ -890,26 +890,6 @@ class AdminController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         shuffle($elements);
-/*
-        $element = reset($elements);
-        if ($element instanceof Participation) {
-            $splitted = array_chunk($elements, 50);
-            foreach ($splitted as $groupIndex => &$subItems) {
-                if ($groupIndex === 0) {
-                    continue;
-                }
-                foreach ($subItems as $subIndex => $items) {
-                    
-                }
-            }
-            $subItems = null;
-            foreach ($splitted as &$subItems) {
-                shuffle($subItems);
-            }
-            unset($subItems);
-            $elements = array_merge($splitted);
-        }
-        */
         $index = ($valueMax + 1);
         foreach ($elements as $element) {
             $fillout = $element->getAcquisitionAttributeFillout($attributeBid, true);
