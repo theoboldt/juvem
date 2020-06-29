@@ -236,15 +236,18 @@ $(function () {
                 });
             }
 
-            table.on('column-switch.bs.table', function (e, dataIndex) {
-                var columnConfiguration = table.bootstrapTable('getVisibleColumns'),
-                    columns = [];
+            table.on('all.bs.table', function (e, eventName, args) {
+                //direct listener on 'column-switch.bs.table' seem to be not working
+                if (eventName === 'column-switch.bs.table') {
+                    var columnConfiguration = table.bootstrapTable('getVisibleColumns'),
+                        columns = [];
 
-                $.each(columnConfiguration, function (index, column) {
-                    columns.push(column.field);
-                });
+                    $.each(columnConfiguration, function (index, column) {
+                        columns.push(column.field);
+                    });
 
-                userSettings.set(tableSettingsIdentifier, columns);
+                    userSettings.set(tableSettingsIdentifier, columns);
+                }
             });
         },
 
@@ -255,17 +258,23 @@ $(function () {
                 handleFetchTable(table);
                 handleColumnSettings(table);
             });
-        }();
+        };
+    handleRemoteTables();
 
     /**
      * PARTICIPANT LIST: Unhide price/to pay column
      */
     var participantsTable = $('#participantsListTable');
-    participantsTable.on('column-switch.bs.table', function (e, dataIndex) {
-        if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
-            return;
+    //direct listener on 'column-switch.bs.table' seem to be not working
+    participantsTable.on('all.bs.table', function (e, eventName, args) {
+        if (eventName === 'column-switch.bs.table') {
+            var dataIndex = args[0];
+            console.log(dataIndex);
+            if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
+                return;
+            }
+            tableEnableQueryParam(participantsTable, 'payment');
         }
-        tableEnableQueryParam(participantsTable, 'payment');
     });
 
     /**
