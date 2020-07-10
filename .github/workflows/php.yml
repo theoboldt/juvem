@@ -68,7 +68,7 @@ jobs:
       
       - name: Run Migration
         run: |
-          composer require symfony/orm-pack
+          composer require symfony/orm-pack:1.0
           php bin/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
           php bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
 
