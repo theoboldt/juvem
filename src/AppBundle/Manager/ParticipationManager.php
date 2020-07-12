@@ -53,7 +53,7 @@ class ParticipationManager extends AbstractMailerAwareManager
         UrlGeneratorInterface $urlGenerator,
         Swift_Mailer $mailer,
         MailGenerator $mailGenerator,
-        LoggerInterface $logger = null,
+        ?LoggerInterface $logger,
         EntityManagerInterface $em
     ) {
         $this->em = $em;
