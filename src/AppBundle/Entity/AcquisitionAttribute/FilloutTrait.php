@@ -133,7 +133,7 @@ trait FilloutTrait
         if (preg_match('/acq_field_(\d+)/', $key, $bidData)) {
             return $this->getAcquisitionAttributeFillout($bidData[1], true);
         }
-        throw new \InvalidArgumentException('Unknown property accessed');
+        throw new \InvalidArgumentException(sprintf('Unknown property "%s" accessed', $key));
     }
 
     /**
