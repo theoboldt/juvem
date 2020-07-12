@@ -168,4 +168,16 @@ class BitmaskTest extends TestCase
             $result
         );
     }
+    
+    public function testFormatterAbsenseLabel(): void {
+        $formatter = ParticipantStatus::formatter();
+        $status    = new ParticipantStatus();
+
+        $result = $formatter->formatMask($status);
+        $this->assertEquals(
+            '<span class="label label-default option-1">unbestätigt</span>',
+            $result
+        );
+        
+    }
 }
