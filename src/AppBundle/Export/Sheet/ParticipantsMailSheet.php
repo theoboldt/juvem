@@ -13,6 +13,7 @@ namespace AppBundle\Export\Sheet;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -50,7 +51,7 @@ class ParticipantsMailSheet extends ParticipantsSheet
                 $numberCount = count($value);
                 $i           = 1;
 
-                /** @var PhoneNumbUsinger $number */
+                /** @var PhoneNumber $number */
                 foreach ($value as $number) {
                     $numberText .= $phoneNumberUtil->formatOutOfCountryCallingNumber($number->getNumber(), 'DE');
                     if ($number->getDescription()) {
