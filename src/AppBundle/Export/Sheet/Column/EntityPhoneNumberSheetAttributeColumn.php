@@ -47,8 +47,6 @@ class EntityPhoneNumberSheetAttributeColumn extends EntityAttributeColumn
                 $value = $entity->getPhoneNumbers();
                 
                 $numberTexts  = [];
-                $numberCount = count($value);
-                $i           = 1;
                 
                 /** @var PhoneNumber $number */
                 foreach ($value as $number) {
