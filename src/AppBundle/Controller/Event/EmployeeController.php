@@ -15,18 +15,21 @@ use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Export\EmployeesExport;
 use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
 use AppBundle\Form\ImportEmployeesType;
 use AppBundle\Form\MoveEmployeeType;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\Payment\PaymentManager;
+use AppBundle\ResponseHelper;
 use AppBundle\Security\EventVoter;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -49,6 +52,39 @@ class EmployeeController extends Controller
                 'event' => $event,
             ]
         );
+    }
+    
+    
+    /**
+     * Export employee list
+     *
+     * @Route("/admin/event/{eid}/employee/export", requirements={"eid": "\d+"}, name="admin_employee_export")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('employees_read', event)")
+     */
+    public function exportAction(Event $event)
+    {
+        $repository = $this->getDoctrine()->getRepository(Employee::class);
+        $employees  = $repository->findForEvent($event);
+        
+        $export = new EmployeesExport(
+            $this->get('app.twig_global_customization'), $event, $employees, $this->getUser()
+        );
+        $export->setMetadata();
+        $export->process();
+        
+        $response = new StreamedResponse(
+            function () use ($export) {
+                $export->write('php://output');
+            }
+        );
+        ResponseHelper::configureAttachment(
+            $response,
+            $event->getTitle() . ' - Mitarbeiter.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+        
+        return $response;
     }
 
     /**
