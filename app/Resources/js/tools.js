@@ -1,10 +1,10 @@
 $(function () {
-    
+
     // {@see https://github.com/advisories/GHSA-gxr4-xjj5-5px2}
     jQuery.htmlPrefilter = function (html) {
         return html;
     };
-    
+
     /**
      * GLOBAL request configuration
      */
@@ -196,6 +196,9 @@ $(function () {
     };
 
     const sorterDatify = function (v) {
+        if (v === null) {
+            return new Date(1980);
+        }
         var parts;
         parts = v.match(/^(\d{2})\.(\d{2})\.(\d{2,4})$/);
         if (parts) {
