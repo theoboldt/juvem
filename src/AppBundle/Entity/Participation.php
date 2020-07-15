@@ -26,6 +26,7 @@ use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -350,11 +351,19 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     /**
      * Get participants
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return array|Participant[]
      */
-    public function getParticipants()
+    public function getParticipants(): array
     {
-        return $this->participants;
+        if ($this->participants instanceof Collection) {
+            $participants = $this->participants->toArray();
+        } else {
+            $participants = $this->participants;
+        }
+        usort($participants, function(Participant $a, Participant $b) {
+            return $a->getNameFirst() <=> $b->getNameFirst();
+        });
+        return $participants;
     }
 
     /**

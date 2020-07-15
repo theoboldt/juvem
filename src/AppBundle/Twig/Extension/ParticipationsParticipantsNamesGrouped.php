@@ -113,7 +113,7 @@ class ParticipationsParticipantsNamesGrouped extends AbstractExtension
     )
     {
         /** @var array|Participant[] $participants */
-        $participants = $participation->getParticipants()->toArray();
+        $participants = $participation->getParticipants();
         return self::combineNames($participants, $template, $textFilter);
     }
     

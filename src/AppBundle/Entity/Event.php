@@ -799,7 +799,8 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         /** @var Participation $participation */
         foreach ($this->participations as $participation) {
             /** @var Participant $participant */
-            $participations = $participation->getParticipants()->filter($filter);
+            $participants   = new ArrayCollection($participation->getParticipants());
+            $participations = $participants->filter($filter);
             $count          += $participations->count();
         }
         
