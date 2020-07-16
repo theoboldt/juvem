@@ -49,7 +49,7 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
         $fillout = $this->findOneBy(['participant' => $participant, 'attendanceList' => $list, 'column' => $column]);
         if (!$fillout) {
             if ($createIfNotExists) {
-                $fillout = new AttendanceListParticipantFillout($list, $participant);
+                $fillout = new AttendanceListParticipantFillout($list, $participant, $column);
                 $fillout->setParticipant($participant);
                 $fillout->setAttendanceList($list);
             } else {

@@ -48,7 +48,7 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="fillouts", cascade={"all"})
      * @ORM\JoinColumn(name="column_id", referencedColumnName="column_id", onDelete="cascade", nullable=false)
-     * @var Participant
+     * @var AttendanceListColumn
      */
     protected $column;
     
@@ -70,17 +70,20 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
      *
      * @param AttendanceList $attendanceList
      * @param Participant $participant
+     * @param AttendanceListColumn $column
      * @param AttendanceListColumnChoice $choice
      * @param string|null $comment
      */
     public function __construct(
         AttendanceList $attendanceList,
         Participant $participant,
+        AttendanceListColumn $column,
         ?AttendanceListColumnChoice $choice = null,
         ?string $comment = null
     )
     {
         $this->choice  = $choice;
+        $this->column  = $column;
         $this->comment = $comment;
         if ($attendanceList) {
             $attendanceList->addFillout($this);
@@ -124,6 +127,22 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     {
         $this->participant = $participant;
         return $this;
+    }
+    
+    /**
+     * @return AttendanceListColumn
+     */
+    public function getColumn(): AttendanceListColumn
+    {
+        return $this->column;
+    }
+    
+    /**
+     * @param AttendanceListColumn $column
+     */
+    public function setColumn(AttendanceListColumn $column): void
+    {
+        $this->column = $column;
     }
     
     /**

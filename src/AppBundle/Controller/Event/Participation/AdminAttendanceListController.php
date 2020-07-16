@@ -12,6 +12,7 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\AttendanceList\AttendanceListColumn;
 use AppBundle\Entity\AttendanceList\AttendanceListFilloutParticipantRepository;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Event;
@@ -301,10 +302,12 @@ class AdminAttendanceListController extends Controller
         $repositoryParticipant = $this->getDoctrine()->getRepository(Participant::class);
         /** @var Participant $participant */
         $participant = $repositoryParticipant->find($request->get('aid'));
-        $fillout               = $repositoryFillout->findFillout(
+        /** @var AttendanceListColumn $column */
+        $column  = $repositoryFillout->findColumnById($request->get('columnId'));
+        $fillout = $repositoryFillout->findFillout(
             $participant,
             $list,
-            $repositoryFillout->findColumnById($request->get('columnId'))
+            $column
         );
         $comment = trim($request->get('comment'));
         if ($fillout) {
@@ -313,6 +316,7 @@ class AdminAttendanceListController extends Controller
             $fillout = new AttendanceListParticipantFillout(
                 $list,
                 $participant,
+                $column,
                 null,
                 $comment
             );
