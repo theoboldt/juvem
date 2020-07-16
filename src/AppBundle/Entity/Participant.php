@@ -111,7 +111,8 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Contains the participants assigned to this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participant")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"},
+     *                                                                              mappedBy="participant")
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $acquisitionAttributeFillouts;
@@ -119,7 +120,8 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Contains the list of attendance lists fillouts of this participation
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout", mappedBy="participant", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout", mappedBy="participant",
+     *                                                                                                 cascade={"all"})
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $attendanceListsFillouts;
@@ -140,6 +142,13 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     protected $paymentEvents;
 
     /**
+     * Connectors
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ParticipantConnector", cascade={"all"}, mappedBy="participant")
+     */
+    protected $connectors;
+
+    /**
      * Stores the date information about when the confirmation notification was sent the last time
      *
      * @var \DateTime|null
@@ -148,11 +157,11 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      * @Serialize\Type("DateTime<'d.m.Y H:i'>")
      */
     protected $confirmationSentAt = null;
-    
+
     /**
      * Constructor
      *
-     * @param Participation $participation  Related participation
+     * @param Participation $participation Related participation
      */
     public function __construct(Participation $participation = null)
     {
@@ -170,6 +179,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         $this->attendanceListsFillouts      = new ArrayCollection();
         $this->comments                     = new ArrayCollection();
         $this->paymentEvents                = new ArrayCollection();
+        $this->connectors                   = new ArrayCollection();
     }
 
     /**
@@ -181,7 +191,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return $this->aid;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -218,7 +228,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             return $this->gender;
         }
     }
-    
+
     /**
      * Format gender code
      *
@@ -470,7 +480,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Set this participant as withdrawn
      *
-     * @param   bool $withdrawn New value
+     * @param bool $withdrawn New value
      * @return self
      */
     public function setIsWithdrawn($withdrawn = true)
@@ -487,7 +497,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Mark withdraw requested for this participant
      *
-     * @param   bool $withdrawn New value
+     * @param bool $withdrawn New value
      * @return self
      */
     public function setIsWithdrawRequested($withdrawn = true)
@@ -515,7 +525,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Set this participant as rejected
      *
-     * @param   bool $rejected New value
+     * @param bool $rejected New value
      * @return self
      */
     public function setIsRejected($rejected = true)
@@ -542,7 +552,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         if ($attendanceListsFillout->getParticipant() !== $this) {
             $attendanceListsFillout->setParticipant($this);
         }
-        
+
         return $this;
     }
 
@@ -594,6 +604,39 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     }
 
     /**
+     * Connectors
+     *
+     * @return array|ParticipantConnector[]
+     */
+    public function getConnectors(): array
+    {
+        return $this->connectors->toArray();
+    }
+
+    /**
+     * Create new connector and add to list
+     *
+     * @return ParticipantConnector
+     */
+    public function createConnector(): ParticipantConnector
+    {
+        $connector = new ParticipantConnector($this);
+        $this->connectors->add($connector);
+
+        return $connector;
+    }
+
+    /**
+     * Remove connector
+     *
+     * @param ParticipantConnector $connector
+     */
+    public function removeConnector(ParticipantConnector $connector): void
+    {
+        $this->connectors->removeElement($connector);
+    }
+
+    /**
      * Determine if the value of an info field is considered as empty
      *
      * @param string|null $value Value to check
@@ -616,7 +659,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         ];
         return empty($value) || in_array(trim(mb_strtolower($value)), $acceptedAsEmpty);
     }
-    
+
     /**
      * Get date information about when the confirmation notification was sent the last time
      *
@@ -626,7 +669,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return $this->confirmationSentAt;
     }
-    
+
     /**
      * Set date information about when the confirmation notification was sent the last time
      *
@@ -636,7 +679,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         $this->confirmationSentAt = $confirmationSentAt;
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -644,7 +687,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return $this->getAid();
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -652,7 +695,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return sprintf('%s @ %s [%d]', $this->fullname(), $this->getEvent()->getTitle(), $this->getAid());
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -660,7 +703,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     {
         return ['comments', 'paymentEvents', 'basePrice'];
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -677,7 +720,7 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             'food'   => function ($value) {
                 $status = new ParticipantFood($value);
                 return implode(', ', $status->getActiveList(true));
-            }
+            },
         ];
     }
 }
