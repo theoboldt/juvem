@@ -322,7 +322,11 @@ class AdminAttendanceListController extends Controller
             );
         }
         $em = $this->getDoctrine()->getManager();
-        $em->persist($fillout);
+        if (empty($comment) && !$fillout->getChoice()) {
+            $em->remove($fillout);
+        } else {
+            $em->persist($fillout);
+        }
         $em->flush();
         return new JsonResponse([]);
     }
