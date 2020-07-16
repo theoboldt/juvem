@@ -8,9 +8,13 @@ $(function () {
         reloadBlocked = true,
         updateInProgress = false,
         queuedUpdates = [],
+        queuedUndos = [],
+        queuedRedos = [],
         filterGroups = [],
         filterColumns = [],
-        elIndicator = $('.attendance-list-toolbar .indicator-fetch');
+        elIndicator = $('.attendance-list-toolbar .indicator-fetch'),
+        btnUndo = $('#btnUndo'),
+        btnRedo = $('#btnRedo');
 
     if (attendanceList.length) {
         $('td.column label').on('click', function () {
@@ -121,69 +125,114 @@ $(function () {
             }, 100);
         });
 
+        const updateUndoRedo = function () {
+            btnUndo.toggleClass('disabled', !queuedUndos.length);
+            btnRedo.toggleClass('disabled', !queuedRedos.length);
+        };
+
+        btnUndo.on('click', function (event) {
+            if (!elContainer.hasClass('locked') && queuedUndos.length) {
+                const elId = queuedUndos.pop(),
+                    el = $('#' + elId),
+                    elOld = findCheckedOrDefault(elId);
+                queuedRedos.push(elOld.attr('id'));
+                el.closest('label').trigger('click', ['caused-by-undo']);
+            } else {
+                event.preventDefault();
+            }
+        });
+
+        btnRedo.on('click', function (event) {
+            if (!elContainer.hasClass('locked') && queuedRedos.length) {
+                const elId = queuedRedos.pop(),
+                    el = $('#' + elId),
+                    elOld = findCheckedOrDefault(elId);
+                queuedUndos.push(elOld.attr('id'));
+                el.closest('label').trigger('click', ['caused-by-redo']);
+            } else {
+                event.preventDefault();
+            }
+        });
+
+        const findCheckedOrDefault = function (elId) {
+            var el = $('#' + elId),
+                elBtnGroup = el.closest('.btn-group'),
+                elOld = elBtnGroup.find("input[type='radio']:checked");
+            if (!elOld || !elOld.length) {
+                elOld = elBtnGroup.find("input[data-choice-id='0']");
+            }
+            return elOld;
+        }
+
+        const flushQueueImmediately = function (callAfterComplete) {
+            if (updateInProgress || !queuedUpdates.length) {
+                return;
+            }
+            updateInProgress = true;
+            var updatesToProcess = queuedUpdates,
+                updates = {};
+            queuedUpdates = []; //empty queue
+            elIndicator.toggleClass('loading', true);
+
+            $.each(updatesToProcess, function (key, elId) {
+                var elInput = $('#' + elId),
+                    elLabel = elInput.closest('label'),
+                    elRow = elInput.parents('tr'),
+                    aid = elRow.data('aid'),
+                    columnId = elInput.data('column-id'),
+                    choiceId = elInput.data('choice-id');
+
+                if (!updates[columnId]) {
+                    updates[columnId] = {};
+                }
+                if (!updates[columnId][choiceId]) {
+                    updates[columnId][choiceId] = [];
+                }
+                updates[columnId][choiceId].push(aid);
+                elLabel.toggleClass('preview', true);
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: listId + '/fillout.json',
+                data: {
+                    _token: attendanceList.data('token'),
+                    updates: updates,
+                },
+                datatype: 'json',
+                success: function (response) {
+                    handleParticipantsResponse(response);
+                },
+                error: function (response) {
+                    $.each(updatesToProcess, function (key, elId) {
+                        const elLabel = $('#' + elId).closest('label');
+                        elLabel.toggleClass('btn-alert', true);
+                    });
+                    $(document).trigger('add-alerts', {
+                        message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                        priority: 'error'
+                    });
+                },
+                complete: function (response) {
+                    $.each(updatesToProcess, function (key, elId) {
+                        const elLabel = $('#' + elId).closest('label');
+                        elLabel.toggleClass('preview', false);
+                    });
+                    if (elAutoRefresh.find('input').prop('checked')) {
+                        autoRefreshInterval = setInterval(refreshView, 10000);
+                    }
+                    updateInProgress = false;
+                    scheduleQueueFlush();
+                    elIndicator.toggleClass('loading', false);
+                    if (callAfterComplete) {
+                        callAfterComplete();
+                    }
+                }
+            });
+        };
         const scheduleQueueFlush = function () {
             clearInterval(autoRefreshInterval);
-            setTimeout(function () {
-                if (updateInProgress || !queuedUpdates.length) {
-                    return;
-                }
-                updateInProgress = true;
-                var updatesToProcess = queuedUpdates,
-                    updates = {};
-                queuedUpdates = []; //empty queue
-                elIndicator.toggleClass('loading', true);
-
-                $.each(updatesToProcess, function (key, el) {
-                    var elInput = el.find('input'),
-                        elRow = el.parents('tr'),
-                        aid = elRow.data('aid'),
-                        columnId = elInput.data('column-id'),
-                        choiceId = elInput.data('choice-id');
-
-                    if (!updates[columnId]) {
-                        updates[columnId] = {};
-                    }
-                    if (!updates[columnId][choiceId]) {
-                        updates[columnId][choiceId] = [];
-                    }
-                    updates[columnId][choiceId].push(aid);
-                    el.toggleClass('preview', true);
-                });
-
-                $.ajax({
-                    type: 'POST',
-                    url: listId + '/fillout.json',
-                    data: {
-                        _token: attendanceList.data('token'),
-                        updates: updates,
-                    },
-                    datatype: 'json',
-                    success: function (response) {
-                        handleParticipantsResponse(response);
-                    },
-                    error: function (response) {
-                        $.each(updatesToProcess, function (key, el) {
-                            el.toggleClass('btn-alert', true);
-                        });
-                        $(document).trigger('add-alerts', {
-                            message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
-                            priority: 'error'
-                        });
-                    },
-                    complete: function (response) {
-                        $.each(updatesToProcess, function (key, el) {
-                            el.toggleClass('preview', false);
-                        });
-                        if (elAutoRefresh.find('input').prop('checked')) {
-                            autoRefreshInterval = setInterval(refreshView, 10000);
-                        }
-                        updateInProgress = false;
-                        scheduleQueueFlush();
-                        elIndicator.toggleClass('loading', false);
-                    }
-                });
-
-            }, 100);
+            setTimeout(flushQueueImmediately, 100);
         };
 
         $('.column label').click(function (event, cause) {
@@ -197,10 +246,32 @@ $(function () {
                 event.stopImmediatePropagation();
                 return;  //do nothing if not editable
             }
-            const el = $(this);
-            queuedUpdates.push(el);
-            el.toggleClass('preview', true);
-            scheduleQueueFlush();
+            const elNew = $(this),
+                elNewId = elNew.find('input').attr('id'),
+            elBtnGroup = elNew.closest('.btn-group');
+            queuedUpdates.push(elNewId);
+
+            if (cause === 'caused-by-undo' || cause === 'caused-by-redo') {
+                elContainer.toggleClass('locked', true);
+            } else {
+                queuedRedos = [];
+                var elOld = findCheckedOrDefault(elNewId),
+                    elOldId = elOld.attr('id');
+
+                if (elNewId !== elOldId)
+                queuedUndos.push(elOldId);
+            }
+            elNew.toggleClass('preview', true);
+            updateUndoRedo();
+            elBtnGroup.find('input').prop('checked', false);
+            elNew.find('input').prop('checked', true);
+            if (cause === 'caused-by-undo' || cause === 'caused-by-redo') {
+                flushQueueImmediately(function() {
+                    elContainer.toggleClass('locked', false);
+                });
+            } else {
+                scheduleQueueFlush();
+            }
         });
 
         $('#modalComment').on('show.bs.modal', function (event) {

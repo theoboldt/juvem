@@ -325,11 +325,13 @@ input.input-formula, textarea.input-formula {
 }
 
 #attendanceFilloutPage {
+  &.locked .btn,
+  .btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
   &.locked {
-    .btn {
-      cursor: not-allowed;
-      opacity: 0.65;
-    }
     .btn.btn-unlockable {
       cursor: pointer;
       opacity: 1;
@@ -343,7 +345,6 @@ input.input-formula, textarea.input-formula {
       opacity: inherit;
     }
 
-    .attendance-list-toolbar .btn,
     .navbar .btn,
     .btn.btn-never-lock-if-active.active,
     .btn.btn-never-lock {
