@@ -299,23 +299,28 @@ class AdminAttendanceListController extends Controller
         }
         $repositoryFillout     = $this->getDoctrine()->getRepository(AttendanceListParticipantFillout::class);
         $repositoryParticipant = $this->getDoctrine()->getRepository(Participant::class);
+        /** @var Participant $participant */
+        $participant = $repositoryParticipant->find($request->get('aid'));
         $fillout               = $repositoryFillout->findFillout(
-            $repositoryParticipant->find($request->get('aid')),
+            $participant,
             $list,
             $repositoryFillout->findColumnById($request->get('columnId'))
         );
+        $comment = trim($request->get('comment'));
         if ($fillout) {
-            $comment = trim($request->get('comment'));
             $fillout->setComment(empty($comment) ? null : $comment);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($fillout);
-            $em->flush();
-            return new JsonResponse([]);
-        } else {
-            return new JsonResponse(
-                ['message' => 'Wenn nichts ausgewählt ist, kann kein Kommentar gespeichert werden']
+        } elseif (!empty($comment)) {
+            $fillout = new AttendanceListParticipantFillout(
+                $list,
+                $participant,
+                null,
+                $comment
             );
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($fillout);
+        $em->flush();
+        return new JsonResponse([]);
     }
 
     /**

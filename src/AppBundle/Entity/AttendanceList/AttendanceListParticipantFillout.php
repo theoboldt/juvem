@@ -54,8 +54,8 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     
     /**
      * @ORM\ManyToOne(targetEntity="AttendanceListColumnChoice", cascade={"all"})
-     * @ORM\JoinColumn(name="choice_id", referencedColumnName="choice_id", onDelete="cascade", nullable=false)
-     * @var AttendanceListColumnChoice
+     * @ORM\JoinColumn(name="choice_id", referencedColumnName="choice_id", onDelete="cascade", nullable=true)
+     * @var AttendanceListColumnChoice|null
      */
     protected $choice;
     
@@ -76,7 +76,7 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     public function __construct(
         AttendanceList $attendanceList,
         Participant $participant,
-        AttendanceListColumnChoice $choice = null,
+        ?AttendanceListColumnChoice $choice = null,
         ?string $comment = null
     )
     {
@@ -127,18 +127,18 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     }
     
     /**
-     * @return AttendanceListColumnChoice
+     * @return AttendanceListColumnChoice|null
      */
-    public function getChoice(): AttendanceListColumnChoice
+    public function getChoice(): ?AttendanceListColumnChoice
     {
         return $this->choice;
     }
     
     /**
-     * @param AttendanceListColumnChoice $choice
+     * @param AttendanceListColumnChoice|null $choice
      * @return AttendanceListParticipantFillout
      */
-    public function setChoice(AttendanceListColumnChoice $choice): AttendanceListParticipantFillout
+    public function setChoice(?AttendanceListColumnChoice $choice): AttendanceListParticipantFillout
     {
         $this->choice = $choice;
         return $this;

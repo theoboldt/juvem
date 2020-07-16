@@ -30,7 +30,6 @@ $(function () {
                         }
                         elBtn = $(baseId + choiceId);
                         elCommentBtn = $(baseId + 'comment');
-                        elCommentBtn.toggleClass('disabled', !choiceId);
                         elCommentBtn.toggleClass('active', column.comment !== null);
                         elCommentBtn.data('comment', column.comment);
                         elBtn.trigger('click', ['caused-by-refresh']);

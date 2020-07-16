@@ -119,13 +119,18 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
                             ]
                         );
                     } else {
+                        $params = [
+                            $listId,
+                            $update['aid'],
+                            $update['columnId']
+                        ];
                         $em->getConnection()->executeQuery(
-                            'DELETE FROM attendance_list_participant_fillout WHERE list_id = ? AND participant_id = ? AND column_id = ?',
-                            [
-                                $listId,
-                                $update['aid'],
-                                $update['columnId']
-                            ]
+                            'DELETE FROM attendance_list_participant_fillout WHERE list_id = ? AND participant_id = ? AND column_id = ? AND (comment IS NULL OR comment = \'\')',
+                            $params
+                        );
+                        $em->getConnection()->executeQuery(
+                            'UPDATE attendance_list_participant_fillout SET choice_id = NULL WHERE list_id = ? AND participant_id = ? AND column_id = ? AND (comment IS NOT NULL OR comment != \'\')',
+                            $params
                         );
                     }
                     
@@ -173,7 +178,7 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
         $qb->select(
             [
                 'fillout.participant_id',
-                'columns.column_id',
+                'fillout.column_id',
                 'fillout.choice_id',
                 'fillout.comment',
                 'fillout.modified_at',
@@ -181,15 +186,17 @@ class AttendanceListFilloutParticipantRepository extends EntityRepository
             ]
         )
            ->from('attendance_list_participant_fillout', 'fillout')
-           ->innerJoin('fillout', 'attendance_list_column_choices', 'choices', 'fillout.choice_id = choices.choice_id')
-           ->innerJoin('choices', 'attendance_list_column', 'columns', 'choices.column_id = columns.column_id')
+           ->leftJoin('fillout', 'attendance_list_column_choices', 'choices', 'fillout.choice_id = choices.choice_id')
+           ->leftJoin('choices', 'attendance_list_column', 'columns', 'choices.column_id = columns.column_id')
            ->andWhere('fillout.list_id = :list_id')
            ->setParameter('list_id', $list->getTid());
         $queryResult = $qb->execute();
         while ($row = $queryResult->fetch()) {
+            $rowChoiceId = $row['choice_id'];
+            $rowComment = $row['comment'];
             $result[$row['participant_id']]['columns'][$row['column_id']] = [
-                'choice_id'   => (int)$row['choice_id'],
-                'comment'     => empty(trim($row['comment'])) ? null : trim($row['comment']),
+                'choice_id'   => $rowChoiceId === null ? null : (int)$rowChoiceId,
+                'comment'     => empty($rowComment) ? null : $rowComment,
                 'created_at'  => $row['created_at'],
                 'modified_at' => $row['modified_at'],
             ];
