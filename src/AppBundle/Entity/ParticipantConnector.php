@@ -139,7 +139,7 @@ class ParticipantConnector implements ProvidesCreatedInterface, ProvidesCreatorI
     public static function createToken(): string
     {
         $token = '';
-        while (strlen($token) < 40) {
+        while (strlen($token) < 32) {
             $group = random_int(0, 2);
             switch ($group) {
                 case 0:
