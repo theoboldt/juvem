@@ -704,6 +704,8 @@
                                     <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
                                        class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                     {% endif -%}
+                                    <a href="{{ path('event_participation_connectors', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
+                                       class="btn btn-default btn-xs" title="Codes von {{ participant.nameFirst }} verwalten" data-toggle="tooltip">{{ 'qrcode'|glyph }}</a>
                                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                     <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"
                                             data-target="#comment-footer-aid-{{ participant.aid }}" aria-expanded="false"

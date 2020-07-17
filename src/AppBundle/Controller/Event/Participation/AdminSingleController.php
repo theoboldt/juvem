@@ -16,6 +16,7 @@ use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantConnector;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\MoveParticipationType;
@@ -750,7 +751,7 @@ class AdminSingleController extends Controller
      * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"},
      *                                                name="admin_participant_detail")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("fillout", class="AppBundle:Participant", options={"id" = "aid"})
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Security("is_granted('participants_read', event)")
      */
     public function participantDetailAction(Event $event, Participant $participant)

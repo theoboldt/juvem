@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Codes ({{ participant.fullname }} bei {{ event.title }}){% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Codes', 'subtitle': participant.fullname} %}
+        {% block breadcrumb %}
+            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+            <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participant.participation.pid }) }}">{{ participant.fullname }}</a></li>
+            <li class="active">Codes</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p>Es sind noch keine Codes erstellt worden.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
