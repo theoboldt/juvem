@@ -54,10 +54,17 @@ class ParticipantConnector implements ProvidesCreatedInterface, ProvidesCreatorI
 
     /**
      * @ORM\Column(type="string", length=32)
+     * @Assert\Length(max=32)
      * @Assert\NotBlank()
      * @var string
      */
     protected $token;
+
+    /**
+     * @ORM\Column(type="string", length=255, name="description")
+     * @Assert\Length(max=255)
+     */
+    protected $description = '';
 
     /**
      * Connectors
@@ -66,18 +73,20 @@ class ParticipantConnector implements ProvidesCreatedInterface, ProvidesCreatorI
      *     cascade={"all"}, mappedBy="connector")
      */
     protected $connections;
-
+    
     /**
      * ParticipantConnector constructor.
      *
      * @param Participant $participant
-     * @param string      $token
+     * @param string $description
+     * @param string $token
      */
-    public function __construct(Participant $participant, ?string $token = null)
+    public function __construct(Participant $participant, string $description = '', ?string $token = null)
     {
         $this->setCreatedAtNow();
-        $this->connections = new ArrayCollection();
         $this->participant = $participant;
+        $this->description = $description;
+        $this->connections = new ArrayCollection();
         if (!$token) {
             $token = self::createToken();
         }
@@ -98,6 +107,22 @@ class ParticipantConnector implements ProvidesCreatedInterface, ProvidesCreatorI
     public function getParticipant(): Participant
     {
         return $this->participant;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+    
+    /**
+     * @param string $description
+     */
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description ?: '';
     }
 
     /**

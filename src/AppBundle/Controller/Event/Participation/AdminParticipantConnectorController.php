@@ -14,6 +14,8 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Form\Connector\IndividualConnectorType;
+use AppBundle\Form\InvoiceMailingType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use AppBundle\BitMask\LabelFormatter;
@@ -48,10 +50,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AdminParticipantConnectorController extends Controller
 {
-
-
+    
+    
     /**
-     * Perform a token visit
+     * List connectors of participant
      *
      * @Route("/admin/event/{eid}/participation/{pid}/connectors/{aid}",
      *     requirements={"eid": "\d+", "pid": "\d+", "aid": "\d+"}, name="event_participation_connectors")
@@ -61,17 +63,82 @@ class AdminParticipantConnectorController extends Controller
      */
     public function connectorsOverviewAction(Event $event, Participant $participant)
     {
+        if ($participant->getEvent()->getEid() !== $event->getEid()) {
+            throw new BadRequestHttpException('Requested participant is not related to requested event');
+        }
+        
+        $connectors = $participant->getConnectors();
+        usort($connectors, function(ParticipantConnector $a, ParticipantConnector $b) {
+            $deletedDiff = $a->isDeleted() <=> $b->isDeleted();
+            if ($deletedDiff === 0) {
+                return ($a->getCreatedAt() <=> $b->getCreatedAt())*-1;
+            } else {
+                return $deletedDiff;
+            }
+        });
+        
         return $this->render(
             'event/participation/admin/participant-connectors.html.twig',
             [
                 'event'       => $event,
                 'participant' => $participant,
-                'connectors'  => $participant->getConnectors(),
+                'connectors'  => $connectors,
             ]
         );
     }
-
-
+    
+    
+    /**
+     * Create individual connector for participant
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}/connectors/{aid}/create_individual",
+     *     requirements={"eid": "\d+", "pid": "\d+", "aid": "\d+"}, name="connector_new_individual")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Participant $participant
+     * @param Request $request
+     */
+    public function createIndividualConnectorAction(Event $event, Participant $participant, Request $request)
+    {
+        if ($participant->getEvent()->getEid() !== $event->getEid()) {
+            throw new BadRequestHttpException('Requested participant is not related to requested event');
+        }
+        $connector = new ParticipantConnector($participant);
+        $form      = $this->createForm(
+            IndividualConnectorType::class, $connector, [IndividualConnectorType::OPTION_PARTICIPANT => $participant]
+        );
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($connector);
+            $em->flush();
+            
+            $this->addFlash('success', 'Code hinzugefügt');
+            
+            return $this->redirectToRoute(
+                'event_participation_connectors',
+                [
+                    'eid' => $event->getEid(),
+                    'pid' => $participant->getParticipation()->getPid(),
+                    'aid' => $participant->getAid()
+                ]
+            );
+        }
+        
+        return $this->render(
+            'event/participation/admin/add-participant-connector.html.twig',
+            [
+                'form'        => $form->createView(),
+                'event'       => $event,
+                'participant' => $participant,
+            ]
+        );
+    }
+    
+    
     /**
      * Perform a token visit
      *
@@ -89,6 +156,6 @@ class AdminParticipantConnectorController extends Controller
             ['eid' => $event->getEid(), 'pid' => $participant->getParticipation()->getPid()]
         );
     }
-
-
+    
+    
 }

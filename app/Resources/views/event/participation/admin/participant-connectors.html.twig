@@ -3,20 +3,79 @@
 {% block title %}Codes ({{ participant.fullname }} bei {{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Codes', 'subtitle': participant.fullname} %}
-        {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
-            <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participant.participation.pid }) }}">{{ participant.fullname }}</a></li>
-            <li class="active">Codes</li>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <p>Es sind noch keine Codes erstellt worden.</p>
-            </div>
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Codes', 'subtitle': participant.fullname} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+      <li><a
+            href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participant.participation.pid }) }}">{{ participant.fullname }}</a>
+      </li>
+      <li class="active">Codes</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <a href="{{ path('connector_new_individual', {'eid': event.eid, 'pid': participant.participation.pid, 'aid': participant.aid}) }}"
+             class="btn btn-primary">{{ 'plus'|glyph }} <span
+                class="hidden-xs">Individuellen Code hinzufügen</span></a>
         </div>
+      </div>
+      <div class="col-xs-12">
+        <table class="table table-striped table-condensed table-form">
+          <thead>
+          <tr>
+            <td>Beschreibung</td>
+            <td>Art</td>
+            <td>Erstellt</td>
+            <td>Gültigkeit</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% if connectors|length %}
+            {% set notDeletedStarted = false %}
+            {% set deletedStarted = false %}
+            {% for connector in connectors %}
+              {% if connector.deleted and not deletedStarted %}
+                <tr>
+                  <td colspan="4" class="table-row-subgroup-header">Inaktiv</td>
+                </tr>
+                {% set deletedStarted = true %}
+                {% elseif not connector.deleted and not notDeletedStarted %}
+                <tr>
+                  <td colspan="4" class="table-row-subgroup-header">Aktiv</td>
+                </tr>
+                {% set notDeletedStarted = true %}
+              {% endif %}
+              <tr>
+                <td>
+                  {% if connector.description %}
+                    {{ connector.description }}
+                  {% else %}
+                    <i class="empty empty-empty"></i>
+                  {% endif %}
+                </td>
+                <td>Individuell</td>
+                <td>{{ connector.createdAt.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE_TIME')) }}</td>
+                <td>
+                  {% if connector.deleted %}
+                    Inaktiv
+                  {% else %}
+                    Aktiv
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-center">(Keine Codes vorhanden)</td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 {% endblock %}

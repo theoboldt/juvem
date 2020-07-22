@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Individuellen Code hinzufügen ({{ participant.fullname }} bei {{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Individuellen Code hinzufügen', 'subtitle': participant.fullname} %}
+    {% block breadcrumb %}
+        <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+        <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+        <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+        <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participant.participation.pid }) }}">{{ participant.fullname }}</a></li>
+        <li><a href="{{ path('event_participation_connectors', {'eid': event.eid, 'pid': participant.participation.pid, 'aid': participant.aid}) }}">Codes</a></li>
+        <li class="active">Individuellen Code hinzufügen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_row(form.description) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <input type="submit" class="btn btn-primary navbar-btn" value="Individuellen Code hinzufügen"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+  </div>
+{% endblock %}
