@@ -57,13 +57,16 @@ class InvoiceManager
      */
     protected $user = null;
 
-    const PLACEHOLDER_PARTICIPANT_NAME        = 'participantName';
-    const PLACEHOLDER_INVOICE_ROW_TYPE        = 'invoiceRowType';
-    const PLACEHOLDER_INVOICE_ROW_DESCRIPTION = 'invoiceRowDescription';
-    const PLACEHOLDER_INVOICE_ROW_VALUE       = 'invoiceRowValue';
+    const PLACEHOLDER_PARTICIPANT_NAME                 = 'participantName';
+    const PLACEHOLDER_INVOICE_ROW_TYPE                 = 'invoiceRowType';
+    const PLACEHOLDER_INVOICE_ROW_DESCRIPTION          = 'invoiceRowDescription';
+    const PLACEHOLDER_INVOICE_ROW_TYPE_AND_DESCRIPTION = 'invoiceRowTypeDescription';
+    const PLACEHOLDER_INVOICE_ROW_VALUE                = 'invoiceRowValue';
 
     const PLACEHOLDER_PID                            = 'pid';
-    const PLACEHOLDER_SALUTION                       = 'salution';
+    const PLACEHOLDER_SALUTATION_LEGACY              = 'salution'; //typo
+    const PLACEHOLDER_SALUTATION                     = 'salutation';
+    const PLACEHOLDER_GREETING_NAME                  = 'greetingAndName';
     const PLACEHOLDER_NAME_FIRST                     = 'nameFirst';
     const PLACEHOLDER_NAME_LAST                      = 'nameLast';
     const PLACEHOLDER_ADDRESS_STREET                 = 'addressStreet';
@@ -73,9 +76,11 @@ class InvoiceManager
     const PLACEHOLDER_INVOICE_NUMBER                 = 'invoiceNumber';
     const PLACEHOLDER_INVOICE_ROW_SUM                = 'invoiceRowSum';
     const PLACEHOLDER_EVENT_TITLE                    = 'eventTitle';
+    const PLACEHOLDER_EVENT_START                    = 'eventStart';
+    const PLACEHOLDER_EVENT_END                      = 'eventEnd';
     const PLACEHOLDER_PARTICIPANT_NAMES_COMBINED     = 'participantNamesCombined';
     const PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW = 'invoiceRowSumEuroCentsRaw';
-
+    
     /**
      * InvoiceManager constructor.
      *
@@ -169,28 +174,32 @@ class InvoiceManager
                     continue;
                 }
                 if ($summand instanceof BasePriceSummand) {
-                    $type        = 'Grundpreis';
-                    $description = 'Grundpreis';
+                    $type               = 'Grundpreis';
+                    $description        = 'Grundpreis';
+                    $typeAndDescription = [$type];
                 } elseif ($summand instanceof FilloutSummand) {
                     if ($summandValueCents > 0) {
                         $type = 'Aufschlag';
                     } else {
                         $type = 'Rabatt';
                     }
-                    $description = ($summand instanceof AttributeAwareInterface)
+                    $description        = ($summand instanceof AttributeAwareInterface)
                         ? $summand->getAttribute()->getFormTitle() : '';
+                    $typeAndDescription = [$type, $description];
                 } else {
-                    $type        = 'Unbekannt';
-                    $description = 'Unbekannt';
+                    $type               = 'Unbekannt';
+                    $description        = 'Unbekannt';
+                    $typeAndDescription = [$type];
                 }
 
                 $sumCents += $summand->getValue(false);
 
                 $elements[] = [
-                    'participant' => $participant->fullname(),
-                    'value'       => number_format($summand->getValue(true), 2, ',', '.') . ' €',
-                    'type'        => $type,
-                    'description' => $description,
+                    'participant'          => $participant->fullname(),
+                    'value'                => number_format($summand->getValue(true), 2, ',', '.') . ' €',
+                    'type'                 => $type,
+                    'description'          => $description,
+                    'type_and_description' => implode(', ', $typeAndDescription),
                 ];
             }
         }
@@ -200,14 +209,38 @@ class InvoiceManager
             $templateProcessor->setValue(self::PLACEHOLDER_PARTICIPANT_NAME . '#' . $i, $element['participant']);
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_TYPE . '#' . $i, $element['description']);
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_DESCRIPTION . '#' . $i, $element['type']);
+            $templateProcessor->setValue(
+                self::PLACEHOLDER_INVOICE_ROW_TYPE_AND_DESCRIPTION . '#' . $i, $element['type_and_description']
+            );
             $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_VALUE . '#' . $i, $element['value']);
 
             ++$i;
         }
 
+        $eventStart = $event->getStartDate()->format(Event::DATE_FORMAT_DATE);
+        if ($event->hasStartTime()) {
+            $eventStart .= ' '.$event->getStartTime()->format(Event::DATE_FORMAT_TIME);
+        }
+        if ($event->hasEndDate()) {
+            $eventEnd = $event->getEndDate()->format(Event::DATE_FORMAT_DATE);
+            if ($event->hasEndTime()) {
+                $eventEnd .= ' ' . $event->getEndTime()->format(Event::DATE_FORMAT_TIME);
+            }
+        } else {
+            $eventEnd = $eventStart;
+        }
+        $greetingFull = sprintf(
+            '%s %s %s',
+            ($participation->getSalutation() === 'Frau' ? 'Sehr geehrte' : 'Sehr geehrter'),
+            $participation->getSalutation(),
+            $participation->getNameLast()
+        );
+        
         $search  = [
             self::PLACEHOLDER_PID,
-            self::PLACEHOLDER_SALUTION,
+            self::PLACEHOLDER_SALUTATION,
+            self::PLACEHOLDER_SALUTATION_LEGACY,
+            self::PLACEHOLDER_GREETING_NAME,
             self::PLACEHOLDER_NAME_FIRST,
             self::PLACEHOLDER_NAME_LAST,
             self::PLACEHOLDER_ADDRESS_STREET,
@@ -217,12 +250,16 @@ class InvoiceManager
             self::PLACEHOLDER_INVOICE_NUMBER,
             self::PLACEHOLDER_INVOICE_ROW_SUM,
             self::PLACEHOLDER_EVENT_TITLE,
+            self::PLACEHOLDER_EVENT_START,
+            self::PLACEHOLDER_EVENT_END,
             self::PLACEHOLDER_PARTICIPANT_NAMES_COMBINED,
             self::PLACEHOLDER_INVOICE_ROW_SUM_EURO_CENTS_RAW,
         ];
         $replace = [
             $participation->getPid(),
             $participation->getSalutation(),
+            $participation->getSalutation(),
+            $greetingFull,
             $participation->getNameFirst(),
             $participation->getNameLast(),
             $participation->getAddressStreet(),
@@ -231,7 +268,9 @@ class InvoiceManager
             $participation->getEmail(),
             $invoice->getInvoiceNumber(),
             number_format($sumCents / 100, 2, ',', '.') . ' €',
-            $participation->getEvent()->getTitle(),
+            $event->getTitle(),
+            $eventStart,
+            $eventEnd,
             ParticipationsParticipantsNamesGrouped::combinedParticipantsNames($participation),
             $sumCents,
         ];

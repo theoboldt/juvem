@@ -161,7 +161,17 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_SALUTION') -}}
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_GREETING_NAME') -}}
+                                                }</code></td>
+                                        <td>Höfliche Grußformel und Name des Elternteils</td>
+                                        <td>
+                                            <span class="label label-default">Sehr geehrte Frau Maier</span>
+                                            <span class="label label-default">Sehr geehrter Herr Müller</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_SALUTATION') -}}
                                                 }</code></td>
                                         <td>Anrede der Eltern</td>
                                         <td>
@@ -252,6 +262,26 @@
                                     </tr>
                                     <tr>
                                         <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_EVENT_START') -}}
+                                                }</code></td>
+                                        <td>Beginn der Veranstaltung, zu der die Rechnung gehört</td>
+                                        <td>
+                                            <span class="label label-default">02.10.{{ "now"|date("y") }}</span>
+                                            <span class="label label-default">02.10.{{ "now"|date("y") }} 10:00</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_EVENT_END') -}}
+                                                }</code></td>
+                                        <td>Ende der Veranstaltung, zu der die Rechnung gehört</td>
+                                        <td>
+                                            <span class="label label-default">10.10.{{ "now"|date("y") }}</span>
+                                            <span class="label label-default">10.10.{{ "now"|date("y") }} 18:00</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PARTICIPANT_NAMES_COMBINED') -}}
                                                 }</code></td>
                                         <td>Auflistung der Namen aller Teilnehmer für die diese Rechnung gilt
@@ -310,6 +340,17 @@
                                             <span class="label label-default">Grundpreis</span>
                                             <span class="label label-default">Aufschlag</span>
                                             <span class="label label-default">Rabatt</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_INVOICE_ROW_TYPE_AND_DESCRIPTION') -}}
+                                                }</code></td>
+                                        <td>Art und Name dieser Position, durch Komma getrennt (Bspw. der Grundpreis kennt nur einen Wert)</td>
+                                        <td>
+                                            <span class="label label-default">Grundpreis</span>
+                                            <span class="label label-default">Aufschlag, benötigt Fahrkarte</span>
+                                            <span class="label label-default">Rabatt, Familiencard</span>
                                         </td>
                                     </tr>
                                     <tr>
