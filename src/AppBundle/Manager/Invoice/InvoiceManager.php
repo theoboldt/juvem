@@ -170,7 +170,7 @@ class InvoiceManager
                 }
                 if ($summand instanceof BasePriceSummand) {
                     $type        = 'Grundpreis';
-                    $description = '';
+                    $description = 'Grundpreis';
                 } elseif ($summand instanceof FilloutSummand) {
                     if ($summandValueCents > 0) {
                         $type = 'Aufschlag';
