@@ -292,9 +292,13 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="btn-group" role="group">
-                                        <span class="btn btn-default"
-                                              data-token="{{ csrf_token('Participation' ~ 'createInvoice' ~ participation.pid ) }}"
-                                              data-pid="{{ participation.pid }}" role="button" id="createInvoiceBtn">Neue Rechnung erstellen</span>
+                                        {% if allParticipantsInactive %}
+                                            <span class="btn btn-default disabled" data-toggle="tooltip" title="Kein aktiver Teilnehmer. Eine Rechnung kann nicht erstellt werden.">Neue Rechnung erstellen</span>
+                                        {% else %}
+                                            <span class="btn btn-default"
+                                                  data-token="{{ csrf_token('Participation' ~ 'createInvoice' ~ participation.pid ) }}"
+                                                  data-pid="{{ participation.pid }}" role="button" id="createInvoiceBtn">Neue Rechnung erstellen</span>
+                                        {% endif %}
                                         <a href="{{ path('admin_invoice_template_download', {eid: event.eid}) }}" class="btn btn-default btn-download">Vorlage herunterladen</a>
                                     </div>
                                     <table class="table table-striped table-condensed">

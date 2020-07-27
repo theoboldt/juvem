@@ -187,6 +187,7 @@ class AdminSingleController extends Controller
         $similarParticipants     = [];
         $unconfirmedParticipants = [];
         $confirmedParticipants   = [];
+        $allParticipantsInactive = true;
         /** @var Participant $participant */
         foreach ($participation->getParticipants() as $participant) {
             $similarParticipants[$participant->getAid()] = $participationRepository->relatedParticipants($participant);
@@ -194,6 +195,9 @@ class AdminSingleController extends Controller
                 $confirmedParticipants[] = $participant;
             } else {
                 $unconfirmedParticipants[] = $participant;
+            }
+            if (!$participant->isWithdrawn() && !$participant->isRejected() && !$participant->getDeletedAt()) {
+                $allParticipantsInactive = false;
             }
         }
 
@@ -220,6 +224,7 @@ class AdminSingleController extends Controller
                 'similarParticipants'     => $similarParticipants,
                 'confirmedParticipants'   => $confirmedParticipants,
                 'unconfirmedParticipants' => $unconfirmedParticipants,
+                'allParticipantsInactive' => $allParticipantsInactive,
                 'foodFormatter'           => $foodFormatter,
                 'statusFormatter'         => $statusFormatter,
                 'phoneNumberList'         => $phoneNumberList,
