@@ -129,8 +129,36 @@ class AdminMultipleController extends Controller
      */
     public function navigateParticipation(Event $event, Participation $expectedParticipation, string $direction)
     {
+        $participationTarget = $this->findNextParticipation($event, $expectedParticipation, $direction, false);
+        if (!$participationTarget) {
+            $participationTarget = $this->findNextParticipation($event, $expectedParticipation, $direction, true);
+            if (!$participationTarget) {
+                throw new NotFoundHttpException('Failed to identify desired participation');
+            }
+        }
+        
+        return $this->redirectToRoute(
+            'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participationTarget->getPid()]
+        );
+    }
+    
+    /**
+     * Try to find next participation
+     *
+     * @param Event $event
+     * @param Participation $expectedParticipation
+     * @param string $direction
+     * @param bool $includeDeletedAndWithdrawn
+     * @return Participation|null
+     */
+    private function findNextParticipation(
+        Event $event, Participation $expectedParticipation, string $direction, bool $includeDeletedAndWithdrawn
+    ): ?Participation
+    {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participants            = $participationRepository->participantsList($event, null, false, false);
+        $participants            = $participationRepository->participantsList(
+            $event, null, $includeDeletedAndWithdrawn, $includeDeletedAndWithdrawn
+        );
         $participations          = [];
 
         /** @var Participant $participant */ //prepare ordered list
@@ -165,13 +193,7 @@ class AdminMultipleController extends Controller
                 }
             }
         }
-        if (!$participationTarget) {
-            throw new NotFoundHttpException('Failed to identify desired participation');
-        }
-
-        return $this->redirectToRoute(
-            'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participationTarget->getPid()]
-        );
+        return $participationTarget;
     }
 
     /**
