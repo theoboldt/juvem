@@ -109,20 +109,29 @@ class AdminParticipantsDependencyController extends Controller
             $participantsByParticipation[$participant->getParticipation()->getId()][$participant->getId()] = $participant;
         }
 
-        $yearsOfLifeAvailable = [];
-
+        $yearsOfLifeCount = [];
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             if ($participant->getDeletedAt() || $participant->isRejected() || $participant->isWithdrawn()) {
                 continue;
             }
-
-            $yearsOfLife                        = $participant->getYearsOfLifeAtEvent();
-            $yearsOfLifeAvailable[$yearsOfLife] = $yearsOfLife;
+        
+            $yearsOfLife = $participant->getYearsOfLifeAtEvent();
+            if (!isset($yearsOfLifeCount[$yearsOfLife])) {
+                $yearsOfLifeCount[$yearsOfLife] = 0;
+            }
+            ++$yearsOfLifeCount[$yearsOfLife];
         }
-
-        $yearsOfLifeAvailable = array_values($yearsOfLifeAvailable);
-        sort($yearsOfLifeAvailable);
+        $yearsOfLifeParticipants = 0;
+        $yearsOfLifeMaxShow      = 20;
+        ksort($yearsOfLifeCount, SORT_NUMERIC);
+        foreach (array_values($yearsOfLifeCount) as $index => $count) {
+            $yearsOfLifeParticipants += $count;
+            if ($yearsOfLifeParticipants > 70) {
+                $yearsOfLifeMaxShow = $index;
+                break;
+            }
+        }
     
         return $this->render(
             'event/admin/participant_detecting/event-detecting-overview.html.twig',
@@ -131,7 +140,8 @@ class AdminParticipantsDependencyController extends Controller
                 'statusFormatter'    => ParticipantStatus::formatter(),
                 'participants'       => $participants,
                 'attributes'         => $attributes,
-                'yearsOfLife'        => $yearsOfLifeAvailable,
+                'yearsOfLife'        => array_keys($yearsOfLifeCount),
+                'yearsOfLifeMaxShow' => $yearsOfLifeMaxShow,
             ]
         );
     }

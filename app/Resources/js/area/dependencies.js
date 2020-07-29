@@ -37,14 +37,72 @@ $(function () {
             filterShowParticipants = null,
             filterShowParticipationEdges = null,
             filterIncludeChoices = [],
-            container = document.getElementById('vis-network'),
+            nodesView;
+
+        const container = document.getElementById('vis-network'),
             edgesSet = new vis.DataSet(edges),
-            nodesSet = new vis.DataSet(nodes),
-            nodesView = new vis.DataView(nodesSet, {
-                filter: function (item) {
-                    if (filterGroups === null) {
-                        return true;
+            nodesSet = new vis.DataSet(nodes);
+
+        const filtersInputEls = $('.filters input'),
+            filterIncludeChoicesEls = $('.filter-entities input.f'),
+            updateFilterConfiguration = function () {
+                filterGroups = {};
+                filtersInputEls.each(function () {
+                    const filterEl = $(this);
+                    if (filterEl.prop('checked')) {
+                        const property = filterEl.data('property'),
+                            value = filterEl.data('value'),
+                            nodes = filterEl.data('nodes');
+                        if (!filterGroups[property]) {
+                            filterGroups[property] = [];
+                        }
+                        filterGroups[property].push({
+                            value: value,
+                            nodes: nodes.split(',')
+                        });
                     }
+                });
+                filterShowParticipants = false;
+                filterShowParticipationEdges = false;
+                filterIncludeChoices = [];
+                filterIncludeChoicesEls.each(function () {
+                    var filterEl = $(this);
+                    if (filterEl.prop('checked')) {
+                        var type = filterEl.data('type'),
+                            bid = filterEl.data('bid');
+
+                        switch (type) {
+                            case 'participation-edges':
+                                filterShowParticipationEdges = true;
+                                break;
+                            case 'participant':
+                                filterShowParticipants = true;
+                                break;
+                            case 'choice':
+                                filterIncludeChoices.push(bid);
+                                break;
+                        }
+                    }
+                });
+                if (nodesView) {
+                    nodesView.refresh();
+                    $('#display').click();
+                }
+            };
+        filtersInputEls.on('change', updateFilterConfiguration);
+        filterIncludeChoicesEls.on('change', updateFilterConfiguration);
+
+        $('#btnShowParticipationEdges').on('change', function () {
+            if ($(this).prop('checked')) {
+                showParticipationEdges();
+            } else {
+                hideParticipationEdges();
+            }
+        });
+        updateFilterConfiguration();
+
+        nodesView = new vis.DataView(nodesSet, {
+                filter: function (item) {
                     var type = item.type;
 
                     if (!filterShowParticipants && type === 'participant') {
@@ -54,6 +112,9 @@ $(function () {
                         return false;
                     }
 
+                    if (filterGroups === null) {
+                        return true;
+                    }
                     var acceptGroup = false;
                     $.each(filterGroups, function (groupName, acceptedValues) {
                         var groupValue = item[groupName];
@@ -94,7 +155,6 @@ $(function () {
                     edgesSet.add(edge);
                 });
             };
-        showParticipationEdges();
 
         const connectToChoice = function (nodeHuman, nodeChoice) {
             var nodeHumanId = nodeHuman.id,
@@ -151,7 +211,7 @@ $(function () {
         };
 
         var options = {
-            //layout: {improvedLayout: false},
+            layout: {improvedLayout: false},
             manipulation: {
                 enabled: false,
                 addEdge: function (edgeData, callback) {
@@ -364,61 +424,6 @@ $(function () {
                 network.addEdgeMode();
             } else {
                 network.disableEditMode();
-            }
-        });
-
-        const filtersInputEls = $('.filters input'),
-            filterIncludeChoicesEls = $('.filter-entities input.f'),
-            updateFilterConfiguration = function () {
-                filterGroups = {};
-                filtersInputEls.each(function () {
-                    var filterEl = $(this);
-                    if (filterEl.prop('checked')) {
-                        var property = filterEl.data('property'),
-                            value = filterEl.data('value'),
-                            nodes = filterEl.data('nodes');
-                        if (!filterGroups[property]) {
-                            filterGroups[property] = [];
-                        }
-                        filterGroups[property].push({
-                            value: value,
-                            nodes: nodes.split(',')
-                        });
-                    }
-                });
-                filterShowParticipants = false;
-                filterShowParticipationEdges = false;
-                filterIncludeChoices = [];
-                filterIncludeChoicesEls.each(function () {
-                    var filterEl = $(this);
-                    if (filterEl.prop('checked')) {
-                        var type = filterEl.data('type'),
-                            bid = filterEl.data('bid');
-
-                        switch (type) {
-                            case 'participation-edges':
-                                filterShowParticipationEdges = true;
-                                break;
-                            case 'participant':
-                                filterShowParticipants = true;
-                                break;
-                            case 'choice':
-                                filterIncludeChoices.push(bid);
-                                break;
-                        }
-                    }
-                });
-                nodesView.refresh();
-                $('#display').click();
-            };
-        filtersInputEls.on('change', updateFilterConfiguration);
-        filterIncludeChoicesEls.on('change', updateFilterConfiguration);
-
-        $('#btnShowParticipationEdges').on('change', function () {
-            if ($(this).prop('checked')) {
-                showParticipationEdges();
-            } else {
-                hideParticipationEdges();
             }
         });
 

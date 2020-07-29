@@ -56,8 +56,8 @@
 
           <div class="btn-group filters" data-toggle="buttons">
             {% for year in yearsOfLife %}
-              <label class="btn btn-default active" title="Teilnehmer/Innen im Alter von {{ year }} Jahren anzeigen">
-                <input type="checkbox" checked data-property="yearsOfLife" data-value="{{ year }}"
+              <label class="btn btn-default {% if loop.index0 < yearsOfLifeMaxShow %}active{% endif %}" title="Teilnehmer/Innen im Alter von {{ year }} Jahren anzeigen">
+                <input type="checkbox" {% if loop.index0 < yearsOfLifeMaxShow %}checked{% endif %} data-property="yearsOfLife" data-value="{{ year }}"
                        data-nodes="participant"> {{ year }}
               </label>
             {% endfor %}
@@ -66,8 +66,8 @@
             <label class="btn btn-default active">
               <input class="f" type="checkbox" checked data-type="participant" title="Teilnehmer/Innen anzeigen"> Teilnehmer
             </label>
-            <label class="btn btn-default active">
-              <input type="checkbox" checked title="Zusammengehörigkeit von Teilnehmern durch Verbindung anzeigen" id="btnShowParticipationEdges"> Anmeldungsverbindung
+            <label class="btn btn-default">
+              <input type="checkbox" title="Zusammengehörigkeit von Teilnehmern durch Verbindung anzeigen" id="btnShowParticipationEdges"> Anmeldungsverbindung
             </label>
             {% for attribute in attributes %}
               {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
