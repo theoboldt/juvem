@@ -6,7 +6,6 @@
 
     {% if app.environment == 'dev' %}
         <link rel="stylesheet" href="{{ asset('css/all.css', 'css') }}">
-        <script src="//localhost:35729/livereload.js"></script>
     {% else %}
     <link rel="stylesheet" href="{{ asset('css/all.min.css', 'css') }}">
     {% endif %}
