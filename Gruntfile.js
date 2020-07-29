@@ -213,7 +213,7 @@ module.exports = function (grunt) {
         watch: {
             js: {
                 files: '<%= resourcesPath %>/js/**/*.js',
-                tasks: ['clean:js', 'concat:distWebJs', 'uglify:js'],
+                tasks: ['clean:js', 'concat:distWebJs', 'uglify:js',  'uglify:jsvis'],
                 options: {
                     livereload: false
                 }
