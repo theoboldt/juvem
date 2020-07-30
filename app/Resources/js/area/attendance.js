@@ -99,30 +99,48 @@ $(function () {
             elContainer.toggleClass('locked', !newValue);
         });
         elEditableMode.tooltip();
-        $('.btn-column-all').click(function (event) {
+        $('.btn-column-all').on('click', function (eventButton) {
+            var button = $(this),
+                modalEl = $('#modalSwitchAll'),
+                columnId = button.data('column-id'),
+                choiceId = button.data('choice-id'),
+                columnTitle = button.data('column-title'),
+                choiceTitle = button.data('choice-title'),
+                confirmBtn = modalEl.find('.btn-primary');
+
+            button.tooltip('destroy');
             if (elContainer.hasClass('locked')) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
+                eventButton.preventDefault();
+                eventButton.stopImmediatePropagation();
                 return;  //do nothing if not editable
             }
-            var el = $(this),
-                columnId = el.data('column-id'),
-                choiceId = el.data('choice-id');
-            el.tooltip('destroy');
-            el.toggleClass('btn-primary', true);
-            attendanceList.toggleClass('disabled', true);
-            setTimeout(function () {
-                $.each($('#attendanceList tbody tr'), function (key, element) {
-                    var el = $(element);
-                    if (!el.hasClass('filtered-hidden')) {
-                        var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
-                        inputEl.parents('label').click();
-                    }
-                });
-                attendanceList.toggleClass('disabled', false);
-                el.toggleClass('btn-primary', false);
-                el.focus();
-            }, 100);
+            modalEl.find('i.choice').text(choiceTitle);
+            modalEl.find('i.column').text(columnTitle);
+            modalEl.modal('show');
+
+            confirmBtn.off('click');
+            confirmBtn.click(function (event) {
+                modalEl.modal('hide');
+                if (elContainer.hasClass('locked')) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    return;  //do nothing if not editable
+                }
+                button.toggleClass('btn-primary', true);
+                attendanceList.toggleClass('disabled', true);
+                setTimeout(function () {
+                    $.each($('#attendanceList tbody tr'), function (key, element) {
+                        var el = $(element);
+                        if (!el.hasClass('filtered-hidden')) {
+                            var inputEl = $("#choice_" + el.data('aid') + "_" + columnId + "_" + choiceId);
+                            inputEl.parents('label').click();
+                        }
+                    });
+                    attendanceList.toggleClass('disabled', false);
+                    button.toggleClass('btn-primary', false);
+                    button.focus();
+                }, 100);
+            });
         });
 
         const updateUndoRedo = function () {
