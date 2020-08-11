@@ -813,7 +813,7 @@ class ParticipantProfile
                         $this->commentManager->forParticipant($participant),
                         $section,
                         $participant->getGender() ===
-                        Participant::TYPE_GENDER_FEMALE ? ' zur Teilnehmerin' : 'zum Teilnehmer'
+                        Participant::TYPE_GENDER_FEMALE ? ' zur Teilnehmerin' : ' zum Teilnehmer'
                     );
                 }
             }
