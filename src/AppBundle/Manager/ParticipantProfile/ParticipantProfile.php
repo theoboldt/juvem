@@ -54,13 +54,6 @@ class ParticipantProfile
     const STYLE_FONT_NEGATIVE       = 'NegativeP';
 
     /**
-     * Document
-     *
-     * @var PhpWord
-     */
-    private $document;
-
-    /**
      * Participants
      *
      * @var array|Participant[]
