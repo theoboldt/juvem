@@ -433,10 +433,10 @@ class ParticipantProfile
                     $cell = $row->addCell();
                     $run  = $cell->addTextRun();
                     $run->addImage(
-                        $this->temporaryBarCodeGenerator->createCode('url:' . $groupLink, 32),
+                        $this->temporaryBarCodeGenerator->createCode('url:' . $groupLink, 100),
                         [
-                            'width'         => 30,
-                            'height'        => 30,
+                            'width'         => 42,
+                            'height'        => 42,
                             'positioning'   => 'relative',
                             'marginTop'     => 0,
                             'marginLeft'    => 1,
@@ -762,22 +762,23 @@ class ParticipantProfile
                         $row     = $table->addRow();
                     }
 
-                    $cell     = $row->addCell(10);
+                    $cell     = $row->addCell(12);
                     $codePath = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
-                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'))
+                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL')),
+                        80
                     );
                     $cell->addImage(
                         $codePath,
                         [
-                            'width'         => 30,
-                            'height'        => 30,
+                            'width'         => 38,
+                            'height'        => 38,
                             'marginTop'     => -1,
                             'marginLeft'    => -1,
                             'wrappingStyle' => 'square',
                         ]
                     );
-                    $cell    = $row->addCell(null, ['rightFromText' => 10]);
+                    $cell    = $row->addCell(null, ['rightFromText' => 12]);
                     $textrun = $cell->addTextRun();
                     $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
                     if ($phoneNumber->getDescription()) {

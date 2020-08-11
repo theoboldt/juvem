@@ -52,6 +52,7 @@ class TemporaryBarCodeGenerator
      * Generate code
      *
      * @param string $code Textual code
+     * @param int $size
      * @return string
      */
     public function createCode(string $code, int $size = 16)
