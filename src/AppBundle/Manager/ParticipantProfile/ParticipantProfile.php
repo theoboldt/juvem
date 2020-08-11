@@ -393,7 +393,7 @@ class ParticipantProfile
         foreach ($fillouts as $fillout) {
             $attribute = $fillout->getAttribute();
 
-            if ($this->isConfigurationEnabled('general', 'includePrivate') && !$attribute->isPublic()) {
+            if (!$this->isConfigurationEnabled('general', 'includePrivate') && $attribute->isPublic()) {
                 continue;
             }
             $title       = $attribute->getManagementTitle();
