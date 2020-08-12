@@ -621,24 +621,26 @@ class ParticipantProfile
             $section = $this->addSection(
                 $document,
                 [
-                    'colsNum'   => 4,
+                    'colsNum'   => 5,
                     'colsSpace' => 100,
                 ]
             );
 
             $this->addDatum($section, 'Vorname', $participant->getNameFirst());
             $this->addDatum($section, 'Nachname', $participant->getNameLast());
-
-            $birthday = sprintf(
-                "%s \u{25cb} %s (~%s) Jahre",
-                $participant->getBirthday()->format(Event::DATE_FORMAT_DATE),
-                $participant->getYearsOfLifeAtEvent(),
-                number_format($participant->getAgeAtEvent(1), 1, ',', "'")
-            );
+            
+            $birthday = $participant->getBirthday()->format(Event::DATE_FORMAT_DATE);
             if ($participant->hasBirthdayAtEvent()) {
                 $birthday .= " \u{1F381}";
             }
-            $this->addDatum($section, 'Geburtsdatum/Alter', $birthday);
+            $this->addDatum($section, 'Geburtsdatum', $birthday);
+            $age = sprintf(
+                "%s (~%s) Jahre",
+                $participant->getYearsOfLifeAtEvent(),
+                number_format($participant->getAgeAtEvent(1), 1, ',', "'")
+            );
+            $this->addDatum($section, 'Alter', $age);
+
             $this->addDatum($section, 'Geschlecht', $participant->getGender(true));
 
             $linkPath = $this->temporaryBarCodeGenerator->createCode(
