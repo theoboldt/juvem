@@ -337,7 +337,7 @@ class ParticipantProfile
             }
 
             $cell = $table->addCell();
-            $cell->addPreserveText('{PAGE}/{NUMPAGES}', [], ['alignment' => Jc::RIGHT]);
+            $cell->addPreserveText('{PAGE}/{NUMPAGES}', [], ['alignment' => Jc::END]);
         }
 
         $this->firstSection = false;
@@ -614,7 +614,7 @@ class ParticipantProfile
             }
 
             $cell    = $table->addCell();
-            $textrun = $cell->addTextRun(['alignment' => Jc::RIGHT]);
+            $textrun = $cell->addTextRun(['alignment' => Jc::END]);
             $textrun->addText($event->getTitle() . ' (' . $event->getStartDate()->format('Y') . ')');
 
             //participants data
