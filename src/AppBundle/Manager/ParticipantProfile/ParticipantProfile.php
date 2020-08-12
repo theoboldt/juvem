@@ -751,17 +751,24 @@ class ParticipantProfile
                 /** @var PhoneNumber $phoneNumber */
                 foreach ($phoneNumbers as $phoneNumber) {
                     if ($columns === 3) {
+                        if (isset($cellImage)) {
+                            //add additional vertical space to be make qr code usable
+                            $textrun = $cellImage->addTextRun();
+                            $textrun->addTextBreak();
+                            $textrun->addTextBreak();
+                            $textrun->addTextBreak();
+                        }
                         $columns = 0;
                         $row     = $table->addRow();
                     }
-
-                    $cell     = $row->addCell(12);
-                    $codePath = $this->temporaryBarCodeGenerator->createCode(
+            
+                    $cellImage = $row->addCell(12);
+                    $codePath  = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
                         str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL')),
                         80
                     );
-                    $cell->addImage(
+                    $cellImage->addImage(
                         $codePath,
                         [
                             'width'         => 38,
@@ -771,14 +778,15 @@ class ParticipantProfile
                             'wrappingStyle' => 'square',
                         ]
                     );
-                    $cell    = $row->addCell(null, ['rightFromText' => 12]);
-                    $textrun = $cell->addTextRun();
+            
+                    $cellText = $row->addCell(null, ['rightFromText' => 12]);
+                    $textrun  = $cellText->addTextRun();
                     $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
                     if ($phoneNumber->getDescription()) {
                         $textrun->addTextBreak();
                         $textrun->addText($phoneNumber->getDescription());
                     }
-
+        
                     ++$columns;
                 }
 
