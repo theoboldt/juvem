@@ -672,6 +672,9 @@ $(function () {
                 }
 
                 html += '<div class="w';
+                if (weatherAware.length > 1) {
+                    html += ' fm';
+                }
                 if (weatherAware.length === 2) {
                     html += ' f2';
                 }
@@ -726,13 +729,16 @@ $(function () {
                         headerWritten = false;
 
                     $.each(response.forecast, function (date, dateData) {
-
                         if (!headerWritten) {
                             htmlRows += '<thead>';
                             htmlRows += '<tr>';
                             htmlRows += '<td class="e">&nbsp;</td>';
+
+                            const columnCount = Object.keys(dateData.times).length + 1,
+                                columnWidth = (1 / columnCount) * 100;
+
                             $.each(dateData.times, function (time, climatic) {
-                                htmlRows += '<td>' +
+                                htmlRows += '<td style="width:'+columnWidth+'%;">' +
                                     '<div>' + time + '</div>' +
                                     '</td>';
                             });

@@ -584,20 +584,6 @@ abbr.unit {
       overflow: hidden;
       width: 100%;
 
-      .w {
-        background: rgba(255, 255, 255, 0.7);
-        color: lighten($brandPrimaryDark, 70%);
-        padding-top: 2px;
-
-        &.f2 {
-          padding-top: 8px;
-        }
-      }
-
-      i.owf {
-        color: #3c3c3c;
-      }
-
       .deg-20 {
         background: #323690;
       }
@@ -820,6 +806,23 @@ abbr.unit {
         background: darken(#a00627, 20%);
       }
 
+      .w {
+        background: rgba(255, 255, 255, 0.7);
+        color: lighten($brandPrimaryDark, 70%);
+        padding-top: 2px;
+
+        &.f2 {
+          padding-top: 8px;
+        }
+        &.fm {
+          font-size: 75%;
+        }
+      }
+
+      i.owf {
+        color: #3c3c3c;
+      }
+
       tbody {
         td {
           text-align: center;
@@ -834,9 +837,9 @@ abbr.unit {
       }
 
       td {
-        border-top: solid white 4px;
+        border-top: solid white 2px;
         border-bottom: solid white 4px;
-        border-right: solid white 1px;
+        border-right: solid white 2px;
 
         &.e {
           background: transparent;
@@ -861,7 +864,7 @@ abbr.unit {
         > div {
           background: $breadcrumb-bg;
           text-align: center;
-          min-width: 45px;
+          min-width: 40px;
         }
 
         .d {
