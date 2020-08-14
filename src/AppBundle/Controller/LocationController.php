@@ -374,12 +374,13 @@ class LocationController extends Controller
                     
                     $weatherList = $this->extractWeatherList($climate);
                     $climateTime = $climateDate->format(Event::DATE_FORMAT_TIME);
-                    $climateDay  = [
-                        'day'   => (int)$climateDate->format('j'),
-                        'month' => substr(
+                    $climateDay = [
+                        'day'     => (int)$climateDate->format('j'),
+                        'month'   => substr(
                             GalleryPublicController::convertMonthNumber((int)$climateDate->format('m')), 0, 3
                         ),
-                        'times' => []
+                        'weekday' => (int)$climateDate->format('N'),
+                        'times'   => [],
                     ];
                     $climateDate = $climateDate->format('Y-m-d');
                     
@@ -389,11 +390,19 @@ class LocationController extends Controller
                     if (!isset($forecastResult[$climateDate])) {
                         $forecastResult[$climateDate] = $climateDay;
                     }
+                    $rainPx = ((4 * log($climate->getRainVolume()+1))*2);
+                    if (is_infinite($rainPx) || $rainPx > 50) {
+                        $rainPx = 50;
+                    } elseif(is_nan($rainPx) || $rainPx < 0 ) {
+                        $rainPx = 0;
+                    }
                     $forecastResult[$climateDate]['times'][$climateTime] = [
                         'time'     => $climateTime,
                         'forecast' => [
                             'temperature'            => round($climate->getTemperature()),
                             'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
+                            'rain_mm'                => number_format($climate->getRainVolume(), 1, ',', '.'),
+                            'rain_px'                => round($rainPx, 3),
                             'weather'                => $weatherList,
                         ],
                     ];

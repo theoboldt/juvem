@@ -41,6 +41,13 @@ interface ClimaticInformationInterface
      * @return int
      */
     public function getRelativeHumidity(): int;
+
+    /**
+     * Get amount of rain for last 3 hours in mm
+     * 
+     * @return float
+     */
+    public function getRainVolume(): float;
     
     /**
      * Get list of conditions valid for this item

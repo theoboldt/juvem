@@ -202,6 +202,16 @@ class CurrentWeather implements CoordinatesAwareInterface, ClimaticInformationIn
     }
     
     /**
+     * Get amount of rain for last 3 hours in mm
+     * 
+     * @return float
+     */
+    public function getRainVolume(): float
+    {
+        return (float)($this->details['rain']['3h'] ?? 0);
+    }
+    
+    /**
      * @inheritDoc
      */
     public function getWeather(): array

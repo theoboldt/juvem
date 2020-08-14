@@ -826,6 +826,17 @@ abbr.unit {
       tbody {
         td {
           text-align: center;
+          
+          > div {
+            position: relative;
+          }
+
+          .r {
+            position: absolute;
+            background: #0c479a;
+            width: 7px;
+            bottom: 20px;
+          }
 
           .w, div.d {
             height: 40px;

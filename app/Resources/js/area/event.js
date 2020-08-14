@@ -679,6 +679,7 @@ $(function () {
                     html += ' f2';
                 }
                 html += '">';
+
                 if (weatherAware.length === 1) {
                     html += '<i class="owf-' + weatherAware[0].id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weatherAware[0].description + '"></i>';
                     html += '</div>';
@@ -697,6 +698,9 @@ $(function () {
                     }
                     html += '</div>';
                     html += ' <div class="t">' + htmlTemperature + '</div>';
+                }
+                if (temperatureAware.rain_px) {
+                    html += ' <div class="r" style="height: ' + temperatureAware.rain_px + 'px;" data-title="' + temperatureAware.rain_mm + ' mm Niederschlag in 3h"></div>';
                 }
 
                 return html;
@@ -751,7 +755,35 @@ $(function () {
                         htmlRows += '<tr>';
                         htmlRows += '<td class="d">' +
                             '<div>' +
-                            ' <div class="d">' + dateData.day + '</div>' +
+                            ' <div class="d" data-title="';
+                        switch (dateData.weekday) {
+                            case 1:
+                                htmlRows += 'Montag';
+                                break;
+                            case 2:
+                                htmlRows += 'Dienstag';
+                                break;
+                            case 3:
+                                htmlRows += 'Mittwoch';
+                                break;
+                            case 4:
+                                htmlRows += 'Donnerstag';
+                                break;
+                            case 5:
+                                htmlRows += 'Freitag';
+                                break;
+                            case 6:
+                                htmlRows += 'Samstag';
+                                break;
+                            case 7:
+                                htmlRows += 'Sonntag';
+                                break;
+                            default:
+                                htmlRows += dateData.weekday;
+                                break;
+                        }
+
+                        htmlRows += '">' + dateData.day + '</div>' +
                             ' <div class="m">' + dateData.month + '</div>' +
                             '</div>' +
                             '</td>';
