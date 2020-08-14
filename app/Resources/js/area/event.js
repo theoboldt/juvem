@@ -671,11 +671,15 @@ $(function () {
                     defaultCls = 'owf owf-pull-left owf-border';
                 }
 
-                html += '<span class="w">';
+                html += '<div class="w';
+                if (weatherAware.length === 2) {
+                    html += ' f2';
+                }
+                html += '">';
                 if (weatherAware.length === 1) {
                     html += '<i class="owf-' + weatherAware[0].id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weatherAware[0].description + '"></i>';
-                    html += '</span>';
-                    html += '<span class="t">' + htmlTemperature + '</span>';
+                    html += '</div>';
+                    html += '<div class="t">' + htmlTemperature + '</div>';
                     if (useText) {
                         html += ', ' + weatherAware[0].description;
                     }
@@ -688,8 +692,8 @@ $(function () {
                     if (useText) {
                         html += htmlWeatherDescriptions.join(', ') + '; ';
                     }
-                    html += '</span>';
-                    html += ' <span class="t">' + htmlTemperature + '</span>';
+                    html += '</div>';
+                    html += ' <div class="t">' + htmlTemperature + '</div>';
                 }
 
                 return html;
@@ -721,16 +725,15 @@ $(function () {
                     var htmlRows = '',
                         headerWritten = false;
 
-                    $.each(response.forecast, function (time, days) {
+                    $.each(response.forecast, function (date, dateData) {
 
                         if (!headerWritten) {
                             htmlRows += '<thead>';
                             htmlRows += '<tr>';
                             htmlRows += '<td class="e">&nbsp;</td>';
-                            $.each(days, function (day, climatic) {
+                            $.each(dateData.times, function (time, climatic) {
                                 htmlRows += '<td>' +
-                                    '<div>' + climatic.date.day + '.</div>' +
-                                    '<div class="m">' + climatic.date.month + '</div>' +
+                                    '<div>' + time + '</div>' +
                                     '</td>';
                             });
                             htmlRows += '</tr>';
@@ -740,9 +743,14 @@ $(function () {
                         }
 
                         htmlRows += '<tr>';
-                        htmlRows += '<td class="d"><span>' + time + '</span></td>';
+                        htmlRows += '<td class="d">' +
+                            '<div>' +
+                            ' <div class="d">' + dateData.day + '</div>' +
+                            ' <div class="m">' + dateData.month + '</div>' +
+                            '</div>' +
+                            '</td>';
 
-                        $.each(days, function (day, climatic) {
+                        $.each(dateData.times, function (time, climatic) {
                             if (climatic.forecast.temperature === 0 || climatic.forecast.temperature) {
                                 var htmlTemperature = createTemperatureHtml(climatic.forecast);
 
