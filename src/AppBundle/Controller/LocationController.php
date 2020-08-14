@@ -301,9 +301,6 @@ class LocationController extends Controller
                 $weather['icon'] = $weatherCondition->getIcon();
             }
             $weatherList[] = $weather;
-            if (rand(0, 1) === 0) {
-            $weatherList[] = $weather;
-            }
         }
         return $weatherList;
     }
