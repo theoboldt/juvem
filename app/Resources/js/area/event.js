@@ -681,7 +681,7 @@ $(function () {
                     html += '</div>';
                     html += '<div class="t">' + htmlTemperature + '</div>';
                     if (useText) {
-                        html += ', ' + weatherAware[0].description;
+                        html += weatherAware[0].description;
                     }
                 } else {
                     var htmlWeatherDescriptions = [];
