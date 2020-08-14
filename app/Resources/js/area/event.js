@@ -665,14 +665,18 @@ $(function () {
                     ' °C"' +
                     ' style="color:#222;">' + String(temperatureAware.temperature).replace('.', ',') + '°C</span>';
             },
-            createWeatherHtml = function (weatherAware, htmlTemperature, size, useText, defaultCls) {
+            createWeatherHtml = function (weatherAware, temperatureAware, htmlTemperature, size, useText, defaultCls) {
                 var html = '';
                 if (!defaultCls) {
                     defaultCls = 'owf owf-pull-left owf-border';
                 }
 
+                html += '<span class="w';
+                if (temperatureAware.temperature) {
+                    html += ' deg'+temperatureAware.temperature;
+                }
+                html += '">';
                 if (weatherAware.length === 1) {
-                    html += '<span class="w">';
                     html += '<i class="owf-' + weatherAware[0].id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weatherAware[0].description + '"></i>';
                     html += '</span>';
                     html += '<span class="t">' + htmlTemperature + '</span>';
@@ -681,7 +685,6 @@ $(function () {
                     }
                 } else {
                     var htmlWeatherDescriptions = [];
-                    html += '<span class="w">';
                     $.each(weatherAware, function (key, weather) {
                         html += '<i class="owf-' + weather.id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weather.description + '"></i>';
                         htmlWeatherDescriptions.push(weather.description);
@@ -709,7 +712,7 @@ $(function () {
                     html += 'class="control-label">Wetter (aktuell)</label>' +
                         '<p>';
 
-                    html += createWeatherHtml(response.current.weather, htmlTemperature, 2, true);
+                    html += createWeatherHtml(response.current.weather, response.current, htmlTemperature, 2, true);
 
                     html += ' </p>';
 
@@ -750,7 +753,12 @@ $(function () {
                                 htmlRows += '<td>';
                                 htmlRows += '<div>';
                                 htmlRows += createWeatherHtml(
-                                    climatic.forecast.weather, htmlTemperature, climatic.forecast.weather.length > 1 ? 2 : 3, false, 'owf'
+                                    climatic.forecast.weather,
+                                    climatic.forecast,
+                                    htmlTemperature,
+                                    climatic.forecast.weather.length > 1 ? 2 : 3,
+                                    false,
+                                    'owf'
                                 );
 
                                 htmlRows += '</div>';
