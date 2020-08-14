@@ -585,65 +585,65 @@ abbr.unit {
       width: 100%;
 
       .deg-20 {
-        background: #323690;
+        background: darken(#323690, 10%);
       }
       .deg-19 {
-        background: lighten(#323690, 1%);
+        background: darken(#323690, 8%);
       }
       .deg-18 {
-        background: lighten(#323690, 2%);
+        background: darken(#323690, 6%);
       }
       .deg-17 {
-        background: lighten(#323690, 3%);
+        background: darken(#323690, 4%);
       }
       .deg-16 {
-        background: lighten(#323690, 4%);
+        background: darken(#323690, 2%);
       }
       .deg-15 {
-        background: lighten(#323690, 5%);
+        background: #323690;
       }
       .deg-14 {
-        background: lighten(#323690, 6%);
+        background: darken(#4572af, 8%);
       }
       .deg-13 {
-        background: lighten(#323690, 7%);
+        background: darken(#4572af, 6%);
       }
       .deg-12 {
-        background: lighten(#323690, 8%);
+        background: darken(#4572af, 4%);
       }
       .deg-11 {
-        background: lighten(#323690, 9%);
+        background: darken(#4572af, 2%);
       }
 
       .deg-10 {
         background: #4572af;
       }
       .deg-9 {
-        background: lighten(#4572af, 1%);
+        background: darken(#71a7c9, 18%);
       }
       .deg-8 {
-        background: lighten(#4572af, 2%);
+        background: darken(#71a7c9, 16%);
       }
       .deg-7 {
-        background: lighten(#4572af, 3%);
+        background: darken(#71a7c9, 14%);
       }
       .deg-6 {
-        background: lighten(#4572af, 4%);
+        background: darken(#71a7c9, 12%);
       }
       .deg-5 {
-        background: lighten(#4572af, 5%);
+        background: darken(#71a7c9, 10%);
       }
       .deg-4 {
-        background: lighten(#4572af, 6%);
+        background: darken(#71a7c9, 8%);
       }
       .deg-3 {
-        background: lighten(#4572af, 7%);
+        background: darken(#71a7c9, 6%);
       }
       .deg-2 {
-        background: lighten(#4572af, 8%);
+        background: darken(#71a7c9, 4%);
       }
       .deg-1 {
-        background: lighten(#4572af, 9%);
+        background: darken(#71a7c9, 2%);
       }
 
       .deg0 {
@@ -671,10 +671,10 @@ abbr.unit {
         background: lighten(#71a7c9, 7%);
       }
       .deg8 {
-        background: lighten(#71a7c9, 8%);
+        background: darken(#a5d1e2, 2%);
       }
       .deg9 {
-        background: lighten(#71a7c9, 9%);
+        background: darken(#a5d1e2, 1%);
       }
 
       .deg10 {
@@ -716,52 +716,52 @@ abbr.unit {
         background: #f4d88c;
       }
       .deg21 {
-        background: lighten(#f3a760, 4%);
+        background: lighten(#f3a760, 14%);
       }
       .deg22 {
-        background: lighten(#f3a760, 3%);
+        background: lighten(#f3a760, 10%);
       }
       .deg23 {
-        background: lighten(#f3a760, 2%);
+        background: lighten(#f3a760, 6%);
       }
       .deg24 {
-        background: lighten(#f3a760, 1%);
+        background: lighten(#f3a760, 3%);
       }
       .deg25 {
         background: #f3a760;
       }
       .deg26 {
-        background: lighten(#eb6b43, 8%);
+        background: darken(#f3a760, 5%);
       }
       .deg27 {
-        background: lighten(#eb6b43, 6%);
+        background: darken(#f3a760, 10%);
       }
       .deg28 {
-        background: lighten(#eb6b43, 4%);
+        background: lighten(#eb6b43, 10%);
       }
       .deg29 {
-        background: lighten(#eb6b43, 2%);
+        background: lighten(#eb6b43, 5%);
       }
       .deg30 {
         background: #eb6b43;
       }
       .deg31 {
-        background: lighten(#d03229, 8%);
+        background: darken(#eb6b43, 4%);
       }
       .deg32 {
-        background: lighten(#d03229, 6%);
+        background: darken(#eb6b43, 8%);
       }
       .deg33 {
-        background: lighten(#d03229, 4%);
+        background: lighten(#d03229, 8%);
       }
       .deg34 {
-        background: lighten(#d03229, 2%);
+        background: lighten(#d03229, 5%);
       }
       .deg35 {
         background: #d03229;
       }
       .deg36 {
-        background: lighten(#a00627, 8%);
+        background: darken(#d03229, 4%);
       }
       .deg37 {
         background: lighten(#a00627, 6%);
@@ -837,17 +837,12 @@ abbr.unit {
       }
 
       td {
-        border-top: solid white 2px;
+        border-top: solid white 4px;
         border-bottom: solid white 4px;
-        border-right: solid white 2px;
 
         &.e {
           background: transparent;
         }
-      }
-
-      .d {
-        padding: 2px;
       }
 
       .t {
