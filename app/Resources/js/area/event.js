@@ -699,8 +699,11 @@ $(function () {
                     html += '</div>';
                     html += ' <div class="t">' + htmlTemperature + '</div>';
                 }
-                if (temperatureAware.rain_px) {
-                    html += ' <div class="r" style="height: ' + temperatureAware.rain_px + 'px;" data-title="' + temperatureAware.rain_mm + ' mm Niederschlag in 3h"></div>';
+                if (temperatureAware.rain_px && temperatureAware.rain_probability) {
+                    html += ' <div class="r" style="opacity:' + temperatureAware.rain_probability + ';height: ' + temperatureAware.rain_px + 'px;" ' +
+                        'data-title="zu ';
+                    html += parseInt(temperatureAware.rain_probability * 100);
+                    html += '% ' + temperatureAware.rain_mm + ' mm/3h Niederschlag"></div>';
                 }
 
                 return html;

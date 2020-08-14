@@ -81,6 +81,16 @@ class WeatherForecastElementOpenWeatherMap implements \JsonSerializable, Climati
     }
     
     /**
+     * Get probability of precipitation, 0 for 0%, 1 for 100%
+     * 
+     * @return float|null
+     */
+    public function getRainProbability(): ?float
+    {
+        return isset($this->details['pop']) ? $this->details['pop'] : null;
+    }
+    
+    /**
      * @inheritDoc
      */
     public function getWeather(): array

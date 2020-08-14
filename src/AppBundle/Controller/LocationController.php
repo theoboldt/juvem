@@ -403,6 +403,7 @@ class LocationController extends Controller
                             'temperature_feels_like' => round($climate->getTemperatureFeelsLike()),
                             'rain_mm'                => number_format($climate->getRainVolume(), 1, ',', '.'),
                             'rain_px'                => round($rainPx, 3),
+                            'rain_probability'       => $climate->getRainProbability(),
                             'weather'                => $weatherList,
                         ],
                     ];

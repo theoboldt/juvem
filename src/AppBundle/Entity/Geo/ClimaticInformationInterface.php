@@ -50,6 +50,13 @@ interface ClimaticInformationInterface
     public function getRainVolume(): float;
     
     /**
+     * Get probability of precipitation, 0 for 0%, 1 for 100%
+     * 
+     * @return float|null
+     */
+    public function getRainProbability(): ?float;
+    
+    /**
      * Get list of conditions valid for this item
      *
      * @return array|WeatherConditionInterface[]
