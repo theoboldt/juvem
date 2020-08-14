@@ -671,11 +671,7 @@ $(function () {
                     defaultCls = 'owf owf-pull-left owf-border';
                 }
 
-                html += '<span class="w';
-                if (temperatureAware.temperature) {
-                    html += ' deg'+temperatureAware.temperature;
-                }
-                html += '">';
+                html += '<span class="w">';
                 if (weatherAware.length === 1) {
                     html += '<i class="owf-' + weatherAware[0].id + ' owf-' + size + 'x ' + defaultCls + '" data-title="' + weatherAware[0].description + '"></i>';
                     html += '</span>';
@@ -751,7 +747,7 @@ $(function () {
                                 var htmlTemperature = createTemperatureHtml(climatic.forecast);
 
                                 htmlRows += '<td>';
-                                htmlRows += '<div>';
+                                htmlRows += '<div class="deg' + climatic.forecast.temperature + '">';
                                 htmlRows += createWeatherHtml(
                                     climatic.forecast.weather,
                                     climatic.forecast,

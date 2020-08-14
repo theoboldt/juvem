@@ -584,259 +584,256 @@ abbr.unit {
       overflow: hidden;
       width: 100%;
 
-      i.owf {
-        color: lighten($owfColor, 20%);
+      .w {
+        background: rgba(255, 255, 255, 0.7);
+        color: lighten($brandPrimaryDark, 70%);
       }
 
-      .w {
-        &.deg-20 {
-          background: #323690;
-        }
-        &.deg-19 {
-          background: lighten(#323690, 1%);
-        }
-        &.deg-18 {
-          background: lighten(#323690, 2%);
-        }
-        &.deg-17 {
-          background: lighten(#323690, 3%);
-        }
-        &.deg-16 {
-          background: lighten(#323690, 4%);
-        }
-        &.deg-15 {
-          background: lighten(#323690, 5%);
-        }
-        &.deg-14 {
-          background: lighten(#323690, 6%);
-        }
-        &.deg-13 {
-          background: lighten(#323690, 7%);
-        }
-        &.deg-12 {
-          background: lighten(#323690, 8%);
-        }
-        &.deg-11 {
-          background: lighten(#323690, 9%);
-        }
+      i.owf {
+        color: $brandPrimaryDark;
+      }
 
-        &.deg-10 {
-          background: #4572af;
-        }
-        &.deg-9 {
-          background: lighten(#4572af, 1%);
-        }
-        &.deg-8 {
-          background: lighten(#4572af, 2%);
-        }
-        &.deg-7 {
-          background: lighten(#4572af, 3%);
-        }
-        &.deg-6 {
-          background: lighten(#4572af, 4%);
-        }
-        &.deg-5 {
-          background: lighten(#4572af, 5%);
-        }
-        &.deg-4 {
-          background: lighten(#4572af, 6%);
-        }
-        &.deg-3 {
-          background: lighten(#4572af, 7%);
-        }
-        &.deg-2 {
-          background: lighten(#4572af, 8%);
-        }
-        &.deg-1 {
-          background: lighten(#4572af, 9%);
-        }
+      .deg-20 {
+        background: #323690;
+      }
+      .deg-19 {
+        background: lighten(#323690, 1%);
+      }
+      .deg-18 {
+        background: lighten(#323690, 2%);
+      }
+      .deg-17 {
+        background: lighten(#323690, 3%);
+      }
+      .deg-16 {
+        background: lighten(#323690, 4%);
+      }
+      .deg-15 {
+        background: lighten(#323690, 5%);
+      }
+      .deg-14 {
+        background: lighten(#323690, 6%);
+      }
+      .deg-13 {
+        background: lighten(#323690, 7%);
+      }
+      .deg-12 {
+        background: lighten(#323690, 8%);
+      }
+      .deg-11 {
+        background: lighten(#323690, 9%);
+      }
 
-        &.deg0 {
-          background: #71a7c9;
-        }
-        &.deg1 {
-          background: lighten(#71a7c9, 1%);
-        }
-        &.deg2 {
-          background: lighten(#71a7c9, 2%);
-        }
-        &.deg3 {
-          background: lighten(#71a7c9, 3%);
-        }
-        &.deg4 {
-          background: lighten(#71a7c9, 4%);
-        }
-        &.deg5 {
-          background: lighten(#71a7c9, 5%);
-        }
-        &.deg6 {
-          background: lighten(#71a7c9, 6%);
-        }
-        &.deg7 {
-          background: lighten(#71a7c9, 7%);
-        }
-        &.deg8 {
-          background: lighten(#71a7c9, 8%);
-        }
-        &.deg9 {
-          background: lighten(#71a7c9, 9%);
-        }
+      .deg-10 {
+        background: #4572af;
+      }
+      .deg-9 {
+        background: lighten(#4572af, 1%);
+      }
+      .deg-8 {
+        background: lighten(#4572af, 2%);
+      }
+      .deg-7 {
+        background: lighten(#4572af, 3%);
+      }
+      .deg-6 {
+        background: lighten(#4572af, 4%);
+      }
+      .deg-5 {
+        background: lighten(#4572af, 5%);
+      }
+      .deg-4 {
+        background: lighten(#4572af, 6%);
+      }
+      .deg-3 {
+        background: lighten(#4572af, 7%);
+      }
+      .deg-2 {
+        background: lighten(#4572af, 8%);
+      }
+      .deg-1 {
+        background: lighten(#4572af, 9%);
+      }
 
-        &.deg10 {
-          background: #a5d1e2;
-        }
-        &.deg10 {
-          background: lighten(#a5d1e2, 1%);
-        }
-        &.deg11 {
-          background: lighten(#a5d1e2, 2%);
-        }
-        &.deg12 {
-          background: lighten(#a5d1e2, 3%);
-        }
-        &.deg13 {
-          background: lighten(#a5d1e2, 4%);
-        }
-        &.deg14 {
-          background: lighten(#a5d1e2, 5%);
-        }
+      .deg0 {
+        background: #71a7c9;
+      }
+      .deg1 {
+        background: lighten(#71a7c9, 1%);
+      }
+      .deg2 {
+        background: lighten(#71a7c9, 2%);
+      }
+      .deg3 {
+        background: lighten(#71a7c9, 3%);
+      }
+      .deg4 {
+        background: lighten(#71a7c9, 4%);
+      }
+      .deg5 {
+        background: lighten(#71a7c9, 5%);
+      }
+      .deg6 {
+        background: lighten(#71a7c9, 6%);
+      }
+      .deg7 {
+        background: lighten(#71a7c9, 7%);
+      }
+      .deg8 {
+        background: lighten(#71a7c9, 8%);
+      }
+      .deg9 {
+        background: lighten(#71a7c9, 9%);
+      }
 
-        &.deg15 {
-          background: #d7eaf0;
-        }
+      .deg10 {
+        background: #a5d1e2;
+      }
+      .deg10 {
+        background: lighten(#a5d1e2, 1%);
+      }
+      .deg11 {
+        background: lighten(#a5d1e2, 2%);
+      }
+      .deg12 {
+        background: lighten(#a5d1e2, 3%);
+      }
+      .deg13 {
+        background: lighten(#a5d1e2, 4%);
+      }
+      .deg14 {
+        background: lighten(#a5d1e2, 5%);
+      }
 
-        &.deg16 {
-          background: #d5ded4;
-        }
-        &.deg17 {
-          background: #dddcc7;
-        }
-        &.deg18 {
-          background: #e4dab6;
-        }
-        &.deg19 {
-          background: #ebd7a4;
-        }
-        &.deg20 {
-          background: #f4d88c;
-        }
-        &.deg21 {
-          background: lighten(#f3a760, 4%);
-        }
-        &.deg22 {
-          background: lighten(#f3a760, 3%);
-        }
-        &.deg23 {
-          background: lighten(#f3a760, 2%);
-        }
-        &.deg24 {
-          background: lighten(#f3a760, 1%);
-        }
-        &.deg25 {
-          background: #f3a760;
-        }
-        &.deg26 {
-          background: lighten(#eb6b43, 8%);
-        }
-        &.deg27 {
-          background: lighten(#eb6b43, 6%);
-        }
-        &.deg28 {
-          background: lighten(#eb6b43, 4%);
-        }
-        &.deg29 {
-          background: lighten(#eb6b43, 2%);
-        }
-        &.deg30 {
-          background: #eb6b43;
-        }
-        &.deg31 {
-          background: lighten(#d03229, 8%);
-        }
-        &.deg32 {
-          background: lighten(#d03229, 6%);
-        }
-        &.deg33 {
-          background: lighten(#d03229, 4%);
-        }
-        &.deg34 {
-          background: lighten(#d03229, 2%);
-        }
-        &.deg35 {
-          background: #d03229;
-        }
-        &.deg36 {
-          background: lighten(#a00627, 8%);
-        }
-        &.deg37 {
-          background: lighten(#a00627, 6%);
-        }
-        &.deg38 {
-          background: lighten(#a00627, 4%);
-        }
-        &.deg39 {
-          background: lighten(#a00627, 2%);
-        }
-        &.deg40 {
-          background: #a00627;
-        }
-        &.deg41 {
-          background: darken(#a00627, 2%);
-        }
-        &.deg42 {
-          background: darken(#a00627, 4%);
-        }
-        &.deg43 {
-          background: darken(#a00627, 6%);
-        }
-        &.deg44 {
-          background: darken(#a00627, 8%);
-        }
-        &.deg45 {
-          background: darken(#a00627, 10%);
-        }
-        &.deg46 {
-          background: darken(#a00627, 12%);
-        }
-        &.deg47 {
-          background: darken(#a00627, 14%);
-        }
-        &.deg48 {
-          background: darken(#a00627, 16%);
-        }
-        &.deg49 {
-          background: darken(#a00627, 18%);
-        }
-        &.deg50 {
-          background: darken(#a00627, 20%);
-        }
+      .deg15 {
+        background: #d7eaf0;
+      }
+
+      .deg16 {
+        background: #d5ded4;
+      }
+      .deg17 {
+        background: #dddcc7;
+      }
+      .deg18 {
+        background: #e4dab6;
+      }
+      .deg19 {
+        background: #ebd7a4;
+      }
+      .deg20 {
+        background: #f4d88c;
+      }
+      .deg21 {
+        background: lighten(#f3a760, 4%);
+      }
+      .deg22 {
+        background: lighten(#f3a760, 3%);
+      }
+      .deg23 {
+        background: lighten(#f3a760, 2%);
+      }
+      .deg24 {
+        background: lighten(#f3a760, 1%);
+      }
+      .deg25 {
+        background: #f3a760;
+      }
+      .deg26 {
+        background: lighten(#eb6b43, 8%);
+      }
+      .deg27 {
+        background: lighten(#eb6b43, 6%);
+      }
+      .deg28 {
+        background: lighten(#eb6b43, 4%);
+      }
+      .deg29 {
+        background: lighten(#eb6b43, 2%);
+      }
+      .deg30 {
+        background: #eb6b43;
+      }
+      .deg31 {
+        background: lighten(#d03229, 8%);
+      }
+      .deg32 {
+        background: lighten(#d03229, 6%);
+      }
+      .deg33 {
+        background: lighten(#d03229, 4%);
+      }
+      .deg34 {
+        background: lighten(#d03229, 2%);
+      }
+      .deg35 {
+        background: #d03229;
+      }
+      .deg36 {
+        background: lighten(#a00627, 8%);
+      }
+      .deg37 {
+        background: lighten(#a00627, 6%);
+      }
+      .deg38 {
+        background: lighten(#a00627, 4%);
+      }
+      .deg39 {
+        background: lighten(#a00627, 2%);
+      }
+      .deg40 {
+        background: #a00627;
+      }
+      .deg41 {
+        background: darken(#a00627, 2%);
+      }
+      .deg42 {
+        background: darken(#a00627, 4%);
+      }
+      .deg43 {
+        background: darken(#a00627, 6%);
+      }
+      .deg44 {
+        background: darken(#a00627, 8%);
+      }
+      .deg45 {
+        background: darken(#a00627, 10%);
+      }
+      .deg46 {
+        background: darken(#a00627, 12%);
+      }
+      .deg47 {
+        background: darken(#a00627, 14%);
+      }
+      .deg48 {
+        background: darken(#a00627, 16%);
+      }
+      .deg49 {
+        background: darken(#a00627, 18%);
+      }
+      .deg50 {
+        background: darken(#a00627, 20%);
       }
 
       tbody {
 
         td {
           > div {
-            background: transparentize(#e5e5e5, 0.5);
-            position: relative;
-            min-height: 40px;
+            min-height: 60px;
           }
 
-          .w {
+          .t, .w {
             display: block;
             text-align: center;
           }
-
-          .t {
-            position: absolute;
-            top: 0;
-            right: 2px;
-          }
-
         }
       }
 
       td {
-        border: solid white 4px;
+        border-top: solid white 2px;
+        border-right: solid white 4px;
+        border-left: solid white 4px;
+        border-bottom: solid white 2px;
 
         &.e {
           background: transparent;
@@ -855,7 +852,7 @@ abbr.unit {
       thead {
         div {
           padding: 2px;
-          background: transparentize($breadcrumb-bg, 0.8);
+          background: transparentize($breadcrumb-bg, 0.7);
           text-align: center;
         }
 
