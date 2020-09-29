@@ -39,10 +39,11 @@ class PublicParticipateController extends Controller
         if (!$event->isActive()) {
             $this->addFlash(
                 'danger',
-                'Bei der gewählte Veranstaltung werden im Moment keine Anmeldungen erfasst'
+                'Für die Veranstaltung <i>' . htmlspecialchars($event->getTitle()) .
+                '</i> werden im Moment keine Anmeldungen erfasst'
             );
 
-            return $this->redirectToRoute('homepage', ['eid' => $eid]);
+            return $this->redirectToRoute('homepage');
         }
 
         if ($request->getSession()->has('participation-' . $eid)) {
