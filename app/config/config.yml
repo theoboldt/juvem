@@ -145,11 +145,12 @@ stof_doctrine_extensions:
             softdeleteable: true
 
 doctrine_migrations:
-    dir_name: "%kernel.root_dir%/Migrations"
-    namespace: Application\Migrations
-    table_name: migration_versions
-    name: Juvem Migrations
+    migrations_paths: 
+        'Application\Migrations': "%kernel.root_dir%/Migrations"
     organize_migrations: false
+    storage:
+        table_storage:
+            table_name: migration_versions
 
 # Swiftmailer Configuration
 swiftmailer:

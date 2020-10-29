@@ -103,14 +103,17 @@ services:
           - "%juvimg.url%"
           - "%juvimg.password%"
           - "@logger"
-    app.pdf_converter_service:
-        class: AppBundle\PdfConverterService
+    
+    AppBundle\PdfConverterService:
         factory: ['AppBundle\PdfConverterService', create]
         public: true
         arguments:
           - "%app.libreoffice_binary_path%"
           - "%app.tmp.root.path%"
           - "@logger"
+    app.pdf_converter_service:
+        alias: AppBundle\PdfConverterService
+
     app.file_cache.event:
         class: AppBundle\Cache\FileCache
         arguments:
