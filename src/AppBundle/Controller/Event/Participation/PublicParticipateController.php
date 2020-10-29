@@ -45,32 +45,14 @@ class PublicParticipateController extends Controller
 
             return $this->redirectToRoute('homepage');
         }
+        $participation = new Participation($event);
 
-        if ($request->getSession()->has('participation-' . $eid)) {
-            /** @var Participation $participation */
-            $participation = $request->getSession()
-                                     ->get('participation-' . $eid);
-            $sessionEvent  = $participation->getEvent();
-            if ($sessionEvent->getEid() == $eid) {
-                $participation->setEvent($event); //TODO improve solution
-            } else {
-                return $this->render(
-                    'event/public/miss.html.twig', ['eid' => $eid],
-                    new Response(null, Response::HTTP_NOT_FOUND)
-                );
-
-            }
-        } else {
-            $participation = new Participation($event);
-
-            /** @var \AppBundle\Entity\User $user */
-            $user = $this->getUser();
-            if ($user) {
-                $participation->setNameLast($user->getNameLast());
-                $participation->setNameFirst($user->getNameFirst());
-            }
+        /** @var \AppBundle\Entity\User $user */
+        $user = $this->getUser();
+        if ($user) {
+            $participation->setNameLast($user->getNameLast());
+            $participation->setNameFirst($user->getNameFirst());
         }
-
         $form = $this->createForm(
             ParticipationType::class,
             $participation,
@@ -80,12 +62,20 @@ class PublicParticipateController extends Controller
             ]
         );
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $request->getSession()->set('participation-' . $eid, $participation);
+        if ($request->request->has('participation')) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $participationData = $request->request->get('participation', null);
+                $request->getSession()->set('participation-data-' . $eid, $participationData);
 
-            return $this->redirectToRoute('event_public_participate_confirm', ['eid' => $eid]);
+                return $this->redirectToRoute('event_public_participate_confirm', ['eid' => $eid]);
+            }
+        } elseif ($request->getSession()->get('participation-data-' . $eid, null)) {
+            $participationData = $request->getSession()->get('participation-data-' . $eid);
+            $form->submit($participationData);
+            $participation->setEvent($event);
         }
+
         $this->addWaitingListFlashIfRequired($event);
 
         $user           = $this->getUser();
@@ -131,6 +121,39 @@ class PublicParticipateController extends Controller
         $participationPrevious   = $participationRepository->findOneBy(
             ['pid' => $pid, 'assignedUser' => $user->getUid()]
         );
+
+        $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
+        $participation->setAssignedUser($user);
+        $form = $this->createForm(
+            ParticipationType::class,
+            $participation,
+            [
+                ParticipationType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipationType::ACQUISITION_FIELD_PRIVATE => false,
+            ]
+        );
+        $eid = $event->getEid();
+        if ($request->request->has('participation')) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $participationData = $request->request->get('participation', null);
+                $request->getSession()->set('participation-data-' . $eid, $participationData);
+
+                return $this->redirectToRoute('event_public_participate_confirm', ['eid' => $eid]);
+            }
+        } elseif ($request->getSession()->get('participation-data-' . $eid, null)) {
+            $participationData = $request->getSession()->get('participation-data-' . $eid);
+            $form->submit($participationData);
+            $participation->setEvent($event);
+        } else {
+            $this->addFlash(
+                'success',
+                'Die Anmeldung wurde mit Daten einer früheren Anmeldung vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
+            );
+        }
+
+        $this->addWaitingListFlashIfRequired($event);
+        
         if (!$participationPrevious) {
             $this->addFlash(
                 'danger',
@@ -139,39 +162,53 @@ class PublicParticipateController extends Controller
             return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
         }
 
-        $participation = Participation::createFromTemplateForEvent($participationPrevious, $event);
-        $participation->setAssignedUser($user);
+        $user           = $this->getUser();
+        $participations = [];
+        if ($user) {
+            $participations = $user->getAssignedParticipations();
+        }
 
-        $request->getSession()->set('participation-' . $event->getEid(), $participation);
-        $this->addFlash(
-            'success',
-            'Die Anmeldung wurde mit Daten einer früheren Anmeldung vorausgefüllt. Bitte überprüfen Sie sorgfältig ob die Daten noch richtig sind.'
+        return $this->render(
+            'event/participation/public/begin.html.twig',
+            [
+                'event'                          => $event,
+                'acquisitionFieldsParticipation' => $event->getAcquisitionAttributes(true, false, false, false, true),
+                'participations'                 => $participations,
+                'acquisitionFieldsParticipant'   => $event->getAcquisitionAttributes(false, true, false, false, true),
+                'form'                           => $form->createView(),
+            ]
         );
-        return $this->redirectToRoute('event_public_participate', ['eid' => $event->getEid()]);
     }
 
     /**
      * Page for list of events
      *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/participate/confirm", requirements={"eid": "\d+"}, name="event_public_participate_confirm")
      */
-    public function confirmParticipationAction($eid, Request $request)
+    public function confirmParticipationAction(Event $event, Request $request)
     {
-        if (!$request->getSession()->has('participation-' . $eid)) {
+        $eid               = $event->getEid();
+        $participationData = $request->getSession()->get('participation-data-' . $eid, null);
+        if (!$participationData) {
             return $this->redirectToRoute('event_public_participate', ['eid' => $eid]);
         }
 
-        /** @var Participation $participation */
-        $participation = $request->getSession()->get('participation-' . $eid);
-        $event         = $participation->getEvent();
-
-        if (!$participation instanceof Participation
-            || $eid != $participation->getEvent()->getEid()
-        ) {
-            throw new BadRequestHttpException('Given participation data is invalid');
-        }
-
+        $participation = new Participation($event);
+        $form          = $this->createForm(
+            ParticipationType::class,
+            $participation,
+            [
+                ParticipationType::ACQUISITION_FIELD_PUBLIC  => true,
+                ParticipationType::ACQUISITION_FIELD_PRIVATE => false,
+            ]
+        );
+        $form->submit($participationData);
         if ($request->query->has('confirm')) {
+            if (!$form->isSubmitted() || !$form->isValid()) {
+                return $this->redirectToRoute('event_public_participate', ['eid' => $eid]);
+            }
+
             $user                 = $this->getUser();
             $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
                 $participation, $user
@@ -180,7 +217,7 @@ class PublicParticipateController extends Controller
             $participationManager = $this->get('app.participation_manager');
             $participationManager->mailParticipationRequested($participation, $event);
 
-            $request->getSession()->remove('participation-' . $eid);
+            $request->getSession()->remove('participation-data-' . $eid);
 
             if ($request->getSession()->has('participationList')) {
                 $participationList = $request->getSession()->get('participationList');
@@ -200,12 +237,14 @@ class PublicParticipateController extends Controller
                     $this->container->get('router')->generate('fos_user_registration_register')
                 );
             }
-            $repositoryNewsletter = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
-            if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
-                $message .= sprintf(
-                    '<p>Sie können jetzt den <a href="%s">Newsletter abonnieren</a>, um auch in Zukunft von unseren Aktionen erfahren.</p>',
-                    $this->container->get('router')->generate('newsletter_subscription')
-                );
+            if ($this->getParameter('feature.newsletter')) {
+                $repositoryNewsletter = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
+                if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
+                    $message .= sprintf(
+                        '<p>Sie können jetzt den <a href="%s">Newsletter abonnieren</a>, um auch in Zukunft von unseren Aktionen erfahren.</p>',
+                        $this->container->get('router')->generate('newsletter_subscription')
+                    );
+                }
             }
 
             $this->addFlash(
