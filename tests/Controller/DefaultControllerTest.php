@@ -85,10 +85,10 @@ class DefaultControllerTest extends WebTestCase
         $response = $client->getResponse();
         $this->assertEquals('application/xml', $response->headers->get('Content-Type'));
         
-        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(newsletter)/m', $response->getContent());
-        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(login)/m', $response->getContent());
-        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(register)(\/{0,1})/m', $response->getContent());
-        $this->assertRegExp('/\w*\<loc\>[^\<\>]+\/(conditions-of-travel)/m', $response->getContent());
+        $this->assertMatchesRegularExpression('/\w*\<loc\>[^\<\>]+\/(newsletter)/m', $response->getContent());
+        $this->assertMatchesRegularExpression('/\w*\<loc\>[^\<\>]+\/(login)/m', $response->getContent());
+        $this->assertMatchesRegularExpression('/\w*\<loc\>[^\<\>]+\/(register)(\/{0,1})/m', $response->getContent());
+        $this->assertMatchesRegularExpression('/\w*\<loc\>[^\<\>]+\/(conditions-of-travel)/m', $response->getContent());
     }
     
 }
