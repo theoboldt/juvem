@@ -131,7 +131,7 @@ class GlobalCustomization
      *
      * @param Environment $twig                    Twig environment used for rendering
      * @param string      $rootDir                 Applications root dir
-     * @param string      $appTitle                Name of app
+     * @param string|null $appTitle                Name of app
      * @param string      $organizationName        Name of organization
      * @param string      $addressStreet           Address of organization, street name
      * @param string      $addressPostalCode       Address of organization, postal code
@@ -149,7 +149,7 @@ class GlobalCustomization
     public function __construct(
         Environment $twig,
         string $rootDir,
-        string $appTitle,
+        ?string $appTitle,
         string $organizationName,
         string $addressStreet,
         string $addressPostalCode,
@@ -165,7 +165,7 @@ class GlobalCustomization
     ) {
         $this->twig               = $twig;
         $this->rootDir            = $rootDir;
-        $this->appTitle           = $appTitle;
+        $this->appTitle           = $appTitle ?: 'Juvem';
         $this->organizationName   = $organizationName;
         $this->addressStreet      = $addressStreet;
         $this->addressPostalCode  = $addressPostalCode;
