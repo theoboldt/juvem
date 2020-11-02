@@ -98,7 +98,9 @@ twig:
         localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
         secureCacheDecider: '@app.secure_cache_decider'
         tab: '@app.twig_tab_index_skip'
-
+    paths:
+        '%kernel.root_dir%/../config/templates': customization
+        
 # Doctrine Configuration
 doctrine:
     dbal:

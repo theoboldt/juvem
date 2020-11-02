@@ -51,7 +51,7 @@ class ParticipationType extends ParticipationBaseType
             ]
         );
     
-        if (GlobalCustomization::isCustomizationAvailable($this->kernelRootDir, 'conditions-of-travel-content')) {
+        if (GlobalCustomization::isCustomizationAvailable('conditions-of-travel-content')) {
             $builder->add(
                 'acceptConditionsOfTravel',
                 CheckboxType::class,
@@ -66,7 +66,7 @@ class ParticipationType extends ParticipationBaseType
             );
         }
         
-        if (GlobalCustomization::isCustomizationAvailable($this->kernelRootDir, 'conditions-corona-content')) {
+        if (GlobalCustomization::isCustomizationAvailable('conditions-corona-content')) {
             $builder->add(
                 'acceptConditionsCorona',
                 CheckboxType::class,

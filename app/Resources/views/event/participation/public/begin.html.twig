@@ -318,13 +318,13 @@
                     </div>
                 </div>
 
-                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-corona-content') %}
+                {% if customization.isCustomizationAvailable('conditions-corona-content') %}
                     <div class="row">
                         <div class="col-xs-12">
                             <h2>Erweiterte Teilnahmebedingungen <small>wegen <a href="https://www.baden-wuerttemberg.de/de/service/aktuelle-infos-zu-corona/corona-verordnung-ab-29-juni-2020/" target="_blank">CoronaVO</a> & <a href="https://www.baden-wuerttemberg.de/de/service/aktuelle-infos-zu-corona/verordnung-jugendhaeuser/" target="_blank">CoronaVO KJA u. JSA</a></small></h2>
 
                             <div class="scrollspy-panel">
-                                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-corona-scrollspy') %}
+                                {% if customization.isCustomizationAvailable('conditions-corona-scrollspy') %}
                                     {{ customization.legalConditionsCoronaScrollspy|raw }}
                                 {% endif %}
                                 <div class="panel panel-default">
@@ -393,13 +393,13 @@
                         </div>
                     </div>
                 </div>
-                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-content') %}
+                {% if customization.isCustomizationAvailable('conditions-of-travel-content') %}
                     <div class="row">
                         <div class="col-xs-12">
                             <h2>Reisebedingungen</h2>
 
                             <div class="scrollspy-panel">
-                                {% if customization.isCustomizationAvailable(kernelRootDir, 'conditions-of-travel-scrollspy') %}
+                                {% if customization.isCustomizationAvailable('conditions-of-travel-scrollspy') %}
                                     {{ customization.legalConditionsOfTravelScrollspy|raw }}
                                 {% endif %}
                                 <div class="panel panel-default">

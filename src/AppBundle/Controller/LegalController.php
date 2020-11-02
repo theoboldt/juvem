@@ -42,8 +42,7 @@ class LegalController extends Controller
         $customization = $this->get('app.twig_global_customization');
         $description   = 'Diese Bedingungen gelten bei den Veranstaltungen, die von ' . $customization->organizationName() . ' auf dieser Seite angeboten werden.';
 
-        $rootDir = $this->get('kernel')->getRootDir();
-        if (GlobalCustomization::isCustomizationAvailable($rootDir, 'conditions-of-travel-content')) {
+        if (GlobalCustomization::isCustomizationAvailable('conditions-of-travel-content')) {
             return $this->render('legal/conditions-of-travel-page.html.twig', ['pageDescription' => $description]);
         } else {
             return $this->redirectToRoute('imprint');

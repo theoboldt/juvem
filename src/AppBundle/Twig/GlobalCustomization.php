@@ -125,21 +125,21 @@ class GlobalCustomization
      * @var null
      */
     private $privacyResponsible;
-    
+
     /**
      * Customization constructor
      *
      * @param Environment $twig                    Twig environment used for rendering
-     * @param string $rootDir                      Applications root dir
-     * @param string $appTitle                     Name of app
-     * @param string $organizationName             Name of organization
-     * @param string $addressStreet                Address of organization, street name
-     * @param string $addressPostalCode            Address of organization, postal code
-     * @param string $addressLocality              Address of organization, city
-     * @param string $numberPhone                  Phone number of organization
-     * @param string $numberFax                    Fax number of organization
-     * @param string $email                        E-mail address of organization
-     * @param null $privacyResponsible             Name of person responsible for data privacy
+     * @param string      $rootDir                 Applications root dir
+     * @param string      $appTitle                Name of app
+     * @param string      $organizationName        Name of organization
+     * @param string      $addressStreet           Address of organization, street name
+     * @param string      $addressPostalCode       Address of organization, postal code
+     * @param string      $addressLocality         Address of organization, city
+     * @param string      $numberPhone             Phone number of organization
+     * @param string      $numberFax               Fax number of organization
+     * @param string      $email                   E-mail address of organization
+     * @param string|null $privacyResponsible      Name of person responsible for data privacy
      * @param string|null $website                 Website of organization
      * @param string|null $facebook                Facebook link if available
      * @param string|null $juvemWebsite            Juvem app website base url
@@ -148,35 +148,35 @@ class GlobalCustomization
      */
     public function __construct(
         Environment $twig,
-        $rootDir,
-        $appTitle,
-        $organizationName,
-        $addressStreet,
-        $addressPostalCode,
-        $addressLocality,
-        $numberPhone,
-        $numberFax,
-        $email,
-        $privacyResponsible = null,
-        $website = null,
-        $facebook = null,
-        $juvemWebsite = null,
-        $logoLink = null
+        string $rootDir,
+        string $appTitle,
+        string $organizationName,
+        string $addressStreet,
+        string $addressPostalCode,
+        string $addressLocality,
+        string $numberPhone,
+        string $numberFax,
+        string $email,
+        ?string $privacyResponsible = null,
+        ?string $website = null,
+        ?string $facebook = null,
+        ?string $juvemWebsite = null,
+        ?string $logoLink = null
     ) {
-        $this->twig              = $twig;
-        $this->rootDir           = $rootDir;
-        $this->appTitle          = $appTitle;
-        $this->organizationName  = $organizationName;
-        $this->addressStreet     = $addressStreet;
-        $this->addressPostalCode = $addressPostalCode;
-        $this->addressLocality   = $addressLocality;
-        $this->numberPhone       = $numberPhone;
-        $this->numberFax         = $numberFax;
-        $this->email             = $email;
-        $this->website           = $website;
-        $this->facebook          = $facebook;
-        $this->juvemWebsite      = $juvemWebsite;
-        $this->logoLink          = $logoLink;
+        $this->twig               = $twig;
+        $this->rootDir            = $rootDir;
+        $this->appTitle           = $appTitle;
+        $this->organizationName   = $organizationName;
+        $this->addressStreet      = $addressStreet;
+        $this->addressPostalCode  = $addressPostalCode;
+        $this->addressLocality    = $addressLocality;
+        $this->numberPhone        = $numberPhone;
+        $this->numberFax          = $numberFax;
+        $this->email              = $email;
+        $this->website            = $website;
+        $this->facebook           = $facebook;
+        $this->juvemWebsite       = $juvemWebsite;
+        $this->logoLink           = $logoLink;
         $this->privacyResponsible = $privacyResponsible;
     }
 
@@ -308,11 +308,10 @@ class GlobalCustomization
      * @param   string $template Template base name
      * @return  string
      */
-    protected function renderCustomizedIfAvailable($template): string
+    protected function renderCustomizedIfAvailable(string $template): string
     {
-        $customizedTemplate = self::customizedTemplatePath($this->rootDir, $template);
-        if (self::isCustomizationAvailable($this->rootDir, $template)) {
-            return $this->twig->render($customizedTemplate);
+        if (self::isCustomizationAvailable($template)) {
+            return $this->twig->render('@customization/'.$template.'.html.twig');
         } else {
             return $this->twig->render('legal/' . $template . '.html.twig');
         }
@@ -321,26 +320,25 @@ class GlobalCustomization
     /**
      * Generates path to customized template
      *
-     * @param  string $rootDir  The root dir of application
      * @param  string $template Template base name
      * @return string
      */
-    public static function customizedTemplatePath($rootDir, $template): string
+    public static function customizedTemplatePath(string $template): string
     {
-        return $rootDir . '/config/' . $template . '.html.twig';
+        $template = str_replace('/\\', '', $template);
+        return __DIR__ . '/../../../config/templates/' . $template . '.html.twig';
     }
 
     /**
      * Find out if there is a customization for defined template available
      *
      * @see customizedTemplatePath()
-     * @param  string $rootDir  The root dir of application
      * @param  string $template Template base name
      * @return boolean
      */
-    public static function isCustomizationAvailable($rootDir, $template): bool
+    public static function isCustomizationAvailable(string $template): bool
     {
-        $customizedTemplate = self::customizedTemplatePath($rootDir, $template);
+        $customizedTemplate = self::customizedTemplatePath($template);
         return (file_exists($customizedTemplate) && is_readable($customizedTemplate));
     }
 
