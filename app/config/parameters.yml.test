@@ -15,12 +15,12 @@ parameters:
     customization.app_title: null
     customization.theme_color: null
     customization.organization_name: 'Juvem Organisation'
-    customization.organization_address_street: null
-    customization.organization_address_postal_code: null
-    customization.organization_address_postal_locality: null
-    customization.organization_number_phone: null
+    customization.organization_address_street: 'Musterstrasse'
+    customization.organization_address_postal_code: '10000'
+    customization.organization_address_postal_locality: 'Musterstadt'
+    customization.organization_number_phone: '000011'
     customization.organization_number_fax: null
-    customization.organization_email: null
+    customization.organization_email: 'test@example.org'
     customization.privacy_responsible: null
     customization.organization_website: null
     customization.organization_facebook: null

@@ -137,7 +137,7 @@ class GlobalCustomization
      * @param string      $addressPostalCode       Address of organization, postal code
      * @param string      $addressLocality         Address of organization, city
      * @param string      $numberPhone             Phone number of organization
-     * @param string      $numberFax               Fax number of organization
+     * @param string|null $numberFax               Fax number of organization
      * @param string      $email                   E-mail address of organization
      * @param string|null $privacyResponsible      Name of person responsible for data privacy
      * @param string|null $website                 Website of organization
@@ -155,7 +155,7 @@ class GlobalCustomization
         string $addressPostalCode,
         string $addressLocality,
         string $numberPhone,
-        string $numberFax,
+        ?string $numberFax,
         string $email,
         ?string $privacyResponsible = null,
         ?string $website = null,
@@ -407,7 +407,7 @@ class GlobalCustomization
      *
      * @return string|null
      */
-    public function organizationNumberFax()
+    public function organizationNumberFax(): ?string
     {
         return $this->numberFax;
     }
