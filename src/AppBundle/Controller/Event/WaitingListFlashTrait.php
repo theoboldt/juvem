@@ -71,6 +71,6 @@ trait WaitingListFlashTrait
      *
      * @throws \LogicException
      */
-    abstract protected function addFlash($type, $message);
+    abstract protected function addFlash(string $type, $message);
 
 }

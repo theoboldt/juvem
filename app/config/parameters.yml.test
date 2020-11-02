@@ -30,6 +30,5 @@ parameters:
     juvimg.password: null
     app.libreoffice_binary_path: null
     app.geo.openweathermap.api_key: null
-    router.request_context.host: null
-    router.request_context.scheme: null
+    router.request_context.host: 'localhost'
     feature.newsletter: true
