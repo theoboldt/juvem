@@ -21,7 +21,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class CommentManager
@@ -55,19 +55,19 @@ class CommentManager
 	 * @var User|null
 	 */
 	protected $user = null;
-
-	/**
-	 * CommentManager constructor.
-	 *
-	 * @param Registry     $doctrine
-	 * @param TokenStorage $tokenStorage
-	 */
-	public function __construct(Registry $doctrine, TokenStorage $tokenStorage = null)
-	{
-		$this->doctrine = $doctrine;
-		if ($tokenStorage) {
-			$this->user = $tokenStorage->getToken()->getUser();
-		}
+    
+    /**
+     * CommentManager constructor.
+     *
+     * @param Registry $doctrine
+     * @param TokenStorageInterface|null $tokenStorage
+     */
+    public function __construct(Registry $doctrine, TokenStorageInterface $tokenStorage = null)
+    {
+        $this->doctrine = $doctrine;
+        if ($tokenStorage) {
+            $this->user = $tokenStorage->getToken()->getUser();
+        }
 
 		$this->repository = $this->doctrine->getRepository(ParticipantComment::class);
 	}

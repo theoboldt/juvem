@@ -20,7 +20,7 @@ use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class Payment Manager
@@ -88,19 +88,20 @@ class PaymentManager
             throw new \InvalidArgumentException('Failed to convert "' . $priceInEuro . '" to euro cents');
         }
     }
-
+    
     /**
      * CommentManager constructor.
      *
      * @param EntityManagerInterface $em
-     * @param PriceManager           $priceManager
-     * @param TokenStorage           $tokenStorage
+     * @param PriceManager $priceManager
+     * @param TokenStorageInterface|null $tokenStorage
      */
     public function __construct(
         EntityManagerInterface $em,
         PriceManager $priceManager,
-        TokenStorage $tokenStorage = null
-    ) {
+        TokenStorageInterface $tokenStorage = null
+    )
+    {
         $this->em           = $em;
         $this->priceManager = $priceManager;
         if ($tokenStorage && $tokenStorage->getToken()) {

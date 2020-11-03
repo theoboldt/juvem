@@ -10,7 +10,6 @@
 
 namespace AppBundle\Controller\Newsletter;
 
-
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterSubscriptionType;
@@ -33,7 +32,7 @@ class PublicController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $newsletterRepository = $this->get('doctrine.orm.entity_manager')->getRepository(
+            $newsletterRepository = $this->ormManager->getRepository(
                 NewsletterSubscription::class
             );
             $subscription         = $newsletterRepository->findOneByUser($user);
@@ -61,7 +60,7 @@ class PublicController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid() && $subscription) {
-            $tokenGenerator = $this->get('fos_user.util.token_generator');
+            $tokenGenerator = $this->fosTokenGenerator;
             $subscription->setDisableToken($tokenGenerator->generateToken());
 
             $em = $this->getDoctrine()
@@ -76,7 +75,7 @@ class PublicController extends AbstractController
                     'Die Änderungen des Newsletter-Abonnements wurden gespeichert'
                 );
             } else {
-                $mailManager = $this->get('app.newsletter_manager');
+                $mailManager = $this->newsletterManager;
                 $mailManager->mailNewsletterSubscriptionRequested($subscription);
 
                 $this->addFlash(

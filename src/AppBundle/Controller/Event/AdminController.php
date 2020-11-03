@@ -31,22 +31,23 @@ use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\Payment\PaymentManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 
-class AdminController extends Controller
+class AdminController extends AbstractController
 {
     
     /**
@@ -902,6 +903,16 @@ class AdminController extends Controller
         $em->flush();
         
         return $index - 1;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public static function getSubscribedServices()
+    {
+        $services                        = parent::getSubscribedServices();
+        $services['app.payment_manager'] = PaymentManager::class;
+        return $services;
     }
     
 }

@@ -30,6 +30,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class GalleryAdminController extends BaseGalleryController
 {
+    
 
     /**
      * Page for list of events

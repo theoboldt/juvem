@@ -11,7 +11,7 @@
 namespace AppBundle\Twig;
 
 use AppBundle\Entity\User;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Twig global for placing installation based app names and legal notices
@@ -22,15 +22,26 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
  */
 class TabIndexSkip
 {
-
+    
     /**
      * User provider
      *
-     * @var TokenStorage
+     * @var TokenStorageInterface
      */
     protected $tokenStorage = null;
-
-
+    
+    /**
+     * Customization constructor
+     *
+     * @param TokenStorageInterface|null $tokenStorage
+     */
+    public function __construct(
+        TokenStorageInterface $tokenStorage = null
+    )
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+    
     /**
      * Get user if available
      *
@@ -45,19 +56,7 @@ class TabIndexSkip
             return null;
         }
     }
-
-    /**
-     * Customization constructor
-     *
-     * @param TokenStorage|null $tokenStorage
-     */
-    public function __construct(
-        TokenStorage $tokenStorage = null
-    )
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
-
+    
     /**
      * If user has tabexclude activated, related html is inserted
      *
@@ -71,5 +70,5 @@ class TabIndexSkip
             return '';
         }
     }
-
+    
 }

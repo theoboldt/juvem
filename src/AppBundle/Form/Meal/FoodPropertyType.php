@@ -34,8 +34,9 @@ class FoodPropertyType extends AbstractType
                 'exclusionTerm',
                 TextType::class,
                 [
-                    'label'    => 'Ausschluss-Begriff',
-                    'required' => false,
+                    'empty_data' => '',
+                    'label'      => 'Ausschluss-Begriff',
+                    'required'   => false,
                 ]
             )
             ->add(

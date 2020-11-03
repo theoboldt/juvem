@@ -15,12 +15,12 @@ use AppBundle\Entity\Event;
 use AppBundle\ImageResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class PublicController extends Controller
+class PublicController extends AbstractController
 {
     use WaitingListFlashTrait;
 

@@ -13,11 +13,11 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\InvalidTokenHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class UserSettingsController extends Controller
+class UserSettingsController extends AbstractController
 {
     /**
      * @Route("/user/settings/load", name="user_settings_load")

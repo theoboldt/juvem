@@ -13,9 +13,9 @@ namespace AppBundle\Controller\Event\Gallery;
 
 
 use AppBundle\Entity\Event;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-abstract class BaseGalleryController extends Controller
+abstract class BaseGalleryController extends AbstractController
 {
     /**
      * Generate gallery hash for transmitted event

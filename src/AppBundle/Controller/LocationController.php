@@ -17,19 +17,49 @@ use AppBundle\Entity\Geo\ClimaticInformationInterface;
 use AppBundle\Entity\Geo\OpenWeatherMapWeatherCondition;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Manager\Geo\AddressResolver;
 use AppBundle\Manager\Geo\AddressResolverInterface;
+use AppBundle\Manager\Weather\MeteorologicalProvider;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
-class LocationController extends Controller
+class LocationController
 {
     
     const LABEL_UNKNOWN = 'Unbekannt';
+
+    /**
+     * app.geo.address_resolver
+     *
+     * @var AddressResolverInterface
+     */
+    private AddressResolverInterface $addressResolver;
+    
+    /**
+     * app.geo.weather_provider
+     *
+     * @var MeteorologicalProvider
+     */
+    private MeteorologicalProvider $meteorologicalProvider;
+    
+    /**
+     * LocationController constructor.
+     *
+     * @param AddressResolver $addressResolver
+     * @param MeteorologicalProvider $meteorologicalProvider
+     */
+    public function __construct(
+        AddressResolver $addressResolver,
+        MeteorologicalProvider $meteorologicalProvider
+    )
+    {
+        $this->addressResolver        = $addressResolver;
+        $this->meteorologicalProvider = $meteorologicalProvider;
+    }
     
     /**
      * Get participants location distribution
@@ -44,7 +74,7 @@ class LocationController extends Controller
     public function participantsLocationDistribution(Event $event): Response
     {
         /** @var AddressResolverInterface $addressResolver */
-        $addressResolver = $this->get('app.geo.address_resolver');
+        $addressResolver = $this->addressResolver;
         
         $postcodes = [];
         $chain     = [];
@@ -265,7 +295,7 @@ class LocationController extends Controller
             return $response;
         }
         
-        $addressResolver = $this->get('app.geo.address_resolver');
+        $addressResolver = $this->addressResolver;
         $coordinates     = $addressResolver->provideCoordinates($event);
         
         if ($coordinates) {
@@ -322,7 +352,7 @@ class LocationController extends Controller
             return $response;
         }
         
-        $addressResolver = $this->get('app.geo.address_resolver');
+        $addressResolver = $this->addressResolver;
         $coordinates     = $addressResolver->provideCoordinates($event);
         
         $data = [
@@ -331,7 +361,7 @@ class LocationController extends Controller
             'forecast_available' => false,
         ];
         if ($coordinates) {
-            $weatherProvider = $this->get('app.geo.weather_provider');
+            $weatherProvider = $this->meteorologicalProvider;
             $climate         = $weatherProvider->provideCurrentWeather($coordinates);
             if ($climate) {
                 $weatherList     = $this->extractWeatherList($climate);
@@ -450,11 +480,11 @@ class LocationController extends Controller
             return $response;
         }
         
-        $addressResolver = $this->get('app.geo.address_resolver');
+        $addressResolver = $this->addressResolver;
         $coordinates     = $addressResolver->provideCoordinates($event);
         
         if ($coordinates) {
-            $weatherProvider = $this->get('app.geo.weather_provider');
+            $weatherProvider = $this->meteorologicalProvider;
             $climate         = $weatherProvider->provideCurrentWeather($coordinates);
             if ($climate) {
                 $weatherList = $this->extractWeatherList($climate);

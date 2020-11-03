@@ -19,7 +19,6 @@ use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\ProvidesModifierInterface;
 use AppBundle\Entity\Event;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -100,7 +99,7 @@ class RecipeFeedback implements ProvidesModifiedInterface, ProvidesCreatedInterf
      * Weight factor of this feedback, zero for no weight
      *
      * @ORM\Column(type="smallint", options={"unsigned"=true})
-     * @Assert\Choice({"0", "1", "2"})
+     * @Assert\Choice({"0", 0, "1", 1, "2", 2})
      * @Assert\NotBlank()
      */
     protected $weight = self::WEIGHT_SINGLE;
@@ -115,7 +114,7 @@ class RecipeFeedback implements ProvidesModifiedInterface, ProvidesCreatedInterf
      * Global feedback for the recipe
      *
      * @ORM\Column(type="smallint")
-     * @Assert\Choice({"-2", "-1", "0", "1", "2"})
+     * @Assert\Choice({"-2", -2, "-1", -1, "0", 0, "1", 1, "2", 2})
      * @Assert\NotBlank()
      */
     protected $feedbackGlobal = self::AMOUNT_OK;

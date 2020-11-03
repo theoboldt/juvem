@@ -12,10 +12,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Twig\GlobalCustomization;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-class LegalController extends Controller
+class LegalController extends AbstractController
 {
 
     /**

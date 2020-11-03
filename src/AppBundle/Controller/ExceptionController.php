@@ -14,13 +14,13 @@ namespace AppBundle\Controller;
 use AppBundle\EventNotFoundHttpException;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
-use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
-class ExceptionController extends \Symfony\Bundle\TwigBundle\Controller\ExceptionController
+class ExceptionController
 {
 
     /**

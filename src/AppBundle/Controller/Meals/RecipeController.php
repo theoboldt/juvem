@@ -10,25 +10,72 @@
 
 namespace AppBundle\Controller\Meals;
 
-use AppBundle\Entity\Event;
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
+use AppBundle\Entity\Meals\FoodService;
 use AppBundle\Entity\Meals\IngredientAccumulatedFeedback;
-use AppBundle\Entity\Meals\QuantityUnit;
 use AppBundle\Entity\Meals\Recipe;
 use AppBundle\Entity\Meals\RecipeAccumulatedGlobalFeedback;
 use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
-use AppBundle\Form\Meal\MealFeedbackType;
 use AppBundle\Form\Meal\RecipeType;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
-class RecipeController extends Controller
+class RecipeController
 {
+    /**
+     * app.food_service
+     *
+     * @var FoodService
+     */
+    private FoodService $foodService;
+    
+    use DoctrineAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait, FormAwareControllerTrait, AuthorizationAwareControllerTrait, FlashBagAwareControllerTrait;
+    
+    /**
+     * AdminGroupController constructor.
+     *
+     * @param Environment $twig
+     * @param ManagerRegistry $doctrine
+     * @param FormFactoryInterface $formFactory
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param RouterInterface $router
+     * @param FoodService $foodService
+     */
+    public function __construct(
+        Environment $twig,
+        ManagerRegistry $doctrine,
+        FormFactoryInterface $formFactory,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        RouterInterface $router,
+        FoodService $foodService
+    )
+    {
+        $this->twig                 = $twig;
+        $this->doctrine             = $doctrine;
+        $this->formFactory          = $formFactory;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->router               = $router;
+        $this->foodService          = $foodService;
+    }
+    
     /**
      * @Route("/admin/meals/recipes")
      * @Security("has_role('ROLE_ADMIN')")
@@ -64,7 +111,7 @@ class RecipeController extends Controller
             foreach ($recipe->getProperties() as $property) {
                 $properties[] = '<span class="label label-primary">' . $property->getName() . '</span>';
             }
-            $notAssigned = $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe);
+            $notAssigned = $this->foodService->findAllFoodPropertiesNotAssigned($recipe);
             foreach ($notAssigned as $property) {
                 $properties[] = '<span class="label label-default">' . $property->getExclusionTerm() . '</span>';
             }
@@ -107,8 +154,8 @@ class RecipeController extends Controller
                 'recipe'                 => $recipe,
                 'globalFeedback'         => new RecipeAccumulatedGlobalFeedback($feedbackItems, $recipe),
                 'ingredientFeedback'     => $ingredientFeedback,
-                'unassignedProperties'   => $this->get('app.food_service')->findAllFoodPropertiesNotAssigned($recipe),
-                'accumulatedIngredients' => $this->get('app.food_service')->accumulatedIngredients($recipe),
+                'unassignedProperties'   => $this->foodService->findAllFoodPropertiesNotAssigned($recipe),
+                'accumulatedIngredients' => $this->foodService->accumulatedIngredients($recipe),
             ]
         );
     }
@@ -129,8 +176,9 @@ class RecipeController extends Controller
         
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            if ($this->getUser() instanceof User) {
-                $recipe->setModifiedBy($this->getUser());
+            $user = $this->getUser();
+            if ($user instanceof User) {
+                $recipe->setModifiedBy($user);
             }
             $em->persist($recipe);
             $em->flush();
@@ -163,8 +211,9 @@ class RecipeController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()
                        ->getManager();
-            if ($this->getUser() instanceof User) {
-                $recipe->setCreatedBy($this->getUser());
+            $user = $this->getUser();
+            if ($user instanceof User) {
+                $recipe->setCreatedBy($user);
             }
             $em->persist($recipe);
             $em->flush();

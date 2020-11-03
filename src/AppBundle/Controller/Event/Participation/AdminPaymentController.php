@@ -20,7 +20,7 @@ use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\SerializeJsonResponse;
 use AppBundle\Twig\Extension\PaymentInformation;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use AppBundle\Entity\Participant;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Payment\PaymentManager;
@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class AdminPaymentController extends Controller
+class AdminPaymentController extends AbstractController
 {
     
     const ACTION_PAYMENT_RECEIVED = 'paymentReceived';
