@@ -16,7 +16,7 @@ final class Version20201102100000 extends AbstractMigration
      */
     public function getDescription(): string
     {
-        return 'Move customization twig templates to new config directory';
+        return 'Move customization twig templates, tmp dir to new config directory';
     }
 
     /**
@@ -38,6 +38,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-scrollspy.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
+
+        $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'tmp');
+        $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'data');
     }
 
     /**
@@ -59,6 +62,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-scrollspy.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
+
+        $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'tmp');
+        $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'data');
     }
 
     /**

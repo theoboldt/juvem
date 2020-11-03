@@ -10,12 +10,12 @@ imports:
 parameters:
     locale: de
     app.database.configuration.path: "%kernel.root_dir%/config/.my.cnf"
-    app.tmp.root.path: "%kernel.root_dir%/../tmp"
-    app.cache.root.path: "%kernel.root_dir%/cache"
+    app.tmp.root.path: "%kernel.root_dir%/../var/tmp"
+    app.cache.root.path: "%kernel.root_dir%/../var/cache"
     app.cache.environment.path: "%app.cache.root.path%/%kernel.environment%"
     app.cache.nominatim_last_access.path: "%app.cache.environment.path%/nominatim_last_access"
     app.web.root.path: "%kernel.root_dir%/../web"
-    app.data.root.path: "%kernel.root_dir%/../data"
+    app.data.root.path: "%kernel.root_dir%/../var/data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
 
 jms_serializer:
@@ -147,7 +147,7 @@ stof_doctrine_extensions:
             softdeleteable: true
 
 doctrine_migrations:
-    migrations_paths: 
+    migrations_paths:
         'Application\Migrations': "%kernel.root_dir%/Migrations"
     organize_migrations: false
     storage:
