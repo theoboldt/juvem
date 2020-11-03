@@ -1,7 +1,7 @@
 # JUVEM
 Juvem is a symfony based web application to manage events and newsletters.
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
 ![PHP Composer and PhpUnit tests](https://github.com/theoboldt/juvem/workflows/PHP%20Composer%20and%20PhpUnit%20tests/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a41bc804ab7172d930ce/maintainability)](https://codeclimate.com/github/theoboldt/juvem/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a41bc804ab7172d930ce/test_coverage)](https://codeclimate.com/github/theoboldt/juvem/test_coverage)
@@ -40,16 +40,16 @@ People can register themselves in order to receive the newsletter. For each news
 ![Participation price management](/app/Resources/screenshots/participant_price.png)
 
 ## Requirements
-Juvem is a symfony 3.2 based application.
+Juvem is a symfony 4.4 based application.
 
 ### Production
-* PHP 7.3 and above
-* MySQL InnoDB database
+* PHP 7.4
+* MySQL/MariaDB InnoDB database
 * ~ 175 MB disk space (including dependencies)
 
 ### Development/Deployment
-* PHP 7.3 and above
-* MySQL InnoDB database
+* PHP 7.4
+* MySQL/MariaDB InnoDB database
 * Npm/Grunt for css/js deployment, having `grunt-cli` installed globally
 * Having sass gem installed
 * ~ 225 MB disk space (including dev/deployment dependencies, node modules)
