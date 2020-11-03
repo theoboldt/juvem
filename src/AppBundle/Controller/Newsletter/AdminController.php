@@ -14,21 +14,87 @@ namespace AppBundle\Controller\Newsletter;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
-use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\NewsletterManager;
+use AppBundle\Twig\MailGenerator;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use FOS\UserBundle\Util\TokenGeneratorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
 
 class AdminController extends AbstractController
 {
+    /**
+     * app.twig_mail_generator
+     *
+     * @var MailGenerator
+     */
+    private MailGenerator $twigMailGenerator;
+    
+    /**
+     * AbstractController constructor.
+     *
+     * @param Environment $twig
+     * @param ManagerRegistry $doctrine
+     * @param FormFactoryInterface $formFactory
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param RouterInterface $router
+     * @param bool $newsletterFeature
+     * @param string $customizationOrganizationName
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param TokenGeneratorInterface $fosTokenGenerator
+     * @param NewsletterManager $newsletterManager
+     * @param EntityManagerInterface $ormManager
+     * @param MailGenerator $twigMailGenerator
+     */
+    public function __construct(
+        Environment $twig,
+        ManagerRegistry $doctrine,
+        FormFactoryInterface $formFactory,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        RouterInterface $router,
+        bool $newsletterFeature,
+        string $customizationOrganizationName,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        TokenGeneratorInterface $fosTokenGenerator,
+        NewsletterManager $newsletterManager,
+        EntityManagerInterface $ormManager,
+        MailGenerator $twigMailGenerator
+    )
+    {
+        parent::__construct(
+            $twig,
+            $doctrine,
+            $formFactory,
+            $authorizationChecker,
+            $tokenStorage,
+            $router,
+            $newsletterFeature,
+            $customizationOrganizationName,
+            $csrfTokenManager,
+            $fosTokenGenerator,
+            $newsletterManager,
+            $ormManager
+        );
+        $this->twigMailGenerator = $twigMailGenerator;
+    }
 
     /**
      * Newsletter/Subscriptions overview page
@@ -213,7 +279,7 @@ class AdminController extends AbstractController
 
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('subscription-confirmation-' . $subscription->getRid())) {
             throw new InvalidTokenHttpException();
         }
@@ -241,7 +307,7 @@ class AdminController extends AbstractController
         $similarEventIdList = $request->get('events');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('newsletterSendDialog')) {
             throw new InvalidTokenHttpException();
         }
@@ -275,7 +341,7 @@ class AdminController extends AbstractController
         $similarEventIdList = $request->get('events');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('newsletterSendDialog')) {
             throw new InvalidTokenHttpException();
         }
@@ -307,7 +373,7 @@ class AdminController extends AbstractController
         $lid   = (int)$request->get('lid');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('newsletterSendDialog')) {
             throw new InvalidTokenHttpException();
         }
@@ -329,7 +395,7 @@ class AdminController extends AbstractController
                                $newsletter->getLid()
                            );
 
-        $mailManager = $this->get('app.newsletter_manager');
+        $mailManager = $this->newsletterManager;
         $sentCount   = $mailManager->mailNewsletter($newsletter, $recipients);
 
         $em = $this->getDoctrine()->getManager();
@@ -373,7 +439,7 @@ class AdminController extends AbstractController
             $title   = 'Gute Nachrichten';
             $lead    = 'Ein neuer Newsletter ist verfügbar!';
             $content = "Text hier einfügen. Eine Leerzeile führt zu einem Absatz, ein einfacher Zeilenabsatz wird zusammengefasst werden. Text in zwei Sternchen einfassen, damit er **hervorgehoben** wird.\n\nMit besten Grüßen,\n\n*" .
-            $this->getParameter('customization.organization_name') . "*";
+            $this->customizationOrganizationName . "*";
         }
 
         $data = [
@@ -398,8 +464,8 @@ class AdminController extends AbstractController
             'text' => $dataText,
             'html' => $dataHtml,
         ];
-
-        $message = $this->get('app.twig_mail_generator')->renderHtml('general-markdown', $dataBoth);
+        
+        $message = $this->twigMailGenerator->renderHtml('general-markdown', $dataBoth);
         return new Response($message);
     }
 
@@ -420,7 +486,7 @@ class AdminController extends AbstractController
         $email   = $request->get('email');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('newsletterSendDialogTest')) {
             throw new InvalidTokenHttpException();
         }
@@ -437,7 +503,7 @@ class AdminController extends AbstractController
                   ->setIsConfirmed(true)
                   ->setIsEnabled(true);
 
-        $mailManager = $this->get('app.newsletter_manager');
+        $mailManager = $this->newsletterManager;
         $sentCount   = $mailManager->mailNewsletter($newsletter, [$recipient]);
 
         return new JsonResponse(['sentCount' => $sentCount]);
@@ -457,7 +523,7 @@ class AdminController extends AbstractController
         $newsletter->setLead('Ein neuer Newsletter ist verfügbar!');
         $newsletter->setContent(
             "Text hier einfügen. Eine Leerzeile führt zu einem Absatz, ein einfacher Zeilenabsatz wird zusammengefasst werden. Text in zwei Sternchen einfassen, damit er **hervorgehoben** wird.\n\nMit besten Grüßen,\n\n*" .
-            $this->getParameter('customization.organization_name') . "*"
+            $this->customizationOrganizationName . "*"
         );
 
         $form = $this->createForm(NewsletterMailType::class, $newsletter);

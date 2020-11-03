@@ -50,7 +50,7 @@ class Page
     /**
      * Last modified of entry
      *
-     * @var \DateTime
+     * @var \DateTimeInterface
      */
     protected $lastmod;
 
@@ -85,9 +85,9 @@ class Page
      * @param string    $loc
      * @param float     $priority
      * @param string    $changefreq
-     * @param \DateTime $lastmod
+     * @param \DateTimeInterface $lastmod
      */
-    public function __construct($loc, $priority = 0.5, \DateTime $lastmod = null, $changefreq = self::CHANGEFREQ_WEEKLY)
+    public function __construct($loc, $priority = 0.5, \DateTimeInterface $lastmod = null, $changefreq = self::CHANGEFREQ_WEEKLY)
     {
         $this->loc        = $loc;
         $this->priority   = $priority;
@@ -126,11 +126,11 @@ class Page
     }
 
     /**
-     * Get @see $lastmod as @see \DateTime object
+     * Get @see $lastmod as @see \DateTimeInterface object
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
-    public function getLastmod(): \DateTime
+    public function getLastmod(): \DateTimeInterface
     {
         return $this->lastmod;
     }

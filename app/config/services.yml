@@ -4,6 +4,11 @@ parameters:
 #    parameter_name: value
 
 services:
+    _defaults:
+        public: false
+        autowire: true
+        autoconfigure: true
+
     app.twig_extension_glyph:
         class: AppBundle\Twig\Extension\BootstrapGlyph
         public: false
@@ -51,8 +56,10 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
     app.twig_global_customization:
-        class: AppBundle\Twig\GlobalCustomization
+        alias: AppBundle\Twig\GlobalCustomization
+    AppBundle\Twig\GlobalCustomization:
         arguments:
             - '@twig'
             - '%kernel.root_dir%'
@@ -71,6 +78,7 @@ services:
             - '%customization.logo_website%'
         public: true
         lazy: true
+
     app.secure_cache_decider:
         class: AppBundle\Twig\SecureCacheDecider
         arguments: ['@session']
@@ -81,15 +89,22 @@ services:
         arguments:
             - '@security.token_storage'
         lazy: true
+
     app.twig_mail_generator:
-        class: AppBundle\Twig\MailGenerator
+        alias: AppBundle\Twig\MailGenerator
+    AppBundle\Twig\MailGenerator:
         arguments: ['%mailer_address%', '@twig', '@app.twig_global_customization']
+
     app.participation_manager:
+        alias: AppBundle\Manager\ParticipationManager
+    AppBundle\Manager\ParticipationManager:
         class: AppBundle\Manager\ParticipationManager
         arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager']
         public: true
+
     app.newsletter_manager:
-        class: AppBundle\Manager\NewsletterManager
+        alias: AppBundle\Manager\NewsletterManager
+    AppBundle\Manager\NewsletterManager:
         arguments: ['@router', '@mailer', '@app.twig_mail_generator', '@logger']
         public: true
     app.newsletter_token_generator:
@@ -103,7 +118,7 @@ services:
           - "%juvimg.url%"
           - "%juvimg.password%"
           - "@logger"
-    
+
     AppBundle\PdfConverterService:
         factory: ['AppBundle\PdfConverterService', create]
         public: true
@@ -139,12 +154,17 @@ services:
         arguments: ['@session']
         tags:
             - { name: kernel.event_subscriber }
+
     app.comment_manager:
+        alias: AppBundle\Manager\CommentManager
+    AppBundle\Manager\CommentManager:
         class: AppBundle\Manager\CommentManager
         arguments: ['@doctrine', '@security.token_storage']
         public: true
+
     app.participant.profile_generator:
-        class: AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator
+        alias: AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator
+    AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator:
         arguments:
             - "%app.tmp.root.path%"
             - "%app.web.root.path%"
@@ -154,24 +174,32 @@ services:
             - "@app.payment_manager"
             - "@libphonenumber.phone_number_util"
         public: true
+
     app.payment.invoice_manager:
-        class: AppBundle\Manager\Invoice\InvoiceManager
+        alias: AppBundle\Manager\Invoice\InvoiceManager
+    AppBundle\Manager\Invoice\InvoiceManager:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@app.payment_manager'
             - "%app.data.invoice.path%"
             - '@security.token_storage'
+
     app.payment.invoice_pdf_provider:
-        class: AppBundle\Manager\Invoice\InvoicePdfProvider
+        alias: AppBundle\Manager\Invoice\InvoicePdfProvider
+    AppBundle\Manager\Invoice\InvoicePdfProvider:
         arguments:
             - '@app.payment.invoice_manager'
             - "%app.data.invoice.path%"
             - '@app.pdf_converter_service'
+
     app.payment.invoice_mailer:
-        class: AppBundle\Manager\Invoice\InvoiceMailer
+        alias: AppBundle\Manager\Invoice\InvoiceMailer
+    AppBundle\Manager\Invoice\InvoiceMailer:
         arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager', '@app.payment.invoice_manager', '@app.payment.invoice_pdf_provider']
         public: true
     app.payment_manager:
+        alias: AppBundle\Manager\Payment\PaymentManager
+    AppBundle\Manager\Payment\PaymentManager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -199,15 +227,16 @@ services:
             - '@app.payment.expression_language_provider'
         tags:
           - { name: validator.constraint_validator }
+
     app.payment_suggestion_manager:
-        class: AppBundle\Manager\Payment\PaymentSuggestionManager
+        alias: AppBundle\Manager\Payment\PaymentSuggestionManager
+    AppBundle\Manager\Payment\PaymentSuggestionManager:
         arguments: ['@doctrine.orm.entity_manager']
         public: true
-    app.exception_controller:
-        class: AppBundle\Controller\ExceptionController
-        arguments: ['@twig', '%kernel.debug%']
+
     app.food_service:
-        class: AppBundle\Entity\Meals\FoodService
+        alias: AppBundle\Entity\Meals\FoodService
+    AppBundle\Entity\Meals\FoodService:
         arguments: ['@doctrine.orm.entity_manager']
         public: true
 
@@ -260,12 +289,6 @@ services:
         arguments:
             - "%app.tmp.root.path%"
             - '@doctrine.orm.entity_manager'
-
-    app.converter.event:
-        class: AppBundle\Controller\ParamConverter\EventParamConverter
-        arguments: ['@app.repository.event']
-        tags:
-            - { name: request.param_converter, priority: 2, converter: converter_event }
 
     app.repository.event:
         class: AppBundle\Entity\EventRepository
@@ -360,6 +383,8 @@ services:
             - "%app.cache.nominatim_last_access.path%"
 
     app.geo.address_resolver:
+        alias: AppBundle\Manager\Geo\AddressResolver
+    AppBundle\Manager\Geo\AddressResolver:
         class: AppBundle\Manager\Geo\AddressResolver
         arguments:
             - '@AppBundle\Manager\Geo\NominatimAddressResolver'
@@ -371,6 +396,8 @@ services:
             - "%app.geo.openweathermap.api_key%"
 
     app.geo.weather_provider:
+        alias: AppBundle\Manager\Weather\MeteorologicalProvider
+    AppBundle\Manager\Weather\MeteorologicalProvider:
         class: AppBundle\Manager\Weather\MeteorologicalProvider
         arguments:
             - '@AppBundle\Manager\Weather\OpenweathermapMeteorologicalProvider'
@@ -400,3 +427,48 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
+    app.converter.event:
+        class: AppBundle\Controller\ParamConverter\EventParamConverter
+        arguments: ['@app.repository.event']
+        tags:
+            - { name: request.param_converter, priority: 2, converter: converter_event }
+
+#    app.exception_controller:
+#        class: AppBundle\Controller\ExceptionController
+#        arguments: ['@twig', '%kernel.debug%']
+
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller/**/*Controller.php'
+        exclude: '../../src/AppBundle/Controller/{Exception|Default|Event/Participation/AdminMultipleExport}Controller.php'
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\DefaultController:
+        arguments:
+            $customizationThemeColor: "%customization.theme_color%"
+            $kernelRootDir: "%kernel.root_dir%"
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Event\Participation\AdminMultipleExportController:
+        arguments:
+            $tmpRootPath: "%app.tmp.root.path%"
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Event\Participation\AdminInvoiceController:
+        arguments:
+            $tmpRootPath: "%app.tmp.root.path%"
+            $customizationOrganizationName: "%customization.organization_name%"
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Newsletter\PublicController:
+        arguments:
+            $newsletterFeature: "%feature.newsletter%"
+            $customizationOrganizationName: "%customization.organization_name%"
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Newsletter\AdminController:
+        arguments:
+            $newsletterFeature: "%feature.newsletter%"
+            $customizationOrganizationName: "%customization.organization_name%"
+        tags: [ 'controller.service_arguments' ]
+

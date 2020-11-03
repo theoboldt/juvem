@@ -16,11 +16,11 @@ use AppBundle\Form\Meal\ViandType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class ViandController extends Controller
+class ViandController extends AbstractController
 {
     /**
      * @Route("/admin/meals/viands/list", name="meals_viands_list")

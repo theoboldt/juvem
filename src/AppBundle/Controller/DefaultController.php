@@ -15,16 +15,92 @@ use AppBundle\Entity\Flash;
 use AppBundle\ResponseHelper;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
+use AppBundle\Twig\GlobalCustomization;
+use Doctrine\Persistence\ManagerRegistry;
+use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
-class DefaultController extends Controller
+class DefaultController
 {
+    use DoctrineAwareControllerTrait, FlashBagAwareControllerTrait, AuthorizationAwareControllerTrait, RenderingControllerTrait, RoutingControllerTrait;
+    
+    /**
+     * %customization.theme_color%
+     *
+     * @var string|null
+     */
+    private ?string $customizationThemeColor;
+    
+    /**
+     * %kernel.root_dir%
+     *
+     * @var string
+     */
+    private string $kernelRootDir;
+    
+    /**
+     * app.twig_global_customization
+     *
+     * @var GlobalCustomization
+     */
+    private GlobalCustomization $twigGlobalCustomization;
+    
+    /**
+     * markdown.parser
+     *
+     * @var MarkdownParserInterface
+     */
+    private MarkdownParserInterface $markdownParser;
+    
+    /**
+     * AdminMultipleController constructor.
+     *
+     * @param string|null $customizationThemeColor
+     * @param string $kernelRootDir
+     * @param Environment $twig
+     * @param RouterInterface $router
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param SessionInterface $session
+     * @param GlobalCustomization $twigGlobalCustomization
+     * @param MarkdownParserInterface $markdownParser
+     */
+    public function __construct(
+        ?string $customizationThemeColor,
+        string $kernelRootDir,
+        Environment $twig,
+        RouterInterface $router,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        SessionInterface $session,
+        GlobalCustomization $twigGlobalCustomization,
+        MarkdownParserInterface $markdownParser
+    )
+    {
+        $this->customizationThemeColor = $customizationThemeColor;
+        $this->kernelRootDir           = $kernelRootDir;
+        $this->twig                    = $twig;
+        $this->router                  = $router;
+        $this->authorizationChecker    = $authorizationChecker;
+        $this->tokenStorage            = $tokenStorage;
+        $this->doctrine                = $doctrine;
+        $this->session                 = $session;
+        $this->twigGlobalCustomization = $twigGlobalCustomization;
+        $this->markdownParser          = $markdownParser;
+    }
+    
     /**
      * @Route("/", name="homepage")
      */
@@ -36,7 +112,7 @@ class DefaultController extends Controller
         foreach ($flashList as $flash) {
             $this->addFlash(
                 $flash->getType(),
-                $this->container->get('markdown.parser')->transformMarkdown($flash->getMessage())
+                $this->markdownParser->transformMarkdown($flash->getMessage())
             );
         }
 
@@ -57,7 +133,7 @@ class DefaultController extends Controller
             }
         }
 
-        $customization = $this->get('app.twig_global_customization');
+        $customization = $this->twigGlobalCustomization;
         $description = sprintf('Überblick über alle Veranstaltungen von %s. ', $customization->organizationName());
         switch ($activeCount ) {
             case 0:
@@ -187,7 +263,7 @@ class DefaultController extends Controller
      */
     public function licenseAction(): Response
     {
-        return $this->provideTextFileContentIfExists($this->get('kernel')->getRootDir() . '/../LICENSE');
+        return $this->provideTextFileContentIfExists($this->kernelRootDir . '/../LICENSE');
     }
     
     /**
@@ -211,7 +287,7 @@ class DefaultController extends Controller
      */
     public function readmeAction(): Response
     {
-        return $this->provideTextFileContentIfExists($this->get('kernel')->getRootDir() . '/../README.md');
+        return $this->provideTextFileContentIfExists($this->kernelRootDir . '/../README.md');
     }
     
     /**
@@ -278,8 +354,8 @@ class DefaultController extends Controller
      */
     public function sitemapAction()
     {
-        $configDir   = $this->get('kernel')->getRootDir() . '/config/';
-        $router      = $this->get('router');
+        $configDir   = $this->kernelRootDir . '/config/';
+        $router      = $this->router;
         $pageFactory = new PageFactory($router);
 
         $eventRepository   = $this->getDoctrine()->getRepository(Event::class);
@@ -330,7 +406,7 @@ class DefaultController extends Controller
      */
     public function manifestAction()
     {
-        $webDir = $this->get('kernel')->getRootDir() . '/../web';
+        $webDir = $this->kernelRootDir . '/../web';
         $icons  = [];
         foreach (new \DirectoryIterator($webDir) as $fileinfo) {
             $filename = $fileinfo->getFilename();
@@ -344,12 +420,12 @@ class DefaultController extends Controller
         }
         
         $manifest = [
-            'name'      => $this->get('app.twig_global_customization')->organizationName(),
+            'name'      => $this->twigGlobalCustomization->organizationName(),
             'icons'     => $icons,
             'start_url' => '/',
             'display'   => 'browser',
         ];
-        $color    = $this->getParameter('customization.theme_color');
+        $color    = $this->customizationThemeColor;
         if ($color) {
             $manifest['theme_color'] = $color;
         }

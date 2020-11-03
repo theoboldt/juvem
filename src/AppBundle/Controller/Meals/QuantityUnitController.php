@@ -16,11 +16,11 @@ use AppBundle\Form\Meal\QuantityUnitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class QuantityUnitController extends Controller
+class QuantityUnitController extends AbstractController
 {
     /**
      * @Route("/admin/meals/units/list", name="meals_units_list")

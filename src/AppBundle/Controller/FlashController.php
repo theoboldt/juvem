@@ -15,11 +15,11 @@ use AppBundle\Entity\Flash;
 use AppBundle\Form\FlashType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class FlashController extends Controller
+class FlashController extends AbstractController
 {
     /**
      * @Route("/admin/flash/list", name="flash_list")

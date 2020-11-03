@@ -34,6 +34,7 @@
         "ext-xsl": "*",
         "ext-fileinfo": "*",
         "symfony/symfony": "4.4.*",
+        "symfony/proxy-manager-bridge": "4.4.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.3",

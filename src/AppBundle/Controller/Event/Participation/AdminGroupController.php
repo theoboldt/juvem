@@ -12,13 +12,17 @@
 namespace AppBundle\Controller\Event\Participation;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
-
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\EntityHavingFilloutsInterface;
@@ -26,18 +30,62 @@ use AppBundle\Form\GroupFieldAssignEntitiesType;
 use AppBundle\Form\GroupType;
 use AppBundle\Group\AttributeChoiceOptionUsageDistribution;
 use AppBundle\JsonResponse;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Form\FormInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
 
-class AdminGroupController extends Controller
+class AdminGroupController
 {
-
+    
+    use RenderingControllerTrait, DoctrineAwareControllerTrait, FormAwareControllerTrait, AuthorizationAwareControllerTrait, RoutingControllerTrait;
+    
+    /**
+     * doctrine.orm.entity_manager
+     *
+     * @var EntityManagerInterface
+     */
+    private EntityManagerInterface $ormManager;
+    
+    /**
+     * AdminGroupController constructor.
+     *
+     * @param Environment $twig
+     * @param ManagerRegistry $doctrine
+     * @param FormFactoryInterface $formFactory
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param RouterInterface $router
+     * @param EntityManagerInterface $ormManager
+     */
+    public function __construct(
+        Environment $twig,
+        ManagerRegistry $doctrine,
+        FormFactoryInterface $formFactory,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        RouterInterface $router,
+        EntityManagerInterface $ormManager
+    )
+    {
+        $this->twig                 = $twig;
+        $this->doctrine             = $doctrine;
+        $this->formFactory          = $formFactory;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->router               = $router;
+        $this->ormManager           = $ormManager;
+    }
+    
     /**
      * List groups of event
      *
@@ -146,7 +194,7 @@ class AdminGroupController extends Controller
         $attribute    = $repository->findWithOptions($bid);
         $choices      = [];
         $distribution = new AttributeChoiceOptionUsageDistribution(
-            $this->get('doctrine.orm.entity_manager'), $event, $attribute
+            $this->ormManager, $event, $attribute
         );
 
         /** @var AttributeChoiceOption $choiceOption */
@@ -197,19 +245,19 @@ class AdminGroupController extends Controller
         $usage      = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
 
         $formOptions        = ['event' => $event, 'choiceOption' => $choiceOption];
-        $formParticipants   = $this->container->get('form.factory')->createNamed(
+        $formParticipants   = $this->formFactory->createNamed(
             'group_field_assign_participants',
             GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participant::class])
         );
-        $formParticipations = $this->container->get('form.factory')->createNamed(
+        $formParticipations = $this->formFactory->createNamed(
             'group_field_assign_participations',
             GroupFieldAssignEntitiesType::class,
             [],
             array_merge($formOptions, ['entities' => Participation::class])
         );
-        $formEmployees      = $this->container->get('form.factory')->createNamed(
+        $formEmployees      = $this->formFactory->createNamed(
             'group_field_assign_employees',
             GroupFieldAssignEntitiesType::class,
             [],

@@ -56,6 +56,7 @@ class QuantityUnit implements SoftDeleteableInterface, ProvidesModifiedInterface
      * Shortened name
      *
      * @ORM\Column(type="string", length=32)
+     * @Assert\NotBlank()
      * @Assert\Length(max=32)
      * @var string
      */

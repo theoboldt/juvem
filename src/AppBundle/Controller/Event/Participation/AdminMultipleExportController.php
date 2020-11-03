@@ -10,12 +10,18 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\ExportTemplate;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
+use AppBundle\Entity\User;
 use AppBundle\Export\Customized\Configuration as ExcelConfiguration;
 use AppBundle\Export\Customized\CustomizedExport;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
@@ -24,32 +30,127 @@ use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\ParticipantProfile\Configuration as WordConfiguration;
+use AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator;
+use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\ResponseHelper;
+use AppBundle\Twig\GlobalCustomization;
+use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class AdminMultipleExportController extends Controller
+class AdminMultipleExportController
 {
+    use AuthorizationAwareControllerTrait, DoctrineAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait, FormAwareControllerTrait;
+    
+    /**
+     * app.tmp.root.path
+     *
+     * @var string
+     */
+    private string $tmpRootPath;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * event_dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
+    
+    /**
+     * app.twig_global_customization
+     *
+     * @var GlobalCustomization
+     */
+    private GlobalCustomization $twigGlobalCustomization;
+    
+    /**
+     * @var PaymentManager
+     */
+    private PaymentManager $paymentManager;
+    
+    /**
+     * app.participant.profile_generator
+     *
+     * @var ParticipantProfileGenerator
+     */
+    private ParticipantProfileGenerator $profileGenerator;
+    
+    /**
+     * AdminMultipleExportController constructor.
+     *
+     * @param string $tmpRootPath
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param GlobalCustomization $twigGlobalCustomization
+     * @param PaymentManager $paymentManager
+     * @param ParticipantProfileGenerator $profileGenerator
+     * @param FormFactoryInterface $formFactory
+     */
+    public function __construct(
+        string $tmpRootPath,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        FormFactoryInterface $formFactory,
+        EventDispatcherInterface $eventDispatcher,
+        GlobalCustomization $twigGlobalCustomization,
+        PaymentManager $paymentManager,
+        ParticipantProfileGenerator $profileGenerator
+    )
+    {
+        $this->authorizationChecker    = $authorizationChecker;
+        $this->tokenStorage            = $tokenStorage;
+        $this->formFactory             = $formFactory;
+        $this->doctrine                = $doctrine;
+        $this->router                  = $router;
+        $this->twig                    = $twig;
+        $this->eventDispatcher         = $eventDispatcher;
+        $this->csrfTokenManager        = $csrfTokenManager;
+        $this->tmpRootPath             = $tmpRootPath;
+        $this->twigGlobalCustomization = $twigGlobalCustomization;
+        $this->paymentManager          = $paymentManager;
+        $this->profileGenerator        = $profileGenerator;
+    }
+    
     /**
      * Generate export wizard
      *
@@ -61,9 +162,11 @@ class AdminMultipleExportController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
-
+    
+        $user   = $this->getUser();
         $export = new ParticipantsExport(
-            $this->get('app.twig_global_customization'), $event, $participantList, $this->getUser()
+            $this->twigGlobalCustomization, $event, $participantList,
+            ($user instanceof User) ? $user : null
         );
         $export->setMetadata();
         $export->process();
@@ -94,9 +197,11 @@ class AdminMultipleExportController extends Controller
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationsList      = $participationRepository->participationsList($event);
-
+    
+        $user   = $this->getUser();
         $export = new ParticipationsExport(
-            $this->get('app.twig_global_customization'), $event, $participationsList, $this->getUser()
+            $this->twigGlobalCustomization, $event, $participationsList,
+            ($user instanceof User) ? $user : null
         );
         $export->setMetadata();
         $export->process();
@@ -128,7 +233,8 @@ class AdminMultipleExportController extends Controller
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
 
-        $export = new ParticipantsBirthdayAddressExport($this->get('app.twig_global_customization'), $event, $participantList, $this->getUser());
+        $user   = $this->getUser();
+        $export = new ParticipantsBirthdayAddressExport($this->twigGlobalCustomization, $event, $participantList, ($user instanceof User) ? $user : null);
         $export->setMetadata();
         $export->process();
 
@@ -160,8 +266,9 @@ class AdminMultipleExportController extends Controller
         $participantList         = $participationRepository->participantsList($event);
         $participationsList      = $participationRepository->participationsList($event);
 
+        $user   = $this->getUser();
         $export = new ParticipantsMailExport(
-            $this->get('app.twig_global_customization'), $event, $participantList, $participationsList, $this->getUser()
+            $this->twigGlobalCustomization, $event, $participantList, $participationsList, ($user instanceof User) ? $user : null
         );
         $export->setMetadata();
         $export->process();
@@ -194,7 +301,8 @@ class AdminMultipleExportController extends Controller
         $configuration = $this->processRequestConfiguration($request, ExcelConfiguration::class);
         $template->setConfiguration($configuration);
         $template->setModifiedAtNow();
-        $template->setModifiedBy($this->getUser());
+        $user = $this->getUser();
+        $template->setModifiedBy(($user instanceof User) ? $user : null);
         $em->persist($template);
         $em->flush();
 
@@ -217,7 +325,8 @@ class AdminMultipleExportController extends Controller
 
         $configuration = $this->processRequestConfiguration($request, ExcelConfiguration::class);
         $template      = new ExportTemplate($event, $event->getTitle() . ' Export #' . ($templates + 1), null, $configuration);
-        $template->setCreatedBy($this->getUser());
+        $user   = $this->getUser();
+        $template->setCreatedBy(($user instanceof User) ? $user : null);
         $em            = $this->getDoctrine()->getManager();
         $em->persist($template);
         $em->flush();
@@ -256,7 +365,8 @@ class AdminMultipleExportController extends Controller
             $template->setTitle($formEditTemplate->get('title')->getData());
             $template->setDescription($formEditTemplate->get('description')->getData());
             $template->setModifiedAtNow();
-            $template->setModifiedBy($this->getUser());
+            $user = $this->getUser();
+            $template->setModifiedBy(($user instanceof User) ? $user : null);
             $em->persist($template);
             $em->flush();
             $redirect = true;
@@ -338,7 +448,7 @@ class AdminMultipleExportController extends Controller
                 break;
         }
 
-        $url = $this->get('router')->generate(
+        $url = $this->router->generate(
             'event_export_generator_download',
             [
                 'eid'      => $event->getEid(),
@@ -361,7 +471,7 @@ class AdminMultipleExportController extends Controller
      * @Security("is_granted('participants_read', event)")
      */
     public function exportGeneratedDownloadAction(Event $event, string $type, string $tmpname, string $filename, Request $request) {
-        $path = $this->getParameter('app.tmp.root.path').'/'.$tmpname;
+        $path = $this->tmpRootPath.'/'.$tmpname;
         if (!file_exists($path)) {
             throw new NotFoundHttpException('Requested export '.$path.' not found');
         }
@@ -387,7 +497,7 @@ class AdminMultipleExportController extends Controller
         );
 
         //ensure file deleted after request
-        $this->get('event_dispatcher')->addListener(
+        $this->eventDispatcher->addListener(
             KernelEvents::TERMINATE,
             function (PostResponseEvent $event) use ($path) {
                 if (file_exists($path)) {
@@ -453,7 +563,7 @@ class AdminMultipleExportController extends Controller
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
 
         /** @var CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('export-generator-' . $eid)) {
             throw new InvalidTokenHttpException();
         }
@@ -514,7 +624,7 @@ class AdminMultipleExportController extends Controller
     )
     {
     $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-    $paymentManager = $this->get('app.payment_manager');
+    $paymentManager = $this->paymentManager;
 
     $participantList         = array_filter(
             $participationRepository->participantsList(
@@ -594,7 +704,7 @@ class AdminMultipleExportController extends Controller
             $orderBy
             );
 
-        $generator = $this->get('app.participant.profile_generator');
+        $generator = $this->profileGenerator;
         $tmpPath   = $generator->generate($participantList, $processedConfiguration);
 
         //filter name
@@ -643,15 +753,16 @@ class AdminMultipleExportController extends Controller
             $orderBy
             );
 
+        $user   = $this->getUser();
         $export = new CustomizedExport(
-            $this->get('app.twig_global_customization'),
-            $this->get('app.payment_manager'),
+            $this->twigGlobalCustomization,
+            $this->paymentManager,
             $event,
             $participantList,
-            $this->getUser(),
+            ($user instanceof User) ? $user : null,
             $processedConfiguration
         );
-        $tmpPath = tempnam($this->getParameter('app.tmp.root.path'), 'export_');
+        $tmpPath = tempnam($this->tmpRootPath, 'export_');
         if (!$tmpPath) {
             throw new RuntimeException('Failed to create tmp file');
         }
@@ -704,7 +815,7 @@ class AdminMultipleExportController extends Controller
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
 
-        $generator = $this->get('app.participant.profile_generator');
+        $generator = $this->profileGenerator;
         $path      = $generator->generate($participants, $processedConfiguration);
         $response  = new BinaryFileResponse($path);
     
@@ -717,7 +828,7 @@ class AdminMultipleExportController extends Controller
         );
 
         //ensure file deleted after request
-        $this->get('event_dispatcher')->addListener(
+        $this->eventDispatcher->addListener(
             KernelEvents::TERMINATE,
             function (PostResponseEvent $event) use ($path) {
                 if (file_exists($path)) {

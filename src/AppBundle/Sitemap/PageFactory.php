@@ -50,19 +50,22 @@ class PageFactory
         return Page::createForFile($path, $loc, $priority, $changefreq);
     }
 
-
     /**
-     * Create @see Page related to transmitted $name whose last modification depends on transmitted $path modification
+     * Create @param string $name
      *
-     * @param string    $name
-     * @param array     $parameters
-     * @param float     $priority
-     * @param \DateTime $lastMod
-     * @param string    $changefreq
+     * @param array $parameters
+     * @param float $priority
+     * @param \DateTimeInterface $lastMod
+     * @param string $changefreq
      * @return Page
+     * @see Page related to transmitted $name whose last modification depends on transmitted $path modification
+     *
      */
     public function create(
-        $name, $parameters = [], $priority = 0.5, \DateTime $lastMod = null, $changefreq = Page::CHANGEFREQ_WEEKLY
+        $name, $parameters = [],
+        $priority = 0.5,
+        \DateTimeInterface $lastMod = null,
+        $changefreq = Page::CHANGEFREQ_WEEKLY
     )
     {
         $loc = $this->generateRoute($name, $parameters);

@@ -10,30 +10,22 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
-use AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository;
 use AppBundle\Entity\Event;
 use AppBundle\Form\AcquisitionAttribute\EventSpecificVariableType;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForVariableType;
-use AppBundle\Form\AcquisitionFormulaType;
-use AppBundle\Form\AcquisitionType;
-use AppBundle\Form\GroupType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class AcquisitionVariableController extends Controller
+class AcquisitionVariableController extends AbstractController
 {
     
     /**

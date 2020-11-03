@@ -12,13 +12,13 @@ namespace AppBundle\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Response;
 
-class CronController extends Controller
+class CronController extends AbstractController
 {
     /**
      * @Route("/cron/subscription/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_subscription")

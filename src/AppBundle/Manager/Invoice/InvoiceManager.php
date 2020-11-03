@@ -11,6 +11,7 @@
 namespace AppBundle\Manager\Invoice;
 
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\InvoiceRepository;
 use AppBundle\Entity\Participation;
@@ -23,8 +24,7 @@ use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use AppBundle\Entity\Event;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class InvoiceManager
 {
@@ -87,13 +87,13 @@ class InvoiceManager
      * @param EntityManagerInterface $em
      * @param PaymentManager $paymentManager
      * @param string $invoiceBasePath
-     * @param TokenStorage|null $tokenStorage To get user if set
+     * @param TokenStorageInterface|null $tokenStorage To get user if set
      */
     public function __construct(
         EntityManagerInterface $em,
         PaymentManager $paymentManager,
         string $invoiceBasePath,
-        TokenStorage $tokenStorage = null
+        TokenStorageInterface $tokenStorage = null
     )
     {
         $this->em              = $em;

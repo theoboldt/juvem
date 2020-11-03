@@ -18,14 +18,14 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Security\EventVoter;
 use AppBundle\SerializeJsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
-class EntityChangeTrackingController extends Controller
+class EntityChangeTrackingController extends AbstractController
 {
     /**
      * Get list of changes for transmitted entity

@@ -14,13 +14,13 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\InvalidTokenHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
-class ActiveButtonController extends Controller
+class ActiveButtonController extends AbstractController
 {
     
     const USER_ID_SELF = '__self__';

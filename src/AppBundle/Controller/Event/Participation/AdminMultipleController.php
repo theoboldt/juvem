@@ -11,7 +11,10 @@
 namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\Event\Gallery\GalleryPublicController;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
@@ -21,22 +24,99 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\CommentManager;
+use AppBundle\Manager\ParticipationManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\Extension\PaymentInformation;
 use DateTime;
+use Doctrine\Persistence\ManagerRegistry;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class AdminMultipleController extends Controller
+class AdminMultipleController
 {
+    use RenderingControllerTrait, RoutingControllerTrait, AuthorizationAwareControllerTrait;
+    
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * app.payment_manager
+     *
+     * @var PaymentManager
+     */
+    private PaymentManager $paymentManager;
+    
+    /**
+     * app.participation_manager
+     *
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
+    /**
+     * app.comment_manager
+     *
+     * @var CommentManager
+     */
+    private CommentManager $commentManager;
+    
+    /**
+     * AdminMultipleController constructor.
+     *
+     * @param Environment $twig
+     * @param RouterInterface $router
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param ManagerRegistry $doctrine
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param PaymentManager $paymentManager
+     * @param ParticipationManager $participationManager
+     * @param CommentManager $commentManager
+     */
+    public function __construct(
+        Environment $twig,
+        RouterInterface $router,
+        AuthorizationCheckerInterface $authorizationChecker,
+        ManagerRegistry $doctrine,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        PaymentManager $paymentManager,
+        ParticipationManager $participationManager,
+        CommentManager $commentManager
+    )
+    {
+        $this->twig                 = $twig;
+        $this->router               = $router;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->doctrine             = $doctrine;
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->paymentManager       = $paymentManager;
+        $this->participationManager = $participationManager;
+        $this->commentManager       = $commentManager;
+    }
+    
+    
     /**
      * Page for list of participants of an event
      *
@@ -76,7 +156,7 @@ class AdminMultipleController extends Controller
             return new JsonResponse([]);
         }
 
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
 
         $participantList = [];
@@ -155,7 +235,7 @@ class AdminMultipleController extends Controller
         Event $event, Participation $expectedParticipation, string $direction, bool $includeDeletedAndWithdrawn
     ): ?Participation
     {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList(
             $event, null, $includeDeletedAndWithdrawn, $includeDeletedAndWithdrawn
         );
@@ -206,9 +286,9 @@ class AdminMultipleController extends Controller
     public function listParticipantsDataAction(Event $event, Request $request)
     {
         $includePayment          = ($request->query->has('payment'));
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
-        $paymentManager          = $this->get('app.payment_manager');
+        $paymentManager          = $this->paymentManager;
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = ParticipantStatus::formatter();
@@ -369,13 +449,13 @@ class AdminMultipleController extends Controller
         $participants = filter_var_array($request->get('participants'), FILTER_VALIDATE_INT);
 
         /** @var CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('participants-list-edit' . $eid)) {
             throw new InvalidTokenHttpException();
         }
 
-        $eventRepository         = $this->getDoctrine()->getRepository(Event::class);
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $eventRepository         = $this->doctrine->getRepository(Event::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         /** @var Event $event */
         $event                   = $eventRepository->findOneBy(['eid' => $eid]);
         $this->denyAccessUnlessGranted('participants_edit', $event);
@@ -387,9 +467,9 @@ class AdminMultipleController extends Controller
         }
 
         $participants         = $participationRepository->participantsList($event, $participants, true, true);
-        $participationManager = $this->get('app.participation_manager');
-        $paymentManager       = $this->get('app.payment_manager');
-        $em                   = $this->getDoctrine()->getManager();
+        $participationManager = $this->participationManager;
+        $paymentManager       = $this->paymentManager;
+        $em                   = $this->doctrine->getManager();
 
         /** @var Participant $participant */
         foreach ($participants as $participant) {
@@ -429,7 +509,7 @@ class AdminMultipleController extends Controller
      */
     public function printParticipantsAction(Event $event, $eid, $type)
     {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event);
 
         return $this->render(
@@ -437,7 +517,7 @@ class AdminMultipleController extends Controller
             [
                 'event'           => $event,
                 'participants'    => $participants,
-                'commentManager'  => $this->container->get('app.comment_manager'),
+                'commentManager'  => $this->commentManager,
                 'type'            => $type,
                 'statusFormatter' => ParticipantStatus::formatter(),
             ]
@@ -453,7 +533,7 @@ class AdminMultipleController extends Controller
      */
     public function provideParticipateTimelineDataAction(Event $event)
     {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $newParticipants = [];
         /** @var Participant $participant */
         foreach ($participationRepository->participantsList($event) as $participant) {

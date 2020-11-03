@@ -12,31 +12,159 @@
 namespace AppBundle\Controller\Event\Participation;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\InvoiceMailingType;
+use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\Invoice\InvoiceMailer;
 use AppBundle\Manager\Invoice\InvoiceMailingConfiguration;
+use AppBundle\Manager\Invoice\InvoiceManager;
+use AppBundle\Manager\Invoice\InvoicePdfProvider;
 use AppBundle\Manager\Invoice\PdfConverterUnavailableException;
+use AppBundle\PdfConverterService;
 use AppBundle\ResponseHelper;
 use AppBundle\SerializeJsonResponse;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use AppBundle\InvalidTokenHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class AdminInvoiceController extends Controller
+class AdminInvoiceController
 {
+    use FormAwareControllerTrait, FlashBagAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait, DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait;
+    
+    
+    /**
+     * app.tmp.root.path
+     *
+     * @var string
+     */
+    private string $tmpRootPath;
+    
+    /**
+     * customization.organization_name
+     *
+     * @var string
+     */
+    private string $customizationOrganizationName;
+    
+    
+    /**
+     * app.payment.invoice_mailer
+     *
+     * @var InvoiceMailer
+     */
+    private InvoiceMailer $invoiceMailer;
+    
+    /**
+     * app.payment.invoice_manager
+     *
+     * @var InvoiceManager
+     */
+    private InvoiceManager $invoiceManager;
+    
+    /**
+     * app.payment.invoice_pdf_provider
+     *
+     * @var InvoicePdfProvider
+     */
+    private InvoicePdfProvider $invoicePdfProvider;
+    
+    /**
+     * app.pdf_converter_service
+     *
+     * @var PdfConverterService|null
+     */
+    private ?PdfConverterService $pdfConverterService;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * event_dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
+    
+    /**
+     * AdminInvoiceController constructor.
+     *
+     * @param string $tmpRootPath
+     * @param string $customizationOrganizationName
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param InvoiceMailer $invoiceMailer
+     * @param InvoiceManager $invoiceManager
+     * @param InvoicePdfProvider $invoicePdfProvider
+     * @param PdfConverterService|null $pdfConverterService
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     */
+    public function __construct(
+        string $tmpRootPath,
+        string $customizationOrganizationName,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        EventDispatcherInterface $eventDispatcher,
+        InvoiceMailer $invoiceMailer,
+        InvoiceManager $invoiceManager,
+        InvoicePdfProvider $invoicePdfProvider,
+        ?PdfConverterService $pdfConverterService,
+        CsrfTokenManagerInterface $csrfTokenManager
+    )
+    {
+        $this->tmpRootPath                   = $tmpRootPath;
+        $this->invoiceMailer                 = $invoiceMailer;
+        $this->invoiceManager                = $invoiceManager;
+        $this->invoicePdfProvider            = $invoicePdfProvider;
+        $this->pdfConverterService           = $pdfConverterService;
+        $this->csrfTokenManager              = $csrfTokenManager;
+        $this->eventDispatcher               = $eventDispatcher;
+        $this->customizationOrganizationName = $customizationOrganizationName;
+        $this->authorizationChecker          = $authorizationChecker;
+        $this->tokenStorage                  = $tokenStorage;
+        $this->doctrine                      = $doctrine;
+        $this->router                        = $router;
+        $this->twig                          = $twig;
+        $this->formFactory                   = $formFactory;
+    }
+    
     /**
      * List invoices of an event
      *
@@ -57,7 +185,7 @@ anbei erhalten Sie die Rechnung für die Veranstaltung "{EVENT_TITLE}".
 
 Mit freundlichen Grüßen,
 
-%s', $this->getParameter('customization.organization_name')
+%s', $this->customizationOrganizationName
             )
         );
 
@@ -69,7 +197,7 @@ Mit freundlichen Grüßen,
 
         if ($form->isSubmitted() && $form->isValid()) {
             $invoices = $this->provideInvoices($event, 'current');
-            $mailer   = $this->get('app.payment.invoice_mailer');
+            $mailer   = $this->invoiceMailer;
             $sent     = $mailer->mailInvoices($invoiceMailing, $invoices);
 
             if (count($invoices) === $sent) {
@@ -104,7 +232,7 @@ Mit freundlichen Grüßen,
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationEntityList = $participationRepository->participationsList($event, false, false, null);
-        $invoiceManager          = $this->get('app.payment.invoice_manager');
+        $invoiceManager          = $this->invoiceManager;
         $invoices                = $invoiceManager->getInvoicesForEvent($event);
         $result                  = [];
 
@@ -175,7 +303,7 @@ Mit freundlichen Grüßen,
         $pid   = $request->get('pid');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('ParticipationcreateInvoice' . $pid)) {
             throw new InvalidTokenHttpException();
         }
@@ -189,7 +317,7 @@ Mit freundlichen Grüßen,
         $event = $participation->getEvent();
         $this->denyAccessUnlessGranted('participants_read', $event);
 
-        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->invoiceManager;
         $invoice        = $invoiceManager->createInvoice($participation);
 
         return new SerializeJsonResponse(
@@ -217,7 +345,7 @@ Mit freundlichen Grüßen,
         if ($invoice->getParticipation()->getEvent()->getEid() !== $event->getEid()) {
             throw new BadRequestHttpException('Incorrect invoice requested');
         }
-        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->invoiceManager;
 
         if (!$invoiceManager->hasFile($invoice)) {
             throw new NotFoundHttpException('There is no file for transmitted invoice stored');
@@ -250,12 +378,12 @@ Mit freundlichen Grüßen,
         if ($invoice->getParticipation()->getEvent()->getEid() !== $event->getEid()) {
             throw new BadRequestHttpException('Incorrect invoice requested');
         }
-        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->invoiceManager;
 
         if (!$invoiceManager->hasFile($invoice)) {
             throw new NotFoundHttpException('There is no file for transmitted invoice stored');
         }
-        $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
+        $pdfProvider = $this->invoicePdfProvider;
         try {
             $path = $pdfProvider->getFile($invoice);
 
@@ -288,7 +416,7 @@ Mit freundlichen Grüßen,
         if ($event->getInvoiceTemplateFile()) {
             $response = new BinaryFileResponse($event->getInvoiceTemplateFile());
         } else {
-            $invoiceManager = $this->get('app.payment.invoice_manager');
+            $invoiceManager = $this->invoiceManager;
             if (!file_exists($invoiceManager->getInvoiceTemplatePath())) {
                 throw new NotFoundHttpException('There is no template present');
             }
@@ -316,7 +444,7 @@ Mit freundlichen Grüßen,
     {
         $eid = $event->getEid();
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($request->get('_token') != $csrf->getToken('invoice-create' . $eid)) {
             throw new InvalidTokenHttpException();
         }
@@ -324,7 +452,7 @@ Mit freundlichen Grüßen,
         $filter                  = $request->get('filter');
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationEntityList = $participationRepository->participationsList($event, false, false, null);
-        $invoiceManager          = $this->get('app.payment.invoice_manager');
+        $invoiceManager          = $this->invoiceManager;
         $priceManager            = $this->get('app.price_manager');
         $result                  = [];
 
@@ -371,7 +499,7 @@ Mit freundlichen Grüßen,
      */
     private function provideInvoices(Event $event, string $filter): array
     {
-        $invoiceManager   = $this->get('app.payment.invoice_manager');
+        $invoiceManager   = $this->invoiceManager;
         $invoicesComplete = $invoiceManager->getInvoicesForEvent($event);
 
         $invoices = [];
@@ -406,10 +534,10 @@ Mit freundlichen Grüßen,
      */
     public function downloadEventInvoicePdfPackage(Event $event, string $filter): Response
     {
-        if (!$this->has('app.pdf_converter_service')) {
+        if (!$this->pdfConverterService) {
             throw new BadRequestHttpException('PDF converter not configured');
         }
-        $pdfConverter = $this->get('app.pdf_converter_service');
+        $pdfConverter = $this->pdfConverterService;
         if (!$pdfConverter) {
             throw new BadRequestHttpException('PDF converter unavailable');
         }
@@ -419,7 +547,7 @@ Mit freundlichen Grüßen,
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $tmpPath  = $this->getParameter('app.tmp.root.path');
+        $tmpPath  = $this->tmpRootPath;
         $filePath = tempnam($tmpPath, 'invoice_package_');
         unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
 
@@ -430,7 +558,7 @@ Mit freundlichen Grüßen,
             throw new \InvalidArgumentException('Failed to create "' . $tmpPath . '" error code ' . $openResult);
         }
 
-        $pdfProvider = $this->get('app.payment.invoice_pdf_provider');
+        $pdfProvider = $this->invoicePdfProvider;
 
         /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
@@ -467,14 +595,14 @@ Mit freundlichen Grüßen,
      */
     public function downloadEventInvoicePackage(Event $event, string $filter)
     {
-        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->invoiceManager;
 
         $invoices = $this->provideInvoices($event, $filter);
         if (!count($invoices)) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $tmpPath  = $this->getParameter('app.tmp.root.path');
+        $tmpPath  = $this->tmpRootPath;
         $filePath = tempnam($tmpPath, 'invoice_package_');
         unlink($filePath); // need to delete file in order to prevent \ZipArchive file type error while opening
 
@@ -496,7 +624,7 @@ Mit freundlichen Grüßen,
         );
 
         //ensure file deleted after request
-        $this->get('event_dispatcher')->addListener(
+        $this->eventDispatcher->addListener(
             KernelEvents::TERMINATE,
             function (PostResponseEvent $event) use ($filePath) {
                 usleep(100);

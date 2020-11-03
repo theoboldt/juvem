@@ -115,8 +115,8 @@ module.exports = function (grunt) {
             distCssWeb: {
                 src: [
                     'node_modules/easymde/dist/easymde.min.css',
-                    'app/cache/dep/bootstrap-table-sass.css',
-                    'app/cache/dep/all-sass.css',
+                    'var/cache/dep/bootstrap-table-sass.css',
+                    'var/cache/dep/all-sass.css',
                     'node_modules/vis-network/dist/vis-network.css',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
@@ -125,7 +125,7 @@ module.exports = function (grunt) {
             },
             distCssPrint: {
                 src: [
-                    'app/cache/dep/all-sass-print.css'
+                    'var/cache/dep/all-sass-print.css'
                 ],
                 dest: 'web/css/print.css'
             },
@@ -143,8 +143,8 @@ module.exports = function (grunt) {
                     style: 'expanded'
                 },
                 files: {
-                    'app/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss',
-                    'app/cache/dep/bootstrap-table-sass.css': 'node_modules/bootstrap-table/src/bootstrap-table.scss'
+                    'var/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss',
+                    'var/cache/dep/bootstrap-table-sass.css': 'node_modules/bootstrap-table/src/bootstrap-table.scss'
                 }
             },
             print: {
@@ -152,7 +152,7 @@ module.exports = function (grunt) {
                     style: 'expanded'
                 },
                 files: {
-                    'app/cache/dep/all-sass-print.css': '<%= resourcesPath %>/scss/print/main.scss'
+                    'var/cache/dep/all-sass-print.css': '<%= resourcesPath %>/scss/print/main.scss'
                 }
             }
         },
