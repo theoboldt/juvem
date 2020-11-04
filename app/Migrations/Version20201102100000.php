@@ -41,7 +41,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
 
         $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'tmp');
-        $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'data');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'invoice');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'template.docx');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'uploads');
     }
 
     /**
@@ -66,7 +68,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
 
         $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'tmp');
-        $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'data');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'invoice');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'template.docx');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'uploads');
     }
 
     /**
