@@ -81,6 +81,12 @@ final class Version20201102100000 extends AbstractMigration
     private function moveFileIfExists(string $sourcePath, string $targetPath, string $fileName): void
     {
         if (file_exists($sourcePath . '/' . $fileName)) {
+            if (!file_exists($targetPath)) {
+                if (mkdir($targetPath, 0777, true)) {
+                    throw new \RuntimeException('Failed to create ' . $targetPath);
+                }
+            }
+
             if (file_exists($targetPath . '/' . $fileName)) {
                 throw new \RuntimeException(
                     sprintf('Cannot move file "%s" from "%s" to "%s", target already existing', $fileName, $sourcePath, $targetPath)
