@@ -63,7 +63,6 @@ framework:
         name: 's'
     fragments:       ~
     http_method_override: true
-#    error_controller: App\Controller\ErrorController::show TODO
 
 sensio_framework_extra:
     router:

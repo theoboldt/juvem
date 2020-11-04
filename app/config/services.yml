@@ -138,12 +138,13 @@ services:
         arguments:
           - "%app.cache.environment.path%/fc/gallery"
     app.upload_image_manager:
+        public: true
         class: AppBundle\Manager\UploadImageManager
         arguments: ['@app.file_cache.event', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'event_image', '@logger', '@?app.juvimg.service']
     app.gallery_image_manager:
+        public: true
         class: AppBundle\Manager\UploadImageManager
         arguments: ['@app.file_cache.gallery', "%app.tmp.root.path%", '%vich_uploader.mappings%', 'gallery_image', '@logger', '@?app.juvimg.service']
-        public: true
     app.user_registration.participation_listener:
         class: AppBundle\EventListeners\UserRegistrationListener
         arguments: ['@doctrine']
@@ -246,6 +247,7 @@ services:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: -1}
             - { name: monolog.logger, channel: mychannel }
         arguments:
+            - "@twig"
             - "@logger"
     app.response_serialize_listener:
         class: AppBundle\EventListeners\ResponseSerializerListener
@@ -434,13 +436,9 @@ services:
         tags:
             - { name: request.param_converter, priority: 2, converter: converter_event }
 
-#    app.exception_controller:
-#        class: AppBundle\Controller\ExceptionController
-#        arguments: ['@twig', '%kernel.debug%']
-
     AppBundle\Controller\:
         resource: '../../src/AppBundle/Controller/**/*Controller.php'
-        exclude: '../../src/AppBundle/Controller/{Exception|Default|Event/Participation/AdminMultipleExport}Controller.php'
+        exclude: '../../src/AppBundle/Controller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
         tags: [ 'controller.service_arguments' ]
 
     AppBundle\Controller\DefaultController:
