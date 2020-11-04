@@ -470,3 +470,19 @@ services:
             $customizationOrganizationName: "%customization.organization_name%"
         tags: [ 'controller.service_arguments' ]
 
+    AppBundle\Controller\Event\PublicController:
+        arguments:
+            $uploadImageManager: '@app.upload_image_manager'
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Event\Gallery\GalleryAdminController:
+        arguments:
+            $kernelSecret: '%kernel.secret%'
+            $galleryImageManager: '@app.gallery_image_manager'
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Event\Gallery\GalleryPublicController:
+        arguments:
+            $kernelSecret: '%kernel.secret%'
+            $galleryImageManager: '@app.gallery_image_manager'
+        tags: [ 'controller.service_arguments' ]
