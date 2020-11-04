@@ -100,7 +100,7 @@ class AdminController extends AbstractController
      * Newsletter/Subscriptions overview page
      *
      * @Route("/admin/newsletter", name="newsletter_admin_overview")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function overviewAction()
     {
@@ -114,7 +114,7 @@ class AdminController extends AbstractController
      * List of all newsletter subscriptions
      *
      * @Route("/admin/newsletter/subscription/list", name="newsletter_admin_subscription_list")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function listSubscriptionsAction()
     {
@@ -129,7 +129,7 @@ class AdminController extends AbstractController
      *
      * @see self::listSubscriptionsAction()
      * @Route("/admin/newsletter/subscription/list.json", name="newsletter_admin_subscription_list_data")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function listSubscriptionsDataAction()
     {
@@ -179,7 +179,7 @@ class AdminController extends AbstractController
      * List newsletters (sent and drafts)
      *
      * @Route("/admin/newsletter/list", name="newsletter_admin_newsletter_list")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function listNewsletterAction()
     {
@@ -194,7 +194,7 @@ class AdminController extends AbstractController
      *
      * @see self::listNewsletterAction()
      * @Route("/admin/newsletter/list.json", name="newsletter_admin_newsletter_list_data")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function listNewsletterDataAction(Request $request)
     {
@@ -237,7 +237,7 @@ class AdminController extends AbstractController
      * @ParamConverter("subscription", class="AppBundle:NewsletterSubscription", options={"id" = "rid"})
      * @Route("/admin/newsletter/subscription/{rid}", requirements={"rid": "\d+"},
      *                                                name="newsletter_admin_subscription_detail")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function subscriptionDetailAction(Request $request, NewsletterSubscription $subscription)
     {
@@ -269,7 +269,7 @@ class AdminController extends AbstractController
      * @ParamConverter("subscription", class="AppBundle:NewsletterSubscription", options={"id" = "rid"})
      * @Route("/admin/newsletter/subscription/{rid}/forceconfirmation", requirements={"rid": "\d+"},
      *                                                name="newsletter_admin_subscription_confirmation")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function subscriptionForceConfirmationAction(Request $request, NewsletterSubscription $subscription)
     {
@@ -296,7 +296,7 @@ class AdminController extends AbstractController
      * Data provider for recipient count
      *
      * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function affectedNewsletterRecipientAmountAction(Request $request)
     {
@@ -329,7 +329,7 @@ class AdminController extends AbstractController
      * Data provider for recipients
      *
      * @Route("/admin/newsletter/affected-recipient-list", name="newsletter_admin_affected_recipient")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function affectedNewsletterRecipientAction(Request $request)
     {
@@ -364,7 +364,7 @@ class AdminController extends AbstractController
      * Send newsletter
      *
      * @Route("/admin/newsletter/send", name="newsletter_send")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function sendNewsletterAction(Request $request)
     {
@@ -420,7 +420,7 @@ class AdminController extends AbstractController
     /**
      * @param Request $request
      * @Route("/admin/newsletter/create_preview", name="newsletter_preview", methods={"GET", "POST"})
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      * @return Response
      */
     public function previewNewsletterAction(Request $request): Response
@@ -473,7 +473,7 @@ class AdminController extends AbstractController
      * Send newsletter
      *
      * @Route("/admin/newsletter/send_test", name="newsletter_send_test")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function sendNewsletterTestAction(Request $request)
     {
@@ -513,7 +513,7 @@ class AdminController extends AbstractController
      * Create new newsletter page
      *
      * @Route("/admin/newsletter/create", name="newsletter_admin_create")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function createNewsletterAction(Request $request)
     {
@@ -552,7 +552,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("newsletter", class="AppBundle:Newsletter", options={"id" = "lid"})
      * @Route("/admin/newsletter/{lid}/edit", requirements={"lid": "\d+"}, name="newsletter_edit")
-     * @Security("has_role('ROLE_ADMIN_NEWSLETTER')")
+     * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
     public function detailedNewsletterAction(Request $request, Newsletter $newsletter)
     {

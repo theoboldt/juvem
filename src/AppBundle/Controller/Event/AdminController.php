@@ -54,7 +54,7 @@ class AdminController extends AbstractController
      * Page for list of events
      *
      * @Route("/admin/event/list", name="event_list")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function listAction()
     {
@@ -76,7 +76,7 @@ class AdminController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/event/list.json", name="event_list_data", methods={"GET", "HEAD"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @return JsonResponse|Response
      */
@@ -165,7 +165,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editAction(Request $request, Event $event)
     {
@@ -199,7 +199,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
      * @Route("/admin/event/{eid}", requirements={"eid": "\d+"}, name="event")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function detailEventAction(Request $request, Event $event)
     {
@@ -306,7 +306,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/payment_summary.json", requirements={"eid": "\d+"}, name="event_payment_summary")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function eventPaymentSummaryAction(Request $request, Event $event): Response
     {
@@ -402,7 +402,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/variable", requirements={"eid": "\d+"}, name="admin_event_variable", methods={"GET"})
-     * @Security("has_role('ROLE_ADMIN_EVENT', event)")
+     * @Security("is_granted('ROLE_ADMIN_EVENT', event)")
      * @return Response
      */
     public function showEventVariablesAction(Event $event): Response
@@ -483,7 +483,7 @@ class AdminController extends AbstractController
      * @Route("/admin/event/{eid}/variable/configure", requirements={"eid": "\d+"},
      *                                                 name="admin_event_variable_configure")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @param Event $event
      * @return Response
@@ -580,7 +580,7 @@ class AdminController extends AbstractController
      * Detail page for one single event
      *
      * @Route("/admin/mail/template", name="mail_template")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function emailTemplateAction()
     {
@@ -591,7 +591,7 @@ class AdminController extends AbstractController
      * Create a new event
      *
      * @Route("/admin/event/new", name="event_new")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function newAction(Request $request)
     {
@@ -636,7 +636,7 @@ class AdminController extends AbstractController
      * Handler for subscription button
      *
      * @Route("/admin/event/subscription", name="event_admin_subscription")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function subscriptionAction(Request $request)
     {
@@ -672,7 +672,7 @@ class AdminController extends AbstractController
      * Access uploaded image
      *
      * @Route("/uploads/event/{filename}", requirements={"filename": "([^/])+"}, name="event_upload_image")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function uploadEventImageAction(Request $request, string $filename)
     {
@@ -691,7 +691,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
      * @Route("/admin/event/{eid}/users", requirements={"eid": "\d+"}, name="event_user_admin")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @param Event $event
      * @return Response
@@ -754,7 +754,7 @@ class AdminController extends AbstractController
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
      * @Route("/admin/event/{eid}/update-specific-age", requirements={"eid": "\d+"},
      *                                                  name="event_admin_update_specific_age")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @param Event $event
      * @return JsonResponse
@@ -788,7 +788,7 @@ class AdminController extends AbstractController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/order", requirements={"eid": "\d+"}, name="event_admin_order")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Event $event Related event
      * @param Request $request
      * @return Response

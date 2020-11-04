@@ -30,7 +30,7 @@ class RecipeFeedbackController extends AbstractController
     /**
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}/feedback", requirements={"id": "\d+"}, name="meals_feedback_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param Recipe $recipe
      * @return Response
      */
@@ -44,7 +44,7 @@ class RecipeFeedbackController extends AbstractController
      *
      * @Route("/admin/meals/recipes/{id}/list.json", requirements={"id": "\d+"}, name="meals_feedback_list_data")
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction(Recipe $recipe)
     {
@@ -78,7 +78,7 @@ class RecipeFeedbackController extends AbstractController
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
      * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
      * @Route("/admin/meals/recipes/{rid}/feedback/{fid}", requirements={"rid": "\d+","fid": "\d+"}, name="meals_feedback_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function detailAction(Recipe $recipe, RecipeFeedback $feedback)
     {
@@ -115,7 +115,7 @@ class RecipeFeedbackController extends AbstractController
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
      * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
      * @Route("/admin/meals/recipes/{rid}/feedback/{fid}/edit", requirements={"rid": "\d+","fid": "\d+"}, name="meals_feedback_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param Request $request
      * @param Recipe $recipe
      * @return \Symfony\Component\HttpFoundation\Response
@@ -158,7 +158,7 @@ class RecipeFeedbackController extends AbstractController
      *
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}/feedback/new", requirements={"id": "\d+"}, name="meals_feedback_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param Request $request
      * @param Recipe $recipe
      * @return Response

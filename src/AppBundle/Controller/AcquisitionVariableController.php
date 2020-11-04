@@ -30,7 +30,7 @@ class AcquisitionVariableController extends AbstractController
     
     /**
      * @Route("/admin/variable/list", name="admin_variable_list", methods={"GET"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function listAction(Request $request)
     {
@@ -41,7 +41,7 @@ class AcquisitionVariableController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/variable/list.json", name="admin_variable_list_data", methods={"GET"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function listDataAction(Request $request)
     {
@@ -67,7 +67,7 @@ class AcquisitionVariableController extends AbstractController
      * Create a new variable
      *
      * @Route("/admin/variable/new", name="admin_variable_new")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function newAction(Request $request): Response
     {
@@ -107,7 +107,7 @@ class AcquisitionVariableController extends AbstractController
      *
      * @Route("/admin/variable/{vid}/edit", requirements={"vid": "\d+"}, name="admin_variable_edit")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editAction(Request $request, EventSpecificVariable $variable): Response
     {
@@ -201,7 +201,7 @@ class AcquisitionVariableController extends AbstractController
      *
      * @Route("/admin/variable/{vid}", requirements={"vid": "\d+"}, name="admin_variable_detail")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function showEventValuesAction(Request $request, EventSpecificVariable $variable): Response
     {
@@ -263,7 +263,7 @@ class AcquisitionVariableController extends AbstractController
      *
      * @Route("/admin/variable/{vid}/configure", requirements={"vid": "\d+"}, name="admin_variable_configure")
      * @ParamConverter("variable", class="AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable", options={"id" = "vid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function configureEventValuesAction(Request $request, EventSpecificVariable $variable): Response
     {

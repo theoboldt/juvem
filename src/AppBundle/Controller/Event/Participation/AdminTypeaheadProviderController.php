@@ -31,7 +31,7 @@ class AdminTypeaheadProviderController extends AbstractController
      * @Route("/admin/event/{eid}/typeahead/proposals.json", requirements={"eid": "\d+"}, name="admin_event_typeahead_proposals")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('participants_read', event)")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function participationConfirmAction(Event $event, Request $request)
     {

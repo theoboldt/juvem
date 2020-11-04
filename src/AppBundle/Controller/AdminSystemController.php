@@ -24,7 +24,7 @@ class AdminSystemController extends AbstractController
      * Clear cache
      *
      * @Route("/admin/cache/clear", name="admin_cache_clean", methods={"GET"})
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function cacheCleanAction()
     {
@@ -64,7 +64,7 @@ class AdminSystemController extends AbstractController
      * Clear cache
      *
      * @Route("/admin/cache/clear/result", name="admin_cache_clean_result", methods={"GET"})
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function cacheCleanedAction()
     {
@@ -79,7 +79,7 @@ class AdminSystemController extends AbstractController
      * Perform cache warmup
      *
      * @Route("/admin/cache/warmup", name="admin_cache_warmup")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function cacheWarmupAction()
     {
@@ -108,7 +108,7 @@ class AdminSystemController extends AbstractController
      * Display database status or update database
      *
      * @Route("/admin/database/{action}", requirements={"action": "(status|update)"}, name="admin_database")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param string $action Either status or update
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -144,7 +144,7 @@ class AdminSystemController extends AbstractController
      * Execute migrations
      *
      * @Route("/admin/database/migrate", name="admin_database_migrate")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function databaseMigrateAction()

@@ -78,7 +78,7 @@ class RecipeController
     
     /**
      * @Route("/admin/meals/recipes")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listRedirectAction()
     {
@@ -87,7 +87,7 @@ class RecipeController
     
     /**
      * @Route("/admin/meals/recipes/list", name="meals_recipes_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -98,7 +98,7 @@ class RecipeController
      * Data provider for event list grid
      *
      * @Route("/admin/meals/recipes/list.json", name="meals_recipes_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction()
     {
@@ -135,7 +135,7 @@ class RecipeController
     /**
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}", requirements={"id": "\d+"}, name="meals_recipes_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function detailAction(Recipe $recipe)
     {
@@ -163,7 +163,7 @@ class RecipeController
     /**
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}/edit", requirements={"id": "\d+"}, name="meals_recipes_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param Request $request
      * @param Recipe $recipe
      * @return \Symfony\Component\HttpFoundation\Response
@@ -199,7 +199,7 @@ class RecipeController
      * Create a new acquisition attribute
      *
      * @Route("/admin/meals/recipes/new", name="meals_recipes_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function newAction(Request $request)
     {

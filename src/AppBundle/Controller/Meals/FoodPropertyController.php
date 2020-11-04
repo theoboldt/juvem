@@ -26,7 +26,7 @@ class FoodPropertyController extends AbstractController
 {
     /**
      * @Route("/admin/meals/properties/list", name="meals_properties_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -37,7 +37,7 @@ class FoodPropertyController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/meals/properties/list.json", name="meals_properties_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction()
     {
@@ -63,7 +63,7 @@ class FoodPropertyController extends AbstractController
     /**
      * @ParamConverter("foodProperty", class="AppBundle\Entity\Meals\FoodProperty")
      * @Route("/admin/meals/properties/{id}", requirements={"id": "\d+"}, name="meals_property_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function detailAction(FoodProperty $foodProperty)
     {
@@ -73,7 +73,7 @@ class FoodPropertyController extends AbstractController
     /**
      * @ParamConverter("foodProperty", class="AppBundle\Entity\Meals\FoodProperty")
      * @Route("/admin/meals/properties/{id}/edit", requirements={"id": "\d+"}, name="meals_property_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction(Request $request, FoodProperty $foodProperty)
     {
@@ -105,7 +105,7 @@ class FoodPropertyController extends AbstractController
      * Create a new acquisition attribute
      *
      * @Route("/admin/meals/properties/new", name="meals_property_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function newAction(Request $request)
     {
