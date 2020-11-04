@@ -11,14 +11,20 @@
 namespace AppBundle\Controller\Event\Gallery;
 
 
+use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\UploadImageManager;
+use Doctrine\Persistence\ManagerRegistry;
 use Imagine\Image\ImageInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,18 +32,76 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
 
 class GalleryAdminController extends BaseGalleryController
 {
+    use FormAwareControllerTrait;
     
-
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * event_dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
+    
+    /**
+     * logger
+     *
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+    
+    /**
+     * BaseGalleryController constructor.
+     *
+     * @param string $kernelSecret
+     * @param UploadImageManager $galleryImageManager
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(
+        string $kernelSecret,
+        UploadImageManager $galleryImageManager,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        EventDispatcherInterface $eventDispatcher,
+        ?LoggerInterface $logger
+    )
+    {
+        parent::__construct($kernelSecret, $galleryImageManager, $doctrine, $router, $twig);
+        $this->galleryImageManager = $galleryImageManager;
+        $this->formFactory         = $formFactory;
+        $this->csrfTokenManager    = $csrfTokenManager;
+        $this->eventDispatcher     = $eventDispatcher;
+        $this->logger              = $logger ?: new NullLogger();
+    }
+    
     /**
      * Page for list of events
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery", requirements={"eid": "\d+"}, name="event_gallery_admin")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @param Event   $event
      * @return Response
@@ -116,13 +180,13 @@ class GalleryAdminController extends BaseGalleryController
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery/upload", requirements={"eid": "\d+"}, name="event_gallery_admin_upload")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function uploadImageAction(Request $request, Event $event)
     {
         $token = $request->request->get('token');
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('gallery-upload-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
@@ -135,7 +199,7 @@ class GalleryAdminController extends BaseGalleryController
         /** @var UploadedFile $file */
         foreach ($request->files as $file) {
             $galleryImage = new GalleryImage($event, $file);
-            list($width, $height) = getimagesize($file->getPathname(), $info);
+            [$width, $height] = getimagesize($file->getPathname(), $info);
             try {
                 $exif = exif_read_data($file->getPathname(), 'ANY_TAG', true, false);
             } catch (\Exception $e) {
@@ -174,15 +238,18 @@ class GalleryAdminController extends BaseGalleryController
                 $galleryImage->setWidth($width);
                 $galleryImage->setHeight($height);
             } catch (\Exception $e) {
-                $this->get('logger')->error($e->getMessage());
+                $this->logger->error(
+                    'Exception {message} in {file} at {line}',
+                    ['message' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()]
+                );
             }
             $em->persist($galleryImage);
         }
         $em->flush();
         $iid = $galleryImage->getIid();
 
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $this->get('event_dispatcher')->addListener(
+        $uploadManager = $this->galleryImageManager;
+        $this->eventDispatcher->addListener(
             KernelEvents::TERMINATE, function (PostResponseEvent $event) use ($galleryImage, $uploadManager) {
             ignore_user_abort(true);
             if (ini_get('max_execution_time') < 10 * 60) {
@@ -201,7 +268,7 @@ class GalleryAdminController extends BaseGalleryController
         }
         );
 
-        $template = $this->container->get('twig')->render(
+        $template = $this->render(
             'event/public/embed-gallery-image.html.twig',
             [
                 'eid'       => $event->getEid(),
@@ -219,7 +286,7 @@ class GalleryAdminController extends BaseGalleryController
 
     /**
      * @Route("/admin/event/gallery/image/delete", name="gallery_image_delete")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
      */
     public function deleteImageAction(Request $request)
@@ -233,7 +300,7 @@ class GalleryAdminController extends BaseGalleryController
 
         if ($image) {
             /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-            $csrf = $this->get('security.csrf.token_manager');
+            $csrf = $this->csrfTokenManager;
             $event = $image->getEvent();
             if ($token != $csrf->getToken('gallery-image-delete-' .$event->getEid())) {
                 throw new InvalidTokenHttpException();
@@ -251,7 +318,7 @@ class GalleryAdminController extends BaseGalleryController
 
     /**
      * @Route("/admin/event/gallery/image/save", name="gallery_image_save")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
      */
     public function saveImageAction(Request $request)
@@ -266,7 +333,7 @@ class GalleryAdminController extends BaseGalleryController
 
         if ($image) {
             /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-            $csrf = $this->get('security.csrf.token_manager');
+            $csrf = $this->csrfTokenManager;
             $event = $image->getEvent();
             if ($token != $csrf->getToken('gallery-image-save-' .$event->getEid())) {
                 throw new InvalidTokenHttpException();

@@ -11,20 +11,55 @@
 namespace AppBundle\Controller\Event\Gallery;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
 use AppBundle\Entity\User;
 use AppBundle\ImageResponse;
+use AppBundle\Manager\UploadImageManager;
+use Doctrine\Persistence\ManagerRegistry;
 use Imagine\Image\ImageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
 
 class GalleryPublicController extends BaseGalleryController
 {
+    use AuthorizationAwareControllerTrait;
+    
+    /**
+     * BaseGalleryController constructor.
+     *
+     * @param string $kernelSecret
+     * @param UploadImageManager $galleryImageManager
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     */
+    public function __construct(
+        string $kernelSecret,
+        UploadImageManager $galleryImageManager,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage
+    )
+    {
+        parent::__construct($kernelSecret, $galleryImageManager, $doctrine, $router, $twig);
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+    }
+    
     /**
      * Convert month number to german month name
      *
@@ -166,9 +201,8 @@ class GalleryPublicController extends BaseGalleryController
             }
             return new RedirectResponse($this->generateUrl($route, $parameters));
         }
-
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetchResized(
+    
+        $image = $this->galleryImageManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::PREVIEW_DIMENSION, GalleryImage::PREVIEW_DIMENSION,
             ImageInterface::THUMBNAIL_INSET, 50
         );
@@ -204,9 +238,8 @@ class GalleryPublicController extends BaseGalleryController
             }
             return new RedirectResponse($this->generateUrl($route, $parameters));
         }
-
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetchResized(
+    
+        $image = $this->galleryImageManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
             ImageInterface::THUMBNAIL_INSET, 15
         );
@@ -234,9 +267,8 @@ class GalleryPublicController extends BaseGalleryController
         if (!in_array($event->getEid(), $request->getSession()->get('grantedGalleries', []))) {
             return new RedirectResponse($this->generateUrl('event_gallery', ['eid' => $event->getEid(), 'hash' => $hash]));
         }
-
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetchResized(
+    
+        $image = $this->galleryImageManager->fetchResized(
             $galleryImage->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
             ImageInterface::THUMBNAIL_INSET, 80
         );
@@ -265,9 +297,8 @@ class GalleryPublicController extends BaseGalleryController
         if (!in_array($event->getEid(), $request->getSession()->get('grantedGalleries', []))) {
             return new RedirectResponse($this->generateUrl('event_gallery', ['eid' => $event->getEid(), 'hash' => $hash]));
         }
-
-        $uploadManager = $this->get('app.gallery_image_manager');
-        $image         = $uploadManager->fetch($galleryImage->getFilename());
+    
+        $image = $this->galleryImageManager->fetch($galleryImage->getFilename());
 
         return ImageResponse::createFromRequest($image, $request);
     }

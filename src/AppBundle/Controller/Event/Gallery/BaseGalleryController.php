@@ -12,11 +12,58 @@
 namespace AppBundle\Controller\Event\Gallery;
 
 
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use AppBundle\Manager\UploadImageManager;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Routing\RouterInterface;
+use Twig\Environment;
 
-abstract class BaseGalleryController extends AbstractController
+abstract class BaseGalleryController
 {
+    use DoctrineAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait;
+    
+    /**
+     * kernel.secret
+     *
+     * @var string
+     */
+    private string $kernelSecret;
+    
+    /**
+     * app.gallery_image_manager
+     *
+     * @var UploadImageManager
+     */
+    protected UploadImageManager $galleryImageManager;
+    
+    /**
+     * BaseGalleryController constructor.
+     *
+     * @param string $kernelSecret
+     * @param UploadImageManager $galleryImageManager
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     */
+    public function __construct(
+        string $kernelSecret,
+        UploadImageManager $galleryImageManager,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig
+    )
+    {
+        $this->kernelSecret        = $kernelSecret;
+        $this->galleryImageManager = $galleryImageManager;
+        $this->doctrine            = $doctrine;
+        $this->router              = $router;
+        $this->twig                = $twig;
+    }
+    
+    
     /**
      * Generate gallery hash for transmitted event
      *
@@ -25,7 +72,7 @@ abstract class BaseGalleryController extends AbstractController
      */
     protected function galleryHash(Event $event)
     {
-        return sha1('gallery-hash-' . $this->getParameter('kernel.secret') . $event->getEid());
+        return sha1('gallery-hash-' . $this->kernelSecret . $event->getEid());
     }
-
+    
 }

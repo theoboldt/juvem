@@ -11,19 +11,59 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\ImageResponse;
+use AppBundle\Manager\UploadImageManager;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Twig\Environment;
 
 
-class PublicController extends AbstractController
+class PublicController
 {
-    use WaitingListFlashTrait;
-
+    use WaitingListFlashTrait, RenderingControllerTrait, RoutingControllerTrait, DoctrineAwareControllerTrait, FlashBagAwareControllerTrait;
+    
+    /**
+     * app.upload_image_manager
+     *
+     * @var UploadImageManager
+     */
+    private UploadImageManager $uploadImageManager;
+    
+    /**
+     * PublicController constructor.
+     *
+     * @param UploadImageManager $uploadImageManager
+     * @param Environment $twig
+     * @param RouterInterface $router
+     * @param ManagerRegistry $doctrine
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        UploadImageManager $uploadImageManager,
+        Environment $twig,
+        RouterInterface $router,
+        ManagerRegistry $doctrine,
+        SessionInterface $session
+    
+    )
+    {
+        $this->uploadImageManager = $uploadImageManager;
+        $this->twig               = $twig;
+        $this->router             = $router;
+        $this->doctrine           = $doctrine;
+        $this->session            = $session;
+    }
+    
     /**
      * Original image file for event image
      *
@@ -32,8 +72,7 @@ class PublicController extends AbstractController
      */
     public function eventImageOriginalAction(Request $request, Event $event)
     {
-        $uploadManager = $this->get('app.upload_image_manager');
-        $image         = $uploadManager->fetch($event->getImageFilename());
+        $image = $this->uploadImageManager->fetch($event->getImageFilename());
 
         return ImageResponse::createFromRequest($image, $request);
     }
@@ -47,8 +86,7 @@ class PublicController extends AbstractController
      */
     public function eventImageAction(Request $request, Event $event, $width, $height)
     {
-        $uploadManager = $this->get('app.upload_image_manager');
-        $image         = $uploadManager->fetchResized($event->getImageFilename(), $width, $height);
+        $image = $this->uploadImageManager->fetchResized($event->getImageFilename(), $width, $height);
 
         return ImageResponse::createFromRequest($image, $request);
     }
