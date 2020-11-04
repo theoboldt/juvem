@@ -9,13 +9,13 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.database.configuration.path: "%kernel.root_dir%/config/.my.cnf"
-    app.tmp.root.path: "%kernel.root_dir%/../var/tmp"
-    app.cache.root.path: "%kernel.root_dir%/../var/cache"
+    app.database.configuration.path: "%kernel.project_dir%/app/config/.my.cnf"
+    app.tmp.root.path: "%kernel.project_dir%/var/tmp"
+    app.cache.root.path: "%kernel.project_dir%/var/cache"
     app.cache.environment.path: "%app.cache.root.path%/%kernel.environment%"
     app.cache.nominatim_last_access.path: "%app.cache.environment.path%/nominatim_last_access"
-    app.web.root.path: "%kernel.root_dir%/../web"
-    app.data.root.path: "%kernel.root_dir%/../var/data"
+    app.web.root.path: "%kernel.project_dir%/web"
+    app.data.root.path: "%kernel.project_dir%/var/data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
 
 jms_serializer:
@@ -23,10 +23,10 @@ jms_serializer:
         directories:
             FOSUserBundle:
                 namespace_prefix: FOS\UserBundle
-                path: "%kernel.root_dir%/config/serializer/FOSUserBundle"
+                path: "%kernel.project_dir%/app/config/serializer/FOSUserBundle"
             AppBundle:
                 namespace_prefix: AppBundle
-                path: "%kernel.root_dir%/config/serializer/AppBundle"
+                path: "%kernel.project_dir%/app/config/serializer/AppBundle"
 
 framework:
     assets:
@@ -46,7 +46,7 @@ framework:
     translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: "%kernel.project_dir%/app/config/routing.yml"
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
@@ -88,15 +88,16 @@ twig:
         assetJsIntegrity: "%app.version.integrity.js%"
         assetJsVisIntegrity: "%app.version.integrity.js-vis%"
         customization: "@app.twig_global_customization"
-        kernelRootDir: "%kernel.root_dir%"
+        kernelRootDir: "%kernel.project_dir%/app"
         featureNewsletter: "%feature.newsletter%"
         featurePdfConversion: "%app.libreoffice_binary_path%"
         themeColor: "%customization.theme_color%"
         localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
         secureCacheDecider: '@app.secure_cache_decider'
         tab: '@app.twig_tab_index_skip'
+    default_path: '%kernel.project_dir%/app/templates'
     paths:
-        '%kernel.root_dir%/../config/templates': customization
+        '%kernel.project_dir%/config/templates': customization
     exception_controller: ~
 
 # Doctrine Configuration
@@ -109,12 +110,6 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-        # if using pdo_sqlite as your database driver:
-        #   1. add the path in parameters.yml
-        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        #   2. Uncomment database_path in parameters.yml.dist
-        #   3. Uncomment next line:
-        #     path:     "%database_path%"
         mapping_types:
             enum: string
         types:
@@ -146,7 +141,7 @@ stof_doctrine_extensions:
 
 doctrine_migrations:
     migrations_paths:
-        'Application\Migrations': "%kernel.root_dir%/Migrations"
+        'Application\Migrations': "%kernel.project_dir%/app/Migrations"
     organize_migrations: false
     storage:
         table_storage:
@@ -165,21 +160,21 @@ vich_uploader:
     mappings:
         event_image:
             uri_prefix:         /uploads/event
-            upload_destination: "%kernel.root_dir%/../data/uploads/event"
+            upload_destination: "%kernel.project_dir%/data/uploads/event"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         gallery_image:
             uri_prefix:         /uploads/gallery
-            upload_destination: "%kernel.root_dir%/../data/uploads/gallery"
+            upload_destination: "%kernel.project_dir%/data/uploads/gallery"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         invoice_template:
             uri_prefix:         /uploads/invoice_template
-            upload_destination: "%kernel.root_dir%/../data/uploads/invoice_template"
+            upload_destination: "%kernel.project_dir%/data/uploads/invoice_template"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
             delete_on_update:   true
