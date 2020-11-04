@@ -9,7 +9,7 @@
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3">
             <h3><a href="{{ path('homepage') }}">Veranstaltungen</a></h3>
-            {{ render(controller('AppBundle:Event/Public:listActiveEventLinks')) }}
+            {{ render(controller('AppBundle\\Controller\\Event\\PublicController::listActiveEventLinksAction')) }}
         </div>
         {% if featureNewsletter %}
         <div class="col-xs-6 col-sm-4 col-md-3">
