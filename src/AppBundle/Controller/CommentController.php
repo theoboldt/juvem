@@ -85,7 +85,7 @@ class CommentController extends AbstractController
 
         $listHtml = '';
         foreach ($list as $listComment) {
-            $listHtml .= $this->container->get('templating')
+            $listHtml .= $this->container->get('twig')
                                          ->render(
                                              'common/comment-content.html.twig',
                                              ['comment' => $listComment]
