@@ -77,10 +77,17 @@ final class Version20201102100000 extends AbstractMigration
     private function moveFileIfExists(string $sourcePath, string $targetPath, string $fileName): void
     {
         if (file_exists($sourcePath . '/' . $fileName)) {
-           $this->addSql('-- "Moved '.$fileName.'"');
-            if (!rename($sourcePath . '/' . $fileName, $targetPath . '/' . $fileName)) {
+            if (file_exists($targetPath . '/' . $fileName)) {
                 throw new \RuntimeException(
-                    sprintf('Failed to move file "%s" from "%s" to "%s"', $fileName, $sourcePath, $targetPath)
+                    sprintf('Cannot move file "%s" from "%s" to "%s", target already existing', $fileName, $sourcePath, $targetPath)
+                );
+            }   
+     
+           $this->addSql('-- "Moved '.$fileName.'"');
+           exec('mv ' . $sourcePath . '/' . $fileName . ' ' . $targetPath . '/' . $fileName, $output, $return);
+            if ($return !== 0) {
+                throw new \RuntimeException(
+                    sprintf('Failed to move file "%s" from "%s" to "%s"; Output %s', $fileName, $sourcePath, $targetPath, implode(', ', $output))
                 );
             }
         } else {
