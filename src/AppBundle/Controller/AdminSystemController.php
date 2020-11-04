@@ -10,13 +10,14 @@
 
 namespace AppBundle\Controller;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class AdminSystemController extends AbstractController
 {
@@ -25,85 +26,61 @@ class AdminSystemController extends AbstractController
      *
      * @Route("/admin/cache/clear", name="admin_cache_clean", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function cacheCleanAction()
+    public function cacheCleanAction(Request $request)
     {
-        $error           = false;
-        $removeDirectory = function ($dir) use ($error) {
-            try {
-                $files = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
-                    \RecursiveIteratorIterator::CHILD_FIRST
-                );
-            
-                foreach ($files as $fileinfo) {
-                    $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-                    $todo($fileinfo->getRealPath());
-                }
-            
-                rmdir($dir);
-            } catch (\Exception $e) {
-                $error = true;
-                $this->addFlash(
-                    'error',
-                    $e->getMessage()
-                );
-            }
-        };
+        $rootDirPath   = $this->getParameter('app.cache.root.path');
+        $webPath       = $this->getParameter('app.web.root.path');
+        $hostAndScheme = $request->getSchemeAndHttpHost();
+ 
+        $script = '<?php
+$rootDirPath = "__ROOT_DIR__";
+$webPath = "__WEB_PATH__";
+$hostAndScheme = "__HOST_AND_SCHEME_";
 
-        $removeDirectory('../app/cache/dev');
-        $removeDirectory('../app/cache/prod');
-        
-        if ($error) {
-            return new RedirectResponse('/admin/cache/clear/result');
+$removeDirectory = function ($dir) use ($webPath) {
+    $parent = dirname($dir);
+    $target = $parent."/".basename($dir).time();
+    if (!file_exists($parent) || !file_exists($dir)) {
+        return;
+    }
+    if (rename($dir, $target)) {
+        $dir = $target;
+    }
+    $files = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+        \RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $fileinfo) {
+        $todo = ($fileinfo->isDir() ? "rmdir" : "unlink");
+        $todo($fileinfo->getRealPath());
+    }
+
+    rmdir($dir);
+};
+$removeDirectory($rootDirPath . "/dev");
+$removeDirectory($rootDirPath . "/prod");
+unlink($webPath."/clear_cache.php");
+header("Location: $hostAndScheme");
+';
+        $script = strtr(
+            $script,
+            [
+                '__ROOT_DIR__'       => $rootDirPath,
+                '__WEB_PATH__'       => $webPath,
+                '__HOST_AND_SCHEME_' => $hostAndScheme
+            ],
+        );
+        if (!file_put_contents($webPath.'/clear_cache.php', $script)) {
+            throw new \RuntimeException('Failed to place '.$webPath.'/clear_cache.php');
         }
         
-        return $this->redirectToRoute('admin_cache_clean_result');
+        return new RedirectResponse('/clear_cache.php');
     }
-    /**
-     * Clear cache
-     *
-     * @Route("/admin/cache/clear/result", name="admin_cache_clean_result", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function cacheCleanedAction()
-    {
-        $this->addFlash(
-            'info',
-            'Prod/Dev cache cleaned'
-        );
-        return $this->redirect('/');
-    }
-
-    /**
-     * Perform cache warmup
-     *
-     * @Route("/admin/cache/warmup", name="admin_cache_warmup")
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function cacheWarmupAction()
-    {
-        $kernel      = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $input  = new ArrayInput(
-            [
-                'command' => 'cache:warmup'
-            ]
-        );
-        $output = new BufferedOutput();
-        $application->run($input, $output);
-
-        $content = $output->fetch();
-
-        $this->addFlash(
-            'info',
-            $content
-        );
-        return $this->redirect('/');
-    }
-
+    
     /**
      * Display database status or update database
      *
@@ -137,7 +114,7 @@ class AdminSystemController extends AbstractController
         $content = $output->fetch();
 
         $this->addFlash('info', 'Database: <pre>' . nl2br($content) . '</pre>');
-        return $this->redirect('/');
+        return new RedirectResponse('/');
     }
 
     /**
@@ -165,6 +142,6 @@ class AdminSystemController extends AbstractController
         $content = $output->fetch();
 
         $this->addFlash('info', 'Migrations: <pre>' . nl2br($content).'</pre>');
-        return $this->redirect('/');
+        return new RedirectResponse('/');
     }
 }
