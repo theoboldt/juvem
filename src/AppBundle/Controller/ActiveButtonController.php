@@ -134,7 +134,7 @@ class ActiveButtonController extends AbstractController
         }
         $valuePerformed = $entity->$property();
 
-        $html = $this->container->get('templating')
+        $html = $this->container->get('twig')
                                 ->render(
                                     'common/active-button-content.html.twig',
                                     [
