@@ -17,6 +17,7 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentatio
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
 
@@ -28,7 +29,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  */
-class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface, HumanInterface
+class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface, HumanInterface, UserInterface
 {
     use CreatedModifiedTrait, HumanTrait;
 
