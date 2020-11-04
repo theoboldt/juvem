@@ -18,19 +18,26 @@ class DefaultControllerTest extends WebTestCase
 {
     public static function setUpBeforeClass(): void
     {
-        $kernel = static::bootKernel();
+        static::bootKernel();
         /** @var EntityManager $doctrine */
-        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $em = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
         /** @var Connection $connection */
         $connection = $em->getConnection();
         try {
             $connection->exec('SELECT 1 FROM flash');
         } catch (\Exception $e) {
             system('php ' . __DIR__ . '/../../app/console doctrine:database:create -q -n');
+        } finally {
+            static::ensureKernelShutdown();
         }
         system('php ' . __DIR__ . '/../../app/console doctrine:schema:update --force -q -n');
     }
-
+    
+    public function tearDown(): void
+    {
+        static::ensureKernelShutdown();
+    }
+    
     public function testAvailabilityHomepage()
     {
         $client = static::createClient();
@@ -41,7 +48,7 @@ class DefaultControllerTest extends WebTestCase
             200, $client->getResponse()->getStatusCode()
         );
         $this->assertStringContainsString(
-            'Veranstaltung', $crawler->filter('#page-body h1')->text()
+            'Veranstaltung', $crawler->filter('#page-body h1')->text(null, true)
         );
     }
 
@@ -56,7 +63,7 @@ class DefaultControllerTest extends WebTestCase
         );
         $this->assertStringContainsString(
             'Datenschutzerklärung', $crawler->filter('#page-body h1')
-                                            ->text()
+                                            ->text(null, true)
         );
     }
 
@@ -70,7 +77,7 @@ class DefaultControllerTest extends WebTestCase
             200, $client->getResponse()->getStatusCode()
         );
         $this->assertStringContainsString(
-            'Impressum', $crawler->filter('#page-body h1')->text()
+            'Impressum', $crawler->filter('#page-body h1')->text(null, true)
         );
     }
     
