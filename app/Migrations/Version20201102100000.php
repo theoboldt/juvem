@@ -29,7 +29,7 @@ final class Version20201102100000 extends AbstractMigration
 
         umask(0);
         if (!file_exists($targetPath)) {
-            if (mkdir($targetPath, 0777, true)) {
+            if (!mkdir($targetPath, 0777, true)) {
                 throw new \RuntimeException('Failed to create ' . $targetPath);
             }
         }
@@ -54,7 +54,7 @@ final class Version20201102100000 extends AbstractMigration
         $sourcePath = __DIR__ . '/../../config/templates';
         umask(0);
         if (!file_exists($targetPath)) {
-            if (mkdir($targetPath, 0777, true)) {
+            if (!mkdir($targetPath, 0777, true)) {
                 throw new \RuntimeException('Failed to create ' . $targetPath);
             }
         }
@@ -82,7 +82,7 @@ final class Version20201102100000 extends AbstractMigration
     {
         if (file_exists($sourcePath . '/' . $fileName)) {
             if (!file_exists($targetPath)) {
-                if (mkdir($targetPath, 0777, true)) {
+                if (!mkdir($targetPath, 0777, true)) {
                     throw new \RuntimeException('Failed to create ' . $targetPath);
                 }
             }
