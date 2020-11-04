@@ -11,6 +11,12 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
@@ -31,24 +37,112 @@ use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
+use AppBundle\Manager\Payment\PriceManager;
+use AppBundle\Manager\UploadImageManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
 
-class AdminController extends AbstractController
+class AdminController
 {
+    use DoctrineAwareControllerTrait, RenderingControllerTrait, FlashBagAwareControllerTrait, RoutingControllerTrait, FormAwareControllerTrait, AuthorizationAwareControllerTrait;
+    
+    /**
+     * app.payment_manager
+     *
+     * @var PaymentManager
+     */
+    private PaymentManager $paymentManager;
+    
+    /**
+     * app.price_manager
+     *
+     * @var PriceManager
+     */
+    private PriceManager $priceManager;
+    
+    /**
+     * app.participation_manager
+     *
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
+    /**
+     * app.upload_image_manager
+     *
+     * @var UploadImageManager
+     */
+    private UploadImageManager $uploadImageManager;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * AdminController constructor.
+     *
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param PaymentManager $paymentManager
+     * @param PriceManager $priceManager
+     * @param ParticipationManager $participationManager
+     * @param UploadImageManager $uploadImageManager
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     */
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        PaymentManager $paymentManager,
+        PriceManager $priceManager,
+        ParticipationManager $participationManager,
+        UploadImageManager $uploadImageManager,
+        CsrfTokenManagerInterface $csrfTokenManager
+    )
+    {
+        $this->paymentManager       = $paymentManager;
+        $this->priceManager         = $priceManager;
+        $this->participationManager = $participationManager;
+        $this->uploadImageManager   = $uploadImageManager;
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->doctrine             = $doctrine;
+        $this->router               = $router;
+        $this->twig                 = $twig;
+        $this->formFactory          = $formFactory;
+    }
+    
     
     /**
      * Page for list of events
@@ -83,8 +177,9 @@ class AdminController extends AbstractController
     public function listDataAction(Request $request)
     {
         $repository      = $this->getDoctrine()->getRepository(Event::class);
+        $user            = $this->getUser();
         $eventEntityList = $repository->findAllWithCounts(
-            true, true, !$this->isGranted('ROLE_ADMIN_EVENT_GLOBAL') ? $this->getUser() : null
+            true, true, (!$this->isGranted('ROLE_ADMIN_EVENT_GLOBAL') && ($user instanceof User)) ? $user : null
         );
         
         $glyphicon = '<span class="glyphicon glyphicon-%s" aria-hidden="true"></span> ';
@@ -312,7 +407,7 @@ class AdminController extends AbstractController
     {
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participants            = $participationRepository->participantsList($event, null, false, false);
-        $paymentManager          = $this->get('app.payment_manager');
+        $paymentManager          = $this->paymentManager;
         
         $expectedVolume   = 0;
         $additionalVolume = 0;
@@ -409,7 +504,7 @@ class AdminController extends AbstractController
     {
         $variableRepository = $this->getDoctrine()->getRepository(EventSpecificVariable::class);
         
-        $priceManager     = $this->get('app.price_manager');
+        $priceManager     = $this->priceManager;
         $attributes       = $priceManager->attributesWithFormula();
         $variableResolver = $priceManager->resolver();
         
@@ -557,7 +652,7 @@ class AdminController extends AbstractController
             $recipient = $data['recipient'];
             unset($data['recipient']);
             
-            $participationManager = $this->get('app.participation_manager');
+            $participationManager = $this->participationManager;
             $participationManager->mailEventParticipants($data, $event, $recipient);
             $this->addFlash(
                 'info',
@@ -645,7 +740,7 @@ class AdminController extends AbstractController
         $valueNew = $request->get('valueNew');
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('Eventsubscribe' . $eid)) {
             throw new InvalidTokenHttpException();
         }
@@ -676,7 +771,7 @@ class AdminController extends AbstractController
      */
     public function uploadEventImageAction(Request $request, string $filename)
     {
-        $uploadManager = $this->get('app.upload_image_manager');
+        $uploadManager = $this->uploadImageManager;
         $image         = $uploadManager->fetch($filename);
         
         if (!$image->exists()) {
@@ -764,7 +859,7 @@ class AdminController extends AbstractController
         $token = $request->get('_token');
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('filter-specific-age-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
@@ -904,15 +999,4 @@ class AdminController extends AbstractController
         
         return $index - 1;
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public static function getSubscribedServices()
-    {
-        $services                        = parent::getSubscribedServices();
-        $services['app.payment_manager'] = PaymentManager::class;
-        return $services;
-    }
-    
 }

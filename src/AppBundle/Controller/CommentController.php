@@ -15,17 +15,50 @@ use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\ParticipationComment;
 use AppBundle\InvalidTokenHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Manager\CommentManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class CommentController extends AbstractController
+class CommentController
 {
-
+    use RenderingControllerTrait;
+    
+    /**
+     * app.comment_manager
+     *
+     * @var CommentManager
+     */
+    private CommentManager $commentManager;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * CommentController constructor.
+     *
+     * @param Environment $twig
+     * @param CommentManager $commentManager
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     */
+    public function __construct(
+        Environment $twig, CommentManager $commentManager, CsrfTokenManagerInterface $csrfTokenManager
+    )
+    {
+        $this->twig             = $twig;
+        $this->commentManager   = $commentManager;
+        $this->csrfTokenManager = $csrfTokenManager;
+    }
+    
     /**
      * Handler for add/edit comment action
      *
@@ -43,11 +76,11 @@ class CommentController extends AbstractController
         $contentNew = $request->get('content');
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('Comment')) {
             throw new InvalidTokenHttpException();
         }
-        $manager = $this->container->get('app.comment_manager');
+        $manager = $this->commentManager;
         $comment = null;
 
         if ($cid) {
@@ -85,11 +118,10 @@ class CommentController extends AbstractController
 
         $listHtml = '';
         foreach ($list as $listComment) {
-            $listHtml .= $this->container->get('twig')
-                                         ->render(
-                                             'common/comment-content.html.twig',
-                                             ['comment' => $listComment]
-                                         );
+            $listHtml .= $this->twig->render(
+                'common/comment-content.html.twig',
+                ['comment' => $listComment]
+            );
         }
 
         return new JsonResponse(['comments' => $listHtml, 'count' => count($list)]);

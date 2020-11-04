@@ -12,12 +12,19 @@ namespace AppBundle\Controller\Event\Participation;
 
 use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Entity\User;
 use AppBundle\Form\MoveParticipationType;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignRelatedParticipantType;
@@ -25,24 +32,116 @@ use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\CommentManager;
+use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PaymentSuggestionManager;
 use AppBundle\Manager\RelatedParticipantsFinder;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class AdminSingleController extends AbstractController
+class AdminSingleController
 {
+    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait, FormAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait, FlashBagAwareControllerTrait;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * @var PaymentManager
+     */
+    private PaymentManager $paymentManager;
+    
+    /**
+     * @var PaymentSuggestionManager
+     */
+    private PaymentSuggestionManager $paymentSuggestionManager;
+    
+    /**
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
+    /**
+     * @var RelatedParticipantsFinder
+     */
+    private RelatedParticipantsFinder $relatedParticipantsFinder;
+    
+    /**
+     * app.comment_manager
+     *
+     * @var CommentManager
+     */
+    private CommentManager $commentManager;
+
+    /**
+     * AdminSingleController constructor.
+     *
+     * @param Environment $twig
+     * @param RouterInterface $router
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param FormFactoryInterface $formFactory
+     * @param ManagerRegistry $doctrine
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param PaymentManager $paymentManager
+     * @param ParticipationManager $participationManager
+     * @param PaymentSuggestionManager $paymentSuggestionManager
+     * @param RelatedParticipantsFinder $relatedParticipantsFinder
+     * @param CommentManager $commentManager
+     */
+    public function __construct(
+        Environment $twig,
+        RouterInterface $router,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        FormFactoryInterface $formFactory,
+        ManagerRegistry $doctrine,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        PaymentManager $paymentManager,
+        ParticipationManager $participationManager,
+        PaymentSuggestionManager $paymentSuggestionManager,
+        RelatedParticipantsFinder $relatedParticipantsFinder,
+        CommentManager $commentManager
+    )
+    {
+        $this->twig                 = $twig;
+        $this->router               = $router;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->formFactory          = $formFactory;
+        $this->doctrine             = $doctrine;
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->paymentManager       = $paymentManager;
+        $this->participationManager = $participationManager;
+        
+        $this->paymentSuggestionManager  = $paymentSuggestionManager;
+        $this->relatedParticipantsFinder = $relatedParticipantsFinder;
+        $this->commentManager            = $commentManager;
+    }
+    
+    
+    
     /**
      * Details of one participation including all participants
      *
@@ -107,12 +206,13 @@ class AdminSingleController extends AbstractController
         $formMoveParticipation->handleRequest($request);
         if ($formMoveParticipation->isSubmitted() && $formMoveParticipation->isValid()) {
 
-            $participationNew = $this->get('app.participation_manager')->moveParticipation(
+            $user = $this->getUser();
+            $participationNew = $this->participationManager->moveParticipation(
                 $participation,
                 $formMoveParticipation->get('targetEvent')->getData(),
                 $formMoveParticipation->get('commentOldParticipation')->getData(),
                 $formMoveParticipation->get('commentNewParticipation')->getData(),
-                $this->getUser()
+                $user instanceof User ? $user : null
             );
             return $this->redirectToRoute(
                 'event_participation_detail',
@@ -182,7 +282,7 @@ class AdminSingleController extends AbstractController
             $phoneNumber       = $phoneNumberEntity->getNumber();
             $phoneNumberList[] = $phoneNumber;
         }
-        $commentManager = $this->container->get('app.comment_manager');
+        $commentManager = $this->commentManager;
     
         $similarParticipants     = [];
         $unconfirmedParticipants = [];
@@ -202,9 +302,9 @@ class AdminSingleController extends AbstractController
         }
 
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         /** @var PaymentSuggestionManager $paymentSuggestions */
-        $paymentSuggestionsManager = $this->get('app.payment_suggestion_manager');
+        $paymentSuggestionsManager = $this->paymentSuggestionManager;
         $priceSuggestions          = $paymentSuggestionsManager->priceSuggestionsForParticipation(
             $participant->getParticipation()
         );
@@ -257,7 +357,7 @@ class AdminSingleController extends AbstractController
         $participation = $this->validateParticipantsAccessAndLoad($participation);
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('confirmation'.$participation->getPid())) {
             throw new InvalidTokenHttpException();
         }
@@ -278,7 +378,7 @@ class AdminSingleController extends AbstractController
         $em->flush();
     
         if ($action === 'confirmnotify') {
-            $participationManager = $this->get('app.participation_manager');
+            $participationManager = $this->participationManager;
             $participationManager->mailParticipationConfirmed($participation, $participation->getEvent());
         }
 
@@ -331,15 +431,15 @@ class AdminSingleController extends AbstractController
         );
 
         $form->handleRequest($request);
+        $user = $this->getUser();
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var \AppBundle\Entity\User $user */
-            $user = $this->getUser();
 
-            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
+            $managedParticipation = $this->participationManager->receiveParticipationRequest(
                 $participation, $user
             );
 
-            //$participationManager = $this->get('app.participation_manager');
+            //$participationManager = $this->participationManager;
             //$participationManager->mailParticipationRequested($participation, $event); //no mails
 
             return $this->redirectToRoute(
@@ -347,7 +447,6 @@ class AdminSingleController extends AbstractController
             );
         }
 
-        $user           = $this->getUser();
         $participations = [];
         if ($user) {
             $participations = $user->getAssignedParticipations();
@@ -390,11 +489,11 @@ class AdminSingleController extends AbstractController
         );
 
         $form->handleRequest($request);
+        $user = $this->getUser();
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var \AppBundle\Entity\User $user */
-            $user = $this->getUser();
 
-            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
+            $managedParticipation = $this->participationManager->receiveParticipationRequest(
                 $participation, $user
             );
 
@@ -403,7 +502,6 @@ class AdminSingleController extends AbstractController
             );
         }
 
-        $user           = $this->getUser();
         $participations = [];
         if ($user) {
             $participations = $user->getAssignedParticipations();
@@ -438,7 +536,7 @@ class AdminSingleController extends AbstractController
         $term  = (string)$request->get('term');
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('prefill-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
@@ -476,7 +574,7 @@ class AdminSingleController extends AbstractController
         $pids  = explode(';', $request->get('pids', ''));
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('prefill-' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
@@ -549,9 +647,8 @@ class AdminSingleController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em                   = $this->getDoctrine()->getManager();
-            $managedParticipation = $em->merge($participation);
-            $managedParticipation->setModifiedAtNow();
-            $em->persist($managedParticipation);
+            $participation->setModifiedAtNow();
+            $em->persist($participation);
             $em->flush();
             $this->addFlash(
                 'success',
@@ -782,7 +879,7 @@ class AdminSingleController extends AbstractController
         $statusFormatter = ParticipantStatus::formatter();
 
         /** @var RelatedParticipantsFinder $repository */
-        $finder       = $this->get('app.related_participants_finder');
+        $finder       = $this->relatedParticipantsFinder;
         $participants = $finder->proposedParticipants($fillout);
 
         /** @var ParticipantFilloutValue $value */

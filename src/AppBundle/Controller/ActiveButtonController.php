@@ -13,17 +13,54 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\InvalidTokenHttpException;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
 
-class ActiveButtonController extends AbstractController
+class ActiveButtonController
 {
     
+    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait, RenderingControllerTrait;
+    
     const USER_ID_SELF = '__self__';
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * ActiveButtonController constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param Environment $twig
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     */
+    public function __construct(
+        ManagerRegistry $doctrine,
+        Environment $twig,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        CsrfTokenManagerInterface $csrfTokenManager
+    )
+    {
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->doctrine             = $doctrine;
+        $this->twig                 = $twig;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+    }
     
     /**
      * Detail page for one single event
@@ -67,7 +104,7 @@ class ActiveButtonController extends AbstractController
         }
 
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken($entityName . $property . $entityId)) {
             throw new InvalidTokenHttpException();
         }
@@ -133,16 +170,15 @@ class ActiveButtonController extends AbstractController
             $em->flush();
         }
         $valuePerformed = $entity->$property();
-
-        $html = $this->container->get('twig')
-                                ->render(
-                                    'common/active-button-content.html.twig',
-                                    [
-                                        'isXs'            => $isXs,
-                                        'buttonIsEnabled' => $valuePerformed,
-                                        'buttons'         => $buttons
-                                    ]
-                                );
+    
+        $html = $this->twig->render(
+            'common/active-button-content.html.twig',
+            [
+                'isXs'            => $isXs,
+                'buttonIsEnabled' => $valuePerformed,
+                'buttons'         => $buttons
+            ]
+        );
 
         return new JsonResponse(
             array(

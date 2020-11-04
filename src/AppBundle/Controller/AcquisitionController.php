@@ -15,18 +15,54 @@ use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Form\AcquisitionFormulaType;
 use AppBundle\Form\AcquisitionType;
 use AppBundle\Form\GroupType;
+use AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Twig\Environment;
 
-class AcquisitionController extends AbstractController
+class AcquisitionController
 {
+    
+    use RenderingControllerTrait, DoctrineAwareControllerTrait, FormAwareControllerTrait, RoutingControllerTrait;
+    
+    /**
+     * @var RepositoryFormulaVariableProvider
+     */
+    private RepositoryFormulaVariableProvider $variableProvider;
+    
+    /**
+     * AcquisitionController constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param RepositoryFormulaVariableProvider $variableProvider
+     */
+    public function __construct(
+        ManagerRegistry $doctrine,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        RouterInterface $router,
+        RepositoryFormulaVariableProvider $variableProvider
+    )
+    {
+        $this->doctrine         = $doctrine;
+        $this->twig             = $twig;
+        $this->formFactory      = $formFactory;
+        $this->router           = $router;
+        $this->variableProvider = $variableProvider;
+    }
+    
     /**
      * @Route("/admin/acquisition/list", name="acquisition_list")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -35,7 +71,6 @@ class AcquisitionController extends AbstractController
     {
         return $this->render('acquisition/list.html.twig');
     }
-
 
     /**
      * Data provider for event list grid
@@ -120,10 +155,8 @@ class AcquisitionController extends AbstractController
     public function editFormulaAction(Request $request, Attribute $attribute)
     {
         $form             = $this->createForm(AcquisitionFormulaType::class, $attribute);
-        $variableProvider = $this->get('app.price.formula_variable_provider');
+        $variableProvider = $this->variableProvider;
 
-        #$resolver = $this->get('app.payment.formula_resolver');
-    #$dependencies = $resolver->getDependenciesFor($attribute);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -197,10 +230,9 @@ class AcquisitionController extends AbstractController
     public function newAction(Request $request)
     {
         $attribute = new Attribute();
-
-        $form              = $this->createForm(AcquisitionType::class, $attribute);
-        $repository        = $this->getDoctrine()->getRepository(Attribute::class);
-
+    
+        $form = $this->createForm(AcquisitionType::class, $attribute);
+    
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

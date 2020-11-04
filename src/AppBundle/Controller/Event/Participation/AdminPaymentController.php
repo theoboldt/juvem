@@ -12,30 +12,84 @@
 namespace AppBundle\Controller\Event\Participation;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
+use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Invoice\InvoiceManager;
+use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\SerializeJsonResponse;
 use AppBundle\Twig\Extension\PaymentInformation;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use AppBundle\Entity\Participant;
-use AppBundle\InvalidTokenHttpException;
-use AppBundle\Manager\Payment\PaymentManager;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-class AdminPaymentController extends AbstractController
+class AdminPaymentController
 {
+    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait;
     
     const ACTION_PAYMENT_RECEIVED = 'paymentReceived';
     const ACTION_PRICE_SET        = 'newPrice';
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * app.payment.invoice_manager
+     *
+     * @var InvoiceManager
+     */
+    private InvoiceManager $invoiceManager;
+    
+    /**
+     * app.payment_manager
+     *
+     * @var PaymentManager
+     */
+    private PaymentManager $paymentManager;
+    
+    /**
+     * AdminPaymentController constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param InvoiceManager $invoiceManager
+     * @param PaymentManager $paymentManager
+     */
+    public function __construct(
+        ManagerRegistry $doctrine,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        InvoiceManager $invoiceManager,
+        PaymentManager $paymentManager
+    )
+    {
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->invoiceManager       = $invoiceManager;
+        $this->paymentManager       = $paymentManager;
+        $this->doctrine             = $doctrine;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+    }
     
     
     /**
@@ -53,14 +107,14 @@ class AdminPaymentController extends AbstractController
         $description = $request->get('description');
         
         /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('Participationprice')) {
             throw new InvalidTokenHttpException();
         }
         $participants = $this->extractParticipantsFromAid($aids, 'participants_edit');
         
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         $price          = PaymentManager::convertEuroToCent($value);
         
         switch ($action) {
@@ -123,7 +177,7 @@ class AdminPaymentController extends AbstractController
             $priceSumCent += $summand['value_cent'];
         }
         /** @var InvoiceManager $invoiceManager */
-        $invoiceManager = $this->get('app.payment.invoice_manager');
+        $invoiceManager = $this->invoiceManager;
         $participant    = reset($participants);
         
         return [
@@ -146,7 +200,7 @@ class AdminPaymentController extends AbstractController
     private function paymentHistory(array $participants)
     {
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         $paymentEvents  = $paymentManager->getPaymentHistoryForParticipantList($participants);
         $flatEvents     = [];
         
@@ -178,7 +232,7 @@ class AdminPaymentController extends AbstractController
     private function getParticipantsPriceTagList(array $participants)
     {
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         /** @var Participant $participant */
         
         $result = [];
@@ -223,7 +277,7 @@ class AdminPaymentController extends AbstractController
     private function getParticipantsToPayList(array $participants)
     {
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         /** @var Participant $participant */
         
         $detailedValues = [];

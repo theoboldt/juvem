@@ -10,33 +10,120 @@
 
 namespace AppBundle\Controller\Event;
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
-
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Entity\User;
 use AppBundle\Export\EmployeesExport;
 use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
 use AppBundle\Form\ImportEmployeesType;
 use AppBundle\Form\MoveEmployeeType;
 use AppBundle\JsonResponse;
+use AppBundle\Manager\CommentManager;
+use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\ResponseHelper;
 use AppBundle\Security\EventVoter;
+use AppBundle\Twig\GlobalCustomization;
+use Doctrine\Persistence\ManagerRegistry;
 use libphonenumber\PhoneNumberUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
 
-class EmployeeController extends AbstractController
+class EmployeeController
 {
+    use RenderingControllerTrait, DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait, FormAwareControllerTrait, RoutingControllerTrait, FlashBagAwareControllerTrait;
+    
+    /**
+     * Comment provider
+     *
+     * @var CommentManager
+     */
+    private $commentManager;
+
+    /**
+     * Payment manager
+     *
+     * @var PaymentManager
+     */
+    protected $paymentManager;
+    
+    /**
+     * app.participation_manager
+     *
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
+    /**
+     * app.twig_global_customization
+     *
+     * @var GlobalCustomization
+     */
+    private GlobalCustomization $twigGlobalCustomization;
+    
+    /**
+     * AdminController constructor.
+     *
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param SessionInterface $session
+     * @param PaymentManager $paymentManager
+     * @param ParticipationManager $participationManager
+     * @param CommentManager $commentManager
+     * @param GlobalCustomization $twigGlobalCustomization
+     */
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        SessionInterface $session,
+        PaymentManager $paymentManager,
+        ParticipationManager $participationManager,
+        CommentManager $commentManager,
+        GlobalCustomization $twigGlobalCustomization
+    )
+    {
+        $this->paymentManager          = $paymentManager;
+        $this->participationManager    = $participationManager;
+        $this->authorizationChecker    = $authorizationChecker;
+        $this->tokenStorage            = $tokenStorage;
+        $this->doctrine                = $doctrine;
+        $this->router                  = $router;
+        $this->twig                    = $twig;
+        $this->formFactory             = $formFactory;
+        $this->session                 = $session;
+        $this->commentManager          = $commentManager;
+        $this->twigGlobalCustomization = $twigGlobalCustomization;
+    }
+    
     /**
      * Page for list of employees of a single event
      *
@@ -67,8 +154,9 @@ class EmployeeController extends AbstractController
         $repository = $this->getDoctrine()->getRepository(Employee::class);
         $employees  = $repository->findForEvent($event);
         
+        $user   = $this->getUser();
         $export = new EmployeesExport(
-            $this->get('app.twig_global_customization'), $event, $employees, $this->getUser()
+            $this->twigGlobalCustomization, $event, $employees, (($user instanceof User) ? $user : null)
         );
         $export->setMetadata();
         $export->process();
@@ -156,7 +244,7 @@ class EmployeeController extends AbstractController
      */
     public function detailAction(Event $event, Employee $employee, Request $request)
     {
-        $commentManager = $this->container->get('app.comment_manager');
+        $commentManager = $this->commentManager;
 
         $formAction = $this->createFormBuilder()
                            ->add('action', HiddenType::class)
@@ -190,13 +278,13 @@ class EmployeeController extends AbstractController
         );
         $formMoveEmployee->handleRequest($request);
         if ($formMoveEmployee->isSubmitted() && $formMoveEmployee->isValid()) {
-            
-            $employeeNew = $this->get('app.participation_manager')->moveEmployee(
+            $user        = $this->getUser();
+            $employeeNew = $this->participationManager->moveEmployee(
                 $employee,
                 $formMoveEmployee->get('targetEvent')->getData(),
                 $formMoveEmployee->get('commentOldEmployee')->getData(),
                 $formMoveEmployee->get('commentNewEmployee')->getData(),
-                $this->getUser()
+                (($user instanceof User) ? $user : null)
             );
             return $this->redirectToRoute(
                 'admin_employee_detail',
@@ -225,7 +313,7 @@ class EmployeeController extends AbstractController
         $similarEmployees   = $employeeRepository->relatedEmployees($employee);
 
         /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->get('app.payment_manager');
+        $paymentManager = $this->paymentManager;
         $priceTag       = $paymentManager->getEntityPriceTag($employee);
         $summands       = $priceTag->getSummands();
 
@@ -317,8 +405,7 @@ class EmployeeController extends AbstractController
                 $excludePredecessorList[] = $targetEventId;
                 continue;
             }
-            if ($this->get('security.authorization_checker')
-                     ->isGranted(EventVoter::EMPLOYEES_READ, $employee->getEvent())
+            if ($this->isGranted(EventVoter::EMPLOYEES_READ, $employee->getEvent())
             ) {
                 $employees[$employee->getGid()] = $employee;
             }

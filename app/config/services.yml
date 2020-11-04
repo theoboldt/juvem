@@ -200,6 +200,7 @@ services:
         public: true
     app.payment_manager:
         alias: AppBundle\Manager\Payment\PaymentManager
+
     AppBundle\Manager\Payment\PaymentManager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
@@ -207,21 +208,28 @@ services:
             - '@app.price_manager'
             - '@security.token_storage'
         public: true
+
     app.payment.expression_language_provider:
-        class: AppBundle\Manager\Payment\ExpressionLanguageProvider
+        alias: AppBundle\Manager\Payment\ExpressionLanguageProvider
+    AppBundle\Manager\Payment\ExpressionLanguageProvider:
         arguments:
             - "%app.cache.environment.path%/fc/payment"
+
     app.price_manager:
-        class: AppBundle\Manager\Payment\PriceManager
+        alias: AppBundle\Manager\Payment\PriceManager
+    AppBundle\Manager\Payment\PriceManager:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@app.payment.expression_language_provider'
         public: true
+
     app.price.formula_variable_provider:
-        class: AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider
+        alias: AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider
+    AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider:
         arguments:
             - '@doctrine.orm.entity_manager'
         public: true
+
     AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormulaValidator:
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -286,8 +294,10 @@ services:
             - '@app.pdf_converter_service'
         tags:
             - { name: jms_serializer.event_subscriber}
+
     app.related_participants_finder:
-        class: AppBundle\Manager\RelatedParticipantsFinder
+        alias: AppBundle\Manager\RelatedParticipantsFinder
+    AppBundle\Manager\RelatedParticipantsFinder:
         arguments:
             - "%app.tmp.root.path%"
             - '@doctrine.orm.entity_manager'
@@ -475,6 +485,12 @@ services:
             $uploadImageManager: '@app.upload_image_manager'
         tags: [ 'controller.service_arguments' ]
 
+    AppBundle\Controller\Event\AdminController:
+        arguments:
+            $uploadImageManager: '@app.upload_image_manager'
+        tags: [ 'controller.service_arguments' ]
+
+
     AppBundle\Controller\Event\Gallery\GalleryAdminController:
         arguments:
             $kernelSecret: '%kernel.secret%'
@@ -485,4 +501,9 @@ services:
         arguments:
             $kernelSecret: '%kernel.secret%'
             $galleryImageManager: '@app.gallery_image_manager'
+        tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Controller\Event\Participation\PublicParticipateController:
+        arguments:
+            $featureNewsletter: '%feature.newsletter%'
         tags: [ 'controller.service_arguments' ]

@@ -10,22 +10,84 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Controller\Event\WaitingListFlashTrait;
+use AppBundle\Controller\FlashBagAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\User;
 use AppBundle\Form\ParticipationType;
+use AppBundle\Manager\ParticipationManager;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
-class PublicParticipateController extends AbstractController
+class PublicParticipateController
 {
-    use WaitingListFlashTrait;
-
+    use RoutingControllerTrait, AuthorizationAwareControllerTrait, FormAwareControllerTrait, RenderingControllerTrait, WaitingListFlashTrait, DoctrineAwareControllerTrait, FlashBagAwareControllerTrait;
+    
+    /**
+     * feature.newsletter
+     *
+     * @var bool
+     */
+    private bool $featureNewsletter;
+    
+    /**
+     * app.participation_manager
+     *
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
+    /**
+     * AdminController constructor.
+     *
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param SessionInterface $session
+     * @param string $featureNewsletter
+     * @param ParticipationManager $participationManager
+     */
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        SessionInterface $session,
+        string $featureNewsletter,
+        ParticipationManager $participationManager
+    )
+    {
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->doctrine             = $doctrine;
+        $this->router               = $router;
+        $this->twig                 = $twig;
+        $this->formFactory          = $formFactory;
+        $this->session              = $session;
+        $this->featureNewsletter    = $featureNewsletter;
+        $this->participationManager = $participationManager;
+    }
+    
     /**
      * Page for list of events
      *
@@ -210,11 +272,11 @@ class PublicParticipateController extends AbstractController
             }
 
             $user                 = $this->getUser();
-            $managedParticipation = $this->get('app.participation_manager')->receiveParticipationRequest(
-                $participation, $user
+            $managedParticipation = $this->participationManager->receiveParticipationRequest(
+                $participation, ($user instanceof User) ? $user : null
             );
 
-            $participationManager = $this->get('app.participation_manager');
+            $participationManager = $this->participationManager;
             $participationManager->mailParticipationRequested($participation, $event);
 
             $request->getSession()->remove('participation-data-' . $eid);
@@ -234,15 +296,15 @@ class PublicParticipateController extends AbstractController
             if (!$user) {
                 $message .= sprintf(
                     '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
-                    $this->container->get('router')->generate('fos_user_registration_register')
+                    $this->router->generate('fos_user_registration_register')
                 );
             }
-            if ($this->getParameter('feature.newsletter')) {
+            if ($this->featureNewsletter) {
                 $repositoryNewsletter = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
                 if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
                     $message .= sprintf(
                         '<p>Sie können jetzt den <a href="%s">Newsletter abonnieren</a>, um auch in Zukunft von unseren Aktionen erfahren.</p>',
-                        $this->container->get('router')->generate('newsletter_subscription')
+                        $this->router->generate('newsletter_subscription')
                     );
                 }
             }
