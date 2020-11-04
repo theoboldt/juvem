@@ -42,7 +42,7 @@ class AdminPaymentController extends AbstractController
      * Handle payment or price change
      *
      * @Route("/admin/event/participant/price", methods={"POST"}, name="admin_participation_price")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function participantPaymentAction(Request $request)
     {
@@ -89,7 +89,7 @@ class AdminPaymentController extends AbstractController
     /**
      *
      * @Route("/admin/event/participant/price/history", name="admin_participation_price_history")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @return JsonResponse
      */

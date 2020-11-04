@@ -24,7 +24,7 @@ class ViandController extends AbstractController
 {
     /**
      * @Route("/admin/meals/viands/list", name="meals_viands_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -35,7 +35,7 @@ class ViandController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/meals/viands/list.json", name="meals_viands_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction()
     {
@@ -65,7 +65,7 @@ class ViandController extends AbstractController
     /**
      * @ParamConverter("viand", class="AppBundle\Entity\Meals\Viand")
      * @Route("/admin/meals/viands/{id}", requirements={"id": "\d+"}, name="meals_viands_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function detailAction(Viand $viand)
     {
@@ -75,7 +75,7 @@ class ViandController extends AbstractController
     /**
      * @ParamConverter("viand", class="AppBundle\Entity\Meals\Viand")
      * @Route("/admin/meals/viands/{id}/edit", requirements={"id": "\d+"}, name="meals_viands_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param Request $request
      * @param Viand $viand
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
@@ -111,7 +111,7 @@ class ViandController extends AbstractController
      * Create a new acquisition attribute
      *
      * @Route("/admin/meals/viands/new", name="meals_viands_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function newAction(Request $request)
     {

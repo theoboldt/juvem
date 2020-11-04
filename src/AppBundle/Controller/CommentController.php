@@ -30,7 +30,7 @@ class CommentController extends AbstractController
      * Handler for add/edit comment action
      *
      * @Route("/admin/comment/update", name="admin_comment_update")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @return JsonResponse
      */

@@ -34,7 +34,7 @@ class PublicManagementController extends AbstractController
      * Page for list of events
      *
      * @Route("/participation", name="public_participations")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listParticipationsAction()
     {
@@ -45,7 +45,7 @@ class PublicManagementController extends AbstractController
      * Data provider for events participants list grid
      *
      * @Route("/participations.json", name="public_participations_list_data")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listParticipantsDataAction(Request $request)
     {
@@ -112,7 +112,7 @@ class PublicManagementController extends AbstractController
      *
      * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}", requirements={"pid": "\d+"}, name="public_participation_detail")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function participationDetailedAction(Request $request, Participation $participation)
     {
@@ -202,7 +202,7 @@ class PublicManagementController extends AbstractController
      *
      * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/participation", requirements={"pid": "\d+"}, name="public_edit_participation")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function editParticipationAction(Request $request, Participation $participation)
     {
@@ -253,7 +253,7 @@ class PublicManagementController extends AbstractController
      *
      * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/phone", requirements={"pid": "\d+"}, name="public_edit_phonenumbers")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function editPhoneNumbersAction(Request $request, Participation $participation)
     {
@@ -315,7 +315,7 @@ class PublicManagementController extends AbstractController
      * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Route("/participation/{pid}/edit/participant/{aid}", requirements={"pid": "\d+", "aid": "\d+"},
      *                                                       name="public_edit_participant")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function editParticipantAction($pid, Participant $participant, Request $request)
     {
@@ -371,7 +371,7 @@ class PublicManagementController extends AbstractController
      *
      * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/participation/{pid}/edit/participant/add", requirements={"pid": "\d+"}, name="public_add_participant")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function addParticipantAction(Request $request, Participation $participation)
     {

@@ -293,7 +293,7 @@ Mit freundlichen Grüßen,
      * Create invoice for selected @see Participation
      *
      * @Route("/admin/event/participation/invoice/create", methods={"POST"}, name="admin_invoice_create")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
      * @return JsonResponse
      */
@@ -407,7 +407,7 @@ Mit freundlichen Grüßen,
      *
      * @Route("/admin/event/{eid}/invoice/template.docx", requirements={"eid": "\d+"}, name="admin_invoice_template_download")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @Security("is_granted('participants_read', event)")
      * @return BinaryFileResponse
      */
@@ -437,7 +437,7 @@ Mit freundlichen Grüßen,
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/participations", requirements={"eid": "\d+"}, methods={"POST"},
      *                                                     name="admin_invoice_recipients")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return JsonResponse
      */
     public function getInvoiceRecipientsAction(Event $event, Request $request)
@@ -529,7 +529,7 @@ Mit freundlichen Grüßen,
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/{filter}_pdf.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package_pdf")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
      */
     public function downloadEventInvoicePdfPackage(Event $event, string $filter): Response
@@ -590,7 +590,7 @@ Mit freundlichen Grüßen,
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/{filter}.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
      */
     public function downloadEventInvoicePackage(Event $event, string $filter)

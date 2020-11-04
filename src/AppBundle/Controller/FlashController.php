@@ -23,7 +23,7 @@ class FlashController extends AbstractController
 {
     /**
      * @Route("/admin/flash/list", name="flash_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -34,7 +34,7 @@ class FlashController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/flash/list.json", name="flash_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction(Request $request)
     {
@@ -70,7 +70,7 @@ class FlashController extends AbstractController
      * Create a new flash message
      *
      * @Route("/admin/flash/new", name="flash_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function newAction(Request $request)
     {
@@ -96,7 +96,7 @@ class FlashController extends AbstractController
      * Edit flash message
      *
      * @Route("/admin/flash/{fid}", requirements={"fid": "\d+"}, name="flash_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction($fid, Request $request)
     {

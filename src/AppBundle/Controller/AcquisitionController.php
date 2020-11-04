@@ -29,7 +29,7 @@ class AcquisitionController extends AbstractController
 {
     /**
      * @Route("/admin/acquisition/list", name="acquisition_list")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function listAction(Request $request)
     {
@@ -41,7 +41,7 @@ class AcquisitionController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/acquisition/list.json", name="acquisition_list_data")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function listDataAction(Request $request)
     {
@@ -74,7 +74,7 @@ class AcquisitionController extends AbstractController
      *
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function detailAction(Request $request, Attribute $attribute)
     {
@@ -115,7 +115,7 @@ class AcquisitionController extends AbstractController
      *
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit/formula", requirements={"bid": "\d+"}, name="acquisition_edit_formula")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editFormulaAction(Request $request, Attribute $attribute)
     {
@@ -153,7 +153,7 @@ class AcquisitionController extends AbstractController
      *
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit", requirements={"bid": "\d+"}, name="acquisition_edit")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editAction(Request $request, Attribute $attribute)
     {
@@ -192,7 +192,7 @@ class AcquisitionController extends AbstractController
      * Create a new acquisition attribute
      *
      * @Route("/admin/acquisition/new", name="acquisition_new")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function newAction(Request $request)
     {

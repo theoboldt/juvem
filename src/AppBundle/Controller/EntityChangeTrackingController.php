@@ -32,7 +32,7 @@ class EntityChangeTrackingController extends AbstractController
      *
      * @Route("/admin/changes/{classDescriptor}/{entityId}.json",
      *     requirements={"classDescriptor": "([a-zA-Z0-9_\.]+)", "entityId": "(\d+)"}, name="admin_change_overview")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @param string $classDescriptor
      * @param int $entityId
      * @return Response

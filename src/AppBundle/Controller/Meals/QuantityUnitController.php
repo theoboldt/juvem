@@ -24,7 +24,7 @@ class QuantityUnitController extends AbstractController
 {
     /**
      * @Route("/admin/meals/units/list", name="meals_units_list")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -35,7 +35,7 @@ class QuantityUnitController extends AbstractController
      * Data provider for event list grid
      *
      * @Route("/admin/meals/units/list.json", name="meals_units_list_data")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listDataAction()
     {
@@ -60,7 +60,7 @@ class QuantityUnitController extends AbstractController
     /**
      * @ParamConverter("unit", class="AppBundle\Entity\Meals\QuantityUnit")
      * @Route("/admin/meals/units/{id}", requirements={"id": "\d+"}, name="meals_units_detail")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function detailAction(QuantityUnit $unit)
     {
@@ -70,7 +70,7 @@ class QuantityUnitController extends AbstractController
     /**
      * @ParamConverter("unit", class="AppBundle\Entity\Meals\QuantityUnit")
      * @Route("/admin/meals/units/{id}/edit", requirements={"id": "\d+"}, name="meals_units_edit")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction(Request $request, QuantityUnit $unit)
     {
@@ -103,7 +103,7 @@ class QuantityUnitController extends AbstractController
      * Create a new acquisition attribute
      *
      * @Route("/admin/meals/units/new", name="meals_units_new")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function newAction(Request $request)
     {

@@ -438,7 +438,7 @@ class AdminMultipleController
      * Apply changes to multiple participants
      *
      * @Route("/admin/event/participantschange", name="event_participants_change", methods={"POST"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function activeButtonChangeStateHandler(Request $request)
     {

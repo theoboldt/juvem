@@ -30,7 +30,7 @@ class ConfigurationController extends AbstractController
     
     /**
      * @Route("/admin/attendance/columns", name="attendance_column_list")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function columnListAction(): Response
     {
@@ -39,7 +39,7 @@ class ConfigurationController extends AbstractController
     
     /**
      * @Route("/admin/attendance/columns-list.json", name="attendance_column_list_data")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function columnListDataAction(): Response
     {
@@ -63,7 +63,7 @@ class ConfigurationController extends AbstractController
      *
      * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
      * @Route("/admin/attendance/columns/{column_id}", requirements={"column_id": "\d+"}, name="attendance_column_detail")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column
      * @return Response
      */
@@ -82,7 +82,7 @@ class ConfigurationController extends AbstractController
      *
      * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
      * @Route("/admin/attendance/columns/{column_id}/edit", requirements={"column_id": "\d+"}, name="attendance_column_edit")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column
      * @param Request $request
      * @return RedirectResponse|Response
@@ -125,7 +125,7 @@ class ConfigurationController extends AbstractController
      * Create a new acquisition attribute
      *
      * @Route("/admin/attendance/columns/new", name="attendance_column_new")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function columnCreateAction(Request $request): Response
     {

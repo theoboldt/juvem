@@ -48,7 +48,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/{pid}", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                  name="event_participation_detail")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
         public function participationDetailAction(Request $request)
     {
@@ -244,7 +244,7 @@ class AdminSingleController extends AbstractController
      *     methods={"GET"}
      * )
      * @ParamConverter("participation", class="AppBundle:Participation", options={"id" = "pid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Participation $participation
      * @param string $action Either confirm, confirmnotify or unconfirm
      * @param string $token
@@ -371,7 +371,7 @@ class AdminSingleController extends AbstractController
      * @Route("/admin/event/{eid}/participation/create/from/{pid}", requirements={"eid": "\d+","pid": "\d+"}, name="admin_participation_create_prefill")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("source", class="AppBundle:Participation", options={"id" = "pid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT_GLOBAL')")
      * @param Event         $event
      * @param Participation $source
      * @param Request       $request
@@ -427,7 +427,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/create/prefill-participants", requirements={"eid": "\d+"}, name="admin_lookup_participants")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT_GLOBAL')")
      * @param Event $event
      * @param Request $request
      * @return Response
@@ -465,7 +465,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/create/prefill-participations", requirements={"eid": "\d+"}, name="admin_lookup_participations")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Security("has_role('ROLE_ADMIN_EVENT_GLOBAL')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT_GLOBAL')")
      * @param Event $event
      * @param Request $request
      * @return Response
@@ -526,7 +526,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/{pid}/edit", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                       name="admin_edit_participation")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editParticipationAction(Request $request)
     {
@@ -578,7 +578,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/{pid}/phone", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                        name="admin_edit_phonenumbers")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editPhoneNumbersAction(Request $request)
     {
@@ -637,7 +637,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/{pid}/participant/{aid}", requirements={"eid": "\d+", "pid": "\d+",
      *                                                                    "aid": "\d+"}, name="admin_edit_participant")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function editParticipantAction($eid, $pid, $aid, Request $request)
     {
@@ -697,7 +697,7 @@ class AdminSingleController extends AbstractController
      *
      * @Route("/admin/event/{eid}/participation/{pid}/participant/add", requirements={"eid": "\d+", "pid": "\d+"},
      *                                                                  name="admin_add_participant")
-     * @Security("has_role('ROLE_ADMIN_EVENT')")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
     public function addParticipantAction($eid, $pid, Request $request)
     {
