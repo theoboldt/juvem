@@ -28,6 +28,7 @@ use AppBundle\Manager\Invoice\InvoiceMailingConfiguration;
 use AppBundle\Manager\Invoice\InvoiceManager;
 use AppBundle\Manager\Invoice\InvoicePdfProvider;
 use AppBundle\Manager\Invoice\PdfConverterUnavailableException;
+use AppBundle\Manager\Payment\PriceManager;
 use AppBundle\PdfConverterService;
 use AppBundle\ResponseHelper;
 use AppBundle\SerializeJsonResponse;
@@ -87,6 +88,13 @@ class AdminInvoiceController
     private InvoiceManager $invoiceManager;
     
     /**
+     * app.price_manager
+     *
+     * @var PriceManager
+     */
+    private PriceManager $priceManager;
+
+    /**
      * app.payment.invoice_pdf_provider
      *
      * @var InvoicePdfProvider
@@ -128,6 +136,7 @@ class AdminInvoiceController
      * @param EventDispatcherInterface $eventDispatcher
      * @param InvoiceMailer $invoiceMailer
      * @param InvoiceManager $invoiceManager
+     * @param PriceManager $priceManager
      * @param InvoicePdfProvider $invoicePdfProvider
      * @param PdfConverterService|null $pdfConverterService
      * @param CsrfTokenManagerInterface $csrfTokenManager
@@ -144,6 +153,7 @@ class AdminInvoiceController
         EventDispatcherInterface $eventDispatcher,
         InvoiceMailer $invoiceMailer,
         InvoiceManager $invoiceManager,
+        PriceManager $priceManager,
         InvoicePdfProvider $invoicePdfProvider,
         ?PdfConverterService $pdfConverterService,
         CsrfTokenManagerInterface $csrfTokenManager
@@ -152,6 +162,7 @@ class AdminInvoiceController
         $this->tmpRootPath                   = $tmpRootPath;
         $this->invoiceMailer                 = $invoiceMailer;
         $this->invoiceManager                = $invoiceManager;
+        $this->priceManager                  = $priceManager;
         $this->invoicePdfProvider            = $invoicePdfProvider;
         $this->pdfConverterService           = $pdfConverterService;
         $this->csrfTokenManager              = $csrfTokenManager;
@@ -453,7 +464,7 @@ Mit freundlichen Grüßen,
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participationEntityList = $participationRepository->participationsList($event, false, false, null);
         $invoiceManager          = $this->invoiceManager;
-        $priceManager            = $this->get('app.price_manager');
+        $priceManager            = $this->priceManager;
         $result                  = [];
 
         /** @var Participation $participation */

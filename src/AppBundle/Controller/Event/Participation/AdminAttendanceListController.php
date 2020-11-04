@@ -10,6 +10,11 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
+use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\FormAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
+use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
 use AppBundle\Entity\AttendanceList\AttendanceListColumn;
@@ -19,25 +24,77 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
+use AppBundle\Entity\User;
 use AppBundle\Export\AttendanceListExport;
-use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Form\AttendanceListType;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\ResponseHelper;
+use AppBundle\Twig\GlobalCustomization;
+use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
-class AdminAttendanceListController extends AbstractController
+class AdminAttendanceListController
 {
+    use RenderingControllerTrait, DoctrineAwareControllerTrait, FormAwareControllerTrait, RoutingControllerTrait, AuthorizationAwareControllerTrait;
+    
+    /**
+     * security.csrf.token_manager
+     *
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
+     * @var GlobalCustomization
+     */
+    private GlobalCustomization $globalCustomization;
+    
+    /**
+     * AdminController constructor.
+     *
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
+     * @param ManagerRegistry $doctrine
+     * @param RouterInterface $router
+     * @param Environment $twig
+     * @param FormFactoryInterface $formFactory
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param GlobalCustomization $globalCustomization
+     */
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine,
+        RouterInterface $router,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        GlobalCustomization $globalCustomization
+    )
+    {
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->doctrine             = $doctrine;
+        $this->router               = $router;
+        $this->twig                 = $twig;
+        $this->formFactory          = $formFactory;
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->globalCustomization  = $globalCustomization;
+    }
+    
     /**
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance", requirements={"eid": "\d+"}, name="event_attendance_lists")
@@ -251,7 +308,7 @@ class AdminAttendanceListController extends AbstractController
     {
         $token = $request->get('_token');
         /** @var CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('attendance' . $list->getTid())) {
             throw new InvalidTokenHttpException();
         }
@@ -294,7 +351,7 @@ class AdminAttendanceListController extends AbstractController
     {
         $token = $request->get('_token');
         /** @var CsrfTokenManagerInterface $csrf */
-        $csrf = $this->get('security.csrf.token_manager');
+        $csrf = $this->csrfTokenManager;
         if ($token != $csrf->getToken('attendance-comment' . $list->getTid())) {
             throw new InvalidTokenHttpException();
         }
@@ -421,8 +478,9 @@ class AdminAttendanceListController extends AbstractController
             );
         }
 
+        $user = $this->getUser();
         $export = new AttendanceListExport(
-            $this->get('app.twig_global_customization'), $lists, $participantList, $attendanceData, $this->getUser(),
+            $this->globalCustomization, $lists, $participantList, $attendanceData, ($user instanceof User) ? $user : null,
             $attribute
         );
         $export->setMetadata();
