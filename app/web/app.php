@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @var Composer\Autoload\ClassLoader
  */
-$loader = require __DIR__ . '/../app/autoload.php';
+$loader = require __DIR__ . '/../autoload.php';
 
 // Enable APC for autoloading to improve performance.
 // You should change the ApcClassLoader first argument to a unique prefix

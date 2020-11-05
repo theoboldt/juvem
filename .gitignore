@@ -15,8 +15,8 @@
 /bin/
 /build/
 /composer.phar
-/vendor/
-/app/bootstrap.php.cache
+/app/composer.phar
+/app/vendor/
 /app/cache/*
 !app/cache/.gitkeep
 /app/logs/*
