@@ -41,46 +41,49 @@ jobs:
 
       - name: Start database service
         run: sudo /etc/init.d/mysql start
-      
+
       - name: Get composer cache directory
         id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      
+        run: echo "::set-output name=dir::$(composer --working-dir=app config cache-files-dir)"
+
       - name: Cache composer dependencies
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/app/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Validate Composer files
-        run: composer validate
+        run: composer validate --working-dir=app
 
       - name: Copy testing parameters config
         run: cp app/config/parameters.yml.test app/config/parameters.yml
-      
+
       - name: Insert database port number in config file
         run: echo "    database_port${{':'}} ${{ job.services.mysql.ports['3306'] }}" >> app/config/parameters.yml
 
       - name: Install Composer dependencies
         run: |
-          composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-      
+          composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --working-dir=app
+
       - name: Run Migration
         run: |
-          composer require symfony/orm-pack:1.0
-          php bin/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
-          php bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
+          composer require symfony/orm-pack:1.0 --working-dir=app
+          php app/bin/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
+          php app/bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
+
+      - name: Copy test config
+        run: cp phpunit.xml.dist phpunit.xml
 
       - name: Run Tests
-        run: php bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover.xml
+        run: php app/bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover.xml
 
       - uses: actions/upload-artifact@v2
         with:
           name: phpunit-result-clover
           path: ./phpunit-result-clover.xml
 
-      - name: Upload coverage to Codecov  
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

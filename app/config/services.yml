@@ -447,8 +447,8 @@ services:
             - { name: request.param_converter, priority: 2, converter: converter_event }
 
     AppBundle\Controller\:
-        resource: '../../src/AppBundle/Controller/**/*Controller.php'
-        exclude: '../../src/AppBundle/Controller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
+        resource: '../src/AppBundle/Controller/**/*Controller.php'
+        exclude: '../src/AppBundle/Conftroller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
         tags: [ 'controller.service_arguments' ]
 
     AppBundle\Controller\DefaultController:

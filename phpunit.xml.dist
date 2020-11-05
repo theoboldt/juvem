@@ -3,18 +3,18 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" colors="true">
   <coverage processUncoveredFiles="true">
     <include>
-      <directory suffix=".php">src</directory>
+      <directory suffix=".php">app/src</directory>
     </include>
   </coverage>
   <php>
     <ini name="error_reporting" value="-1"/>
     <server name="KERNEL_CLASS" value="AppKernel"/>
-    <server name="KERNEL_DIR" value="app/"/>
+    <server name="KERNEL_DIR" value="app/src/"/>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
   </php>
   <testsuites>
     <testsuite name="Juvem Test Suite">
-      <directory>tests</directory>
+      <directory>app/tests</directory>
     </testsuite>
   </testsuites>
   <listeners>
