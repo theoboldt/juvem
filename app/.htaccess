@@ -1,2 +1,0 @@
-Options –Indexes
-RewriteRule ^.*$ web/ [R=301,L]
