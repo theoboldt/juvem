@@ -3,7 +3,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        resourcesPath: 'app/Resources',
+        assetsPath: 'assets',
 
         clean: {
             dep: ['app/dep/*'],
@@ -56,13 +56,13 @@ module.exports = function (grunt) {
             },
             distWebJs: {
                 src: [
-                    '<%= resourcesPath %>/js/cookiechoices.js',
+                    '<%= assetsPath %>/js/cookiechoices.js',
                     'node_modules/jquery/dist/jquery.js',
                     'node_modules/jquery-storage-api/jquery.storageapi.js',
                     'node_modules/jquery-number/jquery.number.js',
                     'node_modules/easymde/dist/easymde.min.js',
-                    '<%= resourcesPath %>/js/lib/jquery.filedrop.js',
-                    '<%= resourcesPath %>/js/lib/jquery.visible.js',
+                    '<%= assetsPath %>/js/lib/jquery.filedrop.js',
+                    '<%= assetsPath %>/js/lib/jquery.visible.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/alert.js',
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/button.js',
@@ -75,48 +75,48 @@ module.exports = function (grunt) {
                     'node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js',
 //                    'node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js',
                     'node_modules/bootstrap-table/dist/bootstrap-table.js', //must now be load after bootstrap to make it use correct styles
-                    '<%= resourcesPath %>/js/lib/semicolon1.js',
+                    '<%= assetsPath %>/js/lib/semicolon1.js',
                     'node_modules/bootstrap-table/dist/extensions/natural-sorting/bootstrap-table-natural-sorting.js',
                     'node_modules/bootstrap-table/dist/extensions/resizable/bootstrap-table-resizable.js',
                     'node_modules/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.js',
                     'node_modules/bootstrap-table/dist/locale/bootstrap-table-de-DE.js',
-                    '<%= resourcesPath %>/js/lib/semicolon2.js',
+                    '<%= assetsPath %>/js/lib/semicolon2.js',
                     'node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.js',
                     'node_modules/jquery-range/jquery.range.js',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.js',
                     'node_modules/imagesloaded/imagesloaded.pkgd.js',
                     'node_modules/justified-layout/dist/justified-layout.js',
-                    '<%= resourcesPath %>/js/lib/jquery.bsAlerts.min.js',
-                    '<%= resourcesPath %>/js/tools.js',
-                    '<%= resourcesPath %>/js/storage.js',
-                    '<%= resourcesPath %>/js/bootstrap-overrides.js',
-                    '<%= resourcesPath %>/js/bootstrap-table.js',
-                    '<%= resourcesPath %>/js/active-button.js',
-                    '<%= resourcesPath %>/js/markdown.js',
-                    '<%= resourcesPath %>/js/area/acquisition_and_event.js',
-                    '<%= resourcesPath %>/js/area/acquisition_only.js',
-                    '<%= resourcesPath %>/js/area/attendance.js',
-                    '<%= resourcesPath %>/js/area/gallery_classic_loader.js',
-                    '<%= resourcesPath %>/js/area/gallery_cache_api_loader.js',
-                    '<%= resourcesPath %>/js/area/gallery_renderer.js',
-                    '<%= resourcesPath %>/js/area/gallery.js',
-                    '<%= resourcesPath %>/js/area/event.js',
-                    '<%= resourcesPath %>/js/area/dependencies.js',
-                    '<%= resourcesPath %>/js/area/employee.js',
-                    '<%= resourcesPath %>/js/area/event_export.js',
-                    '<%= resourcesPath %>/js/area/participation.js',
-                    '<%= resourcesPath %>/js/area/newsletter.js',
-                    '<%= resourcesPath %>/js/area/meals.js',
-                    '<%= resourcesPath %>/js/main.js'
+                    '<%= assetsPath %>/js/lib/jquery.bsAlerts.min.js',
+                    '<%= assetsPath %>/js/tools.js',
+                    '<%= assetsPath %>/js/storage.js',
+                    '<%= assetsPath %>/js/bootstrap-overrides.js',
+                    '<%= assetsPath %>/js/bootstrap-table.js',
+                    '<%= assetsPath %>/js/active-button.js',
+                    '<%= assetsPath %>/js/markdown.js',
+                    '<%= assetsPath %>/js/area/acquisition_and_event.js',
+                    '<%= assetsPath %>/js/area/acquisition_only.js',
+                    '<%= assetsPath %>/js/area/attendance.js',
+                    '<%= assetsPath %>/js/area/gallery_classic_loader.js',
+                    '<%= assetsPath %>/js/area/gallery_cache_api_loader.js',
+                    '<%= assetsPath %>/js/area/gallery_renderer.js',
+                    '<%= assetsPath %>/js/area/gallery.js',
+                    '<%= assetsPath %>/js/area/event.js',
+                    '<%= assetsPath %>/js/area/dependencies.js',
+                    '<%= assetsPath %>/js/area/employee.js',
+                    '<%= assetsPath %>/js/area/event_export.js',
+                    '<%= assetsPath %>/js/area/participation.js',
+                    '<%= assetsPath %>/js/area/newsletter.js',
+                    '<%= assetsPath %>/js/area/meals.js',
+                    '<%= assetsPath %>/js/main.js'
                 ],
                 dest: 'web/js/all.js'
             },
             distCssWeb: {
                 src: [
                     'node_modules/easymde/dist/easymde.min.css',
-                    'var/cache/dep/bootstrap-table-sass.css',
-                    'var/cache/dep/all-sass.css',
+                    '../var/cache/dep/bootstrap-table-sass.css',
+                    '../var/cache/dep/all-sass.css',
                     'node_modules/vis-network/dist/vis-network.css',
                     'node_modules/ekko-lightbox/dist/ekko-lightbox.css',
                     'node_modules/jquery-range/jquery.range.css',
@@ -125,13 +125,13 @@ module.exports = function (grunt) {
             },
             distCssPrint: {
                 src: [
-                    'var/cache/dep/all-sass-print.css'
+                    '../var/cache/dep/all-sass-print.css'
                 ],
                 dest: 'web/css/print.css'
             },
             distCssOwfont: {
                 src: [
-                    '<%= resourcesPath %>/css/lib/owfont-regular.css'
+                    '<%= assetsPath %>/css/lib/owfont-regular.css'
                 ],
                 dest: 'web/css/owfont.css'
             }
@@ -143,8 +143,8 @@ module.exports = function (grunt) {
                     style: 'expanded'
                 },
                 files: {
-                    'var/cache/dep/all-sass.css': '<%= resourcesPath %>/scss/web/main.scss',
-                    'var/cache/dep/bootstrap-table-sass.css': 'node_modules/bootstrap-table/src/bootstrap-table.scss'
+                    '../var/cache/dep/all-sass.css': '<%= assetsPath %>/scss/web/main.scss',
+                    '../var/cache/dep/bootstrap-table-sass.css': 'node_modules/bootstrap-table/src/bootstrap-table.scss'
                 }
             },
             print: {
@@ -152,13 +152,13 @@ module.exports = function (grunt) {
                     style: 'expanded'
                 },
                 files: {
-                    'var/cache/dep/all-sass-print.css': '<%= resourcesPath %>/scss/print/main.scss'
+                    '../var/cache/dep/all-sass-print.css': '<%= assetsPath %>/scss/print/main.scss'
                 }
             }
         },
 
         jshint: {
-            all: ['Gruntfile.js', '<%= resourcesPath %>/js/**/*.js']
+            all: ['Gruntfile.js', '<%= assetsPath %>/js/**/*.js']
         },
 
         uglify: {
@@ -175,7 +175,7 @@ module.exports = function (grunt) {
             },
             jsvis: {
                 files: {
-                    'web/js/vis-network.min.js': ['<%= resourcesPath %>/js/lib/vis-network.js']
+                    'web/js/vis-network.min.js': ['<%= assetsPath %>/js/lib/vis-network.js']
                 }
             }
         },
@@ -212,21 +212,21 @@ module.exports = function (grunt) {
 
         watch: {
             js: {
-                files: '<%= resourcesPath %>/js/**/*.js',
+                files: '<%= assetsPath %>/js/**/*.js',
                 tasks: ['clean:js', 'concat:distWebJs', 'uglify:js',  'uglify:jsvis'],
                 options: {
                     livereload: false
                 }
             },
             sassWeb: {
-                files: ['<%= resourcesPath %>/scss/web/**/*.scss', '<%= resourcesPath %>/scss/shared/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
+                files: ['<%= assetsPath %>/scss/web/**/*.scss', '<%= assetsPath %>/scss/shared/**/*.scss', '<%= assetsPath %>/config/*.scss'],
                 tasks: ['sass:web', 'concat:distCssWeb', 'cssmin:web'],
                 options: {
                     livereload: false
                 }
             },
             sassPrint: {
-                files: ['<%= resourcesPath %>/scss/print/**/*.scss', '<%= resourcesPath %>/scss/shared/**/*.scss', '<%= resourcesPath %>/config/*.scss'],
+                files: ['<%= assetsPath %>/scss/print/**/*.scss', '<%= assetsPath %>/scss/shared/**/*.scss', '<%= assetsPath %>/config/*.scss'],
                 tasks: ['sass:print', 'concat:distCssPrint', 'cssmin:print']
             }
         }

@@ -38,8 +38,8 @@
 !web/js/.htaccess
 /data/invoice/*
 !/data/invoice/.gitkeep
-/data/uploads/*
-!/data/uploads/.gitkeep
+/var/uploads/*
+!/var/uploads/.gitkeep
 /tmp/*
 !/tmp/.gitkeep
 .DS_Store

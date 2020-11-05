@@ -33,6 +33,7 @@ final class Version20201102100000 extends AbstractMigration
                 throw new \RuntimeException('Failed to create ' . $targetPath);
             }
         }
+        $this->moveFileIfExists(__DIR__ . '/../config', __DIR__ . '/../../config', 'branding.scss');
         $this->moveFileIfExists($sourcePath, $targetPath, 'imprint-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-scrollspy.html.twig');
@@ -57,6 +58,7 @@ final class Version20201102100000 extends AbstractMigration
             }
         }
 
+        $this->moveFileIfExists(__DIR__ . '/../../config', __DIR__ . '/../config', 'branding.scss');
         $this->moveFileIfExists($sourcePath, $targetPath, 'imprint-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-content.html.twig');
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-of-travel-scrollspy.html.twig');
