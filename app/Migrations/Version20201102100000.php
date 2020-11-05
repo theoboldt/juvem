@@ -29,7 +29,7 @@ final class Version20201102100000 extends AbstractMigration
 
         umask(0);
         if (!file_exists($targetPath)) {
-            if (mkdir($targetPath, 0777, true)) {
+            if (!mkdir($targetPath, 0777, true)) {
                 throw new \RuntimeException('Failed to create ' . $targetPath);
             }
         }
@@ -41,7 +41,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
 
         $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'tmp');
-        $this->moveFileIfExists(__DIR__ . '/../..', __DIR__ . '/../../var', 'data');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'invoice');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'template.docx');
+        $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'uploads');
     }
 
     /**
@@ -53,7 +55,7 @@ final class Version20201102100000 extends AbstractMigration
         $sourcePath = __DIR__ . '/../../config/templates';
         umask(0);
         if (!file_exists($targetPath)) {
-            if (mkdir($targetPath, 0777, true)) {
+            if (!mkdir($targetPath, 0777, true)) {
                 throw new \RuntimeException('Failed to create ' . $targetPath);
             }
         }
@@ -66,7 +68,9 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists($sourcePath, $targetPath, 'conditions-corona-scrollspy.html.twig');
 
         $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'tmp');
-        $this->moveFileIfExists(__DIR__ . '/../../var', __DIR__ . '/../..', 'data');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'invoice');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'template.docx');
+        $this->moveFileIfExists(__DIR__ . '/../../var/data', __DIR__ . '/../../data', 'uploads');
     }
 
     /**
@@ -79,10 +83,23 @@ final class Version20201102100000 extends AbstractMigration
     private function moveFileIfExists(string $sourcePath, string $targetPath, string $fileName): void
     {
         if (file_exists($sourcePath . '/' . $fileName)) {
-           $this->addSql('-- "Moved '.$fileName.'"');
-            if (!rename($sourcePath . '/' . $fileName, $targetPath . '/' . $fileName)) {
+            if (!file_exists($targetPath)) {
+                if (!mkdir($targetPath, 0777, true)) {
+                    throw new \RuntimeException('Failed to create ' . $targetPath);
+                }
+            }
+
+            if (file_exists($targetPath . '/' . $fileName)) {
                 throw new \RuntimeException(
-                    sprintf('Failed to move file "%s" from "%s" to "%s"', $fileName, $sourcePath, $targetPath)
+                    sprintf('Cannot move file "%s" from "%s" to "%s", target already existing', $fileName, $sourcePath, $targetPath)
+                );
+            }   
+     
+           $this->addSql('-- "Moved '.$fileName.'"');
+           exec('mv ' . $sourcePath . '/' . $fileName . ' ' . $targetPath . '/' . $fileName, $output, $return);
+            if ($return !== 0) {
+                throw new \RuntimeException(
+                    sprintf('Failed to move file "%s" from "%s" to "%s"; Output %s', $fileName, $sourcePath, $targetPath, implode(', ', $output))
                 );
             }
         } else {
