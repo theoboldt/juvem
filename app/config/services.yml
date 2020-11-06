@@ -253,7 +253,7 @@ services:
         class: AppBundle\EventListeners\ExceptionListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: -1}
-            - { name: monolog.logger, channel: mychannel }
+            - { name: monolog.logger }
         arguments:
             - "@twig"
             - "@logger"
