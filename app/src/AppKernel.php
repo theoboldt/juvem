@@ -5,9 +5,9 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-
-    // Append this init function below
-
+    /**
+     * {@inheritdoc}
+     */
     public function __construct($environment, $debug)
     {
         if (!ini_get('date.timezone')) {
@@ -16,6 +16,9 @@ class AppKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function registerBundles()
     {
         $bundles = [
@@ -48,8 +51,27 @@ class AppKernel extends Kernel
         return $bundles;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getProjectDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheDir()
+    {
+        return $this->getProjectDir().'/../var/cache/'.$this->environment;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLogDir()
+    {
+        return $this->getProjectDir().'/../var/log';
     }
 }
