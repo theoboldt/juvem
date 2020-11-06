@@ -6,12 +6,6 @@
 /app/web/manifest.json
 /app/web/safari-pinned-tab.svg
 /app/config/parameters.yml
-/var/config/branding.scss
-/var/config/imprint-content.html.twig
-/var/config/conditions-of-travel-content.html.twig
-/var/config/conditions-of-travel-scrollspy.html.twig
-/var/config/conditions-corona-content.html.twig
-/var/config/conditions-corona-scrollspy.html.twig
 /bin/
 /build/
 /composer.phar
@@ -37,12 +31,8 @@
 !web/js/.htaccess
 /data/invoice/*
 !/data/invoice/.gitkeep
-/var/uploads/*
-!/var/uploads/.gitkeep
-/var/data/*
-/var/config/*
-/var/tmp/*
-!/var/tmp/.gitkeep
+/var/*
+!/var/.gitkeep
 .DS_Store
 /backup/
 /phpunit.xml
