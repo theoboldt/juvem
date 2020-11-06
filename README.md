@@ -2,7 +2,7 @@
 Juvem is a symfony based web application to manage events and newsletters.
 
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
-![Dependencies and Tests](https://github.com/theoboldt/juvem/workflows/PHP%20Composer%20and%20PhpUnit%20tests/badge.svg)
+![Dependencies and Tests](https://github.com/theoboldt/juvem/workflows/Dependencies%20and%20Tests/badge.svg)
 ![CodeQL](https://github.com/theoboldt/juvem/workflows/CodeQL/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a41bc804ab7172d930ce/maintainability)](https://codeclimate.com/github/theoboldt/juvem/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a41bc804ab7172d930ce/test_coverage)](https://codeclimate.com/github/theoboldt/juvem/test_coverage)
