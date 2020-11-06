@@ -88,3 +88,11 @@ jobs:
           flags: unittests
           name: clover-coverage
           fail_ci_if_error: false
+
+      - name: Upload coverage to codeclimate
+        uses: paambaati/codeclimate-action@v2.7.4
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}>
+        with:
+          coverageLocations: |
+            ./phpunit-result-clover.xml:clover
