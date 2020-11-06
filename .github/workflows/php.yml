@@ -1,4 +1,4 @@
-name: PHP Composer and PhpUnit tests
+name: Dependencies and Tests
 
 on:
   push:
