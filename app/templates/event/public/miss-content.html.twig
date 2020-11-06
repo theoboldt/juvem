@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inhalt nicht gefunden{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {% include 'common/header/inner-page-header.html.twig' with {'title': 'Inhalt nicht gefunden', 'subtitle': appTitle} %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Der angeforderte Inhalt wurde nicht gefunden. Vielleicht sind Sie einem veralteten Link gefolgt.
+                        </p>
+
+                        <h2>Mögliche Ursachen</h2>
+                        <h3>Tippfehler</h3>
+                        <p>Wenn Sie die URL von Hand eingegeben haben, prüfen Sie ob alle Zeichen richtig übertragen
+                            sind.</p>
+                        <h3>Veranstaltung inaktiv</h3>
+                        <p>
+                            Möglicherweise ist die Veranstaltung die aufgerufen werden sollte nicht mehr aktiv.
+                            Das kann zum Beispiel passieren, wenn die Veranstaltung bereits durchgeführt wurde.
+                        </p>
+
+                        <h3>Veranstaltung nur für registrierte Benutzer</h3>
+                        <p>
+                            Vielleicht steht diese Veranstaltung nur bestimmten Benutzergruppen zur Verfügung.
+                            Wenn Sie nicht angemeldet sind sollten Sie sich anmelden. Möglicherweise haben Sie
+                            anschließend Zugriff auf die Veranstaltung.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

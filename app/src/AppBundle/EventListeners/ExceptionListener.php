@@ -13,6 +13,7 @@ namespace AppBundle\EventListeners;
 use AppBundle\EventNotFoundHttpException;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
+use AppBundle\Manager\UploadImageManager\AbstractFileException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
@@ -80,6 +81,13 @@ class ExceptionListener
                     $this->twig->render('event/public/unallowed.html.twig'), Response::HTTP_FORBIDDEN
                 );
             }
+        } elseif ($exception instanceof AbstractFileException) {
+            $doLog = false;
+            $this->logger->warning('Requested unavailable image: ' . $exception->getMessage());
+            $response = new Response(
+                $this->twig->render('event/public/miss-content.html.twig'), Response::HTTP_NOT_FOUND
+            );
+    
         }
         if ($response) {
             $event->setResponse($response);

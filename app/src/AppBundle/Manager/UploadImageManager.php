@@ -14,6 +14,7 @@ use AppBundle\Cache\FileCache;
 use AppBundle\Cache\FileCachePathGeneratorResizedImage;
 use AppBundle\Juvimg\JuvimgNoResizePerformedException;
 use AppBundle\Juvimg\JuvimgService;
+use AppBundle\Manager\UploadImageManager\OriginalFileNotFoundException;
 use AppBundle\UploadImage\ResizedUploadImage;
 use AppBundle\UploadImage\UploadImage;
 use Imagine\Gd\Imagine;
@@ -85,7 +86,6 @@ class UploadImageManager
         ?JuvimgService $juvimg = null
     )
     {
-        
         if (!array_key_exists($mapping, $uploadMappings)) {
             throw new \InvalidArgumentException('Could not find desired upload mapping in vich upload configuration');
         }
@@ -95,6 +95,26 @@ class UploadImageManager
         $this->uploadsDir    = $uploadMappings[$mapping]['upload_destination'];
         $this->logger        = $logger ?: new NullLogger();
         $this->juvimgService = $juvimg;
+    }
+    
+    /**
+     * Create a temporary file in apps tmp dir
+     *
+     * @param string $prefix Prefix to use
+     * @return string        New file name
+     */
+    private function temporaryFileName(string $prefix): string
+    {
+        if (!file_exists($this->tmpDir)) {
+            $umask = umask();
+            umask(0);
+            if (!mkdir($this->tmpDir, 0777, true)) {
+                umask($umask);
+                throw new \RuntimeException(sprintf('Failed to create %s', $this->tmpDir));
+            }
+            umask($umask);
+        }
+        return tempnam($this->tmpDir, $prefix);
     }
 
     /**
@@ -132,7 +152,15 @@ class UploadImageManager
         $key          = new FileCachePathGeneratorResizedImage($width, $height, $mode, $name);
         $originalPath = $this->getOriginalImagePath($name);
         if (!$this->cache->contains($key)) {
-            $tmpFile = tempnam($this->tmpDir, 'imagine_resize');
+            if (!file_exists($originalPath)) {
+                throw new OriginalFileNotFoundException($originalPath, sprintf('Failed to find "%s"', $originalPath));
+            }
+            if (!is_readable($originalPath)) {
+                throw new OriginalFileNotFoundException(
+                    $originalPath, sprintf('File "%s" is not readable', $originalPath)
+                );
+            }
+            $tmpFile = $this->temporaryFileName('imagine_resize');
             $image = null;
             if ($this->juvimgService && $this->juvimgService->isAccessible()) {
                 $this->logger->info('Resizing image {name} using juvimg service', ['name' => $name]);
