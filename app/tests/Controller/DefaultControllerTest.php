@@ -10,29 +10,10 @@
 
 namespace Tests\Controller;
 
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\JuvemWebTestCase;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends JuvemWebTestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        static::bootKernel();
-        /** @var EntityManager $doctrine */
-        $em = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
-        /** @var Connection $connection */
-        $connection = $em->getConnection();
-        try {
-            $connection->exec('SELECT 1 FROM flash');
-        } catch (\Exception $e) {
-            system('php ' . __DIR__ . '/../../console doctrine:database:create -q -n');
-        } finally {
-            static::ensureKernelShutdown();
-        }
-        system('php ' . __DIR__ . '/../../console doctrine:schema:update --force -q -n');
-    }
-    
     public function tearDown(): void
     {
         static::ensureKernelShutdown();
