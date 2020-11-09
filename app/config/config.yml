@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters_defaults.yml }
     - { resource: 'paramete*s.yml' }
-    - { resource: '../../var/config/parameters*.yml' }
+    - { resource: '../../var/config/paramete*s.yml' }
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: version.php }
