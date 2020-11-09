@@ -49,6 +49,15 @@ final class Version20201102100000 extends AbstractMigration
         if (file_exists(__DIR__.'/../bootstrap.php.cache')) {
             unlink(__DIR__.'/../bootstrap.php.cache');
         }
+
+        if (file_exists(__DIR__.'/../../vendor')) {
+           exec('rm -dfR  ' . __DIR__.'/../../vendor', $output, $return);
+            if ($return !== 0) {
+                throw new \RuntimeException(
+                    sprintf('Failed to remove vendor; Output %s', implode(', ', $output))
+                );
+            }
+        }
     }
 
     /**
