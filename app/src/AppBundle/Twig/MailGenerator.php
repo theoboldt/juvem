@@ -61,7 +61,10 @@ class MailGenerator
     public function getMessageByPath($path, $parameters = [])
     {
         if (!isset($parameters['customization'])) {
-            $parameters['customization']    = $this->customization;
+            $parameters['customization'] = $this->customization;
+        }
+        if (!isset($parameters['appTitle'])) {
+            $parameters['appTitle'] = $this->customization->title();
         }
         $organizationEmail = $this->customization->organizationEmail();
         $organizationName  = $this->customization->organizationName();

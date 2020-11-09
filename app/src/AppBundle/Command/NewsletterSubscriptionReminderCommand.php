@@ -12,14 +12,43 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Manager\NewsletterManager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class NewsletterSubscriptionReminderCommand extends ContainerAwareCommand
+class NewsletterSubscriptionReminderCommand extends Command
 {
+
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * app.newsletter_manager
+     *
+     * @var NewsletterManager
+     */
+    private NewsletterManager $newsletterManager;
+    
+    /**
+     * NewsletterSubscriptionReminderCommand constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param NewsletterManager $newsletterManager
+     */
+    public function __construct(ManagerRegistry $doctrine, NewsletterManager $newsletterManager)
+    {
+        $this->doctrine          = $doctrine;
+        $this->newsletterManager = $newsletterManager;
+        parent::__construct();
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -75,7 +104,7 @@ class NewsletterSubscriptionReminderCommand extends ContainerAwareCommand
      */
     protected function unconfirmedSubscriptionList()
     {
-        $repository    = $this->getContainer()->get('doctrine')->getRepository(NewsletterSubscription::class);
+        $repository    = $this->doctrine->getRepository(NewsletterSubscription::class);
         $subscriptions = $repository->findBy(['isConfirmed' => false]);
 
         return $subscriptions;
@@ -91,7 +120,7 @@ class NewsletterSubscriptionReminderCommand extends ContainerAwareCommand
     protected function processSubscriptions(array $subscriptions, $stepCallback = null)
     {
         /** @var NewsletterManager $mailManager */
-        $mailManager = $this->getContainer()->get('app.newsletter_manager');
+        $mailManager = $this->newsletterManager;
         $sent        = 0;
 
         foreach ($subscriptions as $subscription) {

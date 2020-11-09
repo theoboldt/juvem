@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,14 +23,16 @@ class CronController extends AbstractController
 {
     /**
      * @Route("/cron/subscription/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_subscription")
+     * @param string $token
+     * @param KernelInterface $kernel
+     * @return Response
      */
-    public function subscriptionMailAction($token)
+    public function subscriptionMailAction(string $token, KernelInterface $kernel)
     {
         if ($token != $this->getParameter('cron_secret')) {
             throw new AccessDeniedException('Called cron task with incorrect credentials');
         }
 
-        $kernel      = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
@@ -43,16 +46,19 @@ class CronController extends AbstractController
             return new Response('Successfully sent');
         }
     }
+    
     /**
      * @Route("/cron/user/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_clenaup_user")
+     * @param string $token
+     * @param KernelInterface $kernel
+     * @return Response
      */
-    public function cleanupUserRegistrationRequestsAction($token)
+    public function cleanupUserRegistrationRequestsAction(string $token, KernelInterface $kernel)
     {
         if ($token != $this->getParameter('cron_secret')) {
             throw new AccessDeniedException('Called cron task with incorrect credentials');
         }
 
-        $kernel      = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 

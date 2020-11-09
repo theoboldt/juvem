@@ -16,14 +16,30 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use AppBundle\Manager\ParticipationManager;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EventSubscriptionMailCommand extends ContainerAwareCommand
+class EventSubscriptionMailCommand extends Command
 {
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * app.participation_manager
+     *
+     * @var ParticipationManager
+     */
+    private ParticipationManager $participationManager;
+    
     /**
      * Event Task
      *
@@ -51,7 +67,20 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
      * @var array
      */
     protected $userSubscription = [];
-
+    
+    /**
+     * EventSubscriptionMailCommand constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param ParticipationManager $participationManager
+     */
+    public function __construct(ManagerRegistry $doctrine, ParticipationManager $participationManager)
+    {
+        $this->doctrine             = $doctrine;
+        $this->participationManager = $participationManager;
+        parent::__construct();
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -70,7 +99,7 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
         $dry  = $input->getOption('dry-run');
         $run  = new \DateTime();
         $task = $this->getTask();
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em = $this->doctrine->getManager();
 
         $this->executeParticipantParse($output);
         $this->executeMailSend($output, $dry);
@@ -78,6 +107,7 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
         $task->setLastRun($run);
         $em->persist($task);
         $em->flush();
+        return 0;
     }
 
     /**
@@ -88,7 +118,7 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
      */
     protected function executeMailSend(OutputInterface $output, $dry = false)
     {
-        $participationManager = $this->getContainer()->get('app.participation_manager');
+        $participationManager = $this->participationManager;
 
         $progress = new ProgressBar($output, count($this->userSubscription));
         $progress->start();
@@ -115,8 +145,8 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
     protected function executeParticipantParse(OutputInterface $output)
     {
         $last                    = $this->getLastTaskRun();
-        $eventRepository         = $this->getContainer()->get('doctrine')->getRepository(Event::class);
-        $participationRepository = $this->getContainer()->get('doctrine')->getRepository(Participation::class);
+        $eventRepository         = $this->doctrine->getRepository(Event::class);
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
         $eventList               = $eventRepository->findWithSubscriptions();
 
         $progress = new ProgressBar($output, count($eventList));
@@ -163,7 +193,7 @@ class EventSubscriptionMailCommand extends ContainerAwareCommand
     protected function getTask()
     {
         if (!$this->task) {
-            $repository = $this->getContainer()->get('doctrine')->getRepository(Task::class);
+            $repository = $this->doctrine->getRepository(Task::class);
             $this->task = $repository->findOneBy(['command' => $this->getName()]);
             if (!$this->task) {
                 $this->task = new Task();

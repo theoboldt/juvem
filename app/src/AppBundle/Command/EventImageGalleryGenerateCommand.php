@@ -12,16 +12,46 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
+use AppBundle\Manager\UploadImageManager;
+use AppBundle\Manager\UploadImageManager\AbstractFileException;
+use Doctrine\Persistence\ManagerRegistry;
 use Imagine\Image\ImageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EventImageGalleryGenerateCommand extends ContainerAwareCommand
+class EventImageGalleryGenerateCommand extends Command
 {
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * app.gallery_image_manager
+     *
+     * @var UploadImageManager
+     */
+    private UploadImageManager $galleryImageManager;
+    
+    /**
+     * EventImageGalleryGenerateCommand constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param UploadImageManager $galleryImageManager
+     */
+    public function __construct(ManagerRegistry $doctrine, UploadImageManager $galleryImageManager)
+    {
+        $this->doctrine       = $doctrine;
+        $this->galleryImageManager = $galleryImageManager;
+        parent::__construct();
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -50,16 +80,17 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
 
         $dry = $input->getOption('dry-run');
 
-        $eventRepository = $this->getContainer()->get('doctrine')->getRepository(Event::class);
+        $eventRepository = $this->doctrine->getRepository(Event::class);
         /** @var Event $event */
         $event = $eventRepository->find($input->getArgument('event'));
         if (!$event) {
             throw new \RuntimeException('Did not find event with transmitted id');
         }
-        $imageRepository = $this->getContainer()->get('doctrine')->getRepository(GalleryImage::class);
+        $imageRepository = $this->doctrine->getRepository(GalleryImage::class);
         $images          = $imageRepository->findByEvent($event);
 
         $this->executeResize($output, $images, $dry);
+        return 0;
     }
 
     /**
@@ -71,26 +102,33 @@ class EventImageGalleryGenerateCommand extends ContainerAwareCommand
      */
     protected function executeResize(OutputInterface $output, array $images, $dry = false)
     {
-        $uploadManager = $this->getContainer()->get('app.gallery_image_manager');
+        $uploadManager = $this->galleryImageManager;
 
         $progress = new ProgressBar($output, count($images));
         $progress->start();
+        $prepared = 0;
+        
         /** @var GalleryImage $image */
         foreach ($images as $image) {
             if (!$dry) {
-                $uploadManager->fetchResized(
-                    $image->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
-                    ImageInterface::THUMBNAIL_OUTBOUND, 30
-                );
-                $uploadManager->fetchResized(
-                    $image->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
-                    ImageInterface::THUMBNAIL_INSET, 70
-                );
+                try {
+                    $uploadManager->fetchResized(
+                        $image->getFilename(), GalleryImage::THUMBNAIL_DIMENSION, GalleryImage::THUMBNAIL_DIMENSION,
+                        ImageInterface::THUMBNAIL_OUTBOUND, 30
+                    );
+                    $uploadManager->fetchResized(
+                        $image->getFilename(), GalleryImage::THUMBNAIL_DETAIL, GalleryImage::THUMBNAIL_DETAIL,
+                        ImageInterface::THUMBNAIL_INSET, 70
+                    );
+                    ++$prepared;
+                } catch (AbstractFileException $e) {
+                    $output->writeln(sprintf("<error>%s</error>", $e->getMessage()));
+                }
 
             }
             $progress->advance();
         }
         $progress->finish();
-        $output->writeln(sprintf("\n      Prepared <info>%d</info> images", count($images)));
+        $output->writeln(sprintf("\n      Prepared <info>%d</info> images", $prepared));
     }
 }

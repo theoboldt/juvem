@@ -9,9 +9,9 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.database.configuration.path: "%kernel.project_dir%/config/.my.cnf"
     app.var.root.path: "%kernel.project_dir%/../var"
     app.var.config.path: "%app.var.root.path%/config"
+    app.database.configuration.path: "%app.var.config.path%/.my.cnf"
     app.tmp.root.path: "%app.var.root.path%/tmp"
     app.cache.root.path: "%app.var.root.path%/cache"
     app.cache.environment.path: "%app.cache.root.path%/%kernel.environment%"

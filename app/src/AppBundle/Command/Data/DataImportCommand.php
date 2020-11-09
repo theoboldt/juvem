@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Command;
+namespace AppBundle\Command\Data;
 
 
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -88,16 +88,6 @@ class DataImportCommand extends DataCommandBase
     }
     
     /**
-     * Get archive wrapper
-     *
-     * @return string
-     */
-    private function getWrapper()
-    {
-        return 'phar://' . $this->archive->getPath();
-    }
-    
-    /**
      * Collect expected files
      *
      * @param InputInterface $input
@@ -118,7 +108,6 @@ class DataImportCommand extends DataCommandBase
             if ($relativePath === '/database.sql') {
                 $databaseImageFound = true;
             }
-            #copy("zip://" . $path . "#" . $filename, "/your/new/destination/" . $fileinfo['basename']);
         }
         $output->writeln('done.');
         sort($this->dataFilesBefore);
@@ -183,7 +172,7 @@ class DataImportCommand extends DataCommandBase
             $this->disableService();
             
             $output->write('Collecting current data files... ');
-            $dataPath              = $this->getContainer()->getParameter('app.data.root.path');
+            $dataPath              = $this->dataRootPath;
             $this->dataFilesBefore = array_values(self::createFileListing($dataPath, '/data/'));
             $output->writeln('done.');
             
@@ -213,8 +202,8 @@ class DataImportCommand extends DataCommandBase
             $output->writeln(' done.');
             
             $output->write('Preparing database import... ');
-            $databaseImagePath = $this->getContainer()->getParameter('app.tmp.root.path') . '/database.sql';
-            if (!$this->archive->extractTo($this->getContainer()->getParameter('app.tmp.root.path'), '/database.sql')) {
+            $databaseImagePath = $this->tmpRootPath . '/database.sql';
+            if (!$this->archive->extractTo($this->tmpRootPath, '/database.sql')) {
                 $output->writeln('<error>Failed to extract database file.</error>');
                 if ($password) {
                     $output->writeln('The password set might be incorrect');
@@ -222,7 +211,7 @@ class DataImportCommand extends DataCommandBase
                 throw new \RuntimeException();
             }
             
-            $configurationPath = $this->getContainer()->getParameter('app.database.configuration.path');
+            $configurationPath = $this->databaseConfigFilePath;
             $this->createMysqlConfigurationFile();
             $output->writeln('done.');
             
@@ -231,9 +220,9 @@ class DataImportCommand extends DataCommandBase
                 sprintf(
                     'mysql --defaults-file=%s --host=%s --port=%d %s < %s',
                     escapeshellarg($configurationPath),
-                    escapeshellarg($this->getContainer()->getParameter('database_host')),
-                    escapeshellarg($this->getContainer()->getParameter('database_port')),
-                    escapeshellarg($this->getContainer()->getParameter('database_name')),
+                    escapeshellarg($this->databaseHost),
+                    escapeshellarg($this->databasePort),
+                    escapeshellarg($this->databaseName),
                     escapeshellarg($databaseImagePath)
                 )
             );

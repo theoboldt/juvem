@@ -448,7 +448,7 @@ services:
 
     AppBundle\Controller\:
         resource: '../src/AppBundle/Controller/**/*Controller.php'
-        exclude: '../src/AppBundle/Conftroller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
+        exclude: '../src/AppBundle/Controller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
         tags: [ 'controller.service_arguments' ]
 
     AppBundle\Controller\DefaultController:
@@ -507,3 +507,26 @@ services:
         arguments:
             $featureNewsletter: '%feature.newsletter%'
         tags: [ 'controller.service_arguments' ]
+
+    AppBundle\Command\:
+        resource: '../src/AppBundle/Command/**/*Command.php'
+        tags: [ 'console.command' ]
+
+    AppBundle\Command\EventImageGalleryGenerateCommand:
+        arguments:
+            $galleryImageManager: '@app.gallery_image_manager'
+        tags: [ 'console.command' ]
+
+    AppBundle\Command\Data\:
+        resource: '../src/AppBundle/Command/Data/*Command.php'
+        tags: [ 'console.command' ]
+        arguments:
+            $databaseUser: '%database_user%'
+            $databasePassword: '%database_password%'
+            $databaseHost: '%database_host%'
+            $databasePort: '%database_port%'
+            $databaseName: '%database_name%'
+            $databaseConfigFilePath: '%app.database.configuration.path%'
+            $webRootPath: '%app.web.root.path%'
+            $tmpRootPath: '%app.tmp.root.path%'
+            $dataRootPath: '%app.data.root.path%'

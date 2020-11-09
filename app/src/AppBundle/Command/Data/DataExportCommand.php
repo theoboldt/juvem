@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Command;
+namespace AppBundle\Command\Data;
 
 
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -147,19 +147,18 @@ class DataExportCommand extends DataCommandBase
      */
     private function addDatabaseDump(InputInterface $input, OutputInterface $output): bool
     {
-        $container         = $this->getContainer();
-        $this->dbImagePath = $container->getParameter('app.tmp.root.path') . '/' . uniqid('db_image');
+        $this->dbImagePath = $this->tmpRootPath . '/' . uniqid('db_image');
         
         if (`which mysqldump`) {
-            $configurationPath = $container->getParameter('app.database.configuration.path');
+            $configurationPath = $this->databaseConfigFilePath;
             $this->createMysqlConfigurationFile();
             shell_exec(
                 sprintf(
                     'mysqldump --defaults-file=%s --single-transaction --add-drop-table --host=%s --port=%d %s > %s',
                     escapeshellarg($configurationPath),
-                    escapeshellarg($container->getParameter('database_host')),
-                    escapeshellarg($container->getParameter('database_port')),
-                    escapeshellarg($container->getParameter('database_name')),
+                    escapeshellarg($this->databaseHost),
+                    escapeshellarg($this->databasePort),
+                    escapeshellarg($this->databaseName),
                     escapeshellarg($this->dbImagePath)
                 )
             );
@@ -168,7 +167,7 @@ class DataExportCommand extends DataCommandBase
         } else {
             if ($input->isInteractive()) {
                 $helper   = $this->getHelper('question');
-                $question = new ConfirmationQuestion('Can not add database image, continue?', false);
+                $question = new ConfirmationQuestion('Can not add database image as mysqldump is unavailable, continue?', false);
                 
                 if (!$helper->ask($input, $output, $question)) {
                     $output->writeln('Nothing exported');
@@ -188,7 +187,7 @@ class DataExportCommand extends DataCommandBase
      */
     private function addDataFiles(): bool
     {
-        $dataPath    = $this->getContainer()->getParameter('app.data.root.path');
+        $dataPath    = $this->dataRootPath;
         $this->files = array_merge($this->files, self::createFileListing($dataPath, '/data/'));
         return true;
     }

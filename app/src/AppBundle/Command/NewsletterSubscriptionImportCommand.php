@@ -11,7 +11,10 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\NewsletterSubscription;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use AppBundle\Manager\NewsletterManager;
+use Doctrine\Persistence\ManagerRegistry;
+use FOS\UserBundle\Util\TokenGeneratorInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,8 +22,48 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
+class NewsletterSubscriptionImportCommand extends Command
 {
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * Token generator
+     *
+     * @var TokenGeneratorInterface
+     */
+    private TokenGeneratorInterface $newsletterTokenGenerator;
+    
+    /**
+     * app.newsletter_manager
+     *
+     * @var NewsletterManager
+     */
+    private NewsletterManager $newsletterManager;
+    
+    /**
+     * NewsletterSubscriptionImportCommand constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     * @param TokenGeneratorInterface $newsletterTokenGenerator
+     * @param NewsletterManager $newsletterManager
+     */
+    public function __construct(
+        ManagerRegistry $doctrine,
+        TokenGeneratorInterface $newsletterTokenGenerator,
+        NewsletterManager $newsletterManager
+    )
+    {
+        $this->doctrine                 = $doctrine;
+        $this->newsletterTokenGenerator = $newsletterTokenGenerator;
+        $this->newsletterManager        = $newsletterManager;
+        parent::__construct();
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -105,7 +148,7 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
      */
     protected function givenEmailList()
     {
-        $repository    = $this->getContainer()->get('doctrine')->getRepository(NewsletterSubscription::class);
+        $repository    = $this->doctrine->getRepository(NewsletterSubscription::class);
         $subscriptions = $repository->findAll();
         $emailList     = [];
         foreach ($subscriptions as $subscription) {
@@ -123,9 +166,9 @@ class NewsletterSubscriptionImportCommand extends ContainerAwareCommand
      */
     protected function processRecipients(array $recipientsNew, $stepCallback = null)
     {
-        $em             = $this->getContainer()->get('doctrine')->getManager();
-        $tokenGenerator = $this->getContainer()->get('app.newsletter_token_generator');
-        $mailManager    = $this->getContainer()->get('app.newsletter_manager');
+        $em             = $this->doctrine->getManager();
+        $tokenGenerator = $this->newsletterTokenGenerator;
+        $mailManager    = $this->newsletterManager;
         $given          = $this->givenEmailList();
         $subscriptions  = 0;
 

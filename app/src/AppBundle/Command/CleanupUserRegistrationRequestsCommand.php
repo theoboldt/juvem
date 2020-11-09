@@ -10,20 +10,34 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\GalleryImage;
 use AppBundle\Entity\User;
-use Imagine\Image\ImageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CleanupUserRegistrationRequestsCommand extends ContainerAwareCommand
+class CleanupUserRegistrationRequestsCommand extends Command
 {
+    /**
+     * doctrine
+     *
+     * @var ManagerRegistry
+     */
+    private ManagerRegistry $doctrine;
+    
+    /**
+     * CleanupUserRegistrationRequestsCommand constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     */
+    public function __construct(ManagerRegistry $doctrine) {
+        $this->doctrine = $doctrine;
+        parent::__construct();
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -45,7 +59,7 @@ class CleanupUserRegistrationRequestsCommand extends ContainerAwareCommand
         $maxAge = $input->getArgument('age');
         $dry    = $input->getOption('dry-run');
 
-        $repository = $this->getContainer()->get('doctrine')->getRepository(User::class);
+        $repository = $this->doctrine->getRepository(User::class);
         $users      = $repository->findUnconfirmed($maxAge);
 
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
@@ -69,12 +83,14 @@ class CleanupUserRegistrationRequestsCommand extends ContainerAwareCommand
             $output->writeln('No changes applied');
         } else {
             $output->write('Deleting users...');
-            $em = $this->getContainer()->get('doctrine')->getManager();
+            $em = $this->doctrine->getManager();
             foreach ($users as $user) {
                 $em->remove($user);
             }
             $em->flush();
             $output->writeln(' done.');
         }
+        
+        return 0;
     }
 }
