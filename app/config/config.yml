@@ -1,9 +1,12 @@
 imports:
     - { resource: parameters_defaults.yml }
-    - { resource: parameters.yml }
+    - { resource: 'paramete*s.yml' }
+    - { resource: '../../var/config/parameters*.yml' }
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: version.php }
+#TODO: When transition to 4.4 is done on each installation, templated parameters.yml file load should
+#be replaced by single file loads
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
