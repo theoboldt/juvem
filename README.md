@@ -29,15 +29,35 @@ Beside the default fields like name, age or phone numbers you can define your ow
 ### Newsletter
 People can register themselves in order to receive the newsletter. For each newsletter, you have to define an age range specifying for people of which age this newsletter is directed to. People can select the age range they want to be notified about.
 
-![Homepage Screenshot](/app/Resources/screenshots/homepage.png)
-![Public participation form](/app/Resources/screenshots/participate.png)
-![Event management](/app/Resources/screenshots/event_admin.png)
-![Participation history](/app/Resources/screenshots/participate_history.png)
-![Excel export generation](/app/Resources/screenshots/export_generator.png)
-![Custom fields overview](/app/Resources/screenshots/formula_overview.png)
-![Formula editor](/app/Resources/screenshots/formula_editor.png)
-![Newsletter creation](/app/Resources/screenshots/newsletter.png)
-![Participation price management](/app/Resources/screenshots/participant_price.png)
+![Homepage Screenshot](app/assets/screenshots/homepage.png)
+Presents your events on homepage, providing more information for logged in admins
+
+![Event management](app/assets/screenshots/event_admin_detail.png)
+A lot of things to do in event details for admin, providing lists, statistics, exports, weather data...
+
+![Public participation form](app/assets/screenshots/event_public_participation.png)
+Public participation form, providing autofill for registered users
+
+![Participation history](app/assets/screenshots/event_admin_statistics.png)
+See how early participants register for events
+
+![Participants dependencies](app/assets/screenshots/event_admin_graph.png)
+Detect dependencies between participants, easily distribute them in groups
+
+![Excel export generation](app/assets/screenshots/event_admin_export.png)
+Create customized excel export 
+
+![Custom fields overview](app/assets/screenshots/formula_overview.png)
+Create custom fields to ask parents for special data
+
+![Formula editor](app/assets/screenshots/formula_editor.png)
+Configure formulas calculating participation price depending on chosen options when participating
+
+![Newsletter creation](app/assets/screenshots/newsletter.png)
+Create newsletters
+
+![Participation price management](app/assets/screenshots/participant_price.png)
+Manage participation prices and payments
 
 ## Requirements
 Juvem is a symfony 4.4 based application.
