@@ -24,8 +24,8 @@ final class Version20201102100000 extends AbstractMigration
      */
     public function up(Schema $schema): void
     {
-        $targetPath = __DIR__ . '/../../var/config/templates';
         $sourcePath = __DIR__ . '/../config';
+        $targetPath = __DIR__ . '/../../var/config/templates';
 
         umask(0);
         if (!file_exists($targetPath)) {
@@ -52,8 +52,8 @@ final class Version20201102100000 extends AbstractMigration
      */
     public function down(Schema $schema): void
     {
-        $targetPath = __DIR__ . '/../var/config';
         $sourcePath = __DIR__ . '/../../config/templates';
+        $targetPath = __DIR__ . '/../config';
         umask(0);
         if (!file_exists($targetPath)) {
             if (!mkdir($targetPath, 0777, true)) {
