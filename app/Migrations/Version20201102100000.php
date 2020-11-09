@@ -45,6 +45,10 @@ final class Version20201102100000 extends AbstractMigration
         $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'invoice');
         $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'template.docx');
         $this->moveFileIfExists(__DIR__ . '/../../data', __DIR__ . '/../../var/data', 'uploads');
+        
+        if (file_exists(__DIR__.'/../bootstrap.php.cache')) {
+            unlink(__DIR__.'/../bootstrap.php.cache');
+        }
     }
 
     /**
