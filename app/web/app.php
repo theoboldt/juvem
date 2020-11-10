@@ -1,14 +1,19 @@
 <?php
 
 $checkIfDisabled = function () {
-    if (file_exists(__DIR__ . '/app-disabled')) {
+    $fileExists = function () {
+        return file_exists(__DIR__ . '/app-disabled')
+            || file_exists(__DIR__ . '/../../app-disabled');
+    };
+    
+    if ($fileExists()) {
         for ($i = 0; $i <= 20; $i++) {
             sleep(1);
-            if (!file_exists(__DIR__ . '/app-disabled')) {
+            if (!$fileExists()) {
                 break;
             }
         }
-        if (file_exists(__DIR__ . '/app-disabled')) {
+        if ($fileExists()) {
             header('HTTP/1.1 503 Service Temporarily Unavailable');
             header('Status: 503 Service Temporarily Unavailable');
             header('Retry-After: ' . (60 * 2));
