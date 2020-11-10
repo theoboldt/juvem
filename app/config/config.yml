@@ -48,7 +48,9 @@ framework:
                 version: "%app.version.hash.css%"
                 version_format: "%%s?h%%s"
     #esi:             ~
-    translator:      { fallbacks: ["%locale%"] }
+    translator:
+        fallbacks: ["%locale%"]
+        default_path: '%kernel.project_dir%/translations'
     secret:          "%secret%"
     router:
         resource: "%kernel.project_dir%/config/routing.yml"

@@ -9,23 +9,23 @@ AppBundle\Entity\User:
     properties:
         nameFirst:
             - NotBlank:
-                message: AppBundle_user.name_first.blank
+                message: fos_user.name_first.blank
                 groups: [ "AppBundleProfile" ]
             - Length:
                 min: 0
-                minMessage: AppBundle_user.name_first.short
+                minMessage: fos_user.name_first.short
                 max: 255
-                maxMessage: AppBundle_user.name_first.long
+                maxMessage: fos_user.name_first.long
                 groups: [ "AppBundleProfile" ]
         nameLast:
             - NotBlank:
-                message: AppBundle_user.name_last.blank
+                message: fos_user.name_last.blank
                 groups: [ "AppBundleProfile" ]
             - Length:
                 min: 2
-                minMessage: AppBundle_user.name_last.short
+                minMessage: fos_user.name_last.short
                 max: 255
-                maxMessage: AppBundle_user.name_last.long
+                maxMessage: fos_user.name_last.long
                 groups: [ "AppBundleProfile" ]
         email:
             - NotBlank:
