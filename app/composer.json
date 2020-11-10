@@ -87,7 +87,8 @@
           "require": "4.4.*"
         },
         "incenteev-parameters": {
-            "file": "config/parameters.yml"
+            "file": "../var/config/parameters.yml",
+            "dist-file": "config/parameters.yml.dist"
         }
     }
 }
