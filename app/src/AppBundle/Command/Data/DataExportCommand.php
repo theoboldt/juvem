@@ -172,9 +172,14 @@ class DataExportCommand extends DataCommandBase
                     escapeshellarg($this->databaseName),
                     escapeshellarg($this->dbImagePath)
                 );
-            shell_exec($cmd);
+            exec($cmd, $mysqldumpOutput, $return);
             unlink($this->databaseConfigFilePath);
             $this->files[$this->dbImagePath] = '/database.sql';
+            if ($return !== 0) {
+                $output->writeln(
+                    sprintf('<error>Error when creating database backup: %s</error>', implode(', ', $mysqldumpOutput))
+                );
+            }
         } else {
             if ($input->isInteractive()) {
                 $helper   = $this->getHelper('question');
