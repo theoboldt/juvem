@@ -33,6 +33,7 @@
         "ext-xsl": "*",
         "ext-fileinfo": "*",
         "symfony/symfony": "4.4.*",
+        "symfony/translation": "4.4.*",
         "symfony/proxy-manager-bridge": "4.4.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
@@ -86,7 +87,8 @@
           "require": "4.4.*"
         },
         "incenteev-parameters": {
-            "file": "config/parameters.yml"
+            "file": "../var/config/parameters.yml",
+            "dist-file": "config/parameters.yml.dist"
         }
     }
 }

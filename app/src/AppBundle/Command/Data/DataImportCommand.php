@@ -211,23 +211,20 @@ class DataImportCommand extends DataCommandBase
                 throw new \RuntimeException();
             }
             
-            $configurationPath = $this->databaseConfigFilePath;
             $this->createMysqlConfigurationFile();
             $output->writeln('done.');
             
             $output->write('Importing database... ');
             shell_exec(
                 sprintf(
-                    'mysql --defaults-file=%s --host=%s --port=%d %s < %s',
-                    escapeshellarg($configurationPath),
-                    escapeshellarg($this->databaseHost),
-                    escapeshellarg($this->databasePort),
+                    'mysql --defaults-file=%s %s < %s',
+                    escapeshellarg($this->databaseConfigFilePath),
                     escapeshellarg($this->databaseName),
                     escapeshellarg($databaseImagePath)
                 )
             );
             $output->writeln('done.');
-            unlink($configurationPath);
+            unlink($this->databaseConfigFilePath);
             unlink($databaseImagePath);
             
             $output->writeln('Extracting files from backup... ');

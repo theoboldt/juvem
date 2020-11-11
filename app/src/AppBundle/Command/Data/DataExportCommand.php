@@ -58,12 +58,10 @@ class DataExportCommand extends DataCommandBase
             $password = file_get_contents(trim($password));
         }
         
-        $archiveFlags = \ZipArchive::CREATE;
         $targetExists = file_exists($this->path);
         if ($input->isInteractive() && $targetExists) {
-            $helper       = $this->getHelper('question');
-            $question     = new ConfirmationQuestion('Target file already exists, overwrite?', false);
-            $archiveFlags = \ZipArchive::OVERWRITE;
+            $helper    = $this->getHelper('question');
+            $question  = new ConfirmationQuestion('Target file already exists, overwrite?', false);
             
             if (!$helper->ask($input, $output, $question)) {
                 $output->writeln('Nothing exported');
@@ -91,11 +89,12 @@ class DataExportCommand extends DataCommandBase
             } else {
                 $output->writeln('Creating archive without password...');
             }
-            
-            $archive = new \ZipArchive();
-            if (!$archive->open($this->path, $archiveFlags)) {
+    
+            $archive        = new \ZipArchive();
+            $archiveTmpPath = $this->temporaryFileName('data_export');
+            if (!$archive->open($archiveTmpPath, \ZipArchive::CREATE)) {
                 $output->writeln(
-                    '<error>Failed to open "' . $this->path . '", ' . $archive->getStatusString() . '</error>'
+                    '<error>Failed to open "' . $archiveTmpPath . '", ' . $archive->getStatusString() . '</error>'
                 );
                 $archive->close();
                 $this->cleanup();
@@ -124,14 +123,30 @@ class DataExportCommand extends DataCommandBase
             }
             $progress->finish();
             $output->writeln(' done.');
-            
-            
+    
+            $timeClose = microtime(true);
             $output->write('Closing... ');
             $archive->close();
-            $output->writeln('done.');
-            
+            $output->writeln(
+                'done after <info>' . round(microtime(true) - $timeClose) . ' s</info>.'
+            );
+    
+            $output->write('Moving to target... ');
+            $timeMv = microtime(true);
+            exec('mv ' . escapeshellarg($archiveTmpPath) . ' ' . escapeshellarg($this->path), $mvOutput, $return);
+            if ($return !== 0) {
+                $output->writeln(
+                    'failed after <info>' . round(microtime(true) - $timeMv) . ' s</info>: <error>' .
+                    implode(', ', $mvOutput) . '</error>'
+                );
+            } else {
+                $output->writeln(
+                    'done after <info>' . round(microtime(true) - $timeMv) . ' s</info>.'
+                );
+            }
             $this->cleanup();
         } catch (\Exception $e) {
+            $this->cleanup();
             $this->enableService();
             throw $e;
         }
@@ -150,19 +165,15 @@ class DataExportCommand extends DataCommandBase
         $this->dbImagePath = $this->tmpRootPath . '/' . uniqid('db_image');
         
         if (`which mysqldump`) {
-            $configurationPath = $this->databaseConfigFilePath;
             $this->createMysqlConfigurationFile();
-            shell_exec(
-                sprintf(
-                    'mysqldump --defaults-file=%s --single-transaction --add-drop-table --host=%s --port=%d %s > %s',
-                    escapeshellarg($configurationPath),
-                    escapeshellarg($this->databaseHost),
-                    escapeshellarg($this->databasePort),
+            $cmd = sprintf(
+                    'mysqldump --defaults-file=%s --single-transaction --add-drop-table %s > %s',
+                    escapeshellarg($this->databaseConfigFilePath),
                     escapeshellarg($this->databaseName),
                     escapeshellarg($this->dbImagePath)
-                )
-            );
-            unlink($configurationPath);
+                );
+            shell_exec($cmd);
+            unlink($this->databaseConfigFilePath);
             $this->files[$this->dbImagePath] = '/database.sql';
         } else {
             if ($input->isInteractive()) {
@@ -178,6 +189,26 @@ class DataExportCommand extends DataCommandBase
             }
         }
         return true;
+    }
+
+    /**
+     * Create a temporary file in apps tmp dir
+     *
+     * @param string $prefix Prefix to use
+     * @return string        New file name
+     */
+    private function temporaryFileName(string $prefix): string
+    {
+        if (!file_exists($this->tmpRootPath)) {
+            $umask = umask();
+            umask(0);
+            if (!mkdir($this->tmpRootPath, 0777, true)) {
+                umask($umask);
+                throw new \RuntimeException(sprintf('Failed to create %s', $this->tmpDir));
+            }
+            umask($umask);
+        }
+        return tempnam($this->tmpRootPath, $prefix);
     }
     
     /**

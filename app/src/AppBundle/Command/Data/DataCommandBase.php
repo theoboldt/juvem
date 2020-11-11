@@ -142,6 +142,8 @@ abstract class DataCommandBase extends Command
         }
         file_put_contents(
             $configurationPath, "[client]
+port=" . $this->databasePort . "
+host=" . $this->databaseHost."
 user=" . $this->databaseUser . "
 password=" . $this->databasePassword
         );
