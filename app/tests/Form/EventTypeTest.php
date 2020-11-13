@@ -91,8 +91,8 @@ class EventTypeTest extends JuvemKernelTestCase
         $this->assertTrue($model->hasLink());
         $this->assertTrue($model->isActive());
         $this->assertFalse($model->isVisible());
-        $this->assertEquals([], $model->getParticipations());
-        $this->assertEquals([], $model->getGalleryImages());
+        $this->assertCount(0, $model->getParticipations());
+        $this->assertCount(0, $model->getGalleryImages());
         $this->assertFalse($model->isGalleryLinkSharing());
     }
 
