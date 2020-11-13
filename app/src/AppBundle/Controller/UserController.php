@@ -10,20 +10,59 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserRoleAssignmentType;
 use AppBundle\Twig\Extension\BootstrapGlyph;
+use Doctrine\Persistence\ManagerRegistry;
+use FOS\UserBundle\Doctrine\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
-class UserController extends AbstractController
+class UserController
 {
+    use RenderingControllerTrait, DoctrineAwareControllerTrait, FormAwareControllerTrait, AuthorizationAwareControllerTrait;
+
+    /**
+     * @var UserManager
+     */
+    private UserManager $fosUserManager;
+
+    /**
+     * UserController constructor.
+     *
+     * @param UserManager                   $fosUserManager
+     * @param Environment                   $twig
+     * @param FormFactoryInterface          $formFactory
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface         $tokenStorage
+     * @param ManagerRegistry               $doctrine
+     */
+    public function __construct(
+        UserManager $fosUserManager,
+        Environment $twig,
+        FormFactoryInterface $formFactory,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage,
+        ManagerRegistry $doctrine
+    ) {
+        $this->fosUserManager       = $fosUserManager;
+        $this->twig                 = $twig;
+        $this->formFactory          = $formFactory;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
+        $this->doctrine             = $doctrine;
+    }
+
     /**
      * @Route("/admin/user/list", name="user_list")
      * @Security("is_granted('ROLE_ADMIN_USER')")
@@ -43,11 +82,11 @@ class UserController extends AbstractController
     {
         $glyph = new BootstrapGlyph();
 
-        $userManager  = $this->container->get('fos_user.user_manager');
+        $userManager  = $this->fosUserManager;
         $entityList   = $userManager->findUsers();
         $roleTemplate = ' <span title="%s">%s</span>';
 
-        $userList = array();
+        $userList = [];
 
         /** @var User $entity */
         foreach ($entityList as $entity) {
@@ -71,13 +110,13 @@ class UserController extends AbstractController
             }
 
 
-            $userList[] = array(
+            $userList[] = [
                 'uid'       => $entity->getUid(),
                 'email'     => $entity->getEmail(),
                 'nameFirst' => $entity->getNameFirst(),
                 'nameLast'  => $entity->getNameLast(),
-                'roles'     => $roles
-            );
+                'roles'     => $roles,
+            ];
         }
 
         return new JsonResponse($userList);
@@ -92,9 +131,9 @@ class UserController extends AbstractController
     {
         $form = $this->createForm(
             UserRoleAssignmentType::class,
-            array('uid'  => $user->getUid(),
-                  'role' => $user->getRoles()
-            )
+            ['uid'  => $user->getUid(),
+             'role' => $user->getRoles(),
+            ]
         );
         $form->handleRequest($request);
 
@@ -110,11 +149,11 @@ class UserController extends AbstractController
 
         return $this->render(
             'user/detail.html.twig',
-            array(
+            [
                 'user'       => $user,
                 'userIsSelf' => ($user->getUid() == $this->getUser()->getUid()),
-                'form'       => $form->createView()
-            )
+                'form'       => $form->createView(),
+            ]
         );
     }
 
@@ -134,22 +173,23 @@ class UserController extends AbstractController
             ['assignedUser' => $user->getUid(), 'deletedAt' => null]
         );
 
-        $participationListResult = array();
+        $participationListResult = [];
         /** @var Participant $participant */
         foreach ($participationList as $participation) {
+            /** @var Event $event */
             $event = $participation->getEvent();
 
-            $participants = array();
+            $participants = [];
             foreach ($participation->getParticipants() as $participant) {
                 $participants[] = $participant->getNameFirst();
             }
 
-            $participationListResult[] = array(
+            $participationListResult[] = [
                 'eid'          => $event->getEid(),
                 'pid'          => $participation->getPid(),
                 'eventTitle'   => $event->getTitle(),
-                'participants' => implode(', ', $participants)
-            );
+                'participants' => implode(', ', $participants),
+            ];
         }
 
         return new JsonResponse($participationListResult);

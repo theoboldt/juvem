@@ -508,6 +508,11 @@ services:
             $featureNewsletter: '%feature.newsletter%'
         tags: [ 'controller.service_arguments' ]
 
+    AppBundle\Controller\UserController:
+        arguments:
+            $fosUserManager: '@fos_user.user_manager'
+        tags: [ 'controller.service_arguments' ]
+
     AppBundle\Command\:
         resource: '../src/AppBundle/Command/**/*Command.php'
         tags: [ 'console.command' ]
