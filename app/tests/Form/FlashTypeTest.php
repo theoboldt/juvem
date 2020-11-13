@@ -51,6 +51,67 @@ class FlashTypeTest extends TypeTestCase
         $this->assertEquals($messageType, $model->getType());
     }
     
+    public function testSubmitValidityDates()
+    {
+        $formData = [
+            'message'      => 'Test flash message',
+            'type'         => 'success',
+            'hasValidFrom' => true,
+            'validFrom'    => [
+                'date' => [
+                    'year'  => (string)date('Y'),
+                    'month' => '1',
+                    'day'   => '1'
+                ],
+                'time' => [
+                    'hour'   => '10',
+                    'minute' => '0',
+                ]
+            ],
+        ];
+        
+        $model = new Flash();
+        $form  = $this->factory->create(FlashType::class, $model);
+        
+        $form->submit($formData);
+        
+        $this->assertTrue($form->isSynchronized());
+        $this->assertNotNull($model->getValidFrom());
+        $this->assertEquals(new \DateTime(date('Y') . '-01-01 10:00:00'), $model->getValidFrom());
+    }
+    
+    public function testSubmitInvalidDate()
+    {
+        $formData = [
+            'message'      => 'Test flash message',
+            'type'         => 'success',
+            'hasValidFrom' => true,
+            'validFrom'    => [
+                'date' => [
+                    'year'  => (string)(date('Y') - 2),
+                    'month' => '1',
+                    'day'   => '1'
+                ],
+                'time' => [
+                    'hour'   => '10',
+                    'minute' => '0',
+                ]
+            ],
+        ];
+        
+        $model = new Flash();
+        $form  = $this->factory->create(FlashType::class, $model);
+        
+        $form->submit($formData);
+        
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid());
+        $errors = iterator_to_array($form->getErrors(true, true));
+        $this->assertCount(1, $errors);
+        $error = $errors[0];
+        
+        $this->assertEquals('The value ' . (string)(date('Y') - 2) . ' is not valid.', $error->getMessage());
+    }
     
     
 }
