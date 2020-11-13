@@ -20,14 +20,14 @@ class FileCachePathGeneratorResizedImage implements FileCachePathGenerator
      *
      * @var int
      */
-    private $width;
+    private int $width;
 
     /**
      * Resized height
      *
      * @var int
      */
-    private $height;
+    private int $height;
 
 
     /**
@@ -35,14 +35,14 @@ class FileCachePathGeneratorResizedImage implements FileCachePathGenerator
      *
      * @var string
      */
-    private $mode;
+    private string $mode;
 
     /**
      * Original filename
      *
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * FileCachePathGeneratorResizedImage constructor.
@@ -65,7 +65,7 @@ class FileCachePathGeneratorResizedImage implements FileCachePathGenerator
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return sprintf(
             '%s_%s_%s/%s/%s',
@@ -82,7 +82,7 @@ class FileCachePathGeneratorResizedImage implements FileCachePathGenerator
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getPath();
     }

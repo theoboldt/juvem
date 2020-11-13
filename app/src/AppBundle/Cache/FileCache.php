@@ -19,7 +19,7 @@ class FileCache
      *
      * @var string
      */
-    private $cacheDir;
+    private string $cacheDir;
 
     /**
      * FileCache constructor.
@@ -37,7 +37,7 @@ class FileCache
      * @param FileCachePathGenerator $key Value to check
      * @return bool
      */
-    public function contains(FileCachePathGenerator $key)
+    public function contains(FileCachePathGenerator $key): bool
     {
         return file_exists($this->path($key->getPath()));
     }
@@ -48,7 +48,7 @@ class FileCache
      * @param FileCachePathGenerator $key Value
      * @return \SplFileInfo
      */
-    public function fetch(FileCachePathGenerator $key)
+    public function fetch(FileCachePathGenerator $key): \SplFileInfo
     {
         if (!$this->contains($key)) {
             throw new \InvalidArgumentException('Cache miss');
@@ -61,9 +61,9 @@ class FileCache
      *
      * @param FileCachePathGenerator       $key   Key
      * @param resource|string|\SplFileInfo $value Data
-     * @return bool|int
+     * @return bool
      */
-    public function save(FileCachePathGenerator $key, $value)
+    public function save(FileCachePathGenerator $key, $value): bool
     {
         if (is_resource($value)) {
             return $this->saveResource($key, $value);
@@ -82,7 +82,7 @@ class FileCache
      * @param \SplFileInfo           $value Data File
      * @return bool
      */
-    public function saveFileInfo(FileCachePathGenerator $key, \SplFileInfo $value)
+    public function saveFileInfo(FileCachePathGenerator $key, \SplFileInfo $value): bool
     {
         $this->ensureDirectoryExists($key);
         $source = $value->getPathname();
@@ -97,13 +97,13 @@ class FileCache
      * @param resource               $value Data resource
      * @return bool
      */
-    public function saveResource(FileCachePathGenerator $key, $value)
+    public function saveResource(FileCachePathGenerator $key, $value): bool
     {
         if (!is_resource($value)) {
             throw new \InvalidArgumentException('A resource must be transmitted');
         }
         $this->ensureDirectoryExists($key);
-        $target = fopen($this->path($key), 'w');
+        $target = fopen($this->path($key->getPath()), 'w');
         while (!feof($value)) {
             fwrite($target, fread($value, 8192));
         }
@@ -116,12 +116,16 @@ class FileCache
      *
      * @param FileCachePathGenerator $key   Key
      * @param string                 $value Data
-     * @return bool|int
+     * @return bool
      */
-    public function saveString(FileCachePathGenerator $key, string $value)
+    public function saveString(FileCachePathGenerator $key, string $value): bool
     {
         $this->ensureDirectoryExists($key);
-        return file_put_contents($this->path($key), $value);
+        if (file_put_contents($this->path($key->getPath()), $value) !== false) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -129,11 +133,13 @@ class FileCache
      *
      * @param FileCachePathGenerator $key Value
      */
-    private function ensureDirectoryExists(FileCachePathGenerator $key)
+    private function ensureDirectoryExists(FileCachePathGenerator $key): void
     {
-        $dir = dirname($this->path($key));
+        $dir = dirname($this->path($key->getPath()));
         if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
+            if (!mkdir($dir, 0777, true)) {
+                throw new \RuntimeException('Failed to create directory ' . $dir);
+            }
         }
     }
 
@@ -143,7 +149,7 @@ class FileCache
      * @param  string $pathPart Path
      * @return string Full path
      */
-    private function path(string $pathPart)
+    private function path(string $pathPart): string
     {
         return rtrim($this->cacheDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR .
                ltrim($pathPart, DIRECTORY_SEPARATOR);
