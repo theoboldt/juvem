@@ -224,24 +224,20 @@ class EventType extends AbstractType
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $form = $event->getForm();
+            if ($form->isSynchronized()) {
 
-            if (!$form->get('hasStartTime')
-                      ->getData()
-            ) {
-                $form->get('startTime')
-                     ->setData(null);
-            }
-            if (!$form->get('hasEndDate')
-                      ->getData()
-            ) {
-                $form->get('endDate')
-                     ->setData(null);
-            }
-            if (!$form->get('hasEndTime')
-                      ->getData()
-            ) {
-                $form->get('endTime')
-                     ->setData(null);
+                if (!$form->get('hasStartTime')->getData()
+                ) {
+                    $form->get('startTime')->setData(null);
+                }
+                if (!$form->get('hasEndDate')->getData()
+                ) {
+                    $form->get('endDate')->setData(null);
+                }
+                if (!$form->get('hasEndTime')->getData()
+                ) {
+                    $form->get('endTime')->setData(null);
+                }
             }
         }
         );
@@ -252,7 +248,7 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'AppBundle\Entity\Event',
+                'data_class' => Event::class,
             )
         );
     }
