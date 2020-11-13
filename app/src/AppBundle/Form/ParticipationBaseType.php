@@ -29,15 +29,6 @@ class ParticipationBaseType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $dateTypeOptions = [
-            'years'  => range(Date('Y') - 1, Date('Y') + 1),
-            'format' => 'dd.M.yyyy'
-        ];
-        $hasDateCheckbox = [
-            'required'   => false,
-            'attr'       => ['class' => 'checkbox-smart'],
-            'label_attr' => ['class' => 'control-label']
-        ];
         /** @var Participation $participation */
         $participation = $options['data'];
 
@@ -141,7 +132,7 @@ class ParticipationBaseType extends AbstractType
 
         $resolver->setDefaults(
             [
-                'data_class'         => 'AppBundle\Entity\Participation',
+                'data_class'         => Participation::class,
                 'cascade_validation' => true,
             ]
         );
