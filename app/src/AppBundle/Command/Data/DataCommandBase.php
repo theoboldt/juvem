@@ -160,6 +160,10 @@ password=" . $this->databasePassword
     {
         $files = [];
         
+        if (!file_exists($basePath)) {
+            return $files;
+        }
+        
         /** @var \SplFileInfo $item */
         foreach (
             $iterator = new \RecursiveIteratorIterator(
