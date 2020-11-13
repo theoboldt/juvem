@@ -61,7 +61,7 @@ class PhoneNumber implements SupportsChangeTrackingInterface, SpecifiesChangeTra
      * @param        $number
      * @param string $description
      */
-    public function __construct($number, string $description)
+    public function __construct($number = null, string $description = '')
     {
         $this->number      = $number;
         $this->description = $description;
