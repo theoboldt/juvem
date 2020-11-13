@@ -12,7 +12,7 @@ namespace AppBundle\Export;
 
 
 use AppBundle\Entity\User;
-use AppBundle\Twig\GlobalCustomization;
+use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 use PhpOffice\PhpSpreadsheet\Document\Properties;
 use \PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
@@ -58,17 +58,18 @@ abstract class Export
     /**
      * Customization provider
      *
-     * @var GlobalCustomization
+     * @var GlobalCustomizationConfigurationProvider
      */
     protected $customization;
 
     /**
      * Export constructor.
      *
-     * @param GlobalCustomization $customization Customization provider in order to eg. add company information
-     * @param User|null           $modifier      Modifier/creator of export
+     * @param GlobalCustomizationConfigurationProvider $customization Customization provider in order to eg. add
+     *                                                                company information
+     * @param User|null                                $modifier      Modifier/creator of export
      */
-    public function __construct($customization, User $modifier = null)
+    public function __construct(GlobalCustomizationConfigurationProvider $customization, User $modifier = null)
     {
         $this->customization = $customization;
         $this->modifier      = $modifier;

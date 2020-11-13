@@ -56,6 +56,18 @@ class PhoneNumber implements SupportsChangeTrackingInterface, SpecifiesChangeTra
     protected $employee = null;
 
     /**
+     * PhoneNumber constructor.
+     *
+     * @param        $number
+     * @param string $description
+     */
+    public function __construct($number, string $description)
+    {
+        $this->number      = $number;
+        $this->description = $description;
+    }
+
+    /**
      * Get number id
      *
      * @return integer

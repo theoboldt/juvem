@@ -14,7 +14,7 @@ namespace AppBundle\Export;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\Export\Sheet\ParticipationsSheet;
-use AppBundle\Twig\GlobalCustomization;
+use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 
 class ParticipationsExport extends Export
 {
@@ -36,13 +36,18 @@ class ParticipationsExport extends Export
     /**
      * ParticipationsExport constructor.
      *
-     * @param GlobalCustomization $customization  Customization provider in order to eg. add company information
-     * @param Event               $event          Event to export
-     * @param array               $participations List of participations qualified for export
-     * @param User|null           $modifier       Modifier/creator of export
+     * @param GlobalCustomizationConfigurationProvider $customization  Customization provider in order to eg. add
+     *                                                                 company information
+     * @param Event                                    $event          Event to export
+     * @param array                                    $participations List of participations qualified for export
+     * @param User|null                                $modifier       Modifier/creator of export
      */
-    public function __construct($customization, Event $event, array $participations, User $modifier)
-    {
+    public function __construct(
+        GlobalCustomizationConfigurationProvider $customization,
+        Event $event,
+        array $participations,
+        User $modifier
+    ) {
         $this->event          = $event;
         $this->participations = $participations;
 
