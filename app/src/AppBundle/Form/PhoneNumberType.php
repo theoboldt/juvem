@@ -10,6 +10,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use Misd\PhoneNumberBundle\Form\Type\PhoneNumberType as PhoneNumberTypeField;
 use Symfony\Component\Form\AbstractType;
@@ -30,7 +31,7 @@ class PhoneNumberType extends AbstractType
                 'format'         => PhoneNumberFormat::NATIONAL,
                 'label'          => 'Telefonnummer',
                 'attr'           => ['aria-describedby' => 'help-info-phone-number'],
-                'required'       => true
+                'required'       => true,
             ]
         )
                 ->add(
@@ -39,7 +40,7 @@ class PhoneNumberType extends AbstractType
                     [
                         'label'    => 'Hinweis',
                         'required' => false,
-                        'attr'     => ['aria-describedby' => 'help-info-phone-description']
+                        'attr'     => ['aria-describedby' => 'help-info-phone-description'],
                     ]
                 );
     }
@@ -48,7 +49,7 @@ class PhoneNumberType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'AppBundle\Entity\PhoneNumber',
+                'data_class' => PhoneNumber::class,
             ]
         );
     }
