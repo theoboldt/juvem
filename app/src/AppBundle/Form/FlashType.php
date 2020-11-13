@@ -71,17 +71,15 @@ class FlashType extends AbstractType
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $form = $event->getForm();
-            if (!$form->isSynchronized()) {
-                return;
-            }
-
-            if (!$form->get('hasValidFrom')->getData()
-            ) {
-                $form->get('validFrom')->setData(null);
-            }
-            if (!$form->get('hasValidUntil')->getData()
-            ) {
-                $form->get('validUntil')->setData(null);
+            if ($form->isSynchronized()) {
+                if (!$form->get('hasValidFrom')->getData()
+                ) {
+                    $form->get('validFrom')->setData(null);
+                }
+                if (!$form->get('hasValidUntil')->getData()
+                ) {
+                    $form->get('validUntil')->setData(null);
+                }
             }
         }
         );
