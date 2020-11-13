@@ -1227,7 +1227,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
             if (mb_strlen($this->description) > 156) {
                 return mb_substr($this->description, 0, 154) . '…';
             }
-            return $this->descriptionMeta;
+            return $this->description;
         }
         return $this->descriptionMeta;
     }
