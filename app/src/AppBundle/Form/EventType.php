@@ -11,6 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
