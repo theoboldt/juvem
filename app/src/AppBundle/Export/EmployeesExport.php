@@ -15,7 +15,7 @@ use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\Export\Sheet\EmployeesSheet;
-use AppBundle\Twig\GlobalCustomization;
+use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 
 class EmployeesExport extends Export
 {
@@ -37,13 +37,18 @@ class EmployeesExport extends Export
     /**
      * EmployeesExport constructor.
      *
-     * @param GlobalCustomization $customization Customization provider in order to eg. add company information
-     * @param Event $event                       Event to export
-     * @param array|Employee[] $employees        List of employees qualified for export
-     * @param User|null $modifier                Modifier/creator of export
+     * @param GlobalCustomizationConfigurationProvider $customization Customization provider in order to eg. add
+     *                                                                company information
+     * @param Event                                    $event         Event to export
+     * @param array|Employee[]                         $employees     List of employees qualified for export
+     * @param User|null                                $modifier      Modifier/creator of export
      */
-    public function __construct($customization, Event $event, array $employees, User $modifier)
-    {
+    public function __construct(
+        GlobalCustomizationConfigurationProvider $customization,
+        Event $event,
+        array $employees,
+        User $modifier
+    ) {
         $this->event     = $event;
         $this->employees = $employees;
 

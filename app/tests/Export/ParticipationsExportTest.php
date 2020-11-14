@@ -12,6 +12,7 @@
 namespace Tests\Export;
 
 
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\ParticipationsExport;
@@ -23,27 +24,17 @@ class ParticipationsExportTest extends ExportTestCase
 
     public function testParticipationsExport(): void
     {
+        $user  = $this->user();
         $event = $this->event();
 
-        $participation1 = new Participation($event, true, true);
-        $participation1->setSalutation('Ms.');
-        $participation1->setNameLast('Doe');
-        $participation1->setNameFirst('Maria');
-        $participation1->setAddressStreet('Musterstrasse 25');
-        $participation1->setAddressZip('70000');
-        $participation1->setAddressCity('Musterstadt');
-        $participation1->setEmail('doe+example@example.com');
-        $participation1Number = new \libphonenumber\PhoneNumber();
-        $participation1Number->setNationalNumber('0163000000');
-        $participation1Number->setCountryCode(49);
-        $participation1->addPhoneNumber(new PhoneNumber($participation1Number, 'Mobile'));
+        $participation1 = $this->participation($event);
 
         $participations = [
             $participation1,
         ];
 
         $export = new ParticipationsExport(
-            $this->customization(), $event, $participations, $this->user()
+            $this->customization(), $event, $participations, $user
         );
         $export->setMetadata();
         $export->process();
@@ -63,6 +54,11 @@ class ParticipationsExportTest extends ExportTestCase
         $this->assertEqualsSheetValue($sheet, 7, 2, 'doe+example@example.com');
         $this->assertEqualsSheetValue($sheet, 8, 2, '0163000000 (Mobile)');
         $this->assertEqualsSheetValue($sheet, 10, 2, '0');
+
+        $properties = $spreadsheet->getProperties();
+        $this->assertEquals('Juvem', $properties->getCategory());
+        $this->assertEquals($user->fullname(), $properties->getCreator());
+        $this->assertEquals($user->fullname(), $properties->getLastModifiedBy());
     }
 
     protected function assertEqualsSheetValue(Worksheet $sheet, int $columnIndex, int $row, string $expect): void

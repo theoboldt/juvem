@@ -259,7 +259,7 @@ class AdminParticipantsDependencyController extends AbstractController
                 'id'          => self::participantNodeId($participant->getId()),
                 'aid'         => $participant->getId(),
                 'type'        => 'participant',
-                'label'       => $participant->fullname() . ' (' . $yearsOfLife . ')',
+                'label'       => $participant->fullname() . ($yearsOfLife !== null ? ' (' . $yearsOfLife . ')' : ''),
                 'shape'       => 'box',
                 'color'       => $color,
                 'gender'      => $participant->getGender(false),

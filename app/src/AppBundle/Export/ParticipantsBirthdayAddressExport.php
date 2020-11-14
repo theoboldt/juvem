@@ -15,6 +15,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
 use AppBundle\Export\Sheet\ParticipantsBirthdayAddressSheet;
 use AppBundle\Twig\GlobalCustomization;
+use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 
 class ParticipantsBirthdayAddressExport extends Export
 {
@@ -37,14 +38,19 @@ class ParticipantsBirthdayAddressExport extends Export
     /**
      * ParticipationsExport constructor.
      *
-     * @param GlobalCustomization $customization Customization provider in order to eg. add company information
-     * @param Event               $event         Event to export
-     * @param array               $participants  List of participants qualified for export
-     * @param User|null           $modifier      Modifier/creator of export
+     * @param GlobalCustomizationConfigurationProvider $customization Customization provider in order to eg. add
+     *                                                                company information
+     * @param Event                                    $event         Event to export
+     * @param array                                    $participants  List of participants qualified for export
+     * @param User|null                                $modifier      Modifier/creator of export
      */
-    public function __construct($customization, Event $event, array $participants, User $modifier)
-    {
-        $this->event        = $event;
+    public function __construct(
+        GlobalCustomizationConfigurationProvider $customization,
+        Event $event,
+        array $participants,
+        User $modifier
+    ) {
+        $this->event = $event;
         $this->participants = $participants;
 
         parent::__construct($customization, $modifier);

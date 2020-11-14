@@ -57,21 +57,29 @@ trait BirthdayTrait
      * @param int|null $precision If you want the result to be rounded with round(), specify precision here
      * @return float              Age in years
      */
-    public function getAgeAtEvent($precision = null): float
+    public function getAgeAtEvent($precision = null): ?float
     {
-        $event = $this->getEvent();
+        $event          = $this->getEvent();
+        $eventStartDate = $event->getStartDate();
+        if (!$eventStartDate) {
+            return null;
+        }
         return EventRepository::age($this->getBirthday(), $event->getStartDate(), $precision);
     }
 
     /**
      * Get age of participant at the related event
      *
-     * @return int Amount of years of life at event
+     * @return int|null Amount of years of life at event
      */
-    public function getYearsOfLifeAtEvent(): int
+    public function getYearsOfLifeAtEvent(): ?int
     {
-        $event = $this->getEvent();
-        return EventRepository::yearsOfLife($this->getBirthday(), $event->getStartDate());
+        $event          = $this->getEvent();
+        $eventStartDate = $event->getStartDate();
+        if (!$eventStartDate) {
+            return null;
+        }
+        return EventRepository::yearsOfLife($this->getBirthday(), $eventStartDate);
     }
 
     /**
@@ -81,7 +89,11 @@ trait BirthdayTrait
      */
     public function hasBirthdayAtEvent()
     {
-        $event = $this->getEvent();
+        $event          = $this->getEvent();
+        $eventStartDate = $event->getStartDate();
+        if (!$eventStartDate) {
+            return false;
+        }
         return EventRepository::hasBirthdayInTimespan(
             $this->getBirthday(), $event->getStartDate(), $event->getEndDate()
         );

@@ -13,6 +13,8 @@ namespace Tests\Export;
 
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participation;
+use AppBundle\Entity\PhoneNumber;
 use AppBundle\Entity\User;
 use AppBundle\Twig\GlobalCustomizationConfiguration;
 use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
@@ -24,7 +26,7 @@ abstract class ExportTestCase extends TestCase
      * @var array|string[]
      */
     protected static array $files = [];
-    
+
     public static function setUpBeforeClass(): void
     {
 
@@ -51,7 +53,31 @@ abstract class ExportTestCase extends TestCase
         self::$files = [];
         parent::tearDownAfterClass();
     }
-    
+
+    /**
+     * Create participation
+     * 
+     * @param Event $event
+     * @return Participation
+     */
+    protected function participation(Event $event): Participation
+    {
+        $participation = new Participation($event, true, true);
+        $participation->setSalutation('Ms.');
+        $participation->setNameLast('Doe');
+        $participation->setNameFirst('Maria');
+        $participation->setAddressStreet('Musterstrasse 25');
+        $participation->setAddressZip('70000');
+        $participation->setAddressCity('Musterstadt');
+        $participation->setEmail('doe+example@example.com');
+        $participationNumber = new \libphonenumber\PhoneNumber();
+        $participationNumber->setNationalNumber('0163000000');
+        $participationNumber->setCountryCode(49);
+        $participation->addPhoneNumber(new PhoneNumber($participationNumber, 'Mobile'));
+
+        return $participation;
+    }
+
     /**
      * @return GlobalCustomizationConfigurationProvider
      */
@@ -76,6 +102,7 @@ abstract class ExportTestCase extends TestCase
     {
         $event = new Event();
         $event->setTitle('Camping Trip');
+        $event->setStartDate(new \DateTime('2010-01-01 10:00:00'));
 
         return $event;
     }

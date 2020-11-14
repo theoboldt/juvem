@@ -322,10 +322,12 @@ class AdminMultipleController
             if ($participant->hasBirthdayAtEvent()) {
                 $age = '<span class="birthday-during-event">';
             }
-            $age .= '<span class="years-of-life">' . $participant->getYearsOfLifeAtEvent() . '</span>';
-            $age .= ' <span class="rounded-age">(' . number_format($participant->getAgeAtEvent(), 1, ',', '.') . ')</span>';
-            if ($participant->hasBirthdayAtEvent()) {
-                '</span>';
+            if ($participant->getYearsOfLifeAtEvent() !== null) {
+                $age .= '<span class="years-of-life">' . $participant->getYearsOfLifeAtEvent() . '</span>';
+                $age .= ' <span class="rounded-age">(' . number_format($participant->getAgeAtEvent(), 1, ',', '.') . ')</span>';
+                if ($participant->hasBirthdayAtEvent()) {
+                    '</span>';
+                }
             }
             $participantStatusText = $statusFormatter->formatMask($participantStatus);
             if ($participant->isDeleted()) {
