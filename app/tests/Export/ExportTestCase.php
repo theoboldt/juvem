@@ -12,6 +12,7 @@
 namespace Tests\Export;
 
 
+use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
@@ -55,8 +56,32 @@ abstract class ExportTestCase extends TestCase
     }
 
     /**
+     * Create employee
+     *
+     * @param Event $event
+     * @return Employee
+     */
+    protected function employee(Event $event): Employee
+    {
+        $employee = new Employee($event);
+        $employee->setNameFirst('Max');
+        $employee->setNameLast('Dix');
+        $employee->setSalutation('Herr');
+        $employee->setEmail('dix+example@example.com');
+        $employee->setAddressStreet('Musterstrasse 25');
+        $employee->setAddressZip('70000');
+        $employee->setAddressCity('Musterstadt');
+        $number = new \libphonenumber\PhoneNumber();
+        $number->setNationalNumber('0164000000');
+        $number->setCountryCode(49);
+        $employee->addPhoneNumber(new PhoneNumber($number, 'Mobile Number'));
+        
+        return $employee;
+    }
+
+    /**
      * Create participation
-     * 
+     *
      * @param Event $event
      * @return Participation
      */

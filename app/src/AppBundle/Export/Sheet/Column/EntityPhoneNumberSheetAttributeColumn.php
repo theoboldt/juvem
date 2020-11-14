@@ -14,6 +14,7 @@ namespace AppBundle\Export\Sheet\Column;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 
 class EntityPhoneNumberSheetAttributeColumn extends EntityAttributeColumn
@@ -67,6 +68,7 @@ class EntityPhoneNumberSheetAttributeColumn extends EntityAttributeColumn
                 return implode($glue, $numberTexts);
             }
         );
+        $column->setNumberFormat(NumberFormat::FORMAT_TEXT);
         $column->setWidth(13.5);
         if ($wrap) {
             $column->addDataStyleCalback(
