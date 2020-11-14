@@ -21,7 +21,7 @@ use AppBundle\Export\Sheet\ParticipantsBirthdayAddressSheet;
 use AppBundle\Export\Sheet\ParticipationsSheet;
 use AppBundle\Export\Sheet\SheetRequiringExplanationInterface;
 use AppBundle\Manager\Payment\PaymentManager;
-use AppBundle\Twig\GlobalCustomization;
+use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 use Exception;
 
 class CustomizedExport extends Export
@@ -57,16 +57,17 @@ class CustomizedExport extends Export
     /**
      * ParticipationsExport constructor.
      *
-     * @param GlobalCustomization $globalCustomization Customization provider in order to eg. add company information
-     * @param PaymentManager      $paymentManager
-     * @param Event               $event               Event to export
-     * @param array               $participants        List of participants qualified for export
-     * @param User|null           $modifier            Modifier/creator of export
-     * @param array               $configuration       Configuration definition for export,
-     *                                                 validated via @see Configuration
+     * @param GlobalCustomizationConfigurationProvider $globalCustomization Customization provider in order to eg. add
+     *                                                                      company information
+     * @param PaymentManager                           $paymentManager
+     * @param Event                                    $event               Event to export
+     * @param array                                    $participants        List of participants qualified for export
+     * @param User|null                                $modifier            Modifier/creator of export
+     * @param array                                    $configuration       Configuration definition for export,
+     *                                                                      validated via @see Configuration
      */
     public function __construct(
-        $globalCustomization,
+        GlobalCustomizationConfigurationProvider $globalCustomization,
         PaymentManager $paymentManager,
         Event $event,
         array $participants,

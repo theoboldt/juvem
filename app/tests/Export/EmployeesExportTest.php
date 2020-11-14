@@ -12,11 +12,7 @@
 namespace Tests\Export;
 
 
-use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\EmployeesExport;
-use AppBundle\Export\ParticipationsExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
