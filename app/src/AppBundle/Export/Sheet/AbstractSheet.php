@@ -357,7 +357,7 @@ abstract class AbstractSheet
                 $columnStart = $this->columnList['nameLast']->getColumnIndex();
             }
             if (isset($this->columnList['firstLast'])) {
-                $columnEnd = $this->columnList['nameLast']->getColumnIndex();
+                $columnEnd = $this->columnList['firstLast']->getColumnIndex();
             }
         }
     
