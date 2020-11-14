@@ -136,16 +136,6 @@ abstract class Export
     }
 
     /**
-     * Get phpexcel document
-     *
-     * @return Spreadsheet
-     */
-    public function getDocument()
-    {
-        return $this->document;
-    }
-
-    /**
      * Get export timestamp
      *
      * @return \DateTime
