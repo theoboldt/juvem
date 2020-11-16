@@ -27,7 +27,7 @@ $(function () {
                     form.attr('target', target ? target : '');
                     updateButton.prop('disabled', false);
 
-                    $('*#mail-template-iframe-panel .panel-heading').html($("#newsletter_mail_subject").val());
+                    $('*#mail-template-iframe-panel .panel-heading').html(eHtml($("#newsletter_mail_subject").val()));
                 }, 500);
             }
         },
