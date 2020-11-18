@@ -116,6 +116,9 @@ class PdfConverterService
         if (!file_exists($result)) {
             throw new \RuntimeException('Output file not existing');
         }
+        if (filesize($result) < 5) {
+            throw new \RuntimeException('Output file seems to be empty');
+        }
         
         return $result;
     }
