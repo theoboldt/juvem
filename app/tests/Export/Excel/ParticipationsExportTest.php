@@ -9,12 +9,9 @@
  */
 
 
-namespace Tests\Export;
+namespace Tests\Export\Excel;
 
 
-use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
-use AppBundle\Entity\PhoneNumber;
 use AppBundle\Export\ParticipationsExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -39,7 +36,7 @@ class ParticipationsExportTest extends ExportTestCase
         $export->setMetadata();
         $export->process();
 
-        $tmpPath       = __DIR__ . '/../../../var/tmp/' . uniqid('export_test');
+        $tmpPath       = __DIR__ . '/../../../../var/tmp/' . uniqid('export_test');
         self::$files[] = $tmpPath;
         $export->write($tmpPath);
 

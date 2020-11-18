@@ -9,7 +9,7 @@
  */
 
 
-namespace Tests\Export;
+namespace Tests\Export\Excel;
 
 
 use AppBundle\Entity\Employee;
@@ -30,7 +30,7 @@ trait ParticipantTestingDataTrait
 
     protected static function ensureTmpDirAccessible(): void
     {
-        $tmpDir = __DIR__ . '/../../../var/tmp';
+        $tmpDir = __DIR__ . '/../../../../var/tmp';
         if (!file_exists($tmpDir)) {
             $umask = umask();
             umask(0);

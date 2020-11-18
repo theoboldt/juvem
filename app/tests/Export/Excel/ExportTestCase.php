@@ -9,7 +9,7 @@
  */
 
 
-namespace Tests\Export;
+namespace Tests\Export\Excel;
 
 use PHPUnit\Framework\TestCase;
 

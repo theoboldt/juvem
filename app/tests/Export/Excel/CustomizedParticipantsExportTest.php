@@ -9,7 +9,7 @@
  */
 
 
-namespace Tests\Export;
+namespace Tests\Export\Excel;
 
 
 use AppBundle\BitMask\ParticipantFood;
@@ -118,7 +118,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
         $export->setMetadata();
         $export->process();
 
-        $tmpPath       = __DIR__ . '/../../../var/tmp/' . uniqid('export_test');
+        $tmpPath       = __DIR__ . '/../../../../var/tmp/' . uniqid('export_test');
         self::$files[] = $tmpPath;
         $export->write($tmpPath);
 

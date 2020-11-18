@@ -9,16 +9,16 @@
  */
 
 
-namespace Tests\Export;
+namespace Tests\Export\Excel;
 
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
-use AppBundle\Export\ParticipantsBirthdayAddressExport;
+use AppBundle\Export\ParticipantsMailExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ParticipantsBirthdayAddressExportTest extends ExportTestCase
+class ParticipantsMailExportTest extends ExportTestCase
 {
 
     public function testParticipationsExport(): void
@@ -54,15 +54,15 @@ class ParticipantsBirthdayAddressExportTest extends ExportTestCase
         $participant3->setGender(1);
         $participation1->addParticipant($participant3);
 
-        $export = new ParticipantsBirthdayAddressExport(
-            $this->customization(), $event, [$participant1, $participant2, $participant3], $user
+        $export = new ParticipantsMailExport(
+            $this->customization(), $event, [$participant1, $participant2, $participant3], [$participation1], $user
         );
         $export->setMetadata();
 
         $export->setMetadata();
         $export->process();
 
-        $tmpPath       = __DIR__ . '/../../../var/tmp/' . uniqid('export_test');
+        $tmpPath       = __DIR__ . '/../../../../var/tmp/' . uniqid('export_test');
         self::$files[] = $tmpPath;
         $export->write($tmpPath);
 
@@ -71,18 +71,50 @@ class ParticipantsBirthdayAddressExportTest extends ExportTestCase
         $this->assertEqualsSheetValue($sheet, 1, 2, 'Testchild');
         $this->assertEqualsSheetValue($sheet, 2, 2, 'Doe');
         $this->assertEqualsSheetValue($sheet, 3, 2, '01.01.2000');
-        $this->assertEqualsSheetValue($sheet, 4, 2, 'Musterstrasse 25, 70000 Musterstadt');
+        $this->assertEqualsSheetValue($sheet, 4, 2, '10');
+        $this->assertEqualsSheetValue($sheet, 5, 2, 'w');
+        $this->assertEqualsSheetValue($sheet, 6, 2, 'nein');
+        $this->assertEqualsSheetValue($sheet, 7, 2, 'nein');
+        $this->assertEqualsSheetValue($sheet, 8, 2, 'os');
+        $this->assertEqualsSheetValue($sheet, 9, 2, 'No medication needed');
+        $this->assertEqualsSheetValue($sheet, 10, 2, 'Nothing special to know');
 
         $this->assertEqualsSheetValue($sheet, 1, 3, 'Secondchild');
         $this->assertEqualsSheetValue($sheet, 2, 3, 'Doe');
         $this->assertEqualsSheetValue($sheet, 3, 3, '10.01.2000');
-        $this->assertEqualsSheetValue($sheet, 4, 3, 'Musterstrasse 25, 70000 Musterstadt');
+        $this->assertEqualsSheetValue($sheet, 4, 3, '9');
+        $this->assertEqualsSheetValue($sheet, 5, 3, 'm');
+        $this->assertEqualsSheetValue($sheet, 6, 3, 'vs');
+        $this->assertEqualsSheetValue($sheet, 7, 3, 'lf');
+        $this->assertEqualsSheetValue($sheet, 8, 3, 'os');
+        $this->assertEqualsSheetValue($sheet, 9, 3, '');
+        $this->assertEqualsSheetValue($sheet, 10, 3, '');
+
 
         $this->assertEqualsSheetValue($sheet, 1, 4, 'Thirdchild');
         $this->assertEqualsSheetValue($sheet, 2, 4, 'Doe');
         $this->assertEqualsSheetValue($sheet, 3, 4, '15.01.2000');
-        $this->assertEqualsSheetValue($sheet, 4, 4, 'Musterstrasse 25, 70000 Musterstadt');
-    
+        $this->assertEqualsSheetValue($sheet, 4, 4, '9');
+        $this->assertEqualsSheetValue($sheet, 5, 4, 'm');
+        $this->assertEqualsSheetValue($sheet, 6, 4, 'vs');
+        $this->assertEqualsSheetValue($sheet, 7, 4, 'nein');
+        $this->assertEqualsSheetValue($sheet, 8, 4, 'nein');
+        $this->assertEqualsSheetValue($sheet, 9, 4, '');
+        $this->assertEqualsSheetValue($sheet, 10, 4, '');
+
+
+        $sheet = $spreadsheet->getSheet(1);
+        $this->assertEqualsSheetValue($sheet, 1, 2, 'Ms.');
+        $this->assertEqualsSheetValue($sheet, 2, 2, 'Maria');
+        $this->assertEqualsSheetValue($sheet, 3, 2, 'Doe');
+        $this->assertEqualsSheetValue($sheet, 4, 2, 'Musterstrasse 25');
+        $this->assertEqualsSheetValue($sheet, 5, 2, 'Musterstadt');
+        $this->assertEqualsSheetValue($sheet, 6, 2, '70000');
+        $this->assertEqualsSheetValue($sheet, 7, 2, 'doe+example@example.com');
+        $this->assertEqualsSheetValue($sheet, 8, 2, '0163000000 (Mobile)');
+        $this->assertEqualsSheetValue($sheet, 10, 2, '3');
+
+
         $properties = $spreadsheet->getProperties();
         $this->assertEquals('Juvem', $properties->getCategory());
         $this->assertEquals($user->fullname(), $properties->getCreator());
