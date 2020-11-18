@@ -22,36 +22,7 @@ use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 
 trait ParticipantTestingDataTrait
 {
-
-    /**
-     * @var array|string[]
-     */
-    protected static array $files = [];
-
-    protected static function ensureTmpDirAccessible(): void
-    {
-        $tmpDir = __DIR__ . '/../../../../var/tmp';
-        if (!file_exists($tmpDir)) {
-            $umask = umask();
-            umask(0);
-            if (!mkdir($tmpDir, 0777, true)) {
-                umask($umask);
-                throw new \RuntimeException('Precondition failed: Tmp dir inaccessible');
-            }
-            umask($umask);
-        }
-    }
-
-    protected static function removeTmpFiles(): void
-    {
-        foreach (self::$files as $file) {
-            if (file_exists($file)) {
-                unlink($file);
-            }
-        }
-        self::$files = [];
-    }
-
+    
     /**
      * Create employee
      *

@@ -81,6 +81,13 @@ class PdfConverterService
         if (!is_readable($input) || is_dir($input)) {
             throw new InputFileNotFoundException(sprintf('Input file "%s" missing', $input));
         }
+
+        if (!file_exists($this->libreofficePath)) {
+            throw new \RuntimeException('Configured libreoffice binary inaccessible');
+        }
+        if (!is_executable($this->libreofficePath)) {
+            throw new \RuntimeException('Configured libreoffice binary not executable');
+        }
         
         $cli = sprintf(
             '%s --headless --convert-to pdf:writer_pdf_Export -env:UserInstallation=file://%s/LibreOffice_Conversion_${USER} --outdir %s %s',
@@ -92,14 +99,25 @@ class PdfConverterService
         
         exec(
             $cli,
-            $output
+            $output,
+            $returnVar
         );
+        
+        if ($returnVar !== 0) {
+            throw new \RuntimeException(sprintf('Conversion failed with %d: %s', $returnVar, implode(', ', $output)));
+        }
         
         $filename = basename($input);
         
         $filename = preg_replace('/\.[^.]+$/', '.' . 'pdf', $filename);
         
-        return $this->tmpPath . DIRECTORY_SEPARATOR . $filename;
+        $result = $this->tmpPath . DIRECTORY_SEPARATOR . $filename;
+        
+        if (!file_exists($result)) {
+            throw new \RuntimeException('Output file not existing');
+        }
+        
+        return $result;
     }
     
 }

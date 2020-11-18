@@ -12,10 +12,11 @@
 namespace Tests\Export\Excel;
 
 use PHPUnit\Framework\TestCase;
+use Tests\Export\TmpDirAccessingTestTrait;
 
 abstract class ExportTestCase extends TestCase
 {
-    use ParticipantTestingDataTrait;
+    use ParticipantTestingDataTrait, TmpDirAccessingTestTrait;
 
     public static function setUpBeforeClass(): void
     {

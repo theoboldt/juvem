@@ -17,11 +17,12 @@ use AppBundle\Entity\Participant;
 use AppBundle\Export\Customized\CustomizedExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Tests\Export\TmpDirAccessingTestTrait;
 use Tests\JuvemKernelTestCase;
 
 class CustomizedParticipantsExportTest extends JuvemKernelTestCase
 {
-    use ParticipantTestingDataTrait;
+    use ParticipantTestingDataTrait, TmpDirAccessingTestTrait;
 
     public function testExport(): void
     {
