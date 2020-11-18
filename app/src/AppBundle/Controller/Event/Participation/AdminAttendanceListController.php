@@ -422,7 +422,7 @@ class AdminAttendanceListController
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/event/{eid}/attendance/export-multiple/0/{listids}", requirements={"eid": "\d+", "listids": "[\d,]+"})
-     * @Route("/admin/event/{eid}/attendance/export-multiple/{bid}/{listids}", requirements={"eid": "\d+", "bid":"^[1-9]\d*$", "listids": "[\d,]+"})
+     * @Route("/admin/event/{eid}/attendance/export-multiple/{bid}/{listids}", requirements={"eid": "\d+", "bid":"\d+", "listids": "[\d,]+"})
      * @Security("is_granted('participants_read', event)")
      * @param Event $event
      * @param Attribute $attribute
