@@ -41,6 +41,12 @@ class PdfConverterTest extends TestCase
         self::removeTmpFiles();
         parent::tearDownAfterClass();
     }
+    
+    public function testConverterNotCreatedIfNotConfigured(): void
+    {
+        $converter = PdfConverterService::create(null, __DIR__ . '/../../../var/tmp', null);
+        $this->assertNull($converter);
+    }
 
     /**
      * Test creation of pdf from a word document
