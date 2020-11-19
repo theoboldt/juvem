@@ -44,6 +44,7 @@ class PdfConverterTest extends TestCase
 
         if (empty($libreofficePath)) {
             $this->markTestSkipped('Libreoffice binary must be available and configured for converter tests');
+            return;
         }
         if (!file_exists($libreofficePath)) {
             $this->addWarning('Configured libreoffice binary inaccessible');
