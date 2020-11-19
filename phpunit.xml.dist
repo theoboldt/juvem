@@ -11,6 +11,7 @@
     <server name="KERNEL_CLASS" value="AppKernel"/>
     <server name="KERNEL_DIR" value="app/src/"/>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <env name="LIBREOFFICE_BINARY_PATH" value="/usr/bin/soffice"/>
   </php>
   <testsuites>
     <testsuite name="Juvem Test Suite">
