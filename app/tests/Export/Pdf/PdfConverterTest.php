@@ -15,6 +15,7 @@ namespace Tests\Export\Pdf;
 use AppBundle\PdfConverterService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
+use Smalot\PdfParser\Parser;
 use Tests\Export\TmpDirAccessingTestTrait;
 
 class PdfConverterTest extends TestCase
@@ -22,6 +23,12 @@ class PdfConverterTest extends TestCase
 
     use TmpDirAccessingTestTrait;
 
+    /**
+     * Pdf file
+     *
+     * @var string
+     */
+    private static ?string $pdfFile;
 
     public static function setUpBeforeClass(): void
     {
@@ -40,7 +47,14 @@ class PdfConverterTest extends TestCase
      */
     public function testConvertWordToPdf(): void
     {
-        $libreofficePath = getenv('LIBREOFFICE_BINARY_PATH');
+        $libreofficePath = trim(getenv('LIBREOFFICE_BINARY_PATH'));
+
+        if (empty($libreofficePath)) {
+            $libreofficePath = exec('which soffice', $output, $return);
+            if ($return === 0) {
+                $libreofficePath = getenv('LIBREOFFICE_BINARY_PATH');
+            }
+        }
 
         if (empty($libreofficePath)) {
             $this->markTestSkipped('Libreoffice binary must be available and configured for converter tests');
@@ -55,11 +69,27 @@ class PdfConverterTest extends TestCase
 
         $logger    = new TestLogger();
         $converter = new PdfConverterService($libreofficePath, __DIR__ . '/../../../var/tmp', $logger);
-        
-        $result = $converter->convert(__DIR__.'/original.docx');
-        self::$files[] = $result;
 
-        $this->assertFileExists($result);
-        $this->assertGreaterThan(7500, filesize($result));
+        self::$pdfFile = $converter->convert(__DIR__ . '/original.docx');
+        self::$files[] = self::$pdfFile;
+
+        $this->assertFileExists(self::$pdfFile);
+        $this->assertGreaterThan(7500, filesize(self::$pdfFile));
+    }
+
+    /**
+     * @depends testConvertWordToPdf
+     */
+    public function testTextContentOfPdfFile(): void
+    {
+        if (!self::$pdfFile) {
+            $this->markTestSkipped('Requiring pdf file for text test');
+        }
+        
+        $parser = new Parser();
+        $pdf    = $parser->parseFile(self::$pdfFile);
+
+        $text = $pdf->getText();
+        $this->assertEquals('Juvem Test for Word to Pdf converter', $text);
     }
 }
