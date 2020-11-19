@@ -89,6 +89,7 @@ class PdfConverterService
             throw new \RuntimeException('Configured libreoffice binary not executable');
         }
         
+        
         $cli = sprintf(
             '%s --headless --convert-to pdf:writer_pdf_Export -env:UserInstallation=file://%s/LibreOffice_Conversion_${USER} --outdir %s %s',
             $this->libreofficePath,
@@ -97,6 +98,7 @@ class PdfConverterService
             escapeshellarg($input)
         );
         
+        $time = microtime(true);
         exec(
             $cli,
             $output,
@@ -106,6 +108,9 @@ class PdfConverterService
         if ($returnVar !== 0) {
             throw new \RuntimeException(sprintf('Conversion failed with %d: %s', $returnVar, implode(', ', $output)));
         }
+        $this->logger->info(
+            'Converted {source} to PDF within {time} s', ['source' => $input, 'time' => (int)(microtime(true) - $time)]
+        );
         
         $filename = basename($input);
         

@@ -68,7 +68,7 @@ class PdfConverterTest extends TestCase
         }
 
         $logger    = new TestLogger();
-        $converter = new PdfConverterService($libreofficePath, __DIR__ . '/../../../var/tmp', $logger);
+        $converter = PdfConverterService::create($libreofficePath, __DIR__ . '/../../../var/tmp', $logger);
 
         self::$pdfFile = $converter->convert(__DIR__ . '/original.docx');
         self::$files[] = self::$pdfFile;

@@ -42,8 +42,17 @@ jobs:
       - name: Start database service
         run: sudo /etc/init.d/mysql start
       
+      - name: Install jre
+        run: sudo apt-get -y install openjdk-8-jre openjdk-8-jre-headless
+
       - name: Install libreoffice
-        run: sudo apt-get -y install libreoffice-core libreoffice-java-common openjdk-8-jre --no-install-recommends 
+        run: sudo apt-get -y install libreoffice-core libreoffice-writer libreoffice-java-common --no-install-recommends 
+
+      - name: Ensure home config is available for user
+        run: chown -R --reference="$HOME" ~/.config 
+
+      - name: Ensure home config is available for root
+        run: sudo chown -R --reference="$HOME" ~/.config 
 
       - name: Get composer cache directory
         id: composer-cache
