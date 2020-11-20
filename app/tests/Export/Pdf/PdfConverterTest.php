@@ -12,6 +12,7 @@
 namespace Tests\Export\Pdf;
 
 
+use AppBundle\InputFileNotFoundException;
 use AppBundle\PdfConverterService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
@@ -47,21 +48,33 @@ class PdfConverterTest extends TestCase
         $converter = PdfConverterService::create(null, __DIR__ . '/../../../var/tmp', null);
         $this->assertNull($converter);
     }
-
+    
     /**
-     * Test creation of pdf from a word document
+     * Extract libreoffice path
+     *
+     * @return string
      */
-    public function testConvertWordToPdf(): void
+    private function provideLibreOfficePath(): string
     {
         $libreofficePath = trim(getenv('LIBREOFFICE_BINARY_PATH'));
-
+        
         if (empty($libreofficePath)) {
             $libreofficePath = exec('which soffice', $output, $return);
             if ($return === 0) {
                 $libreofficePath = getenv('LIBREOFFICE_BINARY_PATH');
             }
         }
+        
+        return $libreofficePath;
+    }
 
+    /**
+     * Test creation of pdf from a word document
+     */
+    public function testConvertWordToPdf(): void
+    {
+        $libreofficePath = $this->provideLibreOfficePath();
+        
         if (empty($libreofficePath)) {
             $this->markTestSkipped('Libreoffice binary must be available and configured for converter tests');
             return;
@@ -98,4 +111,37 @@ class PdfConverterTest extends TestCase
         $text = $pdf->getText();
         $this->assertEquals('Juvem Test for Word to Pdf converter', $text);
     }
+    
+    public function testConverterNotActuallyExisting(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectDeprecationMessage('Configured libreoffice binary inaccessible');
+        $converter = new PdfConverterService(__DIR__ . '/not_existing_file', __DIR__ . '/../../../var/tmp', null);
+        $converter->convert(__DIR__ . '/original.docx');
+    }
+    
+    public function testConverterNotActuallyExecutable(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectDeprecationMessage('Configured libreoffice binary not executable');
+        $converter = new PdfConverterService(__DIR__ . '/original.docx', __DIR__ . '/../../../var/tmp', null);
+        $converter->convert(__DIR__ . '/original.docx');
+    }
+    
+    /**
+     * @depends testConvertWordToPdf
+     */
+    public function testConverterInputFileUnavailable(): void
+    {
+        $input = __DIR__ . '/not_existing_file';
+        $this->expectException(InputFileNotFoundException::class);
+        $this->expectDeprecationMessage(sprintf('Input file "%s" missing', $input));
+
+        $libreofficePath = $this->provideLibreOfficePath();
+
+        $converter = new PdfConverterService($libreofficePath, __DIR__ . '/../../../var/tmp', null);
+        $converter->convert($input);
+    }
+    
+    
 }
