@@ -43,10 +43,10 @@ jobs:
         run: sudo /etc/init.d/mysql start
       
       - name: Install jre
-        run: sudo apt-get -y install openjdk-8-jre openjdk-8-jre-headless
+        run: sudo apt-get update -qq && sudo apt-get -q -y install openjdk-8-jre openjdk-8-jre-headless
 
       - name: Install libreoffice
-        run: sudo apt-get -y install libreoffice-core libreoffice-writer libreoffice-java-common --no-install-recommends 
+        run: sudo apt-get -q -y install libreoffice-core libreoffice-writer libreoffice-java-common --no-install-recommends 
 
       - name: Ensure home config is available for user
         run: chown -R --reference="$HOME" ~/.config 
