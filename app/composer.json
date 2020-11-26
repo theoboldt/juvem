@@ -35,9 +35,12 @@
         "symfony/symfony": "4.4.*",
         "symfony/translation": "4.4.*",
         "symfony/proxy-manager-bridge": "4.4.*",
+        "doctrine/common": "<3",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.3",
+        "stof/doctrine-extensions-bundle": "^1.3",
+        "doctrine/doctrine-migrations-bundle": "^2.1",
         "symfony/swiftmailer-bundle": "^3.5",
         "swiftmailer/swiftmailer": "^6.1",
         "monolog/monolog": "^1",
@@ -45,7 +48,6 @@
         "symfony/polyfill-apcu": "^1.0",
         "sensio/framework-extra-bundle": "^5.1",
         "incenteev/composer-parameter-handler": "~2.0",
-        "stof/doctrine-extensions-bundle": "^1.3",
         "vich/uploader-bundle": "^1.8",
         "friendsofsymfony/user-bundle": "^2.0",
         "misd/phone-number-bundle": "^1.3",
@@ -56,7 +58,6 @@
         "knplabs/knp-time-bundle": "^1.7",
         "yellowskies/qr-code-bundle": "^1.2",
         "guzzlehttp/guzzle": "^6.3",
-        "doctrine/doctrine-migrations-bundle": "^2.1",
         "phpoffice/phpword": "^0.17",
         "phpoffice/phpspreadsheet": "^1.9",
         "jms/serializer-bundle": "^3.4"
@@ -82,6 +83,8 @@
         "optimize-autoloader": true,
         "bin-dir": "bin"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "symfony": {
           "allow-contrib": false,
