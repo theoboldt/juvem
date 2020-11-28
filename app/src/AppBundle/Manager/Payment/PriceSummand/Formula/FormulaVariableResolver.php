@@ -48,20 +48,19 @@ class FormulaVariableResolver
      * @var array|int[]
      */
     private $fieldDependencies = [];
-    
+
     /**
      * FormulaVariableResolver constructor.
      *
-     * @param ExpressionLanguageProvider $expressionLanguageProvider
-     * @param array|Attribute[] $attributes                 Attributes
+     * @param ExpressionLanguageProvider    $expressionLanguageProvider
+     * @param array|Attribute[]             $attributes     Attributes, identified by bid
      * @param array|EventSpecificVariable[] $eventVariables All {@see EventSpecificVariable} entities
      */
     public function __construct(
         ExpressionLanguageProvider $expressionLanguageProvider,
         array $attributes,
         array $eventVariables
-    )
-    {
+    ) {
         $this->attributes                 = $attributes;
         $this->variableProvider           = new FormulaVariableProvider($attributes, $eventVariables);
         $this->expressionLanguageProvider = $expressionLanguageProvider;
@@ -167,6 +166,9 @@ class FormulaVariableResolver
                     $this->fieldDependencies[$bid][$dependOnBid] = $dependOnBid;
                     if (!$this->dependenciesForAttributeCalculated($dependOnBid)) {
                         //dependencies of dependant field are also required
+                        if (!isset($this->attributes[$dependOnBid])) {
+                            throw new \InvalidArgumentException('Tried to request unknown bid');
+                        }
                         $this->calculateDependenciesForAttribute($this->attributes[$dependOnBid]);
                     }
                 }
@@ -250,7 +252,7 @@ class FormulaVariableResolver
      */
     public function getTestVariableValues(array $variables): array
     {
-        return $this->variableProvider->getTestVariableValues($variables);
+        return FormulaVariableProvider::getTestVariableValues($variables);
     }
 
     /**

@@ -121,7 +121,7 @@ class FormulaVariableProvider implements FormulaVariableProviderInterface
      * @param array|FormulaVariableInterface[] Variables to provide test data for
      * @return array|mixed[] Result
      */
-    public function getTestVariableValues(array $variables): array
+    public static function getTestVariableValues(array $variables): array
     {
         $result = [];
         foreach ($variables as $variable) {
