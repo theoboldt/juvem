@@ -10,28 +10,33 @@
         <loc>{{ url('newsletter_subscription') }}</loc>
         <priority>0.5</priority>
         <lastmod>2019-01-01</lastmod>
+        <changefreq>monthly</changefreq>
     </url>
 {% endif %}
 <url>
   <loc>{{ url('fos_user_security_login') }}</loc>
   <priority>0.1</priority>
   <lastmod>2017-01-01</lastmod>
+  <changefreq>monthly</changefreq>
 </url>
 <url>
   <loc>{{ url('fos_user_registration_register') }}</loc>
   <priority>0.1</priority>
   <lastmod>2017-01-01</lastmod>
+  <changefreq>monthly</changefreq>
 </url>
 <url>
   <loc>{{ url('fos_user_resetting_request') }}</loc>
   <priority>0.1</priority>
   <lastmod>2017-01-01</lastmod>
+  <changefreq>monthly</changefreq>
 </url>
 {% for page in pages %}
  <url>
   <loc>{{ page.loc }}</loc>
   <priority>{{ page.priority }}</priority>
   <lastmod>{{ page.lastmod.format('Y-m-d') }}</lastmod>
+  <changefreq>{{ page.changefreq }}</changefreq>
   {% for image in page.images %}
     <image:image>
         <image:loc>{{ image }}</image:loc>

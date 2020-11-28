@@ -32,42 +32,50 @@ class PageFactory
      *
      * @param UrlGeneratorInterface $router
      */
-    public function __construct(UrlGeneratorInterface $router) {
+    public function __construct(UrlGeneratorInterface $router)
+    {
         $this->router = $router;
     }
 
     /**
-     * Create @see Page related to transmitted $name whose last modification depends on transmitted $path modification
+     * Create
      *
      * @param string $path
      * @param string $name
      * @param float  $priority
      * @param string $changefreq
      * @return Page
+     * @see Page related to transmitted $name whose last modification depends on transmitted $path modification
+     *
      */
-    public function createForPath($path, $name, $priority = 0.5, $changefreq = Page::CHANGEFREQ_WEEKLY) {
+    public function createForPath(
+        string $path,
+        string $name,
+        float $priority = 0.5,
+        string $changefreq = Page::CHANGEFREQ_WEEKLY
+    ) {
         $loc = $this->generateRoute($name);
         return Page::createForFile($path, $loc, $priority, $changefreq);
     }
 
     /**
-     * Create @param string $name
+     * Create
      *
-     * @param array $parameters
-     * @param float $priority
-     * @param \DateTimeInterface $lastMod
-     * @param string $changefreq
+     * @param string                  $name
+     * @param array                   $parameters
+     * @param float                   $priority
+     * @param \DateTimeInterface|null $lastMod
+     * @param string                  $changefreq
      * @return Page
      * @see Page related to transmitted $name whose last modification depends on transmitted $path modification
-     *
      */
     public function create(
-        $name, $parameters = [],
-        $priority = 0.5,
+        string $name,
+        array $parameters = [],
+        float $priority = 0.5,
         \DateTimeInterface $lastMod = null,
-        $changefreq = Page::CHANGEFREQ_WEEKLY
-    )
-    {
+        string $changefreq = Page::CHANGEFREQ_WEEKLY
+    ) {
         $loc = $this->generateRoute($name, $parameters);
         return new Page($loc, $priority, $lastMod, $changefreq);
     }
@@ -76,11 +84,13 @@ class PageFactory
      * Generate absolute path for transmitted route name, possibly with parameters
      *
      * @param string $name       The name of the route
-     * @param mixed  $parameters An array of parameters
+     * @param array  $parameters An array of parameters
      * @return string The generated URL
      */
-    public function generateRoute($name, $parameters = [])
-    {
+    public function generateRoute(
+        string $name,
+        array $parameters = []
+    ) {
         return $this->router->generate($name, $parameters, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
