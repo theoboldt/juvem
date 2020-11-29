@@ -144,9 +144,6 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
         $this->assertEqualsSheetValue($sheet, 17, 2, 'doe+example@example.com');
         $this->assertEqualsSheetValue($sheet, 18, 2, '0163000000');
 
-        //Testchild	Doe	01.01.2000	10	w	nein	nein	os	No medication needed	Nothing special to know	Ms.	Maria	Doe		Musterstadt	70000	doe+example@example.com	0163000000
-        //Secondchild	Doe	10.01.2000	9	m	vs	lf	os			Ms.	Maria	Doe	Musterstrasse 25	Musterstadt	70000	doe+example@example.com	0163000000
-        //Thirdchild	Doe	15.01.2000	9	m	vs	nein	nein			Ms.	Maria	Doe	Musterstrasse 25	Musterstadt	70000	doe+example@example.com	0163000000
         $this->assertEqualsSheetValue($sheet, 1, 3, 'Secondchild');
         $this->assertEqualsSheetValue($sheet, 2, 3, 'Doe');
         $this->assertEqualsSheetValue($sheet, 3, 3, '10.01.2000');
@@ -165,7 +162,6 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
         $this->assertEqualsSheetValue($sheet, 16, 3, '70000');
         $this->assertEqualsSheetValue($sheet, 17, 3, 'doe+example@example.com');
         $this->assertEqualsSheetValue($sheet, 18, 3, '0163000000');
-
 
         $this->assertEqualsSheetValue($sheet, 1, 4, 'Thirdchild');
         $this->assertEqualsSheetValue($sheet, 2, 4, 'Doe');
