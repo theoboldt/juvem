@@ -167,21 +167,21 @@ vich_uploader:
     mappings:
         event_image:
             uri_prefix:         /uploads/event
-            upload_destination: "%kernel.project_dir%/../data/uploads/event"
+            upload_destination: "%app.data.root.path%/uploads/event"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         gallery_image:
             uri_prefix:         /uploads/gallery
-            upload_destination: "%kernel.project_dir%/../data/uploads/gallery"
+            upload_destination: "%app.data.root.path%/uploads/gallery"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         invoice_template:
             uri_prefix:         /uploads/invoice_template
-            upload_destination: "%kernel.project_dir%/../data/uploads/invoice_template"
+            upload_destination: "%app.data.root.path%/uploads/invoice_template"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
             delete_on_update:   true
