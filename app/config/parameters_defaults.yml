@@ -8,3 +8,7 @@ parameters:
     juvimg.password: null
     app.libreoffice_binary_path: null
     app.geo.openweathermap.api_key: null
+    nextcloud.base_uri: null
+    nextcloud.username: null
+    nextcloud.password: null
+    nextcloud.folder: 'Events'

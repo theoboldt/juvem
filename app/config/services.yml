@@ -446,6 +446,15 @@ services:
         tags:
             - { name: request.param_converter, priority: 2, converter: converter_event }
 
+    AppBundle\Manager\Filesharing\NextcloudManager:
+        factory: ['AppBundle\Manager\Filesharing\NextcloudManager', create]
+        arguments:
+          - "%nextcloud.base_uri%"
+          - "%nextcloud.username%"
+          - "%nextcloud.password%"
+          - "%nextcloud.folder%"
+          - "@logger"
+
     AppBundle\Controller\:
         resource: '../src/AppBundle/Controller/**/*Controller.php'
         exclude: '../src/AppBundle/Controller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
