@@ -23,13 +23,14 @@
       }
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=7.4 <8.0",
         "ext-zip": "*",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-xmlwriter": "*",
+        "ext-simplexml": "*",
         "ext-xsl": "*",
         "ext-fileinfo": "*",
         "symfony/symfony": "4.4.*",
