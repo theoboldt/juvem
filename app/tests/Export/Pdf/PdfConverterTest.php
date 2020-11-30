@@ -45,7 +45,7 @@ class PdfConverterTest extends TestCase
     
     public function testConverterNotCreatedIfNotConfigured(): void
     {
-        $converter = PdfConverterService::create(null, __DIR__ . '/../../../var/tmp', null);
+        $converter = PdfConverterService::create(null, __DIR__ . '/../../../../var/tmp', null);
         $this->assertNull($converter);
     }
     
@@ -87,7 +87,7 @@ class PdfConverterTest extends TestCase
         }
 
         $logger    = new TestLogger();
-        $converter = PdfConverterService::create($libreofficePath, __DIR__ . '/../../../var/tmp', $logger);
+        $converter = PdfConverterService::create($libreofficePath, __DIR__ . '/../../../../var/tmp', $logger);
 
         self::$pdfFile = $converter->convert(__DIR__ . '/original.docx');
         self::$files[] = self::$pdfFile;
@@ -116,7 +116,7 @@ class PdfConverterTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
         $this->expectDeprecationMessage('Configured libreoffice binary inaccessible');
-        $converter = new PdfConverterService(__DIR__ . '/not_existing_file', __DIR__ . '/../../../var/tmp', null);
+        $converter = new PdfConverterService(__DIR__ . '/not_existing_file', __DIR__ . '/../../../../var/tmp', null);
         $converter->convert(__DIR__ . '/original.docx');
     }
     
@@ -124,7 +124,7 @@ class PdfConverterTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
         $this->expectDeprecationMessage('Configured libreoffice binary not executable');
-        $converter = new PdfConverterService(__DIR__ . '/original.docx', __DIR__ . '/../../../var/tmp', null);
+        $converter = new PdfConverterService(__DIR__ . '/original.docx', __DIR__ . '/../../../../var/tmp', null);
         $converter->convert(__DIR__ . '/original.docx');
     }
     
@@ -139,7 +139,7 @@ class PdfConverterTest extends TestCase
 
         $libreofficePath = $this->provideLibreOfficePath();
 
-        $converter = new PdfConverterService($libreofficePath, __DIR__ . '/../../../var/tmp', null);
+        $converter = new PdfConverterService($libreofficePath, __DIR__ . '/../../../../var/tmp', null);
         $converter->convert($input);
     }
     
