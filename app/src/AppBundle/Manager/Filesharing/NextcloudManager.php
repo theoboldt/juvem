@@ -55,25 +55,25 @@ class NextcloudManager
         $this->ocsConnector      = new NextcloudOcsConnector($connectionConfiguration, $this->logger);
         $this->webDavConnector   = new NextcloudWebDavConnector($connectionConfiguration, $this->logger);
     }
-
-
+    
     /**
      * Create instance if configuration is not empty
      *
-     * @param string               $baseUri
-     * @param string               $username
-     * @param string               $password
-     * @param string               $folder
+     * @param null|string $baseUri
+     * @param null|string $username
+     * @param null|string $password
+     * @param null|string $folder
      * @param LoggerInterface|null $logger
      * @return NextcloudManager|null
      */
     public static function create(
-        string $baseUri = '',
-        string $username = '',
-        string $password = '',
-        string $folder = '',
+        ?string $baseUri = '',
+        ?string $username = '',
+        ?string $password = '',
+        ?string $folder = '',
         ?LoggerInterface $logger = null
-    ): ?NextcloudManager {
+    ): ?NextcloudManager
+    {
         $baseUri  = trim($baseUri);
         $username = trim($username);
         $folder   = trim($folder);
