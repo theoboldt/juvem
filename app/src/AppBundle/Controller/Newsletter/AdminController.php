@@ -28,6 +28,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -58,6 +59,7 @@ class AdminController extends AbstractController
      * @param bool $newsletterFeature
      * @param string $customizationOrganizationName
      * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param SessionInterface $session
      * @param TokenGeneratorInterface $fosTokenGenerator
      * @param NewsletterManager $newsletterManager
      * @param EntityManagerInterface $ormManager
@@ -73,6 +75,7 @@ class AdminController extends AbstractController
         bool $newsletterFeature,
         string $customizationOrganizationName,
         CsrfTokenManagerInterface $csrfTokenManager,
+        SessionInterface $session,
         TokenGeneratorInterface $fosTokenGenerator,
         NewsletterManager $newsletterManager,
         EntityManagerInterface $ormManager,
@@ -89,6 +92,7 @@ class AdminController extends AbstractController
             $newsletterFeature,
             $customizationOrganizationName,
             $csrfTokenManager,
+            $session,
             $fosTokenGenerator,
             $newsletterManager,
             $ormManager

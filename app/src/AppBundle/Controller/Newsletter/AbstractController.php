@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use FOS\UserBundle\Util\TokenGeneratorInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -86,6 +87,7 @@ abstract class AbstractController
      * @param bool $newsletterFeature
      * @param string $customizationOrganizationName
      * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param SessionInterface $session
      * @param TokenGeneratorInterface $fosTokenGenerator
      * @param NewsletterManager $newsletterManager
      * @param EntityManagerInterface $ormManager
@@ -100,6 +102,7 @@ abstract class AbstractController
         bool $newsletterFeature,
         string $customizationOrganizationName,
         CsrfTokenManagerInterface $csrfTokenManager,
+        SessionInterface $session,
         TokenGeneratorInterface $fosTokenGenerator,
         NewsletterManager $newsletterManager,
         EntityManagerInterface $ormManager
@@ -116,6 +119,7 @@ abstract class AbstractController
         $this->newsletterManager             = $newsletterManager;
         $this->ormManager                    = $ormManager;
         $this->csrfTokenManager              = $csrfTokenManager;
+        $this->session                       = $session;
         $this->customizationOrganizationName = $customizationOrganizationName;
     }
     
