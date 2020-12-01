@@ -26,7 +26,7 @@ trait FlashBagAwareControllerTrait
      *
      * @var SessionInterface|null
      */
-    private ?SessionInterface $session;
+    private ?SessionInterface $session = null;
     
     /**
      * Adds a flash message to the current session for type.
