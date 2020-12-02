@@ -13,9 +13,9 @@ namespace AppBundle\Export;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\Participant;
 use AppBundle\Entity\User;
 use AppBundle\Export\Sheet\AttendanceListSheet;
-use AppBundle\Twig\GlobalCustomization;
 use AppBundle\Twig\GlobalCustomizationConfigurationProvider;
 
 class AttendanceListExport extends Export
@@ -24,40 +24,40 @@ class AttendanceListExport extends Export
     /**
      * The attendance list (containing event)
      *
-     * @var array|AttendanceList[]
+     * @var AttendanceList[]
      */
-    protected $lists = [];
+    protected array $lists = [];
 
     /**
      * Stores a list of Participant entities
      *
-     * @var array
+     * @var Participant[]
      */
-    protected $participants = [];
+    protected array $participants = [];
 
     /**
      * Filed attendance list data
      *
      * @var array
      */
-    private $attendanceData = [];
+    private array $attendanceData = [];
     /**
      * Group field
      *
      * @var Attribute|null
      */
     private $groupBy;
-
+    
     /**
      * ParticipationsExport constructor.
      *
      * @param GlobalCustomizationConfigurationProvider $customization  Customization provider in order to eg. add
      *                                                                 company information
-     * @param array|AttendanceList[]                   $lists          Attendance lists to export
-     * @param array                                    $participants   List of participants qualified for export
-     * @param array                                    $attendanceData Filed attendance list data
-     * @param User|null                                $modifier       Modifier/creator of export
-     * @param Attribute|null                           $groupBy        Group field
+     * @param AttendanceList[] $lists                                  Attendance lists to export
+     * @param Participant[] $participants                              List of participants qualified for export
+     * @param array $attendanceData                                    Filed attendance list data
+     * @param User|null $modifier                                      Modifier/creator of export
+     * @param Attribute|null $groupBy                                  Group field
      */
     public function __construct(
         GlobalCustomizationConfigurationProvider $customization,
@@ -66,7 +66,8 @@ class AttendanceListExport extends Export
         array $attendanceData,
         User $modifier,
         ?Attribute $groupBy = null
-    ) {
+    )
+    {
         $this->lists = $lists;
         if (!count($this->lists)) {
             throw new \InvalidArgumentException('Must provide multiple lists for export');

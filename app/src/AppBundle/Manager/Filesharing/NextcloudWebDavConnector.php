@@ -14,11 +14,12 @@ namespace AppBundle\Manager\Filesharing;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 
 class NextcloudWebDavConnector extends AbstractNextcloudConnector
 {
     const API_PATH = '/remote.php/dav/';
-
+    
     /**
      * Configures the Guzzle client for juvimg service
      *
@@ -40,20 +41,20 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         }
         return $this->client;
     }
-
+    
     /**
      * Do request
      *
      * @param string $method
      * @param string $subUri
-     * @param array  $options
-     * @return \SimpleXMLElement
+     * @param array $options
+     * @return ResponseInterface
      */
-    private function request(string $method, string $subUri, array $options = []): \SimpleXMLElement
+    private function request(string $method, string $subUri, array $options = []): ResponseInterface
     {
         try {
             $response = $this->client()->request(
-                $method, self::API_PATH . $subUri, $options
+                $method, $subUri, $options
             );
         } catch (\Exception $e) {
             throw new NextcloudWebDavOperationFailedException(
@@ -62,30 +63,30 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
                 $e
             );
         }
-        if ($response->getHeaderLine('Content-Type') === 'application/xml; charset=utf-8') {
-            $content = $response->getBody()->getContents();
-            $xml     = new \SimpleXMLElement($content);
-            /*
-            $xml->registerXPathNamespace('d', 'DAV');
-            $xml->registerXPathNamespace('s', 'http://sabredav.org/ns');
-            $xml->registerXPathNamespace('oc', 'http://owncloud.org/ns');
-            $xml->registerXPathNamespace('nc', 'http://nextcloud.org/ns');
-            */
-            return $xml;
-        } else {
-            throw new NextcloudWebDavOperationFailedException(
-                sprintf('Unexpected content type "%s" transmitted', $response->getHeaderLine('Content-Type'))
-            );
-        }
-
+        
+        return $response;
     }
-
+    
     /**
-     * List all existing event directories
-     * 
-     * @return array
+     * Get directories url path with escaped directories
+     *
+     * @param string $path
+     * @return string
      */
-    public function listEventDirectories(): array
+    private function getEventDirectoriesUrlPath(string $path)
+    {
+        return self::API_PATH . 'files/' . $this->configuration->getUsername() . '/' .
+               $this->configuration->getFolder() . '/' .
+               ltrim($path, '/');
+    }
+    
+    /**
+     * List a directory
+     *
+     * @param string $path
+     * @return \Generator
+     */
+    private function listDirectoryItems(string $path): \Generator
     {
         $requestXml = '<?xml version="1.0"?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">
@@ -101,28 +102,35 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         <oc:share-types />
   </d:prop>
 </d:propfind>';
-
-        $xml = $this->request(
+        
+        
+        $start    = microtime(true);
+        $response = $this->request(
             'PROPFIND',
-            'files/' . $this->configuration->getUsername() . '/' . $this->configuration->getFolder(),
+            $path,
             [RequestOptions::BODY => $requestXml]
         );
-
-        $hrefMainFolder = self::API_PATH . 'files/' . $this->configuration->getUsername() . '/' .
-                          $this->configuration->getFolder() . '/';
-
-        $directories = [];
-
+        $duration = round(microtime(true) - $start);
+        $this->logger->debug(
+            'Fetched nextcloud directory listing for path {path} within {duration} s',
+            ['path' => $path, 'duration' => $duration]
+        );
+        
+        if ($response->getStatusCode() === 404) {
+            throw new NextcloudWebDavDirectoryNotFoundException(sprintf('Path "%s" not found', $path));
+        }
+        $xml = self::extractXmlResponse($response);
+        
         $r = $xml->xpath('//d:multistatus/d:response');
         foreach ($r as $xmlResponse) {
-            $href = self::extractXmlProperty($xmlResponse, 'd:href');
-            if ($href === $hrefMainFolder) {
-                continue;
-            }
-            $lastModified = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/d:getlastmodified');
-            $fileId       = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/oc:fileid');
-            $size         = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/oc:size');
-
+            $href          = self::extractXmlProperty($xmlResponse, 'd:href');
+            $lastModified  = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/d:getlastmodified');
+            $fileId        = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/oc:fileid');
+            $size          = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/oc:size');
+            $contentType   = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/d:getcontenttype');
+            $contentLength = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/d:getcontentlength');
+            $eTag          = self::extractXmlProperty($xmlResponse, 'd:propstat/d:prop/d:getetag');
+            
             if (empty($href)) {
                 $this->logger->warning('Failed to extract href for nextcloud folder');
             }
@@ -133,6 +141,9 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
             }
             if (empty($fileId)) {
                 $this->logger->warning('Failed to extract fileid for nextcloud folder');
+            } elseif (!is_numeric($fileId)) {
+                $this->logger->error('Non-numeric filedid {fileid} occurred', ['fileid' => $fileId]);
+                $fileId = (int)$fileId;
             } else {
                 $fileId = (int)$fileId;
             }
@@ -141,16 +152,94 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
             } else {
                 $size = (int)$size;
             }
-            if ($href && $lastModified && $fileId) {
-                $name = str_replace($hrefMainFolder, '', urldecode($href));
-                $name = rtrim($name, '/');
-                
-                $directories[] = new NextcloudDirectory($name, $lastModified, $fileId, $size);
+            if (!$contentType || empty(trim($contentType))) {
+                $contentType = null;
+            }
+            
+            if (!empty($contentType) || !empty($contentLength)) {
+                yield new NextcloudFile($href, $lastModified, $fileId, $size, $eTag, $contentType);
+            } else {
+                yield new NextcloudDirectory($href, $lastModified, $fileId, $size, $eTag);
             }
         }
-
+    }
+    
+    /**
+     * List all existing event directories
+     *
+     * @return array
+     */
+    public function listEventDirectories(): array
+    {
+        $listing = $this->listDirectoryItems($this->getEventDirectoriesUrlPath('/'));
+        
+        $directories = [];
+        /** @var NextcloudFileInterface $item */
+        foreach ($listing as $item) {
+            if (!$item instanceof NextcloudDirectory || $item->getName() === '') {
+                continue;
+            }
+            $directories[] = $item;
+        }
+        
         return $directories;
     }
-
-
+    
+    /**
+     * Fetch a directory
+     *
+     * @param string $name
+     * @return NextcloudDirectory|null
+     * @todo  When urlescaping for webdav is possible, replace
+     */
+    public function fetchEventDirectory(string $name): ?NextcloudDirectory
+    {
+        $listing = $this->listDirectoryItems($this->getEventDirectoriesUrlPath('/'));
+        /** @var NextcloudFileInterface $item */
+        foreach ($listing as $item) {
+            if ($item instanceof NextcloudDirectory && $item->getName() === $name) {
+                return $item;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Create directory for event in event directory
+     *
+     * @param string $name
+     * @return NextcloudDirectory
+     */
+    public function createEventDirectory(string $name): NextcloudDirectory
+    {
+        $start    = microtime(true);
+        $response = $this->request(
+            'MKCOL',
+            self::API_PATH . 'files/' . $this->configuration->getUsername() . '/' . $this->configuration->getFolder() .
+            '/' .
+            rawurlencode($name)
+        );
+        if ($response->getStatusCode() !== 201) {
+            throw new NextcloudWebDavDirectoryCreateFailedException(
+                sprintf('Failed to create directory "%s" with code %d', $name, $response->getStatusCode())
+            );
+        }
+        
+        $directory = $this->fetchEventDirectory($name);
+        
+        $duration = round(microtime(true) - $start);
+        $this->logger->debug(
+            'Created nextcloud event directory {name} within {duration} s',
+            ['name' => $name, 'duration' => $duration]
+        );
+        if ($directory) {
+            return $directory;
+        } else {
+            throw new NextcloudWebDavDirectoryCreateFailedException(
+                sprintf('Directory "%s" should have been created, but not found', $name)
+            );
+        }
+    }
+    
+    
 }

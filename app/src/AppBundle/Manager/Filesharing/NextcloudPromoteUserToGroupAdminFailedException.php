@@ -12,7 +12,7 @@
 namespace AppBundle\Manager\Filesharing;
 
 
-class NextcloudWebDavOperationFailedException extends NextcloudOperationFailedException
+class NextcloudPromoteUserToGroupAdminFailedException extends NextcloudOcsOperationFailedException
 {
 
 }

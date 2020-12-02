@@ -74,8 +74,12 @@
                         </div>
                     {%- endif %}
                     {%- if is_granted('edit', event) -%}
-                        <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
-                            class="btn btn-default" title="Mitarbeiter verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter</span></a>
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
+                                class="btn btn-default" title="Mitarbeiter verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter</span></a>
+                            <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
+                               class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
+                        </div>
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_edit', {'eid': event.eid }) }}"
                                class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
@@ -93,14 +97,18 @@
                                     data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
                         </div>
                     {% endif -%}
-                    <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
-                       class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
+                    <div class="btn-group" role="group">
+                        <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
+                           class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
+                        {%- if is_granted('edit', event) and featureCloud %}
+                            <label id="event-cloud-button" class="btn btn-default {% if event.cloudTeamDirectoryId %}active{% endif %}">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></label>
+                        {% endif %}
+                    </div>
+
                     <a href="{{ path('admin_event_variable', {'eid': event.eid }) }}"
                        class="btn btn-default" title="Veranstaltungsspezifische Variablen verwalten">{{ 'equalizer'|glyph }} <span class="hidden-xs">Variablen</span></a>
                     {{ event|changeTrackingButton }}
                     {%- if is_granted('edit', event) -%}
-                        <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
-                           class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
                         {% if event.isDeleted -%}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
@@ -473,6 +481,31 @@
                     });
                 }
             });
+
+            $('#event-cloud-button').click(function() {
+                var btn = $(this),
+                    valueNew = !btn.hasClass('active');
+                btn.addClass('disabled');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path('admin_event_cloud_enable', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
+                    datatype: 'json',
+                    success: function () {
+                        btn.toggleClass('active', valueNew);
+                    },
+                    error: function (response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Dateifreigaben für die Veranstaltung konnten nicht erstellt werden',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        btn.removeClass('disabled');
+                    }
+                });
+            });
+
 
             $('#event-subscription-button').click(function() {
                 var btn = $(this),

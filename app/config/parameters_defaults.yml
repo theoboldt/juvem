@@ -12,3 +12,4 @@ parameters:
     nextcloud.username: null
     nextcloud.password: null
     nextcloud.folder: 'Events'
+    nextcloud.management: 'Management'

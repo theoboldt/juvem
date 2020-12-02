@@ -54,6 +54,18 @@ class EventUserAssignmentType extends AbstractType
                 CheckboxType::class,
                 array_merge($smartCheckbox, ['label' => 'Darf Bemerkungen zu Teilnehmern hinzufügen'])
             );
+    
+        $builder
+            ->add(
+                'allowedCloudAccessTeam',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Hat Zugriff auf die Dateien in der Mitarbeiter-Cloud'])
+            )
+            ->add(
+                'allowedCloudAccessManagement',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Hat Zugriff auf die Dateien in der Leitungs-Cloud'])
+            );
     }
 
     /**

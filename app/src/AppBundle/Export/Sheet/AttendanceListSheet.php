@@ -36,14 +36,14 @@ class AttendanceListSheet extends AbstractSheet
     /**
      * The attendance lists (containing event)
      *
-     * @var array|AttendanceList[]
+     * @var AttendanceList[]
      */
     protected $lists = [];
 
     /**
      * Stores a list of Participant entities
      *
-     * @var array
+     * @var Participant[]
      */
     protected $participants;
 

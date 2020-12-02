@@ -107,7 +107,6 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
      */
     protected $settings = '{}';
 
-
     /**
      * Defines if help buttons should be excluded from tabindex in forms for this user
      *
@@ -115,6 +114,14 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
      * @var bool
      */
     protected $isExcludeHelpTabindex = false;
+    
+    /**
+     * If this user has a cloud account, the related username is stored here
+     *
+     * @ORM\Column(type="string", name="cloud_username", length=255, nullable=true)
+     * @var null|string
+     */
+    private $cloudUsername = null;
 
     /**
      * CONSTRUCTOR
@@ -348,6 +355,22 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     public function setIsExcludeHelpTabindex(bool $isExcludeHelpTabindex): void
     {
         $this->isExcludeHelpTabindex = $isExcludeHelpTabindex;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getCloudUsername(): ?string
+    {
+        return $this->cloudUsername;
+    }
+    
+    /**
+     * @param string|null $cloudUsername
+     */
+    public function setCloudUsername(?string $cloudUsername): void
+    {
+        $this->cloudUsername = $cloudUsername;
     }
     
     /**

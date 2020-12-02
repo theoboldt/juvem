@@ -13,17 +13,18 @@ namespace AppBundle\Manager\Filesharing;
 
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 abstract class AbstractNextcloudConnector
 {
-
+    
     /**
      * @var NextcloudConnectionConfiguration
      */
     protected NextcloudConnectionConfiguration $configuration;
-
+    
     /**
      * @var LoggerInterface
      */
@@ -35,12 +36,12 @@ abstract class AbstractNextcloudConnector
      * @var Client|null
      */
     protected ?Client $client = null;
-
+    
     /**
      * NextcloudWebDavConnector constructor.
      *
      * @param NextcloudConnectionConfiguration $configuration
-     * @param LoggerInterface|null             $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(NextcloudConnectionConfiguration $configuration, ?LoggerInterface $logger = null)
     {
@@ -54,12 +55,32 @@ abstract class AbstractNextcloudConnector
      * @return Client
      */
     abstract protected function client(): Client;
-
+    
+    /**
+     * Extract response as {@see \SimpleXMLElement}
+     *
+     * @param ResponseInterface $response
+     * @return \SimpleXMLElement
+     */
+    protected static function extractXmlResponse(ResponseInterface $response): \SimpleXMLElement
+    {
+        $expectedContentTypes = ['application/xml; charset=utf-8', 'text/xml; charset=utf-8'];
+        if (in_array(mb_strtolower($response->getHeaderLine('Content-Type')), $expectedContentTypes, true)) {
+            $content = $response->getBody()->getContents();
+            $xml     = new \SimpleXMLElement($content);
+            return $xml;
+        } else {
+            throw new NextcloudOperationFailedException(
+                sprintf('Unexpected content type "%s" transmitted', $response->getHeaderLine('Content-Type'))
+            );
+        }
+    }
+    
     /**
      * Extract
      *
      * @param \SimpleXMLElement $xml
-     * @param string            $xpath
+     * @param string $xpath
      * @return string|null
      */
     protected static function extractXmlProperty(\SimpleXMLElement $xml, string $xpath): ?string

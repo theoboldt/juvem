@@ -45,6 +45,7 @@ parameters:
     nextcloud.username: ~
     nextcloud.password: ~
     nextcloud.folder: ~
+    nextcloud.management: ~
 
     app.libreoffice_binary_path: ~
     app.geo.openweathermap.api_key: ~

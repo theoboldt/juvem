@@ -43,8 +43,11 @@ class EventAddUserAssignmentsType extends AbstractType
                         $qb = $r->createQueryBuilder('u');
                         return $qb->andWhere($qb->expr()->like('u.roles', ':requiredRole'))
                                   ->setParameter('requiredRole', '%"ROLE_ADMIN_EVENT"%')
+/*
+// In order to grant cloud access, also global admins must be assigned
                                   ->andWhere($qb->expr()->notLike('u.roles', ':disallowedRole'))
                                   ->setParameter('disallowedRole', '%"ROLE_ADMIN_EVENT_GLOBAL"%')
+*/
                                   ->andWhere('u.enabled = 1')
                                   ->addOrderBy('u.nameLast', 'ASC')
                                   ->addOrderBy('u.nameFirst', 'ASC')

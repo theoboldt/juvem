@@ -12,7 +12,7 @@
 namespace AppBundle\Manager\Filesharing;
 
 
-class NextcloudWebDavOperationFailedException extends NextcloudOperationFailedException
+class NextcloudWebDavDirectoryNotFoundException extends NextcloudWebDavOperationFailedException
 {
 
 }

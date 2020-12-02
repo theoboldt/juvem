@@ -334,6 +334,38 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     protected $linkUrl = null;
     
     /**
+     * If there is a project folder for the team created on connected cloud, related file id is set here
+     *
+     * @ORM\Column(type="integer", name="cloud_team_directory_id", options={"unsigned"=true}, nullable=true)
+     * @var int|null
+     */
+    protected $cloudTeamDirectoryId = null;
+
+    /**
+     * If there is a project folder for the team created on connected cloud, related file name is set here
+     *
+     * @ORM\Column(type="string", length=128, name="cloud_team_directory_name", nullable=true)
+     * @var string|null
+     */
+    protected $cloudTeamDirectoryName = null;
+    
+    /**
+     * If there is a project folder for management created on connected cloud, related file id is set here
+     *
+     * @ORM\Column(type="integer", name="cloud_management_directory_id", options={"unsigned"=true}, nullable=true)
+     * @var int|null
+     */
+    protected $cloudManagementDirectoryId = null;
+    
+    /**
+     * If there is a project folder for the management created on connected cloud, related file name is set here
+     *
+     * @ORM\Column(type="string", length=128, name="cloud_management_directory_name", nullable=true)
+     * @var string|null
+     */
+    protected $cloudManagementDirectoryName = null;
+    
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -1431,6 +1463,71 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function hasLink(): bool
     {
         return !empty($this->linkTitle) && !empty($this->linkUrl);
+    }
+    
+    /**
+     * @return int|null
+     */
+    public function getCloudTeamDirectoryId(): ?int
+    {
+        return $this->cloudTeamDirectoryId;
+    }
+    
+    /**
+     * @param int|null $cloudTeamDirectoryId
+     */
+    public function setCloudTeamDirectoryId(?int $cloudTeamDirectoryId): void
+    {
+        $this->cloudTeamDirectoryId = $cloudTeamDirectoryId;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getCloudTeamDirectoryName(): ?string
+    {
+        return $this->cloudTeamDirectoryName;
+    }
+    
+    /**
+     * @param string|null $cloudTeamDirectoryName
+     */
+    public function setCloudTeamDirectoryName(?string $cloudTeamDirectoryName): void
+    {
+        $this->cloudTeamDirectoryName = $cloudTeamDirectoryName;
+    }
+    
+    
+    /**
+     * @return int|null
+     */
+    public function getCloudManagementDirectoryId(): ?int
+    {
+        return $this->cloudManagementDirectoryId;
+    }
+    
+    /**
+     * @param int|null $cloudManagementDirectoryId
+     */
+    public function setCloudManagementDirectoryId(?int $cloudManagementDirectoryId): void
+    {
+        $this->cloudManagementDirectoryId = $cloudManagementDirectoryId;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getCloudManagementDirectoryName(): ?string
+    {
+        return $this->cloudManagementDirectoryName;
+    }
+    
+    /**
+     * @param string|null $cloudManagementDirectoryName
+     */
+    public function setCloudManagementDirectoryName(?string $cloudManagementDirectoryName): void
+    {
+        $this->cloudManagementDirectoryName = $cloudManagementDirectoryName;
     }
     
     /**

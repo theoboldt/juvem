@@ -58,6 +58,18 @@ class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentati
      * @var bool
      */
     protected $allowedToComment = false;
+    
+    /**
+     * @ORM\Column(type="boolean", name="allowed_cloud_access_team", nullable=false)
+     * @var bool
+     */
+    protected $allowedCloudAccessTeam = false;
+    
+    /**
+     * @ORM\Column(type="boolean", name="allowed_cloud_access_management", nullable=false)
+     * @var bool
+     */
+    protected $allowedCloudAccessManagement = false;
 
     /**
      * EventUserAssignment constructor.
@@ -177,6 +189,38 @@ class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentati
     {
         $this->allowedToManageParticipants = $allowedToManageParticipants;
         return $this;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isAllowedCloudAccessTeam(): bool
+    {
+        return $this->allowedCloudAccessTeam;
+    }
+    
+    /**
+     * @param bool $allowedCloudAccessTeam
+     */
+    public function setAllowedCloudAccessTeam(bool $allowedCloudAccessTeam): void
+    {
+        $this->allowedCloudAccessTeam = $allowedCloudAccessTeam;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isAllowedCloudAccessManagement(): bool
+    {
+        return $this->allowedCloudAccessManagement;
+    }
+    
+    /**
+     * @param bool $allowedCloudAccessManagement
+     */
+    public function setAllowedCloudAccessManagement(bool $allowedCloudAccessManagement): void
+    {
+        $this->allowedCloudAccessManagement = $allowedCloudAccessManagement;
     }
     
     /**

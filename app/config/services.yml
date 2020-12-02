@@ -453,6 +453,7 @@ services:
           - "%nextcloud.username%"
           - "%nextcloud.password%"
           - "%nextcloud.folder%"
+          - "%nextcloud.management%"
           - "@logger"
 
     AppBundle\Controller\:

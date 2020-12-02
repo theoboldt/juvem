@@ -12,61 +12,19 @@
 namespace AppBundle\Manager\Filesharing;
 
 
-class NextcloudDirectory
+class NextcloudDirectory extends AbstractNextcloudFileItem implements NextcloudFileInterface
 {
-    private string $name;
-
-    private \DateTimeImmutable $lastModified;
-
-    private int $fileId;
-
-    private int $size;
-
+    
     /**
-     * NextcloudDirectory constructor.
+     * Get directory name
      *
-     * @param string             $name
-     * @param \DateTimeImmutable $lastModified
-     * @param int                $fileId
-     * @param int                $size
-     */
-    public function __construct(string $name, \DateTimeImmutable $lastModified, int $fileId, int $size)
-    {
-        $this->name         = $name;
-        $this->lastModified = $lastModified;
-        $this->fileId       = $fileId;
-        $this->size         = $size;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string
     {
-        return $this->name;
-    }
-
-    /**
-     * @return \DateTimeImmutable
-     */
-    public function getLastModified(): \DateTimeImmutable
-    {
-        return $this->lastModified;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFileId(): int
-    {
-        return $this->fileId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSize(): int
-    {
-        return $this->size;
+        if (preg_match('!/([^/]*)/$!', $this->getHref(true), $matches)) {
+            return $matches[1];
+        }
+        throw new \InvalidArgumentException('Failed to extract name of ' . $this->getHref(true));
     }
 }
