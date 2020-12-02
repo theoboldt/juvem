@@ -9,9 +9,13 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\WebDavApi;
 
 
+use AppBundle\Manager\Filesharing\AbstractNextcloudConnector;
+use AppBundle\Manager\Filesharing\NextcloudDirectory;
+use AppBundle\Manager\Filesharing\NextcloudFile;
+use AppBundle\Manager\Filesharing\NextcloudFileInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;

@@ -9,9 +9,12 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\OcsShareApi;
 
 
+use AppBundle\Manager\Filesharing\AbstractNextcloudConnector;
+use AppBundle\Manager\Filesharing\NextcloudDirectory;
+use AppBundle\Manager\Filesharing\OcsApi\NextcloudOcsOperationFailedException;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;

@@ -9,8 +9,10 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\OcsApi;
 
+
+use AppBundle\Manager\Filesharing\NextcloudOperationFailedException;
 
 class NextcloudOcsOperationFailedException extends NextcloudOperationFailedException
 {

@@ -9,10 +9,10 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\OcsShareApi;
 
 
-class NextcloudPromoteUserToGroupAdminFailedException extends NextcloudOcsOperationFailedException
+class NextcloudOcsShareCreationFailedException extends NextcloudOcsShareOperationFailedException
 {
 
 }

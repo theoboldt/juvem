@@ -9,10 +9,10 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\OcsApi;
 
 
-class NextcloudWebDavDirectoryCreateFailedException extends NextcloudWebDavOperationFailedException
+class NextcloudCreateGroupFailedException extends NextcloudOcsOperationFailedException
 {
 
 }

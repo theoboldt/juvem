@@ -9,10 +9,10 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\WebDavApi;
 
 
-class NextcloudWebDavDirectoryNotFoundException extends NextcloudWebDavOperationFailedException
+class NextcloudWebDavDirectoryCreateFailedException extends NextcloudWebDavOperationFailedException
 {
 
 }

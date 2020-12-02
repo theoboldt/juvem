@@ -12,6 +12,9 @@
 namespace AppBundle\Manager\Filesharing;
 
 
+use AppBundle\Manager\Filesharing\OcsApi\NextcloudOcsConnector;
+use AppBundle\Manager\Filesharing\OcsShareApi\NextcloudOcsShareConnector;
+use AppBundle\Manager\Filesharing\WebDavApi\NextcloudWebDavConnector;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

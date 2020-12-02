@@ -9,10 +9,12 @@
  */
 
 
-namespace AppBundle\Manager\Filesharing;
+namespace AppBundle\Manager\Filesharing\WebDavApi;
 
 
-class NextcloudAssignUserToGroupFailedException extends NextcloudOcsOperationFailedException
+use AppBundle\Manager\Filesharing\NextcloudOperationFailedException;
+
+class NextcloudWebDavOperationFailedException extends NextcloudOperationFailedException
 {
 
 }
