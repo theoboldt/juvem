@@ -79,7 +79,10 @@ class AdminCloudController
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('cloud-' . $event->getEid(), $token))) {
             throw new InvalidTokenHttpException();
         }
-        
+
+        if ($event->getCloudTeamDirectoryName()) {
+            return new JsonResponse([]);
+        }
         $share = $this->nextcloudManager->createEventShare(
             $event->getTitle(), $event->getStartDate()
         );
