@@ -108,6 +108,43 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
     {
         $this->addUserToGroup($this->configuration->getUsername(), $group);
     }
+
+    /**
+     * Fetch all users assigned to group
+     * 
+     * @param string $group
+     * @return string[]
+     */
+    public function fetchUsersOfGroup(string $group): array
+    {
+        $start      = microtime(true);
+        $response   = $this->request(
+            'GET',
+            'cloud/groups/' . urlencode($group)
+        );
+        $xml        = self::extractXmlResponse($response);
+        $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
+        $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
+        
+        if ($statusCode !== 100) {
+            throw new NextcloudAssignUserToGroupFailedException(
+                sprintf('Failed to fetch users of group "%s", status: %s', $group, $status)
+            );
+        }
+        
+        $users = [];
+        foreach ($xml->xpath('//data/users/element') as $user) {
+            $users[] = (string)$user;
+        }
+        
+        $duration = round(microtime(true) - $start);
+        $this->logger->debug(
+            'Fetched users of group {group} within {duration} s',
+            ['group' => $group, 'duration' => $duration]
+        );
+
+        return $users;
+    }
     
     /**
      * Assign user to group
@@ -129,12 +166,42 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
         
         if ($statusCode !== 100) {
             throw new NextcloudAssignUserToGroupFailedException(
-                sprintf('Failed to assign "%s" to "%s", status: %s', $username, $group, $status)
+                sprintf('Failed to assign "%s" to group "%s", status: %s', $username, $group, $status)
             );
         }
         $duration = round(microtime(true) - $start);
         $this->logger->debug(
             'Added nextcloud user {username} to group {group} within {duration} s',
+            ['username' => $username, 'group' => $group, 'duration' => $duration]
+        );
+    }
+
+    /**
+     * Remove user from group
+     * 
+     * @param string $username
+     * @param string $group
+     */
+    public function removeUserFromGroup(string $username, string $group): void
+    {
+        $start      = microtime(true);
+        $response   = $this->request(
+            'DELETE',
+            'cloud/users/' . urlencode($username) . '/groups',
+            ['form_params' => ['groupid' => $group]]
+        );
+        $xml        = self::extractXmlResponse($response);
+        $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
+        $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
+
+        if ($statusCode !== 100) {
+            throw new NextcloudAssignUserToGroupFailedException(
+                sprintf('Failed to remove "%s" from group "%s", status: %s', $username, $group, $status)
+            );
+        }
+        $duration = round(microtime(true) - $start);
+        $this->logger->debug(
+            'Removed nextcloud user {username} from group {group} within {duration} s',
             ['username' => $username, 'group' => $group, 'duration' => $duration]
         );
     }

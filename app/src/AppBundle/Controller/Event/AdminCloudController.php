@@ -20,6 +20,7 @@ use AppBundle\Manager\Filesharing\NextcloudManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -61,19 +62,54 @@ class AdminCloudController
         $this->csrfTokenManager = $csrfTokenManager;
         $this->doctrine         = $doctrine;
     }
-    
+
     /**
-     * Page for list of events
+     * Ensure folders and groups for this user are existing in cloud
      *
-     * @Route("/admin/event/{eid}/cloud/{token}/enable", requirements={"eid": "\d+", "token": ".*"}, name="admin_event_cloud_enable")
+     * @Route("/admin/event/{eid}/cloud/{token}/enable", requirements={"eid": "\d+", "token": ".*"},
+     *                                                   name="admin_event_cloud_enable")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('edit', event)")
-     * @param Event $event
+     * @param Event  $event
      * @param string $token
+     * @return Response
      */
-    public function enableCloudAction(Event $event, string $token)
+    public function enableCloudAction(Event $event, string $token): Response
     {
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('cloud-' . $event->getEid(), $token))) {
+            throw new InvalidTokenHttpException();
+        }
+        
+        $share = $this->nextcloudManager->createEventShare(
+            $event->getTitle(), $event->getStartDate()
+        );
+        
+        $event->setCloudTeamDirectoryName($share->getNameTeam());
+        $event->setCloudTeamDirectoryId($share->getTeamDirectoryId());
+        $event->setCloudManagementDirectoryName($share->getNameManagement());
+        $event->setCloudManagementDirectoryId($share->getManagementDirectoryId());
+        
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($event);
+        $em->flush();
+        
+        return new JsonResponse([]);
+    }
+
+    /**
+     * Ensure all users having this event assigned have access to the related share
+     *
+     * @Route("/admin/event/{eid}/cloud/{token}/share", requirements={"eid": "\d+", "token": ".*"},
+     *                                                  name="admin_event_share_update")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('edit', event)")
+     * @param Event  $event
+     * @param string $token
+     * @return Response
+     */
+    public function updateCloudShareAction(Event $event, string $token): Response
+    {
+        if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('cloud-share-' . $event->getEid(), $token))) {
             throw new InvalidTokenHttpException();
         }
         
@@ -90,19 +126,10 @@ class AdminCloudController
                 }
             }
         }
-        
-        $share = $this->nextcloudManager->createEventShare(
-            $event->getTitle(), $event->getStartDate(), $usersTeam, $usersManagement
+
+        $this->nextcloudManager->updateEventShareAssignments(
+            $event->getCloudTeamDirectoryName(), $usersTeam, $event->getCloudManagementDirectoryName(), $usersManagement
         );
-        
-        $event->setCloudTeamDirectoryName($share->getNameTeam());
-        $event->setCloudTeamDirectoryId($share->getTeamDirectoryId());
-        $event->setCloudManagementDirectoryName($share->getNameManagement());
-        $event->setCloudManagementDirectoryId($share->getManagementDirectoryId());
-        
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($event);
-        $em->flush();
         
         return new JsonResponse([]);
     }

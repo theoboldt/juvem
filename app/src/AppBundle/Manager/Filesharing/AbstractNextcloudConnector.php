@@ -67,6 +67,11 @@ abstract class AbstractNextcloudConnector
         $expectedContentTypes = ['application/xml; charset=utf-8', 'text/xml; charset=utf-8'];
         if (in_array(mb_strtolower($response->getHeaderLine('Content-Type')), $expectedContentTypes, true)) {
             $content = $response->getBody()->getContents();
+            if (empty($content) && $response->getStatusCode() === 405) {
+                throw new NextcloudOperationFailedException(
+                    'Method not allowed, empty response provided'
+                );
+            }
             $xml     = new \SimpleXMLElement($content);
             return $xml;
         } else {

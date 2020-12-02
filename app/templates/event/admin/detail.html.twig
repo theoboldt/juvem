@@ -485,14 +485,46 @@
             $('#event-cloud-button').click(function() {
                 var btn = $(this),
                     valueNew = !btn.hasClass('active');
+                if (btn.hasClass('disabled')) {
+                    return;
+                }
                 btn.addClass('disabled');
+                
+                $(document).trigger('add-alerts', {
+                    message: 'Die Dateifreigaben für die Veranstaltung werden angelegt. Das kann einige Minuten dauern...',
+                    priority: 'info'
+                });
 
                 $.ajax({
                     type: 'POST',
                     url: '{{ path('admin_event_cloud_enable', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
                     datatype: 'json',
                     success: function () {
-                        btn.toggleClass('active', valueNew);
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Verzeichnisse und Gruppen sind nun vorhanden. Die Zuweisung der Nutzer wird jetzt aktualisiert...',
+                            priority: 'info'
+                        });
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('admin_event_share_update', {eid: event.eid, token: csrf_token('cloud-share-' ~  event.eid)}) }}',
+                            datatype: 'json',
+                            success: function () {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Dateifreigabe ist erstellt.',
+                                    priority: 'success'
+                                });
+                                btn.toggleClass('active', valueNew);
+                            },
+                            error: function (response) {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Zuweisungen für die Veranstaltung konnten nicht aktualisiert werden',
+                                    priority: 'error'
+                                });
+                            },
+                            complete: function (response) {
+                                btn.removeClass('disabled');
+                            }
+                        });
                     },
                     error: function (response) {
                         $(document).trigger('add-alerts', {

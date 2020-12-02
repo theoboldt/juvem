@@ -171,7 +171,7 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     /**
      * List all existing event directories
      *
-     * @return array
+     * @return NextcloudDirectory[]
      */
     public function listEventDirectories(): array
     {

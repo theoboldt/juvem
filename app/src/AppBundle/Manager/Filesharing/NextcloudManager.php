@@ -26,6 +26,11 @@ class NextcloudManager
     private string $managementLabel;
     
     /**
+     * @var NextcloudConnectionConfiguration
+     */
+    protected NextcloudConnectionConfiguration $configuration;
+    
+    /**
      * @var NextcloudOcsConnector
      */
     private NextcloudOcsConnector $ocsConnector;
@@ -64,14 +69,14 @@ class NextcloudManager
         ?LoggerInterface $logger = null
     )
     {
-        $connectionConfiguration = new NextcloudConnectionConfiguration(
+        $this->configuration     = new NextcloudConnectionConfiguration(
             $baseUri, $username, $password, $folder
         );
         $this->managementLabel   = $managementLabel;
         $this->logger            = $logger ?? new NullLogger();
-        $this->ocsConnector      = new NextcloudOcsConnector($connectionConfiguration, $this->logger);
-        $this->ocsShareConnector = new NextcloudOcsShareConnector($connectionConfiguration, $this->logger);
-        $this->webDavConnector   = new NextcloudWebDavConnector($connectionConfiguration, $this->logger);
+        $this->ocsConnector      = new NextcloudOcsConnector($this->configuration, $this->logger);
+        $this->ocsShareConnector = new NextcloudOcsShareConnector($this->configuration, $this->logger);
+        $this->webDavConnector   = new NextcloudWebDavConnector($this->configuration, $this->logger);
     }
     
     /**
@@ -102,11 +107,6 @@ class NextcloudManager
             return null;
         }
         return new self($baseUri, $username, $password, $folder, $managementLabel, $logger);
-    }
-    
-    public function listEventDirectories()
-    {
-        $this->webDavConnector->listEventDirectories();
     }
     
     /**
@@ -163,12 +163,10 @@ class NextcloudManager
      *
      * @param string $title
      * @param \DateTime $date
-     * @param string[] $usersTeam
-     * @param string[] $usersManagement
      * @return EventShare
      */
     public function createEventShare(
-        string $title, \DateTime $date, array $usersTeam, array $usersManagement
+        string $title, \DateTime $date
     ): EventShare
     {
         $start                   = microtime(true);
@@ -189,13 +187,6 @@ class NextcloudManager
         $directoryManagement = $this->webDavConnector->createEventDirectory($nameDirectoryManagement);
         $this->ocsShareConnector->createShare($directoryManagement, $nameDirectoryTeam);
         
-        foreach ($usersTeam as $userTeam) {
-            $this->ocsConnector->addUserToGroup($userTeam, $nameDirectoryTeam);
-        }
-        foreach ($usersManagement as $userManagement) {
-            $this->ocsConnector->addUserToGroup($userManagement, $nameDirectoryManagement);
-        }
-        
         $duration = round(microtime(true) - $start);
         $this->logger->info(
             'Created {name} within {duration} s', ['name' => $nameDirectoryTeam, 'duration' => $duration]
@@ -204,6 +195,55 @@ class NextcloudManager
         return new EventShare(
             $nameDirectoryTeam, $directoryTeam->getFileId(), $nameDirectoryManagement, $directoryManagement->getFileId()
         );
+    }
+
+    /**
+     * Ensure that only expected users are assigned to related groups
+     *
+     * @param string $nameTeam
+     * @param array  $usersTeam
+     * @param string $nameManagement
+     * @param array  $usersManagement
+     */
+    public function updateEventShareAssignments(
+        string $nameTeam,
+        array $usersTeam,
+        string $nameManagement,
+        array $usersManagement
+    ) {
+        $start = microtime(true);
+        $this->ensureGroupHasOnlyTransmittedUsersAssigned($nameTeam, $usersTeam);
+        $this->ensureGroupHasOnlyTransmittedUsersAssigned($nameManagement, $usersManagement);
+        $duration = round(microtime(true) - $start);
+        $this->logger->info(
+            'Updated user assignments for {nameTeam}, {nameManagement} within {duration} s',
+            ['nameTeam' => $nameTeam, 'nameManagement' => $nameManagement, 'duration' => $duration]
+        );
+    }
+
+    /**
+     * Ensure that only transmitted users are assigned to transmitted group, plus admin user
+     *
+     * @param string   $group         Group to set
+     * @param string[] $expectedUsers List of users
+     */
+    private function ensureGroupHasOnlyTransmittedUsersAssigned(string $group, array $expectedUsers): void
+    {
+        $expectedUsers[] = $this->configuration->getUsername();
+        $expectedUsers   = array_unique($expectedUsers);
+
+        $currentUsers = $this->ocsConnector->fetchUsersOfGroup($group);
+        foreach ($currentUsers as $currentUser) {
+            if (!in_array($currentUser, $expectedUsers)) {
+                $this->ocsConnector->removeUserFromGroup($currentUser, $group);
+            }
+        }
+
+        foreach ($expectedUsers as $expectedUser) {
+            if (!in_array($expectedUser, $currentUsers)) {
+                $this->ocsConnector->addUserToGroup($expectedUser, $group);
+            }
+        }
     }
     
     /**
