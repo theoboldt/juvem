@@ -87,7 +87,7 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
                 sprintf('Failed to create group "%s", already exists', $name)
             );
         } elseif ($statusCode !== 100) {
-            throw new NextcloudCreateGroupExistsException(
+            throw new NextcloudCreateGroupFailedException(
                 sprintf('Failed to create group "%s", status: %s', $name, $status)
             );
         }
