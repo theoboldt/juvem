@@ -148,6 +148,10 @@ class NextcloudManager
                 $nameDirectoryTeam = self::sanitizeFileName($title . ' ' . $date->format('Y-m-d') . ' ' . $i++);
             } while (self::isDirectoryNameExisting($directories, $nameDirectoryTeam));
         }
+        if (empty($nameDirectoryTeam)) {
+            throw new \InvalidArgumentException('Failed to generate name for ' . $title);
+        }
+        
         return $nameDirectoryTeam;
     }
     
@@ -208,9 +212,10 @@ class NextcloudManager
      */
     public static function sanitizeFileName(string $input, int $maxLength = 125): string
     {
-        $output = '';
+        $output = $input;
         if ((!preg_match('/^[\x20-\x7e]*$/', $input) || false !== strpos($input, '%'))) {
             $encoding = mb_detect_encoding($input, null, true) ?: '8bit';
+            $output   = '';
             
             for ($i = 0, $inputLength = mb_strlen($input, $encoding); $i < $inputLength; ++$i) {
                 $char = mb_substr($input, $i, 1, $encoding);
