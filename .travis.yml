@@ -1,0 +1,32 @@
+language: php
+
+sudo: false
+
+cache:
+    directories:
+        - $HOME/app/.composer/cache/files
+
+php:
+  - 7.3
+  - 7.4
+  - nightly
+
+env:
+    matrix:
+        - COMPOSER_PARAM="update --prefer-source --prefer-lowest --working-dir=app"
+        - COMPOSER_PARAM="update --prefer-source --working-dir=app"
+
+before_script:
+    - composer selfupdate
+    - composer $COMPOSER_PARAM
+
+script:
+  - app/bin/phpunit --coverage-clover=coverage.clover
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+matrix:
+  allow_failures:
+    - php: nightly
