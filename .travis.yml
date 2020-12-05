@@ -12,6 +12,8 @@ php:
   - nightly
 
 env:
+    global:
+        - COMPOSER_MEMORY_LIMIT=-1
     matrix:
         - COMPOSER_PARAM="update --prefer-source --prefer-lowest --working-dir=app"
         - COMPOSER_PARAM="update --prefer-source --working-dir=app"
