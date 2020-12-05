@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" colors="true">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">app/src</directory>
+    </include>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <server name="KERNEL_CLASS" value="AppKernel"/>
+    <server name="KERNEL_DIR" value="app/src/"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <env name="LIBREOFFICE_BINARY_PATH" value="/usr/bin/soffice"/>
+  </php>
+  <testsuites>
+    <testsuite name="Juvem Test Suite without Database">
+      <directory>app/tests/Form</directory>
+      <directory>app/tests/Payment</directory>
+      <file>app/tests/BitmaskTest.php</file>
+      <file>app/tests/FileCacheTest.php</file>
+    </testsuite>
+  </testsuites>
+  <listeners>
+    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
+  </listeners>
+</phpunit>

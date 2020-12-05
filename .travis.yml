@@ -18,11 +18,12 @@ env:
         - COMPOSER_PARAM="update --prefer-source --no-scripts --working-dir=app"
 
 before_script:
+    - cp app/config/parameters.yml.test var/config/parameters.yml
     - composer selfupdate
     - composer $COMPOSER_PARAM
 
 script:
-  - app/bin/phpunit --coverage-clover=coverage.clover
+  - app/bin/phpunit --coverage-clover=coverage.clover --config=phpunit-no-database.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
