@@ -15,7 +15,9 @@
   </php>
   <testsuites>
     <testsuite name="Juvem Test Suite without Database">
+      <!--
       <directory>app/tests/Form</directory>
+      -->
       <directory>app/tests/Payment</directory>
       <file>app/tests/BitmaskTest.php</file>
       <file>app/tests/FileCacheTest.php</file>
