@@ -125,16 +125,17 @@ class EventFileSharingManager
      * Ensure all users expected to have access on file share do have it
      *
      * @param Event $event
+     * @return bool Returns true if something was updated
      */
-    public function updateCloudShareAssignments(Event $event): void
+    public function updateCloudShareAssignments(Event $event): bool
     {
         if (!$this->nextcloudManager) {
-            return;
+            return false;
         }
         $shares = $this->findSharesForEvent($event);
 
         if (!count($shares)) {
-            return;
+            return false;
         }
         
         $usersTeam       = [];
@@ -151,20 +152,24 @@ class EventFileSharingManager
             }
         }
         
+        $updated = false;
         foreach ($shares as $share) {
             if ($share->getPurpose() === EventFileShare::PURPOSE_TEAM) {
+                $updated = true;
                 $this->nextcloudManager->updateEventShareAssignments(
                     $share->getGroupName(),
                     $usersTeam
                 );
             }
             if ($share->getPurpose() === EventFileShare::PURPOSE_MANAGEMENT) {
+                $updated = true;
                 $this->nextcloudManager->updateEventShareAssignments(
                     $share->getGroupName(),
                     $usersManagement
                 );
             }
         }
+        return (count($usersTeam) || count($usersManagement)) && $updated;
     }
     
     /**

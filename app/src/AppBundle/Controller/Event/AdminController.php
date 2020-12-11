@@ -37,6 +37,7 @@ use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\Filesharing\EventFileSharingManager;
 use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PriceManager;
@@ -96,6 +97,11 @@ class AdminController
     private UploadImageManager $uploadImageManager;
     
     /**
+     * @var EventFileSharingManager
+     */
+    private EventFileSharingManager $eventFileSharingManager;
+    
+    /**
      * security.csrf.token_manager
      *
      * @var CsrfTokenManagerInterface
@@ -115,6 +121,7 @@ class AdminController
      * @param PriceManager $priceManager
      * @param ParticipationManager $participationManager
      * @param UploadImageManager $uploadImageManager
+     * @param EventFileSharingManager $eventFileSharingManager
      * @param CsrfTokenManagerInterface $csrfTokenManager
      * @param SessionInterface $session
      */
@@ -129,6 +136,7 @@ class AdminController
         PriceManager $priceManager,
         ParticipationManager $participationManager,
         UploadImageManager $uploadImageManager,
+        EventFileSharingManager $eventFileSharingManager,
         CsrfTokenManagerInterface $csrfTokenManager,
         SessionInterface $session
     )
@@ -137,6 +145,7 @@ class AdminController
         $this->priceManager         = $priceManager;
         $this->participationManager = $participationManager;
         $this->uploadImageManager   = $uploadImageManager;
+        $this->eventFileSharingManager = $eventFileSharingManager;
         $this->csrfTokenManager     = $csrfTokenManager;
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage         = $tokenStorage;
@@ -832,8 +841,11 @@ class AdminController
             $em->flush();
             $this->addFlash(
                 'success',
-                'Änderungen an den Zuweisungen gespeichert'
+                'Die Benutzerzuweisung zur Veranstaltung wurden aktualisiert.'
             );
+            if ($this->eventFileSharingManager->updateCloudShareAssignments($event)) {
+                $this->addFlash('success', 'Die Zuweisungen für die Dateifreigaben der Veranstaltung wurden aktualisiert.');
+            }
         }
         
         return $this->render(
