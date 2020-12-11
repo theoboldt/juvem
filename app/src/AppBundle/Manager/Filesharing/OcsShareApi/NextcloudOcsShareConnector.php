@@ -78,16 +78,8 @@ class NextcloudOcsShareConnector extends AbstractNextcloudConnector
      */
     public function createShare(NextcloudDirectory $directory, string $group)
     {
-        $start = microtime(true);
-        /*
-        $response   = $this->request(
-            'GET',
-            'shares'
-        );
-         *
-        $xml        = self::extractXmlResponse($response);
-*/
-        $path       = '/' . $this->configuration->getFolder() . '/' . $directory->getName();
+        $start      = microtime(true);
+        $path       = '/' . implode('/', $directory->getPath(true));
         $response   = $this->request(
             'POST',
             'shares',
@@ -115,9 +107,9 @@ class NextcloudOcsShareConnector extends AbstractNextcloudConnector
                 )
             );
         }
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Created nextcloud share of path {path} for group {group} within {duration} s',
+            'Created nextcloud share of path {path} for group {group} within {duration} ms',
             ['path' => $path, 'group' => $group, 'duration' => $duration]
         );
     }

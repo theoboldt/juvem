@@ -332,38 +332,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @ORM\Column(type="string", length=255, name="link_url", nullable=true)
      */
     protected $linkUrl = null;
-    
-    /**
-     * If there is a project folder for the team created on connected cloud, related file id is set here
-     *
-     * @ORM\Column(type="integer", name="cloud_team_directory_id", options={"unsigned"=true}, nullable=true)
-     * @var int|null
-     */
-    protected $cloudTeamDirectoryId = null;
 
     /**
-     * If there is a project folder for the team created on connected cloud, related file name is set here
+     * WebDAV href to event root share directory (if configured)
      *
-     * @ORM\Column(type="string", length=128, name="cloud_team_directory_name", nullable=true)
+     * @ORM\Column(type="string", length=255, name="share_directory_root_href", nullable=true)
      * @var string|null
      */
-    protected $cloudTeamDirectoryName = null;
-    
-    /**
-     * If there is a project folder for management created on connected cloud, related file id is set here
-     *
-     * @ORM\Column(type="integer", name="cloud_management_directory_id", options={"unsigned"=true}, nullable=true)
-     * @var int|null
-     */
-    protected $cloudManagementDirectoryId = null;
-    
-    /**
-     * If there is a project folder for the management created on connected cloud, related file name is set here
-     *
-     * @ORM\Column(type="string", length=128, name="cloud_management_directory_name", nullable=true)
-     * @var string|null
-     */
-    protected $cloudManagementDirectoryName = null;
+    protected $shareDirectoryRootHref = null;
     
     /**
      * CONSTRUCTOR
@@ -1466,68 +1442,29 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     }
     
     /**
-     * @return int|null
-     */
-    public function getCloudTeamDirectoryId(): ?int
-    {
-        return $this->cloudTeamDirectoryId;
-    }
-    
-    /**
-     * @param int|null $cloudTeamDirectoryId
-     */
-    public function setCloudTeamDirectoryId(?int $cloudTeamDirectoryId): void
-    {
-        $this->cloudTeamDirectoryId = $cloudTeamDirectoryId;
-    }
-    
-    /**
      * @return string|null
      */
-    public function getCloudTeamDirectoryName(): ?string
+    public function getShareDirectoryRootHref(): ?string
     {
-        return $this->cloudTeamDirectoryName;
+        return $this->shareDirectoryRootHref;
     }
     
     /**
-     * @param string|null $cloudTeamDirectoryName
+     * Determine if file share is enabled
+     *
+     * @return bool
      */
-    public function setCloudTeamDirectoryName(?string $cloudTeamDirectoryName): void
+    public function hasShareDirectoryRoot(): bool
     {
-        $this->cloudTeamDirectoryName = $cloudTeamDirectoryName;
-    }
-    
-    
-    /**
-     * @return int|null
-     */
-    public function getCloudManagementDirectoryId(): ?int
-    {
-        return $this->cloudManagementDirectoryId;
+        return $this->shareDirectoryRootHref !== null;
     }
     
     /**
-     * @param int|null $cloudManagementDirectoryId
+     * @param string|null $shareDirectoryRootHref
      */
-    public function setCloudManagementDirectoryId(?int $cloudManagementDirectoryId): void
+    public function setShareDirectoryRootHref(?string $shareDirectoryRootHref): void
     {
-        $this->cloudManagementDirectoryId = $cloudManagementDirectoryId;
-    }
-    
-    /**
-     * @return string|null
-     */
-    public function getCloudManagementDirectoryName(): ?string
-    {
-        return $this->cloudManagementDirectoryName;
-    }
-    
-    /**
-     * @param string|null $cloudManagementDirectoryName
-     */
-    public function setCloudManagementDirectoryName(?string $cloudManagementDirectoryName): void
-    {
-        $this->cloudManagementDirectoryName = $cloudManagementDirectoryName;
+        $this->shareDirectoryRootHref = $shareDirectoryRootHref;
     }
     
     /**

@@ -93,9 +93,9 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
             );
         }
         
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Created nextcloud group {name} within {duration} s', ['name' => $name, 'duration' => $duration]
+            'Created nextcloud group {name} within {duration} ms', ['name' => $name, 'duration' => $duration]
         );
     }
     
@@ -108,10 +108,10 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
     {
         $this->addUserToGroup($this->configuration->getUsername(), $group);
     }
-
+    
     /**
      * Fetch all users assigned to group
-     * 
+     *
      * @param string $group
      * @return string[]
      */
@@ -137,12 +137,12 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
             $users[] = (string)$user;
         }
         
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Fetched users of group {group} within {duration} s',
+            'Fetched users of group {group} within {duration} ms',
             ['group' => $group, 'duration' => $duration]
         );
-
+        
         return $users;
     }
     
@@ -169,16 +169,16 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
                 sprintf('Failed to assign "%s" to group "%s", status: %s', $username, $group, $status)
             );
         }
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Added nextcloud user {username} to group {group} within {duration} s',
+            'Added nextcloud user {username} to group {group} within {duration} ms',
             ['username' => $username, 'group' => $group, 'duration' => $duration]
         );
     }
-
+    
     /**
      * Remove user from group
-     * 
+     *
      * @param string $username
      * @param string $group
      */
@@ -193,15 +193,15 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
         $xml        = self::extractXmlResponse($response);
         $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
         $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
-
+        
         if ($statusCode !== 100) {
             throw new NextcloudAssignUserToGroupFailedException(
                 sprintf('Failed to remove "%s" from group "%s", status: %s', $username, $group, $status)
             );
         }
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Removed nextcloud user {username} from group {group} within {duration} s',
+            'Removed nextcloud user {username} from group {group} within {duration} ms',
             ['username' => $username, 'group' => $group, 'duration' => $duration]
         );
     }
@@ -239,9 +239,9 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
                 sprintf('Failed to promote user "%s" for "%s", status: %s', $username, $group, $status)
             );
         }
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Promoted nextcloud user {username} to subadmin of {group} within {duration} s',
+            'Promoted nextcloud user {username} to subadmin of {group} within {duration} ms',
             ['username' => $username, 'group' => $group, 'duration' => $duration]
         );
     }

@@ -27,4 +27,18 @@ class NextcloudDirectory extends AbstractNextcloudFileItem implements NextcloudF
         }
         throw new \InvalidArgumentException('Failed to extract name of ' . $this->getHref(true));
     }
+    
+    /**
+     * Extract directory name for WebDAV urlencoded Href
+     *
+     * @param string $urlencodedHref Href source
+     * @return string Directory name
+     */
+    public static function extractDirectoryNameFromDirectoryHref(string $urlencodedHref): string
+    {
+        if (preg_match('!/([^/]*)/$!', urldecode(urldecode($urlencodedHref)), $matches)) {
+            return $matches[1];
+        }
+        throw new \InvalidArgumentException('Failed to extract name for ' . $urlencodedHref);
+    }
 }

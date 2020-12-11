@@ -101,7 +101,7 @@
                         <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
                            class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
                         {%- if is_granted('edit', event) and featureCloud %}
-                            <label id="event-cloud-button" class="btn btn-default {% if event.cloudTeamDirectoryId %}active{% endif %}">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></label>
+                            <label id="event-cloud-button" class="btn btn-default {% if event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></label>
                         {% endif %}
                     </div>
 
@@ -482,14 +482,15 @@
                 }
             });
 
-            $('#event-cloud-button').click(function() {
+            var cloudButton = $('#event-cloud-button');
+            cloudButton.click(function() {
                 var btn = $(this),
                     valueNew = !btn.hasClass('active');
                 if (btn.hasClass('disabled')) {
                     return;
                 }
                 btn.addClass('disabled');
-                
+
                 $(document).trigger('add-alerts', {
                     message: 'Die Dateifreigaben für die Veranstaltung werden angelegt. Das kann einige Minuten dauern...',
                     priority: 'info'

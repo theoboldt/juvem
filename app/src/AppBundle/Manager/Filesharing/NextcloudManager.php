@@ -128,15 +128,37 @@ class NextcloudManager
     }
     
     /**
-     * Provide unused name for team directory
+     * Create a new unique event root directory on file share
+     *
+     * @param string $title
+     * @param \DateTime $date
+     * @return NextcloudDirectory
+     */
+    public function createUniqueEventRootDirectory(string $title, \DateTime $date): NextcloudDirectory
+    {
+        $start         = microtime(true);
+        $nameDirectory = $this->provideUniqueEventRootName($title, $date);
+        
+        $directory = $this->webDavConnector->createEventRootDirectory($nameDirectory);
+        
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->info(
+            'Created event root directory {name} within {duration} ms',
+            ['name' => $nameDirectory, 'duration' => $duration]
+        );
+        return $directory;
+    }
+    
+    /**
+     * Provide unused name for event root directory
      *
      * @param string $title
      * @param \DateTime $date
      * @return string
      */
-    private function provideNameDirectoryTeam(string $title, \DateTime $date): string
+    private function provideUniqueEventRootName(string $title, \DateTime $date): string
     {
-        $directories = $this->webDavConnector->listEventDirectories();
+        $directories = $this->webDavConnector->listEventRootDirectories();
         
         $nameDirectoryTeam = self::sanitizeFileName($title);
         if (self::isDirectoryNameExisting($directories, $nameDirectoryTeam)) {
@@ -159,86 +181,97 @@ class NextcloudManager
     }
     
     /**
-     * Create an event share and return chosen names of directories and groups
+     * Create team share for event
      *
-     * @param string $title
-     * @param \DateTime $date
-     * @return EventShare
+     * @param NextcloudDirectory $eventRootDirectory
+     * @return NextcloudDirectory
      */
-    public function createEventShare(
-        string $title, \DateTime $date
-    ): EventShare
+    public function createEventTeamShare(NextcloudDirectory $eventRootDirectory): NextcloudDirectory
     {
-        $start                   = microtime(true);
-        $nameDirectoryTeam       = $this->provideNameDirectoryTeam($title, $date);
-        $managementSuffix        = ' - ' . $this->managementLabel;
-        $nameDirectoryManagement = self::sanitizeFileName($nameDirectoryTeam, 125 - mb_strlen($managementSuffix)) .
-                                   $managementSuffix;
-        
-        $this->ocsConnector->createGroup($nameDirectoryTeam);
-        $this->ocsConnector->addAdminToGroup($nameDirectoryTeam);
-        $this->ocsConnector->promoteAdminToGroupAdmin($nameDirectoryTeam);
-        $directoryTeam = $this->webDavConnector->createEventDirectory($nameDirectoryTeam);
-        $this->ocsShareConnector->createShare($directoryTeam, $nameDirectoryTeam);
-        
-        $this->ocsConnector->createGroup($nameDirectoryManagement);
-        $this->ocsConnector->addAdminToGroup($nameDirectoryManagement);
-        $this->ocsConnector->promoteAdminToGroupAdmin($nameDirectoryManagement);
-        $directoryManagement = $this->webDavConnector->createEventDirectory($nameDirectoryManagement);
-        $this->ocsShareConnector->createShare($directoryManagement, $nameDirectoryTeam);
-        
-        $duration = round(microtime(true) - $start);
-        $this->logger->info(
-            'Created {name} within {duration} s', ['name' => $nameDirectoryTeam, 'duration' => $duration]
-        );
-        
-        return new EventShare(
-            $nameDirectoryTeam, $directoryTeam->getFileId(), $nameDirectoryManagement, $directoryManagement->getFileId()
-        );
+        return $this->createEventShare($eventRootDirectory, $eventRootDirectory->getName());
     }
-
+    
+    /**
+     * Create team share for event
+     *
+     * @param NextcloudDirectory $eventRootDirectory
+     * @return NextcloudDirectory
+     */
+    public function createEventManagementShare(NextcloudDirectory $eventRootDirectory): NextcloudDirectory
+    {
+        $managementSuffix        = ' - ' . $this->managementLabel;
+        $nameDirectoryManagement = self::sanitizeFileName(
+                $eventRootDirectory->getName(), 125 - mb_strlen($managementSuffix)
+            ) . $managementSuffix;
+        
+        return $this->createEventShare($eventRootDirectory, $nameDirectoryManagement);
+    }
+    
+    /**
+     * Create an event sub directory, create groups and share
+     *
+     * @param NextcloudDirectory $eventRootDirectory Event root directory
+     * @param string $title                          Sub directory and group title
+     * @return NextcloudDirectory
+     */
+    private function createEventShare(
+        NextcloudDirectory $eventRootDirectory,
+        string $title
+    ): NextcloudDirectory
+    {
+        $start = microtime(true);
+        
+        $directory = $this->webDavConnector->createSubDirectory($eventRootDirectory, $title);
+        $this->ocsConnector->createGroup($title);
+        $this->ocsConnector->addAdminToGroup($title);
+        $this->ocsConnector->promoteAdminToGroupAdmin($title);
+        $this->ocsShareConnector->createShare($directory, $title);
+        
+        $duration = round((microtime(true) - $start)*1000);
+        $this->logger->info(
+            'Created {name} within {duration} ms', ['name' => $title, 'duration' => $duration]
+        );
+        
+        return $directory;
+    }
+    
     /**
      * Ensure that only expected users are assigned to related groups
      *
-     * @param string $nameTeam
-     * @param array  $usersTeam
-     * @param string $nameManagement
-     * @param array  $usersManagement
+     * @param string $name
+     * @param array $users
      */
     public function updateEventShareAssignments(
-        string $nameTeam,
-        array $usersTeam,
-        string $nameManagement,
-        array $usersManagement
+        string $name,
+        array $users
     ) {
         $start = microtime(true);
-        $this->ensureGroupHasOnlyTransmittedUsersAssigned($nameTeam, $usersTeam);
-        $this->ensureGroupHasOnlyTransmittedUsersAssigned($nameManagement, $usersManagement);
-        $duration = round(microtime(true) - $start);
+        $this->ensureGroupHasOnlyTransmittedUsersAssigned($name, $users);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->info(
-            'Updated user assignments for {nameTeam}, {nameManagement} within {duration} s',
-            ['nameTeam' => $nameTeam, 'nameManagement' => $nameManagement, 'duration' => $duration]
+            'Updated user assignments for {name} within {duration} ms',
+            ['name' => $name, 'duration' => $duration]
         );
     }
-
+    
     /**
      * Ensure that only transmitted users are assigned to transmitted group, plus admin user
      *
-     * @param string   $group         Group to set
+     * @param string $group           Group to set
      * @param string[] $expectedUsers List of users
      */
     private function ensureGroupHasOnlyTransmittedUsersAssigned(string $group, array $expectedUsers): void
     {
         $expectedUsers[] = $this->configuration->getUsername();
         $expectedUsers   = array_unique($expectedUsers);
-
+        
         $currentUsers = $this->ocsConnector->fetchUsersOfGroup($group);
         foreach ($currentUsers as $currentUser) {
             if (!in_array($currentUser, $expectedUsers)) {
                 $this->ocsConnector->removeUserFromGroup($currentUser, $group);
             }
         }
-
+        
         foreach ($expectedUsers as $expectedUser) {
             if (!in_array($expectedUser, $currentUsers)) {
                 $this->ocsConnector->addUserToGroup($expectedUser, $group);

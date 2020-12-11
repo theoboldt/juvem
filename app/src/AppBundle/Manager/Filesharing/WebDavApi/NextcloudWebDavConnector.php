@@ -22,7 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class NextcloudWebDavConnector extends AbstractNextcloudConnector
 {
-    const API_PATH = '/remote.php/dav/';
+    const API_PATH = '/remote.php/dav/files/';
     
     /**
      * Configures the Guzzle client for juvimg service
@@ -72,25 +72,33 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     }
     
     /**
-     * Get directories url path with escaped directories
+     * Get directories url including user name
      *
-     * @param string $path
      * @return string
      */
-    private function getEventDirectoriesUrlPath(string $path)
+    private function provideEventDirectoryBaseUrl()
     {
-        return self::API_PATH . 'files/' . $this->configuration->getUsername() . '/' .
-               $this->configuration->getFolder() . '/' .
-               ltrim($path, '/');
+        return self::API_PATH . $this->configuration->getUsername() . '/';
+    }
+    
+    /**
+     * Get path to transmitted sub path, including name of configured event folder in first level
+     *
+     * @param string $subPath Sub path
+     * @return string Path
+     */
+    private function provideEventDirectoryPath(string $subPath): string
+    {
+        return ltrim($this->configuration->getFolder(), '/') . '/' . ltrim($subPath, '/');
     }
     
     /**
      * List a directory
      *
-     * @param string $path
+     * @param string $href
      * @return \Generator
      */
-    private function listDirectoryItems(string $path): \Generator
+    private function listDirectory(string $href): \Generator
     {
         $requestXml = '<?xml version="1.0"?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">
@@ -111,17 +119,17 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         $start    = microtime(true);
         $response = $this->request(
             'PROPFIND',
-            $path,
+            $href,
             [RequestOptions::BODY => $requestXml]
         );
-        $duration = round(microtime(true) - $start);
+        $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Fetched nextcloud directory listing for path {path} within {duration} s',
-            ['path' => $path, 'duration' => $duration]
+            'Fetched nextcloud directory listing for path {path} within {duration} ms',
+            ['path' => $href, 'duration' => $duration]
         );
         
         if ($response->getStatusCode() === 404) {
-            throw new NextcloudWebDavDirectoryNotFoundException(sprintf('Path "%s" not found', $path));
+            throw new NextcloudWebDavDirectoryNotFoundException(sprintf('Path "%s" not found', $href));
         }
         $xml = self::extractXmlResponse($response);
         
@@ -173,9 +181,9 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
      *
      * @return NextcloudDirectory[]
      */
-    public function listEventDirectories(): array
+    public function listEventRootDirectories(): array
     {
-        $listing = $this->listDirectoryItems($this->getEventDirectoriesUrlPath('/'));
+        $listing = $this->listDirectory($this->provideEventDirectoryBaseUrl() . $this->provideEventDirectoryPath('/'));
         
         $directories = [];
         /** @var NextcloudFileInterface $item */
@@ -190,22 +198,76 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     }
     
     /**
-     * Fetch a directory
+     * Urlencode except "/" character
      *
-     * @param string $name
-     * @return NextcloudDirectory|null
-     * @todo  When urlescaping for webdav is possible, replace
+     * @param string $path
+     * @return string
      */
-    public function fetchEventDirectory(string $name): ?NextcloudDirectory
+    private static function urlencodeWebDavPath(string $path): string
     {
-        $listing = $this->listDirectoryItems($this->getEventDirectoriesUrlPath('/'));
-        /** @var NextcloudFileInterface $item */
-        foreach ($listing as $item) {
-            if ($item instanceof NextcloudDirectory && $item->getName() === $name) {
-                return $item;
+        $pathParts = explode('/', $path);
+        foreach ($pathParts as &$pathPart) {
+            $pathPart = rawurlencode($pathPart);
+        }
+        unset($pathPart);
+        return trim(implode('/', $pathParts), '/');
+    }
+    
+    /**
+     * Create sub directory at transmitted one
+     *
+     * @param NextcloudDirectory $directory Directory
+     * @param string $subDirectoryName      New Sub directory name (not encoded)
+     * @return NextcloudDirectory Created directory
+     */
+    public function createSubDirectory(NextcloudDirectory $directory, string $subDirectoryName): NextcloudDirectory
+    {
+        return $this->createSubDirectoryAtHref($directory->getHref(false), $subDirectoryName);
+    }
+    
+    /**
+     * Create sub directory in transmitted WebDAV href
+     *
+     * @param string $href             Root WebDAV href
+     * @param string $subDirectoryName New Sub directory name (not encoded)
+     * @return NextcloudDirectory Created directory
+     */
+    private function createSubDirectoryAtHref(string $href, string $subDirectoryName): NextcloudDirectory
+    {
+        $start    = microtime(true);
+        $url      = $href . '/' . rawurlencode($subDirectoryName);
+        $response = $this->request(
+            'MKCOL',
+            $url
+        );
+        if ($response->getStatusCode() !== 201) {
+            throw new NextcloudWebDavDirectoryCreateFailedException(
+                sprintf('Failed to create "%s" with code %d', $url, $response->getStatusCode())
+            );
+        }
+        
+        $directory = null;
+        foreach ($this->listDirectory($href) as $file) {
+            if ($file instanceof NextcloudDirectory) {
+                if ($file->getHref(false) !== $href && $file->getName() === $subDirectoryName) {
+                    $directory = $file;
+                    break;
+                }
             }
         }
-        return null;
+        
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->debug(
+            'Created nextcloud event {zrl} within {duration} ms',
+            ['url' => $url, 'duration' => $duration]
+        );
+        if ($directory) {
+            return $directory;
+        } else {
+            throw new NextcloudWebDavDirectoryCreateFailedException(
+                sprintf('Path "%s" should have been created, but not found', $url)
+            );
+        }
     }
     
     /**
@@ -214,35 +276,11 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
      * @param string $name
      * @return NextcloudDirectory
      */
-    public function createEventDirectory(string $name): NextcloudDirectory
+    public function createEventRootDirectory(string $name): NextcloudDirectory
     {
-        $start    = microtime(true);
-        $response = $this->request(
-            'MKCOL',
-            self::API_PATH . 'files/' . $this->configuration->getUsername() . '/' . $this->configuration->getFolder() .
-            '/' .
-            rawurlencode($name)
+        return $this->createSubDirectoryAtHref(
+            $this->provideEventDirectoryBaseUrl() . $this->provideEventDirectoryPath('/'), $name
         );
-        if ($response->getStatusCode() !== 201) {
-            throw new NextcloudWebDavDirectoryCreateFailedException(
-                sprintf('Failed to create directory "%s" with code %d', $name, $response->getStatusCode())
-            );
-        }
-        
-        $directory = $this->fetchEventDirectory($name);
-        
-        $duration = round(microtime(true) - $start);
-        $this->logger->debug(
-            'Created nextcloud event directory {name} within {duration} s',
-            ['name' => $name, 'duration' => $duration]
-        );
-        if ($directory) {
-            return $directory;
-        } else {
-            throw new NextcloudWebDavDirectoryCreateFailedException(
-                sprintf('Directory "%s" should have been created, but not found', $name)
-            );
-        }
     }
     
     

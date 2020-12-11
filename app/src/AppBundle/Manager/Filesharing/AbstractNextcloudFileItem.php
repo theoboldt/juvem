@@ -12,6 +12,8 @@
 namespace AppBundle\Manager\Filesharing;
 
 
+use AppBundle\Manager\Filesharing\WebDavApi\NextcloudWebDavConnector;
+
 abstract class AbstractNextcloudFileItem
 {
     private string $href;
@@ -52,6 +54,49 @@ abstract class AbstractNextcloudFileItem
             return urldecode(urldecode($this->href));
         }
         return $this->href;
+    }
+    
+    /**
+     * Extract user name
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        $matches = $this->extractHrefParts();
+        return $matches['username'];
+    }
+    
+    /**
+     * Extract path, url encoded
+     *
+     * @param bool $urldecode
+     * @return string[]
+     */
+    public function getPath(bool $urldecode = false): array
+    {
+        $matches = $this->extractHrefParts();
+        $path    = explode('/', $matches['path']);
+        if ($urldecode) {
+            foreach ($path as &$pathPart) {
+                $pathPart = urldecode(urldecode($pathPart));
+            }
+            unset($pathPart);
+        }
+        return $path;
+    }
+    
+    /**
+     * @return array
+     */
+    private function extractHrefParts(): array
+    {
+        $pattern = '/^' . preg_quote(NextcloudWebDavConnector::API_PATH, '/') .
+                   '(?<username>[^\/]+)\/(?<path>.+?)(?:[\/]{0,1})$/';
+        if (preg_match($pattern, $this->href, $matches)) {
+            return $matches;
+        }
+        throw new \RuntimeException('Failed to extract ' . $this->href);
     }
     
     /**
