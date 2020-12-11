@@ -177,21 +177,36 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     }
     
     /**
+     * Fetch event root directory for transmitted root name
+     *
+     * @param string $eventDirectoryRootName
+     * @return NextcloudDirectory|null
+     */
+    public function fetchEventRootDirectory(string $eventDirectoryRootName): ?NextcloudDirectory
+    {
+        foreach ($this->listEventRootDirectories() as $directory) {
+            if ($directory->getName() === $eventDirectoryRootName) {
+                return $directory;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * List all existing event directories
      *
-     * @return NextcloudDirectory[]
+     * @return \Traversable|NextcloudDirectory[]
      */
-    public function listEventRootDirectories(): array
+    public function listEventRootDirectories(): \Traversable
     {
         $listing = $this->listDirectory($this->provideEventDirectoryBaseUrl() . $this->provideEventDirectoryPath('/'));
         
         $directories = [];
         /** @var NextcloudFileInterface $item */
         foreach ($listing as $item) {
-            if (!$item instanceof NextcloudDirectory || $item->getName() === '') {
-                continue;
+            if ($item instanceof NextcloudDirectory && $item->getName() !== '') {
+                yield $item;
             }
-            $directories[] = $item;
         }
         
         return $directories;

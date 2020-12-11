@@ -149,6 +149,19 @@ class NextcloudManager
         return $directory;
     }
     
+    
+    /**
+     * Fetch event root directory for transmitted root name
+     *
+     * @param string $eventDirectoryRootName
+     * @return NextcloudDirectory|null
+     */
+    public function fetchEventRootDirectory(string $eventDirectoryRootName): ?NextcloudDirectory
+    {
+        return $this->webDavConnector->fetchEventRootDirectory($eventDirectoryRootName);
+    }
+    
+    
     /**
      * Provide unused name for event root directory
      *
@@ -158,7 +171,7 @@ class NextcloudManager
      */
     private function provideUniqueEventRootName(string $title, \DateTime $date): string
     {
-        $directories = $this->webDavConnector->listEventRootDirectories();
+        $directories = iterator_to_array($this->webDavConnector->listEventRootDirectories());
         
         $nameDirectoryTeam = self::sanitizeFileName($title);
         if (self::isDirectoryNameExisting($directories, $nameDirectoryTeam)) {
@@ -179,6 +192,7 @@ class NextcloudManager
         
         return $nameDirectoryTeam;
     }
+    
     
     /**
      * Create team share for event

@@ -17,8 +17,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
-use AppBundle\Manager\Filesharing\NextcloudManager;
-use Doctrine\Persistence\ManagerRegistry;
+use AppBundle\Manager\Filesharing\EventFileSharingManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,41 +43,22 @@ class AdminCloudController
     private CsrfTokenManagerInterface $csrfTokenManager;
     
     /**
-     * @var NextcloudManager|null
+     * @var EventFileSharingManager
      */
-    private ?NextcloudManager $nextcloudManager;
+    private EventFileSharingManager $fileSharingManager;
     
     /**
      * AdminCloudController constructor.
      *
-     * @param NextcloudManager|null $nextcloudManager
+     * @param EventFileSharingManager $fileSharingManager
      * @param CsrfTokenManagerInterface $csrfTokenManager
-     * @param ManagerRegistry $doctrine
      */
     public function __construct(
-        ?NextcloudManager $nextcloudManager, CsrfTokenManagerInterface $csrfTokenManager, ManagerRegistry $doctrine
+        EventFileSharingManager $fileSharingManager, CsrfTokenManagerInterface $csrfTokenManager
     )
     {
-        $this->nextcloudManager = $nextcloudManager;
-        $this->csrfTokenManager = $csrfTokenManager;
-        $this->doctrine         = $doctrine;
-    }
-    
-    /**
-     * @Route("/admin/event/{eid}/cloud/availability", requirements={"eid": "\d+"}, name="admin_event_cloud_availability")
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Security("is_granted('edit', event)")
-     * @param Event $event
-     * @return Response
-     */
-    public function hasCloudAction(Event $event): Response
-    {
-        $shares = $this->findSharesForEvent($event);
-        
-        if (count($shares)) {
-            return new JsonResponse(['available' => true]);
-        }
-        return new JsonResponse(['available' => false]);
+        $this->fileSharingManager = $fileSharingManager;
+        $this->csrfTokenManager   = $csrfTokenManager;
     }
     
     /**
@@ -110,40 +90,7 @@ class AdminCloudController
             throw new InvalidTokenHttpException();
         }
         
-        if ($event->getShareDirectoryRootHref()) {
-            return new JsonResponse([]);
-        }
-        $directory = $this->nextcloudManager->createUniqueEventRootDirectory(
-            $event->getTitle(), $event->getStartDate()
-        );
-        $em        = $this->getDoctrine()->getManager();
-        $event->setShareDirectoryRootHref($directory->getHref());
-        $em->persist($event);
-        $em->flush();
-        
-        $shareDirectory = $this->nextcloudManager->createEventTeamShare($directory);
-        $share          = new EventFileShare(
-            $event,
-            EventFileShare::PURPOSE_TEAM,
-            $shareDirectory->getFileId(),
-            $shareDirectory->getHref(false),
-            $shareDirectory->getName(),
-            $shareDirectory->getName()
-        );
-        $em->persist($share);
-        $em->flush();
-        
-        $shareDirectory = $this->nextcloudManager->createEventManagementShare($directory);
-        $share          = new EventFileShare(
-            $event,
-            EventFileShare::PURPOSE_MANAGEMENT,
-            $shareDirectory->getFileId(),
-            $shareDirectory->getHref(false),
-            $shareDirectory->getName(),
-            $shareDirectory->getName()
-        );
-        $em->persist($share);
-        $em->flush();
+        $this->fileSharingManager->ensureEventCloudSharesAvailable($event);
         
         return new JsonResponse([]);
     }
@@ -165,36 +112,8 @@ class AdminCloudController
             throw new InvalidTokenHttpException();
         }
         
-        $usersTeam       = [];
-        $usersManagement = [];
-        foreach ($event->getUserAssignments() as $userAssignment) {
-            $cloudUserName = $userAssignment->getUser()->getCloudUsername();
-            if ($cloudUserName) {
-                if ($userAssignment->isAllowedCloudAccessTeam()) {
-                    $usersTeam[] = $cloudUserName;
-                }
-                if ($userAssignment->isAllowedCloudAccessManagement()) {
-                    $usersManagement[] = $cloudUserName;
-                }
-            }
-        }
-    
-        $shares = $this->findSharesForEvent($event);
-        foreach ($shares as $share) {
-            if ($share->getPurpose() === EventFileShare::PURPOSE_TEAM) {
-                $this->nextcloudManager->updateEventShareAssignments(
-                    $share->getGroupName(),
-                    $usersTeam
-                );
-            }
-            if ($share->getPurpose() === EventFileShare::PURPOSE_MANAGEMENT) {
-                $this->nextcloudManager->updateEventShareAssignments(
-                    $share->getGroupName(),
-                    $usersManagement
-                );
-            }
-        }
-    
+        $this->fileSharingManager->updateCloudShareAssignments($event);
+        
         return new JsonResponse([]);
     }
 }

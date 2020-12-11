@@ -456,6 +456,8 @@ services:
           - "%nextcloud.management%"
           - "@logger"
 
+    AppBundle\Manager\Filesharing\EventFileSharingManager:
+
     AppBundle\Controller\:
         resource: '../src/AppBundle/Controller/**/*Controller.php'
         exclude: '../src/AppBundle/Controller/{Default|Event/Participation/AdminMultipleExport}Controller.php'
