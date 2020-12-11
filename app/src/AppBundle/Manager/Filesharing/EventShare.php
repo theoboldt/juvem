@@ -22,13 +22,25 @@ class EventShare
     private string $nameTeam;
     
     /**
+     * Nextcloud file id for team directory
+     *
+     * @var int
+     */
+    private int $teamDirectoryId;
+    
+    /**
      * Name of management share
      *
      * @var string
      */
     private string $nameManagement;
-    private int    $teamDirectoryId;
-    private int    $managementDirectoryId;
+    
+    /**
+     * Nextcloud file id for management directory
+     *
+     * @var int
+     */
+    private int $managementDirectoryId;
     
     /**
      * EventShare constructor.
