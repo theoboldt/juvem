@@ -104,6 +104,8 @@ class NewsletterManager extends AbstractMailerAwareManager
         $sentCount     = 0;
         $exceptions    = [];
         
+        $subscriptions = array_reverse($subscriptions);
+        
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
             $startTime = microtime(true);
@@ -184,7 +186,7 @@ class NewsletterManager extends AbstractMailerAwareManager
             /** @var \Exception $exception */
             foreach ($exceptions as $exception) {
                 $this->logger->error(
-                    'Exception occured while sending in file {file}:{line}: {message}',
+                    'Exception occurred while sending in file {file}:{line}: {message}',
                     [
                         'file'    => $exception->getFile(),
                         'line'    => $exception->getLine(),
