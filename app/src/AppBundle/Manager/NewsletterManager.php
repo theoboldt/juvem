@@ -102,9 +102,6 @@ class NewsletterManager extends AbstractMailerAwareManager
     
         $totalDuration = 0;
         $sentCount     = 0;
-        $exceptions    = [];
-        
-        $subscriptions = array_reverse($subscriptions);
         
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
@@ -157,7 +154,15 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $sentCount   += $resultCount;
                     $newsletter->addRecipient($subscription);
                 } catch (\Exception $e) {
-                    $exceptions[] = $e;
+                    $this->logger->error(
+                        'Exception occurred while sending in file {file}:{line} with message "{message}", trace: {trace}',
+                        [
+                            'file'    => $e->getFile(),
+                            'line'    => $e->getLine(),
+                            'message' => $e->getMessage(),
+                            'trace'   => $e->getTraceAsString()
+                        ]
+                    );
                 }
                 
                 $duration = round((microtime(true) - $startTime)*1000);
@@ -175,26 +180,12 @@ class NewsletterManager extends AbstractMailerAwareManager
                     );
                 }
             }
-            
-            $this->logger->info(
-                'Finished newsletter distribution within {duration} ms',
-                ['rid' => $subscription->getRid(), 'duration' => $totalDuration]
-            );
         }
-
-        if (count($exceptions)) {
-            /** @var \Exception $exception */
-            foreach ($exceptions as $exception) {
-                $this->logger->error(
-                    'Exception occurred while sending in file {file}:{line}: {message}',
-                    [
-                        'file'    => $exception->getFile(),
-                        'line'    => $exception->getLine(),
-                        'message' => $exception->getMessage()
-                    ]
-                );
-            }
-        }
+        
+        $this->logger->info(
+            'Finished newsletter distribution within {duration} ms, sent {count} messages',
+            ['count' => $sentCount, 'duration' => $totalDuration]
+        );
 
         return $sentCount;
     }
