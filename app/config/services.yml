@@ -105,7 +105,7 @@ services:
     app.newsletter_manager:
         alias: AppBundle\Manager\NewsletterManager
     AppBundle\Manager\NewsletterManager:
-        arguments: ['@router', '@mailer', '@app.twig_mail_generator', '@logger']
+        arguments: ['@router', '@swiftmailer.mailer.direct', '@app.twig_mail_generator', '@logger']
         public: true
     app.newsletter_token_generator:
         class: FOS\UserBundle\Util\TokenGenerator

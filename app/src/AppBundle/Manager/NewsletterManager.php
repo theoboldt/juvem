@@ -99,10 +99,11 @@ class NewsletterManager extends AbstractMailerAwareManager
             'Going to send newsletter {lid} for {count} recipients',
             ['lid' => $newsletter->getLid(), 'count' => count($subscriptions)]
         );
-
-        $sentCount  = 0;
-        $exceptions = [];
-
+    
+        $totalDuration = 0;
+        $sentCount     = 0;
+        $exceptions    = [];
+        
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
             $startTime = microtime(true);
@@ -156,20 +157,27 @@ class NewsletterManager extends AbstractMailerAwareManager
                 } catch (\Exception $e) {
                     $exceptions[] = $e;
                 }
-
-                $duration = round(microtime(true) - $startTime);
+                
+                $duration = round((microtime(true) - $startTime)*1000);
+                $totalDuration += $duration;
+                
                 if ($resultCount) {
                     $this->logger->info(
-                        'Sent newsletter to {rid} in {duration} seconds',
+                        'Sent newsletter to {rid} in {duration} ms',
                         ['rid' => $subscription->getRid(), 'duration' => $duration]
                     );
                 } else {
                     $this->logger->error(
-                        'Failed to send newsletter to {rid} in {duration} seconds',
+                        'Failed to send newsletter to {rid} in {duration} ms',
                         ['rid' => $subscription->getRid(), 'duration' => $duration]
                     );
                 }
             }
+            
+            $this->logger->info(
+                'Finished newsletter distribution within {duration} ms',
+                ['rid' => $subscription->getRid(), 'duration' => $totalDuration]
+            );
         }
 
         if (count($exceptions)) {

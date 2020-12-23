@@ -157,11 +157,20 @@ doctrine_migrations:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: "%mailer_transport%"
-    host:      "%mailer_host%"
-    username:  "%mailer_user%"
-    password:  "%mailer_password%"
-    spool:     { type: memory }
+    default_mailer: spooled
+    mailers:
+        spooled:
+            transport: "%mailer_transport%"
+            host: "%mailer_host%"
+            username: "%mailer_user%"
+            password: "%mailer_password%"
+            spool: { type: memory }
+        direct:
+            transport: "%mailer_transport%"
+            host: "%mailer_host%"
+            username: "%mailer_user%"
+            password: "%mailer_password%"
+
 
 vich_uploader:
     db_driver: orm
