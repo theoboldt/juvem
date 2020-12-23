@@ -174,13 +174,23 @@ $(function () {
                 lead: $('*#newsletter_mail_lead').val(),
                 content: $('*#newsletter_mail_content').val()
             },
-            success: function () {
+            success: function (response) {
                 btnSendTest.prop('disabled', false);
                 $('#dialogSendTest').modal('hide');
-                $(document).trigger('add-alerts', {
-                    message: 'Die Test-E-Mail wurde versandt',
-                    priority: 'success'
-                });
+                if (response && response.sentCount !== undefined) {
+                    if (response.sentCount) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Test-E-Mail wurde versandt',
+                            priority: 'success'
+                        });
+
+                    } else {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Test-E-Mail scheint nicht versandt worden zu sein. Möglicherweise liegt ein Problem mit dem Mail-Dienstleister vor.',
+                            priority: 'warning'
+                        });
+                    }
+                }
             },
             fail: function () {
                 $(document).trigger('add-alerts', {
