@@ -102,7 +102,7 @@ class NewsletterSubscriptionRepository extends EntityRepository
                     )
               ',
             $queryAgeRangeClearance,
-            implode($similarEventIdList, ','),
+            implode(',', $similarEventIdList),
             $queryAgeOver18rangeAddition
         );
         $stmt  = $this->getEntityManager()->getConnection()->prepare($query);
@@ -118,17 +118,16 @@ class NewsletterSubscriptionRepository extends EntityRepository
     /**
      * Get the list of newsletter subscriptions which qualifies for transmitted parameters
      *
-     * @see qualifiedNewsletterSubscriptionQuery()
-     * @param int      $ageRangeBegin             Begin of interesting age range
-     * @param int      $ageRangeEnd               Begin of interesting age range
-     * @param array    $similarEventIdList        List of subscribed event ids
+     * @param int $ageRangeBegin                  Begin of interesting age range
+     * @param int $ageRangeEnd                    Begin of interesting age range
+     * @param array|null $similarEventIdList      List of subscribed event ids
      * @param int|null $excludeFromNewsletter     Define newsletter id here to exclude subscriptions which have already
      *                                            received the transmitted newsletter
      * @return array|NewsletterSubscription[]
-     * @throws \Doctrine\DBAL\DBALException
+     * @see qualifiedNewsletterSubscriptionQuery()
      */
     public function qualifiedNewsletterSubscriptionList(
-        int $ageRangeBegin, int $ageRangeEnd, array $similarEventIdList = null, $excludeFromNewsletter = null
+        int $ageRangeBegin, int $ageRangeEnd, ?array $similarEventIdList = null, $excludeFromNewsletter = null
     )
     {
         if ($excludeFromNewsletter instanceof Newsletter) {
