@@ -148,6 +148,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $message->setTo($email);
                 }
 
+                $abort       = false;
                 $resultCount = 0;
                 try {
                     $resultCount = $this->mailer->send($message);
@@ -163,6 +164,11 @@ class NewsletterManager extends AbstractMailerAwareManager
                             'trace'   => $e->getTraceAsString()
                         ]
                     );
+                    if (strpos($e->getMessage(), 'Connection could not be established with host') !== false
+                        || strpos($e->getMessage(), 'Mails per session limit exceeded') !== false
+                    ) {
+                        $abort = true;
+                    }
                 }
                 
                 $duration = round((microtime(true) - $startTime)*1000);
@@ -178,6 +184,12 @@ class NewsletterManager extends AbstractMailerAwareManager
                         'Failed to send newsletter to {rid} in {duration} ms',
                         ['rid' => $subscription->getRid(), 'duration' => $duration]
                     );
+                }
+                if ($abort) {
+                    $this->logger->warning(
+                        'Permanent error occurred while sending messages, aborting message delivery'
+                    );
+                    break;
                 }
             }
         }
