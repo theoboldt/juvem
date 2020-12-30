@@ -103,9 +103,11 @@ class NewsletterSubscriptionReminderCommand extends Command
         $progress->finish();
         if (count($exceptions)) {
             foreach ($exceptions as $exception) {
+                $tpl = $output->isVeryVerbose(
+                ) ? '<error>Exception while sending in file %1$s:%2$d, with message "%3$s", trace: %4$s</error>' : '<error>Exception while sending, file %1$s:%2$d, message "%3$s"</error>';
                 $output->writeln(
                     sprintf(
-                        'Exception occurred while sending in file %s:%d with message "%s", trace: %s',
+                        $tpl,
                         $exception->getFile(),
                         $exception->getLine(),
                         $exception->getMessage(),
@@ -114,7 +116,8 @@ class NewsletterSubscriptionReminderCommand extends Command
                 );
             }
         
-            $output->writeln('<error>Failed to send messages to ' . implode(', ', $failed) . '</error>');
+            $output->write(sprintf("\n       Sent <info>%d</info> reminders for confirmation. ", $sent));
+            $output->writeln('<error>Failed to send '.count($failed).' messages to ' . implode(', ', $failed) . '</error>');
             return 3;
         
         }
