@@ -79,21 +79,48 @@ class NewsletterSubscriptionReminderCommand extends Command
 
         $progress = new ProgressBar($output, count($subscriptions));
         $progress->start();
-        try {
-            $sent = $this->processSubscriptions(
-                $subscriptions,
-                function () use ($progress) {
-                    $progress->advance();
+    
+        $sent       = 0;
+        $exceptions = [];
+        $failed     = [];
+        foreach ($subscriptions as $subscription) {
+            try {
+                $subscriptionSent = $this->newsletterManager->mailNewsletterSubscriptionConfirmationReminder(
+                    $subscription
+                );
+                $sent             += $subscriptionSent;
+            } catch (\Exception $e) {
+                $exceptions[] = $e;
+                $failed[]     = $subscription->getEmail();
+                if (strpos($e->getMessage(), 'Connection could not be established with host') !== false
+                    || strpos($e->getMessage(), 'Mails per session limit exceeded') !== false
+                ) {
+                    break;
                 }
-            );
-        } catch (\Exception $e) {
-            $output->writeln('<error>Failed to process participants: ' . $e->getMessage() . '</error>');
-            return 3;
-        } finally {
-            $progress->finish();
+            }
+            $progress->advance();
         }
+        $progress->finish();
+        if (count($exceptions)) {
+            foreach ($exceptions as $exception) {
+                $output->writeln(
+                    sprintf(
+                        'Exception occurred while sending in file %s:%d with message "%s", trace: %s',
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getMessage(),
+                        $exception->getTraceAsString()
+                    )
+                );
+            }
+        
+            $output->writeln('<error>Failed to send messages to ' . implode(', ', $failed) . '</error>');
+            return 3;
+        
+        }
+    
         $output->writeln(sprintf("\n       Sent <info>%d</info> reminders for confirmation", $sent));
-
+    
         return 0;
     }
 
@@ -108,27 +135,5 @@ class NewsletterSubscriptionReminderCommand extends Command
         $subscriptions = $repository->findBy(['isConfirmed' => false]);
 
         return $subscriptions;
-    }
-
-    /**
-     * Process subscriptions and send reminder email
-     *
-     * @param array         $subscriptions List of new recipients
-     * @param null|callable $stepCallback  Callback called each time a row was read
-     * @return  int                        Amount of new created subscriptions
-     */
-    protected function processSubscriptions(array $subscriptions, $stepCallback = null)
-    {
-        /** @var NewsletterManager $mailManager */
-        $mailManager = $this->newsletterManager;
-        $sent        = 0;
-
-        foreach ($subscriptions as $subscription) {
-            $sent += $mailManager->mailNewsletterSubscriptionConfirmationReminder($subscription);
-            if (is_callable($stepCallback)) {
-                $stepCallback();
-            }
-        }
-        return $sent;
     }
 }
