@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminSystemController extends AbstractController
@@ -80,18 +81,18 @@ header("Location: $hostAndScheme");
         
         return new RedirectResponse('/clear_cache.php');
     }
-    
+
     /**
      * Display database status or update database
      *
      * @Route("/admin/database/{action}", requirements={"action": "(status|update)"}, name="admin_database")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @param string $action Either status or update
+     * @param string          $action Either status or update
+     * @param KernelInterface $kernel
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function databaseStateAction(string $action)
+    public function databaseStateAction(string $action, KernelInterface $kernel)
     {
-        $kernel      = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
@@ -122,11 +123,11 @@ header("Location: $hostAndScheme");
      *
      * @Route("/admin/database/migrate", name="admin_database_migrate")
      * @Security("is_granted('ROLE_ADMIN')")
+     * @param KernelInterface $kernel
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function databaseMigrateAction()
+    public function databaseMigrateAction(KernelInterface $kernel)
     {
-        $kernel      = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
