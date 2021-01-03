@@ -106,7 +106,7 @@ class MailGenerator
      */
     public static function extractMailDomain(string $email): ?string
     {
-        if (preg_match('^(?:[^\@]+)\@(?P<domain>[^\@]+)$', $email, $result)) {
+        if (preg_match('/^(?:[^\@]+)\@(?P<domain>[^\@]+)$/', $email, $result)) {
             return $result['domain'];
         }
         return null;
