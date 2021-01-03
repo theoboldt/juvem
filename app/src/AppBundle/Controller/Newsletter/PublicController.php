@@ -13,8 +13,10 @@ namespace AppBundle\Controller\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
 use AppBundle\Form\NewsletterSubscriptionType;
-use Symfony\Component\Routing\Annotation\Route;
+use Swift_TransportException;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 
 class PublicController extends AbstractController
@@ -76,13 +78,22 @@ class PublicController extends AbstractController
                 );
             } else {
                 $mailManager = $this->newsletterManager;
-                $mailManager->mailNewsletterSubscriptionRequested($subscription);
+                try {
+                    $mailManager->mailNewsletterSubscriptionRequested($subscription);
 
-                $this->addFlash(
-                    'success',
-                    'Wir haben die Registrierung Ihres Newsletter-Abonnements entgegengenommen. Sie erhalten demnächst eine E-Mail, in der Sie das Abonnement noch bestätigen müssen.'
-                );
-                return $this->redirectToRoute('homepage');
+                    $this->addFlash(
+                        'success',
+                        'Wir haben die Registrierung Ihres Newsletter-Abonnements entgegengenommen. Sie erhalten demnächst eine E-Mail, in der Sie das Abonnement noch bestätigen müssen.'
+                    );
+                    return $this->redirectToRoute('homepage');
+                } catch (Swift_TransportException $e) {
+                    if (strpos($e->getMessage(), 'Error: no valid recipients') !== false) {
+                        $form->get('email')->addError(new FormError('An die genannte E-Mail Adresse konte keine Nachricht verschickt werden. Bitte überprüfen Sie die Eingabe, oder schreiben Sie uns eine E-Mail wenn sich das Problem nicht anderweitig lösen lässt.'));
+                    } else {
+                        throw $e;
+                    }
+                }
+
             }
         }
 

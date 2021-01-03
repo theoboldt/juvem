@@ -58,7 +58,7 @@ class NewsletterManager extends AbstractMailerAwareManager
      * @param string                 $template     Mail template to use
      * @return int                                 Number of successful recipients. Can be 0 which indicates failure
      */
-    protected function mail(NewsletterSubscription $subscription, $template)
+    protected function mail(NewsletterSubscription $subscription, string $template)
     {
         $message  = $this->mailGenerator->getMessage(
             $template,
@@ -67,7 +67,13 @@ class NewsletterManager extends AbstractMailerAwareManager
         $nameLast = $subscription->getNameLast();
         $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
 
-        return $this->mailer->send($message);
+        $sent = 0;
+        try {
+            $sent = $this->mailer->send($message);
+        } catch (\Exception $e) {
+            $this->logger->error('Exception while sending mail: {message}', ['message' => $e->getMessage()]);
+        }
+        return $sent;
     }
 
     /**
