@@ -215,7 +215,9 @@ class AdminController extends AbstractController
 
             $newsletterList[] = [
                 'lid'           => $newsletter->getLid(),
-                'subject'       => $newsletter->getSubject(),
+                'subject'       => htmlentities($newsletter->getSubject()),
+                'title'         => '<b>' . htmlentities($newsletter->getTitle()) . '</b> ' .
+                                   htmlentities($newsletter->getLead()),
                 'sentAt'        => $newsletterSentAt ? $newsletterSentAt->format(
                     'd.m.y H:i'
                 ) : '<i>Entwurf</i>',
