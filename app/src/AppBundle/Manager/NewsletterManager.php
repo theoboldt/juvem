@@ -72,6 +72,7 @@ class NewsletterManager extends AbstractMailerAwareManager
             $sent = $this->mailer->send($message);
         } catch (\Exception $e) {
             $this->logger->error('Exception while sending mail: {message}', ['message' => $e->getMessage()]);
+            throw $e;
         }
         return $sent;
     }
