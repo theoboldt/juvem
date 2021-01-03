@@ -84,13 +84,32 @@ class MailGenerator
             ->setSubject($subject);
 
         if ($organizationEmail) {
-            $message->setReplyTo($organizationEmail, $organizationName)
-                    ->setReturnPath($organizationEmail);
+            $message->setReplyTo($organizationEmail, $organizationName);
+            $organizationEmailDomain = self::extractMailDomain($organizationEmail);
+            if ($organizationEmailDomain !== null
+                && $organizationEmailDomain === self::extractMailDomain($this->mailerAddress)
+            ) {
+                $message->setReturnPath($organizationEmail);
+            }
         }
         $message->setBody($bodyText, 'text/plain')
                 ->addPart($bodyHtml, 'text/html');
 
         return $message;
+    }
+
+    /**
+     * Extract mail domain
+     *
+     * @param string $email
+     * @return string|null
+     */
+    public static function extractMailDomain(string $email): ?string
+    {
+        if (preg_match('^(?:[^\@]+)\@(?P<domain>[^\@]+)$', $email, $result)) {
+            return $result['domain'];
+        }
+        return null;
     }
 
     /**
