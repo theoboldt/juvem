@@ -401,7 +401,11 @@ class AdminController extends AbstractController
 
         $mailManager = $this->newsletterManager;
         $sentCount   = $mailManager->mailNewsletter($newsletter, $recipients);
-
+        
+        if ($newsletter->getSentAt()) {
+            $newsletter->setSentAt(new \DateTime());
+        }
+        
         $em = $this->getDoctrine()->getManager();
         $em->persist($newsletter);
         $em->flush();
