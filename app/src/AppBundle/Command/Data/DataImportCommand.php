@@ -154,7 +154,7 @@ class DataImportCommand extends DataCommandBase
             if ($input->isInteractive()) {
                 $helper   = $this->getHelper('question');
                 $question = new ConfirmationQuestion(
-                    'No mysql command to import database available, contiune anyway?', false
+                    'No mysql command to import database available, continue anyway?', false
                 );
                 
                 if (!$helper->ask($input, $output, $question)) {
