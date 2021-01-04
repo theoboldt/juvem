@@ -22,14 +22,14 @@ abstract class DataCommandBase extends Command
      *
      * @var string
      */
-    private string $databaseUser;
+    protected string $databaseUser;
     
     /**
      * database_password
      *
      * @var string
      */
-    private string $databasePassword;
+    protected string $databasePassword;
     
     /**
      * database_host
@@ -129,24 +129,6 @@ abstract class DataCommandBase extends Command
         $this->tmpRootPath            = $tmpRootPath;
         $this->dataRootPath           = $dataRootPath;
         parent::__construct();
-    }
-    
-    /**
-     * Create mysql configuration file
-     */
-    public function createMysqlConfigurationFile()
-    {
-        $configurationPath = $this->databaseConfigFilePath;
-        if (file_exists($configurationPath)) {
-            unlink($configurationPath);
-        }
-        file_put_contents(
-            $configurationPath, "[client]
-port=" . $this->databasePort . "
-host=" . $this->databaseHost."
-user=" . $this->databaseUser . "
-password=" . $this->databasePassword
-        );
     }
     
     /**

@@ -11,6 +11,7 @@
 namespace AppBundle\Command\Data;
 
 
+use Ifsnop\Mysqldump\Mysqldump;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -163,36 +164,21 @@ class DataExportCommand extends DataCommandBase
     private function addDatabaseDump(InputInterface $input, OutputInterface $output): bool
     {
         $this->dbImagePath = $this->tmpRootPath . '/' . uniqid('db_image');
-        
-        if (`which mysqldump`) {
-            $this->createMysqlConfigurationFile();
-            $cmd = sprintf(
-                    'mysqldump --defaults-file=%s --single-transaction --add-drop-table %s > %s',
-                    escapeshellarg($this->databaseConfigFilePath),
-                    escapeshellarg($this->databaseName),
-                    escapeshellarg($this->dbImagePath)
-                );
-            exec($cmd, $mysqldumpOutput, $return);
-            unlink($this->databaseConfigFilePath);
+    
+        try {
+            $dump = new Mysqldump(
+                'mysql:host=' . $this->databaseHost . ';port='.$this->databasePort.';dbname=' . $this->databaseName, $this->databaseUser,
+                $this->databasePassword
+            );
+            $dump->start($this->dbImagePath);
             $this->files[$this->dbImagePath] = '/database.sql';
-            if ($return !== 0) {
-                $output->writeln(
-                    sprintf('<error>Error when creating database backup: %s</error>', implode(', ', $mysqldumpOutput))
-                );
-            }
-        } else {
-            if ($input->isInteractive()) {
-                $helper   = $this->getHelper('question');
-                $question = new ConfirmationQuestion('Can not add database image as mysqldump is unavailable, continue?', false);
-                
-                if (!$helper->ask($input, $output, $question)) {
-                    $output->writeln('Nothing exported');
-                    return false;
-                }
-            } else {
-                $output->writeln('<error>Can not add database image, mysqldump command missing</error>');
-            }
+        } catch (\Exception $e) {
+            $output->writeln(
+                sprintf('<error>Error when creating database backup: %s</error>', $e->getMessage())
+            );
+            return false;
         }
+    
         return true;
     }
 

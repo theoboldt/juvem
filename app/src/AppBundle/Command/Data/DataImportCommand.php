@@ -251,4 +251,23 @@ class DataImportCommand extends DataCommandBase
         
         return 0;
     }
+    
+    /**
+     * Create mysql configuration file
+     */
+    private function createMysqlConfigurationFile()
+    {
+        $configurationPath = $this->databaseConfigFilePath;
+        if (file_exists($configurationPath)) {
+            unlink($configurationPath);
+        }
+        file_put_contents(
+            $configurationPath, "[client]
+port=" . $this->databasePort . "
+host=" . $this->databaseHost."
+user=" . $this->databaseUser . "
+password=" . $this->databasePassword
+        );
+    }
+    
 }
