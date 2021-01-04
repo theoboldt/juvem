@@ -15,6 +15,7 @@ use Ifsnop\Mysqldump\Mysqldump;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
@@ -43,6 +44,8 @@ class DataExportCommand extends DataCommandBase
         $this->setName('app:data:export')
              ->setDescription('Create export package containing database and file system contents')
              ->addArgument('path', InputArgument::REQUIRED, 'Location where export package is saved to')
+             ->addOption('exclude-database', 'b', InputOption::VALUE_NONE, 'Exclude database backup from result')
+             ->addOption('exclude-data', 'd', InputOption::VALUE_NONE, 'Exclude backup of data files (which would increase backup size significantly if included)')
              ->addArgument('password', InputArgument::OPTIONAL, 'Password which is used to encrypt archive');
     }
     
@@ -69,31 +72,45 @@ class DataExportCommand extends DataCommandBase
                 return 0;
             }
         }
+
+        $excludeDatabase = $input->getOption('exclude-database') !== false;
+        $excludeData     = $input->getOption('exclude-data') !== false;
+
         $this->cleanup();
         
         try {
             $this->disableService();
-            $output->write('Creating database image... ');
-            if (!$this->addDatabaseDump($input, $output)) {
-                $output->writeln('aborted.');
-                $this->enableService();
-                return 1;
+            if ($excludeDatabase) {
+                $output->writeln('Skipping database image creation.');
+            } else {
+                $output->write('Creating database image... ');
+                $start = microtime(true);
+                if (!$this->addDatabaseDump($input, $output)) {
+                    $output->writeln('aborted.');
+                    $this->enableService();
+                    return 1;
+                }
+                $output->writeln('done in '.round(microtime(true)-$start).' s.');
             }
-            $output->writeln('done.');
             
-            $output->write('Collecting data files to export... ');
-            $this->addDataFiles();
-            $output->writeln('done.');
+            if ($excludeData) {
+                $output->writeln('Skipping collection of data files.');
+            } else {
+                $output->write('Collecting data files to export... ');
+                $this->addDataFiles();
+                $output->writeln('done.');
+            }
             
             if ($password) {
-                $output->writeln('Creating archive with password...');
+                $output->write('Creating archive with password... ');
             } else {
-                $output->writeln('Creating archive without password...');
+                $output->write('Creating archive without password... ');
             }
     
             $archive        = new \ZipArchive();
             $archiveTmpPath = $this->temporaryFileName('data_export');
             if (!$archive->open($archiveTmpPath, \ZipArchive::CREATE)) {
+                $output->writeln('failed.');
                 $output->writeln(
                     '<error>Failed to open "' . $archiveTmpPath . '", ' . $archive->getStatusString() . '</error>'
                 );
@@ -104,17 +121,23 @@ class DataExportCommand extends DataCommandBase
             if ($password) {
                 $archive->setPassword($password);
             }
+            $output->writeln('done.');
             
-            $output->writeln('Adding files to export...');
+            $output->write('Adding files to export...');
+            $encryptionError = false;
             $progress = new ProgressBar($output, count($this->files));
             foreach ($this->files as $path => $subPathName) {
                 $archive->addFile($path, $subPathName);
                 if ($password) {
                     if (!$archive->setEncryptionName($subPathName, \ZipArchive::EM_AES_256, $password)) {
+                        if (!$encryptionError) {
+                            $output->writeln(' partially failed.');
+                        }
                         $output->writeln(
                             '<error>Failed to encrypt "' . $subPathName . '", ' . $archive->getStatusString() .
                             '</error>'
                         );
+                        $encryptionError = true;
                         $archive->close();
                         $this->cleanup();
                         return 3;
