@@ -159,8 +159,8 @@ header("Location: $hostAndScheme");
     {
         $backupPassword        = $this->getParameter('backup_password');
         $backupPath            = rtrim($this->getParameter('app.var.backup.path'), '/');
-        $backupArchiveFileName = 'backup_' . date('Y-m-d') . '.zip';
-        $backupLogFileName     = 'backup_' . date('Y-m-d') . '.log';
+        $backupArchiveFileName = 'backup_' . $this->getParameter('database_name') . '_' . date('Y-m-d') . '.zip';
+        $backupLogFileName     = 'backup_' . $this->getParameter('database_name') . '_' . date('Y-m-d') . '.log';
     
         if (!$backupPassword) {
             return new RedirectResponse('/');
