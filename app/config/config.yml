@@ -13,6 +13,7 @@ imports:
 parameters:
     locale: de
     app.var.root.path: "%kernel.project_dir%/../var"
+    app.var.backup.path: "%app.var.root.path%/backup"
     app.var.config.path: "%app.var.root.path%/config"
     app.database.configuration.path: "%app.var.config.path%/.my.cnf"
     app.tmp.root.path: "%app.var.root.path%/tmp"

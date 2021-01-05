@@ -17,6 +17,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -144,5 +146,56 @@ header("Location: $hostAndScheme");
 
         $this->addFlash('info', 'Migrations: <pre>' . nl2br($content).'</pre>');
         return new RedirectResponse('/');
+    }
+    
+    /**
+     * Create daily database backup if backup password is configured
+     *
+     * @Route("/system/database/backup")
+     * @param KernelInterface $kernel
+     * @return Response
+     */
+    public function createDailyBackup(KernelInterface $kernel): Response
+    {
+        $backupPassword        = $this->getParameter('backup_password');
+        $backupPath            = rtrim($this->getParameter('app.var.backup.path'), '/');
+        $backupArchiveFileName = 'backup_' . date('Y-m-d') . '.zip';
+        $backupLogFileName     = 'backup_' . date('Y-m-d') . '.log';
+    
+        if (!$backupPassword) {
+            return new RedirectResponse('/');
+        }
+        
+        if (!file_exists($backupPath)) {
+            if (!mkdir($backupPath)) {
+                throw new BadRequestHttpException('Failed to create backup dir ' . $backupPath);
+            }
+        }
+    
+        if (file_exists($backupPath . '/' . $backupArchiveFileName)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
+    
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+    
+        $parameters = [
+            'command'          => 'app:data:export',
+            '--no-interaction' => true,
+            '--exclude-data'   => true,
+            'path'             => $backupPath . '/' . $backupArchiveFileName,
+            'password'         => $backupPassword,
+        ];
+    
+        $input  = new ArrayInput($parameters);
+        $output = new BufferedOutput();
+        $application->run($input, $output);
+    
+        $content = $output->fetch();
+        file_put_contents($backupPath . '/' . $backupLogFileName, $content);
+        
+        
+        
+        return new Response('', Response::HTTP_CREATED);
     }
 }
