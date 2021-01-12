@@ -20,6 +20,8 @@ use Psr\Log\NullLogger;
 
 class NextcloudManager
 {
+    const USER_AGENT = 'Juvem/1.0 ';
+    
     /**
      * @var string
      */

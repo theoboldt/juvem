@@ -16,6 +16,7 @@ use AppBundle\Manager\Filesharing\AbstractNextcloudConnector;
 use AppBundle\Manager\Filesharing\NextcloudDirectory;
 use AppBundle\Manager\Filesharing\NextcloudFile;
 use AppBundle\Manager\Filesharing\NextcloudFileInterface;
+use AppBundle\Manager\Filesharing\NextcloudManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
@@ -40,6 +41,9 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
                     ],
                     RequestOptions::HTTP_ERRORS => false,
                     RequestOptions::COOKIES     => true,
+                    RequestOptions::HEADERS     => [
+                        'User-Agent' => NextcloudManager::USER_AGENT . ' <webdav>',
+                    ]
                 ]
             );
         }

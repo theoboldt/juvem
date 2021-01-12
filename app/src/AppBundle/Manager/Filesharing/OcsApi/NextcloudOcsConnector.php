@@ -13,6 +13,7 @@ namespace AppBundle\Manager\Filesharing\OcsApi;
 
 
 use AppBundle\Manager\Filesharing\AbstractNextcloudConnector;
+use AppBundle\Manager\Filesharing\NextcloudManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
@@ -38,7 +39,8 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
                     RequestOptions::HTTP_ERRORS => false,
                     RequestOptions::COOKIES     => true,
                     RequestOptions::HEADERS     => [
-                        'OCS-APIRequest' => 'true'
+                        'OCS-APIRequest' => 'true',
+                        'User-Agent'     => NextcloudManager::USER_AGENT . ' <ocs>',
                     ]
                 ]
             );
