@@ -13,4 +13,5 @@ parameters:
     nextcloud.password: null
     nextcloud.folder: 'Events'
     nextcloud.management: 'Management'
+    nextcloud.team: 'Team'
     backup_password: null

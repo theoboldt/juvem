@@ -454,6 +454,7 @@ services:
           - "%nextcloud.password%"
           - "%nextcloud.folder%"
           - "%nextcloud.management%"
+          - "%nextcloud.team%"
           - "@logger"
 
     AppBundle\Manager\Filesharing\EventFileSharingManager:

@@ -23,6 +23,11 @@ class NextcloudManager
     /**
      * @var string
      */
+    private string $teamLabel;
+    
+    /**
+     * @var string
+     */
     private string $managementLabel;
     
     /**
@@ -57,6 +62,7 @@ class NextcloudManager
      * @param string $username
      * @param string $password
      * @param string $folder
+     * @param string $teamLabel
      * @param string $managementLabel
      * @param LoggerInterface|null $logger
      */
@@ -65,6 +71,7 @@ class NextcloudManager
         string $username,
         string $password,
         string $folder,
+        string $teamLabel,
         string $managementLabel,
         ?LoggerInterface $logger = null
     )
@@ -72,6 +79,7 @@ class NextcloudManager
         $this->configuration     = new NextcloudConnectionConfiguration(
             $baseUri, $username, $password, $folder
         );
+        $this->teamLabel         = $teamLabel;
         $this->managementLabel   = $managementLabel;
         $this->logger            = $logger ?? new NullLogger();
         $this->ocsConnector      = new NextcloudOcsConnector($this->configuration, $this->logger);
@@ -86,6 +94,7 @@ class NextcloudManager
      * @param null|string $username
      * @param null|string $password
      * @param null|string $folder
+     * @param string|null $teamLabel
      * @param string|null $managementLabel
      * @param LoggerInterface|null $logger
      * @return NextcloudManager|null
@@ -95,6 +104,7 @@ class NextcloudManager
         ?string $username = '',
         ?string $password = '',
         ?string $folder = '',
+        ?string $teamLabel = '',
         ?string $managementLabel = '',
         ?LoggerInterface $logger = null
     ): ?NextcloudManager
@@ -102,11 +112,12 @@ class NextcloudManager
         $baseUri         = trim($baseUri);
         $username        = trim($username);
         $folder          = trim(str_replace(['/', '\\'], '_', $folder));
+        $teamLabel       = trim(str_replace(['/', '\\'], '_', $teamLabel));
         $managementLabel = trim(str_replace(['/', '\\'], '_', $managementLabel));
         if (empty($baseUri) || empty($username)) {
             return null;
         }
-        return new self($baseUri, $username, $password, $folder, $managementLabel, $logger);
+        return new self($baseUri, $username, $password, $folder, $teamLabel, $managementLabel, $logger);
     }
     
     /**
@@ -202,7 +213,12 @@ class NextcloudManager
      */
     public function createEventTeamShare(NextcloudDirectory $eventRootDirectory): NextcloudDirectory
     {
-        return $this->createEventShare($eventRootDirectory, $eventRootDirectory->getName());
+        $teamSuffix        = ' - ' . $this->teamLabel;
+        $nameDirectoryTeam = self::sanitizeFileName(
+                $eventRootDirectory->getName(), 125 - mb_strlen($teamSuffix)
+            ) . $teamSuffix;
+        
+        return $this->createEventShare($eventRootDirectory, $nameDirectoryTeam);
     }
     
     /**
