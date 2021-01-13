@@ -99,10 +99,10 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     /**
      * List a directory
      *
-     * @param string $href
+     * @param string $listingHref
      * @return \Generator
      */
-    private function listDirectory(string $href): \Generator
+    public function listDirectory(string $listingHref): \Generator
     {
         $requestXml = '<?xml version="1.0"?>
 <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">
@@ -123,17 +123,17 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         $start    = microtime(true);
         $response = $this->request(
             'PROPFIND',
-            $href,
+            $listingHref,
             [RequestOptions::BODY => $requestXml]
         );
         $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
             'Fetched nextcloud directory listing for path {path} within {duration} ms',
-            ['path' => $href, 'duration' => $duration]
+            ['path' => $listingHref, 'duration' => $duration]
         );
         
         if ($response->getStatusCode() === 404) {
-            throw new NextcloudWebDavDirectoryNotFoundException(sprintf('Path "%s" not found', $href));
+            throw new NextcloudWebDavDirectoryNotFoundException(sprintf('Path "%s" not found', $listingHref));
         }
         $xml = self::extractXmlResponse($response);
         

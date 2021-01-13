@@ -12,16 +12,22 @@
 namespace AppBundle\Controller\Event;
 
 
+use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
+use AppBundle\Manager\Filesharing\NextcloudFile;
+use AppBundle\Manager\Filesharing\NextcloudFileInterface;
+use AppBundle\Security\EventVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -33,7 +39,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 class AdminCloudController
 {
     
-    use DoctrineAwareControllerTrait;
+    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait;
     
     /**
      * security.csrf.token_manager
@@ -52,13 +58,20 @@ class AdminCloudController
      *
      * @param EventFileSharingManager $fileSharingManager
      * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(
-        EventFileSharingManager $fileSharingManager, CsrfTokenManagerInterface $csrfTokenManager
+        EventFileSharingManager $fileSharingManager,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        AuthorizationCheckerInterface $authorizationChecker,
+        TokenStorageInterface $tokenStorage
     )
     {
-        $this->fileSharingManager = $fileSharingManager;
-        $this->csrfTokenManager   = $csrfTokenManager;
+        $this->fileSharingManager   = $fileSharingManager;
+        $this->csrfTokenManager     = $csrfTokenManager;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage         = $tokenStorage;
     }
     
     /**
@@ -115,5 +128,43 @@ class AdminCloudController
         $this->fileSharingManager->updateCloudShareAssignments($event);
         
         return new JsonResponse([]);
+    }
+    
+    /**
+     * Ensure all users having this event assigned have access to the related share
+     *
+     * @Route("/admin/event/{eid}/cloud/files.json", requirements={"eid": "\d+"})
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('cloud_access_team', event) or is_granted('cloud_access_management', event)")
+     * @param Event $event
+     * @param string $token
+     * @return Response
+     */
+    public function listCloudFilesAction(Event $event): Response
+    {
+        $files = [];
+        if ($this->isGranted(EventVoter::CLOUD_ACCESS_TEAM, $event)) {
+            $files = array_merge($files, $this->fileSharingManager->listFiles($event, EventFileShare::PURPOSE_TEAM));
+        }
+        if ($this->isGranted(EventVoter::CLOUD_ACCESS_MANAGEMENT, $event)) {
+            $files = array_merge($files, $this->fileSharingManager->listFiles($event, EventFileShare::PURPOSE_MANAGEMENT));
+        }
+    
+        $result = [];
+        /** @var NextcloudFileInterface $file */
+        foreach ($files as $file) {
+            $fileData = [
+                'filename'      => $file->getName(),
+                'filesize'      => $file->getSize(),
+                'last_modified' => $file->getLastModified()->format(Event::DATE_FORMAT_DATE_TIME),
+            ];
+            if ($file instanceof NextcloudFile) {
+                $fileData['content_type'] = $file->getContentType();
+            }
+        
+            $result[] = $fileData;
+        }
+        
+        return new JsonResponse(['files' => $result]);
     }
 }

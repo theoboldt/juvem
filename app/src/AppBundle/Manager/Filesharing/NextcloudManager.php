@@ -174,6 +174,31 @@ class NextcloudManager
         return $this->webDavConnector->fetchEventRootDirectory($eventDirectoryRootName);
     }
     
+    /**
+     * Iterate directories
+     *
+     * @param string $directoryHref
+     * @param bool $recursive If set to true, also iterate sub directories
+     * @return NextcloudFileInterface[]
+     */
+    public function fetchDirectory(string $directoryHref, bool $recursive): array
+    {
+        $files = $this->webDavConnector->listDirectory($directoryHref);
+        
+        $result = [];
+        /** @var NextcloudFileInterface $file */
+        foreach ($files as $file) {
+            if ($file instanceof NextcloudDirectory) {
+                if ($recursive && $file->getHref() !== $directoryHref) {
+                    $result = array_merge($result, $this->fetchDirectory($file->getHref(), $recursive));
+                }
+            } else {
+                $result[] = $file;
+            }
+        }
+        
+        return $result;
+    }
     
     /**
      * Provide unused name for event root directory

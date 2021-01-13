@@ -745,7 +745,7 @@ $(function () {
                                 columnWidth = (1 / columnCount) * 100;
 
                             $.each(dateData.times, function (time, climatic) {
-                                htmlRows += '<td style="width:'+columnWidth+'%;">' +
+                                htmlRows += '<td style="width:' + columnWidth + '%;">' +
                                     '<div>' + time + '</div>' +
                                     '</td>';
                             });
@@ -1084,5 +1084,53 @@ $(function () {
         });
     }
 
+    const cloudFileListingEl = jQuery('#cloudFileListing');
+    if (cloudFileListingEl.length) {
+        const loadCloudFiles = function () {
+            const btnReload = cloudFileListingEl.find('button');
+            cloudFileListingEl.toggleClass('loading', true);
+            btnReload.toggleClass('disabled', true);
+            $.ajax({
+                type: 'GET',
+                url: '/admin/event/' + cloudFileListingEl.data('eid') + '/cloud/files.json',
+                success: function (response) {
+                    cloudFileListingEl.toggleClass('loading', false);
+                    btnReload.toggleClass('disabled', false);
+                    var targetEl = cloudFileListingEl.find('div');
+                    if (response.files) {
+                        if (response.files.length) {
+                            var html = '<table class="table table-striped table-condensed">';
+                            html += '<thead><tr><td>Datei</td><td class="text-right" style="min-width: 70px;">Größe</td><td><abbr title="Letzte Änderung" style="min-width: 70px;">Datum</abbr></td></tr></thead>';
+                            html += '<tbody>';
+                            $.each(response.files, function (key, file) {
+                                html += '<tr>';
+                                html += '<td>'+eHtml(file.filename)+'</td>';
+                                html += '<td class="text-right">'+filesize(file.filesize)+'</td>';
+                                html += '<td>'+file.last_modified+'</td>';
+                                html += '</tr>';
+                            });
+                            html += '<tbody>';
+                            html += '</table>';
+
+                            targetEl.html(html);
+                        } else {
+                            targetEl.html('<p>Keine Dateien in der Cloud gespeichert.</p>');
+                        }
+                    } else {
+                        if (response && response.message && response.message.content) {
+                            html = '<div class="alert alert-' + eHtml(response.message.severity)
+                                + '" role="alert">' + eHtml(response.message.content) + '</div>';
+                        }
+                    }
+
+                    cloudFileListingEl.find('div').html(html);
+                    cloudFileListingEl.find('[data-toggle="tooltip"]').tooltip({placement: 'top'});
+                    cloudFileListingEl.attr('class', 'load');
+                }
+            });
+        };
+        loadCloudFiles();
+        cloudFileListingEl.find('button').on('click', loadCloudFiles);
+    }
 
 });

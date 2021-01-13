@@ -38,4 +38,30 @@ class EventFileShareRepository extends EntityRepository
         
         return $query->execute();
     }
+    
+    /**
+     * Fetch for single purpose for for transmitted event if available
+     *
+     * @param Event $event The event
+     * @param string $purpose
+     * @return EventFileShare|null
+     */
+    public function findSinglePurposeForEvent(Event $event, string $purpose): ?EventFileShare
+    {
+        $eid = $event->getEid();
+        
+        $qb = $this->createQueryBuilder('s')
+                   ->select(['s'])
+                   ->andWhere('s.event = :eid')
+        ->andWhere('s.purpose = :purpose');
+        
+        $qb->setParameter('eid', $eid);
+        $qb->setParameter('purpose', $purpose);
+        
+        $query = $qb->getQuery();
+        
+        $result = $query->execute();
+        
+        return count($result) ? $result[0] : null;
+    }
 }

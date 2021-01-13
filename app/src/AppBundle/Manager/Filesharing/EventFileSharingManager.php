@@ -122,6 +122,28 @@ class EventFileSharingManager
     }
     
     /**
+     * List files recursively
+     *
+     * @param Event $event
+     * @param string $purpose
+     * @return array
+     */
+    public function listFiles(Event $event, string $purpose): array
+    {
+        if (!$this->nextcloudManager) {
+            return [];
+        }
+        $share = $this->getRepository()->findSinglePurposeForEvent($event, $purpose);
+        if (!$share) {
+            return [];
+        }
+
+        $files = $this->nextcloudManager->fetchDirectory($share->getDirectoryHref(), true);
+        
+        return $files;
+    }
+    
+    /**
      * Ensure all users expected to have access on file share do have it
      *
      * @param Event $event

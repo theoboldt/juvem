@@ -19,15 +19,17 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class EventVoter extends AbstractDecisionManagerAwareVoter
 {
-    const READ              = 'read';
-    const EDIT              = 'edit';
-    const PARTICIPANTS_READ = 'participants_read';
-    const PARTICIPANTS_EDIT = 'participants_edit';
-    const EMPLOYEES_READ    = 'employees_read';
-    const EMPLOYEES_EDIT    = 'employees_edit';
-    const COMMENT_READ      = 'comment_read';
-    const COMMENT_ADD       = 'comment_add';
-
+    const READ                    = 'read';
+    const EDIT                    = 'edit';
+    const PARTICIPANTS_READ       = 'participants_read';
+    const PARTICIPANTS_EDIT       = 'participants_edit';
+    const EMPLOYEES_READ          = 'employees_read';
+    const EMPLOYEES_EDIT          = 'employees_edit';
+    const COMMENT_READ            = 'comment_read';
+    const COMMENT_ADD             = 'comment_add';
+    const CLOUD_ACCESS_TEAM       = 'cloud_access_team';
+    const CLOUD_ACCESS_MANAGEMENT = 'cloud_access_management';
+    
     /**
      * {@inheritdoc}
      */
@@ -44,6 +46,8 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
                 self::EMPLOYEES_EDIT,
                 self::COMMENT_READ,
                 self::COMMENT_ADD,
+                self::CLOUD_ACCESS_TEAM,
+                self::CLOUD_ACCESS_MANAGEMENT
             ]
         )) {
             return false;
@@ -105,6 +109,10 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
                 return $userAssignment->isAllowedToReadComments();
             case self::COMMENT_ADD:
                 return $userAssignment->isAllowedToComment();
+            case self::CLOUD_ACCESS_TEAM:
+                return $userAssignment->isAllowedCloudAccessTeam();
+            case self::CLOUD_ACCESS_MANAGEMENT:
+                return $userAssignment->isAllowedCloudAccessManagement();
         }
 
         return false;

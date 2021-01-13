@@ -235,6 +235,31 @@ $(function () {
         return 0;
     };
 
+    window.filesize = function (bytes, binary, precision) {
+        binary = typeof binary !== 'undefined' ? binary : false;
+        precision = typeof precision !== 'undefined' ? precision : 1;
+        var base = binary ? 1024 : 1000;
+        var prefixes = [
+            (binary ? 'KiB' : 'KB'),
+            (binary ? 'MiB' : 'MB'),
+            (binary ? 'GiB' : 'GB'),
+            (binary ? 'TiB' : 'TB'),
+            (binary ? 'PiB' : 'PB'),
+            (binary ? 'EiB' : 'EB'),
+            (binary ? 'ZiB' : 'ZB'),
+            (binary ? 'YiB' : 'YB')
+        ]
+        if (!isFinite(bytes)) {
+            return '- B';
+        } else if (bytes === 1) {
+            return '1 B';
+        } else if (bytes < base) {
+            return bytes + ' B';
+        }
+        var index = Math.floor(Math.log(bytes) / Math.log(base));
+        return parseFloat((bytes / Math.pow(base, Math.floor(index))).toFixed(precision)).toString() + ' ' + prefixes[index - 1];
+    };
+
     /**
      * The "mean" is the "average" you're used to, where you add up all the numbers
      * and then divide by the number of numbers.

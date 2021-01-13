@@ -310,6 +310,16 @@
                         </div>
                     </div>
                     {% endif %}
+                    {%- if is_granted('cloud_access_team', event) or (is_granted('cloud_access_management', event)) and featureCloud %}
+                        <div class="col-xs-12">
+                            <div id="cloudFileListing" data-eid="{{ event.eid }}">
+                                <h4>Cloud
+                                    <button class="btn btn-default btn-xs">{{ 'refresh'|glyph }}</button>
+                                </h4>
+                                <div></div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
