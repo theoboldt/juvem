@@ -163,18 +163,15 @@ services:
         arguments: ['@doctrine', '@security.token_storage']
         public: true
 
-    app.participant.profile_generator:
-        alias: AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator
     AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator:
+        autoconfigure: true
         arguments:
-            - "%app.tmp.root.path%"
-            - "%app.web.root.path%"
-            - "@router"
-            - "@skies_barcode.generator"
-            - "@app.comment_manager"
-            - "@app.payment_manager"
-            - "@libphonenumber.phone_number_util"
+            - $tmpDir: "%app.tmp.root.path%"
+            - $webDir: "%app.web.root.path%"
         public: true
+    
+    Skies\QRcodeBundle\Generator\Generator:
+        alias: 'skies_barcode.generator'
 
     app.payment.invoice_manager:
         alias: AppBundle\Manager\Invoice\InvoiceManager

@@ -83,7 +83,8 @@ class ParticipantProfileGenerator
      * @param PhoneNumberUtil $phoneUtil
      */
     public function __construct(
-        string $tmpDir, string $webDir,
+        string $tmpDir, 
+        string $webDir,
         UrlGeneratorInterface $urlGenerator,
         BarcodeGenerator $barcodeGenerator,
         CommentManager $commentManager,
