@@ -46,6 +46,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -97,18 +98,19 @@ class AdminSingleController
     /**
      * AdminSingleController constructor.
      *
-     * @param Environment $twig
-     * @param RouterInterface $router
+     * @param Environment                   $twig
+     * @param RouterInterface               $router
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
-     * @param FormFactoryInterface $formFactory
-     * @param ManagerRegistry $doctrine
-     * @param CsrfTokenManagerInterface $csrfTokenManager
-     * @param PaymentManager $paymentManager
-     * @param ParticipationManager $participationManager
-     * @param PaymentSuggestionManager $paymentSuggestionManager
-     * @param RelatedParticipantsFinder $relatedParticipantsFinder
-     * @param CommentManager $commentManager
+     * @param TokenStorageInterface         $tokenStorage
+     * @param FormFactoryInterface          $formFactory
+     * @param ManagerRegistry               $doctrine
+     * @param CsrfTokenManagerInterface     $csrfTokenManager
+     * @param SessionInterface              $session
+     * @param PaymentManager                $paymentManager
+     * @param ParticipationManager          $participationManager
+     * @param PaymentSuggestionManager      $paymentSuggestionManager
+     * @param RelatedParticipantsFinder     $relatedParticipantsFinder
+     * @param CommentManager                $commentManager
      */
     public function __construct(
         Environment $twig,
@@ -118,13 +120,13 @@ class AdminSingleController
         FormFactoryInterface $formFactory,
         ManagerRegistry $doctrine,
         CsrfTokenManagerInterface $csrfTokenManager,
+        SessionInterface $session,
         PaymentManager $paymentManager,
         ParticipationManager $participationManager,
         PaymentSuggestionManager $paymentSuggestionManager,
         RelatedParticipantsFinder $relatedParticipantsFinder,
         CommentManager $commentManager
-    )
-    {
+    ) {
         $this->twig                 = $twig;
         $this->router               = $router;
         $this->authorizationChecker = $authorizationChecker;
@@ -134,6 +136,8 @@ class AdminSingleController
         $this->csrfTokenManager     = $csrfTokenManager;
         $this->paymentManager       = $paymentManager;
         $this->participationManager = $participationManager;
+        $this->session              = $session;
+
         
         $this->paymentSuggestionManager  = $paymentSuggestionManager;
         $this->relatedParticipantsFinder = $relatedParticipantsFinder;
