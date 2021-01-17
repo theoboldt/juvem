@@ -15,19 +15,19 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class SecureCacheDecider
 {
-    
+
     /**
      * Session storage
      *
      * @var Session
      */
-    private $session;
-    
+    private Session $session;
+
     public function __construct(Session $session)
     {
         $this->session = $session;
     }
-    
+
     /**
      * Check if enabled
      *
@@ -37,5 +37,5 @@ class SecureCacheDecider
     {
         return $this->session !== null && $this->session->get('use_secure_cache', false);
     }
-    
+
 }
