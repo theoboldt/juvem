@@ -164,11 +164,10 @@ services:
         public: true
 
     AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator:
-        autoconfigure: true
+        autowire: true
         arguments:
-            - $tmpDir: "%app.tmp.root.path%"
-            - $webDir: "%app.web.root.path%"
-        public: true
+            $tmpDir: "%app.tmp.root.path%"
+            $webDir: "%app.web.root.path%"
     
     Skies\QRcodeBundle\Generator\Generator:
         alias: 'skies_barcode.generator'
