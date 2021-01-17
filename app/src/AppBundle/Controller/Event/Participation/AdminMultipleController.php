@@ -186,7 +186,7 @@ class AdminMultipleController
                 'nameLast'  => $participant->getNameLast(),
                 'age'       => $age,
                 'birthday'  => $birthday,
-                'gender'    => $participant->getGender(true),
+                'gender'    => $participant->getGender(),
             ];
 
             $participantList[] = $participantEntry;
@@ -364,7 +364,7 @@ class AdminMultipleController
                 'age'                      => $age,
                 'phone'                    => implode(', ', $participantPhoneList),
                 'status'                   => $participantStatusText,
-                'gender'                   => $participant->getGender(true),
+                'gender'                   => $participant->getGender(),
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
                 'action'                   => $participantAction
             ];

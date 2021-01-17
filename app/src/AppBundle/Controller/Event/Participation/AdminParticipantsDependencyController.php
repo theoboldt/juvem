@@ -25,10 +25,10 @@ use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class AdminParticipantsDependencyController extends AbstractController
@@ -249,10 +249,23 @@ class AdminParticipantsDependencyController extends AbstractController
 
             $yearsOfLife = $participant->getYearsOfLifeAtEvent();
 
+            switch ($participant->getGender()) {
+                case Participant::LABEL_GENDER_FEMALE:
+                case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                    $colorCode = '255,161,201';
+                    break;
+                case Participant::LABEL_GENDER_MALE:
+                case Participant::LABEL_GENDER_MALE_ALIKE:
+                    $colorCode = '85,159,255';
+                    break;
+                default:
+                    $colorCode = '255,140,0';
+                    break;
+            }
+            
             $color   = sprintf(
                 'rgba(%s,%1.2f)',
-                $participant->getGender(false) ===
-                Participant::TYPE_GENDER_FEMALE ? '255,161,201' : '85,159,255',
+                $colorCode,
                 ($yearsOfLife / 18)
             );
             $nodes[] = [
@@ -262,7 +275,7 @@ class AdminParticipantsDependencyController extends AbstractController
                 'label'       => $participant->fullname() . ($yearsOfLife !== null ? ' (' . $yearsOfLife . ')' : ''),
                 'shape'       => 'box',
                 'color'       => $color,
-                'gender'      => $participant->getGender(false),
+                'gender'      => $participant->getGender(),
                 'yearsOfLife' => $yearsOfLife,
                 'age'         => $participant->getAgeAtEvent(),
                 'confirmed'   => (int)$participant->isConfirmed(),

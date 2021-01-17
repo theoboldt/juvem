@@ -12,7 +12,6 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
 use Doctrine\ORM\EntityRepository;
-use PDO;
 
 /**
  * EventRepository
@@ -415,22 +414,46 @@ class EventRepository extends EntityRepository
                      ->prepare($query);
         $stmt->execute(array($eid));
 
-        $genderDistribution = array();
-        foreach ($stmt->fetchAll() as $distribution) {
+        $genderDistribution = [];
+        foreach ($stmt->fetchAllAssociative() as $distribution) {
             switch ($distribution['gender']) {
-                case Participant::TYPE_GENDER_MALE:
-                    $genderDistribution[Participant::TYPE_GENDER_MALE] = array(
-                        'type'  => Participant::TYPE_GENDER_MALE,
-                        'label' => Participant::LABEL_GENDER_MALE,
-                        'count' => $distribution['count']
-                    );
+                case Participant::LABEL_GENDER_MALE:
+                case Participant::LABEL_GENDER_MALE_ALIKE:
+                    if (!isset($genderDistribution[Participant::LABEL_GENDER_MALE])) {
+                        $genderDistribution[Participant::LABEL_GENDER_MALE] = [
+                            'type'  => Participant::LABEL_GENDER_MALE,
+                            'label' => Participant::LABEL_GENDER_MALE,
+                            'count' => 0,
+                            'class' => 'progress-bar-gender-1',
+                        ];
+                    }
+                    $genderDistribution[Participant::LABEL_GENDER_MALE]['count'] += $distribution['count'];
                     break;
-                case Participant::TYPE_GENDER_FEMALE:
-                    $genderDistribution[Participant::TYPE_GENDER_FEMALE] = array(
-                        'type'  => Participant::TYPE_GENDER_FEMALE,
-                        'label' => Participant::LABEL_GENDER_FEMALE,
-                        'count' => $distribution['count']
-                    );
+                case Participant::LABEL_GENDER_FEMALE:
+                case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                    if (!isset($genderDistribution[Participant::LABEL_GENDER_FEMALE])) {
+
+                        $genderDistribution[Participant::LABEL_GENDER_FEMALE] = [
+                            'type'  => Participant::LABEL_GENDER_FEMALE,
+                            'label' => Participant::LABEL_GENDER_FEMALE,
+                            'count' => 0,
+                            'class' => 'progress-bar-gender-2',
+                        ];
+                    }
+                    $genderDistribution[Participant::LABEL_GENDER_FEMALE]['count'] += $distribution['count'];
+
+                    break;
+                case Participant::LABEL_GENDER_DIVERSE:
+                case Participant::LABEL_GENDER_OTHER:
+                    if (!isset($genderDistribution[Participant::LABEL_GENDER_DIVERSE])) {
+                        $genderDistribution[Participant::LABEL_GENDER_DIVERSE] = [
+                            'type'  => Participant::LABEL_GENDER_DIVERSE,
+                            'label' => Participant::LABEL_GENDER_DIVERSE,
+                            'count' => 0,
+                            'class' => 'progress-bar-gender-0',
+                        ];
+                    }
+                    $genderDistribution[Participant::LABEL_GENDER_DIVERSE]['count'] += $distribution['count'];
                     break;
                 default:
                     throw new \InvalidArgumentException('Unknown gender type found');

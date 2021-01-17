@@ -641,7 +641,7 @@ class ParticipantProfile
             );
             $this->addDatum($section, 'Alter', $age);
 
-            $this->addDatum($section, 'Geschlecht', $participant->getGender(true));
+            $this->addDatum($section, 'Geschlecht', $participant->getGender());
 
             $linkPath = $this->temporaryBarCodeGenerator->createCode(
                 'url:' . $this->urlGenerator->generate(
@@ -819,11 +819,24 @@ class ParticipantProfile
                     $this->addCommentsToSection(
                         $this->commentManager->forParticipation($participation), $section, ' zur Anmeldung'
                     );
+
+                    switch ($participant->getGender()) {
+                        case Participant::LABEL_GENDER_FEMALE:
+                        case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                            $commentTarget = ' zur Teilnehmerin';
+                            break;
+                        case Participant::LABEL_GENDER_MALE:
+                        case Participant::LABEL_GENDER_MALE_ALIKE:
+                            $commentTarget = ' zum Teilnehmer';
+                            break;
+                        default:
+                            $commentTarget = ' zur teilnehmende Person ';
+                            break;
+                    }
                     $this->addCommentsToSection(
                         $this->commentManager->forParticipant($participant),
                         $section,
-                        $participant->getGender() ===
-                        Participant::TYPE_GENDER_FEMALE ? ' zur Teilnehmerin' : ' zum Teilnehmer'
+                        $commentTarget
                     );
                 }
             }

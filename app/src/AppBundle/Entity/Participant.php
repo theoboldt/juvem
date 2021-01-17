@@ -28,8 +28,8 @@ use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Serialize\ExclusionPolicy("all")
@@ -43,11 +43,12 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
 
-    const TYPE_GENDER_MALE   = 1;
-    const TYPE_GENDER_FEMALE = 2;
-
-    const LABEL_GENDER_MALE   = 'männlich';
-    const LABEL_GENDER_FEMALE = 'weiblich';
+    const LABEL_GENDER_MALE         = 'männlich';
+    const LABEL_GENDER_MALE_ALIKE   = 'divers, eher männlich';
+    const LABEL_GENDER_DIVERSE      = 'divers';
+    const LABEL_GENDER_FEMALE_ALIKE = 'divers, eher weiblich';
+    const LABEL_GENDER_FEMALE       = 'weiblich';
+    const LABEL_GENDER_OTHER        = 'anderes';
 
     /**
      * @ORM\Column(type="integer", name="aid")
@@ -69,10 +70,11 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     protected $participation;
 
     /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true})
+     * @var string
+     * @ORM\Column(type="string", length=128)
      * @Assert\NotBlank()
      */
-    protected $gender;
+    protected $gender = '';
 
     /**
      * @ORM\Column(type="smallint", options={"unsigned"=true})
@@ -193,11 +195,11 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Set gender
      *
-     * @param integer $gender
+     * @param string $gender
      *
      * @return self
      */
-    public function setGender($gender)
+    public function setGender(string $gender)
     {
         $this->gender = $gender;
 
@@ -207,34 +209,39 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     /**
      * Get gender
      *
-     * @param bool $formatted Set to true to get gender label
-     * @return int
-     */
-    public function getGender($formatted = false)
-    {
-        if ($formatted) {
-            return self::formatGender($this->gender);
-        } else {
-            return $this->gender;
-        }
-    }
-    
-    /**
-     * Format gender code
-     *
-     * @param int $genderCode
      * @return string
      */
-    public static function formatGender(int $genderCode): string
+    public function getGender(): string
     {
-        switch ($genderCode) {
-            case self::TYPE_GENDER_FEMALE:
-                return self::LABEL_GENDER_FEMALE;
-            case self::TYPE_GENDER_MALE:
-                return self::LABEL_GENDER_MALE;
+        return $this->gender;
+    }
+
+    /**
+     * Get gender term
+     * 
+     * @param bool $includeArticle
+     * @return string
+     */
+    public function getGenderTerm(bool $includeArticle): string
+    {
+        $term = '';
+        switch ($this->getGender()) {
+            case Participant::LABEL_GENDER_FEMALE:
+            case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                $term .= $includeArticle ? 'Die ' : '';
+                $term .= 'Teilnehmerin';
+                break;
+            case Participant::LABEL_GENDER_MALE:
+            case Participant::LABEL_GENDER_MALE_ALIKE:
+                $term .= $includeArticle ? 'Der ' : '';
+                $term .= 'Teilnehmer';
+                break;
             default:
-                throw new \InvalidArgumentException(sprintf('Unknown code "%s" transmitted', $genderCode));
+                $term .= $includeArticle ? 'Die ' : '';
+                $term .= 'teilnehmende Person';
+                break;
         }
+        return $term;
     }
 
     /**
@@ -670,9 +677,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             'status' => function ($value) {
                 $status = new ParticipantStatus($value);
                 return implode(', ', $status->getActiveList(true));
-            },
-            'gender' => function ($value) {
-                return self::formatGender($value);
             },
             'food'   => function ($value) {
                 $status = new ParticipantFood($value);

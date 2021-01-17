@@ -766,10 +766,18 @@ class AdminSingleController
             $em->persist($participant);
             $em->flush();
 
-            if ($participant->getGender() == Participant::TYPE_GENDER_FEMALE) {
-                $message = 'dem Teilnehmerin ';
-            } else {
-                $message = 'der Teilnehmer ';
+            switch ($participant->getGender()) {
+                case Participant::LABEL_GENDER_FEMALE:
+                case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                    $message = 'Der Teilnehmerin ';
+                    break;
+                case Participant::LABEL_GENDER_MALE:
+                case Participant::LABEL_GENDER_MALE_ALIKE:
+                    $message = 'Die Teilnehmer ';
+                    break;
+                default:
+                    $message = 'Die teilnehmende Person ';
+                    break;
             }
             $this->addFlash(
                 'success',
@@ -823,12 +831,21 @@ class AdminSingleController
             $em = $this->getDoctrine()->getManager();
             $em->persist($participant);
             $em->flush();
-
-            if ($participant->getGender() == Participant::TYPE_GENDER_FEMALE) {
-                $message = 'Der Teilnehmerin ';
-            } else {
-                $message = 'Die Teilnehmer ';
+            
+            switch ($participant->getGender()) {
+                case Participant::LABEL_GENDER_FEMALE:
+                case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                    $message = 'Der Teilnehmerin ';
+                    break;
+                case Participant::LABEL_GENDER_MALE:
+                case Participant::LABEL_GENDER_MALE_ALIKE:
+                    $message = 'Die Teilnehmer ';
+                    break;
+                default:
+                    $message = 'Die teilnehmende Person ';
+                    break;
             }
+            
             $this->addFlash(
                 'success',
                 $message.' '.$participant->getNameFirst().' wurde hinzugefügt.'

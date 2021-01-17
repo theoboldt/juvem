@@ -39,7 +39,7 @@ DATEN DER TEILNEHMER:
   Teilnehmer ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
     Vorname: {{ participant.nameFirst }}
     Nachname: {{ participant.nameLast }}
-    Geschlecht: {{ participant.getGender(true) }}
+    Geschlecht: {{ participant.getGender() }}
     Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
     Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
 {% for fillout in participant.acquisitionAttributeFillouts %}
@@ -143,7 +143,7 @@ Mit besten Grüßen,
                 </tr>
                 <tr>
                     <td class="thead" style="min-width:150px;">Geschlecht</td>
-                    <td>{{ participant.getGender(true) }}</td>
+                    <td>{{ participant.getGender() }}</td>
                 </tr>
                 <tr>
                     <td class="thead">Geburtsdatum</td>

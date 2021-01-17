@@ -54,7 +54,20 @@ class ParticipantsSheet extends ParticipantsSheetBase
         $column = EntityAttributeColumn::createSmallColumn('gender', 'Geschlecht');
         $column->setConverter(
             function ($value, Participant $entity) {
-                return substr($entity->getGender(true), 0, 1);
+                switch ($value) {
+                    case Participant::LABEL_GENDER_FEMALE:
+                    case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                        return 'w';
+                    case Participant::LABEL_GENDER_MALE:
+                    case Participant::LABEL_GENDER_MALE_ALIKE:
+                        return 'm';
+                    case Participant::LABEL_GENDER_OTHER:
+                        return 'o';
+                    case Participant::LABEL_GENDER_DIVERSE:
+                        return 'd';
+                    default:
+                        return $value;
+                }
             }
         );
         $this->addColumn($column);

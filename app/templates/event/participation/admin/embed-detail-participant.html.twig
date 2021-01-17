@@ -5,7 +5,7 @@
         <dt>Nachname</dt>
         <dd>{{ participant.nameLast }}</dd>
         <dt>Geschlecht</dt>
-        <dd>{{ participant.getGender(true) }}</dd>
+        <dd>{{ participant.getGender() }}</dd>
         <dt>Geburtsdatum</dt>
         <dd>
             {{ participant.getBirthday|date("d.m.Y") }}

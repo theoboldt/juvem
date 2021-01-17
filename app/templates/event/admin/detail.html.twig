@@ -242,7 +242,7 @@
                                 <div class="col-xs-12">
                                     <div class="progress">
                                         {% for code, genderData in genderDistribution %}
-                                            <div class="progress-bar progress-bar-gender-{{ genderData.type }}"
+                                            <div class="progress-bar {{ genderData.class }}"
                                                  data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}"
                                                  role="progressbar" aria-valuenow="{{ genderData.count }}"
                                                  aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
