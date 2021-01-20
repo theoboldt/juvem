@@ -14,29 +14,28 @@ namespace Tests\Export;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AttendanceList\AttendanceList;
+use AppBundle\Entity\AttendanceList\AttendanceListColumn;
+use AppBundle\Entity\AttendanceList\AttendanceListColumnChoice;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\AttendanceListExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Tests\Export\Excel\ParticipantTestingDataTrait;
-use Tests\JuvemKernelTestCase;
+use Tests\Export\Excel\ExportTestCase;
 
-class AttendanceListExportTest extends JuvemKernelTestCase
+class AttendanceListExportTest extends ExportTestCase
 {
-    use ParticipantTestingDataTrait;
-
     public function testExport(): void
     {
-        $this->markTestSkipped('Not yet implemented');
-        $kernel = static::bootKernel();
-        $kernel->boot();
-
         $user  = $this->user();
         $event = $this->event();
 
         $participation1 = $this->participation($event);
 
         $participant1 = new Participant();
+        $reflection   = new \ReflectionClass($participant1);
+        $property     = $reflection->getProperty('aid');
+        $property->setAccessible(true);
+        $property->setValue($participant1, 1);
         $participant1->setNameLast('Doe');
         $participant1->setNameFirst('Testchild');
         $participant1->setBirthday(new \DateTime('2000-01-01 10:00:00'));
@@ -45,7 +44,12 @@ class AttendanceListExportTest extends JuvemKernelTestCase
         $participant1->setInfoGeneral('Nothing special to know');
         $participant1->setInfoMedical('No medication needed');
         $participation1->addParticipant($participant1);
+
         $participant2 = new Participant();
+        $reflection   = new \ReflectionClass($participant2);
+        $property     = $reflection->getProperty('aid');
+        $property->setAccessible(true);
+        $property->setValue($participant2, 2);
         $participant2->setNameLast('Doe');
         $participant2->setNameFirst('Secondchild');
         $participant2->setBirthday(new \DateTime('2000-01-10 10:00:00'));
@@ -54,6 +58,10 @@ class AttendanceListExportTest extends JuvemKernelTestCase
         $participation1->addParticipant($participant2);
 
         $participant3 = new Participant();
+        $reflection   = new \ReflectionClass($participant3);
+        $property     = $reflection->getProperty('aid');
+        $property->setAccessible(true);
+        $property->setValue($participant3, 3);
         $participant3->setNameLast('Doe');
         $participant3->setNameFirst('Thirdchild');
         $participant3->setBirthday(new \DateTime('2000-01-15 10:00:00'));
@@ -61,13 +69,63 @@ class AttendanceListExportTest extends JuvemKernelTestCase
         $participant3->setGender(\AppBundle\Entity\Participant::LABEL_GENDER_MALE);
         $participation1->addParticipant($participant3);
 
-        $list = new AttendanceList($event);
+        $column     = new AttendanceListColumn('Presence');
+        $reflection = new \ReflectionClass($column);
+        $property   = $reflection->getProperty('columnId');
+        $property->setAccessible(true);
+        $property->setValue($column, 1);
+
+        $choice1    = new AttendanceListColumnChoice('Present');
+        $reflection = new \ReflectionClass($choice1);
+        $property   = $reflection->getProperty('choiceId');
+        $property->setAccessible(true);
+        $property->setValue($choice1, 1);
+        $column->addChoice($choice1);
+
+        $choice2  = new AttendanceListColumnChoice('Unavailable');
+        $property = $reflection->getProperty('choiceId');
+        $property->setAccessible(true);
+        $property->setValue($choice2, 2);
+        $column->addChoice($choice2);
+
+        $list       = new AttendanceList($event);
+        $reflection = new \ReflectionClass($list);
+        $property   = $reflection->getProperty('tid');
+        $property->setAccessible(true);
+        $property->setValue($list, 1);
+
         $list->setTitle('Day 1');
         $list->setStartDate(new \DateTime('2000-10-01 10:00:00'));
-        
-        $lists = $list;
-        
-        $export        = new AttendanceListExport(
+        $list->addColumn($column);
+
+        $lists = [$list];
+
+        $attendanceData = [
+            1 => [ //tid
+                   1 => [ //aid
+                          'columns' => [
+                              1 => [
+                                  'choice_id'   => 2,
+                                  'comment'     => null,
+                                  'created_at'  => null,
+                                  'modified_at' => null,
+                              ],
+                          ],
+                   ],
+                   2 => [ //aid
+                          'columns' => [
+                              1 => [
+                                  'choice_id'   => 1,
+                                  'comment'     => null,
+                                  'created_at'  => null,
+                                  'modified_at' => null,
+                              ],
+                          ],
+                   ],
+            ],
+        ];
+
+        $export = new AttendanceListExport(
             $this->customization(),
             $lists,
             [$participant1, $participant2, $participant3],
@@ -86,8 +144,20 @@ class AttendanceListExportTest extends JuvemKernelTestCase
 
         $spreadsheet = IOFactory::load($tmpPath);
         $sheet       = $spreadsheet->getSheet(0);
-        $this->assertEqualsSheetValue($sheet, 1, 2, 'Testchild');
+        $this->assertEquals('Day 1', $sheet->getTitle());
+        $this->assertEqualsSheetValue($sheet, 2, 2, 'Testchild');
+        $this->assertEqualsSheetValue($sheet, 3, 2, 'Doe');
+        $this->assertEqualsSheetValue($sheet, 4, 2, 'U');
 
+        $this->assertEqualsSheetValue($sheet, 2, 3, 'Secondchild');
+        $this->assertEqualsSheetValue($sheet, 3, 3, 'Doe');
+        $this->assertEqualsSheetValue($sheet, 4, 3, 'P');
+
+        $this->assertEqualsSheetValue($sheet, 2, 4, 'Thirdchild');
+        $this->assertEqualsSheetValue($sheet, 3, 4, 'Doe');
+        $this->assertEqualsSheetValue($sheet, 4, 4, '');
+
+        
         $properties = $spreadsheet->getProperties();
         $this->assertEquals('Juvem', $properties->getCategory());
         $this->assertEquals($user->fullname(), $properties->getCreator());
@@ -96,7 +166,8 @@ class AttendanceListExportTest extends JuvemKernelTestCase
 
     protected function assertEqualsSheetValue(Worksheet $sheet, int $columnIndex, int $row, string $expect): void
     {
-        $given = $sheet->getCellByColumnAndRow($columnIndex, $row)->getFormattedValue();
+        $cell = $sheet->getCellByColumnAndRow($columnIndex, $row);
+        $given = $cell->getFormattedValue();
         $this->assertEquals($expect, $given);
     }
 
