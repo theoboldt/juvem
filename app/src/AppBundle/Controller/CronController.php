@@ -10,14 +10,15 @@
 
 namespace AppBundle\Controller;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Command\CalculateRelatedParticipantsCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CronController extends AbstractController
 {
@@ -70,6 +71,33 @@ class CronController extends AbstractController
             return new Response($output->fetch(), Response::HTTP_NOT_FOUND);
         } else {
             return new Response('Successfully removed');
+        }
+    }
+
+
+    /**
+     * @Route("/cron/participants-related/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_subscription")
+     * @param string $token
+     * @param KernelInterface $kernel
+     * @return Response
+     */
+    public function relatedParticipantsFinderAction(string $token, KernelInterface $kernel)
+    {
+        if ($token != $this->getParameter('cron_secret')) {
+            throw new AccessDeniedException('Called cron task with incorrect credentials');
+        }
+
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input  = new ArrayInput(['command' => CalculateRelatedParticipantsCommand::NAME]);
+        $output = new BufferedOutput();
+        $result = $application->run($input, $output);
+
+        if ($result) {
+            return new Response($output->fetch(), Response::HTTP_NOT_FOUND);
+        } else {
+            return new Response('Successfully calculated');
         }
     }
 }

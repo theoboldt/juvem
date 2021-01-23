@@ -20,6 +20,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
+use AppBundle\Form\ParticipantDetectingType;
 use Doctrine\ORM\EntityManager;
 
 class RelatedParticipantsFinder extends RelatedParticipantsLocker
@@ -68,10 +69,10 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         if (!$filloutValue instanceof ParticipantFilloutValue) {
             return [];
         }
-            $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
+            $this->calculateProposedParticipantsForEventAndAttributes($fillout->getEvent(), [$fillout->getAttribute()]);
 
         if (!$filloutValue->hasProposedParticipantsCalculated()) {
-            $this->calculateProposedParticipantsForEvent($fillout->getEvent(), $fillout->getAttribute());
+            $this->calculateProposedParticipantsForEventAndAttributes($fillout->getEvent(), [$fillout->getAttribute()]);
         }
         $result = [];
         $filloutValue = $fillout->getValue(); //refetch
@@ -82,14 +83,31 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     }
 
     /**
-     * Calculate all @see Participant for transmitted @see Attribute
-     *
-     * @param Event     $event     Related event
-     * @param Attribute $attribute Attribute
+     * Calculate for all fields of event
+     * 
+     * @param Event $event
      */
-    private function calculateProposedParticipantsForEvent(Event $event, Attribute $attribute)
+    public function calculateProposedParticipantsForEvent(Event $event): void
     {
+        $attributes = [];
+        /** @var Attribute $attribute */
+        foreach ($event->getAcquisitionAttributes(true, true, true, true, true) as $attribute) {
+            if ($attribute->getFieldType(false) === ParticipantDetectingType::class) {
+                $attributes[] = $attribute;
+            }
+        }
+        $this->calculateProposedParticipantsForEventAndAttributes($event, $attributes);
+    }
 
+    /**
+     * Calculate all
+     *
+     * @param Event       $event      Related event
+     * @param Attribute[] $attributes Attributes
+     * @see Participant for transmitted @see Attribute
+     */
+    private function calculateProposedParticipantsForEventAndAttributes(Event $event, array $attributes)
+    {
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             /** @var Participant[] $participants */
@@ -99,52 +117,57 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             foreach ($participants as $participant) {
                 $this->participantsCache[$participant->getAid()] = $participant;
 
-                try {
-                    $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
-                } catch (RequestedFilloutNotFoundException $e) {
-                    continue;
-                }
-                $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
+                foreach ($attributes as $attribute) {
+                    try {
+                        $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
+                    } catch (RequestedFilloutNotFoundException $e) {
+                        continue;
+                    }
+                    $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
 
-                /** @var ParticipantFilloutValue $value */
-                $filloutRawValue = $fillout->getRawValue();
-                if (is_string($filloutRawValue)) {
-                    $filloutRawValue = json_decode($filloutRawValue, true);
-                }
-                if (!is_array($filloutRawValue)) {
-                    $filloutRawValue = [];
-                }
+                    /** @var ParticipantFilloutValue $value */
+                    $filloutRawValue = $fillout->getRawValue();
+                    if (is_string($filloutRawValue)) {
+                        $filloutRawValue = json_decode($filloutRawValue, true);
+                    }
+                    if (!is_array($filloutRawValue)) {
+                        $filloutRawValue = [];
+                    }
 
-                /** @var ParticipantFilloutValue $value */
-                $value = $fillout->getValue();
-                if ($value->getSelectedParticipantId() === null) {
-                    //check for exact match
-                    foreach ($qualified as $relatedParticipant) {
-                        if ($relatedParticipant->getNameFirst() === $value->getRelatedFirstName()
-                            && $relatedParticipant->getNameLast() === $value->getRelatedLastName()
-                        ) {
-                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_AID] = $relatedParticipant->getAid();
-                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_FIRST] = $relatedParticipant->getNameFirst();
-                            $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_LAST] = $relatedParticipant->getNameLast();
-                            $filloutRawValue[ParticipantFilloutValue::KEY_SYSTEM_SELECTION] = true;
+                    /** @var ParticipantFilloutValue $value */
+                    $value = $fillout->getValue();
+                    if ($value->getSelectedParticipantId() === null) {
+                        //check for exact match
+                        foreach ($qualified as $relatedParticipant) {
+                            if ($relatedParticipant->getNameFirst() === $value->getRelatedFirstName()
+                                && $relatedParticipant->getNameLast() === $value->getRelatedLastName()
+                            ) {
+                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_AID]
+                                    = $relatedParticipant->getAid();
+                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_FIRST]
+                                    = $relatedParticipant->getNameFirst();
+                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_LAST]
+                                    = $relatedParticipant->getNameLast();
+                                $filloutRawValue[ParticipantFilloutValue::KEY_SYSTEM_SELECTION] = true;
+                            }
                         }
                     }
-                }
 
-                $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
-                /** @var Participant $qualifiedParticipant */
-                foreach ($qualified as $qualifiedParticipant) {
-                    $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS][] = $qualifiedParticipant->getAid();
+                    $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
+                    /** @var Participant $qualifiedParticipant */
+                    foreach ($qualified as $qualifiedParticipant) {
+                        $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS][] = $qualifiedParticipant->getAid();
+                    }
+                    $fillout->setValue($filloutRawValue);
+                    $this->em->persist($fillout);
                 }
-                $fillout->setValue($filloutRawValue);
-                $this->em->persist($fillout);
             }
             $this->em->flush();
             $this->release($event, $lockHandle);
         } else {
             $this->closeLockHandle($lockHandle);
             sleep(2);
-            $this->calculateProposedParticipantsForEvent($event, $attribute);
+            $this->calculateProposedParticipantsForEventAndAttributes($event, $attributes);
         }
     }
 
