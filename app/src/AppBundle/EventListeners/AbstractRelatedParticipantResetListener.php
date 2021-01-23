@@ -50,7 +50,7 @@ abstract class AbstractRelatedParticipantResetListener extends RelatedParticipan
                     if (is_array($filloutDecoded)
                         && isset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS])) {
                         unset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS]);
-                        $em->getConnection()->executeUpdate(
+                        $em->getConnection()->executeStatement(
                             'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
                             [json_encode($filloutDecoded), $row['oid']]
                         );

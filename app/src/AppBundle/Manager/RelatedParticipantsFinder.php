@@ -174,7 +174,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                     if (is_array($filloutDecoded) &&
                         isset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS])) {
                         $filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
-                        $this->em->getConnection()->executeUpdate(
+                        $this->em->getConnection()->executeStatement(
                             'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
                             [json_encode($filloutDecoded), $row['oid']]
                         );

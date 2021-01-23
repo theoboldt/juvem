@@ -2,8 +2,6 @@
 
 namespace Application\Migrations;
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -50,7 +48,7 @@ final class Version20180917100000 extends AbstractMigration implements Container
             }
 
             unset($options['choices']);
-            $this->connection->executeUpdate(
+            $this->connection->executeStatement(
                 'UPDATE acquisition_attribute SET field_options = ? WHERE bid = ?',
                 [json_encode($options), $bid]
             );
@@ -113,7 +111,7 @@ final class Version20180917100000 extends AbstractMigration implements Container
                 $newValue = $this->findOption($bid, $oldValue, $choicesNew);
             }
             if ($newValue !== null && $newValue != $fillout['value']) {
-                $affected = $this->connection->executeUpdate(
+                $affected = $this->connection->executeStatement(
                     'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
                     [$newValue, $fillout['oid']]
                 );
@@ -184,7 +182,7 @@ final class Version20180917100000 extends AbstractMigration implements Container
             $fieldOptions            = json_decode($fields[$bid], true);
             $fieldOptions['choices'] = $choicesList[$bid];
 
-            $this->connection->executeUpdate(
+            $this->connection->executeStatement(
                 'UPDATE acquisition_attribute SET field_options = ? WHERE bid = ?',
                 [json_encode($fieldOptions), $bid]
             );

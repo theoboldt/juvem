@@ -37,7 +37,7 @@ final class Version20181226122000 extends AbstractMigration
                     $filloutDecoded['participantDetectingFirstName'] = array_shift($filloutValue);
                     $filloutDecoded['participantDetectingLastName']  = implode(' ', $filloutValue);
                 }
-                $this->connection->executeUpdate(
+                $this->connection->executeStatement(
                     'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
                     [json_encode($filloutDecoded), $row['oid']]
                 );
@@ -73,7 +73,7 @@ final class Version20181226122000 extends AbstractMigration
                         unset($filloutDecoded['participantDetectingLastName']);
                     }
                     $filloutDecoded['value'] = implode(' ', $value);
-                    $this->connection->executeUpdate(
+                    $this->connection->executeStatement(
                         'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
                         [json_encode($filloutDecoded), $row['oid']]
                     );
