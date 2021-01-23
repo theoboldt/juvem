@@ -28,7 +28,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @Vich\Uploadable
@@ -1480,7 +1479,10 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      */
     public static function getExcludedAttributes(): array
     {
-        return [];
+        return [
+            'imageFilename',
+            'invoiceTemplateFilename'
+        ];
     }
     
     /**
