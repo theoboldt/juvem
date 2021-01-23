@@ -24,7 +24,23 @@ use Tests\Export\Excel\ExportTestCase;
 
 class AttendanceListExportTest extends ExportTestCase
 {
-    public function testExport(): void
+
+    public function provideData(): array
+    {
+        return [
+            ['Day 1', 'Day 1'],
+            ['Very long Column title which will not fit tab title',
+             'Very long Column title which wi',
+            ],
+        ];
+    }
+
+    /**
+     * @param string $listTitle
+     * @param string $expectedTitle
+     * @dataProvider provideData
+     */
+    public function testExport(string $listTitle, string $expectedTitle): void
     {
         $user  = $this->user();
         $event = $this->event();
@@ -94,7 +110,7 @@ class AttendanceListExportTest extends ExportTestCase
         $property->setAccessible(true);
         $property->setValue($list, 1);
 
-        $list->setTitle('Day 1');
+        $list->setTitle($listTitle);
         $list->setStartDate(new \DateTime('2000-10-01 10:00:00'));
         $list->addColumn($column);
 
@@ -144,7 +160,7 @@ class AttendanceListExportTest extends ExportTestCase
 
         $spreadsheet = IOFactory::load($tmpPath);
         $sheet       = $spreadsheet->getSheet(0);
-        $this->assertEquals('Day 1', $sheet->getTitle());
+        $this->assertEquals($expectedTitle, $sheet->getTitle());
         $this->assertEqualsSheetValue($sheet, 2, 2, 'Testchild');
         $this->assertEqualsSheetValue($sheet, 3, 2, 'Doe');
         $this->assertEqualsSheetValue($sheet, 4, 2, 'U');
@@ -157,7 +173,7 @@ class AttendanceListExportTest extends ExportTestCase
         $this->assertEqualsSheetValue($sheet, 3, 4, 'Doe');
         $this->assertEqualsSheetValue($sheet, 4, 4, '');
 
-        
+
         $properties = $spreadsheet->getProperties();
         $this->assertEquals('Juvem', $properties->getCategory());
         $this->assertEquals($user->fullname(), $properties->getCreator());
@@ -166,7 +182,7 @@ class AttendanceListExportTest extends ExportTestCase
 
     protected function assertEqualsSheetValue(Worksheet $sheet, int $columnIndex, int $row, string $expect): void
     {
-        $cell = $sheet->getCellByColumnAndRow($columnIndex, $row);
+        $cell  = $sheet->getCellByColumnAndRow($columnIndex, $row);
         $given = $cell->getFormattedValue();
         $this->assertEquals($expect, $given);
     }
