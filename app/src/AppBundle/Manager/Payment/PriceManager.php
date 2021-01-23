@@ -367,11 +367,7 @@ class PriceManager
             try {
                 $value = $variable->getValue($event, true);
             } catch (NoDefaultValueSpecifiedException $e) {
-                throw new CalculationImpossibleException(
-                    'Variable used in formula but no value configured and no default assigned',
-                    0,
-                    $e
-                );
+                throw CalculationImpossibleException::create($variable, $e);
             }
         
             $this->eventVariableValueCache[$variable->getId()][$event->getEid()] = $value->getValue();

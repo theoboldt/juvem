@@ -19,6 +19,7 @@ use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -315,12 +316,32 @@ class AdminSingleController
         $paymentSuggestions          = $paymentSuggestionsManager->paymentSuggestionsForParticipation(
             $participant->getParticipation()
         );
+
+        try {
+            $paymentParticipation = $paymentManager->getToPayValueForParticipation($participation, true);
+        } catch (CalculationImpossibleException $e) {
+            $paymentParticipation = null;
+            $paymentManager       = null; //preventing payment manager from being passed to twig
+            $variable             = $e->getVariable();
+            $this->addFlash(
+                'danger',
+                sprintf(
+                    'Die Preise konnten nicht berechnet werden, da eine der anzuwendenden Formeln die Variable <code>%s</code> (<i>%s</i>) verwendet. Obwohl für diese Variable kein Standardwert konfiguriert wurde, ist für diese Veranstaltungen kein Werte eingestellt. Sie sollten die umgehend die <a href="%s">Werte für Variablen konfigurieren</a>. Sonst können keine Preise berechnet werden.',
+                    $variable->getFormulaVariable(),
+                    $variable->getDescription(),
+                    $this->generateUrl(
+                        'admin_event_variable_configure', ['eid' => $event->getEid()]
+                    )
+                )
+            );
+        }
     
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
                 'commentManager'          => $commentManager,
                 'paymentManager'          => $paymentManager,
+                'paymentParticipation'    => $paymentParticipation,
                 'priceSuggestions'        => $priceSuggestions,
                 'paymentSuggestions'      => $paymentSuggestions,
                 'event'                   => $event,

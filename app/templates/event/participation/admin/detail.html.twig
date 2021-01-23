@@ -108,32 +108,33 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="btn-group btn-group-justified" role="group" aria-label="Zahlungsvorschläge">
-                                        {% set paymentParticipation = paymentManager.toPayValueForParticipation(participation, true) %}
+                                        {% if paymentParticipation is not null %}
                                             <span class="btn btn-default btn-predefined btn-payment-full" data-value="{{ paymentParticipation|number_format(2) }}" role="button" data-description="Komplett"><b>{{ paymentParticipation|number_format(2) }} €</b> Komplett</span>
-                                        {% for suggestion in paymentSuggestions %}
-                                            {% if loop.length > 2 and loop.index == 2 %}
-                                              <div class="btn-group" role="group">
-                                                <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                  Mehr <span class="caret"></span>
-                                                </span>
-                                                <ul class="dropdown-menu">
-                                            {% endif %}
-                                            {% if loop.length > 2 and loop.index >= 2 %}
-                                                <li>
-                                            {% endif %}
-                                            <a href="#" class="{% if loop.length <= 2 or loop.index < 2 %}btn btn-default{% endif %} btn-predefined" role="button"
-                                                  data-value="{{ suggestion.value(true)|number_format(2) }}"
-                                                  data-description="{{ suggestion.description }}">
-                                                    <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
-                                            </a>
-                                           {% if loop.length > 2 and loop.index >= 2 %}
-                                                </li>
-                                            {% endif %}
-                                            {% if loop.length > 2 and loop.last %}
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-                                        {% endfor %}
+                                            {% for suggestion in paymentSuggestions %}
+                                                {% if loop.length > 2 and loop.index == 2 %}
+                                                  <div class="btn-group" role="group">
+                                                    <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                                      Mehr <span class="caret"></span>
+                                                    </span>
+                                                    <ul class="dropdown-menu">
+                                                {% endif %}
+                                                {% if loop.length > 2 and loop.index >= 2 %}
+                                                    <li>
+                                                {% endif %}
+                                                <a href="#" class="{% if loop.length <= 2 or loop.index < 2 %}btn btn-default{% endif %} btn-predefined" role="button"
+                                                      data-value="{{ suggestion.value(true)|number_format(2) }}"
+                                                      data-description="{{ suggestion.description }}">
+                                                        <b>{{ suggestion.value(true)|number_format(2) }} €</b> <small>{{ suggestion.description }}</small>
+                                                </a>
+                                               {% if loop.length > 2 and loop.index >= 2 %}
+                                                    </li>
+                                                {% endif %}
+                                                {% if loop.length > 2 and loop.last %}
+                                                    </ul>
+                                                </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-3">
@@ -525,7 +526,7 @@
                                 {{ 'share-alt'|glyph }} zurückziehen…
                             </button>
                         {% endif %}
-                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogPriceConfiguration" data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
+                        <button type="button" class="btn btn-default {% if paymentManager is null %}disabled"{% else%}" data-toggle="modal" data-target="#dialogPriceConfiguration"{% endif %} data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
                             {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung <span class="caret-right"></span></span>
                         </button>
                         {{ participation|changeTrackingButton(false) }}

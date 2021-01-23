@@ -22,6 +22,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Form\ParticipantDetectingType;
 use Doctrine\ORM\EntityManager;
+use Psr\Log\LoggerInterface;
 
 class RelatedParticipantsFinder extends RelatedParticipantsLocker
 {
@@ -38,6 +39,13 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     private $repository;
 
     /**
+     * Logger
+     * 
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * Cache for @see Participant entities identified by their aid
      *
      * @var array|Participant[]
@@ -47,13 +55,15 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     /**
      * RelatedParticipantsFinder constructor.
      *
-     * @param string        $tmpPath
-     * @param EntityManager $em
+     * @param string          $tmpPath
+     * @param EntityManager   $em
+     * @param LoggerInterface $logger
      */
-    public function __construct(string $tmpPath, EntityManager $em)
+    public function __construct(string $tmpPath, EntityManager $em, LoggerInterface $logger)
     {
         $this->em         = $em;
         $this->repository = $em->getRepository(Participation::class);
+        $this->logger     = $logger;
         parent::__construct($tmpPath);
     }
 
@@ -96,6 +106,12 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 $attributes[] = $attribute;
             }
         }
+        if (count($attributes)) {
+            return;
+        }
+        $this->logger->info(
+            'Going to calculate proposed participants for event {event}', ['event' => $event->getEid()]
+        );
         $this->calculateProposedParticipantsForEventAndAttributes($event, $attributes);
     }
 
@@ -118,6 +134,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 $this->participantsCache[$participant->getAid()] = $participant;
 
                 foreach ($attributes as $attribute) {
+                    $time = microtime(true);
                     try {
                         $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
                     } catch (RequestedFilloutNotFoundException $e) {
@@ -160,12 +177,22 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                     }
                     $fillout->setValue($filloutRawValue);
                     $this->em->persist($fillout);
+
+                    $duration = round((microtime(true) - $time) * 1000);
+                    $this->logger->info(
+                        'Calculated proposed participants for event {event} and attribute done within {duration} ms',
+                        ['event' => $event->getEid(), 'attribute' => $attribute->getId(), 'duration' => $duration]
+                    );
                 }
             }
             $this->em->flush();
             $this->release($event, $lockHandle);
         } else {
             $this->closeLockHandle($lockHandle);
+            $this->logger->info(
+                'Proposed participants calculation is locked for event {event}, retrying in few seconds',
+                ['event' => $event->getEid()]
+            );
             sleep(2);
             $this->calculateProposedParticipantsForEventAndAttributes($event, $attributes);
         }
