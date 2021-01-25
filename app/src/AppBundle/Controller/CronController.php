@@ -76,7 +76,7 @@ class CronController extends AbstractController
 
 
     /**
-     * @Route("/cron/participants-related/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_subscription")
+     * @Route("/cron/participants-related/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_participants_related")
      * @param string $token
      * @param KernelInterface $kernel
      * @return Response
