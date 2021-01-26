@@ -36,18 +36,18 @@ class ParticipantType extends AbstractType
     /**
      * @var string[]
      */
-    private $excludedGenderOptions = [];
+    private $excludedGenderChoices = [];
     
     /**
      * ParticipantType constructor.
      *
-     * @param string $excludedGenderOptions
+     * @param string $excludedGenderChoices
      */
-    public function __construct(string $excludedGenderOptions)
+    public function __construct(string $excludedGenderChoices)
     {
-        $excludedGenderOptions = explode(';', $excludedGenderOptions);
-        if (count($excludedGenderOptions) && !empty($excludedGenderOptions[0])) {
-            $this->excludedGenderOptions = $excludedGenderOptions;
+        $excludedGenderChoices = explode(';', $excludedGenderChoices);
+        if (count($excludedGenderChoices) && !empty($excludedGenderChoices[0])) {
+            $this->excludedGenderChoices = $excludedGenderChoices;
         }
     }
     
@@ -59,7 +59,21 @@ class ParticipantType extends AbstractType
         $foodMask   = new ParticipantFood();
         $foodLabels = $foodMask->labels();
         unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
-
+    
+        $genderChoices = [
+            Participant::LABEL_GENDER_FEMALE       => Participant::LABEL_GENDER_FEMALE,
+            Participant::LABEL_GENDER_MALE         => Participant::LABEL_GENDER_MALE,
+            Participant::LABEL_GENDER_FEMALE_ALIKE => Participant::LABEL_GENDER_FEMALE_ALIKE,
+            Participant::LABEL_GENDER_MALE_ALIKE   => Participant::LABEL_GENDER_MALE_ALIKE,
+            Participant::LABEL_GENDER_DIVERSE      => Participant::LABEL_GENDER_DIVERSE,
+            Participant::LABEL_GENDER_OTHER        => Participant::LABEL_GENDER_OTHER,
+        ];
+        foreach ($this->excludedGenderChoices as $excludedGenderChoice) {
+            if (isset($genderChoices[$excludedGenderChoice])) {
+                unset($genderChoices[$excludedGenderChoice]);
+            }
+        }
+        
         $builder
             ->add(
                 'nameFirst',
@@ -76,14 +90,7 @@ class ParticipantType extends AbstractType
                 ChoiceType::class,
                 [
                     'label'    => 'Geschlecht',
-                    'choices'  => [
-                        Participant::LABEL_GENDER_FEMALE       => Participant::LABEL_GENDER_FEMALE,
-                        Participant::LABEL_GENDER_MALE         => Participant::LABEL_GENDER_MALE,
-                        Participant::LABEL_GENDER_FEMALE_ALIKE => Participant::LABEL_GENDER_FEMALE_ALIKE,
-                        Participant::LABEL_GENDER_MALE_ALIKE   => Participant::LABEL_GENDER_MALE_ALIKE,
-                        Participant::LABEL_GENDER_DIVERSE      => Participant::LABEL_GENDER_DIVERSE,
-                        Participant::LABEL_GENDER_OTHER        => Participant::LABEL_GENDER_OTHER,
-                    ],
+                    'choices'  => $genderChoices,
                     'required' => true,
                 ]
             )
