@@ -15,3 +15,4 @@ parameters:
     nextcloud.management: 'Management'
     nextcloud.team: 'Team'
     backup_password: null
+    app.gender.exclude: ''

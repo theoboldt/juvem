@@ -32,7 +32,25 @@ class ParticipantType extends AbstractType
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
     const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
-
+    
+    /**
+     * @var string[]
+     */
+    private $excludedGenderOptions = [];
+    
+    /**
+     * ParticipantType constructor.
+     *
+     * @param string $excludedGenderOptions
+     */
+    public function __construct(string $excludedGenderOptions)
+    {
+        $excludedGenderOptions = explode(';', $excludedGenderOptions);
+        if (count($excludedGenderOptions) && !empty($excludedGenderOptions[0])) {
+            $this->excludedGenderOptions = $excludedGenderOptions;
+        }
+    }
+    
     /**
      * {@inheritdoc}
      */

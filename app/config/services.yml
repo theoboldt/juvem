@@ -168,7 +168,7 @@ services:
         arguments:
             $tmpDir: "%app.tmp.root.path%"
             $webDir: "%app.web.root.path%"
-    
+
     Skies\QRcodeBundle\Generator\Generator:
         alias: 'skies_barcode.generator'
 
@@ -347,6 +347,13 @@ services:
     AppBundle\LocalhostInformationProvider:
         arguments:
             - "@request_stack"
+
+    AppBundle\Form\ParticipantType:
+      autowire: true
+      arguments:
+          - '%app.gender.exclude%'
+      tags:
+        - form.type
 
     AppBundle\Form\GroupFieldAssignEntitiesType:
       autowire: true
