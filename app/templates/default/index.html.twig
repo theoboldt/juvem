@@ -57,11 +57,11 @@
                                         {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
                                             <p>{{ 'user'|glyph }}
                                                 <b>{{ event.participantsConfirmedCount }}</b>
-                                                bestätigte{% if event.participantsConfirmedCount == 1 %}r{% endif %},
+                                                bestätigt,
                                                 <b>{{ event.participantsUnconfirmedCount }}</b>
-                                                unbestätigte{% if event.participantsUnconfirmedCount == 1 %}r{% endif %}
-                                                ,
-                                                insgesamt <b>{{ event.participantsCount }}</b> Teilnehmer</p>
+                                                unbestätigt,
+                                                <abbr title="insgesamt">insg.</abbr> <b>{{ event.participantsCount }}</b> angemeltet
+                                            </p>
                                         {% endif %}
 
                                         <p>{{ event.descriptionMeta(true)|e }}</p>
