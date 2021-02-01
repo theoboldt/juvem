@@ -320,8 +320,9 @@ class PublicParticipateController
                 $this->addFlash(
                     'warning',
                     sprintf(
-                        'Es wurde keine Hausnummer erkannt. Falls Ihre Eingabe <code>%s</code> für Straße <b>und</b> Hausnummer unvollständig ist, vervollständigen Sie bitte die Angabe.',
-                        htmlentities($participation->getAddressStreet())
+                        'Es wurde keine Hausnummer erkannt. Falls Ihre Eingabe <code>%s</code> für Straße <b>und</b> Hausnummer unvollständig ist, <a href="%s#participation-address">vervollständigen Sie bitte die Angabe</a>.',
+                        htmlentities($participation->getAddressStreet()),
+                        $this->router->generate('event_public_participate', ['eid' => $eid])
                     )
                 );
             }
