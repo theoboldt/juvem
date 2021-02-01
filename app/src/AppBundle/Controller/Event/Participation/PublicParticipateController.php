@@ -243,7 +243,7 @@ class PublicParticipateController
     }
 
     /**
-     * Page for list of events
+     * Page summary and confirmation
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/participate/confirm", requirements={"eid": "\d+"}, name="event_public_participate_confirm")
@@ -316,6 +316,15 @@ class PublicParticipateController
 
             return $this->redirectToRoute('event_public_detail', ['eid' => $eid]);
         } else {
+            if ($participation->getAddressStreetNumber() === null) {
+                $this->addFlash(
+                    'warning',
+                    sprintf(
+                        'Es wurde keine Hausnummer erkannt. Falls Ihre Eingabe <code>%s</code> für Straße <b>und</b> Hausnummer unvollständig ist, vervollständigen Sie bitte die Angabe.',
+                        htmlentities($participation->getAddressStreet())
+                    )
+                );
+            }
             $this->addWaitingListFlashIfRequired($event);
             return $this->render(
                 'event/participation/public/confirm.html.twig',
