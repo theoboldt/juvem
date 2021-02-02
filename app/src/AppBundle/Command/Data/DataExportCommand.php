@@ -188,10 +188,18 @@ class DataExportCommand extends DataCommandBase
     {
         $this->dbImagePath = $this->tmpRootPath . '/' . uniqid('db_image');
     
+        $settings = [
+            'add-drop-table'        => true,
+            'single-transaction'    => true,
+            'default-character-set' => Mysqldump::UTF8MB4,
+        ];
+        
         try {
             $dump = new Mysqldump(
-                'mysql:host=' . $this->databaseHost . ';port='.$this->databasePort.';dbname=' . $this->databaseName, $this->databaseUser,
-                $this->databasePassword
+                'mysql:host=' . $this->databaseHost . ';port=' . $this->databasePort . ';dbname=' . $this->databaseName,
+                $this->databaseUser,
+                $this->databasePassword,
+                $settings
             );
             $dump->start($this->dbImagePath);
             $this->files[$this->dbImagePath] = '/database.sql';
