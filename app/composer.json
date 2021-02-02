@@ -61,7 +61,8 @@
         "phpoffice/phpword": "^0.17",
         "phpoffice/phpspreadsheet": "^1.9",
         "jms/serializer-bundle": "^3.4",
-        "ifsnop/mysqldump-php": "^2.9"
+        "ifsnop/mysqldump-php": "^2.9",
+        "fakerphp/faker": "^1.13"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
