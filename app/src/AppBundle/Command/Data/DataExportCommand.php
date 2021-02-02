@@ -11,6 +11,7 @@
 namespace AppBundle\Command\Data;
 
 
+use AppBundle\Anonymization\DumpAnonymizer;
 use Ifsnop\Mysqldump\Mysqldump;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -46,6 +47,7 @@ class DataExportCommand extends DataCommandBase
              ->addArgument('path', InputArgument::REQUIRED, 'Location where export package is saved to')
              ->addOption('exclude-database', 'b', InputOption::VALUE_NONE, 'Exclude database backup from result')
              ->addOption('exclude-data', 'd', InputOption::VALUE_NONE, 'Exclude backup of data files (which would increase backup size significantly if included)')
+             ->addOption('anonymize-database', 'a', InputOption::VALUE_NONE, 'Anonymize data of participants')
              ->addArgument('password', InputArgument::OPTIONAL, 'Password which is used to encrypt archive');
     }
     
@@ -83,6 +85,8 @@ class DataExportCommand extends DataCommandBase
             if ($excludeDatabase) {
                 $output->writeln('Skipping database image creation.');
             } else {
+                $memoryPeak = round(memory_get_peak_usage(true) / 1024 / 1024); 
+                $output->writeln('Peak memory is '.$memoryPeak.' MiB');
                 $output->write('Creating database image... ');
                 $start = microtime(true);
                 if (!$this->addDatabaseDump($input, $output)) {
@@ -90,7 +94,11 @@ class DataExportCommand extends DataCommandBase
                     $this->enableService();
                     return 1;
                 }
-                $output->writeln('done in '.round(microtime(true)-$start).' s.');
+                $memoryPeakDb = round(memory_get_peak_usage(true) / 1024 / 1024); 
+                $output->writeln(
+                    'done in ' . round(microtime(true) - $start) . ' s using peak of ' .
+                    $memoryPeakDb . ' MiB.'
+                );
             }
             
             if ($excludeData) {
@@ -186,6 +194,7 @@ class DataExportCommand extends DataCommandBase
      */
     private function addDatabaseDump(InputInterface $input, OutputInterface $output): bool
     {
+        $anonymizeDatabase = $input->getOption('anonymize-database') !== false;
         $this->dbImagePath = $this->tmpRootPath . '/' . uniqid('db_image');
     
         $settings = [
@@ -201,6 +210,11 @@ class DataExportCommand extends DataCommandBase
                 $this->databasePassword,
                 $settings
             );
+            if ($anonymizeDatabase) {
+                $output->write('anonymized... ');
+                $anonymizer = new DumpAnonymizer($dump);
+                $anonymizer->__invoke();
+            }
             $dump->start($this->dbImagePath);
             $this->files[$this->dbImagePath] = '/database.sql';
         } catch (\Exception $e) {
