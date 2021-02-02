@@ -32,7 +32,7 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
      */
     private static function replaceArrayValues(array $list): array
     {
-        $faker = \Faker\Factory::create();
+        $faker = \Faker\Factory::create('de_DE');
         foreach ($list as $key => &$value) {
             if (is_array($value)) {
                 $value = self::replaceArrayValues($value);
