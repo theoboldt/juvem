@@ -37,7 +37,11 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
             if (is_array($value)) {
                 $value = self::replaceArrayValues($value);
             } elseif (!is_numeric($value) && $value !== null) {
-                $value = $faker->text(mb_strlen($value));
+                $strlen = mb_strlen($value);
+                if ($strlen < 5) {
+                    $strlen = 5;
+                }
+                $value = $faker->text($strlen);
             }
 
         }
