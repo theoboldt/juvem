@@ -12,6 +12,7 @@
 namespace AppBundle\Anonymization;
 
 
+use AppBundle\Entity\Participant;
 use Ifsnop\Mysqldump\Mysqldump;
 
 class DumpAnonymizer
@@ -48,12 +49,16 @@ class DumpAnonymizer
                     if (in_array($columnName, $jsonColumns)) {
                         $cell = json_decode($cell, true);
                     }
-                    $cell = $this->replace($tableName, $columnName, $cell);
+                    $cell = $this->replace($tableName, $columnName, $cell, $row);
                     if (is_array($cell)) {
                         $cell = json_encode($cell);
                     }
                     $row[$columnName] = $cell;
                     
+                    if ($tableName === 'user') {
+                        $row['salt']     = '';
+                        $row['password'] = '';
+                    }
                 }
                 /*
                 if ($tableName !== $this->lastTable) {
@@ -68,14 +73,58 @@ class DumpAnonymizer
     }
     
     /**
+     * Detect gender
+     *
+     * @param array $row
+     * @return string|null
+     */
+    private function detectGender(array $row): ?string
+    {
+        if (isset($row['gender'])) {
+            switch ($row['gender']) {
+                case Participant::LABEL_GENDER_MALE:
+                case Participant::LABEL_GENDER_MALE_ALIKE:
+                    return Participant::LABEL_GENDER_MALE;
+                case Participant::LABEL_GENDER_FEMALE:
+                case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                    return Participant::LABEL_GENDER_FEMALE;
+                default:
+                    return null;
+            }
+        }
+        if (isset($row['salution'])) {
+            switch (isset($row['salution'])) {
+                case 'Herr':
+                    return Participant::LABEL_GENDER_MALE;
+                case 'Frau':
+                    return Participant::LABEL_GENDER_FEMALE_ALIKE;
+                default:
+                    return null;
+            }
+        }
+        if (isset($row['salutation'])) {
+            switch (isset($row['salutation'])) {
+                case 'Herr':
+                    return Participant::LABEL_GENDER_MALE;
+                case 'Frau':
+                    return Participant::LABEL_GENDER_FEMALE_ALIKE;
+                default:
+                    return null;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Detect datum type and provide replacement qualified
      *
-     * @param string $table
-     * @param string $column
-     * @param scalar|array $value
+     * @param string $table       Table this value is related to
+     * @param string $column      Column this value is related to
+     * @param scalar|array $value Actual value or decoded json
+     * @param array $row          Whole row data as well
      * @return ReplacementInterface|null
      */
-    private function detectDatumType(string $table, string $column, $value): ?ReplacementInterface
+    private function detectDatumType(string $table, string $column, $value, array $row): ?ReplacementInterface
     {
         switch ($table) {
             case 'migration_versions':
@@ -87,9 +136,10 @@ class DumpAnonymizer
             case 'task':
                 return null;
         }
-        if (($table === 'user' && ($column === 'password' || $column === 'roles'))
+        if (($table === 'user' && ($column === 'password' || $column === 'salt' || $column === 'roles'))
             || ($table === 'weather_current' && $column === 'provider')
             || $column === 'salution'
+            || $column === 'salutation'
         ) {
             return null;
         }
@@ -102,6 +152,7 @@ class DumpAnonymizer
         $keepColumns = [
             'gender',
             'field_type',
+            'field_options',
             'related_class',
             'related_id',
             'operation',
@@ -175,8 +226,14 @@ class DumpAnonymizer
                     return new FakerReplacement(
                         $value,
                         $column,
-                        function (\Faker\Generator $faker) {
-                            return $faker->firstName;
+                        function (\Faker\Generator $faker) use ($row) {
+                            if ($this->detectGender($row) === Participant::LABEL_GENDER_MALE) {
+                                return $faker->firstNameMale;
+                            } elseif ($this->detectGender($row) === Participant::LABEL_GENDER_FEMALE) {
+                                return $faker->firstNameFemale;
+                            } else {
+                                return $faker->firstName;
+                            }
                         }
                     );
                 case 'address_street_name':
@@ -246,6 +303,14 @@ class DumpAnonymizer
                             return $faker->url;
                         }
                     );
+                case 'disable_token':
+                    return new FakerReplacement(
+                        $value,
+                        $column,
+                        function (\Faker\Generator $faker) {
+                            return $faker->uuid;
+                        }
+                    );
             }
             if (preg_match('/^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$/i', $value, $results)) {
                 return new ReplacementDate(
@@ -288,6 +353,7 @@ class DumpAnonymizer
             $replaceValueColumns = [
                 'attribute_changes',
                 'collection_changes',
+                'details'
             ];
             if (in_array($column, $replaceValueColumns)) {
                 return new ReplacementArray($value);
@@ -299,14 +365,15 @@ class DumpAnonymizer
     /**
      * Replace value
      *
-     * @param string $table
-     * @param string $column
-     * @param scalar|array $value
+     * @param string $table       Table this value is related to
+     * @param string $column      Column this value is related to
+     * @param scalar|array $value Actual value or decoded json
+     * @param array $row          Whole row data as well
      * @return bool|float|int|mixed|string|null
      */
-    private function replace(string $table, string $column, $value)
+    private function replace(string $table, string $column, $value, array $row)
     {
-        $qualified = $this->detectDatumType($table, $column, $value);
+        $qualified = $this->detectDatumType($table, $column, $value, $row);
         if ($qualified) {
             if (!isset($this->replacements[$qualified->getType()][$qualified->getKey()])) {
                 $this->replacements[$qualified->getType()][$qualified->getKey()] = $qualified->provideReplacement();
