@@ -20,12 +20,12 @@ class DumpAnonymizer
      * @var Mysqldump
      */
     private $dump;
-
+    
     /**
      * @var array|string[][]
      */
     private $replacements = [];
-
+    
     /**
      * DumpAnonymizer constructor.
      *
@@ -53,7 +53,7 @@ class DumpAnonymizer
                         $cell = json_encode($cell);
                     }
                     $row[$columnName] = $cell;
-
+                    
                 }
                 /*
                 if ($tableName !== $this->lastTable) {
@@ -66,18 +66,41 @@ class DumpAnonymizer
             }
         );
     }
-
+    
     /**
      * Detect datum type and provide replacement qualified
      *
-     * @param string       $table
-     * @param string       $column
+     * @param string $table
+     * @param string $column
      * @param scalar|array $value
      * @return ReplacementInterface|null
      */
     private function detectDatumType(string $table, string $column, $value): ?ReplacementInterface
     {
+        switch ($table) {
+            case 'migration_versions':
+            case 'recipe':
+            case 'recipe_feedback':
+            case 'recipe_ingredient':
+            case 'viand':
+            case 'quantity_unit':
+            case 'task':
+                return null;
+        }
+        if (($table === 'user' && ($column === 'password' || $column === 'roles'))
+            || ($table === 'weather_current' && $column === 'provider')
+            || $column === 'salution'
+        ) {
+            return null;
+        }
+        if (($table === 'location_description' && $column === 'details')
+            || ($table === 'user' && ($column === 'settings' || $column === 'settings_hash'))
+            || ($table === 'weather_current' && $column === 'details')
+        ) {
+            return null;
+        }
         $keepColumns = [
+            'gender',
             'field_type',
             'related_class',
             'related_id',
@@ -88,7 +111,7 @@ class DumpAnonymizer
         $keepTables  = [
             'food_property',
         ];
-
+        
         if ($table === 'phone_number' && $column === 'number') {
             return new FakerReplacement(
                 $value,
@@ -98,7 +121,6 @@ class DumpAnonymizer
                 }
             );
         }
-
         if (is_numeric($value)
             && ($column === 'latitude' || $column === 'longitude')
         ) {
@@ -273,40 +295,17 @@ class DumpAnonymizer
         }
         return null;
     }
-
+    
     /**
      * Replace value
      *
-     * @param string       $table
-     * @param string       $column
+     * @param string $table
+     * @param string $column
      * @param scalar|array $value
      * @return bool|float|int|mixed|string|null
      */
     private function replace(string $table, string $column, $value)
     {
-        switch ($table) {
-            case 'migration_versions':
-            case 'recipe':
-            case 'recipe_feedback';
-            case 'recipe_ingredient':
-            case 'viand':
-            case 'quantity_unit':
-            case 'task':
-                return $value;
-        }
-        if (($table === 'user' && ($column === 'password' || $column === 'roles'))
-            || ($table === 'weather_current' && $column === 'provider')
-            || $column === 'salution'
-        ) {
-            return $value;
-        }
-        if (($table === 'location_description' && $column === 'details')
-            || ($table === 'user' && ($column === 'settings' || $column === 'settings_hash'))
-            || ($table === 'weather_current' && $column === 'details')
-        ) {
-            return [];
-        }
-
         $qualified = $this->detectDatumType($table, $column, $value);
         if ($qualified) {
             if (!isset($this->replacements[$qualified->getType()][$qualified->getKey()])) {
@@ -314,8 +313,8 @@ class DumpAnonymizer
             }
             $value = $this->replacements[$qualified->getType()][$qualified->getKey()];
         }
-
+        
         return $value;
     }
-
+    
 }

@@ -33,15 +33,15 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
     private static function replaceArrayValues(array $list): array
     {
         $faker = \Faker\Factory::create('de_DE');
-        foreach ($list as $key => &$value) {
+        foreach ($list as $key => $value) {
             if (is_array($value)) {
-                $value = self::replaceArrayValues($value);
+                $list[$key] = self::replaceArrayValues($value);
             } elseif (!is_numeric($value) && $value !== null) {
                 $strlen = mb_strlen($value);
                 if ($strlen < 5) {
                     $strlen = 5;
                 }
-                $value = $faker->text($strlen);
+                $list[$key] = $faker->text($strlen);
             }
 
         }
