@@ -303,6 +303,7 @@ class DumpAnonymizer
                             return $faker->url;
                         }
                     );
+                case 'confirmation_token':
                 case 'disable_token':
                     return new FakerReplacement(
                         $value,
