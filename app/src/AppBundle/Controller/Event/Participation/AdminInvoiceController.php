@@ -42,6 +42,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -140,6 +141,7 @@ class AdminInvoiceController
      * @param InvoicePdfProvider $invoicePdfProvider
      * @param PdfConverterService|null $pdfConverterService
      * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param SessionInterface $session
      */
     public function __construct(
         string $tmpRootPath,
@@ -156,7 +158,8 @@ class AdminInvoiceController
         PriceManager $priceManager,
         InvoicePdfProvider $invoicePdfProvider,
         ?PdfConverterService $pdfConverterService,
-        CsrfTokenManagerInterface $csrfTokenManager
+        CsrfTokenManagerInterface $csrfTokenManager,
+        SessionInterface $session
     )
     {
         $this->tmpRootPath                   = $tmpRootPath;
@@ -174,6 +177,7 @@ class AdminInvoiceController
         $this->router                        = $router;
         $this->twig                          = $twig;
         $this->formFactory                   = $formFactory;
+        $this->session                       = $session;
     }
     
     /**
@@ -270,7 +274,16 @@ Mit freundlichen Grüßen,
                     $participationInvoices[$iid] = $invoice;
                 }
             }
-
+            if (count($participationInvoices)
+                && ($participation->isRejected()
+                    || $participation->isWithdrawn()
+                    || $participation->isDeleted()
+                    || !$participation->isConfirmed()
+                )
+            ) {
+                continue;
+            }
+    
             if (count($participationInvoices)) {
                 ksort($participationInvoices);
                 /** @var Invoice $invoiceLatest */
@@ -284,6 +297,7 @@ Mit freundlichen Grüßen,
                     $row['number']       = $invoice->getInvoiceNumber();
                     $row['sum']          = number_format($invoice->getSum(true), 2, ',', '.') . '&nbsp;€';
                     $row['created_at']   = $invoice->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME);
+                    $row['is_sent']      = $invoice->isSent() ? 'verschickt' : 'nicht verschickt';
 
                     if ($invoiceIdLatest !== $iid) {
                         $row['is_latest'] = 0;
@@ -469,8 +483,13 @@ Mit freundlichen Grüßen,
 
         /** @var Participation $participation */
         foreach ($participationEntityList as $participation) {
+            if (!$participation->isConfirmed()) {
+                continue;
+            }
+
             if ($filter) {
                 $invoices = $invoiceManager->getInvoicesForParticipation($participation);
+
                 if (count($invoices) && $filter === 'changed') {
                     $currentPrice = $priceManager->getPriceForParticipation($participation, false);
                     usort(

@@ -472,8 +472,8 @@ $(function () {
                         participationsTotal = participations.length,
                         participationsDone = participationsTotal - participations.length,
                         updateProgressBar = function (participationsDone) {
-                            progressBarEl.css('width', (((participationsDone + 1) / (participationsTotal + 1)) * 100) + '%');
-                            progressBarEl.text(participationsDone + '/' + participationsTotal);
+                            progressBarEl.css('width', (((participationsDone + 1) / (participationsTotal)) * 100) + '%');
+                            progressBarEl.text((participationsDone+1) + '/' + participationsTotal);
                         };
                     progressBarEl.css('min-width', '50px');
                     updateProgressBar(participationsDone);
