@@ -95,6 +95,11 @@
   </div>
   {% endif %}
   <div class="container">
+  {% if choiceOption.deleted %}
+      <div class="alert alert-warning">
+          Diese Option wurde gelöscht und kann nicht mehr zugewiesen werden.
+      </div>
+  {% endif %}
     {% if not usage.hasEmployees and not usage.hasParticipants and not usage.hasParticipations %}
       <div class="row">
         <div class="col-xs-12" style="margin-top: 15px;">

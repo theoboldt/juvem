@@ -129,7 +129,12 @@ class AdminGroupController
                 $acquisition = [];
                 /** @var AttributeChoiceOption $choiceOption */
                 foreach ($field->getChoiceOptions() as $choiceOption) {
-                    $choices[] = $choiceOption->getManagementTitle(true);
+                    $choice = htmlentities($choiceOption->getManagementTitle(true));
+                    if ($choiceOption->getDeletedAt()) {
+                        $choice = '<span style="opacity:0.5;text-decoration:line-through;">'.$choice.'</span>';
+                    }
+
+                    $choices[] = $choice;
                 }
 
                 if ($field->getUseAtParticipation()) {
@@ -199,18 +204,27 @@ class AdminGroupController
 
         /** @var AttributeChoiceOption $choiceOption */
         foreach ($attribute->getChoiceOptions() as $choiceOption) {
+            $countEmployees      = $distribution->getOptionDistribution($choiceOption)->getEmployeeCount();
+            $countParticipants   = $distribution->getOptionDistribution($choiceOption)->getParticipantsCount();
+            $countParticipations = $distribution->getOptionDistribution($choiceOption)->getParticipationCount();
+            
+            $title = htmlentities($choiceOption->getManagementTitle(true));
+
             if ($choiceOption->getDeletedAt()) {
-                continue;
+                $title = '<span style="opacity:0.5;text-decoration:line-through;">'.$title.'</span>';
+                if (!$countEmployees && !$countParticipants && !$countParticipations) {
+                    continue;
+                }
             }
             $choices[] = [
                 'bid'                 => $bid,
                 'id'                  => $choiceOption->getId(),
-                'managementTitle'     => $choiceOption->getManagementTitle(true),
+                'managementTitle'     => $title,
                 'formTitle'           => $choiceOption->getFormTitle(),
                 'shortTitle'          => $choiceOption->getShortTitle(false),
-                'countEmployees'      => $distribution->getOptionDistribution($choiceOption)->getEmployeeCount(),
-                'countParticipants'   => $distribution->getOptionDistribution($choiceOption)->getParticipantsCount(),
-                'countParticipations' => $distribution->getOptionDistribution($choiceOption)->getParticipationCount(),
+                'countEmployees'      => $countEmployees,
+                'countParticipants'   => $countParticipants,
+                'countParticipations' => $countParticipations,
 
             ];
 

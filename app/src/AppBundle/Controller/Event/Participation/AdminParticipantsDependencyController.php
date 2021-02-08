@@ -205,9 +205,6 @@ class AdminParticipantsDependencyController extends AbstractController
                     /** @var AttributeChoiceOption $choiceOption */
                     $choiceOptions = 0;
                     foreach ($attribute->getChoiceOptions() as $choiceOption) {
-                        if ($choiceOption->getDeletedAt()) {
-                            continue;
-                        }
                         $attributeOptionColor = sprintf(
                             'rgba(%1$d,%2$d,%3$d,0.9)',
                             $attributeNumber + ($choiceOptions*6),
@@ -216,6 +213,10 @@ class AdminParticipantsDependencyController extends AbstractController
                         );
 
                         $attributeOptionColors[$bid][$choiceOption->getId()] = $attributeOptionColor;
+
+                        if ($choiceOption->getDeletedAt()) {
+                            continue;
+                        }
 
                         $groupTitle = sprintf(
                                 '%s (<i>%s</i>)',
@@ -338,10 +339,20 @@ class AdminParticipantsDependencyController extends AbstractController
                         /** @var GroupFilloutValue $value */
                         $groupId = $value->getGroupId();
                         if ($groupId) {
-                            /** @var AttributeChoiceOption $selectedChoice */
                             $selectedChoice = $value->getSelectedChoices();
                             $selectedChoice = reset($selectedChoice);
-
+    
+                            if (!isset($attributeOptionColors[$bid])) {
+                                throw new \OutOfBoundsException($bid . ' is not in color list');
+                            }
+                            if (!isset($attributeOptionColors[$bid][$groupId])) {
+                                throw new \OutOfBoundsException(
+                                    'Group ' . $groupId . ' not in color list of ' . $bid
+                                );
+                            } else {
+                                $color = $attributeOptionColors[$bid][$groupId];
+                            }
+                            
                             $edge    = [
                                 'from'     => self::participantNodeId($participant->getId()),
                                 'to'       => self::choiceOptionNodeId($bid, $groupId),
@@ -354,7 +365,7 @@ class AdminParticipantsDependencyController extends AbstractController
                                 ),
                                 'bid'      => $bid,
                                 'choiceId' => $groupId,
-                                'color'    => ['color' => $attributeOptionColors[$bid][$groupId]],
+                                'color'    => ['color' => $color],
                             ];
                             $edges[] = $edge;
                         }
