@@ -148,9 +148,9 @@ class InvoiceManager
             $templatePath = $event->getInvoiceTemplateFile()->getPathname();
         } else {
             $templatePath = $this->getInvoiceTemplatePath();
-            if (!file_exists($templatePath)) {
-                throw new \RuntimeException('No invoice template available');
-            }
+        }
+        if (!file_exists($templatePath)) {
+            throw new InvoiceTemplateMissingException('No invoice template available');
         }
         $templateProcessor = new TemplateProcessor($templatePath);
 
