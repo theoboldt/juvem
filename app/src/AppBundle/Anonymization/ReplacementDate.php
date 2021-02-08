@@ -14,20 +14,6 @@ namespace AppBundle\Anonymization;
 
 class ReplacementDate extends ReplacementQualified implements ReplacementInterface
 {
-    private array $details;
-
-    /**
-     * ReplacementDate constructor.
-     *
-     * @param       $original
-     * @param array $details
-     */
-    public function __construct($original, array $details)
-    {
-        $this->details = $details;
-        parent::__construct($original);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -35,15 +21,24 @@ class ReplacementDate extends ReplacementQualified implements ReplacementInterfa
     {
         return 'date';
     }
-
+    
     /**
      * @return string
      */
     public function provideReplacement()
     {
+        $original = $this->getOriginal();
+        if ($original === null) {
+            return null;
+        }
+        
+        if (!preg_match('/^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$/i', $original, $details)) {
+            throw new \InvalidArgumentException('Unknown format "' . $original . '" provided');
+        }
+        
         $int = mt_rand(1262304000, 1293753600);
-
-        $date = $this->details['year'] . date("-m-d", $int);
+        
+        $date = $details['year'] . date("-m-d", $int);
         return $date;
     }
 }

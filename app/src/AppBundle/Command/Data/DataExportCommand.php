@@ -85,7 +85,7 @@ class DataExportCommand extends DataCommandBase
             if ($excludeDatabase) {
                 $output->writeln('Skipping database image creation.');
             } else {
-                $memoryPeak = round(memory_get_peak_usage(true) / 1024 / 1024); 
+                $memoryPeak = round(memory_get_peak_usage(true) / 1024 / 1024);
                 $output->writeln('Peak memory is '.$memoryPeak.' MiB');
                 $output->write('Creating database image... ');
                 $start = microtime(true);
@@ -94,7 +94,7 @@ class DataExportCommand extends DataCommandBase
                     $this->enableService();
                     return 1;
                 }
-                $memoryPeakDb = round(memory_get_peak_usage(true) / 1024 / 1024); 
+                $memoryPeakDb = round(memory_get_peak_usage(true) / 1024 / 1024);
                 $output->writeln(
                     'done in ' . round(microtime(true) - $start) . ' s using peak of ' .
                     $memoryPeakDb . ' MiB.'
@@ -210,12 +210,23 @@ class DataExportCommand extends DataCommandBase
                 $this->databasePassword,
                 $settings
             );
+    
+            $progress = new ProgressBar($output, 65);
+            $dump->setInfoHook(
+                function ($event) use ($progress) {
+                    if ($event === 'table') {
+                        $progress->advance();
+                    }
+                }
+            );
             if ($anonymizeDatabase) {
-                $output->write('anonymized... ');
+                $output->writeln('anonymized:');
                 $anonymizer = new DumpAnonymizer($dump);
                 $anonymizer->__invoke();
             }
+            $progress->start();
             $dump->start($this->dbImagePath);
+            $progress->finish();
             $this->files[$this->dbImagePath] = '/database.sql';
         } catch (\Exception $e) {
             $output->writeln(

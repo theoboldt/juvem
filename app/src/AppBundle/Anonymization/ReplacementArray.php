@@ -14,15 +14,30 @@ namespace AppBundle\Anonymization;
 
 class ReplacementArray extends ReplacementQualified implements ReplacementInterface
 {
-
+    /**
+     * @var string
+     */
+    private string $type;
+    
+    /**
+     * ReplacementArray constructor.
+     *
+     * @param scalar $original
+     * @param string $type
+     */
+    public function __construct($original, string $type = 'array')
+    {
+        $this->type = $type;
+        parent::__construct($original);
+    }
+    
     /**
      * {@inheritDoc}
      */
     public function getType(): string
     {
-        return 'array';
+        return $this->type;
     }
-
     
     /**
      * Replace array values
@@ -36,6 +51,8 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
         foreach ($list as $key => $value) {
             if (is_array($value)) {
                 $list[$key] = self::replaceArrayValues($value);
+            } elseif (is_numeric($value)) {
+                $list[$key] = $faker->numberBetween(0, 99);
             } elseif (!is_numeric($value) && $value !== null) {
                 $strlen = mb_strlen($value);
                 if ($strlen < 5) {
@@ -43,7 +60,7 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
                 }
                 $list[$key] = $faker->text($strlen);
             }
-
+            
         }
         return $list;
     }
@@ -53,6 +70,16 @@ class ReplacementArray extends ReplacementQualified implements ReplacementInterf
      */
     public function provideReplacement()
     {
-        return json_encode(self::replaceArrayValues($this->getOriginal()));
+        $original = $this->getOriginal();
+        if (is_array($original)) {
+            return json_encode(self::replaceArrayValues($original));
+        } else {
+            $strlen = mb_strlen($original);
+            if ($strlen < 5) {
+                $strlen = 5;
+            }
+            $faker = \Faker\Factory::create('de_DE');
+            return $faker->text($strlen);
+        }
     }
 }

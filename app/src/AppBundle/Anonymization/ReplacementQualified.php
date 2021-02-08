@@ -40,7 +40,7 @@ abstract class ReplacementQualified
     public function getKey(): string
     {
         if (is_array($this->original)) {
-            return sha1(json_encode($this->original));
+            return hash('sha256', json_encode($this->original));
         } else {
             return (string)$this->original;
         }

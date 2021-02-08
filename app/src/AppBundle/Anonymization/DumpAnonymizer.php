@@ -13,7 +13,14 @@ namespace AppBundle\Anonymization;
 
 
 use AppBundle\Entity\Participant;
+use AppBundle\Form\BankAccountType;
+use AppBundle\Form\GroupType;
+use AppBundle\Form\ParticipantDetectingType;
 use Ifsnop\Mysqldump\Mysqldump;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class DumpAnonymizer
 {
@@ -21,6 +28,11 @@ class DumpAnonymizer
      * @var Mysqldump
      */
     private $dump;
+    
+    /**
+     * @var callable|null
+     */
+    private $tableProgressCallable = null;
     
     /**
      * @var array|string[][]
@@ -44,9 +56,13 @@ class DumpAnonymizer
                 $jsonColumns = [
                     'field_options',
                     'attribute_changes',
+                    'collection_changes',
                 ];
                 foreach ($row as $columnName => $cell) {
-                    if (in_array($columnName, $jsonColumns)) {
+                    if (in_array($columnName, $jsonColumns)
+                        || ($tableName === 'weather_current' && $columnName === 'details')
+                        || ($tableName === 'weather_forecast' && $columnName === 'details')
+                    ) {
                         $cell = json_decode($cell, true);
                     }
                     $cell = $this->replace($tableName, $columnName, $cell, $row);
@@ -59,6 +75,9 @@ class DumpAnonymizer
                         $row['salt']     = '';
                         $row['password'] = '';
                     }
+                }
+                if ($tableName === 'acquisition_attribute') {
+                    $this->acquisitionAttributes[$row['bid']] = $row;
                 }
                 /*
                 if ($tableName !== $this->lastTable) {
@@ -153,22 +172,122 @@ class DumpAnonymizer
             'gender',
             'field_type',
             'field_options',
+            'price_formula',
             'related_class',
             'related_id',
             'operation',
             'age_range',
             'image_filename',
+            'management_title',
+            'form_title',
         ];
-        $keepTables  = [
+        $keepTables = [
             'food_property',
         ];
+        if ($table === 'acquisition_attribute_fillout' && $column === 'value') {
+            $name      = 'acquisition_attribute_fillout_' . $row['bid'];
+            $attribute = $this->acquisitionAttributes[$row['bid']] ?? null;
+        
+            switch ($attribute['field_type']) {
+                case BankAccountType::class:
+                    return new FakerReplacement(
+                        $value,
+                        $name,
+                        function (\Faker\Generator $faker) use ($value, $row) {
+                            return [
+                                'bankAccountBic'   => $faker->swiftBicNumber,
+                                'bankAccountIban'  => $faker->iban('DE'),
+                                'bankAccountOwner' => $faker->lastName,
+                            ];
+                        }
+                    );
+                case DateType::class:
+                    return new ReplacementDate($value);
+                case DateTimeType::class:
+                    return new ReplacementDateTime($value);
+                case ParticipantDetectingType::class:
+                    $value                = json_decode($value, true);
+                    $valueFirstName       = $value['participantDetectingFirstName'] ?? '';
+                    $replacementFirstName = new FakerReplacement(
+                        $valueFirstName,
+                        'name_first',
+                        function (\Faker\Generator $faker) use ($valueFirstName) {
+                            if ($valueFirstName === null) {
+                                return null;
+                            }
+                            return $faker->firstName;
+                        }
+                    );
+                    $valueLastName        = $value['participantDetectingLastName'] ?? '';
+                    $replacementLastName  = new FakerReplacement(
+                        $valueLastName,
+                        'name_last',
+                        function (\Faker\Generator $faker) use ($valueLastName) {
+                            if ($valueLastName === null) {
+                                return null;
+                            }
+                            return $faker->firstName;
+                        }
+                    );
+                    return new FakerReplacement(
+                        $value,
+                        $name,
+                        function (\Faker\Generator $faker) use (
+                            $value, $row, $replacementFirstName, $replacementLastName
+                        ) {
+                            $result = [
+                                'participantDetectingFirstName'   => $this->provideReplacement($replacementFirstName),
+                                'participantDetectingLastName'    => $this->provideReplacement($replacementLastName),
+                                'participant_selected_first_name' => $this->provideReplacement($replacementFirstName),
+                                'participant_selected_last_name'  => $this->provideReplacement($replacementLastName),
+                            ];
+                            if (array_key_exists('participant_selected', $value)) {
+                                $result['participant_selected'] = $value['participant_selected'];
+                            }
+                            if (array_key_exists('system_selection', $value)) {
+                                $result['system_selection'] = $value['system_selection'];
+                            }
+                            return $result;
+                        }
+                    );
+                case NumberType::class:
+                    return new FakerReplacement(
+                        $value,
+                        $name,
+                        function (\Faker\Generator $faker) use ($value) {
+                            $valueMin = round($value*0.5);
+                            $valueMax = round($value*1.5);
+                            return $faker->numberBetween($valueMin, $valueMax);
+                        }
+                    );
+                case GroupType::class;
+                case ChoiceType::class:
+                    return null;
+                default:
+                    if ($value === null) {
+                        return null;
+                    }
+                    if (is_numeric($value)) {
+                        return new FakerReplacement(
+                            $value,
+                            $name,
+                            function (\Faker\Generator $faker) use ($value) {
+                                $valueMin = round($value*0.5);
+                                $valueMax = round($value*1.5);
+                                return $faker->numberBetween($valueMin, $valueMax);
+                            }
+                        );
+                    }
+                    return new ReplacementArray($value, $name);
+            }
+        }
         
         if ($table === 'phone_number' && $column === 'number') {
             return new FakerReplacement(
                 $value,
                 $table,
                 function (\Faker\Generator $faker) {
-                    return $faker->phoneNumber;
+                    return '+49' . substr($faker->e164PhoneNumber, 3);
                 }
             );
         }
@@ -315,16 +434,14 @@ class DumpAnonymizer
             }
             if (preg_match('/^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$/i', $value, $results)) {
                 return new ReplacementDate(
-                    $value,
-                    $results
+                    $value
                 );
             } elseif (preg_match(
                 '/^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}) (?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$/i',
                 $value, $results
             )) {
                 return new ReplacementDateTime(
-                    $value,
-                    $results
+                    $value
                 );
             } elseif (preg_match(
                 '/^(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$/i',
@@ -376,11 +493,23 @@ class DumpAnonymizer
     {
         $qualified = $this->detectDatumType($table, $column, $value, $row);
         if ($qualified) {
-            if (!isset($this->replacements[$qualified->getType()][$qualified->getKey()])) {
-                $this->replacements[$qualified->getType()][$qualified->getKey()] = $qualified->provideReplacement();
-            }
-            $value = $this->replacements[$qualified->getType()][$qualified->getKey()];
+            return $this->provideReplacement($qualified);
         }
+        
+        return $value;
+    }
+    
+    /**
+     * Provide replacement
+     *
+     * @param ReplacementInterface $qualified
+     * @return mixed|string
+     */
+    private function provideReplacement(ReplacementInterface $qualified) {
+        if (!isset($this->replacements[$qualified->getType()][$qualified->getKey()])) {
+            $this->replacements[$qualified->getType()][$qualified->getKey()] = $qualified->provideReplacement();
+        }
+        $value = $this->replacements[$qualified->getType()][$qualified->getKey()];
         
         return $value;
     }
