@@ -237,7 +237,7 @@ class GlobalCustomization extends GlobalCustomizationConfiguration
     public static function customizedTemplatePath(string $template): string
     {
         $template = str_replace('/\\', '', $template);
-        return __DIR__ . '/../../../config/templates/' . $template . '.html.twig';
+        return __DIR__ . '/../../../../var/config/templates/' . $template . '.html.twig';
     }
 
     /**
