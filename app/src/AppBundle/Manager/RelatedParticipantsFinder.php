@@ -40,7 +40,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
 
     /**
      * Logger
-     * 
+     *
      * @var LoggerInterface
      */
     private $logger;
@@ -94,7 +94,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
 
     /**
      * Calculate for all fields of event
-     * 
+     *
      * @param Event $event
      */
     public function calculateProposedParticipantsForEvent(Event $event): void
@@ -106,7 +106,10 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 $attributes[] = $attribute;
             }
         }
-        if (count($attributes)) {
+        if (!count($attributes)) {
+            $this->logger->info(
+                'No proposed participants fields for event {event}', ['event' => $event->getEid()]
+            );
             return;
         }
         $this->logger->info(
@@ -126,15 +129,16 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     {
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
+            $start = microtime(true);
             /** @var Participant[] $participants */
-            $participants = $this->repository->participantsList($event, null, true, true);
+            $participants  = $this->repository->participantsList($event, null, true, true);
+            $durationFetch = round((microtime(true) - $start) * 1000);
 
             /** @var Participant $participant */
             foreach ($participants as $participant) {
                 $this->participantsCache[$participant->getAid()] = $participant;
 
                 foreach ($attributes as $attribute) {
-                    $time = microtime(true);
                     try {
                         $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
                     } catch (RequestedFilloutNotFoundException $e) {
@@ -178,14 +182,23 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                     $fillout->setValue($filloutRawValue);
                     $this->em->persist($fillout);
 
-                    $duration = round((microtime(true) - $time) * 1000);
-                    $this->logger->info(
-                        'Calculated proposed participants for event {event} and attribute done within {duration} ms',
-                        ['event' => $event->getEid(), 'attribute' => $attribute->getId(), 'duration' => $duration]
-                    );
                 }
             }
+            $startFlush = microtime(true);
             $this->em->flush();
+            $durationFlush        = round((microtime(true) - $startFlush) * 1000);
+            $durationParticipants = round((microtime(true) - $start) * 1000);
+            $this->logger->info(
+                'Calculated proposed participants for event {event} for {participants} participants at {attributes} attributes within {duration} ms ({durationFetch} ms of this spent to fetch them, {durationFlush} ms for flush)',
+                [
+                    'event'         => $event->getEid(),
+                    'participants'  => count($participants),
+                    'attributes'    => count($attributes),
+                    'duration'      => $durationParticipants,
+                    'durationFetch' => $durationFetch,
+                    'durationFlush' => $durationFlush,
+                ]
+            );
             $this->release($event, $lockHandle);
         } else {
             $this->closeLockHandle($lockHandle);
