@@ -145,6 +145,40 @@ class AdminSingleController
         $this->commentManager            = $commentManager;
     }
     
+    /**
+     * Details of one participation including all participants
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
+     * @Route("/admin/event/{eid}/participant/{aid}/partial", requirements={"eid": "\d+", "aid": "\d+"}, name="event_partial_participant_detail")
+     * @Security("is_granted('participants_read', event)")
+     * @param Participant $participant
+     * @return Response
+     */
+    public function partialParticipantDetailAction(Event $event, Participant $participant): Response
+    {
+        /** @var Participant $participation */
+        $participation = $participant->getParticipation();
+        $event         = $participation->getEvent();
+    
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+        $similarParticipants     = [$participant->getAid() => $participationRepository->relatedParticipants($participant)];
+    
+        return $this->render(
+            'event/participation/admin/partial-participant-detail.html.twig',
+            [
+                'commentManager'      => $this->commentManager,
+                'paymentManager'      => $this->paymentManager,
+                'event'               => $event,
+                'participant'         => $participant,
+                'participation'       => $participation,
+                'similarParticipants' => $similarParticipants,
+                'statusFormatter'     => ParticipantStatus::formatter(),
+                'enableEditMode'      => false,
+            ]
+        );
+    }
+    
     
     
     /**
@@ -287,8 +321,7 @@ class AdminSingleController
             $phoneNumber       = $phoneNumberEntity->getNumber();
             $phoneNumberList[] = $phoneNumber;
         }
-        $commentManager = $this->commentManager;
-    
+
         $similarParticipants     = [];
         $unconfirmedParticipants = [];
         $confirmedParticipants   = [];
@@ -305,20 +338,16 @@ class AdminSingleController
                 $allParticipantsInactive = false;
             }
         }
-
-        /** @var PaymentManager $paymentManager */
-        $paymentManager = $this->paymentManager;
-        /** @var PaymentSuggestionManager $paymentSuggestions */
-        $paymentSuggestionsManager = $this->paymentSuggestionManager;
-        $priceSuggestions          = $paymentSuggestionsManager->priceSuggestionsForParticipation(
+        
+        $priceSuggestions   = $this->paymentSuggestionManager->priceSuggestionsForParticipation(
             $participant->getParticipation()
         );
-        $paymentSuggestions          = $paymentSuggestionsManager->paymentSuggestionsForParticipation(
+        $paymentSuggestions = $this->paymentSuggestionManager->paymentSuggestionsForParticipation(
             $participant->getParticipation()
         );
 
         try {
-            $paymentParticipation = $paymentManager->getToPayValueForParticipation($participation, true);
+            $paymentParticipation = $this->paymentManager->getToPayValueForParticipation($participation, true);
         } catch (CalculationImpossibleException $e) {
             $paymentParticipation = null;
             $paymentManager       = null; //preventing payment manager from being passed to twig
@@ -339,8 +368,8 @@ class AdminSingleController
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
-                'commentManager'          => $commentManager,
-                'paymentManager'          => $paymentManager,
+                'commentManager'          => $this->commentManager,
+                'paymentManager'          => $this->paymentManager,
                 'paymentParticipation'    => $paymentParticipation,
                 'priceSuggestions'        => $priceSuggestions,
                 'paymentSuggestions'      => $paymentSuggestions,

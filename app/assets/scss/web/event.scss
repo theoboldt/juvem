@@ -830,7 +830,7 @@ abbr.unit {
       tbody {
         td {
           text-align: center;
-          
+
           > div {
             position: relative;
           }
@@ -1032,6 +1032,15 @@ abbr.unit {
       &:first-child {
         padding-left: 80px;
       }
+    }
+  }
+}
+
+
+#modalParticipant {
+  .modal-body {
+    button {
+      display: none;
     }
   }
 }

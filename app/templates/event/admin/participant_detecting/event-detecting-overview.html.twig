@@ -11,30 +11,24 @@
     <div class="row">
       <div class="col-xs-12" style="padding: 0;">
 
-        {% for participant in participants %}
-          <div class="modal fade" id="modalParticipant{{ participant.aid }}" tabindex="-1">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
-                        aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">{{ participant|fullname }}</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    {% include 'event/participation/admin/embed-detail-participant.html.twig' with {'participant': participant, 'event': event, 'paymentManager': null, 'similarParticipants': null} %}
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn btn-default" target="_blank"
-                     href="{{ path('event_participation_detail', {eid: event.eid, pid: participant.participation.pid}) }}"> Anmeldungsdetails... {{ 'new-window'|glyph }}
-                  </a>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
-                </div>
+        <div class="modal fade" id="modalParticipant" tabindex="-1" data-aid="0" data-eid="{{ event.eid }}">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
+                      aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+              </div>
+              <div class="modal-body">
+                <div class="row"></div>
+              </div>
+              <div class="modal-footer">
+                <a class="btn btn-default" target="_blank" href="#"> Anmeldungsdetails... {{ 'new-window'|glyph }}</a>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
               </div>
             </div>
           </div>
-        {% endfor %}
+        </div>
 
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group filters" data-toggle="buttons">

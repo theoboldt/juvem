@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+</head>
+<body>
+<div class="col-xs-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{ 'file'|glyph }} Anmeldung</h3>
+    </div>
+    <div class="panel-body">
+      {% include 'event/participation/admin/embed-detail-participation.html.twig' with {'participation': participation} %}
+    </div>
+  </div>
+</div>
+
+
+<div class="col-xs-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{ 'user'|glyph }} {{ participant.nameFirst }}</h3>
+    </div>
+    <div class="panel-body">
+      {% include 'event/participation/admin/embed-detail-participant.html.twig' with {'participant': participant, 'event': event, 'paymentManager': paymentManager, 'similarParticipants': similarParticipants, enableEditMode: false} %}
+    </div>
+  </div>
+</body>
+</html>

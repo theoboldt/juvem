@@ -375,6 +375,9 @@ $(function () {
             scheduleQueue();
         };
 
+        const modalParticipantEl = $('#modalParticipant'),
+            modalParticipantBodyEl = jQuery(modalParticipantEl.find('.modal-body .row')[0]),
+            participantDetails = {};
         network.on("doubleClick", function (params) {
             if (params.nodes.length !== 1) {
                 return;
@@ -402,12 +405,56 @@ $(function () {
                         network.clusterByConnection(nodeId, clusterOptionsByData);
                         break;
                     case 'participant':
-                        $('#modalParticipant' + node.aid).modal('show');
+                        modalParticipantEl.data('aid', node.aid);
+                        jQuery(modalParticipantEl.find('h4')[0]).text(node.label);
+                        modalParticipantEl.modal('show');
                         break;
                 }
-
             }
         });
+
+        const hydrateParticipantDetails = function (content) {
+            modalParticipantBodyEl.html('<div></div>');
+            const items = jQuery.parseHTML(content);
+            const target = jQuery(modalParticipantBodyEl.find('div')[0]);
+
+            jQuery.each(items, function (index, item) {
+                target.append(item);
+            });
+
+            modalParticipantBodyEl.find('a').each(function () {
+                const el = jQuery(this);
+                el.attr('target', '_blank');
+                el.html(el.text() + '&nbsp;<span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>');
+            });
+        };
+
+        modalParticipantEl.on('show.bs.modal', function (event) {
+            const aid = modalParticipantEl.data('aid');
+            modalParticipantBodyEl.toggleClass('loading-text', true);
+            if (participantDetails[aid]) {
+                hydrateParticipantDetails(participantDetails[aid]);
+            } else {
+                modalParticipantBodyEl.html('<div class="col-xs-12"><div class="alert alert-info">Die Anmeldungdetails werden nachgeschlagen...</div></div>');
+            }
+
+            jQuery.ajax({
+                type: 'GET',
+                dataType: 'text',
+                url: '/admin/event/' + modalParticipantEl.data('eid') + '/participant/' + aid + '/partial',
+                success: function (content, statusText) {
+                    modalParticipantBodyEl.toggleClass('loading-text', false);
+                    hydrateParticipantDetails(content);
+                    participantDetails[aid] = content;
+                },
+                error: function () {
+                    modalParticipantBodyEl.toggleClass('loading-text', false);
+                    modalParticipantBodyEl.html('<div class="col-xs-12"><div class="alert alert-danger">Die Anmeldungdetails konnten nicht geladen werden.</div></div>');
+                }
+            });
+        });
+
+
         network.on("selectNode", function (params) {
             if (params.nodes.length !== 1) {
                 return;

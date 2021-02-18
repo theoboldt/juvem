@@ -86,6 +86,13 @@
 
 }
 
+#modalParticipant dd,
+.participation-panels dd.phone-container div,
+.participation-panels dd {
+  margin-bottom: 3px;
+}
+
+#modalParticipant,
 .participation-panels {
   > .row:first-child,
   .panel-body .row .col-xs-12:first-child {
@@ -98,10 +105,6 @@
     }
     dl {
       margin: 0;
-    }
-    dd.phone-container div,
-    dd {
-      margin-bottom: 3px;
     }
     dd.phone-container,
     dd:last-child {

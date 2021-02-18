@@ -588,72 +588,7 @@
                         </div>
                     </div>
                     <div class="panel-body">
-                        <dl class="dl-horizontal">
-                            <dt>Anrede</dt>
-                            <dd>{{ participation.salutation }}</dd>
-                            <dt>Vorname</dt>
-                            <dd>{{ participation.nameFirst }}</dd>
-                            <dt>Nachname</dt>
-                            <dd>{{ participation.nameLast }}</dd>
-                            <dt>Telefon</dt>
-                            <dd class="phone-container">
-                            {% for phoneNumber in participation.phoneNumbers %}
-                                <div>
-                                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}">{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
-                                    {% if phoneNumber.description %}
-                                    <br>
-                                    <i>{{ phoneNumber.description }}</i>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-
-                            </dd>
-                            <dt>Anschrift</dt>
-                            <dd class="address-container">
-                                <address>
-                                    <strong>{{ participation.getName() }}</strong><br>
-                                    {{ participation.addressStreet }}<br>
-                                    {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
-                                    {{ participation.addressCountry }}{% endif %}
-                                </address>
-                            </dd>
-                            <dt>E-Mail Adresse</dt>
-                            <dd class="address-container">
-                                <address>
-                                    {{ participation.email }}
-                                </address>
-                            </dd>
-                            {% for fillout in participation.acquisitionAttributeFillouts %}
-                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                                    data-placement="right">
-                                    {%- if not fillout.attribute.isPublic -%}
-                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-                                    {% endif %}
-                                    {{ fillout.attribute.formTitle }}
-                                </dt>
-                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
-                            {% endfor %}
-                            <dt title=
-                                "Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
-                            <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
-                            <dt title="Ist die Anmeldung mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
-                                data-toggle="tooltip" data-placement="right">
-                                Benutzerkonto
-                            </dt>
-                            <dd>
-                                {% if participation.assignedUser %}<a href="{{ path('user_detail', {'uid': participation.assignedUser.uid}) }}">
-                                    {{ participation.assignedUser|fullname }}</a>
-                                {% else %}
-                                    <i>(keines)</i>
-                                {% endif %}
-                                {% if is_granted('participants_edit', event) -%}
-                                <button data-toggle="modal" data-target="#dialogModalAssignUser"
-                                        class="btn btn-default btn-xs"
-                                        title="Benutzerkonto verknüpfen">{{ 'pencil'|glyph }}</button>
-                                {% endif -%}
-                            </dd>
-
-                        </dl>
+                        {% include 'event/participation/admin/embed-detail-participation.html.twig' with {'participation': participation} %}
                     </div>
                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                     <div class="panel-footer panel-comments collapse{% if commentManager.countForParticipation(participation) %} in{% endif %}" id="comment-footer-pid-{{ participation.pid }}">
@@ -692,7 +627,11 @@
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-6">
-                                    <h3 class="panel-title">{{ 'user'|glyph }} <span class="hidden-xs"> Teilnehmer </span>{{ participant.nameFirst }}</h3>
+                                    <h3 class="panel-title">{{ 'user'|glyph }}
+                                        <span class="hidden-xs">
+                                            {%- if participant.gender == constant('AppBundle\\Entity\\Participant::LABEL_GENDER_FEMALE') or participant.gender == constant('AppBundle\\Entity\\Participant::LABEL_GENDER_FEMALE_ALIKE') -%}Teilnehmerin{% else %}Teilnehmer{% endif %}
+                                        </span> {{ participant.nameFirst }}
+                                    </h3>
                                 </div>
                                 <div class="col-xs-6 text-right hidden-print">
                                     {% if is_granted('participants_edit', event) -%}
