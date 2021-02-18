@@ -16,8 +16,8 @@
   "dependencies": {
     "bootstrap-3-typeahead": "^4.0",
     "bootstrap-sass": "^3.4.1",
-    "bootstrap-table": "^1.18.0",
-    "easymde": "^2.12.1",
+    "bootstrap-table": "^1.18.2",
+    "easymde": "^2.14.0",
     "ekko-lightbox": "^5.3.0",
     "imagesloaded": "^4.1",
     "jquery": "^3.5.1",
@@ -26,10 +26,11 @@
     "jquery-storage-api": "^1.9",
     "justified-layout": "^3",
     "lodash": "^4.17.20",
+    "marked": ">=2.0.0",
     "masonry-layout": "^4.2",
     "merge": "^2.1.0",
     "moment": "^2.29.1",
-    "npm": "^7.2.0",
+    "npm": "^7.5.4",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
     "vis-network": "<=7.5"
