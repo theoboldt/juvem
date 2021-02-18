@@ -179,7 +179,24 @@ class AdminSingleController
         );
     }
     
-    
+    /**
+     * Redirect to related participation
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
+     * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"})
+     * @Security("is_granted('participants_read', event)")
+     * @param Event $event
+     * @param Participant $participant
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function participantRedirectDetailAction(Event $event, Participant $participant)
+    {
+        return $this->redirectToRoute(
+            'event_participation_detail',
+            ['eid' => $event->getEid(), 'pid' => $participant->getParticipation()->getPid()]
+        );
+    }
     
     /**
      * Details of one participation including all participants

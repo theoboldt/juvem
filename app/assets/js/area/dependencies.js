@@ -407,6 +407,7 @@ $(function () {
                     case 'participant':
                         modalParticipantEl.data('aid', node.aid);
                         jQuery(modalParticipantEl.find('h4')[0]).text(node.label);
+                        jQuery(modalParticipantEl.find('.modal-footer a')[0]).attr('href', '/admin/event/' + modalParticipantEl.data('eid') + '/participant/' + node.aid);
                         modalParticipantEl.modal('show');
                         break;
                 }
