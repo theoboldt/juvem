@@ -432,8 +432,8 @@ $(function () {
         modalParticipantEl.on('show.bs.modal', function (event) {
             const aid = modalParticipantEl.data('aid');
             modalParticipantBodyEl.toggleClass('loading-text', true);
-            if (participantDetails[aid]) {
-                hydrateParticipantDetails(participantDetails[aid]);
+            if (commonCache.has('participant-partial-details.a'+aid)) {
+                hydrateParticipantDetails(commonCache.get('participant-partial-details.a'+aid));
             } else {
                 modalParticipantBodyEl.html('<div class="col-xs-12"><div class="alert alert-info">Die Anmeldungdetails werden nachgeschlagen...</div></div>');
             }
@@ -445,7 +445,7 @@ $(function () {
                 success: function (content, statusText) {
                     modalParticipantBodyEl.toggleClass('loading-text', false);
                     hydrateParticipantDetails(content);
-                    participantDetails[aid] = content;
+                    commonCache.set('participant-partial-details.a'+aid, content);
                 },
                 error: function () {
                     modalParticipantBodyEl.toggleClass('loading-text', false);

@@ -93,7 +93,7 @@ $(function(){
         return $('body').data('use-secure-cache');
     };
     /**
-     * GLOBAL load user settings
+     * GLOBAL remote table cache
      */
     window.tableCache = {
         storage: $.localStorage,
@@ -129,4 +129,59 @@ $(function(){
         }
     };
     tableCache.init();
+
+    const commonCacheLocal = {};
+    /**
+     * GLOBAL Cache used commonly
+     */
+    window.commonCache = {
+        storage: $.localStorage,
+        init: function () {
+            $.alwaysUseJsonInStorage(true);
+            if (!useSecureCache()) {
+                this.storage.remove('common-cache');
+            }
+        },
+        getKey(key) {
+            return 'common-cache.' + key;
+        },
+        has: function (key) {
+            const internalKey = this.getKey(key);
+            if (!useSecureCache()) {
+                return commonCacheLocal[internalKey] !== null;
+            }
+            return this.storage.isSet(internalKey);
+        },
+        get: function (key) {
+            const internalKey = this.getKey(key);
+            if (!useSecureCache()) {
+                return commonCacheLocal[internalKey];
+            }
+
+            if (this.has(key)) {
+                return this.storage.get(internalKey);
+            }
+        },
+        remove: function (key) {
+            const internalKey = this.getKey(key);
+            if (!useSecureCache()) {
+                delete commonCacheLocal[internalKey];
+                return;
+            }
+
+            if (this.has(key)) {
+                return this.storage.remove(internalKey);
+            }
+        },
+        set: function (key, valueNew) {
+            const internalKey = this.getKey(key);
+
+            if (!useSecureCache()) {
+                commonCacheLocal[internalKey] = valueNew;
+                return valueNew;
+            }
+            return this.storage.set(internalKey, valueNew);
+        }
+    };
+    commonCache.init();
 });
