@@ -82,6 +82,12 @@ class EventFileSharingManager
             $directory                   = $this->nextcloudManager->fetchEventRootDirectory(
                 $eventRootShareDirectoryName
             );
+            if ($directory == null) {
+                throw new NextcloudEventShareRootDirectoryNotFoundException(
+                    'Expected directory for event ' . $event->getEid() . ' at "' . $event->getShareDirectoryRootHref() .
+                    '", but not found'
+                );
+            }
         } else {
             $directory = $this->nextcloudManager->createUniqueEventRootDirectory(
                 $event->getTitle(), $event->getStartDate()
