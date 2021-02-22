@@ -334,12 +334,21 @@ services:
         arguments:
             - 'AppBundle:ChangeTracking\EntityChange'
 
+    AppBundle\Security\ApiAccessDeniedHandler:
+      autoconfigure: true
+      autowire: true
+
     AppBundle\Security\EventVoter:
       autowire: true
       tags:
         - security.voter
 
     AppBundle\Security\AttributeVoter:
+      autowire: true
+      tags:
+        - security.voter
+
+    AppBundle\Security\CloudVoter:
       autowire: true
       tags:
         - security.voter

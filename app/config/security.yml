@@ -21,6 +21,13 @@ security:
             memory: ~
 
     firewalls:
+        api:
+            provider: fos_userbundle
+            pattern: ^/api/
+            stateless: true
+            http_basic:
+                realm: Juvem API
+            access_denied_handler: AppBundle\Security\ApiAccessDeniedHandler
         main:
             provider: fos_userbundle
             pattern: ^/
