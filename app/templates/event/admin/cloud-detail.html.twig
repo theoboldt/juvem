@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cloud ({{ event.title }}){% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Cloud', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Cloud</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="modal fade" id="dialogModalDisableCloud" tabindex="-1" role="dialog"
+         aria-labelledby="dialogModalDisableCloudLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="dialogModalDisableCloudLabel">Dateifreigaben deaktivieren</h4>
+          </div>
+          <div class="modal-body">
+            <p>Für diese Veranstaltung sind im Moment Dateifreigaben und Zuweisungen konfiguriert.</p>
+            <p><b>Vorsicht!</b> Werden sie deaktiviert, werden alle in der Cloud gespeicherten Dateien gelöscht und alle
+              Cloud-Nutzer-Zuweisungen entfernt.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-cloud-disable">
+              Dateifreigaben deaktivieren
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="dialogModalEnableCloud" tabindex="-1" role="dialog"
+         aria-labelledby="dialogModalEnableCloudLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="dialogModalEnableCloudLabel">Dateifreigaben deaktivieren</h4>
+          </div>
+          <div class="modal-body">
+            <p>Für diese Veranstaltung sind im Moment keine Dateifreigaben konfiguriert.</p>
+            <p>Wenn sie jetzt aktiviert werden, werden die benötigten Verzeichnisse in der Cloud angelegt und diese den
+              hier konfigurierten Benutzern zugewiesen. Die Zuweisung der Benutzer kann auch nachträglich geändert
+              werden.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-cloud-enable">
+              Dateifreigaben aktivieren
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="mainContent">
+      {%- if featureCloud %}
+        <div class="col-xs-12 col-md-8">
+          <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+            <div class="btn-group" role="group">
+              <label id="btnDisableCloud" {% if event.hasShareDirectoryRoot() %}data-toggle="modal"
+                     data-target="#dialogModalDisableCloud"{% endif %}
+                     class="btn btn-default {% if not event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
+                <span class="hidden-xs">Dateifreigaben nicht verwenden</span>
+              </label>
+              <label id="btnEnableCloud" {% if not event.hasShareDirectoryRoot() %}data-toggle="modal"
+                     data-target="#dialogModalEnableCloud"{% endif %}
+                     class="btn btn-default {% if event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
+                <span class="hidden-xs">Dateifreigaben verwenden</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+          <div class="col-xs-12">
+            <div id="cloudFileListing" data-eid="{{ event.eid }}">
+              <h4>Dateien
+                <button class="btn btn-default btn-xs">{{ 'refresh'|glyph }}</button>
+              </h4>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-xs-12">
+          <div class="alert alert-danger" role="alert">
+            <p>Für diese Juvem-Installation ist keine Cloud-Anbindung konfiguriert.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock %}
+{% block javascriptCustom %}
+  {% cspscript %}
+    <script>
+        jQuery(document).ready(function () {
+            var cloudDisableButton = $('#btn-cloud-disable');
+            cloudDisableButton.click(function () {
+                $('#mainContent').addClass('hidden');
+                var btn = $(this),
+                    valueNew = !btn.hasClass('active');
+                if (btn.hasClass('disabled')) {
+                    return;
+                }
+                btn.addClass('disabled');
+
+                $(document).trigger('add-alerts', {
+                    message: 'Die Dateifreigaben für die Veranstaltung werden entfernt. Das kann einige Minuten dauern...',
+                    priority: 'info'
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path('admin_event_cloud_disable', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
+                    datatype: 'json',
+                    success: function () {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Dateifreigaben wurden entfernt.',
+                            priority: 'success'
+                        });
+                        btn.toggleClass('active', valueNew);
+                        location.reload();
+                    },
+                    error: function (response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Dateifreigaben für die Veranstaltung konnten nicht entfernt werden',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        btn.removeClass('disabled');
+                    }
+                });
+            });
+
+            var cloudButton = $('#btn-cloud-enable');
+            cloudButton.click(function () {
+                $('#mainContent').addClass('hidden');
+                var btn = $(this),
+                    valueNew = !btn.hasClass('active');
+                if (btn.hasClass('disabled')) {
+                    return;
+                }
+                btn.addClass('disabled');
+
+                $(document).trigger('add-alerts', {
+                    message: 'Die Dateifreigaben für die Veranstaltung werden angelegt. Das kann einige Minuten dauern...',
+                    priority: 'info'
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path('admin_event_cloud_enable', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
+                    datatype: 'json',
+                    success: function () {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Verzeichnisse und Gruppen sind nun vorhanden. Die Zuweisung der Nutzer wird jetzt aktualisiert...',
+                            priority: 'info'
+                        });
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('admin_event_share_update', {eid: event.eid, token: csrf_token('cloud-share-' ~  event.eid)}) }}',
+                            datatype: 'json',
+                            success: function () {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Dateifreigabe ist erstellt.',
+                                    priority: 'success'
+                                });
+                                btn.toggleClass('active', valueNew);
+                                location.reload();
+                            },
+                            error: function (response) {
+                                $(document).trigger('add-alerts', {
+                                    message: 'Die Zuweisungen für die Veranstaltung konnten nicht aktualisiert werden',
+                                    priority: 'error'
+                                });
+                            },
+                            complete: function (response) {
+                                btn.removeClass('disabled');
+                            }
+                        });
+                    },
+                    error: function (response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Dateifreigaben für die Veranstaltung konnten nicht erstellt werden',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        btn.removeClass('disabled');
+                    }
+                });
+            });
+        });
+    </script>
+  {% endcspscript %}
+{% endblock %}

@@ -100,6 +100,37 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
             'Created nextcloud group {name} within {duration} ms', ['name' => $name, 'duration' => $duration]
         );
     }
+
+    /**
+     * Delete a group
+     * 
+     * @param string $name
+     */
+    public function removeGroup(string $name): void
+    {
+        $start      = microtime(true);
+        $response   = $this->request('DELETE', 'cloud/groups/'.urlencode($name));
+        $xml        = self::extractXmlResponse($response);
+        $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
+        $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
+        $duration   = round((microtime(true) - $start) * 1000);
+
+        if ($statusCode === 101) {
+            $this->logger->debug(
+                'Tried deleting nextcloud group {name} within {duration} ms, group did not exist',
+                ['name' => $name, 'duration' => $duration]
+            );
+        } elseif ($statusCode === 100) {
+            $this->logger->debug(
+                'Deleted nextcloud group {name} within {duration} ms',
+                ['name' => $name, 'duration' => $duration]
+            );
+        } else {
+            throw new NextcloudDeleteGroupFailedException(
+                sprintf('Failed to delete group "%s", status: %s', $name, $status)
+            );
+        }
+    }
     
     /**
      * Add this admin user to transmitted group

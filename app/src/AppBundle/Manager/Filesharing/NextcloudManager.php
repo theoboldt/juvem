@@ -161,7 +161,23 @@ class NextcloudManager
         );
         return $directory;
     }
-    
+
+    /**
+     * Delete directory via href
+     * 
+     * @param string $directoryHref
+     */
+    public function deleteDirectory(string $directoryHref): void
+    {
+        $start = microtime(true);
+        $this->webDavConnector->deleteDirectory($directoryHref);
+
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->info(
+            'Deleted event root directory {name} within {duration} ms',
+            ['name' => $directoryHref, 'duration' => $duration]
+        );
+    }
     
     /**
      * Fetch event root directory for transmitted root name
@@ -308,6 +324,21 @@ class NextcloudManager
         $this->logger->info(
             'Updated user assignments for {name} within {duration} ms',
             ['name' => $name, 'duration' => $duration]
+        );
+    }
+
+    /**
+     * Remove a group
+     * 
+     * @param string $group
+     */
+    public function removeEventGroup(string $group) {
+        $start = microtime(true);
+        $this->ocsConnector->removeGroup($group);
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->info(
+            'Removed group {name} within {duration} ms',
+            ['name' => $group, 'duration' => $duration]
         );
     }
     

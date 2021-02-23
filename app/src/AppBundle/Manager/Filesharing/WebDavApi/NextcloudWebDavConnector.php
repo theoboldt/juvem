@@ -277,7 +277,7 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         
         $duration = round((microtime(true) - $start) * 1000);
         $this->logger->debug(
-            'Created nextcloud event {zrl} within {duration} ms',
+            'Created nextcloud event {url} within {duration} ms',
             ['url' => $url, 'duration' => $duration]
         );
         if ($directory) {
@@ -301,6 +301,30 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
             $this->provideEventDirectoryBaseUrl() . $this->provideEventDirectoryPath('/'), $name
         );
     }
-    
+
+
+    /**
+     * Delete a directory from webDAV
+     * 
+     * @param string $directoryHref
+     */
+    public function deleteDirectory(string $directoryHref): void
+    {
+        $start    = microtime(true);
+        $response = $this->request(
+            'DELETE',
+            $directoryHref
+        );
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->debug(
+            'Deleted nextcloud directory {href} within {duration} ms',
+            ['href' => $directoryHref, 'duration' => $duration]
+        );
+        if ($response->getStatusCode() !== 204) {
+            throw new NextcloudWebDavDirectoryDeleteFailedException(
+                sprintf('Failed to delete "%s" with code %d', $directoryHref, $response->getStatusCode())
+            );
+        }
+    }
     
 }

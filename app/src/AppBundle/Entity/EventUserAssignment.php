@@ -214,6 +214,23 @@ class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentati
         $this->allowedToManageParticipants = $allowedToManageParticipants;
         return $this;
     }
+
+    /**
+     * Determine if only cloud access is configured
+     * 
+     * @return bool
+     */
+    public function isOnlyCloudAccessAllowed(): bool
+    {
+        return (
+            ($this->allowedCloudAccessTeam || $this->allowedCloudAccessManagement)
+            && !$this->allowedToRead
+            && !$this->allowedToEdit
+            && !$this->allowedToManageParticipants
+            && !$this->allowedToReadComments
+            && !$this->allowedToComment
+        );
+    }
     
     /**
      * @return bool

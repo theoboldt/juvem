@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Event;
 
 use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\DoctrineAwareControllerTrait;
+use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
 use AppBundle\InvalidTokenHttpException;
@@ -30,6 +31,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Twig\Environment;
 
 /**
  * AdminCloudController
@@ -39,7 +41,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 class AdminCloudController
 {
     
-    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait;
+    use DoctrineAwareControllerTrait, AuthorizationAwareControllerTrait, RenderingControllerTrait;
+
     
     /**
      * security.csrf.token_manager
@@ -52,26 +55,28 @@ class AdminCloudController
      * @var EventFileSharingManager
      */
     private EventFileSharingManager $fileSharingManager;
-    
+
     /**
      * AdminCloudController constructor.
      *
-     * @param EventFileSharingManager $fileSharingManager
-     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param EventFileSharingManager       $fileSharingManager
+     * @param Environment                   $twig
+     * @param CsrfTokenManagerInterface     $csrfTokenManager
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface         $tokenStorage
      */
     public function __construct(
         EventFileSharingManager $fileSharingManager,
+        Environment $twig,
         CsrfTokenManagerInterface $csrfTokenManager,
         AuthorizationCheckerInterface $authorizationChecker,
         TokenStorageInterface $tokenStorage
-    )
-    {
+    ) {
         $this->fileSharingManager   = $fileSharingManager;
         $this->csrfTokenManager     = $csrfTokenManager;
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage         = $tokenStorage;
+        $this->twig                 = $twig;
     }
     
     /**
@@ -104,6 +109,28 @@ class AdminCloudController
         }
         
         $this->fileSharingManager->ensureEventCloudSharesAvailable($event);
+        
+        return new JsonResponse([]);
+    }
+    
+    /**
+     * Remove folders and groups related to this event
+     *
+     * @Route("/admin/event/{eid}/cloud/{token}/disable", requirements={"eid": "\d+", "token": ".*"},
+     *                                                   name="admin_event_cloud_disable")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('edit', event)")
+     * @param Event $event
+     * @param string $token
+     * @return Response
+     */
+    public function disableCloudAction(Event $event, string $token): Response
+    {
+        if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('cloud-' . $event->getEid(), $token))) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $this->fileSharingManager->removeEventCloudShares($event);
         
         return new JsonResponse([]);
     }
@@ -166,5 +193,23 @@ class AdminCloudController
         }
         
         return new JsonResponse(['files' => $result]);
+    }
+
+    /**
+     * @Route("/admin/event/{eid}/cloud", requirements={"eid": "\d+"}, name="admin_event_cloud")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('edit', event)")
+     * @param Event $event
+     * @return Response
+     */
+    public function manageEventCloudConfiguration(Event $event): Response
+    {
+        return $this->render(
+            'event/admin/cloud-detail.html.twig',
+            [
+                'event' => $event,
+            ]
+        );
+        
     }
 }

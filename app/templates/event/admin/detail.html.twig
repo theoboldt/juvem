@@ -101,7 +101,8 @@
                         <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
                            class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
                         {%- if is_granted('edit', event) and featureCloud %}
-                            <label id="event-cloud-button" class="btn btn-default {% if event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></label>
+                        <a href="{{ path('admin_event_cloud', {'eid': event.eid }) }}"
+                           class="btn btn-default" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></a>
                         {% endif %}
                     </div>
 
@@ -491,65 +492,6 @@
                     });
                 }
             });
-
-            var cloudButton = $('#event-cloud-button');
-            cloudButton.click(function() {
-                var btn = $(this),
-                    valueNew = !btn.hasClass('active');
-                if (btn.hasClass('disabled')) {
-                    return;
-                }
-                btn.addClass('disabled');
-
-                $(document).trigger('add-alerts', {
-                    message: 'Die Dateifreigaben für die Veranstaltung werden angelegt. Das kann einige Minuten dauern...',
-                    priority: 'info'
-                });
-
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ path('admin_event_cloud_enable', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
-                    datatype: 'json',
-                    success: function () {
-                        $(document).trigger('add-alerts', {
-                            message: 'Die Verzeichnisse und Gruppen sind nun vorhanden. Die Zuweisung der Nutzer wird jetzt aktualisiert...',
-                            priority: 'info'
-                        });
-                        $.ajax({
-                            type: 'POST',
-                            url: '{{ path('admin_event_share_update', {eid: event.eid, token: csrf_token('cloud-share-' ~  event.eid)}) }}',
-                            datatype: 'json',
-                            success: function () {
-                                $(document).trigger('add-alerts', {
-                                    message: 'Die Dateifreigabe ist erstellt.',
-                                    priority: 'success'
-                                });
-                                btn.toggleClass('active', valueNew);
-                            },
-                            error: function (response) {
-                                $(document).trigger('add-alerts', {
-                                    message: 'Die Zuweisungen für die Veranstaltung konnten nicht aktualisiert werden',
-                                    priority: 'error'
-                                });
-                            },
-                            complete: function (response) {
-                                btn.removeClass('disabled');
-                            }
-                        });
-                    },
-                    error: function (response) {
-                        $(document).trigger('add-alerts', {
-                            message: 'Die Dateifreigaben für die Veranstaltung konnten nicht erstellt werden',
-                            priority: 'error'
-                        });
-                    },
-                    complete: function (response) {
-                        btn.removeClass('disabled');
-                    }
-                });
-            });
-
-
             $('#event-subscription-button').click(function() {
                 var btn = $(this),
                     valueNew = !btn.hasClass('active');

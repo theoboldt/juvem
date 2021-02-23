@@ -126,6 +126,44 @@ class EventFileSharingManager
             $em->flush();
         }
     }
+
+    /**
+     * Remove shares for an event completely
+     * 
+     * @param Event $event
+     */
+    public function removeEventCloudShares(Event $event): void
+    {
+        $em = $this->doctrine->getManager();
+        if (!$this->nextcloudManager) {
+            return;
+        }
+        $eventRootShareDirectoryName = NextcloudDirectory::extractDirectoryNameFromDirectoryHref(
+            $event->getShareDirectoryRootHref()
+        );
+
+        $directory = $this->nextcloudManager->fetchEventRootDirectory(
+            $eventRootShareDirectoryName
+        );
+        if ($directory) {
+            $this->nextcloudManager->deleteDirectory($directory->getHref());
+        }
+        $event->setShareDirectoryRootHref(null);
+        $em->persist($event);
+
+        $shares = $this->findSharesForEvent($event);
+        foreach ($shares as $share) {
+            $this->nextcloudManager->removeEventGroup($share->getGroupName());
+            $em->remove($share);
+        }
+
+        foreach ($event->getUserAssignments() as $userAssignment) {
+            if ($userAssignment->isOnlyCloudAccessAllowed()) {
+                $em->remove($userAssignment);
+            }
+        }
+        $em->flush();
+    }
     
     /**
      * List files recursively
