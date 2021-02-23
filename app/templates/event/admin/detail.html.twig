@@ -310,7 +310,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    {%- if is_granted('cloud_access_team', event) or (is_granted('cloud_access_management', event)) and featureCloud %}
+                    {%- if featureCloud and (is_granted('cloud_access_team', event) or is_granted('cloud_access_management', event)) %}
                         <div class="col-xs-12">
                             <div id="cloudFileListing" data-eid="{{ event.eid }}">
                                 <h4>Cloud
