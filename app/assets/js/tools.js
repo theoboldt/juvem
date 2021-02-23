@@ -165,6 +165,10 @@ $(function () {
             regex = /^.*<span class="rounded-age">\(([,.0-9]+)\)<\/span>.*$/,
             matches;
 
+        if (n === null || n === undefined) {
+            return 0;
+        }
+
         if (regex.test(n)) {
             matches = regex.exec(n);
             n = matches[1];
