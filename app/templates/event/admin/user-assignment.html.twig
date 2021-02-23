@@ -74,23 +74,32 @@
                         </div>
                         <div class="panel-body panel-collapse collapse in">
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    {{ form_row(formElement.allowedToEdit) }}
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    {{ form_row(formElement.allowedToManageParticipants) }}
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            {{ form_row(formElement.allowedToReadComments) }}
+                                <div style="{% if not formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}visibility:hidden;{% endif %}">
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                {{ form_row(formElement.allowedToRead) }}
+                                            </div>
+                                            <div class="col-xs-12">
+                                                {{ form_row(formElement.allowedToEdit) }}
+                                            </div>
                                         </div>
-                                        <div class="col-xs-12">
-                                            {{ form_row(formElement.allowedToComment) }}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        {{ form_row(formElement.allowedToManageParticipants) }}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                {{ form_row(formElement.allowedToReadComments) }}
+                                            </div>
+                                            <div class="col-xs-12">
+                                                {{ form_row(formElement.allowedToComment) }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3" {% if not formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}">
+                                <div class="col-xs-12 col-sm-6 col-md-3">
                                     <div class="row">
                                         {% if formElement.children.allowedCloudAccessTeam is defined %}
                                             <div class="col-xs-12">
@@ -103,12 +112,12 @@
                                             </div>
                                         {% endif %}
                                     </div>
+                                    <div class="col-xs-12" {% if featureCloud and formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}">
+                                    <div class="alert alert-info" role="alert">Nutzer ist noch nicht mit der Cloud verbunden.</div>
+                                    </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6 col-md-3" {% if featureCloud %}style="display: none;"{% endif %}">
                                     <div class="alert alert-info" role="alert">Cloud Anbindung nicht konfiguriert.</div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3" {% if featureCloud and formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}">
-                                <div class="alert alert-info" role="alert">Nutzer ist noch nicht mit der Cloud verbunden. Dementsprechend kann dem Nutzer noch kein Zugriff gewährt werden.</div>
                                 </div>
                             </div>
                         </div>

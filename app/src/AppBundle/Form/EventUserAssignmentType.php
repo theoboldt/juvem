@@ -29,8 +29,13 @@ class EventUserAssignmentType extends AbstractType
             'required' => false,
             'mapped'   => true,
         ];
-
+        
         $builder
+            ->add(
+                'allowedToRead',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Darf Veranstaltungsdetails und Teilnehmerdaten einsehen'])
+            )
             ->add(
                 'allowedToEdit',
                 CheckboxType::class,

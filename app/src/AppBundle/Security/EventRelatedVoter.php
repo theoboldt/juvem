@@ -32,6 +32,8 @@ class EventRelatedVoter extends AbstractDecisionManagerAwareVoter
                 EventVoter::PARTICIPANTS_EDIT,
                 EventVoter::EMPLOYEES_READ,
                 EventVoter::EMPLOYEES_EDIT,
+                EventVoter::CLOUD_ACCESS_MANAGEMENT,
+                EventVoter::CLOUD_ACCESS_TEAM,
             ]
         )) {
             return false;

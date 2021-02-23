@@ -19,6 +19,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function Doctrine\ORM\QueryBuilder;
 
 class EventAddUserAssignmentsType extends AbstractType
 {
@@ -41,20 +42,31 @@ class EventAddUserAssignmentsType extends AbstractType
                     'class'         => User::class,
                     'query_builder' => function (UserRepository $r) use ($eid) {
                         $qb = $r->createQueryBuilder('u');
-                        return $qb->andWhere($qb->expr()->like('u.roles', ':requiredRole'))
-                                  ->setParameter('requiredRole', '%"ROLE_ADMIN_EVENT"%')
-/*
-// In order to grant cloud access, also global admins must be assigned
-                                  ->andWhere($qb->expr()->notLike('u.roles', ':disallowedRole'))
-                                  ->setParameter('disallowedRole', '%"ROLE_ADMIN_EVENT_GLOBAL"%')
-*/
+                        return $qb->andWhere(
+                            $qb->expr()->orX(
+                                $qb->expr()->like('u.roles', ':enablingRoleA'),
+                                $qb->expr()->like('u.roles', ':enablingRoleB')
+                            )
+                        )
+                                  ->setParameter('enablingRoleA', '%"ROLE_ADMIN_EVENT"%')
+                                  ->setParameter('enablingRoleB', '%"ROLE_CLOUD"%')
                                   ->andWhere('u.enabled = 1')
                                   ->addOrderBy('u.nameLast', 'ASC')
                                   ->addOrderBy('u.nameFirst', 'ASC')
                                   ->leftJoin('u.eventAssignments', 'a', Join::WITH, 'a.event = ' . $eid)
                                   ->andWhere('a IS NULL');
                     },
-                    'choice_label'  => 'fullname',
+                    'choice_label' => function (User $user) {
+                        $roles = [];
+                        if ($user->hasRole(User::ROLE_ADMIN_EVENT_GLOBAL)) {
+                            $roles[] = User::ROLE_ADMIN_EVENT_GLOBAL_LABEL;
+                        } elseif ($user->hasRole(User::ROLE_ADMIN_EVENT)) {
+                            $roles[] = User::ROLE_ADMIN_EVENT_LABEL;
+                        } elseif ($user->hasRole(User::ROLE_CLOUD)) {
+                            $roles[] = User::ROLE_CLOUD_LABEL;
+                        }
+                        return $user->fullname() . ' [' . implode(', ', $roles) . ']';
+                    },
                     'multiple'      => true,
                     'required'      => false,
                 ]

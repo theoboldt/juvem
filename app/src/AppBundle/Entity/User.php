@@ -37,7 +37,7 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     const ROLE_ADMIN_LABEL = 'Administration';
 
     const ROLE_ADMIN_EVENT       = 'ROLE_ADMIN_EVENT';
-    const ROLE_ADMIN_EVENT_LABEL = 'Veranstaltungsverwaltung';
+    const ROLE_ADMIN_EVENT_LABEL = 'Veranstaltungsverwaltung (ausgewählte)';
 
     const ROLE_ADMIN_EVENT_GLOBAL       = 'ROLE_ADMIN_EVENT_GLOBAL';
     const ROLE_ADMIN_EVENT_GLOBAL_LABEL = 'Veranstaltungsverwaltung (alle)';
@@ -49,7 +49,10 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     const ROLE_ADMIN_NEWSLETTER_LABEL = 'Newsletterverwaltung';
 
     const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE_LABEL';
-    const ROLE_EMPLOYEE_LABEL = 'Mitarbeiter';
+    const ROLE_EMPLOYEE_LABEL = 'Mitarbeiterverwaltung';
+
+    const ROLE_CLOUD = 'ROLE_CLOUD';
+    const ROLE_CLOUD_LABEL = 'Cloud-Zugang';
 
     /**
      * @Serialize\Expose

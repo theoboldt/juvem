@@ -80,9 +80,24 @@
 
                     <div class="col-sm-8">
                         <p class="form-control-static">{{ user.email }}</p>
-
                     </div>
                 </div>
+                {% if featureCloud and user.role('ROLE_CLOUD') %}
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Cloud-Benutzername</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if user.cloudUsername %}
+                                    {{ user.cloudUsername }}
+                                {% else %}
+                                    <i class="empty no-selection"><span></span></i>
+                                {% endif %}
+                            </p>
+
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
         </div>

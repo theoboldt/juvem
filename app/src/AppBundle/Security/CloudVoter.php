@@ -32,6 +32,6 @@ class CloudVoter extends AbstractDecisionManagerAwareVoter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        return $this->decisionManager->decide($token, [User::ROLE_ADMIN]);
+        return $this->decisionManager->decide($token, [User::ROLE_CLOUD]);
     }
 }

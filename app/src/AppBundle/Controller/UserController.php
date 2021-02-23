@@ -91,24 +91,32 @@ class UserController
         /** @var User $entity */
         foreach ($entityList as $entity) {
             $entityRoles = $entity->getRoles();
-
+    
             $roles = '';
-            if (in_array('ROLE_USER', $entityRoles)) {
-                $roles .= sprintf($roleTemplate, 'Benutzer', $glyph->bootstrapGlyph('pawn'));
+            if (!in_array('ROLE_USER', $entityRoles)) {
+                $roles .= sprintf($roleTemplate, 'Benutzer', $glyph->bootstrapGlyph('warning-sign'));
             }
             if (in_array(User::ROLE_ADMIN, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_LABEL, $glyph->bootstrapGlyph('king'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_LABEL, $glyph->bootstrapGlyph('briefcase'));
             }
             if (in_array(User::ROLE_ADMIN_USER, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_USER_LABEL, $glyph->bootstrapGlyph('queen'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_USER_LABEL, $glyph->bootstrapGlyph('user'));
+            }
+            if (in_array(User::ROLE_ADMIN_EVENT_GLOBAL, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_EVENT_GLOBAL_LABEL, $glyph->bootstrapGlyph('tags'));
             }
             if (in_array(User::ROLE_ADMIN_EVENT, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_EVENT_LABEL, $glyph->bootstrapGlyph('bishop'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_EVENT_LABEL, $glyph->bootstrapGlyph('tag'));
             }
             if (in_array(User::ROLE_ADMIN_NEWSLETTER, $entityRoles)) {
-                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_NEWSLETTER_LABEL, $glyph->bootstrapGlyph('knight'));
+                $roles .= sprintf($roleTemplate, User::ROLE_ADMIN_NEWSLETTER_LABEL, $glyph->bootstrapGlyph('envelope'));
             }
-
+            if (in_array(User::ROLE_EMPLOYEE, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, User::ROLE_EMPLOYEE_LABEL, $glyph->bootstrapGlyph('heart'));
+            }
+            if (in_array(User::ROLE_CLOUD, $entityRoles)) {
+                $roles .= sprintf($roleTemplate, User::ROLE_CLOUD_LABEL, $glyph->bootstrapGlyph('cloud'));
+            }
 
             $userList[] = [
                 'uid'       => $entity->getUid(),
@@ -131,8 +139,9 @@ class UserController
     {
         $form = $this->createForm(
             UserRoleAssignmentType::class,
-            ['uid'  => $user->getUid(),
-             'role' => $user->getRoles(),
+            [
+                'uid'  => $user->getUid(),
+                'role' => $user->getRoles(),
             ]
         );
         $form->handleRequest($request);

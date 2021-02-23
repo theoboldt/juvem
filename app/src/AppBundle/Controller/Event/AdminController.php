@@ -720,6 +720,7 @@ class AdminController
                 $user = $this->getUser();
                 if (!$user->hasRole(\AppBundle\Entity\User::ROLE_ADMIN_EVENT_GLOBAL)) {
                     $assignment = new EventUserAssignment($event, $user);
+                    $assignment->setAllowedToRead(true);
                     $assignment->setAllowedToEdit(true);
                     $assignment->setAllowedToManageParticipants(true);
                     $assignment->setAllowedToComment(true);

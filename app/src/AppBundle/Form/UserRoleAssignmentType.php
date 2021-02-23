@@ -21,7 +21,7 @@ class UserRoleAssignmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
-    
+        
         $builder
             ->add('uid', HiddenType::class)
             ->add(
@@ -36,6 +36,7 @@ class UserRoleAssignmentType extends AbstractType
                         User::ROLE_ADMIN_USER_LABEL         => User::ROLE_ADMIN_USER,
                         User::ROLE_ADMIN_NEWSLETTER_LABEL   => User::ROLE_ADMIN_NEWSLETTER,
                         User::ROLE_EMPLOYEE_LABEL           => User::ROLE_EMPLOYEE,
+                        User::ROLE_CLOUD_LABEL              => User::ROLE_CLOUD,
                     ],
                     'expanded' => true,
                     'multiple' => true,
@@ -48,5 +49,5 @@ class UserRoleAssignmentType extends AbstractType
     {
         return 'app_bundle_user_role_assignment';
     }
-
+    
 }

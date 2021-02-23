@@ -71,11 +71,21 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
             return false;
         }
         $uid = $user->getUid();
-
+    
         if ($this->decisionManager->decide($token, [User::ROLE_ADMIN_EVENT_GLOBAL])) {
-            //allow everything
-            return true;
-        } elseif (!$this->decisionManager->decide($token, [User::ROLE_ADMIN_EVENT])) {
+            switch ($attribute) {
+                case self::CLOUD_ACCESS_TEAM:
+                case self::CLOUD_ACCESS_MANAGEMENT:
+                    return $this->decisionManager->decide($token, [User::ROLE_CLOUD]);
+                default:
+                    //allow almost everything
+                    return true;
+            }
+        } elseif (
+            !$this->decisionManager->decide($token, [User::ROLE_ADMIN_EVENT])
+            && $attribute !== self::CLOUD_ACCESS_TEAM
+            && $attribute !== self::CLOUD_ACCESS_MANAGEMENT
+        ) {
             //if not even this permission is granted, disallow all
             return false;
         }
@@ -99,7 +109,7 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
             case self::READ:
             case self::PARTICIPANTS_READ:
             case self::EMPLOYEES_READ:
-                return true;
+                return $userAssignment->isAllowedToRead();
             case self::EDIT:
             case self::EMPLOYEES_EDIT:
                 return $userAssignment->isAllowedToEdit();
@@ -110,9 +120,11 @@ class EventVoter extends AbstractDecisionManagerAwareVoter
             case self::COMMENT_ADD:
                 return $userAssignment->isAllowedToComment();
             case self::CLOUD_ACCESS_TEAM:
-                return $userAssignment->isAllowedCloudAccessTeam();
+                return $this->decisionManager->decide($token, [User::ROLE_CLOUD])
+                       && $userAssignment->isAllowedCloudAccessTeam();
             case self::CLOUD_ACCESS_MANAGEMENT:
-                return $userAssignment->isAllowedCloudAccessManagement();
+                return $this->decisionManager->decide($token, [User::ROLE_CLOUD])
+                       && $userAssignment->isAllowedCloudAccessManagement();
         }
 
         return false;

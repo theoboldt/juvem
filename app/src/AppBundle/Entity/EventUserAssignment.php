@@ -34,6 +34,12 @@ class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentati
      * @var Event
      */
     protected $event;
+    
+    /**
+     * @ORM\Column(type="boolean", name="allowed_to_read", nullable=false)
+     * @var bool
+     */
+    protected $allowedToRead = false;
 
     /**
      * @ORM\Column(type="boolean", name="allowed_to_edit", nullable=false)
@@ -118,7 +124,25 @@ class EventUserAssignment implements SpecifiesChangeTrackingStorableRepresentati
         $this->event = $event;
         return $this;
     }
-
+    
+    /**
+     * @return bool
+     */
+    public function isAllowedToRead(): bool
+    {
+        return $this->allowedToRead;
+    }
+    
+    /**
+     * @param bool $allowedToRead
+     * @return EventUserAssignment
+     */
+    public function setAllowedToRead(bool $allowedToRead): EventUserAssignment
+    {
+        $this->allowedToRead = $allowedToRead;
+        return $this;
+    }
+    
     /**
      * @return bool
      */
