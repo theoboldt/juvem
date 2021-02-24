@@ -15,6 +15,7 @@ use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\Event;
 use AppBundle\Form\AcquisitionAttribute\EventSpecificVariableType;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForVariableType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +30,7 @@ class AcquisitionVariableController extends AbstractController
 {
     
     /**
+     * @CloseSessionEarly
      * @Route("/admin/variable/list", name="admin_variable_list", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -40,6 +42,7 @@ class AcquisitionVariableController extends AbstractController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/variable/list.json", name="admin_variable_list_data", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */

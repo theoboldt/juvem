@@ -245,6 +245,13 @@ services:
         arguments: ['@doctrine.orm.entity_manager']
         public: true
 
+    AppBundle\EventListeners\CloseSessionEarlyAnnotationListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+        arguments:
+            - "@annotation_reader"
+            - "@session"
+
     app.exception_listener:
         class: AppBundle\EventListeners\ExceptionListener
         tags:

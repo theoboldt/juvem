@@ -35,6 +35,7 @@ use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
@@ -159,6 +160,7 @@ class AdminController
     /**
      * Page for list of events
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/list", name="event_list")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -181,6 +183,7 @@ class AdminController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/list.json", name="event_list_data", methods={"GET", "HEAD"})
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
@@ -270,6 +273,7 @@ class AdminController
     /**
      * Edit page for one single event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/edit", requirements={"eid": "\d+"}, name="event_edit")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -391,6 +395,7 @@ class AdminController
     /**
      * Detail page for one single event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
      * @Route("/admin/event/{eid}/location", requirements={"eid": "\d+"}, name="event_participants_location")
      * @Security("is_granted('participants_read', event)")
@@ -411,6 +416,7 @@ class AdminController
     /**
      * Detail page for one single event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/payment_summary.json", requirements={"eid": "\d+"}, name="event_payment_summary")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -686,6 +692,7 @@ class AdminController
     /**
      * Detail page for one single event
      *
+     * @CloseSessionEarly
      * @Route("/admin/mail/template", name="mail_template")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -697,6 +704,7 @@ class AdminController
     /**
      * Create a new event
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/new", name="event_new")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -743,6 +751,7 @@ class AdminController
     /**
      * Handler for subscription button
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/subscription", name="event_admin_subscription")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -779,6 +788,7 @@ class AdminController
     /**
      * Access uploaded image
      *
+     * @CloseSessionEarly
      * @Route("/uploads/event/{filename}", requirements={"filename": "([^/])+"}, name="event_upload_image")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -862,6 +872,7 @@ class AdminController
     /**
      * Update specific age and date of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "users"})
      * @Route("/admin/event/{eid}/update-specific-age", requirements={"eid": "\d+"},
      *                                                  name="event_admin_update_specific_age")
@@ -979,6 +990,7 @@ class AdminController
     /**
      * Update fillout order
      *
+     * @CloseSessionEarly
      * @param array $elements
      * @param int $attributeBid
      * @param bool $reset

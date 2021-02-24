@@ -23,6 +23,7 @@ use AppBundle\Entity\Meals\RecipeAccumulatedGlobalFeedback;
 use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\RecipeType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -77,6 +78,7 @@ class RecipeController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/admin/meals/recipes")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -86,6 +88,7 @@ class RecipeController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/admin/meals/recipes/list", name="meals_recipes_list")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -97,6 +100,7 @@ class RecipeController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/recipes/list.json", name="meals_recipes_list_data")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -133,6 +137,7 @@ class RecipeController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}", requirements={"id": "\d+"}, name="meals_recipes_detail")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -161,6 +166,7 @@ class RecipeController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}/edit", requirements={"id": "\d+"}, name="meals_recipes_edit")
      * @Security("is_granted('ROLE_ADMIN')")

@@ -17,6 +17,7 @@ use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
@@ -94,6 +95,7 @@ class AdminCloudController
     /**
      * Ensure folders and groups for this user are existing in cloud
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/cloud/{token}/enable", requirements={"eid": "\d+", "token": ".*"},
      *                                                   name="admin_event_cloud_enable")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -160,6 +162,7 @@ class AdminCloudController
     /**
      * Ensure all users having this event assigned have access to the related share
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/cloud/files.json", requirements={"eid": "\d+"})
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('cloud_access_team', event) or is_granted('cloud_access_management', event)")
@@ -196,6 +199,7 @@ class AdminCloudController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/cloud", requirements={"eid": "\d+"}, name="admin_event_cloud")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('edit', event)")

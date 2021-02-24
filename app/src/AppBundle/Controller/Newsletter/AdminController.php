@@ -16,6 +16,7 @@ use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\NewsletterManager;
 use AppBundle\Twig\MailGenerator;
@@ -103,6 +104,7 @@ class AdminController extends AbstractController
     /**
      * Newsletter/Subscriptions overview page
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter", name="newsletter_admin_overview")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -117,6 +119,7 @@ class AdminController extends AbstractController
     /**
      * List of all newsletter subscriptions
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/subscription/list", name="newsletter_admin_subscription_list")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -132,6 +135,7 @@ class AdminController extends AbstractController
      * Data provider for newsletter subscription list
      *
      * @see self::listSubscriptionsAction()
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/subscription/list.json", name="newsletter_admin_subscription_list_data")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -182,6 +186,7 @@ class AdminController extends AbstractController
     /**
      * List newsletters (sent and drafts)
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/list", name="newsletter_admin_newsletter_list")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -197,6 +202,7 @@ class AdminController extends AbstractController
      * Data provider for newsletter (message) list
      *
      * @see self::listNewsletterAction()
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/list.json", name="newsletter_admin_newsletter_list_data")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -272,6 +278,7 @@ class AdminController extends AbstractController
     /**
      * Force confirmation of an subscription
      *
+     * @CloseSessionEarly
      * @ParamConverter("subscription", class="AppBundle:NewsletterSubscription", options={"id" = "rid"})
      * @Route("/admin/newsletter/subscription/{rid}/forceconfirmation", requirements={"rid": "\d+"},
      *                                                name="newsletter_admin_subscription_confirmation")
@@ -301,6 +308,7 @@ class AdminController extends AbstractController
     /**
      * Data provider for recipient count
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/affected-recipient-count", name="newsletter_admin_affected_recipient_count")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -334,6 +342,7 @@ class AdminController extends AbstractController
     /**
      * Data provider for recipients
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/affected-recipient-list", name="newsletter_admin_affected_recipient")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */
@@ -429,6 +438,7 @@ class AdminController extends AbstractController
 
     /**
      * @param Request $request
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/create_preview", name="newsletter_preview", methods={"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      * @return Response
@@ -482,6 +492,7 @@ class AdminController extends AbstractController
     /**
      * Send newsletter
      *
+     * @CloseSessionEarly
      * @Route("/admin/newsletter/send_test", name="newsletter_send_test")
      * @Security("is_granted('ROLE_ADMIN_NEWSLETTER')")
      */

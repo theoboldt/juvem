@@ -14,6 +14,7 @@ use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\ParticipationComment;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\CommentManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -62,6 +63,7 @@ class CommentController
     /**
      * Handler for add/edit comment action
      *
+     * @CloseSessionEarly
      * @Route("/admin/comment/update", name="admin_comment_update")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request

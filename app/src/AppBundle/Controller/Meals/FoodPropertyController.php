@@ -15,6 +15,7 @@ use AppBundle\Entity\Meals\Viand;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\FoodPropertyType;
 use AppBundle\Form\Meal\ViandType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -36,6 +37,7 @@ class FoodPropertyController extends AbstractController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/properties/list.json", name="meals_properties_list_data")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -61,6 +63,7 @@ class FoodPropertyController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("foodProperty", class="AppBundle\Entity\Meals\FoodProperty")
      * @Route("/admin/meals/properties/{id}", requirements={"id": "\d+"}, name="meals_property_detail")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -71,6 +74,7 @@ class FoodPropertyController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("foodProperty", class="AppBundle\Entity\Meals\FoodProperty")
      * @Route("/admin/meals/properties/{id}/edit", requirements={"id": "\d+"}, name="meals_property_edit")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -104,6 +108,7 @@ class FoodPropertyController extends AbstractController
     /**
      * Create a new acquisition attribute
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/properties/new", name="meals_property_new")
      * @Security("is_granted('ROLE_ADMIN')")
      */

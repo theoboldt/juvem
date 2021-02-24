@@ -18,6 +18,7 @@ use AppBundle\Entity\PhoneNumber;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -33,6 +34,7 @@ class PublicManagementController extends AbstractController
     /**
      * Page for list of events
      *
+     * @CloseSessionEarly
      * @Route("/participation", name="public_participations")
      * @Security("is_granted('ROLE_USER')")
      */
@@ -44,6 +46,7 @@ class PublicManagementController extends AbstractController
     /**
      * Data provider for events participants list grid
      *
+     * @CloseSessionEarly
      * @Route("/participations.json", name="public_participations_list_data")
      * @Security("is_granted('ROLE_USER')")
      */
@@ -60,6 +63,7 @@ class PublicManagementController extends AbstractController
         $participationListResult = array();
         /** @var Participant $participant */
         foreach ($participationList as $participation) {
+            /** @var Event $event */
             $event = $participation->getEvent();
 
 

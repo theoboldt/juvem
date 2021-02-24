@@ -15,6 +15,7 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,7 @@ class AdminTypeaheadProviderController extends AbstractController
     /**
      * Collects and provides typeahead values for transmitted event
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/typeahead/proposals.json", requirements={"eid": "\d+"}, name="admin_event_typeahead_proposals")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('participants_read', event)")

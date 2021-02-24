@@ -28,6 +28,7 @@ use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use AppBundle\Export\ParticipantsExport;
 use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\ParticipantProfile\Configuration as WordConfiguration;
 use AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator;
@@ -154,6 +155,7 @@ class AdminMultipleExportController
     /**
      * Generate export wizard
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/export", requirements={"eid": "\d+"}, name="event_participants_export")
      * @Security("is_granted('participants_read', event)")
@@ -188,6 +190,7 @@ class AdminMultipleExportController
     /**
      * Generate participations export
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participations/export", requirements={"eid": "\d+"},
      *                                                    name="event_participations_export")
@@ -223,6 +226,7 @@ class AdminMultipleExportController
     /**
      * Page for list of participants of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/birthday_address_export", requirements={"eid": "\d+"},
      *     name="event_participants_birthday_address_export")
@@ -255,6 +259,7 @@ class AdminMultipleExportController
     /**
      * Page for list of participants of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
      *                                                    name="event_participants_mail_export")
@@ -290,6 +295,7 @@ class AdminMultipleExportController
     /**
      * Update transmitted template
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("template", class="AppBundle:ExportTemplate", options={"id" = "id"})
      * @Route("/admin/event/{eid}/export/template/{id}/update", methods={"POST"}, requirements={"eid": "\d+", "id": "\d+"}, name="event_export_template_update")
@@ -312,6 +318,7 @@ class AdminMultipleExportController
     /**
      * Create transmitted template
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export/template/create", methods={"POST"}, requirements={"eid": "\d+"}, name="event_export_template_create")
      * @Security("is_granted('participants_read', event)")
@@ -337,6 +344,7 @@ class AdminMultipleExportController
     /**
      * Page for excel export generation wizard
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/export", requirements={"eid": "\d+"}, name="event_export_generator")
      * @Security("is_granted('participants_read', event)")
@@ -409,6 +417,7 @@ class AdminMultipleExportController
     /**
      * Page for excel word generation wizard
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/profiles", requirements={"eid": "\d+"}, name="event_profiles_generator")
      * @Security("is_granted('participants_read', event)")
@@ -433,6 +442,7 @@ class AdminMultipleExportController
     /**
      * Process transmitted configuration and provide download url
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/{type}/download/{filename}", requirements={"type": "(export|profiles)", "eid": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_process")
      * @Security("is_granted('participants_read', event)")
@@ -466,6 +476,7 @@ class AdminMultipleExportController
     /**
      * Download created export
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/{type}/download/{tmpname}/{filename}", requirements={"type": "(export|profiles)", "eid": "\d+", "tmpname": "([a-zA-Z0-9\s_\\.\-\(\):])+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="event_export_generator_download")
      * @Security("is_granted('participants_read', event)")
@@ -517,6 +528,7 @@ class AdminMultipleExportController
      * @param Request $request
      * @return BinaryFileResponse
      * @deprecated
+     * @CloseSessionEarly
      * @Route("/admin/event/{type}/process", name="event_export_generator_process_legacy", requirements={"type": "(export|profiles)"})
      * @Security("is_granted('participants_read', event)")
      */
@@ -781,6 +793,7 @@ class AdminMultipleExportController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/profile_export.docx", requirements={"eid": "\d+"}, name="event_participants_profile")
      * @Security("is_granted('participants_read', event)")

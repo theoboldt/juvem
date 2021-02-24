@@ -15,6 +15,7 @@ use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Form\AcquisitionFormulaType;
 use AppBundle\Form\AcquisitionType;
 use AppBundle\Form\GroupType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Manager\Payment\PriceSummand\Formula\RepositoryFormulaVariableProvider;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -64,6 +65,7 @@ class AcquisitionController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/admin/acquisition/list", name="acquisition_list")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -75,6 +77,7 @@ class AcquisitionController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/acquisition/list.json", name="acquisition_list_data")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -107,6 +110,7 @@ class AcquisitionController
     /**
      * Detail page for a acquisition attribute
      *
+     * @CloseSessionEarly
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}", requirements={"bid": "\d+"}, name="acquisition_detail")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -148,6 +152,7 @@ class AcquisitionController
     /**
      * Edit page for formula
      *
+     * @CloseSessionEarly
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit/formula", requirements={"bid": "\d+"}, name="acquisition_edit_formula")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -184,6 +189,7 @@ class AcquisitionController
     /**
      * Edit page for one single attribute
      *
+     * @CloseSessionEarly
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/acquisition/{bid}/edit", requirements={"bid": "\d+"}, name="acquisition_edit")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -224,6 +230,7 @@ class AcquisitionController
     /**
      * Create a new acquisition attribute
      *
+     * @CloseSessionEarly
      * @Route("/admin/acquisition/new", name="acquisition_new")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
