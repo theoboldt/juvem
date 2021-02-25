@@ -15,6 +15,7 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserRoleAssignmentType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Twig\Extension\BootstrapGlyph;
 use Doctrine\Persistence\ManagerRegistry;
 use FOS\UserBundle\Doctrine\UserManager;
@@ -64,6 +65,7 @@ class UserController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/admin/user/list", name="user_list")
      * @Security("is_granted('ROLE_ADMIN_USER')")
      */
@@ -75,6 +77,7 @@ class UserController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/user/list.json", name="user_list_data")
      * @Security("is_granted('ROLE_ADMIN_USER')")
      */
@@ -131,6 +134,7 @@ class UserController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("user", class="AppBundle:User", options={"id" = "uid"})
      * @Route("/admin/user/{uid}", requirements={"uid": "\d+"}, name="user_detail")
      * @Security("is_granted('ROLE_ADMIN_USER')")
@@ -170,6 +174,7 @@ class UserController
     /**
      * Data provider for events participants list grid
      *
+     * @CloseSessionEarly
      * @ParamConverter("user", class="AppBundle:User", options={"id" = "uid"})
      * @Route("/admin/user/{uid}/participations.json", requirements={"uid": "\d+"},
      *                                                 name="admin_user_participations_list_data")

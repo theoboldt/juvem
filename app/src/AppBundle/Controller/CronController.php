@@ -11,6 +11,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Command\CalculateRelatedParticipantsCommand;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -23,6 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CronController extends AbstractController
 {
     /**
+     * @CloseSessionEarly
      * @Route("/cron/subscription/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_subscription")
      * @param string $token
      * @param KernelInterface $kernel
@@ -49,6 +51,7 @@ class CronController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/cron/user/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_clenaup_user")
      * @param string $token
      * @param KernelInterface $kernel
@@ -76,6 +79,7 @@ class CronController extends AbstractController
 
 
     /**
+     * @CloseSessionEarly
      * @Route("/cron/participants-related/{token}", requirements={"token": "[[:alnum:]]{1,128}"}, name="cron_participants_related")
      * @param string $token
      * @param KernelInterface $kernel

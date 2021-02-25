@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +28,7 @@ class AdminSystemController extends AbstractController
     /**
      * Clear cache
      *
+     * @CloseSessionEarly
      * @Route("/admin/cache/clear", name="admin_cache_clean", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @param Request $request
@@ -87,6 +89,7 @@ header("Location: $hostAndScheme");
     /**
      * Display database status or update database
      *
+     * @CloseSessionEarly
      * @Route("/admin/database/{action}", requirements={"action": "(status|update)"}, name="admin_database")
      * @Security("is_granted('ROLE_ADMIN')")
      * @param string          $action Either status or update
@@ -123,6 +126,7 @@ header("Location: $hostAndScheme");
     /**
      * Execute migrations
      *
+     * @CloseSessionEarly
      * @Route("/admin/database/migrate", name="admin_database_migrate")
      * @Security("is_granted('ROLE_ADMIN')")
      * @param KernelInterface $kernel
@@ -151,6 +155,7 @@ header("Location: $hostAndScheme");
     /**
      * Create daily database backup if backup password is configured
      *
+     * @CloseSessionEarly
      * @Route("/system/database/backup")
      * @param KernelInterface $kernel
      * @return Response

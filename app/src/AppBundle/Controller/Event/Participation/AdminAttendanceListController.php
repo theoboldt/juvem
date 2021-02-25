@@ -27,6 +27,7 @@ use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\User;
 use AppBundle\Export\AttendanceListExport;
 use AppBundle\Form\AttendanceListType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\ResponseHelper;
 use AppBundle\Twig\GlobalCustomization;
@@ -96,6 +97,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance", requirements={"eid": "\d+"}, name="event_attendance_lists")
      * @Security("is_granted('participants_read', event)")
@@ -107,6 +109,7 @@ class AdminAttendanceListController
 
     /**
      * @see listAttendanceListsAction()
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance-lists.json", requirements={"eid": "\d+"},
      *                                                    name="event_attendance_lists_data")
@@ -151,6 +154,7 @@ class AdminAttendanceListController
     /**
      * Create a new attendance list
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/new", requirements={"eid": "\d+"}, name="event_attendance_list_new")
      * @Security("is_granted('participants_read', event)")
@@ -176,6 +180,7 @@ class AdminAttendanceListController
     /**
      * Create a new attendance list
      *
+     * @CloseSessionEarly
      * @ParamConverter("previous", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/followup", requirements={"eid": "\d+", "tid": "\d+"},
@@ -222,6 +227,7 @@ class AdminAttendanceListController
     /**
      * Edit an attendance list
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/edit", requirements={"eid": "\d+", "tid": "\d+"},
      *                                                    name="event_attendance_list_edit")
@@ -258,6 +264,7 @@ class AdminAttendanceListController
     /**
      * View an attendance list
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}", requirements={"eid": "\d+", "tid": "\d+"},
@@ -276,6 +283,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"GET"}, name="event_attendance_fillout_data")
@@ -295,6 +303,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/fillout.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_update")
@@ -338,6 +347,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/comment.json", requirements={"eid": "\d+", "tid": "\d+"}, methods={"POST"}, name="event_attendance_fillout_comment")
@@ -389,6 +399,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
@@ -404,6 +415,7 @@ class AdminAttendanceListController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("list", class="AppBundle\Entity\AttendanceList\AttendanceList", options={"id" = "tid"})
      * @Route("/admin/event/{eid}/attendance/{tid}/export", requirements={"eid": "\d+", "tid": "\d+"}, name="event_attendance_fillout_export")
@@ -419,6 +431,7 @@ class AdminAttendanceListController
     /**
      * Create export of multiple lists
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/event/{eid}/attendance/export-multiple/0/{listids}", requirements={"eid": "\d+", "listids": "[\d,]+"})

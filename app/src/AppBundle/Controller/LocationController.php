@@ -17,6 +17,7 @@ use AppBundle\Entity\Geo\ClimaticInformationInterface;
 use AppBundle\Entity\Geo\OpenWeatherMapWeatherCondition;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Manager\Geo\AddressResolver;
 use AppBundle\Manager\Geo\AddressResolverInterface;
 use AppBundle\Manager\Weather\MeteorologicalProvider;
@@ -64,6 +65,7 @@ class LocationController
     /**
      * Get participants location distribution
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
      * @Route("/admin/event/{eid}/participants-location.json", requirements={"eid": "\d+"}, name="event_participants_location_data")
      * @Security("is_granted('participants_read', event)")
@@ -280,6 +282,7 @@ class LocationController
     /**
      * Get event coordinates
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/location.json", requirements={"eid": "\d+"}, name="event_location_location")
      * @param Request $request
@@ -337,6 +340,7 @@ class LocationController
     /**
      * Get event current weather
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/meteorologocial_information.json", requirements={"eid": "\d+"}, name="event_meteorological")
      * @param Request $request
@@ -464,6 +468,7 @@ class LocationController
     /**
      * Get event current weather
      *
+     * @CloseSessionEarly
      * @param Request $request
      * @param Event $event
      * @return JsonResponse

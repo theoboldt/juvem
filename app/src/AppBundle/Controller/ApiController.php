@@ -11,6 +11,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Manager\Filesharing\NextcloudManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
@@ -51,6 +52,7 @@ class ApiController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/api/cloud", name="api_cloud")
      * @Security("is_granted('cloud_access')")
      */

@@ -23,6 +23,7 @@ use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\ParticipationManager;
@@ -120,6 +121,7 @@ class AdminMultipleController
     /**
      * Page for list of participants of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants", requirements={"eid": "\d+"}, name="event_participants_list")
      * @Security("is_granted('participants_read', event)")
@@ -132,6 +134,7 @@ class AdminMultipleController
     /**
      * Page for list of participants of an event having a provided age at a specific date
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants-age", requirements={"eid": "\d+"}, name="event_participants_list_specific_age")
      * @Security("is_granted('participants_read', event)")
@@ -146,6 +149,7 @@ class AdminMultipleController
     /**
      * Data provider for events participants list grid having specific age at specific date
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants-specific-age.json", requirements={"eid": "\d+"}, name="event_participants_list_specific_age_data")
      * @Security("is_granted('participants_read', event)")
@@ -198,6 +202,7 @@ class AdminMultipleController
     /**
      * Navigate to other participation
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("expectedParticipation", class="AppBundle:Participation", options={"id" = "pid"})
      * @Route("/admin/event/{eid}/participation/{pid}/{direction}", requirements={"eid": "\d+", "pid": "\d+", "direction":"previous|next"}, name="admin_participation_navigate")
@@ -279,6 +284,7 @@ class AdminMultipleController
     /**
      * Data provider for events participants list grid
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants.json", requirements={"eid": "\d+"}, name="event_participants_list_data")
      * @Security("is_granted('participants_read', event)")
@@ -439,6 +445,7 @@ class AdminMultipleController
     /**
      * Apply changes to multiple participants
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/participantschange", name="event_participants_change", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -505,6 +512,7 @@ class AdminMultipleController
     /**
      * Page for list of participants of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participants/{type}", requirements={"eid": "\d+", "type": "(print|printdataonly)"}, name="event_participants_print")
      * @Security("is_granted('participants_read', event)")
@@ -529,6 +537,7 @@ class AdminMultipleController
     /**
      * Page for list of participants of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participate-timeline.json", requirements={"eid": "\d+"}, name="event_participate_timeline")
      * @Security("is_granted('read', event)")

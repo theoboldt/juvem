@@ -32,6 +32,7 @@ use AppBundle\Form\ParticipationAssignRelatedParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
 use AppBundle\Form\ParticipationBaseType;
 use AppBundle\Form\ParticipationPhoneNumberList;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\ParticipationManager;
@@ -148,6 +149,7 @@ class AdminSingleController
     /**
      * Details of one participation including all participants
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Route("/admin/event/{eid}/participant/{aid}/partial", requirements={"eid": "\d+", "aid": "\d+"}, name="event_partial_participant_detail")
@@ -182,6 +184,7 @@ class AdminSingleController
     /**
      * Redirect to related participation
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"})
@@ -409,6 +412,7 @@ class AdminSingleController
     
     /**
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/participation-confirmation/{pid}/{action}/{token}",
      *     requirements={"pid": "\d+", "token":"[a-zA-Z0-9_-]+", "confirm": "(confirm|confirmnotify|unconfirm)"},
      *     name="admin_participation_confirm",
@@ -482,6 +486,7 @@ class AdminSingleController
     /**
      * Create new participation by admin
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/create", requirements={"eid": "\d+"}, name="admin_participation_create")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('participants_edit', event)")
@@ -538,6 +543,7 @@ class AdminSingleController
     /**
      * Create new participation form and prefill with transmitted pid
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/create/from/{pid}", requirements={"eid": "\d+","pid": "\d+"}, name="admin_participation_create_prefill")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("source", class="AppBundle:Participation", options={"id" = "pid"})
@@ -594,6 +600,7 @@ class AdminSingleController
     /**
      * Lookup participants for query
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/create/prefill-participants", requirements={"eid": "\d+"}, name="admin_lookup_participants")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('ROLE_ADMIN_EVENT_GLOBAL')")
@@ -632,6 +639,7 @@ class AdminSingleController
     /**
      * Lookup participations for list of pids
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/create/prefill-participations", requirements={"eid": "\d+"}, name="admin_lookup_participations")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('ROLE_ADMIN_EVENT_GLOBAL')")
@@ -937,6 +945,7 @@ class AdminSingleController
     /**
      * Participant detail page
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"},
      *                                                name="admin_participant_detail")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -953,6 +962,7 @@ class AdminSingleController
     /**
      * Get proposal
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participant_proposal/{oid}", requirements={"eid": "\d+", "oid": "\d+"},
      *                                                                  name="admin_event_participant_proposal")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})

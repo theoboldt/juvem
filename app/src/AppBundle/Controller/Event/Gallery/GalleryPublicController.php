@@ -15,6 +15,7 @@ use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
 use AppBundle\Entity\User;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\Manager\UploadImageManager;
 use Doctrine\Persistence\ManagerRegistry;
@@ -176,6 +177,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Preview for image
      *
+     * @CloseSessionEarly
      * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/preview/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_preview")
@@ -213,6 +215,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Thumbnail for image
      *
+     * @CloseSessionEarly
      * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/thumbnail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *                                               name="gallery_image_thumbnail")
@@ -248,6 +251,7 @@ class GalleryPublicController extends BaseGalleryController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/detail/{hash}/{filename}", requirements={"eid": "\d+", "iid": "\d+"},
      *     defaults={"hash": "0"}, name="gallery_image_detail")
@@ -279,6 +283,7 @@ class GalleryPublicController extends BaseGalleryController
     /**
      * Detail page for one single event
      *
+     * @CloseSessionEarly
      * @ParamConverter("galleryImage", class="AppBundle\Entity\GalleryImage", options={"id" = "iid"})
      * @Route("/event/{eid}/gallery/{iid}/original/{hash}", requirements={"eid": "\d+", "iid": "\d+",},
      *                                                      name="gallery_image_original")

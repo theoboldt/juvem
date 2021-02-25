@@ -18,6 +18,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Invoice\InvoiceManager;
 use AppBundle\Manager\Payment\PaymentManager;
@@ -95,6 +96,7 @@ class AdminPaymentController
     /**
      * Handle payment or price change
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/participant/price", methods={"POST"}, name="admin_participation_price")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
@@ -142,6 +144,7 @@ class AdminPaymentController
     
     /**
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/participant/price/history", name="admin_participation_price_history")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request

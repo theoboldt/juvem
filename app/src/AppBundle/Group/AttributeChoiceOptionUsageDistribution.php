@@ -21,6 +21,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 
 class AttributeChoiceOptionUsageDistribution
@@ -29,7 +30,7 @@ class AttributeChoiceOptionUsageDistribution
     /**
      * EntityManager
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     
@@ -57,12 +58,12 @@ class AttributeChoiceOptionUsageDistribution
     /**
      * ChoiceOptionUsage constructor.
      *
-     * @param EntityManager $em    Entity manager
-     * @param Event $event         Related event
-     * @param Attribute $attribute Related attribute
+     * @param EntityManagerInterface $em Entity manager
+     * @param Event $event               Related event
+     * @param Attribute $attribute       Related attribute
      */
     public function __construct(
-        EntityManager $em,
+        EntityManagerInterface $em,
         Event $event,
         Attribute $attribute
     )
