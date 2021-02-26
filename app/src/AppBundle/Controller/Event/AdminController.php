@@ -32,9 +32,11 @@ use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
+use AppBundle\Form\EventAddUserCloudAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
+use AppBundle\Form\EventUserCloudAssignmentsType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
@@ -835,6 +837,7 @@ class AdminController
                 'success',
                 'Weitere Benutzer hinzugefügt'
             );
+            return $this->redirectToRoute('event_user_admin', ['eid' => $event->getEid()]);
         }
         foreach ($event->getUserAssignments() as $assignment) {
             $originalAssignments->add($assignment);
@@ -857,6 +860,7 @@ class AdminController
             if ($this->eventFileSharingManager->updateCloudShareAssignments($event)) {
                 $this->addFlash('success', 'Die Zuweisungen für die Dateifreigaben der Veranstaltung wurden aktualisiert.');
             }
+            return $this->redirectToRoute('event_user_admin', ['eid' => $event->getEid()]);
         }
         
         return $this->render(
