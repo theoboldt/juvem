@@ -99,7 +99,7 @@ twig:
         kernelRootDir: "%kernel.project_dir%"
         featureNewsletter: "%feature.newsletter%"
         featurePdfConversion: "%app.libreoffice_binary_path%"
-        featureCloud: ""
+        featureCloud: "%nextcloud.base_uri%"
         themeColor: "%customization.theme_color%"
         localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
         secureCacheDecider: '@app.secure_cache_decider'
