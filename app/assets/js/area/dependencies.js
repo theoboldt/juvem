@@ -426,7 +426,7 @@ $(function () {
             modalParticipantBodyEl.find('a').each(function () {
                 const el = jQuery(this);
                 el.attr('target', '_blank');
-                el.html(el.text() + '&nbsp;<span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>');
+                el.html(eHtml(el.text()) + '&nbsp;<span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>');
             });
         };
 
