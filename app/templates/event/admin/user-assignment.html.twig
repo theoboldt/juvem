@@ -99,7 +99,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-6 col-md-3 feature-cloud">
                                     <div class="row">
                                         {% if formElement.children.allowedCloudAccessTeam is defined %}
                                             <div class="col-xs-12">
@@ -115,9 +115,6 @@
                                     <div class="col-xs-12" {% if featureCloud and formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}">
                                     <div class="alert alert-info" role="alert">Nutzer ist noch nicht mit der Cloud verbunden.</div>
                                     </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3" {% if featureCloud %}style="display: none;"{% endif %}">
-                                    <div class="alert alert-info" role="alert">Cloud Anbindung nicht konfiguriert.</div>
                                 </div>
                             </div>
                         </div>

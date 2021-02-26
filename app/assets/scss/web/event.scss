@@ -1044,3 +1044,8 @@ abbr.unit {
     }
   }
 }
+
+body.feature-newsletter-disabled .feature-newsletter,
+body.feature-cloud-disabled .feature-cloud {
+  display: none;
+}
