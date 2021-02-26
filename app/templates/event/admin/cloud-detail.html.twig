@@ -62,27 +62,30 @@
       {%- if featureCloud %}
         <div class="col-xs-12 col-md-8">
           <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+            <span class="navbar-text visible-xs">Dateifreigaben</span>
             <div class="btn-group" role="group">
               <label id="btnDisableCloud" {% if event.hasShareDirectoryRoot() %}data-toggle="modal"
                      data-target="#dialogModalDisableCloud"{% endif %}
                      class="btn btn-default {% if not event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
-                <span class="hidden-xs">Dateifreigaben nicht verwenden</span>
+                <span class="hidden-xs">Dateifreigaben </span>nicht verwenden <span class="caret-right"></span>
               </label>
               <label id="btnEnableCloud" {% if not event.hasShareDirectoryRoot() %}data-toggle="modal"
                      data-target="#dialogModalEnableCloud"{% endif %}
                      class="btn btn-default {% if event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
-                <span class="hidden-xs">Dateifreigaben verwenden</span>
+                <span class="hidden-xs">Dateifreigaben </span>verwenden <span class="caret-right"></span>
               </label>
             </div>
           </div>
         </div>
         <div class="col-xs-12 col-md-4">
-          <div class="col-xs-12">
-            <div id="cloudFileListing" data-eid="{{ event.eid }}">
-              <h4>Dateien
-                <button class="btn btn-default btn-xs">{{ 'refresh'|glyph }}</button>
-              </h4>
-              <div></div>
+          <div class="row">
+            <div class="col-xs-12">
+              <div id="cloudFileListing" data-eid="{{ event.eid }}">
+                <h4>Dateien
+                  <button class="btn btn-default btn-xs">{{ 'refresh'|glyph }}</button>
+                </h4>
+                <div></div>
+              </div>
             </div>
           </div>
         </div>
