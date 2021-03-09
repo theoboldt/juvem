@@ -293,12 +293,14 @@ class PublicParticipateController
             $message
                 = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
 
+            /*
             if (!$user) {
                 $message .= sprintf(
                     '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
                     $this->router->generate('fos_user_registration_register')
                 );
             }
+            */
             if ($this->featureNewsletter) {
                 $repositoryNewsletter = $this->getDoctrine()->getRepository(NewsletterSubscription::class);
                 if (!$repositoryNewsletter->findOneByEmail($participation->getEmail())) {
