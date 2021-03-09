@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Twig\GlobalCustomization;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,6 +47,7 @@ class LegalController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/legal", name="legal")
      * @Route("/datenschutzerklaerung")
      * @Route("/datenschutz")
@@ -61,6 +63,7 @@ class LegalController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/conditions-of-travel", name="conditions_of_travel")
      * @Route("/reisebedingungen")
      */
@@ -81,6 +84,7 @@ class LegalController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/imprint", name="imprint")
      * @Route("/impressum")
      */

@@ -29,6 +29,7 @@ use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Form\GroupFieldAssignEntitiesType;
 use AppBundle\Form\GroupType;
 use AppBundle\Group\AttributeChoiceOptionUsageDistribution;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -89,6 +90,7 @@ class AdminGroupController
     /**
      * List groups of event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/groups", requirements={"eid": "\d+"}, name="event_admin_groups")
      * @Security("is_granted('participants_read', event)")
@@ -109,6 +111,7 @@ class AdminGroupController
     /**
      * Data for @see eventGroupsAction()
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/groups-data.json", requirements={"eid": "\d+"}, name="event_admin_groups_data")
      * @Security("is_granted('participants_read', event)")
@@ -160,6 +163,7 @@ class AdminGroupController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/event/{eid}/groups/{bid}", requirements={"eid": "\d+", "bid": "\d+"},
@@ -183,6 +187,7 @@ class AdminGroupController
     /**
      * Data for @see eventGroupsAction()
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @Route("/admin/event/{eid}/groups/{bid}/choices-data.json", requirements={"eid": "\d+", "bid": "\d+"},
@@ -236,6 +241,7 @@ class AdminGroupController
     /**
      * Page for list of participants of an event having a provided age at a specific date
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @ParamConverter("choiceOption", class="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption",
@@ -359,6 +365,7 @@ class AdminGroupController
      * @return Response
      *@see Employee having specific @see AttributeChoiceOption selected for an @see Event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @ParamConverter("choiceOption", class="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption",
@@ -401,6 +408,7 @@ class AdminGroupController
      * @return Response
      *@see Participant having specific @see AttributeChoiceOption selected for an @see Event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @ParamConverter("choiceOption", class="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption",
@@ -454,8 +462,9 @@ class AdminGroupController
      *
      * @param AttributeChoiceOption $choiceOption
      * @return Response
-     *@see Employee having specific @see AttributeChoiceOption selected for an @see Event
+     * @see Employee having specific @see AttributeChoiceOption selected for an @see Event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("attribute", class="AppBundle\Entity\AcquisitionAttribute\Attribute", options={"id" = "bid"})
      * @ParamConverter("choiceOption", class="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption",

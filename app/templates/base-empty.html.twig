@@ -28,7 +28,7 @@
     {% block head %}
     {% endblock %}
 </head>
-<body data-use-secure-cache="{% if secureCacheDecider.enabled %}1{% else %}0{% endif %}" data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %}>
+<body data-use-secure-cache="{% if secureCacheDecider.enabled %}1{% else %}0{% endif %}" data-user-settings-hash="{% if app.user is not null %}{{ app.user.settingsHash }}{% endif %}" data-user-settings-token="{{ csrf_token('user-settings') }}" {% block bodytag %}{% endblock %} class="{% if not featureNewsletter %}feature-newsletter-disabled {% endif %}{% if not featureCloud %}feature-cloud-disabled {% endif %}">
 <div id="page">
     {% block page %}{% endblock %}
 </div>

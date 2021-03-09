@@ -22,6 +22,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\InvoiceMailingType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Invoice\InvoiceMailer;
 use AppBundle\Manager\Invoice\InvoiceMailingConfiguration;
@@ -239,6 +240,7 @@ Mit freundlichen Grüßen,
     /**
      * Data provider for events invoice list grid
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoices.json", requirements={"eid": "\d+"}, name="event_invoices_list_data")
      * @Security("is_granted('participants_read', event)")
@@ -317,6 +319,7 @@ Mit freundlichen Grüßen,
     /**
      * Create invoice for selected @see Participation
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/participation/invoice/create", methods={"POST"}, name="admin_invoice_create")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param Request $request
@@ -357,6 +360,7 @@ Mit freundlichen Grüßen,
     /**
      * Download created invoice
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/invoice/{id}/{filename}", requirements={"eid": "\d+","id": "\d+",
      *                                                                    "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"},
      *                                                                    name="admin_invoice_download")
@@ -389,6 +393,7 @@ Mit freundlichen Grüßen,
     /**
      * Convert created invoice to PDF and provide download
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/participation/invoice/{id}/pdf/{filename}", requirements={"eid": "\d+","id": "\d+", "filename": "([a-zA-Z0-9\s_\\.\-\(\):])+"}, name="admin_invoice_download_pdf")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("invoice", class="AppBundle:Invoice", options={"id" = "id"})
@@ -430,6 +435,7 @@ Mit freundlichen Grüßen,
     /**
      * Download invoice template
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/invoice/template.docx", requirements={"eid": "\d+"}, name="admin_invoice_template_download")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -459,6 +465,7 @@ Mit freundlichen Grüßen,
     /**
      * Get list of @see Participation ids where new invoice should be created
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/participations", requirements={"eid": "\d+"}, methods={"POST"},
      *                                                     name="admin_invoice_recipients")
@@ -556,6 +563,7 @@ Mit freundlichen Grüßen,
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/{filter}_pdf.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package_pdf")
@@ -617,6 +625,7 @@ Mit freundlichen Grüßen,
     /**
      * Get list of @see Participation ids where new invoice should be created
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/invoice/{filter}.zip", requirements={"eid": "\d+", "filter":"(all|current)"},
      *                                                 name="event_invoice_download_package")

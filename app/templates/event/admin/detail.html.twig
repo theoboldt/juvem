@@ -102,7 +102,7 @@
                            class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
                         {%- if is_granted('edit', event) and featureCloud %}
                         <a href="{{ path('admin_event_cloud', {'eid': event.eid }) }}"
-                           class="btn btn-default" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></a>
+                           class="btn btn-default feature-cloud" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></a>
                         {% endif %}
                     </div>
 

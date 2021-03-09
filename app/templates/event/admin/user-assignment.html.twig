@@ -4,157 +4,202 @@
 {% block title %}Benutzerzuweisung verwalten ({{ event.title }}){% endblock %}
 
 {% block body %}
-    <article>
-        {% embed 'common/header/base-page-header.html.twig' with {'title': 'Benutzerzuweisung', 'subtitle': 'Veranstaltung'} %}
-            {% block breadcrumb %}
-                <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-                <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li class="active">Benutzerzuweisung</li>
-            {% endblock %}
-        {% endembed %}
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <p>
-                        Benutzer, die einer Veranstaltung zugewiesen sind können Veranstaltungs-Details sowie die Teilnehmerdaten ansehen und exportieren.
-                        Nur Benutzer, denen die Rolle <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_LABEL') }}</i> zugewiesen ist, können Veranstaltungen zugewiesen werden.
-                    </p>
-                </div>
-                <div class="col-xs-12">
-                    <div class="btn-toolbar" role="toolbar">
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#addUserAssignmentModal" id ="addUserAssignmentButton" title="Weitere Benutzer zuweisen">
-                            {{ 'plus'|glyph }} Weitere Benutzer zuweisen
-                        </button>
-                        <div class="modal fade" id="addUserAssignmentModal" tabindex="-1" role="dialog"
-                             aria-labelledby="addUserAssignmentButton">
-                            <div class="modal-dialog" role="document">
-                                {{ form_start(formAddUser) }}
-                                {{ form_errors(form) }}
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">Weitere Benutzer zuweisen</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ form_row(formAddUser.assignUser) }}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                                        <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
-                                    </div>
-                                </div>
-                                {{ form_end(formAddUser) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr />
-            {{ form_start(form) }}
-            <div class="row">
-                <div class="col-xs-12">
-                {{ form_errors(form) }}
-                </div>
-            </div>
-            <div class="row">
-                {% macro prototypeAssignment(formElement) %}
-                    <div class="panel panel-default prototype-element">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-10 col-sm-8">
-                                    <h3 class="panel-title">Zuweisung für <b>{{ formElement.vars.data.user|fullname }}</b></h3>
-                                </div>
-                                <div class="col-xs-2 col-sm-4 text-right">
-                                    <a href="#" class="btn btn-danger btn-xs prototype-remove"
-                                       title="Zuweisung entfernen">{{ 'remove-sign'|glyph }} <span
-                                                class="hidden-xs">Zuweisung entfernen</span></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body panel-collapse collapse in">
-                            <div class="row">
-                                <div style="{% if not formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}visibility:hidden;{% endif %}">
-                                    <div class="col-xs-12 col-sm-6 col-md-3">
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedToRead) }}
-                                            </div>
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedToEdit) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6 col-md-3">
-                                        {{ form_row(formElement.allowedToManageParticipants) }}
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6 col-md-3">
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedToReadComments) }}
-                                            </div>
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedToComment) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <div class="row">
-                                        {% if formElement.children.allowedCloudAccessTeam is defined %}
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedCloudAccessTeam) }}
-                                            </div>
-                                        {% endif %}
-                                        {% if formElement.children.allowedCloudAccessManagement is defined %}
-                                            <div class="col-xs-12">
-                                                {{ form_row(formElement.allowedCloudAccessManagement) }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="col-xs-12" {% if featureCloud and formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}">
-                                    <div class="alert alert-info" role="alert">Nutzer ist noch nicht mit der Cloud verbunden.</div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3" {% if featureCloud %}style="display: none;"{% endif %}">
-                                    <div class="alert alert-info" role="alert">Cloud Anbindung nicht konfiguriert.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endmacro %}
-                <div class="col-xs-12 assignments-list prototype-container" data-prototype="none">
-                    <div class="prototype-elements">
-                        <div class="form-group">
-                            {{ form_errors(form.userAssignments) }}
-                            {% for assignment in form.userAssignments %}
-                                {{ m.prototypeAssignment(assignment) }}
-                            {% endfor %}
-                            {% if form.userAssignments|length == 0 %}
-                                {{ form_row(form.userAssignments) }}
-                            {% endif %}
-                            <div class="prototype-missing-message"{% if form.userAssignments|length > 0 %} style="display:none"{% endif %}>
-                                <div class="alert alert-info">
-                                    <ul class="list-unstyled">
-                                        <li>Der Veranstaltung sind noch keine Benutzer zugewiesen</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12" style="margin-top: 15px;">
-                    <nav class="navbar navbar-default">
-                        <div class="container-fluid">
-                            <input type="submit" class="btn btn-primary navbar-btn" value="Änderungen speichern"/>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-            {{ form_end(form) }}
+  <article>
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Benutzerzuweisung', 'subtitle': 'Veranstaltung'} %}
+      {% block breadcrumb %}
+        <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+        <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+        <li class="active">Benutzerzuweisung</li>
+      {% endblock %}
+    {% endembed %}
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <p>
+            Benutzer, die {% if featureCloud %}über Cloud-Zugriff hinausgehende{% endif %} Berechtigungen
+            erhalten sollen, müssen hier zugewiesen werden.
+          </p>
+          {% if featureCloud %}
+            <p>Um Benutzern lediglich Cloud-Zugriff einzuräumen empfiehlt es sich (insbesondere im Bezug auf das
+              Hinzufügen weiterer Benutzer) die <a href="{{ path('admin_event_cloud', {eid: event.eid}) }}"
+                                                   target="_blank">Benutzerverwaltung Cloud-Konfiguration</a> dieser
+              Veranstaltung verwenden.</p>
+          {% endif %}
         </div>
-    </article>
+        <div class="col-xs-12">
+          <div class="btn-toolbar" role="toolbar">
+            <button type="button" class="btn btn-default" data-toggle="modal"
+                    data-target="#addUserAssignmentModal" id="addUserAssignmentButton"
+                    title="Weitere Benutzer zuweisen">
+              {{ 'plus'|glyph }} Weitere Benutzer zuweisen <span class="caret-right"></span>
+            </button>
+            <div class="modal fade" id="addUserAssignmentModal" tabindex="-1" role="dialog"
+                 aria-labelledby="addUserAssignmentButton">
+              <div class="modal-dialog" role="document">
+                {{ form_start(formAddUser) }}
+                {{ form_errors(form) }}
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                          aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Weitere Benutzer zuweisen</h4>
+                  </div>
+                  <div class="modal-body">
+                    {{ form_row(formAddUser.assignUser) }}
+                    <p class="help-block help-block-input">
+                      Diese Liste enthält nur Benutzer, denen über die globale
+                      {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
+                      <a href="{{ path('user_list') }}" target="_blank">
+                          Benutzerverwaltung</a>{% else %}Benutzerverwaltung{% endif %} die
+                      Rolle <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_LABEL') }}</i> und
+                      <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_LABEL') }}</i>
+                      zugewiesen ist.
+                    </p>
+                    <p class="help-block">
+                      Benutzer die dieser Veranstaltung bereits zugewiesen sind tauchen hier nicht auf.
+                    </p>
+                    <p class="help-block">
+                      Um Benutzern lediglich Cloud-Zugriff einzuräumen bitte die <a
+                          href="{{ path('admin_event_cloud', {eid: event.eid}) }}" target="_blank">Benutzerverwaltung
+                        der Cloud-Konfiguration</a> für diese Veranstaltung verwenden. (Dies gilt auch für Benutzer die
+                      über die Rolle <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_GLOBAL_LABEL') }}</i>
+                      ohnehin Zugriff auf alle Veranstaltungen haben.)
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
+                  </div>
+                </div>
+                {{ form_end(formAddUser) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr/>
+      {{ form_start(form) }}
+      <div class="row">
+        <div class="col-xs-12">
+          {{ form_errors(form) }}
+        </div>
+      </div>
+      <div class="row">
+        {% macro prototypeAssignment(formElement) %}
+        <div class="panel panel-default prototype-element">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-xs-10 col-sm-8">
+                <h3 class="panel-title">Zuweisung für <b>{{ formElement.vars.data.user|fullname }}</b></h3>
+              </div>
+              <div class="col-xs-2 col-sm-4 text-right">
+                <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                   title="Zuweisung entfernen">{{ 'remove-sign'|glyph }} <span
+                      class="hidden-xs">Zuweisung entfernen</span></a>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body panel-collapse collapse in">
+            <div class="row">
+              {% if formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_GLOBAL')) %}
+                <div class="col-xs-12 col-sm-9">
+                  <div class="alert alert-info" role="alert">Dieser Nutzer hat die Rolle
+                    <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_GLOBAL_LABEL') }}</i>
+                    und daher automatisch vollen Zugriff.
+                  </div>
+                </div>
+              {% endif %}
+              {% if not formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) %}
+                <div class="col-xs-12 col-sm-9">
+                  <div class="alert alert-info" role="alert">Diesem Nutzer fehlt die Rolle
+                    <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_LABEL') }}</i>, um
+                    (abgesehen von Dateifreigaben) Zugriff auf Veranstaltungen erhalten zu
+                    können.
+                  </div>
+                </div>
+              {% endif %}
+              <div
+                  style="{% if not formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT')) or formElement.vars.data.user.hasRole(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_GLOBAL')) %}display:none;{% endif %}">
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedToRead) }}
+                    </div>
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedToEdit) }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                  {{ form_row(formElement.allowedToManageParticipants) }}
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedToReadComments) }}
+                    </div>
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedToComment) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-3 feature-cloud">
+                <div class="row">
+                  {% if formElement.children.allowedCloudAccessTeam is defined %}
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedCloudAccessTeam) }}
+                    </div>
+                  {% endif %}
+                  {% if formElement.children.allowedCloudAccessManagement is defined %}
+                    <div class="col-xs-12">
+                      {{ form_row(formElement.allowedCloudAccessManagement) }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-xs-12"
+                     {% if featureCloud and formElement.vars.data.user.cloudUsername %}style="display: none;"{% endif %}
+                ">
+                <div class="alert alert-info" role="alert">Nutzer ist noch nicht mit der Cloud verbunden.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endmacro %}
+      <div class="col-xs-12 assignments-list prototype-container" data-prototype="none">
+        <div class="prototype-elements">
+          <div class="form-group">
+            {{ form_errors(form.userAssignments) }}
+            {% for assignment in form.userAssignments %}
+              {{ m.prototypeAssignment(assignment) }}
+            {% endfor %}
+            {% if form.userAssignments|length == 0 %}
+              {{ form_row(form.userAssignments) }}
+            {% endif %}
+            <div
+                class="prototype-missing-message"{% if form.userAssignments|length > 0 %} style="display:none"{% endif %}>
+              <div class="alert alert-info">
+                <ul class="list-unstyled">
+                  <li>Der Veranstaltung sind noch keine Benutzer zugewiesen</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12" style="margin-top: 15px;">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <input type="submit" class="btn btn-primary navbar-btn" value="Änderungen speichern"/>
+          </div>
+        </nav>
+      </div>
+    </div>
+    {{ form_end(form) }}
+    </div>
+  </article>
 {% endblock %}

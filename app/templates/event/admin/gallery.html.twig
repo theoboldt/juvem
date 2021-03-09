@@ -79,21 +79,28 @@
                             <div class="row">
                                 <div class="col-xs-4">
                                     <div class="btn-toolbar" role="toolbar">
-                                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                                data-target="#dialogModalTruncate" title="Alle Bilder löschen">
-                                            {{ 'remove'|glyph }}<span class="hidden-xs"> Leeren…</span>
-                                        </button>
-                                        <button type="button" class="btn btn-default" title="Vorschau und Thumbnails vorbereiten" id="prepareThmubnails" data-eid="{{ event.eid }}">
+                                        {% if is_granted('edit', event) %}
+                                            <button type="button" class="btn btn-default" data-toggle="modal"
+                                                    data-target="#dialogModalTruncate" title="Alle Bilder löschen">
+                                                {{ 'remove'|glyph }}<span class="hidden-xs"> Leeren…</span>
+                                            </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-default"
+                                                title="Vorschau und Thumbnails vorbereiten" id="prepareThmubnails"
+                                                data-eid="{{ event.eid }}">
                                             {{ 'fire'|glyph }}<span class="hidden-xs"> Cache vorbereiten</span>
                                         </button>
-                                        <button type="button" class="btn btn-default" data-element="activebutton"
-                                                data-entity="Event"
-                                                data-property="isGalleryLinkSharing" data-entity-id="{{ event.eid }}"
-                                                data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
-                                                data-button-enable-label="Teilen via Link aktivieren"
-                                                data-button-enable-glyph="link"
-                                                data-button-disable-label="Teilen via Link deaktivieren"
-                                                data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                                        {% if is_granted('edit', event) %}
+                                            <button type="button" class="btn btn-default" data-element="activebutton"
+                                                    data-entity="Event"
+                                                    data-property="isGalleryLinkSharing"
+                                                    data-entity-id="{{ event.eid }}"
+                                                    data-token="{{ csrf_token('Event' ~ 'isGalleryLinkSharing' ~ event.eid ) }}"
+                                                    data-button-enable-label="Teilen via Link aktivieren"
+                                                    data-button-enable-glyph="link"
+                                                    data-button-disable-label="Teilen via Link deaktivieren"
+                                                    data-button-disable-glyph="unchecked">{{ 'option-horizontal'|glyph }}</button>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-xs-8">

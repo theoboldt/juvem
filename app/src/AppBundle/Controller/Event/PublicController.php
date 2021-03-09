@@ -16,6 +16,7 @@ use AppBundle\Controller\FlashBagAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\Manager\UploadImageManager;
 use Doctrine\Persistence\ManagerRegistry;
@@ -67,6 +68,7 @@ class PublicController
     /**
      * Original image file for event image
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/image/original", name="event_image_original")
      */
@@ -78,8 +80,7 @@ class PublicController
     }
 
     /**
-     *
-     *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}/image/{width}/{height}", requirements={"eid": "\d+", "width": "\d+", "height": "\d+"},
      *                                               name="event_image")
@@ -94,6 +95,7 @@ class PublicController
     /**
      * Page for details of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/event/{eid}", requirements={"eid": "\d+"}, name="event_public_detail")
      */
@@ -109,6 +111,7 @@ class PublicController
     /**
      * Redirect for routes
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/{eid}{wildcard}", requirements={"eid": "\d+", "wildcard": "(|\.|,|\s|\/)"})
      * @Route("/{eventIdentifier}/{eid}{wildcard}", requirements={"eventIdentifier": "(event|e)", "eid": "\d+", "wildcard": "(\.|,|\s|\/)"})
@@ -123,6 +126,7 @@ class PublicController
     /**
      * Short url redirecting to details of an event
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/e/{eid}", requirements={"eid": "\d+"}, name="event_public_short")
      */

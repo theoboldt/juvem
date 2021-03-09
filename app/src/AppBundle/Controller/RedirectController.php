@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ class RedirectController extends AbstractController
 {
 
     /**
+     * @CloseSessionEarly
      * @Route("/{url}", name="remove_trailing_slash",
      *     requirements={"url" = "^((?!register).)*$\/$"}, methods={"GET"})
      */

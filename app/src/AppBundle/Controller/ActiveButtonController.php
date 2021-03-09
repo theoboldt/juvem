@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\User;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -65,6 +66,7 @@ class ActiveButtonController
     /**
      * Detail page for one single event
      *
+     * @CloseSessionEarly
      * @Route("/admin/active/button", name="active_button")
      */
     public function activeButtonChangeStateHandler(Request $request)

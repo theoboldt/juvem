@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Meals;
 use AppBundle\Entity\Meals\QuantityUnit;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\QuantityUnitType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 class QuantityUnitController extends AbstractController
 {
     /**
+     * @CloseSessionEarly
      * @Route("/admin/meals/units/list", name="meals_units_list")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -34,6 +36,7 @@ class QuantityUnitController extends AbstractController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/units/list.json", name="meals_units_list_data")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -58,6 +61,7 @@ class QuantityUnitController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("unit", class="AppBundle\Entity\Meals\QuantityUnit")
      * @Route("/admin/meals/units/{id}", requirements={"id": "\d+"}, name="meals_units_detail")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -68,6 +72,7 @@ class QuantityUnitController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("unit", class="AppBundle\Entity\Meals\QuantityUnit")
      * @Route("/admin/meals/units/{id}/edit", requirements={"id": "\d+"}, name="meals_units_edit")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -102,6 +107,7 @@ class QuantityUnitController extends AbstractController
     /**
      * Create a new acquisition attribute
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/units/new", name="meals_units_new")
      * @Security("is_granted('ROLE_ADMIN')")
      */

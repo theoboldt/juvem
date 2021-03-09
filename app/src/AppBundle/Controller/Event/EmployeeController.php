@@ -26,6 +26,7 @@ use AppBundle\Form\EmployeeAssignUserType;
 use AppBundle\Form\EmployeeType;
 use AppBundle\Form\ImportEmployeesType;
 use AppBundle\Form\MoveEmployeeType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\JsonResponse;
 use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\ParticipationManager;
@@ -127,6 +128,7 @@ class EmployeeController
     /**
      * Page for list of employees of a single event
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/list", requirements={"eid": "\d+"}, name="admin_event_employee_list")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('edit', event)")
@@ -145,6 +147,7 @@ class EmployeeController
     /**
      * Export employee list
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/export", requirements={"eid": "\d+"}, name="admin_employee_export")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('employees_read', event)")
@@ -178,6 +181,7 @@ class EmployeeController
     /**
      * Page for list of employees of a single event
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee-list.json", requirements={"eid": "\d+"},
      *                                                 name="admin_event_employee_list_data")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -236,6 +240,7 @@ class EmployeeController
     /**
      * Page for list of employees of a single event
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/{gid}", requirements={"eid": "\d+", "gid": "\d+"},
      *                                             name="admin_employee_detail")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -336,6 +341,7 @@ class EmployeeController
     /**
      * Page for editing employee
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/{gid}/edit", requirements={"eid": "\d+", "gid": "\d+"},
      *                                                  name="admin_employee_edit")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
@@ -383,6 +389,7 @@ class EmployeeController
     /**
      * Page for importing employee
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/import", requirements={"eid": "\d+"}, methods={"GET"}, name="admin_employee_import_proposals")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('employees_edit', event)")
@@ -518,6 +525,7 @@ class EmployeeController
     /**
      * Page for editing employee
      *
+     * @CloseSessionEarly
      * @Route("/admin/event/{eid}/employee/create", requirements={"eid": "\d+"}, name="admin_employee_create")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('employees_read', event)")

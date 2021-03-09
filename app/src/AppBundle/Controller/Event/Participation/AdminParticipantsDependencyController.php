@@ -21,6 +21,7 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\GroupType;
 use AppBundle\Form\ParticipantDetectingType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -36,6 +37,7 @@ class AdminParticipantsDependencyController extends AbstractController
     /**
      * Apply changes to multiple participants
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("participant", class="AppBundle:Participant", options={"id" = "aid"})
      * @Route("/admin/event/{eid}/dependencies/change_group_assignment/a{aid}", requirements={"eid": "\d+", "aid": "\d+"}, methods={"POST"})
@@ -82,6 +84,7 @@ class AdminParticipantsDependencyController extends AbstractController
     /**
      * Get details for detecting fields
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/dependencies", requirements={"eid": "\d+"}, name="event_admin_dependencies_overview")
      * @Security("is_granted('participants_read', event)")
@@ -150,6 +153,7 @@ class AdminParticipantsDependencyController extends AbstractController
     /**
      * Get detailed data for detecting fields
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/dependencies/data.json", requirements={"eid": "\d+"}, name="event_admin_dependencies_data")
      * @Security("is_granted('participants_read', event)")

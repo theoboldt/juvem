@@ -11,6 +11,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 class UserSettingsController extends AbstractController
 {
     /**
+     * @CloseSessionEarly
      * @Route("/user/settings/load", name="user_settings_load")
      */
     public function userSettingsLoadAction()
@@ -36,6 +38,7 @@ class UserSettingsController extends AbstractController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/user/settings/store", name="user_settings_store")
      */
     public function userSettingsStoreAction(Request $request)

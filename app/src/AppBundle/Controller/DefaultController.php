@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ResponseHelper;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
@@ -158,6 +159,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/heartbeat", name="heartbeat")
      */
     public function heartbeatAction()
@@ -166,6 +168,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/ads.txt")
      * @Route("/css/all.css.map")
      * @Route("/js/all.js.map")
@@ -181,6 +184,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/{url2}",
      * requirements={"url2" = "(?:test|old|wp\/|blog|wordpress|wp-content|wp-includes|wp-admin|utility\/convert)(?:.*)$"})
      * @Route("/wp-login.php")
@@ -193,6 +197,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/apple-app-site-association")
      * @Route("/.well-known/apple-app-site-association")
      */
@@ -202,6 +207,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/new")
      * @Route("/v2")
      * @Route("/v1")
@@ -224,6 +230,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/login_check", methods={"GET"})
      */
     public function loginCheckFallbackAction()
@@ -231,6 +238,7 @@ class DefaultController
         return $this->redirectToRoute('homepage');
     }
     /**
+     * @CloseSessionEarly
      * @Route("/crossdomain.xml")
      * @Route("/clientaccesspolicy.xml")
      * @Route("/.well-known/assetlinks.json")
@@ -244,6 +252,7 @@ class DefaultController
     /**
      * License redirect
      *
+     * @CloseSessionEarly
      * @Route("/LICENSE")
      * @Route("/license")
      * @Route("/license.md")
@@ -258,6 +267,7 @@ class DefaultController
     /**
      * License text action
      *
+     * @CloseSessionEarly
      * @Route("/license.txt", name="app_license")
      * @return Response
      */
@@ -269,6 +279,7 @@ class DefaultController
     /**
      * Readme redirect
      *
+     * @CloseSessionEarly
      * @Route("/README")
      * @Route("/readme.txt")
      * @Route("/README.md")
@@ -282,6 +293,7 @@ class DefaultController
     /**
      * Readme text action
      *
+     * @CloseSessionEarly
      * @Route("/readme.md", name="app_license")
      * @return Response
      */
@@ -314,6 +326,7 @@ class DefaultController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/contribute.json")
      */
     public function contributeAction()
@@ -350,6 +363,7 @@ class DefaultController
 
 
     /**
+     * @CloseSessionEarly
      * @Route("/sitemap.xml")
      */
     public function sitemapAction()
@@ -402,6 +416,7 @@ class DefaultController
     }
     
     /**
+     * @CloseSessionEarly
      * @Route("/manifest.json")
      */
     public function manifestAction()

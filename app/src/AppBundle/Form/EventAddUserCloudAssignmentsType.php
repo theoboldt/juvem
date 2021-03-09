@@ -21,9 +21,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function Doctrine\ORM\QueryBuilder;
 
-class EventAddUserAssignmentsType extends AbstractType
+class EventAddUserCloudAssignmentsType extends AbstractType
 {
-    
+
     /**
      * {@inheritdoc}
      */
@@ -32,7 +32,7 @@ class EventAddUserAssignmentsType extends AbstractType
         /** @var Event $event */
         $event = $options['event'];
         $eid   = $event->getEid();
-        
+
         $builder
             ->add(
                 'assignUser',
@@ -42,40 +42,25 @@ class EventAddUserAssignmentsType extends AbstractType
                     'class'         => User::class,
                     'query_builder' => function (UserRepository $r) use ($eid) {
                         $qb = $r->createQueryBuilder('u');
-                        $qb->andWhere($qb->expr()->notLike('u.roles', ':disablingRoleA'));
-                        $qb->andWhere(
+                        return $qb->andWhere(
                             $qb->expr()->orX(
-                                $qb->expr()->like('u.roles', ':enablingRoleA'),
-                                $qb->expr()->like('u.roles', ':enablingRoleB')
+                                $qb->expr()->like('u.roles', ':enablingRole')
                             )
                         )
-                           ->setParameter('disablingRoleA', '%"ROLE_ADMIN_EVENT_GLOBAL"%')
-                           ->setParameter('enablingRoleA', '%"ROLE_ADMIN_EVENT"%')
-                           ->setParameter('enablingRoleB', '%"ROLE_CLOUD"%')
-                           ->andWhere('u.enabled = 1')
-                           ->addOrderBy('u.nameLast', 'ASC')
-                           ->addOrderBy('u.nameFirst', 'ASC')
-                           ->leftJoin('u.eventAssignments', 'a', Join::WITH, 'a.event = ' . $eid)
-                           ->andWhere('a IS NULL');
-                        return $qb;
+                                  ->setParameter('enablingRole', '%"ROLE_CLOUD"%')
+                                  ->andWhere('u.enabled = 1')
+                                  ->addOrderBy('u.nameLast', 'ASC')
+                                  ->addOrderBy('u.nameFirst', 'ASC')
+                                  ->leftJoin('u.eventAssignments', 'a', Join::WITH, 'a.event = ' . $eid)
+                                  ->andWhere('a IS NULL');
                     },
-                    'choice_label'  => function (User $user) {
-                        $roles = [];
-                        if ($user->hasRole(User::ROLE_ADMIN_EVENT_GLOBAL)) {
-                            $roles[] = User::ROLE_ADMIN_EVENT_GLOBAL_LABEL;
-                        } elseif ($user->hasRole(User::ROLE_ADMIN_EVENT)) {
-                            $roles[] = User::ROLE_ADMIN_EVENT_LABEL;
-                        } elseif ($user->hasRole(User::ROLE_CLOUD)) {
-                            $roles[] = User::ROLE_CLOUD_LABEL;
-                        }
-                        return $user->fullname() . ' [' . implode(', ', $roles) . ']';
-                    },
+                    'choice_label' => 'fullname',
                     'multiple'      => true,
                     'required'      => false,
                 ]
             );
     }
-    
+
     /**
      * {@inheritdoc}
      */

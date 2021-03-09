@@ -13,6 +13,7 @@ namespace AppBundle\Controller\Meals;
 use AppBundle\Entity\Meals\Viand;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\ViandType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ViandController extends AbstractController
 {
     /**
+     * @CloseSessionEarly
      * @Route("/admin/meals/viands/list", name="meals_viands_list")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -34,6 +36,7 @@ class ViandController extends AbstractController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/viands/list.json", name="meals_viands_list_data")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -63,6 +66,7 @@ class ViandController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("viand", class="AppBundle\Entity\Meals\Viand")
      * @Route("/admin/meals/viands/{id}", requirements={"id": "\d+"}, name="meals_viands_detail")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -73,6 +77,7 @@ class ViandController extends AbstractController
     }
     
     /**
+     * @CloseSessionEarly
      * @ParamConverter("viand", class="AppBundle\Entity\Meals\Viand")
      * @Route("/admin/meals/viands/{id}/edit", requirements={"id": "\d+"}, name="meals_viands_edit")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -110,6 +115,7 @@ class ViandController extends AbstractController
     /**
      * Create a new acquisition attribute
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/viands/new", name="meals_viands_new")
      * @Security("is_granted('ROLE_ADMIN')")
      */

@@ -26,6 +26,7 @@ iframe[name=export-generator-frame] {
   white-space: pre-line;
 }
 
+#event_add_user_cloud_assignments_assignUser,
 #event_add_user_assignments_assignUser {
   min-height: 300px;
 }
@@ -1043,4 +1044,9 @@ abbr.unit {
       display: none;
     }
   }
+}
+
+body.feature-newsletter-disabled .feature-newsletter,
+body.feature-cloud-disabled .feature-cloud {
+  display: none;
 }

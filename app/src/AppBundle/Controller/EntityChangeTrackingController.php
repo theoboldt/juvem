@@ -16,6 +16,7 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentatio
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\Security\EventVoter;
 use AppBundle\SerializeJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,6 +31,7 @@ class EntityChangeTrackingController extends AbstractController
     /**
      * Get list of changes for transmitted entity
      *
+     * @CloseSessionEarly
      * @Route("/admin/changes/{classDescriptor}/{entityId}.json",
      *     requirements={"classDescriptor": "([a-zA-Z0-9_\.]+)", "entityId": "(\d+)"}, name="admin_change_overview")
      * @Security("is_granted('ROLE_ADMIN')")

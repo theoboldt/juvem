@@ -17,6 +17,7 @@ use AppBundle\Entity\Meals\RecipeFeedback;
 use AppBundle\Entity\User;
 use AppBundle\Form\Meal\MealFeedbackType;
 use AppBundle\Form\Meal\RecipeType;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,6 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 class RecipeFeedbackController extends AbstractController
 {
     /**
+     * @CloseSessionEarly
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Route("/admin/meals/recipes/{id}/feedback", requirements={"id": "\d+"}, name="meals_feedback_list")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -42,6 +44,7 @@ class RecipeFeedbackController extends AbstractController
     /**
      * Data provider for event list grid
      *
+     * @CloseSessionEarly
      * @Route("/admin/meals/recipes/{id}/list.json", requirements={"id": "\d+"}, name="meals_feedback_list_data")
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -75,6 +78,7 @@ class RecipeFeedbackController extends AbstractController
     }
 
     /**
+     * @CloseSessionEarly
      * @ParamConverter("recipe", class="AppBundle\Entity\Meals\Recipe", options={"id" = "rid"})
      * @ParamConverter("feedback", class="AppBundle\Entity\Meals\RecipeFeedback", options={"id" = "fid"})
      * @Route("/admin/meals/recipes/{rid}/feedback/{fid}", requirements={"rid": "\d+","fid": "\d+"}, name="meals_feedback_detail")

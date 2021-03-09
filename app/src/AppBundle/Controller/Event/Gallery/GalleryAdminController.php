@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Event\Gallery;
 use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\GalleryImage;
+use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\UploadImageManager;
 use Doctrine\Persistence\ManagerRegistry;
@@ -99,6 +100,7 @@ class GalleryAdminController extends BaseGalleryController
     /**
      * Page for list of events
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery", requirements={"eid": "\d+"}, name="event_gallery_admin")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -147,6 +149,7 @@ class GalleryAdminController extends BaseGalleryController
     /**
      * Get list of all urls for all image previews/thumbnails etc.
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery/image_urls.json", requirements={"eid": "\d+"}, name="event_gallery_image_urls_admin", methods={"GET"})
      * @Security("is_granted('read', event)")
@@ -178,6 +181,7 @@ class GalleryAdminController extends BaseGalleryController
     /**
      * Page for list of events
      *
+     * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/gallery/upload", requirements={"eid": "\d+"}, name="event_gallery_admin_upload")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
@@ -285,6 +289,7 @@ class GalleryAdminController extends BaseGalleryController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/admin/event/gallery/image/delete", name="gallery_image_delete")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
@@ -317,6 +322,7 @@ class GalleryAdminController extends BaseGalleryController
     }
 
     /**
+     * @CloseSessionEarly
      * @Route("/admin/event/gallery/image/save", name="gallery_image_save")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @return Response
