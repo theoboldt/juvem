@@ -105,7 +105,7 @@ class DataImportCommand extends DataCommandBase
             if (strpos($relativePath, '/data/') === 0) {
                 $this->dataFilesAfter[] = $relativePath;
             }
-            if ($relativePath === '/database.sql') {
+            if ($relativePath === '/database.sql' || $relativePath === 'database.sql') {
                 $databaseImageFound = true;
             }
         }
@@ -203,7 +203,7 @@ class DataImportCommand extends DataCommandBase
             
             $output->write('Preparing database import... ');
             $databaseImagePath = $this->tmpRootPath . '/database.sql';
-            if (!$this->archive->extractTo($this->tmpRootPath, '/database.sql')) {
+            if (!$this->archive->extractTo($this->tmpRootPath, 'database.sql')) {
                 $output->writeln('<error>Failed to extract database file.</error>');
                 if ($password) {
                     $output->writeln('The password set might be incorrect');
