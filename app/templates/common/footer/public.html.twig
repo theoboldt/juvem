@@ -23,7 +23,7 @@
             <h3>Konto</h3>
             <ul>
                 <li><a href="{{ path('fos_user_security_login') }}">Anmelden</a></li>
-                <li><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>
+                {% if featureRegistration %}<li><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>{% endif %}
                 <li><a href="{{ path('fos_user_resetting_request') }}">Passwort zurücksetzen</a></li>
             </ul>
 

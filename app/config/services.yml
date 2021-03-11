@@ -591,6 +591,7 @@ services:
 
     AppBundle\Controller\Event\Participation\PublicParticipateController:
         arguments:
+            $featureRegistration: "%feature.registration%"
             $featureNewsletter: '%feature.newsletter%'
         tags: [ 'controller.service_arguments' ]
 

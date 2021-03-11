@@ -110,6 +110,7 @@ twig:
         customization: "@app.twig_global_customization"
         kernelRootDir: "%kernel.project_dir%"
         featureNewsletter: "%feature.newsletter%"
+        featureRegistration: "%feature.registration%"
         featurePdfConversion: "%app.libreoffice_binary_path%"
         featureCloud: "%nextcloud.base_uri%"
         themeColor: "%customization.theme_color%"

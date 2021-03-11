@@ -17,7 +17,14 @@
       {{ form_errors(form) }}
     </div>
   </div>
-  <div class="row">
+    {% if not featureRegistration %}
+      <div class="row">
+        <div class="col-xs-12">
+          <p>Die Registrierungsfunktion ist deaktiviert.</p>
+        </div>
+      </div>
+    {% endif %}
+  <div class="row" {% if not featureRegistration %}style="display: none;"{% endif %}>
     <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
       {{ form_row(form.nameFirst) }}
       {{ form_row(form.nameLast) }}

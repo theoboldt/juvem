@@ -45,6 +45,14 @@ class PublicParticipateController
      */
     private bool $featureNewsletter;
     
+    
+    /**
+     * feature.registration
+     *
+     * @var bool
+     */
+    private bool $featureRegistration;
+    
     /**
      * app.participation_manager
      *
@@ -63,6 +71,7 @@ class PublicParticipateController
      * @param FormFactoryInterface $formFactory
      * @param SessionInterface $session
      * @param string $featureNewsletter
+     * @param string $featureRegistration
      * @param ParticipationManager $participationManager
      */
     public function __construct(
@@ -74,6 +83,7 @@ class PublicParticipateController
         FormFactoryInterface $formFactory,
         SessionInterface $session,
         string $featureNewsletter,
+        string $featureRegistration,
         ParticipationManager $participationManager
     )
     {
@@ -85,6 +95,7 @@ class PublicParticipateController
         $this->formFactory          = $formFactory;
         $this->session              = $session;
         $this->featureNewsletter    = $featureNewsletter;
+        $this->featureRegistration  = $featureRegistration;
         $this->participationManager = $participationManager;
     }
     
@@ -293,7 +304,7 @@ class PublicParticipateController
             $message
                 = '<p>Wir haben Ihren Teilnahmewunsch festgehalten. Sie erhalten eine automatische Bestätigung, dass die Anfrage bei uns eingegangen ist.</p>';
 
-            if (!$user) {
+            if ($this->featureRegistration && !$user) {
                 $message .= sprintf(
                     '<p>Sie können sich jetzt <a href="%s">registrieren</a>. Dadurch können Sie Korrekturen an den Anmeldungen vornehmen oder zukünftige Anmeldungen schneller ausfüllen.</p>',
                     $this->router->generate('fos_user_registration_register')

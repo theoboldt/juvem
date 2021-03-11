@@ -121,7 +121,7 @@
                         <li class="first last"><a href="{{ path('fos_user_security_logout') }}">Abmelden</a></li>
                     {% else %}
                         <li class="first"><a href="{{ path('fos_user_security_login') }}">Anmelden</a></li>
-                        <li class="last"><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>
+                        {% if featureRegistration %}<li class="last"><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></li>{% endif %}
                     {% endif %}
                 </ul>
             </div>

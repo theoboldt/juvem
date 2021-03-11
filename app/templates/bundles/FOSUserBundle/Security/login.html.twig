@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-sm-offset-3 col-sm-6 col-md-offset-4 col-md-4">
                         <hr />
-                    <p><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></p>
+                    {% if featureRegistration %}<p><a href="{{ path('fos_user_registration_register') }}">Registrieren</a></p>{% endif %}
                     <p><a href="{{ path('fos_user_resetting_request') }}">Passwort vergessen/zurücksetzen</a></p>
                 </div>
             </div>

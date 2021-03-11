@@ -17,3 +17,4 @@ parameters:
     backup_password: null
     app.gender.exclude: ''
     mailer_imap_host: null
+    feature.registration: true
