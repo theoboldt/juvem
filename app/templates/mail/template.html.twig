@@ -97,6 +97,7 @@
 </tr>
 </table>
 <br>{% endif %}
+{% if customization.organizationFacebook %}
 <table class="tiny-button facebook">
 <tr>
 <td>
@@ -104,11 +105,12 @@
 </td>
 </tr>
 </table>
+{% endif %}
 {% if customization.organizationWebsite %}<br>
 <table class="tiny-button btn-custom-website">
 <tr>
 <td>
-<a href="http://{{ customization.organizationWebsite }}/">{{ customization.organizationWebsite }}</a>
+<a href="http://{{ customization.organizationWebsite }}/">{% if customization.organizationWebsite|length < 25 %}{{ customization.organizationWebsite }}{% else %}Website{% endif %}</a>
 </td>
 </tr>
 </table>{% endif %}
