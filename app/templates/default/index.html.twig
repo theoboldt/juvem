@@ -103,7 +103,15 @@
                                                 {% else %}
                                                     <a role="button"
                                                        href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                                                       class="btn btn-primary">Teilnehmen</a>
+                                                       class="btn btn-primary">Teilnehmen
+                                                        {% if event.hasWaitingListThreshold() -%}
+                                                            {%- if event.participantsCount >= event.waitingListThreshold -%}
+                                                                (Warteliste)
+                                                            {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
+                                                                (wenig Plätze frei)
+                                                            {%- endif -%}
+                                                        {%- endif -%}
+                                                    </a>
                                                 {% endif %}
                                             {% endif %}
                                             {% if is_granted('read', event) %}
