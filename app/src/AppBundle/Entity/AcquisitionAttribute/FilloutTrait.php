@@ -120,7 +120,9 @@ trait FilloutTrait
             return $fillout;
 
         }
-        throw new RequestedFilloutNotFoundException();
+        throw new RequestedFilloutNotFoundException(
+            'Requested fillout for bid '.$bid.' was not found'
+        );
     }
 
     /**
