@@ -147,7 +147,7 @@ trait FilloutTrait
      */
     public function __set($key, $value) {
         if (preg_match('/acq_field_(\d+)/', $key, $bidData)) {
-            $fillout = $this->getAcquisitionAttributeFillout($bidData[1]);
+            $fillout = $this->getAcquisitionAttributeFillout($bidData[1], true);
             $fillout->setValue($value);
         }
         return $this;
