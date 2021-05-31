@@ -128,11 +128,12 @@ class NewsletterManager extends AbstractMailerAwareManager
                 } else {
                     $dataHtml['calltoactioncontent'] = null;
                 }
-
-                $dataBoth     = array(
-                    'text' => $dataText,
-                    'html' => $dataHtml
-                );
+    
+                $dataBoth = [
+                    'text'         => $dataText,
+                    'html'         => $dataHtml,
+                    'subscription' => $subscription
+                ];
                 $email        = $subscription->getEmail();
                 $firstName    = '';
                 $lastName     = $subscription->getNameLast();
