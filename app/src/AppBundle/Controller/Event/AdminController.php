@@ -26,6 +26,7 @@ use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedExcept
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
+use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
@@ -37,6 +38,7 @@ use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\Form\EventUserCloudAssignmentsType;
+use AppBundle\Form\NewsletterMailType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
@@ -45,6 +47,7 @@ use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PriceManager;
 use AppBundle\Manager\UploadImageManager;
+use AppBundle\Twig\MailGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -111,6 +114,8 @@ class AdminController
      */
     private CsrfTokenManagerInterface $csrfTokenManager;
     
+    private MailGenerator $twigMailGenerator;
+    
     /**
      * AdminController constructor.
      *
@@ -125,6 +130,7 @@ class AdminController
      * @param ParticipationManager $participationManager
      * @param UploadImageManager $uploadImageManager
      * @param EventFileSharingManager $eventFileSharingManager
+     * @param MailGenerator $twigMailGenerator
      * @param CsrfTokenManagerInterface $csrfTokenManager
      * @param SessionInterface $session
      */
@@ -140,23 +146,25 @@ class AdminController
         ParticipationManager $participationManager,
         UploadImageManager $uploadImageManager,
         EventFileSharingManager $eventFileSharingManager,
+        MailGenerator $twigMailGenerator,
         CsrfTokenManagerInterface $csrfTokenManager,
         SessionInterface $session
     )
     {
-        $this->paymentManager       = $paymentManager;
-        $this->priceManager         = $priceManager;
-        $this->participationManager = $participationManager;
-        $this->uploadImageManager   = $uploadImageManager;
+        $this->paymentManager          = $paymentManager;
+        $this->priceManager            = $priceManager;
+        $this->participationManager    = $participationManager;
+        $this->uploadImageManager      = $uploadImageManager;
         $this->eventFileSharingManager = $eventFileSharingManager;
-        $this->csrfTokenManager     = $csrfTokenManager;
-        $this->authorizationChecker = $authorizationChecker;
-        $this->tokenStorage         = $tokenStorage;
-        $this->doctrine             = $doctrine;
-        $this->router               = $router;
-        $this->twig                 = $twig;
-        $this->formFactory          = $formFactory;
-        $this->session              = $session;
+        $this->csrfTokenManager        = $csrfTokenManager;
+        $this->authorizationChecker    = $authorizationChecker;
+        $this->twigMailGenerator       = $twigMailGenerator;
+        $this->tokenStorage            = $tokenStorage;
+        $this->doctrine                = $doctrine;
+        $this->router                  = $router;
+        $this->twig                    = $twig;
+        $this->formFactory             = $formFactory;
+        $this->session                 = $session;
     }
     
     /**
@@ -703,6 +711,46 @@ class AdminController
         return $this->render('mail/notify-participants.html.twig');
     }
     
+    /**
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participations"})
+     * @Route("/admin/event/{eid}/mail_preview", requirements={"eid": "\d+"}, name="event_mail_preview")
+     * @Security("is_granted('participants_edit', event)")
+     * @return Response
+     */
+    public function previewNewsletterAction(Request $request): Response
+    {
+        $form = $this->createForm(EventMailType::class);
+    
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+        } else {
+            $data['subject'] = 'Test';
+            $data['title']   = 'Gute Nachrichten';
+            $data['lead']    = 'Ein neuer Newsletter ist verfügbar!';
+            $data['content']
+                             = "Text hier einfügen. Eine Leerzeile führt zu einem Absatz, ein einfacher Zeilenabsatz wird zusammengefasst werden. Text in zwei Sternchen einfassen, damit er **hervorgehoben** wird.\n\nMit besten Grüßen";
+        }
+        $data['calltoactioncontent'] = '';
+    
+        $dataText = [];
+        $dataHtml = [];
+    
+        foreach ($data as $area => $content) {
+            $dataText[$area] = strip_tags($content);
+            $dataHtml[$area] = $content;
+        }
+        
+        $dataBoth = [
+            'text' => $dataText,
+            'html' => $dataHtml,
+        ];
+        
+        $message = $this->twigMailGenerator->renderHtml('general-markdown', $dataBoth);
+        return new Response($message);
+    }
+
     /**
      * Create a new event
      *

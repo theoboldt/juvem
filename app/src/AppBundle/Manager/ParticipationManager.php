@@ -137,19 +137,13 @@ class ParticipationManager extends AbstractMailerAwareManager
         $dataText = [];
         $dataHtml = [];
 
+        $dataText = array();
+        $dataHtml = array();
+
         $content = null;
         foreach ($data as $area => $content) {
-            $content = str_replace('{EVENT_TITLE}', $event->getTitle(), $content);
-
             $dataText[$area] = strip_tags($content);
-
-            $contentHtml = htmlentities($content);
-
-            if ($area == 'content') {
-                $contentHtml = str_replace(["\n\n", "\r\r", "\r\n\r\n"], '</p><p>', $contentHtml);
-            }
-
-            $dataHtml[$area] = $contentHtml;
+            $dataHtml[$area] = $content;
         }
         unset($content);
         $dataHtml['calltoactioncontent'] = null;
@@ -180,9 +174,8 @@ class ParticipationManager extends AbstractMailerAwareManager
             }
             unset($contentList);
 
-            $message = $this->mailGenerator->getMessage(
-                'general-raw', $dataBoth
-            );
+            $message = $this->mailGenerator->getMessage('general-markdown', $dataBoth);
+
             $message->setTo(
                 $participation->getEmail(),
                 $participation->fullname()

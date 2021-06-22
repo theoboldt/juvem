@@ -11,7 +11,7 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
-        <div id="mail-form" data-event-title="{{ event.title }}">
+        <div id="mail-form" data-event-title="{{ event.title }}" data-eid="{{ event.id }}">
             {{ form_start(form) }}
             <div class="row">
                 <div class="col-xs-12">
@@ -21,7 +21,7 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6">
                     {{ form_row(form.recipient) }}
                     {{ form_row(form.subject) }}
                     {{ form_row(form.title) }}
@@ -51,13 +51,13 @@
                     <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
                     <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
                 </div>
-                <div class="col-sm-6 col-lg-8" id="mail-template">
+                <div class="col-sm-6" id="mail-template">
                     <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
 
                     <div class="panel panel-default" id="mail-template-iframe-panel">
                         <div class="panel-heading">Betreff der E-Mail</div>
                         <div class="panel-body">
-                            <iframe src="{{ path('mail_template') }}"></iframe>
+                            <iframe src="{{ path('mail_template') }}" id="mail-template-iframe" name="mail-template-iframe"></iframe>
                         </div>
                     </div>
                 </div>

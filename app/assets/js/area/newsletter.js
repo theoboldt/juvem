@@ -38,7 +38,7 @@ $(function () {
             );
         };
     $('*#mail-form-newsletter-newsletter .btn-update-preview').click(updateMailPreview);
-    $('*#mail-form-newsletter input.preview, *#mail-form-newsletter textarea.preview').bind('input propertychange', updateMailPreview);
+    $('*#mail-form-newsletter input.preview, *#mail-form-newsletter textarea').bind('input propertychange', updateMailPreview);
     $('*#mail-form-newsletter input, *#mail-form-newsletter textarea, *#mail-form-newsletter select').bind('input propertychange', disableSend);
 
     updateButton.click(function () {

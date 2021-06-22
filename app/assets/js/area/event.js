@@ -1,57 +1,39 @@
 $(function () {
+    var updateButton = $('*#mail-form .btn-update-preview'),
+        eventId = $('*#mail-form').data('eid'),
+        updateScheduled = false;
+
     /**
-     * EVENT: Events participants email preview
+     * EMAIL: Email preview
      */
-    var updateMailPreview = function () {
-        var updateButton = $('*#mail-form .btn-update-preview');
-        updateButton.prop('disabled', true);
-        var content = {
-                subject: $("#event_mail_subject").val(),
-                title: $("#event_mail_title").val(),
-                lead: $("#event_mail_lead").val(),
-                content: $("#event_mail_content").val()
-            },
-            preview = $('*#mail-template iframe').contents(),
-            exampleSalutation = 'Frau',
-            exampleLastName = 'Müller',
-            exampleEventTitle = $('#mail-form').data('event-title');
+    const updateMailPreview = function () {
+            if (updateScheduled === false) {
+                updateScheduled = true;
 
-        var replacePlaceholders = function (value) {
-            if (!value) {
-                return '';
+                updateButton.prop('disabled', true);
+                setTimeout(function () {
+                    updateScheduled = false;
+
+                    var form = $('#mail-form form'),
+                        action = form.attr('action'),
+                        target = form.attr('target');
+
+                    form.attr('action', '/admin/event/'+eventId+'/mail_preview');
+                    form.attr('target', 'mail-template-iframe');
+
+                    form.submit();
+
+                    form.attr('action', action ? action : '');
+                    form.attr('target', target ? target : '');
+                    updateButton.prop('disabled', false);
+                }, 500);
             }
-            value = value.replace(/\{PARTICIPATION_SALUTATION\}/g, exampleSalutation);
-            value = value.replace(/\{PARTICIPATION_NAME_LAST\}/g, exampleLastName);
-            value = value.replace(/\{EVENT_TITLE\}/g, exampleEventTitle);
-
-            return eHtml(value);
         };
-
-        $.each(content, function (key, value) {
-            value = replacePlaceholders(value);
-
-            switch (key) {
-                case 'content':
-                    value = value.replace(/\n\n/g, '</p><p>');
-                    break;
-                case 'subject':
-                    if (value == '') {
-                        value = '<em>Kein Betreff</em>';
-                    }
-                    break;
-            }
-
-            if (key == 'subject') {
-                $('*#mail-template-iframe-panel .panel-heading').html(value);
-            } else {
-                preview.find('#mail-part-' + key).html(value);
-            }
-        });
-        updateButton.prop('disabled', false);
-    };
-    $('*#mail-form .btn-update-preview').click(updateMailPreview);
-    $('*#mail-form input, *#mail-form textarea').change(updateMailPreview);
-
+    updateButton.click(updateMailPreview);
+    $('*#mail-form input, *#mail-form textarea').bind('input propertychange', updateMailPreview);
+    updateButton.click(function () {
+        updateMailPreview();
+    });
 
     /**
      * EVENT: Handle comment form call
