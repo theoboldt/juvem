@@ -84,12 +84,12 @@ class AcquisitionController
     public function listDataAction(Request $request)
     {
         $repository          = $this->getDoctrine()->getRepository(Attribute::class);
-        $attributeEntityList = $repository->findBy(['deletedAt' => null]);
+        $attributeEntityList = $repository->findAll();
 
         $attributeList = [];
         /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
         foreach ($attributeEntityList as $attribute) {
-
+    
             $attributeList[] = [
                 'bid'                    => $attribute->getBid(),
                 'management_title'       => $attribute->getManagementTitle(),
@@ -100,6 +100,7 @@ class AcquisitionController
                 'formula_enabled'        => $attribute->isPriceFormulaEnabled() ? 'ja' : 'nein',
                 'formula'                => $attribute->getPriceFormula(),
                 'is_deleted'             => $attribute->isDeleted() ? 1 : 0,
+                'is_archived'            => $attribute->isArchived() ? 1 : 0,
             ];
         }
 
@@ -120,7 +121,7 @@ class AcquisitionController
         $formAction = $this->createFormBuilder()
                            ->add('action', HiddenType::class)
                            ->getForm();
-
+    
         $formAction->handleRequest($request);
         if ($formAction->isSubmitted() && $formAction->isValid()) {
             $action = $formAction->get('action')
@@ -131,6 +132,12 @@ class AcquisitionController
                     break;
                 case 'restore':
                     $attribute->setDeletedAt(null);
+                    break;
+                case 'archive':
+                    $attribute->setIsArchived(true);
+                    break;
+                case 'unarchive':
+                    $attribute->setIsArchived(false);
                     break;
             }
             $em = $this->getDoctrine()->getManager();

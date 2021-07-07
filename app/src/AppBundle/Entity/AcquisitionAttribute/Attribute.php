@@ -153,6 +153,13 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     protected $isPublic = true;
 
     /**
+     * Stores if attribute is archived and not suitable to be used for new events
+     *
+     * @ORM\Column(type="boolean", name="is_archived", options={"default":0})
+     */
+    protected $isArchived = false;
+
+    /**
      * Contains the choice options the user can use
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"},
@@ -769,6 +776,24 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     public function setIsPriceFormulaEnabled(bool $isPriceFormulaEnabled)
     {
         $this->isPriceFormulaEnabled = $isPriceFormulaEnabled;
+        return $this;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isArchived(): bool
+    {
+        return $this->isArchived;
+    }
+    
+    /**
+     * @param bool $isArchived
+     * @return Attribute
+     */
+    public function setIsArchived(bool $isArchived): Attribute
+    {
+        $this->isArchived = $isArchived;
         return $this;
     }
 

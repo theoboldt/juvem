@@ -1,6 +1,24 @@
 {% cspscript %}
 <script type='text/javascript'>
     $(function () {
+        $('#event_acquisitionAttributes label').each(function () {
+            const el = $(this),
+                inputEl = el.find('input');
+
+            if (inputEl[0].checked) {
+                el.addClass('is-initial-checked');
+            }
+
+            if (inputEl.hasClass('is-archived')) {
+                el.addClass('is-archived');
+                el.append(' <span class="label label-info">archiviert</span>');
+            }
+            if (inputEl.hasClass('is-deleted')) {
+                el.addClass('is-deleted');
+                el.append(' <span class="label label-danger">gelöscht</span>');
+            }
+        });
+
         var updateBoxState = function(box) {
             var name = box.attr('name'),
                     checked = box.prop('checked'),

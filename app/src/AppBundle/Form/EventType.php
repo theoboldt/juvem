@@ -201,8 +201,21 @@ class EventType extends AbstractType
                     'class'         => Attribute::class,
                     'query_builder' => function (EntityRepository $er) {
                         return $er->createQueryBuilder('a')
-                                  ->where('a.deletedAt IS NULL')
                                   ->orderBy('a.managementTitle', 'ASC');
+                    },
+                    'row_attr' => [
+                        'data-classes',
+                    ],
+                    'choice_attr' => function (Attribute $attribute, $key, $value) {
+                        $classes = [];
+                        if ($attribute->isDeleted()) {
+                            $classes[] = 'is-deleted';
+                        }
+                        if ($attribute->isArchived()) {
+                            $classes[] = 'is-archived';
+                        }
+    
+                        return ['class' => implode(' ', $classes)];
                     },
                     'choice_label'  => 'managementTitle',
                     'multiple'      => true,

@@ -27,16 +27,8 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        {% if acquisition.isDeleted %}
-                            <p>Soll dieses Feld wirklich aus dem Papierkorb herausgeholt werden?</p>
-                        {% else %}
-                            <p>Soll dieses Feld wirklich in den Papierkorb verschoben werden?</p>
-                            <p>Daten bei bereits erfassten Anmeldungen bleiben erhalten, werden aber nicht mehr
-                                angezeigt werden. Das Feld erscheint auch nicht mehr im Anmeldeformular von
-                                Veranstaltungen, denen es bereits zugewiesen ist und kann auch keiner Veranstaltung mehr
-                                zugewiesen werden.</p>
-                        {% endif %}
-
+                      <p id="dialogModalQuestion"></p>
+                      <p id="dialogModalExplanation"></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
@@ -59,26 +51,84 @@
                         </div>
                         <a href="{{ path('acquisition_edit_formula', {bid: acquisition.bid}) }}"
                            class="btn btn-default {% if not acquisition.priceFormulaEnabled %}disabled{% endif %}">{{ 'equalizer'|glyph }} Formeleditor</a>
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="delete">
-                            {{ 'trash'|glyph }}<span class="hidden-xs"> in Papierkorb verschieben…</span>
-                        </button>
-                    {% else %}
-                        <button type="button" class="btn btn-default" data-toggle="modal"
-                                data-target="#dialogModal" data-action="restore">
-                            {{ 'repeat'|glyph }}<span class="hidden-xs"> aus Papierkorb zurückholen…</span>
-                        </button>
                     {% endif %}
-                    {{ acquisition|changeTrackingButton }}
+
+                  <div class="btn-group">
+                    {% if not acquisition.isArchived %}
+                      <button type="button" class="btn btn-default" data-toggle="modal"
+                              data-target="#dialogModal" data-action="archive">
+                        {{ 'folder-close'|glyph }}<span class="hidden-xs"> Archivieren</span> <span
+                            class="caret-right"></span>
+                      </button>
+                    {% elseif not acquisition.isDeleted %}
+                      <button type="button" class="btn btn-default" data-toggle="modal"
+                              data-target="#dialogModal" data-action="delete">
+                        {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span> <span class="caret-right"></span>
+                      </button>
+                    {% else %}
+                      <button type="button" class="btn btn-default" data-toggle="modal"
+                              data-target="#dialogModal" data-action="restore">
+                        {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen </span> <span
+                            class="caret-right"></span>
+                      </button>
+                    {% endif %}
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                      <span class="caret"></span>
+                      <span class="sr-only">Archivieren oder in Papierkorb verschieben…</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li>
+                        {% if acquisition.isDeleted %}
+                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="restore">
+                            {{ 'repeat'|glyph }} aus Papierkorb zurückholen <span class="caret-right"></span>
+                          </a>
+                        {% else %}
+                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="delete">
+                            {{ 'trash'|glyph }} in Papierkorb verschieben <span class="caret-right"></span>
+                          </a>
+                        {% endif %}
+                      </li>
+                      <li>
+                        {% if acquisition.isArchived %}
+                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="unarchive">
+                            {{ 'folder-open'|glyph }} aus dem Archiv zurückholen <span class="caret-right"></span>
+                          </a>
+                        {% else %}
+                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="archive">
+                            {{ 'folder-close'|glyph }} archivieren <span class="caret-right"></span>
+                          </a>
+                        {% endif %}
+                      </li>
+                    </ul>
+                  </div>
+                  {{ acquisition|changeTrackingButton }}
                 </div>
                 <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Status</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if not acquisition.isDeleted and not acquisition.isArchived %}
+                                    <span class="label label-primary">aktiv</span>
+                                {% endif %}
+                                {% if acquisition.isDeleted %}
+                                    <span class="label label-default">im Papierkorb</span>
+                                {% endif %}
+
+                                {% if acquisition.isArchived %}
+                                    <span class="label label-info">archiviert</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Titel</label>
 
                         <div class="col-sm-8">
                             <p class="form-control-static">{{ acquisition.managementTitle }}</p>
-
                         </div>
                     </div>
                     <div class="form-group">
@@ -276,11 +326,39 @@
                 $('#dialogModal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget),
                         action = button.data('action'),
-                        modal = $(this);
+                        modal = $(this),
+                        modalTitle = '',
+                        modalQuestion = '',
+                        modalExplanation = '';
 
                     modal.find('input[name="form[action]"]').val(action);
+
+                    switch(action) {
+                        case 'delete':
+                            modalTitle = 'Feld in Papierkorb verschieben';
+                            modalQuestion = 'Soll dieses Feld wirklich in den Papierkorb verschoben werden?';
+                            modalExplanation = 'Daten bei bereits erfassten Anmeldungen bleiben erhalten, werden aber nicht mehr angezeigt werden.  Das Feld erscheint auch nicht mehr im Anmeldeformular von Veranstaltungen, denen es bereits zugewiesen ist und kann auch keiner Veranstaltung mehr zugewiesen werden.';
+                            break;
+                        case 'restore':
+                            modalTitle = 'Feld aus Papierkorb nehmen';
+                            modalQuestion = 'Soll dieses Feld wirklich aus dem Papierkorb herausgeholt werden?';
+                            break;
+                        case 'archive':
+                            modalTitle = 'Feld archivieren';
+                            modalQuestion = 'Soll dieses Feld wirklich archiviert werden?';
+                            modalExplanation = 'Daten bei bereits erfassten Anmeldungen bleiben erhalten, und werden weiterhin angezeigt werden. Das Feld erscheint weiterhin im Anmeldeformular von Veranstaltungen, denen es bereits zugewiesen ist. Es kann jedoch keiner Veranstaltung mehr zugewiesen werden. Besonders nützlich bei Feldern, die auf eine spezielle Vernastaltung zugeschnitten sind.';
+                            break;
+                        case 'unarchive':
+                            modalTitle = 'Feld aus Archiv zurückholen';
+                            modalQuestion = 'Soll dieses Feld wirklich aus dem Archiv herausgeholt werden?';
+                            break;
+                    }
+                    modal.find('#dialogModalLabel').html(modalTitle);
+                    modal.find('#dialogModalQuestion').html(modalQuestion);
+                    modal.find('#dialogModalExplanation').html(modalExplanation);
                 });
             });
+
         </script>
     {% endcspscript %}
 {% endblock %}

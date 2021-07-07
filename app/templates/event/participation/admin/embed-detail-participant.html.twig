@@ -47,7 +47,13 @@
                 {%- if not fillout.attribute.isPublic -%}
                     {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
                 {% endif %}
-                {{ fillout.attribute.formTitle }}
+                {%- if fillout.attribute.isDeleted -%}
+                    {{ 'trash'|glyph('Dieses Feld ist im Papierkorb') }}
+                {% endif %}
+                {%- if fillout.attribute.isArchived -%}
+                    {{ 'folder-close'|glyph('Dieses ist archiviert') }}
+                {% endif %}
+                {{ fillout.attribute.managementTitle }}
             </dt>
             <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
         {% endfor %}
