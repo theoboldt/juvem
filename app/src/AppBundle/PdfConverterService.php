@@ -119,10 +119,10 @@ class PdfConverterService
         $result = $this->tmpPath . DIRECTORY_SEPARATOR . $filename;
         
         if (!file_exists($result)) {
-            throw new \RuntimeException('Output file not existing');
+            throw new \RuntimeException('Output file for input "'.$input.'" not existing');
         }
         if (filesize($result) < 5) {
-            throw new \RuntimeException('Output file seems to be empty');
+            throw new \RuntimeException('Output file for input "'.$input.'" seems to be empty');
         }
         
         return $result;
