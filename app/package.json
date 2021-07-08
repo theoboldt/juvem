@@ -24,7 +24,7 @@
     "jquery-number": "^2.1",
     "jquery-range": "^1",
     "jquery-storage-api": "^1.9",
-    "justified-layout": "^3",
+    "justified-layout": "^4.1.0",
     "lodash": "^4.17.21",
     "marked": "^2.0.6",
     "masonry-layout": "^4.2",
@@ -33,6 +33,7 @@
     "npm": "^7.15.0",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
-    "vis-network": "<=7.5"
+    "vis-network": "<=7.5",
+    "trim-newlines": ">=3.0.1"
   }
 }
