@@ -27,7 +27,7 @@ use Symfony\Component\Routing\RequestContext;
 
 class MailService implements UrlGeneratorInterface
 {
-    private string $mailerHost;
+    private string $mailerImapHost;
     
     private string $mailerUser;
     
@@ -65,6 +65,7 @@ class MailService implements UrlGeneratorInterface
      * Initiate a participation manager service
      *
      * @param string $mailerHost
+     * @param string|null $mailerImapHost
      * @param string $mailerUser
      * @param string $mailerPassword
      * @param UrlGeneratorInterface $urlGenerator
@@ -74,6 +75,7 @@ class MailService implements UrlGeneratorInterface
      */
     public function __construct(
         string $mailerHost,
+        ?string $mailerImapHost,
         string $mailerUser,
         string $mailerPassword,
         UrlGeneratorInterface $urlGenerator,
@@ -82,7 +84,7 @@ class MailService implements UrlGeneratorInterface
         LoggerInterface $logger = null
     )
     {
-        $this->mailerHost     = $mailerHost;
+        $this->mailerImapHost = $mailerImapHost ?: $mailerHost;
         $this->mailerUser     = $mailerUser;
         $this->mailerPassword = $mailerPassword;
         $this->urlGenerator   = $urlGenerator;
@@ -108,7 +110,7 @@ class MailService implements UrlGeneratorInterface
             return null;
         }
         $timeBegin = microtime(true);
-        $server    = new Server($this->mailerHost);
+        $server    = new Server($this->mailerImapHost);
         try {
             $this->imapConnection = $server->authenticate($this->mailerUser, $this->mailerPassword);
         } catch (AuthenticationFailedException $e) {
@@ -116,7 +118,7 @@ class MailService implements UrlGeneratorInterface
                 'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
                 [
                     'user'    => $this->mailerUser,
-                    'host'    => $this->mailerHost,
+                    'host'    => $this->mailerImapHost,
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()
@@ -128,7 +130,7 @@ class MailService implements UrlGeneratorInterface
                 'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
                 [
                     'user'    => $this->mailerUser,
-                    'host'    => $this->mailerHost,
+                    'host'    => $this->mailerImapHost,
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()
@@ -140,7 +142,7 @@ class MailService implements UrlGeneratorInterface
                 'IMAP authentication for {user} on {host} failed, generic exception {class} with message {message}: {trace}',
                 [
                     'user'    => $this->mailerUser,
-                    'host'    => $this->mailerHost,
+                    'host'    => $this->mailerImapHost,
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()

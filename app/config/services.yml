@@ -167,6 +167,7 @@ services:
         autowire: true
         arguments:
             $mailerHost: "%mailer_host%"
+            $mailerImapHost: "%mailer_imap_host%"
             $mailerUser: "%mailer_user%"
             $mailerPassword: "%mailer_password%"
 

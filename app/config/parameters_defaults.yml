@@ -16,3 +16,4 @@ parameters:
     nextcloud.team: 'Team'
     backup_password: null
     app.gender.exclude: ''
+    mailer_imap_host: null
