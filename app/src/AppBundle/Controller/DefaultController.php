@@ -107,15 +107,8 @@ class DefaultController
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(MailService $mailService)
+    public function indexAction()
     {
-         $message    = (new Swift_Message())
-            ->setSubject('Test')
-             ->setTo('erik@theoboldt.eu');
-        $message->setBody('TestContent', 'text/plain');
-
-        $mailService->mail($message);
-        
         $repositoryFlash = $this->getDoctrine()->getRepository(Flash::class);
         $flashList       = $repositoryFlash->findValid();
         /** @var Flash $flash */
