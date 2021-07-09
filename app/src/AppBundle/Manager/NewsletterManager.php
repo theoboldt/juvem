@@ -13,11 +13,39 @@ namespace AppBundle\Manager;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
+use AppBundle\Mail\MailService;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class NewsletterManager extends AbstractMailerAwareManager
+class NewsletterManager
 {
-
+    
+    /**
+     * @var MailService
+     */
+    private MailService $mailService;
+    
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+    
+    /**
+     * Initiate a participation manager service
+     *
+     * @param MailService $mailService
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(
+        MailService $mailService,
+        ?LoggerInterface $logger
+    )
+    {
+        $this->mailService = $mailService;
+        $this->logger      = $logger ?? new NullLogger();
+    }
+    
     /**
      * Send a newsletter subscription request email
      *
@@ -60,21 +88,13 @@ class NewsletterManager extends AbstractMailerAwareManager
      */
     protected function mail(NewsletterSubscription $subscription, string $template)
     {
-        $message  = $this->mailGenerator->getMessage(
-            $template,
-            ['subscription' => $subscription]
+        $message = $this->mailService->getTemplatedMessage(
+            $template, ['subscription' => $subscription]
         );
         $nameLast = $subscription->getNameLast();
         $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
-
-        $sent = 0;
-        try {
-            $sent = $this->mailer->send($message);
-        } catch (\Exception $e) {
-            $this->logger->error('Exception while sending mail: {message}', ['message' => $e->getMessage()]);
-            throw $e;
-        }
-        return $sent;
+        
+        return $this->mailService->send($message);
     }
 
     /**
@@ -120,7 +140,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                         <p><a href="%3$s">Abonnement verwalten &raquo;</a></p>',
                         $subscription->getAgeRangeBegin(true),
                         $subscription->getAgeRangeEnd(true),
-                        $this->urlGenerator->generate(
+                        $this->mailService->generate(
                             'newsletter_subscription_token', ['token' => $subscription->getDisableToken()],
                             UrlGeneratorInterface::ABSOLUTE_URL
                         )
@@ -143,7 +163,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                     $firstName = $assignedUser->getNameFirst();
                 }
 
-                $message = $this->mailGenerator->getMessage('general-markdown', $dataBoth);
+                $message = $this->mailService->getTemplatedMessage('general-markdown', $dataBoth);
 
                 if ($assignedUser) {
                     $message->setTo(
@@ -159,7 +179,7 @@ class NewsletterManager extends AbstractMailerAwareManager
                 $abort       = false;
                 $resultCount = 0;
                 try {
-                    $resultCount = $this->mailer->send($message);
+                    $resultCount = $this->mailService->send($message);
                     $sentCount   += $resultCount;
                     $newsletter->addRecipient($subscription);
                 } catch (\Exception $e) {

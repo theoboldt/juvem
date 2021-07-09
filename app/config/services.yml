@@ -99,13 +99,13 @@ services:
         alias: AppBundle\Manager\ParticipationManager
     AppBundle\Manager\ParticipationManager:
         class: AppBundle\Manager\ParticipationManager
-        arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager']
+        autowire: true
         public: true
 
     app.newsletter_manager:
         alias: AppBundle\Manager\NewsletterManager
     AppBundle\Manager\NewsletterManager:
-        arguments: ['@router', '@swiftmailer.mailer.direct', '@app.twig_mail_generator', '@logger']
+        autowire: true
         public: true
     app.newsletter_token_generator:
         class: FOS\UserBundle\Util\TokenGenerator
@@ -163,6 +163,13 @@ services:
         arguments: ['@doctrine', '@security.token_storage']
         public: true
 
+    AppBundle\Mail\MailService:
+        autowire: true
+        arguments:
+            $mailerHost: "%mailer_host%"
+            $mailerUser: "%mailer_user%"
+            $mailerPassword: "%mailer_password%"
+
     AppBundle\Manager\ParticipantProfile\ParticipantProfileGenerator:
         autowire: true
         arguments:
@@ -192,7 +199,11 @@ services:
     app.payment.invoice_mailer:
         alias: AppBundle\Manager\Invoice\InvoiceMailer
     AppBundle\Manager\Invoice\InvoiceMailer:
-        arguments: ['@router','@mailer', '@app.twig_mail_generator', '@logger', '@doctrine.orm.entity_manager', '@app.payment.invoice_manager', '@app.payment.invoice_pdf_provider']
+        arguments:
+            - '@AppBundle\Mail\MailService'
+            - '@doctrine.orm.entity_manager'
+            - '@app.payment.invoice_manager'
+            - '@app.payment.invoice_pdf_provider'
         public: true
     app.payment_manager:
         alias: AppBundle\Manager\Payment\PaymentManager

@@ -13,58 +13,52 @@ namespace AppBundle\Manager\Invoice;
 
 
 use AppBundle\Entity\Invoice;
-use AppBundle\Form\EventMailType;
-use AppBundle\Manager\AbstractMailerAwareManager;
-use AppBundle\Twig\MailGenerator;
+use AppBundle\Mail\MailService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class InvoiceMailer extends AbstractMailerAwareManager
+class InvoiceMailer
 {
-
+    /**
+     * @var MailService
+     */
+    private MailService $mailService;
+    
     /**
      * @var InvoiceManager
      */
     private $invoiceManager;
-
+    
     /**
      * @var InvoicePdfProvider|null
      */
     private $invoicePdfProvider = null;
-
+    
     /**
      * EntityManager
      *
      * @var EntityManagerInterface
      */
     protected $em;
-
-
+    
     /**
      * Initiate a participation manager service
      *
-     * @param UrlGeneratorInterface   $urlGenerator
-     * @param \Swift_Mailer           $mailer
-     * @param MailGenerator           $mailGenerator
-     * @param LoggerInterface|null    $logger
-     * @param EntityManagerInterface  $em
-     * @param InvoiceManager          $invoiceManager
+     * @param EntityManagerInterface $em
+     * @param InvoiceManager $invoiceManager
+     *
      * @param InvoicePdfProvider|null $invoicePdf
      */
     public function __construct(
-        UrlGeneratorInterface $urlGenerator,
-        \Swift_Mailer $mailer,
-        MailGenerator $mailGenerator,
-        ?LoggerInterface $logger,
+        MailService $mailService,
         EntityManagerInterface $em,
         InvoiceManager $invoiceManager,
         ?InvoicePdfProvider $invoicePdf
-    ) {
+    )
+    {
+        $this->mailService        = $mailService;
         $this->em                 = $em;
         $this->invoiceManager     = $invoiceManager;
         $this->invoicePdfProvider = $invoicePdf;
-        parent::__construct($urlGenerator, $mailer, $mailGenerator, $logger);
     }
 
     /**
@@ -121,7 +115,7 @@ class InvoiceMailer extends AbstractMailerAwareManager
             $contentHtml = str_replace('{PARTICIPATION_SALUTATION}', $participation->getSalutation(), $contentHtml);
             $contentHtml = str_replace('{PARTICIPATION_NAME_LAST}', $participation->getNameLast(), $contentHtml);
 
-            $message = $this->mailGenerator->getMessage(
+            $message = $this->mailService->getTemplatedMessage(
                 'general-raw',
                 [
                     'text' => [
@@ -163,7 +157,7 @@ class InvoiceMailer extends AbstractMailerAwareManager
             $attachment->setContentType($type);
             $message->attach($attachment);
 
-            if ($this->mailer->send($message)) {
+            if ($this->mailService->send($message)) {
                 $invoice->setIsSent(true);
                 $this->em->persist($invoice);
                 $this->em->flush();

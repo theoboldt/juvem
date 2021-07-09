@@ -22,42 +22,45 @@ use AppBundle\Entity\User;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\MoveEmployeeType;
 use AppBundle\Form\MoveParticipationType;
+use AppBundle\Mail\MailService;
 use AppBundle\Twig\MailGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Swift_Mailer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ParticipationManager extends AbstractMailerAwareManager
+class ParticipationManager
 {
-
+    
+    /**
+     * @var MailService
+     */
+    private MailService $mailService;
+    
     /**
      * EntityManager
      *
      * @var EntityManagerInterface
      */
     protected $em;
-
+    
     /**
      * Initiate a participation manager service
      *
-     * @param UrlGeneratorInterface  $urlGenerator
-     * @param Swift_Mailer           $mailer
-     * @param MailGenerator          $mailGenerator
-     * @param LoggerInterface|null   $logger
+     * @param MailService $mailService
      * @param EntityManagerInterface $em
      */
     public function __construct(
-        UrlGeneratorInterface $urlGenerator,
-        Swift_Mailer $mailer,
-        MailGenerator $mailGenerator,
-        ?LoggerInterface $logger,
+        MailService $mailService,
         EntityManagerInterface $em
-    ) {
-        $this->em = $em;
-        parent::__construct($urlGenerator, $mailer, $mailGenerator, $logger);
+    )
+    {
+        $this->em          = $em;
+        $this->mailService = $mailService;
+        
     }
 
     /**
@@ -108,19 +111,20 @@ class ParticipationManager extends AbstractMailerAwareManager
      */
     protected function mailEventParticipation($template, ParticipationEntity $participation, Event $event)
     {
-        $message = $this->mailGenerator->getMessage(
-            $template, [
-                         'event'         => $event,
-                         'participation' => $participation,
-                         'participants'  => $participation->getParticipants(),
-                     ]
+        $message = $this->mailService->getTemplatedMessage(
+            $template,
+            [
+                'event'         => $event,
+                'participation' => $participation,
+                'participants'  => $participation->getParticipants(),
+            ]
         );
         $message->setTo(
             $participation->getEmail(),
             $participation->fullname()
         );
-
-        $this->mailer->send($message);
+    
+        $this->mailService->send($message);
     }
 
     /**
@@ -136,9 +140,6 @@ class ParticipationManager extends AbstractMailerAwareManager
     {
         $dataText = [];
         $dataHtml = [];
-
-        $dataText = array();
-        $dataHtml = array();
 
         $content = null;
         foreach ($data as $area => $content) {
@@ -174,14 +175,14 @@ class ParticipationManager extends AbstractMailerAwareManager
             }
             unset($contentList);
 
-            $message = $this->mailGenerator->getMessage('general-markdown', $dataBoth);
+            $message = $this->mailService->getTemplatedMessage('general-markdown', $dataBoth);
 
             $message->setTo(
                 $participation->getEmail(),
                 $participation->fullname()
             );
 
-            $this->mailer->send($message);
+            $this->mailService->send($message);
         }
     }
 
@@ -202,7 +203,7 @@ class ParticipationManager extends AbstractMailerAwareManager
             $participantsCount += count($event['participants']);
         }
 
-        $message = $this->mailGenerator->getMessage(
+        $message = $this->mailService->getTemplatedMessage(
             'event-subscription-report',
             ['user' => $user, 'events' => $eventList, 'participantsCount' => $participantsCount, 'lastRun' => $lastRun]
         );
@@ -210,7 +211,7 @@ class ParticipationManager extends AbstractMailerAwareManager
             $user->getEmail(),
             $user->fullname()
         );
-        $this->mailer->send($message);
+        $this->mailService->send($message);
     }
 
     /**

@@ -10,10 +10,16 @@
 
 namespace AppBundle\Twig;
 
+use AppBundle\Mail\MailService;
 use Swift_Message;
 use Twig\Environment;
 use Twig\Template;
 
+/**
+ * MailGenerator
+ *
+ * @internal Use {@see MailService} instead
+ */
 class MailGenerator
 {
     /**
@@ -94,6 +100,10 @@ class MailGenerator
         }
         $message->setBody($bodyText, 'text/plain')
                 ->addPart($bodyHtml, 'text/html');
+
+        $messageHeaders = $message->getHeaders();
+        $messageHeaders->addTextHeader('X-Organization', $this->customization->organizationName());
+        $messageHeaders->addTextHeader('X-Application', $this->customization->title());
 
         return $message;
     }

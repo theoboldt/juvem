@@ -13,12 +13,14 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
 use AppBundle\Http\Annotation\CloseSessionEarly;
+use AppBundle\Mail\MailService;
 use AppBundle\ResponseHelper;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;
 use AppBundle\Twig\GlobalCustomization;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
+use Swift_Message;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -105,8 +107,15 @@ class DefaultController
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction()
+    public function indexAction(MailService $mailService)
     {
+         $message    = (new Swift_Message())
+            ->setSubject('Test')
+             ->setTo('erik@theoboldt.eu');
+        $message->setBody('TestContent', 'text/plain');
+
+        $mailService->mail($message);
+        
         $repositoryFlash = $this->getDoctrine()->getRepository(Flash::class);
         $flashList       = $repositoryFlash->findValid();
         /** @var Flash $flash */
