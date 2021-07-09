@@ -219,9 +219,11 @@ class MailService implements UrlGeneratorInterface
             );
         }
         $mailbox = $this->getSentMailbox();
-        $result  = $mailbox->addMessage($message->toString(), '\\Seen');
-        if ($result) {
-            $this->logger->error('Failed to store sent email');
+        if ($mailbox) {
+            $result = $mailbox->addMessage($message->toString(), '\\Seen');
+            if (!$result) {
+                $this->logger->error('Failed to store sent email');
+            }
         }
         
         return $sent;
