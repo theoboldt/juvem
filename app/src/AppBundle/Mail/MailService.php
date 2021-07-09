@@ -181,7 +181,7 @@ class MailService implements UrlGeneratorInterface
                 continue;
             }
             $mailboxNames[] = $mailbox->getName();
-            if (mb_strtolower($mailbox->getName()) === 'sent') {
+            if (in_array(mb_strtolower($mailbox->getName()), ['sent', 'gesendete objekte', 'gesendet'])) {
                 $this->sentMailbox = $mailbox;
             }
         }
