@@ -722,6 +722,7 @@ class AdminMultipleExportController
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.docx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
+        $filename = str_replace('&', 'u.', $filename);
 
         return [
             'path' => $tmpPath,
@@ -785,6 +786,7 @@ class AdminMultipleExportController
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
+        $filename = str_replace('&', 'u.', $filename);
 
         return [
             'path' => $tmpPath,
