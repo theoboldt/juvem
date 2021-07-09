@@ -163,7 +163,6 @@ class ParticipantProfile
      */
     private function prepareDocument(): PhpWord
     {
-        Settings::setOutputEscapingEnabled(true);
         $document = new PhpWord();
         $language = new Language(Language::DE_DE);
 

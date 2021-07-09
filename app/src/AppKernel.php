@@ -13,6 +13,10 @@ class AppKernel extends Kernel
         if (!ini_get('date.timezone')) {
             date_default_timezone_set('Europe/Berlin');
         }
+        if (class_exists('\PhpOffice\PhpWord\Settings')) {
+            \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+        }
+        
         parent::__construct($environment, $debug);
     }
 
