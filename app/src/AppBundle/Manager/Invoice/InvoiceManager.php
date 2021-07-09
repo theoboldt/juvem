@@ -139,9 +139,9 @@ class InvoiceManager
      * Calculate new @see Invoice
      *
      * @param Participation $participation
-     * @return Invoice
+     * @return Invoice|null
      */
-    public function createInvoice(Participation $participation)
+    public function createInvoice(Participation $participation): ?Invoice
     {
         $event = $participation->getEvent();
         if ($event->getInvoiceTemplateFile()) {
@@ -155,6 +155,9 @@ class InvoiceManager
         $templateProcessor = new TemplateProcessor($templatePath);
 
         $toPayValue = $this->paymentManager->getToPayValueForParticipation($participation, false);
+        if ($toPayValue === null) {
+            return null;
+        }
         $invoice    = new Invoice($participation, $toPayValue);
         $invoice->setCreatedBy($this->user);
         $this->em->persist($invoice);
