@@ -115,42 +115,29 @@
       <div class="col-xs-12">
         <div>
           <ul class="nav nav-tabs" role="tablist">
-            {% if attribute.useAtEmployee %}
-              <li role="presentation" class="active">
-                <a href="#employees" aria-controls="employees" role="tab"
-                   data-toggle="tab">{{ usage.employeeCount }} Mitarbeiter</a>
-              </li>
-            {% endif %}
             {% if attribute.useAtParticipant %}
-              <li role="presentation"{% if not attribute.useAtEmployee %} class="active"{% endif %}>
+              <li role="presentation" class="active">
                 <a href="#participants" aria-controls="participants" role="tab"
-                   data-toggle="tab">{{ usage.participantsCount }} Teilnehmer</a>
+                   data-toggle="tab">{{ usage.participantsCount }} Teilnehmende</a>
               </li>
             {% endif %}
             {% if attribute.useAtParticipation %}
-              <li role="presentation"{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} class="active"{% endif %}>
+              <li role="presentation"{% if not attribute.useAtParticipant %} class="active"{% endif %}>
                 <a href="#participations" aria-controls="participations" role="tab"
                    data-toggle="tab">{{ usage.participationCount }}
                   Anmeldung{% if usage.participationCount > 1 %}en{% endif %}</a>
               </li>
             {% endif %}
+            {% if attribute.useAtEmployee %}
+              <li role="presentation"{% if not attribute.useAtParticipant and not attribute.useAtParticipation %} class="active"{% endif %}>
+                <a href="#employees" aria-controls="employees" role="tab"
+                   data-toggle="tab">{{ usage.employeeCount }} Mitarbeitende</a>
+              </li>
+            {% endif %}
           </ul>
           <div class="tab-content">
-            {% if attribute.useAtEmployee %}
-              <div role="tabpanel" class="tab-pane active" id="employees">
-                {% embed 'event/admin/group/embed-group-table-employees.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
-                  {% block toolbar %}
-                    {% if is_granted('employees_edit', event) -%}
-                      <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
-                              data-target="#dialogAddEmployee">{{ 'plus'|glyph }} Hinzufügen
-                      </button>
-                    {% endif %}
-                  {% endblock %}
-                {% endembed %}
-              </div>
-            {% endif %}
             {% if attribute.useAtParticipant %}
-              <div role="tabpanel" class="tab-pane{% if not attribute.useAtEmployee %} active{% endif %}"
+              <div role="tabpanel" class="tab-pane active"
                    id="participants">
                 {% embed 'event/admin/group/embed-group-table-participants.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
                   {% block toolbar %}
@@ -158,6 +145,11 @@
                       <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
                               data-target="#dialogAddParticipant">{{ 'plus'|glyph }} Hinzufügen
                       </button>
+                      <div class="btn-group" role="group">
+                          {{ 'is_confirmed'|tableFilterButtonTri(2, 'nur bestätigte', 'ohne bestätigte', 'inkl. bestätigte', true) }}
+                          {{ 'is_withdrawn_or_rejected'|tableFilterButtonTri(1, 'nur zurückgezogene/abgelehnte', 'ohne zurückgezogene/abgelehnte', 'inkl. zurückgezogen/abgelehnte') }}
+                          {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'inkl. gelöschte') }}
+                      </div>
                     {% endif %}
                   {% endblock %}
                 {% endembed %}
@@ -165,13 +157,26 @@
             {% endif %}
             {% if attribute.useAtParticipation %}
               <div role="tabpanel"
-                   class="tab-pane{% if not attribute.useAtEmployee and not attribute.useAtParticipant %} active{% endif %}"
+                   class="tab-pane{% if not attribute.useAtParticipant %} active{% endif %}"
                    id="participations">
                 {% embed 'event/admin/group/embed-group-table-participations.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
                   {% block toolbar %}
                     {% if is_granted('participants_edit', event) -%}
                       <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
                               data-target="#dialogAddParticipation">{{ 'plus'|glyph }} Hinzufügen
+                      </button>
+                    {% endif %}
+                  {% endblock %}
+                {% endembed %}
+              </div>
+            {% endif %}
+            {% if attribute.useAtEmployee %}
+              <div role="tabpanel" class="tab-pane {% if not attribute.useAtParticipant and not attribute.useAtParticipation %} active{% endif %}" id="employees">
+                {% embed 'event/admin/group/embed-group-table-employees.html.twig' with {'event': event, 'choiceOption': choiceOption} %}
+                  {% block toolbar %}
+                    {% if is_granted('employees_edit', event) -%}
+                      <button title="Hinzufügen" class="btn btn-primary" data-toggle="modal"
+                              data-target="#dialogAddEmployee">{{ 'plus'|glyph }} Hinzufügen
                       </button>
                     {% endif %}
                   {% endblock %}

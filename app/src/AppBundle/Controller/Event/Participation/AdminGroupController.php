@@ -12,6 +12,7 @@
 namespace AppBundle\Controller\Event\Participation;
 
 
+use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Controller\FormAwareControllerTrait;
@@ -420,18 +421,48 @@ class AdminGroupController
      */
     public function groupParticipantDataAction(Event $event, Attribute $attribute, AttributeChoiceOption $choiceOption)
     {
-        $repository = $this->getDoctrine()->getRepository(Attribute::class);
-        $usage      = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
-        $result     = [];
+        $statusFormatter = ParticipantStatus::formatter();
+        $repository      = $this->getDoctrine()->getRepository(Attribute::class);
+        $usage           = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
+        $result          = [];
 
         /** @var Participant $participant */
         foreach ($usage->getParticipants() as $participant) {
             $participation = $participant->getParticipation();
+
+            $participantStatus = $participant->getStatus(true);
+
+            $age = '';
+            if ($participant->hasBirthdayAtEvent()) {
+                $age = '<span class="birthday-during-event">';
+            }
+            if ($participant->getYearsOfLifeAtEvent() !== null) {
+                $age .= '<span class="years-of-life">' . $participant->getYearsOfLifeAtEvent() . '</span>';
+                $age .= ' <span class="rounded-age">(' . number_format($participant->getAgeAtEvent(), 1, ',', '.') . ')</span>';
+                if ($participant->hasBirthdayAtEvent()) {
+                    '</span>';
+                }
+            }
+            $participantStatusText = $statusFormatter->formatMask($participantStatus);
+            if ($participant->isDeleted()) {
+                $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
+            }
+            $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
+            $participantStatusRejected  = $participantStatus->has(ParticipantStatus::TYPE_STATUS_REJECTED);
+
             $row           = [
                 'pid'       => $participation->getPid(),
                 'aid'       => $participant->getAid(),
                 'nameFirst' => $participant->getNameFirst(),
                 'nameLast'  => $participant->getNameLast(),
+                'is_deleted'               => (int)($participant->getDeletedAt() instanceof \DateTime),
+                'is_withdrawn'             => (int)$participantStatusWithdrawn,
+                'is_rejected'              => (int)$participantStatusRejected,
+                'is_withdrawn_or_rejected' => (int)($participantStatusWithdrawn || $participantStatusRejected),
+                'is_confirmed'             => (int)$participantStatus->has(ParticipantStatus::TYPE_STATUS_CONFIRMED),
+                'age'                      => $age,
+                'status'                   => $participantStatusText,
+                'gender'                   => $participant->getGender(),
             ];
 
             /** @var Fillout $fillout */
