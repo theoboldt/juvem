@@ -149,7 +149,7 @@ HTML;
         SupportsChangeTrackingInterface $entity, ?string $size, bool $includeModal = true
     ): string
     {
-        if ($this->authorizationChecker->isGranted('READ', $entity)) {
+        if ($this->authorizationChecker->isGranted('read', $entity)) {
             $changes = 0;
         } else {
             $changes = $this->repository->countAllByEntity($entity);
