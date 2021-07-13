@@ -105,7 +105,8 @@ $(function () {
                 }
             });
         }, 600000);
-    }();
+    };
+    heartbeat();
 
     var $grid = $('.grid').masonry({
         itemSelector: '.grid-item',
