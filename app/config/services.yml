@@ -378,6 +378,11 @@ services:
       tags:
         - security.voter
 
+    AppBundle\Security\EmailVoter:
+      autowire: true
+      tags:
+        - security.voter
+
     AppBundle\LocalhostInformationProvider:
         arguments:
             - "@request_stack"
@@ -473,6 +478,14 @@ services:
             - '@app.repository.entity_change'
             - '@security.authorization_checker'
             - '@router'
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\Extension\EmailListingButton:
+        autowire: true
+        arguments:
+            $authorizationChecker: '@security.authorization_checker'
         public: false
         tags:
             - { name: twig.extension }

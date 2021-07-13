@@ -108,6 +108,7 @@ module.exports = function (grunt) {
                     '<%= assetsPath %>/js/area/participation.js',
                     '<%= assetsPath %>/js/area/newsletter.js',
                     '<%= assetsPath %>/js/area/meals.js',
+                    '<%= assetsPath %>/js/area/email.js',
                     '<%= assetsPath %>/js/main.js'
                 ],
                 dest: 'web/js/all.js'

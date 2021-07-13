@@ -148,7 +148,7 @@ $(function(){
         has: function (key) {
             const internalKey = this.getKey(key);
             if (!useSecureCache()) {
-                return commonCacheLocal[internalKey] !== null;
+                return commonCacheLocal[internalKey] !== null && commonCacheLocal[internalKey] !== undefined;
             }
             return this.storage.isSet(internalKey);
         },
