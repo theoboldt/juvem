@@ -92,7 +92,10 @@ class NewsletterManager
             $template, ['subscription' => $subscription]
         );
         $nameLast = $subscription->getNameLast();
-        $message->setTo($subscription->getEmail(), $nameLast ? $nameLast : null);
+        $message->setTo($subscription->getEmail(), $nameLast ?: null);
+        $headers = $message->getHeaders();
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
         
         return $this->mailService->send($message);
     }
@@ -164,6 +167,9 @@ class NewsletterManager
                 }
 
                 $message = $this->mailService->getTemplatedMessage('general-markdown', $dataBoth);
+                $headers = $message->getHeaders();
+                $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
+                $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
 
                 if ($assignedUser) {
                     $message->setTo(

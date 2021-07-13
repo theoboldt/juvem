@@ -27,6 +27,16 @@ use Symfony\Component\Routing\RequestContext;
 
 class MailService implements UrlGeneratorInterface
 {
+    const HEADER_APPLICATION = 'X-Application';
+
+    const HEADER_APPLICATION_SENDER = 'X-Application-Sender';
+    
+    const HEADER_ORGANIZATION = 'X-Organization';
+    
+    const HEADER_RELATED_ENTITY_TYPE = 'X-Related-Type';
+    
+    const HEADER_RELATED_ENTITY_ID = 'X-Related-Id';
+    
     private string $mailerImapHost;
     
     private string $mailerUser;
@@ -205,7 +215,7 @@ class MailService implements UrlGeneratorInterface
     public function send(Swift_Mime_SimpleMessage $message): int
     {
         $messageHeaders = $message->getHeaders();
-        $messageHeaders->addTextHeader('X-Application-Sender', 'Juvem');
+        $messageHeaders->addTextHeader(self::HEADER_APPLICATION_SENDER, 'Juvem');
         
         $sent = 0;
         try {

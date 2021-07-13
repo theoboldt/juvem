@@ -102,8 +102,8 @@ class MailGenerator
                 ->addPart($bodyHtml, 'text/html');
 
         $messageHeaders = $message->getHeaders();
-        $messageHeaders->addTextHeader('X-Organization', $this->customization->organizationName());
-        $messageHeaders->addTextHeader('X-Application', $this->customization->title());
+        $messageHeaders->addTextHeader(MailService::HEADER_ORGANIZATION, $this->customization->organizationName());
+        $messageHeaders->addTextHeader(MailService::HEADER_APPLICATION, $this->customization->title());
 
         return $message;
     }

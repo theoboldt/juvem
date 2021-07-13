@@ -23,14 +23,8 @@ use AppBundle\Form\EventMailType;
 use AppBundle\Form\MoveEmployeeType;
 use AppBundle\Form\MoveParticipationType;
 use AppBundle\Mail\MailService;
-use AppBundle\Twig\MailGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use Swift_Mailer;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ParticipationManager
 {
@@ -123,6 +117,9 @@ class ParticipationManager
             $participation->getEmail(),
             $participation->fullname()
         );
+        $headers = $message->getHeaders();
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
     
         $this->mailService->send($message);
     }
@@ -181,6 +178,9 @@ class ParticipationManager
                 $participation->getEmail(),
                 $participation->fullname()
             );
+            $headers = $message->getHeaders();
+            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
 
             $this->mailService->send($message);
         }
@@ -211,6 +211,10 @@ class ParticipationManager
             $user->getEmail(),
             $user->fullname()
         );
+        $headers = $message->getHeaders();
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, User::class);
+        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $user->getUid());
+
         $this->mailService->send($message);
     }
 

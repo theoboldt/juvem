@@ -13,6 +13,7 @@ namespace AppBundle\Manager\Invoice;
 
 
 use AppBundle\Entity\Invoice;
+use AppBundle\Entity\Participation;
 use AppBundle\Mail\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -157,6 +158,9 @@ class InvoiceMailer
             $attachment->setContentType($type);
             $message->attach($attachment);
 
+            $headers = $message->getHeaders();
+            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
             if ($this->mailService->send($message)) {
                 $invoice->setIsSent(true);
                 $this->em->persist($invoice);
