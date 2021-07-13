@@ -163,7 +163,7 @@ services:
         arguments: ['@doctrine', '@security.token_storage']
         public: true
 
-    AppBundle\Mail\MailService:
+    AppBundle\Mail\MailSendService:
         autowire: true
         arguments:
             $mailerHost: "%mailer_host%"
@@ -201,7 +201,7 @@ services:
         alias: AppBundle\Manager\Invoice\InvoiceMailer
     AppBundle\Manager\Invoice\InvoiceMailer:
         arguments:
-            - '@AppBundle\Mail\MailService'
+            - '@AppBundle\Mail\MailSendService'
             - '@doctrine.orm.entity_manager'
             - '@app.payment.invoice_manager'
             - '@app.payment.invoice_pdf_provider'
