@@ -13,7 +13,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Flash;
 use AppBundle\Http\Annotation\CloseSessionEarly;
-use AppBundle\Mail\MailService;
 use AppBundle\ResponseHelper;
 use AppBundle\Sitemap\Page;
 use AppBundle\Sitemap\PageFactory;

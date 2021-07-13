@@ -13,7 +13,7 @@ namespace AppBundle\Manager;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\User;
-use AppBundle\Mail\MailService;
+use AppBundle\Mail\MailSendService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,9 +22,9 @@ class NewsletterManager
 {
     
     /**
-     * @var MailService
+     * @var MailSendService
      */
-    private MailService $mailService;
+    private MailSendService $mailService;
     
     /**
      * @var LoggerInterface
@@ -34,11 +34,11 @@ class NewsletterManager
     /**
      * Initiate a participation manager service
      *
-     * @param MailService $mailService
+     * @param MailSendService $mailService
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        MailService $mailService,
+        MailSendService $mailService,
         ?LoggerInterface $logger
     )
     {
@@ -94,8 +94,8 @@ class NewsletterManager
         $nameLast = $subscription->getNameLast();
         $message->setTo($subscription->getEmail(), $nameLast ?: null);
         $headers = $message->getHeaders();
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
         
         return $this->mailService->send($message);
     }
@@ -168,8 +168,8 @@ class NewsletterManager
 
                 $message = $this->mailService->getTemplatedMessage('general-markdown', $dataBoth);
                 $headers = $message->getHeaders();
-                $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
-                $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
+                $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
+                $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
 
                 if ($assignedUser) {
                     $message->setTo(

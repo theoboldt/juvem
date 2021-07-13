@@ -25,7 +25,7 @@ use Swift_Mime_SimpleMessage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
-class MailService implements UrlGeneratorInterface
+class MailSendService implements UrlGeneratorInterface
 {
     const HEADER_APPLICATION = 'X-Application';
 

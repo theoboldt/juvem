@@ -10,7 +10,7 @@
 
 namespace AppBundle\Twig;
 
-use AppBundle\Mail\MailService;
+use AppBundle\Mail\MailSendService;
 use Swift_Message;
 use Twig\Environment;
 use Twig\Template;
@@ -18,7 +18,7 @@ use Twig\Template;
 /**
  * MailGenerator
  *
- * @internal Use {@see MailService} instead
+ * @internal Use {@see MailSendService} instead
  */
 class MailGenerator
 {
@@ -102,8 +102,8 @@ class MailGenerator
                 ->addPart($bodyHtml, 'text/html');
 
         $messageHeaders = $message->getHeaders();
-        $messageHeaders->addTextHeader(MailService::HEADER_ORGANIZATION, $this->customization->organizationName());
-        $messageHeaders->addTextHeader(MailService::HEADER_APPLICATION, $this->customization->title());
+        $messageHeaders->addTextHeader(MailSendService::HEADER_ORGANIZATION, $this->customization->organizationName());
+        $messageHeaders->addTextHeader(MailSendService::HEADER_APPLICATION, $this->customization->title());
 
         return $message;
     }

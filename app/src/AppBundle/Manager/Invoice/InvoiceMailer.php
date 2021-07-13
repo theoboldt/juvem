@@ -14,15 +14,15 @@ namespace AppBundle\Manager\Invoice;
 
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
-use AppBundle\Mail\MailService;
+use AppBundle\Mail\MailSendService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class InvoiceMailer
 {
     /**
-     * @var MailService
+     * @var MailSendService
      */
-    private MailService $mailService;
+    private MailSendService $mailService;
     
     /**
      * @var InvoiceManager
@@ -50,7 +50,7 @@ class InvoiceMailer
      * @param InvoicePdfProvider|null $invoicePdf
      */
     public function __construct(
-        MailService $mailService,
+        MailSendService $mailService,
         EntityManagerInterface $em,
         InvoiceManager $invoiceManager,
         ?InvoicePdfProvider $invoicePdf
@@ -159,8 +159,8 @@ class InvoiceMailer
             $message->attach($attachment);
 
             $headers = $message->getHeaders();
-            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
+            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
             if ($this->mailService->send($message)) {
                 $invoice->setIsSent(true);
                 $this->em->persist($invoice);

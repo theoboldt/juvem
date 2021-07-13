@@ -22,7 +22,7 @@ use AppBundle\Entity\User;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\MoveEmployeeType;
 use AppBundle\Form\MoveParticipationType;
-use AppBundle\Mail\MailService;
+use AppBundle\Mail\MailSendService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -30,9 +30,9 @@ class ParticipationManager
 {
     
     /**
-     * @var MailService
+     * @var MailSendService
      */
-    private MailService $mailService;
+    private MailSendService $mailService;
     
     /**
      * EntityManager
@@ -44,11 +44,11 @@ class ParticipationManager
     /**
      * Initiate a participation manager service
      *
-     * @param MailService $mailService
+     * @param MailSendService $mailService
      * @param EntityManagerInterface $em
      */
     public function __construct(
-        MailService $mailService,
+        MailSendService $mailService,
         EntityManagerInterface $em
     )
     {
@@ -118,8 +118,8 @@ class ParticipationManager
             $participation->fullname()
         );
         $headers = $message->getHeaders();
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
     
         $this->mailService->send($message);
     }
@@ -179,8 +179,8 @@ class ParticipationManager
                 $participation->fullname()
             );
             $headers = $message->getHeaders();
-            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-            $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
+            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
+            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
 
             $this->mailService->send($message);
         }
@@ -212,8 +212,8 @@ class ParticipationManager
             $user->fullname()
         );
         $headers = $message->getHeaders();
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_TYPE, User::class);
-        $headers->addTextHeader(MailService::HEADER_RELATED_ENTITY_ID, $user->getUid());
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, User::class);
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $user->getUid());
 
         $this->mailService->send($message);
     }
