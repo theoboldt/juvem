@@ -13,11 +13,7 @@ namespace AppBundle\Mail;
 
 
 use AppBundle\Twig\MailGenerator;
-use Ddeboer\Imap\ConnectionInterface;
-use Ddeboer\Imap\Exception\AuthenticationFailedException;
-use Ddeboer\Imap\Exception\ResourceCheckFailureException;
 use Ddeboer\Imap\Mailbox;
-use Ddeboer\Imap\Server;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swift_Message;
@@ -37,15 +33,7 @@ class MailSendService implements UrlGeneratorInterface
     
     const HEADER_RELATED_ENTITY_ID = 'X-Related-Id';
     
-    private string $mailerImapHost;
-    
-    private string $mailerUser;
-    
-    private string $mailerPassword;
-    
-    private bool $imapConnectionTried = false;
-    
-    private ?ConnectionInterface $imapConnection = null;
+    private MailImapService $mailImapService;
     
     private ?Mailbox $sentMailbox = null;
     
@@ -74,96 +62,24 @@ class MailSendService implements UrlGeneratorInterface
     /**
      * Initiate a participation manager service
      *
-     * @param string $mailerHost
-     * @param string|null $mailerImapHost
-     * @param string $mailerUser
-     * @param string $mailerPassword
      * @param UrlGeneratorInterface $urlGenerator
      * @param \Swift_Mailer $mailer
      * @param MailGenerator $mailGenerator
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        string $mailerHost,
-        ?string $mailerImapHost,
-        string $mailerUser,
-        string $mailerPassword,
         UrlGeneratorInterface $urlGenerator,
         \Swift_Mailer $mailer,
         MailGenerator $mailGenerator,
+        MailImapService $mailImapService,
         LoggerInterface $logger = null
     )
     {
-        $this->mailerImapHost = $mailerImapHost ?: $mailerHost;
-        $this->mailerUser     = $mailerUser;
-        $this->mailerPassword = $mailerPassword;
         $this->urlGenerator   = $urlGenerator;
         $this->mailer         = $mailer;
         $this->mailGenerator  = $mailGenerator;
         $this->logger         = $logger ?? new NullLogger();
-    }
-    
-    /**
-     * Get IMAP connection to configured mail account
-     *
-     * @return ConnectionInterface|null
-     */
-    private function getImapConnection(): ?ConnectionInterface
-    {
-        if ($this->imapConnectionTried) {
-            return $this->imapConnection;
-        }
-        $this->imapConnectionTried = true;
-        
-        if (!function_exists('imap_open')) {
-            $this->logger->warning('PHP IMAP Extension unavailable');
-            return null;
-        }
-        $timeBegin = microtime(true);
-        $server    = new Server($this->mailerImapHost);
-        try {
-            $this->imapConnection = $server->authenticate($this->mailerUser, $this->mailerPassword);
-        } catch (AuthenticationFailedException $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-            return null;
-        } catch (ResourceCheckFailureException $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-            return null;
-        } catch (\Exception $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, generic exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-        }
-        $this->logger->info(
-            'Connected to mail in {duration} seconds', ['duration' => round(microtime(true) - $timeBegin)]
-        );
-        
-        return $this->imapConnection;
+        $this->mailImapService = $mailImapService;
     }
     
     /**
@@ -176,12 +92,7 @@ class MailSendService implements UrlGeneratorInterface
         if ($this->sentMailbox) {
             return $this->sentMailbox;
         }
-        $connection = $this->getImapConnection();
-        if (!$connection) {
-            return null;
-        }
-        $timeBegin = microtime(true);
-        $mailboxes = $connection->getMailboxes();
+        $mailboxes = $this->mailImapService->getMailboxes();
         
         $mailboxNames = [];
         foreach ($mailboxes as $mailbox) {
@@ -201,9 +112,6 @@ class MailSendService implements UrlGeneratorInterface
                 'Unable to identify sent mailbox, found {mailboxes}', ['mailboxes' => implode(', ', $mailboxNames)]
             );
         }
-        $this->logger->info(
-            'Found sent mailbox in {duration} seconds', ['duration' => round(microtime(true) - $timeBegin)]
-        );
         
         return $this->sentMailbox;
     }
