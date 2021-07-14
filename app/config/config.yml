@@ -45,7 +45,7 @@ framework:
             # uses the "app" cache configuration
             cache.app.email:
                 adapter: cache.app
-                default_lifetime: 60
+                default_lifetime: 604800
 
     assets:
         version: "%app.version%"
