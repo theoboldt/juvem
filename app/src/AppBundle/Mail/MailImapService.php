@@ -19,15 +19,11 @@ use Ddeboer\Imap\Mailbox;
 use Ddeboer\Imap\Server;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Swift_Mime_SimpleMessage;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class MailImapService
 {
-    private string $mailerImapHost;
-    
-    private string $mailerUser;
-    
-    private string $mailerPassword;
-    
     private bool $imapConnectionTried = false;
     
     private ?ConnectionInterface $imapConnection = null;
@@ -38,26 +34,36 @@ class MailImapService
     private ?array $mailboxes = null;
     
     /**
+     * Mail Listing cache
+     *
+     * @var CacheInterface
+     */
+    private CacheInterface $cache;
+    
+    /**
+     * @var MailConfigurationProvider
+     */
+    private MailConfigurationProvider $mailConfigurationProvider;
+    
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    
+    /**
      * Initiate a participation manager service
      *
-     * @param string $mailerHost
-     * @param string|null $mailerImapHost
-     * @param string $mailerUser
-     * @param string $mailerPassword
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        string $mailerHost,
-        ?string $mailerImapHost,
-        string $mailerUser,
-        string $mailerPassword,
+        MailConfigurationProvider $mailConfigurationProvider,
+        CacheInterface $cacheAppEmail,
         LoggerInterface $logger = null
     )
     {
-        $this->mailerImapHost = $mailerImapHost ?: $mailerHost;
-        $this->mailerUser     = $mailerUser;
-        $this->mailerPassword = $mailerPassword;
-        $this->logger         = $logger ?? new NullLogger();
+        $this->cache                     = $cacheAppEmail;
+        $this->logger                    = $logger ?? new NullLogger();
+        $this->mailConfigurationProvider = $mailConfigurationProvider;
     }
     
     /**
@@ -77,15 +83,17 @@ class MailImapService
             return null;
         }
         $timeBegin = microtime(true);
-        $server    = new Server($this->mailerImapHost);
+        $server    = new Server($this->mailConfigurationProvider->getMailerImapHost());
         try {
-            $this->imapConnection = $server->authenticate($this->mailerUser, $this->mailerPassword);
+            $this->imapConnection = $server->authenticate(
+                $this->mailConfigurationProvider->getMailerUser(), $this->mailConfigurationProvider->getMailerPassword()
+            );
         } catch (AuthenticationFailedException $e) {
             $this->logger->error(
                 'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
                 [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()
@@ -96,8 +104,8 @@ class MailImapService
             $this->logger->error(
                 'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
                 [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()
@@ -108,8 +116,8 @@ class MailImapService
             $this->logger->error(
                 'IMAP authentication for {user} on {host} failed, generic exception {class} with message {message}: {trace}',
                 [
-                    'user'    => $this->mailerUser,
-                    'host'    => $this->mailerImapHost,
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
                     'class'   => get_class($e),
                     'message' => $e->getMessage(),
                     'trace'   => $e->getTraceAsString()
@@ -148,6 +156,57 @@ class MailImapService
             }
         }
         return $this->mailboxes;
+    }
+    
+    /**
+     * Get sent mailbox if any
+     *
+     * @return Mailbox|null
+     */
+    public function getSentMailbox(): ?Mailbox
+    {
+        foreach ($this->getMailboxes() as $mailbox) {
+            // Skip container-only mailboxes
+            // @see https://secure.php.net/manual/en/function.imap-getmailboxes.php
+            if ($mailbox->getAttributes() & \LATT_NOSELECT) {
+                continue;
+            }
+            $mailboxNames[] = $mailbox->getName();
+            if (in_array(mb_strtolower($mailbox->getName()), ['sent', 'gesendete objekte', 'gesendet'])) {
+                return $mailbox;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Add email to mailbox
+     *
+     * @param Swift_Mime_SimpleMessage $message
+     * @param Mailbox $mailbox
+     * @return void
+     */
+    public function addMessageToBox(\Swift_Mime_SimpleMessage $message, Mailbox $mailbox, bool $seen): void
+    {
+        $result = $mailbox->addMessage($message->toString(), $seen ? '\\Seen' : null, $message->getDate());
+        if (!$result) {
+            $this->logger->error(
+                'Failed to store email {subject} to {recipient}',
+                [
+                    'subject'   => $message->getSubject(),
+                    'recipient' => implode(', ', $message->getTo()),
+                ]
+            );
+        }
+        
+        $headers = $message->getHeaders();
+        if ($headers->has(MailSendService::HEADER_RELATED_ENTITY_TYPE)
+            && $headers->has(MailSendService::HEADER_RELATED_ENTITY_TYPE)
+        ) {
+            $relatedEntityType = $headers->get(MailSendService::HEADER_RELATED_ENTITY_TYPE)->getFieldBody();
+            $relatedEntityId   = (int)$headers->get(MailSendService::HEADER_RELATED_ENTITY_ID)->getFieldBody();
+            $this->cache->delete(MailListService::getCacheKey($relatedEntityType, $relatedEntityId));
+        }
     }
     
 }

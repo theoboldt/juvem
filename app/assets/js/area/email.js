@@ -49,10 +49,17 @@ $(function () {
 
             jQuery.each(emails, function (key, email) {
                 html += '<tr>';
-                html += '<td>' + eHtml(email.from.join(', ')) + '</td>';
-                html += '<td>' + eHtml(email.to.join(', ')) + '</td>';
+                html += '<td><small>' + eHtml(email.from.join(', ')) + '</small></td>';
+                html += '<td><small>' + eHtml(email.to.join(', ')) + '</small></td>';
                 html += '<td>' + eHtml(email.date) + '</td>';
-                html += '<td>' + eHtml(email.subject) + '</td>';
+                html += '<td>';
+                if (email.attachment_count) {
+                    html += '<span class="glyphicon glyphicon-paperclip" aria-hidden="true" title="';
+                    html += (email.attachment_count === 1 ? '1 Anhang' : email.attachment_count + ' Anhänge');
+                    html += '"></span> ';
+                }
+                html += eHtml(email.subject);
+                html += '</td>';
                 html += '<td>' + eHtml(email.mailbox) + '</td>';
                 html += '</tr>';
             });

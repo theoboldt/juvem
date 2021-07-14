@@ -30,6 +30,9 @@ class MailListService
      */
     private CacheInterface $cache;
     
+    /**
+     * @var MailImapService
+     */
     private MailImapService $mailImapService;
     
     /**
@@ -66,7 +69,7 @@ class MailListService
      * @param int $id
      * @return string
      */
-    private function getCacheKey(string $class, int $id): string
+    public static function getCacheKey(string $class, int $id): string
     {
         return EntityChangeRepository::convertClassNameForRoute($class) . '_' . $id;
     }
@@ -121,21 +124,28 @@ class MailListService
                                 $toList[] = $address->getAddress();
                             }
                         }
-                        //$attachments = $message->getAttachments();
-                        
                         $result[] = new MailFragment(
                             $fromList,
                             $toList,
                             $message->getSubject(),
                             $message->getDate(),
-                            $mailbox->getName()
+                            $mailbox->getName(),
+                            count($message->getAttachments())
                         );
                     }
                 }
+    
+                usort(
+                    $result, function (MailFragment $a, MailFragment $b) {
+                    return $b->getDate() <=> $a->getDate();
+                }
+                );
+                
                 
                 return $result;
             }
         );
     }
+    
     
 }

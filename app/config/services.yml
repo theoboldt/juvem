@@ -163,17 +163,19 @@ services:
         arguments: ['@doctrine', '@security.token_storage']
         public: true
 
-    AppBundle\Mail\MailImapService:
+    AppBundle\Mail\MailConfigurationProvider:
         autowire: true
         arguments:
             $mailerHost: "%mailer_host%"
             $mailerImapHost: "%mailer_imap_host%"
             $mailerUser: "%mailer_user%"
             $mailerPassword: "%mailer_password%"
+            $mailerAddress: "%mailer_address%"
+
+    AppBundle\Mail\MailImapService:
+        autowire: true
 
     AppBundle\Mail\MailSendService:
-        arguments:
-            $mailerAddress: "%mailer_address%"
         autowire: true
 
     AppBundle\Mail\MailListService:

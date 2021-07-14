@@ -12,9 +12,7 @@
 namespace AppBundle\Mail;
 
 
-use AppBundle\Twig\GlobalCustomization;
 use AppBundle\Twig\MailGenerator;
-use Ddeboer\Imap\Mailbox;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swift_Message;
@@ -25,7 +23,7 @@ use Symfony\Component\Routing\RequestContext;
 class MailSendService implements UrlGeneratorInterface
 {
     const HEADER_APPLICATION = 'X-Application';
-
+    
     const HEADER_APPLICATION_SENDER = 'X-Application-Sender';
     
     const HEADER_ORGANIZATION = 'X-Organization';
@@ -34,16 +32,7 @@ class MailSendService implements UrlGeneratorInterface
     
     const HEADER_RELATED_ENTITY_ID = 'X-Related-Id';
     
-    /**
-     * mailer_address
-     *
-     * @var string
-     */
-    private string $mailerAddress;
-    
     private MailImapService $mailImapService;
-    
-    private ?Mailbox $sentMailbox = null;
     
     /**
      * @var \Swift_Mailer
@@ -56,23 +45,26 @@ class MailSendService implements UrlGeneratorInterface
     protected $mailGenerator;
     
     /**
+     * Router used to create the routes for the transmitted pages
+     *
+     * @var UrlGeneratorInterface
+     */
+    protected $urlGenerator;
+    
+    /**
+     * @var MailConfigurationProvider
+     */
+    private MailConfigurationProvider $mailConfigurationProvider;
+    
+    /**
      * @var LoggerInterface
      */
     protected $logger;
     
     /**
-     * Router used to create the routes for the transmitted pages
-     *
-     * @var UrlGeneratorInterface
-     */
-    protected                   $urlGenerator;
-    private GlobalCustomization $customization;
-    
-    /**
      * Initiate a participation manager service
      *
-     * @param string $mailerAddress
-     * @param GlobalCustomization $customization
+     * @param MailConfigurationProvider $mailConfigurationProvider
      * @param UrlGeneratorInterface $urlGenerator
      * @param \Swift_Mailer $mailer
      * @param MailGenerator $mailGenerator
@@ -80,8 +72,7 @@ class MailSendService implements UrlGeneratorInterface
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        string $mailerAddress,
-        GlobalCustomization $customization,
+        MailConfigurationProvider $mailConfigurationProvider,
         UrlGeneratorInterface $urlGenerator,
         \Swift_Mailer $mailer,
         MailGenerator $mailGenerator,
@@ -89,48 +80,14 @@ class MailSendService implements UrlGeneratorInterface
         LoggerInterface $logger = null
     )
     {
-        $this->urlGenerator   = $urlGenerator;
-        $this->mailer         = $mailer;
-        $this->mailGenerator  = $mailGenerator;
-        $this->logger         = $logger ?? new NullLogger();
-        $this->mailImapService = $mailImapService;
-        $this->mailerAddress = $mailerAddress;
-        $this->customization = $customization;
+        $this->urlGenerator              = $urlGenerator;
+        $this->mailer                    = $mailer;
+        $this->mailGenerator             = $mailGenerator;
+        $this->logger                    = $logger ?? new NullLogger();
+        $this->mailImapService           = $mailImapService;
+        $this->mailConfigurationProvider = $mailConfigurationProvider;
     }
     
-    /**
-     * Get sent mailbox if any
-     *
-     * @return Mailbox|null
-     */
-    private function getSentMailbox(): ?Mailbox
-    {
-        if ($this->sentMailbox) {
-            return $this->sentMailbox;
-        }
-        $mailboxes = $this->mailImapService->getMailboxes();
-        
-        $mailboxNames = [];
-        foreach ($mailboxes as $mailbox) {
-            // Skip container-only mailboxes
-            // @see https://secure.php.net/manual/en/function.imap-getmailboxes.php
-            if ($mailbox->getAttributes() & \LATT_NOSELECT) {
-                continue;
-            }
-            $mailboxNames[] = $mailbox->getName();
-            if (in_array(mb_strtolower($mailbox->getName()), ['sent', 'gesendete objekte', 'gesendet'])) {
-                $this->sentMailbox = $mailbox;
-            }
-        }
-        
-        if (!$this->sentMailbox) {
-            $this->logger->error(
-                'Unable to identify sent mailbox, found {mailboxes}', ['mailboxes' => implode(', ', $mailboxNames)]
-            );
-        }
-        
-        return $this->sentMailbox;
-    }
     
     /**
      * @param Swift_Mime_SimpleMessage $message
@@ -138,11 +95,20 @@ class MailSendService implements UrlGeneratorInterface
      */
     public function send(Swift_Mime_SimpleMessage $message): int
     {
-        $message->setSender($this->mailerAddress, $this->customization->organizationName());
-        $message->setFrom($this->mailerAddress, $this->customization->organizationName());
-        $message->setReplyTo(
-            $this->customization->organizationEmail(), $this->customization->organizationName()
+        $message->setSender(
+            $this->mailConfigurationProvider->getMailerAddress(), $this->mailConfigurationProvider->organizationName()
         );
+        $message->setFrom(
+            $this->mailConfigurationProvider->getMailerAddress(), $this->mailConfigurationProvider->organizationName()
+        );
+        if ($this->mailConfigurationProvider->organizationEmail()
+            !== $this->mailConfigurationProvider->getMailerAddress()
+        ) {
+            $message->setReplyTo(
+                $this->mailConfigurationProvider->organizationEmail(),
+                $this->mailConfigurationProvider->organizationName()
+            );
+        }
         $messageHeaders = $message->getHeaders();
         $messageHeaders->addTextHeader(self::HEADER_APPLICATION_SENDER, 'Juvem');
         
@@ -159,12 +125,14 @@ class MailSendService implements UrlGeneratorInterface
                 'Failed to email to recipients: {recipients}', ['recipients' => implode(', ', $failedRecipients)]
             );
         }
-        $mailbox = $this->getSentMailbox();
-        if ($mailbox) {
-            $result = $mailbox->addMessage($message->toString(), '\\Seen');
-            if (!$result) {
-                $this->logger->error('Failed to store sent email');
-            }
+        
+        $sentMailbox = $this->mailImapService->getSentMailbox();
+        if ($sentMailbox) {
+            $this->mailImapService->addMessageToBox(
+                $message,
+                $sentMailbox,
+                true
+            );
         }
         
         return $sent;
