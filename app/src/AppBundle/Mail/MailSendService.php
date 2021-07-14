@@ -12,6 +12,7 @@
 namespace AppBundle\Mail;
 
 
+use AppBundle\Twig\GlobalCustomization;
 use AppBundle\Twig\MailGenerator;
 use Ddeboer\Imap\Mailbox;
 use Psr\Log\LoggerInterface;
@@ -32,6 +33,13 @@ class MailSendService implements UrlGeneratorInterface
     const HEADER_RELATED_ENTITY_TYPE = 'X-Related-Type';
     
     const HEADER_RELATED_ENTITY_ID = 'X-Related-Id';
+    
+    /**
+     * mailer_address
+     *
+     * @var string
+     */
+    private string $mailerAddress;
     
     private MailImapService $mailImapService;
     
@@ -57,17 +65,23 @@ class MailSendService implements UrlGeneratorInterface
      *
      * @var UrlGeneratorInterface
      */
-    protected $urlGenerator;
+    protected                   $urlGenerator;
+    private GlobalCustomization $customization;
     
     /**
      * Initiate a participation manager service
      *
+     * @param string $mailerAddress
+     * @param GlobalCustomization $customization
      * @param UrlGeneratorInterface $urlGenerator
      * @param \Swift_Mailer $mailer
      * @param MailGenerator $mailGenerator
+     * @param MailImapService $mailImapService
      * @param LoggerInterface|null $logger
      */
     public function __construct(
+        string $mailerAddress,
+        GlobalCustomization $customization,
         UrlGeneratorInterface $urlGenerator,
         \Swift_Mailer $mailer,
         MailGenerator $mailGenerator,
@@ -80,6 +94,8 @@ class MailSendService implements UrlGeneratorInterface
         $this->mailGenerator  = $mailGenerator;
         $this->logger         = $logger ?? new NullLogger();
         $this->mailImapService = $mailImapService;
+        $this->mailerAddress = $mailerAddress;
+        $this->customization = $customization;
     }
     
     /**
@@ -122,6 +138,11 @@ class MailSendService implements UrlGeneratorInterface
      */
     public function send(Swift_Mime_SimpleMessage $message): int
     {
+        $message->setSender($this->mailerAddress, $this->customization->organizationName());
+        $message->setFrom($this->mailerAddress, $this->customization->organizationName());
+        $message->setReplyTo(
+            $this->customization->organizationEmail(), $this->customization->organizationName()
+        );
         $messageHeaders = $message->getHeaders();
         $messageHeaders->addTextHeader(self::HEADER_APPLICATION_SENDER, 'Juvem');
         

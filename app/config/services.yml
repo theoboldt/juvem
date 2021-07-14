@@ -172,6 +172,8 @@ services:
             $mailerPassword: "%mailer_password%"
 
     AppBundle\Mail\MailSendService:
+        arguments:
+            $mailerAddress: "%mailer_address%"
         autowire: true
 
     AppBundle\Mail\MailListService:
