@@ -32,7 +32,7 @@ DATEN DER ELTERN:
 
 DATEN DER TEILNEHMER:
 {% for participant in participation.getParticipants() %}
-  Teilnehmer ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
+  {{ partipant.getGenderTerm(false) }} ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
     Vorname: {{ participant.nameFirst }}
     Nachname: {{ participant.nameLast }}
     Geschlecht: {{ participant.getGender() }}
@@ -126,7 +126,7 @@ Mit besten Grüßen,
                 <thead>
                 <tr>
                     <td class="thead" colspan="2" style="padding-bottom: 2px;border-bottom: 1px solid #222222;">
-                        Teilnehmer ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
+                        {{ partipant.getGenderTerm(false) }} ({{ participant.fullname(participant.nameLast, participant.nameFirst) }})
                     </td>
                 </tr>
                 </thead>

@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Anmeldung - Teilnehmerdaten bearbeiten ({{ event.title }}){% endblock %}
+{% block title %}Teilnehmer:in bearbeiten ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Teilnehmerdaten bearbeiten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer:in', 'subtitle': 'bearbeiten'} %}
         {% block breadcrumb %}
             {% if adminView %}
                 <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                 <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
                 <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">{{ participation|participantsgrouped }}</a>
                 </li>
             {% else %}
@@ -18,7 +18,7 @@
                 <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Detailansicht</a>
                 </li>
             {% endif %}
-            <li class="active">Teilnehmerdaten bearbeiten</li>
+            <li class="active">Teilnehmer:in bearbeiten</li>
         {% endblock %}
     {% endembed %}
     <div class="container" {% if is_granted('participants_read', event) %}data-provide-proposals="{{ event.eid }}"{% endif %}>

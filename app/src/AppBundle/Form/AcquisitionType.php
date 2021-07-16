@@ -88,14 +88,14 @@ class AcquisitionType extends AbstractType
             'useAtParticipant',
             CheckboxType::class,
             [
-                'label'    => 'Je Teilnehmer erfassen',
+                'label'    => 'Je Teilnehmer:in erfassen',
                 'required' => false
             ]
         )->add(
             'useAtEmployee',
             CheckboxType::class,
             [
-                'label'    => 'Bei Mitarbeitern erfassen',
+                'label'    => 'Bei Mitarbeiter:innen erfassen',
                 'required' => false
             ]
         )->add(

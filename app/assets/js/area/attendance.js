@@ -227,7 +227,7 @@ $(function () {
                         elLabel.toggleClass('btn-alert', true);
                     });
                     $(document).trigger('add-alerts', {
-                        message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                        message: 'Die Daten des Teilnehmenden konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
                         priority: 'error'
                     });
                 },
@@ -344,7 +344,7 @@ $(function () {
                     error: function (response) {
                         btn.toggleClass('btn-alert', true);
                         $(document).trigger('add-alerts', {
-                            message: 'Die Daten des Teilnehmers konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
+                            message: 'Die Daten des Teilnehmenden konnten nicht aktualisiert werden. Möglicherweise ist die Internetverbindung unterbrochen worden.',
                             priority: 'error'
                         });
                     },
@@ -418,7 +418,7 @@ $(function () {
     var modalExportMultiple = $('#modalExportMultiple');
     modalExportMultiple.on('show.bs.modal', function () {
         var modalEl = $('#modalExportMultiple'),
-            lists = $('#eventAttendanceListTable').bootstrapTable('getAllSelections'),
+            lists = $('#eventAttendanceListTable').bootstrapTable('getSelections'),
             listEl = modalEl.find('ul'),
             listIds = [];
 

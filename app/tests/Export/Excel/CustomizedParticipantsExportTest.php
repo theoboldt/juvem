@@ -117,7 +117,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                         [
                         ],
                 ],
-            'title'            => 'Teilnehmer',
+            'title'            => 'Teilnehmende',
             'additional_sheet' => [],
         ];
         $export        = new CustomizedExport(
@@ -139,7 +139,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
         $spreadsheet = IOFactory::load($tmpPath);
         $sheet       = $spreadsheet->getSheet(0);
         
-        $this->assertEquals('Teilnehmer', $sheet->getTitle());
+        $this->assertEquals('Teilnehmende', $sheet->getTitle());
 
         $this->assertEqualsSheetValue($sheet, 1, 2, 'Testchild');
         $this->assertEqualsSheetValue($sheet, 2, 2, 'Doe');
@@ -257,7 +257,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                         [
                         ],
                 ],
-            'title'            => 'Teilnehmer',
+            'title'            => 'Teilnehmende',
             'additional_sheet' => [
                 'participation' => true,
             ],
@@ -347,7 +347,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                         [
                         ],
                 ],
-            'title'            => 'Teilnehmer',
+            'title'            => 'Teilnehmende',
             'additional_sheet' => [
                 'subvention_request' => true,
             ],
@@ -369,7 +369,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
 
         $spreadsheet = IOFactory::load($tmpPath);
         $sheet       = $spreadsheet->getSheet(1);
-        $this->assertEquals('Teilnehmer - Zuschussantrag', $sheet->getTitle());
+        $this->assertEquals('Teilnehmende - Zuschussantrag', $sheet->getTitle());
 
         $this->assertEqualsSheetValue($sheet, 1, 2, 'Testchild');
         $this->assertEqualsSheetValue($sheet, 2, 2, 'Doe');

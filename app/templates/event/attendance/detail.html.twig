@@ -40,11 +40,11 @@
           <h4 class="modal-title"><i class="choice">Option</i> bei <i class="column">Spalte</i> auswählen</h4>
         </div>
         <div class="modal-body">
-          <p>Soll für alle sichtbaren Teilnehmer die Option <i class="choice">Option</i> bei der Spalte <i class="column">Spalte</i> ausgewählt werden?</p>
+          <p>Soll für alle sichtbaren Teilnehmer:innen die Option <i class="choice">Option</i> bei der Spalte <i class="column">Spalte</i> ausgewählt werden?</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default btn-never-lock" data-dismiss="modal">Abbrechen</button>
-          <button type="button" class="btn btn-primary hide-if-locked">Option für alle sichtbaren Teilnehmer auswählen</button>
+          <button type="button" class="btn btn-primary hide-if-locked">Option für alle sichtbaren Teilnehmer:innen auswählen</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -155,14 +155,14 @@
                          data-column-id="{{ column.columnId }}" checked value="all"> <i>Alle</i>
                 </label>
                 <label class="btn btn-sm navbar-btn btn-default"
-                       title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' nichts ausgewählt haben"
+                       title="Zeige nur Teilnehmer:innen die beim Feld '{{ column.title }}' nichts ausgewählt haben"
                        data-toggle="tooltip" data-placement="top" data-trigger="hover">
                   <input type="radio" name="column_{{ column.columnId }}" id="group_{{ column.columnId }}_0"
                          data-column-id="{{ column.columnId }}" value="0"> <i>Nichts</i>
                 </label>
                 {% for choice in column.choices %}
                   <label class="btn btn-sm navbar-btn btn-default"
-                         title="Zeige nur Teilnehmer die beim Feld '{{ column.title }}' keine Option oder '{{ choice.title }}' ausgewählt haben"
+                         title="Zeige nur Teilnehmer:innen die beim Feld '{{ column.title }}' keine Option oder '{{ choice.title }}' ausgewählt haben"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <input type="radio" name="column_{{ column.columnId }}"
                            id="group_{{ column.columnId }}_{{ choice.choiceId }}" value="{{ choice.choiceId }}"
@@ -185,7 +185,7 @@
                            data-bid="{{ attribute.bid }}" checked value="all"> <i>Alle</i>
                   </label>
                   <label class="btn btn-sm navbar-btn btn-default"
-                         title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' nicht eingeteilt sind"
+                         title="Zeige nur Teilnehmer:innen die beim Feld '{{ attribute.getManagementTitle(true) }}' nicht eingeteilt sind"
                          data-toggle="tooltip" data-placement="top" data-trigger="hover">
                       <input type="radio" name="group_{{ attribute.bid }}" id="group_{{ attribute.bid }}_0"
                              data-bid="{{ attribute.bid }}" value=""> <i>Nichts</i>
@@ -193,7 +193,7 @@
                   {% for choice in attribute.choiceOptions %}
                     {% if not choice.isDeleted %}
                       <label class="btn btn-sm navbar-btn btn-default"
-                             title="Zeige nur Teilnehmer die beim Feld '{{ attribute.getManagementTitle(true) }}' in '{{ choice.getManagementTitle(true) }}' eingeteilt sind"
+                             title="Zeige nur Teilnehmer:innen die beim Feld '{{ attribute.getManagementTitle(true) }}' in '{{ choice.getManagementTitle(true) }}' eingeteilt sind"
                              data-toggle="tooltip" data-placement="top" data-trigger="hover"
                              title="Optionen des Einteilungsfeldes '{{ attribute.getManagementTitle(true) }}' anzeigen">
                         <input type="radio" name="group_{{ attribute.bid }}"
@@ -223,7 +223,7 @@
                   <button type="button" class="btn btn-default btn-column-all" data-column-id="{{ column.columnId }}"
                           data-choice-id="0"
                           data-column-title="{{ column.title }}" data-choice-title="Nichts"
-                          title="{{ column.title }}: Bei allen sichtbaren Teilnehmern für '{{ column.title }}' keine der Optionen wählen"
+                          title="{{ column.title }}: Bei allen sichtbaren Teilnehmer:innen für '{{ column.title }}' keine der Optionen wählen"
                           data-toggle="tooltip" data-placement="top" data-trigger="hover">
                     <i>nichts</i>
                   </button>
@@ -231,7 +231,7 @@
                     <button type="button" class="btn btn-default btn-column-all" data-column-id="{{ column.columnId }}"
                             data-column-title="{{ column.title }}" data-choice-title="{{ choice.title }}"
                             data-choice-id="{{ choice.choiceId }}"
-                            title="{{ column.title }}: Bei allen sichtbaren Teilnehmern '{{ choice.title }}' für '{{ column.title }}' wählen"
+                            title="{{ column.title }}: Bei allen sichtbaren Teilnehmer:innen '{{ choice.title }}' für '{{ column.title }}' wählen"
                             data-toggle="tooltip" data-placement="top" data-trigger="hover">
                       {{ choice.getShortTitle(true) }}
                     </button>

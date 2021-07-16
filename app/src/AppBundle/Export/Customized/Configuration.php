@@ -47,7 +47,7 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
             ->children()
                 ->scalarNode('title')
                     ->info('Titel')
-                    ->defaultValue('Teilnehmer')
+                    ->defaultValue('Teilnehmende')
                 ->end()
                 ->arrayNode('filter')
                     ->addDefaultsIfNotSet()
@@ -57,9 +57,9 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->info('Bestätigt/Unbestätigt')
                         ->values(
                             [
-                                'Bestätigte und unbestätigt Teilnehmer mit aufnehmen' => self::OPTION_CONFIRMED_ALL,
-                                'Nur bestätigte Teilnehmer mit aufnehmen'             => self::OPTION_CONFIRMED_CONFIRMED,
-                                'Nur unbestätigte mit aufnehmen'                      => self::OPTION_CONFIRMED_UNCONFIRMED,
+                                'Bestätigte und unbestätigt Teilnehmende mit aufnehmen' => self::OPTION_CONFIRMED_ALL,
+                                'Nur bestätigte Teilnehmende mit aufnehmen'             => self::OPTION_CONFIRMED_CONFIRMED,
+                                'Nur unbestätigte mit aufnehmen'                        => self::OPTION_CONFIRMED_UNCONFIRMED,
                             ]
                         )
                         ->end()
@@ -67,9 +67,9 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->info('Bezahlungsstatus')
                         ->values(
                             [
-                                'Teilnehmer unabhängig vom Bezahlungsstatus aufnehmen'               => self::OPTION_PAID_ALL,
-                                'Nur Teilnehmer deren Rechnung bezahlt ist mit aufnehmen'            => self::OPTION_PAID_PAID,
-                                'Nur Teilnehmer deren Rechnung noch nicht bezahlt ist mit aufnehmen' => self::OPTION_PAID_NOTPAID,
+                                'Teilnehmende unabhängig vom Bezahlungsstatus aufnehmen'               => self::OPTION_PAID_ALL,
+                                'Nur Teilnehmende deren Rechnung bezahlt ist mit aufnehmen'            => self::OPTION_PAID_PAID,
+                                'Nur Teilnehmende deren Rechnung noch nicht bezahlt ist mit aufnehmen' => self::OPTION_PAID_NOTPAID,
                             ]
                         )
                         ->end()
@@ -77,9 +77,9 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->info('Zurückgezogen und abgelehnt')
                         ->values(
                             [
-                                'Zurückgezogene/abgelehnte mit aufnehmen'                     => self::OPTION_REJECTED_WITHDRAWN_ALL,
-                                'Nur Teilnehmer die weder zurückgzogen noch abgelehnt wurden' => self::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN,
-                                'Nur Teilnehmer die zurückgzogen oder abgelehnt wurden'       => self::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN,
+                                'Zurückgezogene/abgelehnte mit aufnehmen'                       => self::OPTION_REJECTED_WITHDRAWN_ALL,
+                                'Nur Teilnehmende die weder zurückgzogen noch abgelehnt wurden' => self::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN,
+                                'Nur Teilnehmende die zurückgzogen oder abgelehnt wurden'       => self::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN,
                             ]
                         )
                         ->end()
@@ -88,7 +88,7 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                 ->append($this->participantNodeCreator($participantNodes))
                 ->arrayNode('participation')
                     ->addDefaultsIfNotSet()
-                    ->info('Anmeldungsdaten')
+                    ->info('Daten der Anmeldung')
                     ->children()
                         ->append(Configuration::booleanNodeCreator('pid', 'PID (Eindeutige Anmeldungsnummer)'))
                         ->append(Configuration::booleanNodeCreator('salutation', 'Anrede'))
@@ -117,12 +117,12 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                     ->children()
                         ->append(
                             Configuration::booleanNodeCreator(
-                                'participation', 'Anmeldungen aller enthaltener Teilnehmer'
+                                'participation', 'Anmeldungen aller enthaltener Teilnehmenden'
                             )
                         )
                         ->append(
                             Configuration::booleanNodeCreator(
-                                'subvention_request', 'Teilnehmerliste für Zuschussantrag (Geburtsdatum und Anschrift)'
+                                'subvention_request', 'Liste der Teilnehmer:innen für Zuschussantrag (Geburtsdatum und Anschrift)'
                             )
                         )
                     ->end()

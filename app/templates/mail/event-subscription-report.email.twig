@@ -1,9 +1,9 @@
-{% block subject %}[{{ appTitle }}] Anmeldungsbericht: {{ participantsCount }} neue Teilnehmer{% endblock %}
+{% block subject %}[{{ appTitle }}] Anmeldungsbericht: {{ participantsCount }} neue Teilnehmer:innen{% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
 Hallo {{ user.nameFirst }} {{ user.nameLast }},
-seit dem {{ lastRun|date('d.m.Y H:i') }} wurden Anmeldungen für {{ participantsCount }} Teilnehmer bei {{ events|length }} Veranstaltungen abgegeben die noch nicht bestätigt wurden.
+seit dem {{ lastRun|date('d.m.Y H:i') }} wurden Anmeldungen für {{ participantsCount }} Teilnehmer:innen bei {{ events|length }} Veranstaltungen abgegeben die noch nicht bestätigt wurden.
 
 {% for event in events %}
  * Veranstaltung {{ event.event.title }}{% for participant in event.participants %}
@@ -18,10 +18,10 @@ Mit besten Grüßen,
 {% block body_html %}
 {% embed 'mail/template.html.twig' %}
     {% block title %}Anmeldungsbericht {{ 'now'|date('d.m.Y') }}{% endblock %}
-    {% block lead %}{{ participantsCount }} neue Teilnehmer bei {{ events|length }} Veranstaltungen{% endblock %}
+    {% block lead %}{{ participantsCount }} neue Teilnehmer:innen bei {{ events|length }} Veranstaltungen{% endblock %}
     {% block content %}
         <p>Hallo {{ user.nameFirst }} {{ user.nameLast }},</p>
-        <p>seit dem {{ lastRun|date('d.m.Y H:i') }} wurden bei {{ events|length }} der von Ihnen abonnierten Veranstaltungen Anmeldungen für {{ participantsCount }} Teilnehmer abgegeben, die in der Zwischenzeit noch nicht bestätigt wurden.</p>
+        <p>seit dem {{ lastRun|date('d.m.Y H:i') }} wurden bei {{ events|length }} der von Ihnen abonnierten Veranstaltungen Anmeldungen für {{ participantsCount }} Teilnehmer:innen abgegeben, die in der Zwischenzeit noch nicht bestätigt wurden.</p>
         <ul>
         {% for event in events %}
             <li>

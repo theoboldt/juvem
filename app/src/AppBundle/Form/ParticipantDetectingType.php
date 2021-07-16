@@ -34,7 +34,7 @@ class ParticipantDetectingType extends AbstractType
                 self::FIELD_NAME_FIRST_NAME,
                 TextType::class,
                 [
-                    'label'    => 'Vorname (verknüpfter Teilnehmer)',
+                    'label'    => 'Vorname (verknüpfte Teilnehmer:in)',
                     'required' => false,
                     'attr'     => ['class' => 'col-sm-6 participant-detecting-firstname'],
                 ]
@@ -43,7 +43,7 @@ class ParticipantDetectingType extends AbstractType
                 self::FIELD_NAME_LAST_NAME,
                 TextType::class,
                 [
-                    'label'    => 'Nachname (verknüpfter Teilnehmer)',
+                    'label'    => 'Nachname (verknüpfte Teilnehmer:in)',
                     'required' => false,
                     'attr'     => ['class' => 'col-sm-6 participant-detecting-lastname'],
                 ]

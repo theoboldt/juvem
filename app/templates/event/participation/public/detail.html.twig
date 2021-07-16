@@ -113,13 +113,13 @@
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-9">
-                                    <h3 class="panel-title">Teilnehmer {{ participant.nameFirst }}</h3>
+                                    <h3 class="panel-title">Teilnehmer:in {{ participant.nameFirst }}</h3>
                                 </div>
                                 <div class="col-xs-3 text-right">
                                 <a href="{{ path('public_add_participant', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen" data-toggle="tooltip">{{ 'plus'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Neue Teilnehmer:in hinzufügen" data-toggle="tooltip">{{ 'plus'|glyph }}</a>
                                 <a href="{{ path('public_edit_participant', {'pid': participation.pid, 'aid': participant.aid}) }}"
-                                   class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                         </div>
                         <div class="panel-footer">
                             {% if participant.withdrawn %}
-                                Teilnehmer zurückgezogen
+                                Teilnehmer:in zurückgezogen
                             {% else %}
                                 <button type="button" class="btn btn-default" data-action="withdraw"
                                         data-confirmed="{{ participant.confirmed }}"
@@ -186,7 +186,7 @@
                                     {% if participant.withdrawRequested %}
                                         {{ 'retweet'|glyph }} Anfrage für Zurücknahme entfernen
                                     {% else %}
-                                        {{ 'share-alt'|glyph }} Teilnehmer zurückziehen
+                                        {{ 'share-alt'|glyph }} Teilnehmer:in zurückziehen
                                     {% endif %}
                                 </button>
                             {% endif %}
@@ -217,11 +217,11 @@
                 switch (action) {
                     case 'withdraw':
                         if (value) {
-                            title = 'Anmeldung des Teilnehmers nicht mehr zurückziehen';
+                            title = 'Anmeldung der Teilnehmer:in nicht mehr zurückziehen';
                             buttonText = 'Anmeldung nicht mehr zurückziehen';
                             question = '<p>Sie haben die Rücknahme dieser Anmeldung angefragt.</p><p>Falls dies versehentlich geschehen ist, oder die Gründe für die Rücknahme nicht mehr vorliegen, können sie diesen Vorgang abbrechen. Sofern die Anmeldung in der Zwischenzeit nicht von uns zurückgenommen wurde, ist sie wieder gültig. Bei Problemen kontaktieren nehmen Sie bitte Kontakt zum Jugendwerk auf.</p>';
                         } else {
-                            title = 'Anmeldung des Teilnehmers zurückziehen';
+                            title = 'Anmeldung der Teilnehmer:in zurückziehen';
                             buttonText = 'Anmeldung zurückziehen';
                             question = '<p>Sie können hier die Rücknahme der Anmeldung anfragen. Tun Sie das, wenn ihr Kind doch nicht mehr bei der Veranstaltung teilnehmen kann oder nicht mehr teilnehmen möchte.</p>';
                             if (confirmed) {

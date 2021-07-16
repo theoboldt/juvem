@@ -34,7 +34,7 @@ class EventUserAssignmentType extends AbstractType
             ->add(
                 'allowedToRead',
                 CheckboxType::class,
-                array_merge($smartCheckbox, ['label' => 'Darf Veranstaltungsdetails und Teilnehmerdaten einsehen'])
+                array_merge($smartCheckbox, ['label' => 'Darf Veranstaltungsdetails und Daten der Teilnehmer:innen einsehen'])
             )
             ->add(
                 'allowedToEdit',
@@ -46,18 +46,18 @@ class EventUserAssignmentType extends AbstractType
                 CheckboxType::class,
                 array_merge(
                     $smartCheckbox,
-                    ['label' => 'Darf Teilnehmerdaten bearbeiten, bestätigen und ablehnen sowie E-Mails versenden']
+                    ['label' => 'Darf Daten der Teilnehmer:innen bearbeiten, bestätigen und ablehnen sowie E-Mails versenden']
                 )
             )
             ->add(
                 'allowedToReadComments',
                 CheckboxType::class,
-                array_merge($smartCheckbox, ['label' => 'Darf Bemerkungen zu Teilnehmern lesen'])
+                array_merge($smartCheckbox, ['label' => 'Darf Bemerkungen zu Teilnehmer:innen lesen'])
             )
             ->add(
                 'allowedToComment',
                 CheckboxType::class,
-                array_merge($smartCheckbox, ['label' => 'Darf Bemerkungen zu Teilnehmern hinzufügen'])
+                array_merge($smartCheckbox, ['label' => 'Darf Bemerkungen zu Teilnehmer:innen hinzufügen'])
             );
     
         $builder

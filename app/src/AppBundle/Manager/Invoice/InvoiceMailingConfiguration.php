@@ -18,10 +18,10 @@ use AppBundle\Entity\Invoice;
 class InvoiceMailingConfiguration
 {
     const SEND_ALL_FILTER = 'send_most_recent_resend';
-    const SEND_ALL_LABEL  = 'Die aktuellste Rechnung für alle Teilnehmer verschicken, unabhängig davon, ob sie bereits verschickt wurden';
+    const SEND_ALL_LABEL  = 'Die aktuellste Rechnung für alle Teilnehmer:innen verschicken, unabhängig davon, ob sie bereits verschickt wurden';
 
     const SEND_NEW_FILTER = 'send_most_recent_unsend';
-    const SEND_NEW_LABEL  = 'Die aktuellste Rechnung für alle Teilnehmer verschicken, die bisher noch nicht verschickt wurden';
+    const SEND_NEW_LABEL  = 'Die aktuellste Rechnung für alle Teilnehmer:innen verschicken, die bisher noch nicht verschickt wurden';
 
     const FILE_TYPE_PDF       = 'file_type_pdf';
     const FILE_TYPE_PDF_LABEL = 'Rechnungen als PDF-Datei anhängen';

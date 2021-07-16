@@ -97,7 +97,7 @@ class ParticipationBaseType extends AbstractType
                 'participants',
                 CollectionType::class,
                 [
-                    'label'         => 'Teilnehmer',
+                    'label'         => 'Teilnehmer:innen',
                     'entry_type'    => ParticipantType::class,
                     'allow_add'     => true,
                     'allow_delete'  => true,

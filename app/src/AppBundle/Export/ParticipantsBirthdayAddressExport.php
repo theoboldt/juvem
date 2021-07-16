@@ -61,11 +61,11 @@ class ParticipantsBirthdayAddressExport extends Export
         parent::setMetadata();
 
         $this->document->getProperties()
-                       ->setTitle('Teilnehmerliste');
+                       ->setTitle('Teilnehmendenliste');
         $this->document->getProperties()
                        ->setSubject($this->event->getTitle());
         $this->document->getProperties()
-                       ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
+                       ->setDescription(sprintf('Liste der Teilnehmer:innen für Veranstaltung "%s"', $this->event->getTitle()));
     }
 
     public function process()
@@ -75,7 +75,7 @@ class ParticipantsBirthdayAddressExport extends Export
         $participantsSheet = new ParticipantsBirthdayAddressSheet($sheet, $this->event, $this->participants);
         $participantsSheet->process();
 
-        $sheet->setTitle('Teilnehmer');
+        $sheet->setTitle('Teilnehmenden');
 
         parent::process();
     }

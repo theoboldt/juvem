@@ -108,18 +108,18 @@ $(function () {
             buttonEl = $(event.relatedTarget),
             listEl = modalEl.find('#participantsActionList'),
             action = buttonEl.data('action'),
-            participants = $('#participantsListTable').bootstrapTable('getAllSelections'),
+            participants = $('#participantsListTable').bootstrapTable('getSelections'),
             participantIds = [],
             inputDescriptionFormVisible,
             description;
 
         switch (action) {
             case 'confirm':
-                description = 'Sollen die Anmeldungen der folgenden Teilnehmer bestätigt werden? Dabei werden auch die entsprechenden E-Mails verschickt.';
+                description = 'Sollen die Anmeldungen der folgenden Teilnehmer:innen bestätigt werden? Dabei werden auch die entsprechenden E-Mails verschickt.';
                 inputDescriptionFormVisible = false;
                 break;
             case 'paid':
-                description = 'Sollen für die folgenden Teilnehmer Zahlungseingang vermerkt werden?';
+                description = 'Sollen für die folgenden Teilnehmer:innen Zahlungseingang vermerkt werden?';
                 inputDescriptionFormVisible = true;
                 break;
         }
@@ -436,7 +436,7 @@ $(function () {
                 modalInvoiceCreate.modal('hide');
                 $('#invoiceListTable').bootstrapTable('refresh');
                 $(document).trigger('add-alerts', {
-                    message: 'Rechnungen für ' + parseInt(participationsDone) + ' Teilnehmer erstellt',
+                    message: 'Rechnungen für ' + parseInt(participationsDone) + ' Teilnehmer:innen erstellt',
                     priority: abort ? 'error' : 'success'
                 });
             };
@@ -830,13 +830,13 @@ $(function () {
                             case 'AppBundle\\Entity\\Participation':
                                 return 'Anmeldung';
                             case 'AppBundle\\Entity\\Participant':
-                                return 'Teilnehmer/In';
+                                return 'Teilnehmer:in';
                             case 'AppBundle\\Entity\\PhoneNumber':
                                 return 'Telefonnummer';
                             case 'AppBundle\\Entity\\AcquisitionAttribute\\Fillout':
                                 return 'Feldantwort';
                             case 'AppBundle\\Entity\\Employee':
-                                return 'Mitarbeiter/In';
+                                return 'Mitarbeiter:in';
                             default:
                                 return '<i>' + className + '</i>';
                         }

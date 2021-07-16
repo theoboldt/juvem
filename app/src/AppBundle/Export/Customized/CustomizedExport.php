@@ -94,7 +94,7 @@ class CustomizedExport extends Export
         $this->document->getProperties()
                        ->setSubject($this->event->getTitle());
         $this->document->getProperties()
-                       ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
+                       ->setDescription(sprintf('Liste der Teilnehmer:innen für Veranstaltung "%s"', $this->event->getTitle()));
     }
 
     /**
@@ -132,7 +132,7 @@ class CustomizedExport extends Export
         $participantsSheet = new ParticipantsBirthdayAddressSheet($sheet, $this->event, $this->participants);
         $participantsSheet->process();
 
-        $sheet->setTitle('Teilnehmer - Zuschussantrag');
+        $sheet->setTitle('Teilnehmende - Zuschussantrag');
     }
 
     /**
@@ -141,7 +141,8 @@ class CustomizedExport extends Export
     public function process()
     {
         $worksheet = $this->addSheet();
-        $title     = mb_substr($this->configuration['title'], 0, 30, 'UTF-8');
+        $title     = str_replace(['*', ':', '/', '\\', '?', '[', ']'], '', $this->configuration['title']);
+        $title     = mb_substr($title, 0, 30, 'UTF-8');
         $worksheet->setTitle($title);
 
         $participantsSheet = new CustomizedParticipantsSheet(

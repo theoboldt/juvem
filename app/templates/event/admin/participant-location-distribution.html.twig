@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teilnehmer-Herkunft ({{ event.title }}){% endblock %}
+{% block title %}Teilnehmer:innen-Herkunft ({{ event.title }}){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer-Herkunft', 'subtitle': event.title} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer:innen-Herkunft', 'subtitle': event.title} %}
     {% block breadcrumb %}
       <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
       <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-      <li class="active">Teilnehmer-Herkunft</li>
+      <li class="active">Teilnehmer:innen-Herkunft</li>
     {% endblock %}
   {% endembed %}
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
         <p>
-          Die folgende Tabelle gibt Aufschluss darüber, woher die bestätigten Teilnehmer stammen.
+          Die folgende Tabelle gibt Aufschluss darüber, woher die bestätigten Teilnehmer:innen stammen.
           Durch die Granularitäts-Schalter können die einzelnen Gruppierungen weiter aufgeschlüsselt werden.
         </p>
       </div>
@@ -47,7 +47,7 @@
           <thead>
           <tr>
             <td>Ort</td>
-            <td class="number">Teilnehmer</td>
+            <td class="number">Teilnehmer:innen</td>
             <td></td>
           </tr>
           </thead>

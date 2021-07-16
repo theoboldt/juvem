@@ -97,8 +97,8 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
      * @Assert\Valid()
      * @Assert\Count(
      *      min = "1",
-     *      minMessage = "Bei einer Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen Sie noch
-     *      mindestens einen Teilnehmer hinzu."
+     *      minMessage = "Bei einer Anmeldung muss mindestens ein Teilnehmender angegeben werden. Bitte fügen Sie noch
+     *      mindestens einen Teilnehmenden hinzu."
      * )
      */
     protected $participants;

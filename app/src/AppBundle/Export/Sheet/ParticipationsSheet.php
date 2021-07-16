@@ -95,7 +95,7 @@ class ParticipationsSheet extends AbstractSheet
         $column->setWidth(15);
         $this->addColumn($column);
 
-        $column = new EntityAttributeColumn('participants', 'Teilnehmer');
+        $column = new EntityAttributeColumn('participants', 'Teilnahmen');
         $column->setConverter(
             function ($value, $entity) {
                 return count($value);

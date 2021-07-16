@@ -63,11 +63,11 @@ class EmployeesExport extends Export
         parent::setMetadata();
 
         $this->document->getProperties()
-                       ->setTitle('Mitarbeiter');
+                       ->setTitle('Mitarbeitende');
         $this->document->getProperties()
                        ->setSubject($this->event->getTitle());
         $this->document->getProperties()
-                       ->setDescription(sprintf('Mitarbeiterliste für Veranstaltung "%s"', $this->event->getTitle()));
+                       ->setDescription(sprintf('Liste der Mitarbeiter:innen für Veranstaltung "%s"', $this->event->getTitle()));
     }
 
     /**
@@ -80,7 +80,7 @@ class EmployeesExport extends Export
         $participantsSheet = new EmployeesSheet($sheet, $this->event, $this->employees);
         $participantsSheet->process();
 
-        $sheet->setTitle('Teilnehmer');
+        $sheet->setTitle('Teilnehmende');
 
         parent::process();
     }

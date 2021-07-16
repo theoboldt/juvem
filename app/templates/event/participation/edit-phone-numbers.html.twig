@@ -9,7 +9,7 @@
             {% if adminView %}
                 <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                 <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
                 <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">{{ participation|participantsgrouped }}</a>
                 </li>
             {% else %}

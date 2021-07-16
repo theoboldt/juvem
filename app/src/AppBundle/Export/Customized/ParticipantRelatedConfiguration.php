@@ -71,7 +71,7 @@ abstract class ParticipantRelatedConfiguration
         $builder = new TreeBuilder();
         $node    = $builder->root('participant')
                            ->addDefaultsIfNotSet()
-                           ->info('Teilnehmerdaten');
+                           ->info('Daten der Teilnehmenden');
 
         $children = $node->children();
         foreach ($participantNodes as $childNode) {
@@ -91,7 +91,7 @@ abstract class ParticipantRelatedConfiguration
     protected function participantNodesCreator(): array
     {
         $nodes   = [];
-        $nodes[] = Configuration::booleanNodeCreator('aid', 'AID (Eindeutige Teilnehmernummer)');
+        $nodes[] = Configuration::booleanNodeCreator('aid', 'AID (Eindeutige Teilnahme-Nummer)');
         $nodes[] = Configuration::booleanNodeCreator('nameFirst', 'Vorname');
         $nodes[] = Configuration::booleanNodeCreator('nameLast', 'Nachname');
         $nodes[] = Configuration::booleanNodeCreator('birthday', 'Geburtsdatum');
@@ -215,7 +215,7 @@ abstract class ParticipantRelatedConfiguration
         $groupingNode->info($groupInfo);
         $groupingNode->append(
             Configuration::booleanNodeCreator(
-                'enabled', 'Teilnehmer gruppieren'
+                'enabled', 'Teilnehmer:innen gruppieren'
             )
         );
         $enum = new EnumNodeDefinition('field');
@@ -230,7 +230,7 @@ abstract class ParticipantRelatedConfiguration
         $sortingNode->info($sortingInfo);
         $sortingNode->append(
             Configuration::booleanNodeCreator(
-                'enabled', 'Teilnehmer sortieren'
+                'enabled', 'Teilnehmer:innen sortieren'
             )
         );
         $enum = new EnumNodeDefinition('field');

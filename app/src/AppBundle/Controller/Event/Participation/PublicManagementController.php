@@ -159,7 +159,7 @@ class PublicManagementController extends AbstractController
                             } else {
                                 $this->addFlash(
                                     'danger',
-                                    'Die Anmeldung wurde von uns bereits als zurückgezogen markiert. Wenn Sie die Anmeldung diesen Teilnehmers reaktivieren möchten, wenden Sie sich in diesem Fall bitte direkt an das Jugendwerk.'
+                                    'Die Anmeldung wurde von uns bereits als zurückgezogen markiert. Wenn Sie die Anmeldung diesen Teilnehmenden reaktivieren möchten, wenden Sie sich in diesem Fall bitte direkt an das Jugendwerk.'
                                 );
                             }
                         } else {
@@ -172,7 +172,7 @@ class PublicManagementController extends AbstractController
                             if ($newValue) {
                                 $this->addFlash(
                                     'success',
-                                    'Ihre Anfrage zur Zurücknahme dieser Anmeldung wurde registiert und wird demnächst von uns bearbeitet. Wenn sich der Status der Anmeldung des betroffenen Teilnehmers nicht innerhalb einiger Tage ändert, wenden Sie sich bitte direkt an das Jugendwerk.'
+                                    'Ihre Anfrage zur Zurücknahme dieser Anmeldung wurde registiert und wird demnächst von uns bearbeitet. Wenn sich der Status der Anmeldung des betroffenen Teilnehmenden nicht innerhalb einiger Tage ändert, wenden Sie sich bitte direkt an das Jugendwerk.'
                                 );
                             } else {
                                 $this->addFlash(

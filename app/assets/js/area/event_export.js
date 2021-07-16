@@ -46,7 +46,7 @@ $(function () {
                 selectPhone.val('comma');
                 includeAcquisitionFields.participant.display = 'selectedAnswer';
                 includeAcquisitionFields.participant.optionValue = 'managementTitle';
-                inputTitle.val('Teilnehmer');
+                inputTitle.val('Teilnehmende');
                 break;
             case 'food':
                 includeFields = [

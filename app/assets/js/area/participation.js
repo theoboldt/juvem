@@ -183,7 +183,7 @@ $(function () {
                 '<tr class="total">' +
                 '    <td class="value text-right"><b>' + valueText + '</b></td>' +
                 '    <td class="participant">' +
-                '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
+                '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer:innen)' : '') +
                 '   </td>' +
                 '</tr>'
             );
@@ -215,7 +215,7 @@ $(function () {
                         glyphParticipantTitle = 'Summand durch Anmeldung';
                     } else {
                         glyphParticipant = 'user';
-                        glyphParticipantTitle = 'Summand durch Teilnehmer';
+                        glyphParticipantTitle = 'Summand durch Teilnehmer:innen';
                     }
 
                     htmlRows.push(
@@ -241,7 +241,7 @@ $(function () {
                     '    <td class="value">' + formatCurrencyNumber(price_tag_sum) + '</td>' +
                     '    <td></td>' +
                     '    <td class="description">' +
-                    '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer)' : '') +
+                    '       <b>Summe</b>' + (multiple ? ' (für alle Teilnehmer:innen)' : '') +
                     '</td>' +
                     '</tr>'
                 );
@@ -501,7 +501,7 @@ $(function () {
                                     html += '</p>';
                                     html += '   </div>';
                                     html += '   <div class="col-xs-12 col-sm-7">';
-                                    html += '    <h5>Teilnehmer</h5>';
+                                    html += '    <h5>Teilnehmer:innen</h5>';
                                     html += '    <ul>';
                                     $.each(participation.participants, function (key, participant) {
                                         html += '     <li>';

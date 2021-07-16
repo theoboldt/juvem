@@ -1006,7 +1006,7 @@ class AdminController
                 $this->updateFilloutOrder($elements, $attributeBid, $reset);
                 $this->addFlash(
                     'success',
-                    'Reihenfolge für Teilnehmer für das Feld <i>' . htmlspecialchars($attribute->getManagementTitle()) .
+                    'Reihenfolge für Teilnehmer:innen für das Feld <i>' . htmlspecialchars($attribute->getManagementTitle()) .
                     '</i> festgelegt'
                 );
             }

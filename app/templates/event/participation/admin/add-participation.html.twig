@@ -8,7 +8,7 @@
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+            <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
             <li class="active">Teilnahme erfassen</li>
         {% endblock %}
     {% endembed %}
@@ -31,8 +31,7 @@
                                     <form class="col-xs-12">
                                         <p>Um Daten aus einer früheren Anmeldung zum hinzufügen einer neuen Anmeldung
                                             für diese Veranstaltung herauszusuchen, müssen zunächst im Eingabefeld Teile
-                                            des Namens des gewünschten Teilnehmers/der gewünschten Teilnehmerin
-                                            eingegeben werden.
+                                            des Namens der gewünschten Teilnehmer:in eingegeben werden.
                                         </p>
                                         <div class="form-group">
                                             <label for="prefillInputTerm">Teil des Namens</label>
@@ -82,7 +81,7 @@
         {% embed 'event/admin/employee/embed-form-phone-numbers.html.twig' with {'formPhoneNumbers': form.phoneNumbers, 'labelAddNumber': 'Telefonnummer hinzufügen'} %}{% endembed %}
         <div class="row">
             <div class="col-xs-12">
-                <h3>Teilnehmer</h3>
+                <h3>Teilnehmer:innen</h3>
             </div>
         </div>
         {% macro prototypeParticipant(formElement, acquisitionFieldsParticipant) %}
@@ -92,14 +91,14 @@
                         <div class="col-xs-10 col-sm-8">
                             <h3 class="panel-title">
                                 <!--<a role="button" data-toggle="collapse">-->
-                                Teilnehmer
+                                Teilnehmer:innen
                                 <!--</a>-->
                             </h3>
                         </div>
                         <div class="col-xs-2 col-sm-4 text-right">
                             <a href="#" class="btn btn-danger btn-xs prototype-remove"
-                               title="Teilnehmer entfernen">{{ 'remove-sign'|glyph }}
-                                <span class="hidden-xs">Teilnehmer entfernen</span>
+                               title="Teilnehmer:in entfernen">{{ 'remove-sign'|glyph }}
+                                <span class="hidden-xs">Teilnehmer:in entfernen</span>
                             </a>
                         </div>
                     </div>
@@ -126,16 +125,15 @@
                             <div class="alert alert-danger">
                                 <ul class="list-unstyled">
                                     <li><span class="glyphicon glyphicon-exclamation-sign"></span> Bei einer
-                                        Anmeldung muss mindestens ein Teilnehmer angegeben werden. Bitte fügen
-                                        Sie noch mindestens einen Teilnehmer hinzu.
+                                        Anmeldung muss mindestens eine Teilnehmer:in angegeben werden. Bitte fügen
+                                        Sie noch mindestens eine Teilnehmer:in hinzu.
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weiteren Teilnehmer
-                    hinzufügen
+                <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }} Weitere Teilnehmer:in hinzufügen
                 </button>
             </div>
         </div>

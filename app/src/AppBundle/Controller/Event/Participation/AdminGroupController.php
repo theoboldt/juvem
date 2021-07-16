@@ -145,7 +145,7 @@ class AdminGroupController
                     $acquisition[] = 'Anmeldung';
                 }
                 if ($field->getUseAtParticipant()) {
-                    $acquisition[] = 'Teilnehmer';
+                    $acquisition[] = 'Teilnehmer:innen';
                 }
                 if ($field->getUseAtEmployee()) {
                     $acquisition[] = 'Mitarbeiter';

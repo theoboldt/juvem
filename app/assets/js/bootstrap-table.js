@@ -228,7 +228,9 @@ $(function () {
                 var columnShow = userSettings.get(tableSettingsIdentifier, []);
 
                 $.each(columns, function (index, column) {
-                    if (!columnShow.includes(column.field)) {
+                    if (column.checkbox || column.radio) {
+                        //intentionally left empty
+                    } else if (!columnShow.includes(column.field)) {
                         table.bootstrapTable('hideColumn', column.field);
                     } else {
                         table.bootstrapTable('showColumn', column.field);
@@ -243,7 +245,9 @@ $(function () {
                         columns = [];
 
                     $.each(columnConfiguration, function (index, column) {
-                        columns.push(column.field);
+                        if (!column.checkbox && !column.radio) {
+                            columns.push(column.field);
+                        }
                     });
 
                     userSettings.set(tableSettingsIdentifier, columns);
@@ -269,7 +273,6 @@ $(function () {
     participantsTable.on('all.bs.table', function (e, eventName, args) {
         if (eventName === 'column-switch.bs.table') {
             var dataIndex = args[0];
-            console.log(dataIndex);
             if ((dataIndex !== 'payment_price' && dataIndex !== 'payment_to_pay')) {
                 return;
             }

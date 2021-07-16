@@ -3,11 +3,11 @@
 {% block title %}Steckbriefe erstellen ({{ event.title }}){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'Steckbriefe erstellen'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer:innen', 'subtitle': 'Steckbriefe erstellen'} %}
     {% block breadcrumb %}
       <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
       <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
       <li class="active">Steckbriefe erstellen</li>
     {% endblock %}
   {% endembed %}

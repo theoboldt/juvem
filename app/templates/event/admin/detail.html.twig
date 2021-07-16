@@ -35,7 +35,7 @@
                     {%- if is_granted('participants_read', event) %}
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
-                               class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer
+                               class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer:innen
                                     {% if event.participantsUnconfirmedCount -%}
                                         <span class="badge">{{- event.participantsUnconfirmedCount }}</span>{%- endif -%}</span>
                             </a>
@@ -45,7 +45,7 @@
                                 <span class="sr-only">Menü erweitern</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer verwalten</a></li>
+                                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer:innen verwalten</a></li>
                                 <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">{{ 'transfer'|glyph }} {{ groupCount }} Einteilungsfeld{% if groupCount != 1 %}er{% endif %} verwalten</a></li>
                                 {% if numberFieldCount > 0 %}
                                     <li><a href="{{ path('event_admin_order', {'eid': event.eid }) }}">{{ 'sort-by-order'|glyph }}
@@ -58,14 +58,14 @@
                                 <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
                                 {%- endif %}
                                 <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
-                                <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer-Herkunft untersuchen</a></li>
+                                <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer:innen-Herkunft untersuchen</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren…</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken (alt)</a></li>
                                 <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken (alt)</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer exportieren…</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer:innen exportieren…</a></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren…</a></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren…</a></li>
                                 <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussantrag exportieren (alt) {{ 'new-window'|glyph }}</a></li>
@@ -185,7 +185,7 @@
                         <span class="label label-primary">Automatische Bestätigungen</span>
                     {% endif %}
                     {% if event.hasWaitingListThreshold() %}
-                        <span class="label label-primary">Warteliste ab {{ event.waitingListThreshold }} <abbr title="Teilnehmern">TN</abbr></span>
+                        <span class="label label-primary">Warteliste ab {{ event.waitingListThreshold }} <abbr title="Teilnehmer:innen">TN</abbr></span>
                     {% endif %}
                     {% if event.invoiceTemplateFile %}
                         <span class="label label-primary" title="Eine eigene Rechnungsvorlage ist konfiguriert">Rechnungsvorlage</span>
@@ -244,11 +244,11 @@
                                     <div class="progress">
                                         {% for code, genderData in genderDistribution %}
                                             <div class="progress-bar {{ genderData.class }}"
-                                                 data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}"
+                                                 data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer:innen sind {{ genderData.label }}"
                                                  role="progressbar" aria-valuenow="{{ genderData.count }}"
                                                  aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
                                                  style="width: {{ ((genderData.count/participantsCount)*100) }}%;">
-                                                <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer sind {{ genderData.label }}</span>
+                                                <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer:innen sind {{ genderData.label }}</span>
                                                 <span>{{ genderData.count }}</span>
                                             </div>
                                         {% endfor %}
@@ -264,11 +264,11 @@
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
                                                  aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
-                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer haben zu Beginn der Veranstaltung das {{ age }}.&nbsp;Lebensjahr vollendet"
+                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer:innen haben zu Beginn der Veranstaltung das {{ age }}.&nbsp;Lebensjahr vollendet"
                                                  style="width: {{ ((count/ageDistributionMax)*100) }}%;">
-                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer haben zu Beginn der Veranstaltung das {{ age }}. Lebensjahr vollendet</span>
+                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer:innen haben zu Beginn der Veranstaltung das {{ age }}. Lebensjahr vollendet</span>
                                                 <span title="Anzahl">
-                                                    <abbr title="Teilnehmer">{{ count }}</abbr>
+                                                    <abbr title="Teilnehmer:innen">{{ count }}</abbr>
                                                 </span>
                                             </div>
                                         </div>
@@ -278,7 +278,7 @@
                         {% else %}
                             <div class="row">
                                 <div class="col-xs-12">
-                                    Im Moment sind keine Teilnehmer angemeldet.
+                                    Im Moment sind keine Teilnehmer:innen angemeldet.
                                 </div>
                             </div>
                         {% endif %}
@@ -379,7 +379,7 @@
                                     jQuery.each(days, function (index, dayData) {
                                         var day = dayData.day;
                                         if (row <= dayData.count) {
-                                            rowHtml += '<td class="f" title="' + day + '. ' + month + ' ' + year + ': ' + dayData.count + ' Teilnehmer (' + dayData.days + ' Tage bis zur Veranstaltung)"></td>';
+                                            rowHtml += '<td class="f" title="' + day + '. ' + month + ' ' + year + ': ' + dayData.count + ' Teilnehmer:innen (' + dayData.days + ' Tage bis zur Veranstaltung)"></td>';
                                         } else {
                                             rowHtml += '<td></td>';
                                         }

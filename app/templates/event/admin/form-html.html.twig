@@ -83,9 +83,9 @@
                     {{ form_widget(form.hasWaitingListThreshold) }}
                     {{ form_errors(form.waitingListThreshold) }}
                     {{ form_widget(form.waitingListThreshold) }}
-                    <p class="help-block" id="help-waiting-list">Wird die hier festgelegte Zahl Anmeldungen (Teilnehmer)
+                    <p class="help-block" id="help-waiting-list">Wird die hier festgelegte Zahl Anmeldungen (Teilnehmer:innen)
                         erreicht, erfolgen eingehende Anmeldungen auf Warteliste. Die Veranstaltungsseite und
-                        Eingangs-E-Mails erhalten diesen hinweis. Ist die Differenz zwischen Schwelle und Teilnehmern
+                        Eingangs-E-Mails erhalten diesen hinweis. Ist die Differenz zwischen Schwelle und Teilnehmer:innen
                         &le; 3, wird die Info "wenig Plätze frei" angezeigt.</p>
                 </div>
             </div>
@@ -282,7 +282,7 @@
                                         <td>
                                             <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PARTICIPANT_NAMES_COMBINED') -}}
                                                 }</code></td>
-                                        <td>Auflistung der Namen aller Teilnehmer für die diese Rechnung gilt
+                                        <td>Auflistung der Namen aller Teilnehmer:innen für die diese Rechnung gilt
                                         <td>
                                             <span class="label label-default">Max, Moritz Muster</span>
                                             <span class="label label-default">Anna Mayer, Hans Maier, Jens Meyer</span>
@@ -314,7 +314,7 @@
                                         <td>
                                             <code>${ {{- constant('AppBundle\\Manager\\Invoice\\InvoiceManager::PLACEHOLDER_PARTICIPANT_NAME') -}}
                                                 }</code></td>
-                                        <td>Name der Teilnehmerin/des Teilnehmers</td>
+                                        <td>Name der Teilnehmer:in</td>
                                         <td>
                                             <span class="label label-default">Anna Muster</span>
                                         </td>
@@ -416,7 +416,7 @@
                 {{ form_label(form.acquisitionAttributes) }}
                 {{ form_widget(form.acquisitionAttributes) }}
                 {{ form_errors(form.acquisitionAttributes) }}
-                <p class="help-block">Die aktivierten Felder werden bei jeder Anmeldung eines Teilnehmers erfasst. Werden zuvor verwendete Felder deaktiviert, bleiben bereits erfasste Daten erhalten. Die Eigenschaften der verfügbaren Felder werden im <a target="_blank" href="{{ path('acquisition_list') }}">Felder</a>-Bereich verwaltet.</p>
+                <p class="help-block">Die aktivierten Felder werden bei jeder Anmeldung einer Teilnehmer:in erfasst. Werden zuvor verwendete Felder deaktiviert, bleiben bereits erfasste Daten erhalten. Die Eigenschaften der verfügbaren Felder werden im <a target="_blank" href="{{ path('acquisition_list') }}">Felder</a>-Bereich verwaltet.</p>
                 <p class="help-block">Neben den Feldern werden immer Name, Anschrift der Eltern und deren Telefonnummern sowie Name und Geburtsdatum der Kinder, Medizinische Hinweise, Allgemeine Hinweise sowie ob die Ernährung laktosefrei/vegan/ohne Schweinefleisch abgefragt.</p>
             </div>
         </div>

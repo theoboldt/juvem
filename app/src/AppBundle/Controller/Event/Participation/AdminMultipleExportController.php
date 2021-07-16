@@ -180,7 +180,7 @@ class AdminMultipleExportController
         );
         ResponseHelper::configureAttachment(
             $response,
-            $event->getTitle() . ' - Teilnehmer.xlsx',
+            $event->getTitle() . ' - Teilnehmende.xlsx',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
 
@@ -249,7 +249,7 @@ class AdminMultipleExportController
         );
         ResponseHelper::configureAttachment(
             $response,
-            $event->getTitle() . ' - Teilnehmer.xlsx',
+            $event->getTitle() . ' - Teilnehmende.xlsx',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
 
@@ -593,7 +593,7 @@ class AdminMultipleExportController
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
         if (!$processedConfiguration['title']) {
-            $processedConfiguration['title'] = 'Teilnehmer';
+            $processedConfiguration['title'] = 'Teilnehmende';
         }
         return $processedConfiguration;
     }

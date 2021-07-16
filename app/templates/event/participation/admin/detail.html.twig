@@ -169,7 +169,7 @@
                                         <thead>
                                         <tr>
                                             <td class="value">Betrag</td>
-                                            <td>Teilnehmer</td>
+                                            <td>Teilnehmer:in</td>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -184,7 +184,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <p class="help-block">Bei Zahlungen für mehrere Teilnehmer: Deckt die Zahlung den gesamten offenen Betrag, wird die Zahlung entsprechend auf die Teilnehmer aufgeteilt. Bei Überdeckung wird der Überschuss auf dem ersten Teilnehmer verbucht. Deckt die Zahlung den offenen Betrag nicht und ist der offene Betrag aller Teilnehmer gleich, wird die Zahlung gleichmäßig aufgeteilt. Ist der offene Betrag für alle Teilnehmer unterschiedlich, wird die Zahlung beginnend beim ersten Teilnehmer aufgeteilt, bis die Zahlung aufgebraucht ist.</p>
+                                    <p class="help-block">Bei Zahlungen für mehrere Teilnehmer:innen: Deckt die Zahlung den gesamten offenen Betrag, wird die Zahlung entsprechend auf die Teilnehmer:innen aufgeteilt. Bei Überdeckung wird der Überschuss auf der ersten Teilnehmer:in verbucht. Deckt die Zahlung den offenen Betrag nicht und ist der offene Betrag aller Teilnehmer:innen gleich, wird die Zahlung gleichmäßig aufgeteilt. Ist der offene Betrag für alle Teilnehmer:innen unterschiedlich, wird die Zahlung beginnend bei der ersten Teilnehmer:in aufgeteilt, bis die Zahlung aufgebraucht ist.</p>
                                     <p class="help-block">Für Korrekturbuchungen ein negatives Vorzeichen <code>-</code> voranstellen. Sollen beispielsweise <samp> 20 €</samp> die überzahlt wurden korrigiert werden, <code>-20</code> buchen.</p>
                                 </div>
                             </div>
@@ -223,7 +223,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="form-group">
-                                        <label for="newPrice">Grundpreis je <abbr title="Teilnehmer">TN</abbr></label>
+                                        <label for="newPrice">Grundpreis je <abbr title="Teilnehmer:innen">TN</abbr></label>
                                         <div class="input-group">
                                             <div class="input-group-addon">€</div>
                                             <input type="text" class="form-control" id="newPriceValue" placeholder="Grundpreis">
@@ -253,7 +253,7 @@
                                         <thead>
                                         <tr>
                                             <td></td>
-                                            <td>Teilnehmer</td>
+                                            <td>Teilnehmer:in</td>
                                             <td class="value">Betrag</td>
                                             <td colspan="2">Art</td>
                                         </tr>
@@ -275,7 +275,7 @@
                                         <thead>
                                         <tr>
                                             <td></td>
-                                            <td>Teilnehmer</td>
+                                            <td>Teilnehmer:in</td>
                                             <td class="value">Betrag</td>
                                             <td>Beschreibung</td>
                                             <td>Erfassung</td>
@@ -295,7 +295,7 @@
                                 <div class="col-xs-12">
                                     <div class="btn-group" role="group">
                                         {% if allParticipantsInactive %}
-                                            <span class="btn btn-default disabled" data-toggle="tooltip" title="Kein aktiver Teilnehmer. Eine Rechnung kann nicht erstellt werden.">Neue Rechnung erstellen</span>
+                                            <span class="btn btn-default disabled" data-toggle="tooltip" title="Keine aktive Teilnehmer:in. Eine Rechnung kann nicht erstellt werden.">Neue Rechnung erstellen</span>
                                         {% else %}
                                             <span class="btn btn-default"
                                                   data-token="{{ csrf_token('Participation' ~ 'createInvoice' ~ participation.pid ) }}"
@@ -458,7 +458,7 @@
                     <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
                     <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                     <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                    <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                    <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
                     <li class="active">{{ participation|participantsgrouped() }}</li>
                 </ol>
             </div>
@@ -638,7 +638,7 @@
                                 <div class="col-xs-6 text-right hidden-print">
                                     {% if is_granted('participants_edit', event) -%}
                                     <a href="{{ path('admin_add_participant', {'eid': event.eid, 'pid': participation.pid}) }}"
-                                       class="btn btn-default btn-xs" title="Neuen Teilnehmer hinzufügen"
+                                       class="btn btn-default btn-xs" title="Neue Teilnehmer:in hinzufügen"
                                        data-toggle="tooltip">{{ 'plus'|glyph }}</a>
                                     <button type="button" class="btn btn-default btn-xs" data-element="activebutton"
                                             data-entity="Participant"
@@ -648,7 +648,7 @@
                                             data-button-disable-label="Anmeldung von {{ participant.nameFirst }} reaktivieren"
                                             data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
                                     <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
-                                       class="btn btn-default btn-xs" title="Teilnehmer {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                       class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
                                     {% endif -%}
                                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                     <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"

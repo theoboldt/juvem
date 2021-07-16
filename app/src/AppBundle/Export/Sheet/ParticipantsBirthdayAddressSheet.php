@@ -80,7 +80,7 @@ class ParticipantsBirthdayAddressSheet extends AbstractSheet
      */
     public function setHeader(string $title = null, string $subtitle = null)
     {
-        parent::setHeader($this->event->getTitle(), 'Teilnehmer (Zuschussantrag)');
+        parent::setHeader($this->event->getTitle(), 'Teilnahmen (Zuschussantrag)');
         parent::setColumnHeaders();
     }
 

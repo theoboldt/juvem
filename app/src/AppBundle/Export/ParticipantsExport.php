@@ -58,11 +58,11 @@ class ParticipantsExport extends Export
         parent::setMetadata();
 
         $this->document->getProperties()
-                       ->setTitle('Teilnehmerliste');
+                       ->setTitle('Teilnehmende');
         $this->document->getProperties()
                        ->setSubject($this->event->getTitle());
         $this->document->getProperties()
-                       ->setDescription(sprintf('Teilnehmerliste für Veranstaltung "%s"', $this->event->getTitle()));
+                       ->setDescription(sprintf('Liste der Teilnehmer:innen für Veranstaltung "%s"', $this->event->getTitle()));
     }
 
     public function process()
@@ -73,7 +73,7 @@ class ParticipantsExport extends Export
         $participantsSheet = new ParticipantsSheet($sheet, $this->event, $this->participants);
         $participantsSheet->process();
 
-        $sheet->setTitle('Teilnehmer');
+        $sheet->setTitle('Teilnehmende');
 
         parent::process();
     }

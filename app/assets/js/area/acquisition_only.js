@@ -100,7 +100,7 @@ $(function () {
                         $('#dialogModalRelateParticipant form').submit();
                     });
                 } else {
-                    tbodyEl.html('<td colspan="5" class="text-center">(Keine passenden Teilnehmer gefunden)</td>');
+                    tbodyEl.html('<td colspan="5" class="text-center">(Keine passenden Teilnehmer:innen gefunden)</td>');
                 }
 
             },

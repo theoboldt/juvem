@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teilnehmer exportieren ({{ event.title }}){% endblock %}
+{% block title %}Teilnehmer:innen exportieren ({{ event.title }}){% endblock %}
 
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'exportieren'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer:innen', 'subtitle': 'exportieren'} %}
     {% block breadcrumb %}
       <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
       <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+      <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
       <li class="active">Exportieren</li>
     {% endblock %}
   {% endembed %}
@@ -63,7 +63,7 @@
       <div class="col-xs-12">
          <ul class="nav nav-tabs" role="tablist">
            <li role="presentation" class="active"><a href="#templates" aria-controls="input" role="tab" data-toggle="tab">Vorlagen</a></li>
-           <li role="presentation"><a href="#input" aria-controls="input" role="tab" data-toggle="tab">Eingabe (Teilnehmer-Filter)</a></li>
+           <li role="presentation"><a href="#input" aria-controls="input" role="tab" data-toggle="tab">Eingabe (Filter für Teilnehmende)</a></li>
            <li role="presentation"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Ausgabe (Spalten, Darstellung)</a></li>
          </ul>
       </div>
@@ -279,7 +279,7 @@
               <div class="form-group">
                 <label for="config[title]">Titel</label>
                 <input type="text" class="form-control" id="config[title]" name="config[title]"
-                       placeholder="{{ event.title }} - Teilnehmer">
+                       placeholder="{{ event.title }} - Teilnehmende">
               </div>
               <button class="btn btn-primary export-generator-create btn-generator">Export erstellen
               </button>

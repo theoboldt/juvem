@@ -85,7 +85,7 @@ class PaymentInformation extends AbstractExtension
         if ($paymentStatus->isInactive()) {
             if ($paymentStatus->getPaymentSum(false) < 0) {
                 $labels[]
-                    = ' <span class="label label-warning option-payment option-inactive-payments" title="Teilnehmer ist inaktiv, Zahlungen wurden jedoch bereits erfasst">Zahlungen erfasst</span>';
+                    = ' <span class="label label-warning option-payment option-inactive-payments" title="Teilnehmer:in ist inaktiv, Zahlungen wurden jedoch bereits erfasst">Zahlungen erfasst</span>';
             }
         } else {
             if ($paymentStatus->isOverPaid()) {

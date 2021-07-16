@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Anmeldung - Teilnehmerdaten hinzufügen ({{ event.title }}){% endblock %}
+{% block title %}Anmeldung - Teilnehmer:in hinzufügen ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Teilnehmer hinzufügen'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldung', 'subtitle': 'Teilnehmer:in hinzufügen'} %}
         {% block breadcrumb %}
             {% if adminView %}
                 <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                 <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer</a></li>
+                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
                 <li><a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid}) }}">{{ participation|participantsgrouped }}</a>
                 </li>
             {% else %}
@@ -18,7 +18,7 @@
                 <li><a href="{{ path('public_participation_detail', {'pid': participation.pid}) }}">Detailansicht</a>
                 </li>
             {% endif %}
-            <li class="active">Teilnehmer hinzufügen</li>
+            <li class="active">Teilnehmer:in hinzufügen</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
@@ -26,7 +26,7 @@
         {% include '/event/participation/form-participant.html.twig' with {'form': form} %}
         <div class="row">
             <div class="col-xs-12">
-                <input type="submit" class="btn btn-primary navbar-btn" value="Teilnehmer hinzufügen"/>
+                <input type="submit" class="btn btn-primary navbar-btn" value="Teilnehmer:in hinzufügen"/>
             </div>
         </div>
         {{ form_end(form) }}

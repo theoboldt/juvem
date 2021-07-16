@@ -29,7 +29,7 @@ $(function () {
                     button = element.find('button');
 
                     popover = button.popover({
-                        content: 'Bitte geben Sie im Feld für <i>Medizinische Hinweise</i> detailierte Informationen zur Ausprägung der Unverträglichkeit an. Müssen konsequent laktosefreie Produkte verwendet werden (bspw. auch bei Schokoriegeln) oder ist es ausreichend auf laktosearme Produkte zu achten? Verwendet der Teilnehmer Laktase-Tabletten?',
+                        content: 'Bitte geben Sie im Feld für <i>Medizinische Hinweise</i> detailierte Informationen zur Ausprägung der Unverträglichkeit an. Müssen konsequent laktosefreie Produkte verwendet werden (bspw. auch bei Schokoriegeln) oder ist es ausreichend auf laktosearme Produkte zu achten? Verwendet die angemeldete Person Laktase-Tabletten?',
                         html: true,
                         trigger: 'manual'
                     });

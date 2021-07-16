@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teilnehmer verwalten ({{ event.title }}){% endblock %}
+{% block title %}Teilnehmer:innen verwalten ({{ event.title }}){% endblock %}
 
 {% block body %}
     <div class="modal fade" id="dialogModalParticipantsAction" tabindex="-1" role="dialog" aria-labelledby="dialogModalParticipantsActionLabel">
@@ -9,7 +9,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                                 aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="dialogModalParticipantsActionLabel">Teilnehmer bearbeiten</h4>
+                    <h4 class="modal-title" id="dialogModalParticipantsActionLabel">Teilnehmer:innen bearbeiten</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -31,11 +31,11 @@
             </div>
         </div>
     </div>
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer', 'subtitle': 'verwalten'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Teilnehmer:innen', 'subtitle': 'verwalten'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li class="active">Teilnehmer</li>
+            <li class="active">Teilnehmer:innen</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
@@ -71,7 +71,7 @@
                     <thead>
                     <tr>
                         {%- if is_granted('participants_edit', event) -%}
-                        <th data-field="state" data-checkbox="true"></th>
+                            <th data-checkbox="true">x</th>
                         {% endif %}
                         <th data-field="aid" data-sortable="true" data-visible="false">#</th>
                         <th data-field="pid" data-sortable="true" data-visible="false">Anmeldungs<wbr>nummer
@@ -79,7 +79,7 @@
                         <th data-field="nameLast" data-sortable="true">Nachname</th>
                         <th data-field="nameFirst" data-sortable="true">Vorname</th>
                         <th data-field="age" data-sortable="true" data-sorter="germanNumberFormatSorter" class="text-right" data-class="age">
-                            <abbr title="Alter der Teilnehmer bei der Veranstaltung">Alter</abbr>
+                            <abbr title="Alter der Teilnehmer:innen bei der Veranstaltung">Alter</abbr>
                         </th>
                         <th data-field="phone" data-sortable="false">Telefon<wbr>nummern
                         </th>
@@ -109,7 +109,7 @@
                 <div class="btn-toolbar" role="toolbar">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="confirm">Bestätigen & benachrichtigen…</button>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalParticipantsAction" data-action="paid">Zahlungseingang vermerken…</button>
-                    <p class="navbar-text">{{ 'info-sign'|glyph }} <kbd><kbd>Strg</kbd></kbd>-Taste halten und klicken, um einen Teilnehmer in einem neuen Tab zu öffnen</p>
+                    <p class="navbar-text">{{ 'info-sign'|glyph }} <kbd><kbd>Strg</kbd></kbd>-Taste halten und klicken, um eine Teilnehmer:innen in einem neuen Tab zu öffnen</p>
                 </div>
                 {% endif %}
             </div>

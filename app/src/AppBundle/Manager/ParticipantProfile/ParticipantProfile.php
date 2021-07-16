@@ -177,9 +177,9 @@ class ParticipantProfile
         $settings->setThemeFontLang($language);
 
         $information = $document->getDocInfo();
-        $information->setTitle('Teilnehmerprofile');
+        $information->setTitle('Teilnahmeprofile');
         $information->setSubject($this->getEvent()->getTitle());
-        $information->setDescription('Profile der Teilnehmer der Veranstaltung ' . $this->getEvent()->getTitle());
+        $information->setDescription('Profile der Teilnehmer:innen der Veranstaltung ' . $this->getEvent()->getTitle());
 
         //title styles
         $document->addTitleStyle(

@@ -75,7 +75,7 @@ class MealFeedbackType extends AbstractType
                     'choices'    => [
                         'Meine Probe ist nicht repräsentativ und sollte nicht automatisch mit in die Kalkulation einfließen'                   => RecipeFeedback::WEIGHT_NONE,
                         'Meine Probe ist durchschnittlich repräsentativ (einfache Wertung)'                                                    => RecipeFeedback::WEIGHT_SINGLE,
-                        'Meine Probe ist besonders repräsentativ und bildet unseren üblichen Teilnehmer-Schnitt perfekt ab (doppelte Wertung)' => RecipeFeedback::WEIGHT_DOUBLE,
+                        'Meine Probe ist besonders repräsentativ und bildet unseren üblichen Teilnehmer:innen-Schnitt perfekt ab (doppelte Wertung)' => RecipeFeedback::WEIGHT_DOUBLE,
                     ],
                     'empty_data' => RecipeFeedback::WEIGHT_SINGLE,
                     'expanded'   => true,

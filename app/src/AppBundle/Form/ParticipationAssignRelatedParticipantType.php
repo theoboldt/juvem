@@ -38,7 +38,7 @@ class ParticipationAssignRelatedParticipantType extends AbstractType
                 'related',
                 EntityType::class,
                 [
-                    'label'         => 'Verknüpfter Teilnehmer',
+                    'label'         => 'Verknüpfte:r Teilnehmer:in',
                     'placeholder'   => '(keiner)',
                     'class'         => Participant::class,
                     'query_builder' => function (EntityRepository $r) use ($eid) {

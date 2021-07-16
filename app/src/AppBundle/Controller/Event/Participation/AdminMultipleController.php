@@ -345,7 +345,7 @@ class AdminMultipleController
                     $participantStatusText .= ' ' . PaymentInformation::provideLabel($paymentStatus);
                 } catch (CalculationImpossibleException $e) {
                     $paymentImpossible     = true;
-                    $participantStatusText .= ' <span class="label label-warning" title="Der Preis dieses Teilnehmers kann nicht berechnet werden. Die Variablen sollten geprüft werden.">Preis unbekannt</span>';
+                    $participantStatusText .= ' <span class="label label-warning" title="Der Preis des Teilnehmenden kann nicht berechnet werden. Die Variablen sollten geprüft werden.">Preis unbekannt</span>';
                 }
             }
             $participantStatusWithdrawn = $participantStatus->has(ParticipantStatus::TYPE_STATUS_WITHDRAWN);
@@ -408,7 +408,7 @@ class AdminMultipleController
 
                 if ($paymentImpossible) {
                     $paymentPrice
-                        = '<span class="label label-danger" title="Der Preis dieses Teilnehmers kann nicht berechnet werden. Die Variablen sollten geprüft werden.">unbekannt</span>';
+                        = '<span class="label label-danger" title="Der Preis des Teilnehmenden kann nicht berechnet werden. Die Variablen sollten geprüft werden.">unbekannt</span>';
                     
                     $participantEntry['payment_to_pay'] = $paymentPrice;
                 }
