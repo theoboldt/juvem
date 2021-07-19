@@ -53,7 +53,7 @@ $(function () {
     };
 
     var handleFetchTable = function (table) {
-            var tableToolbar = $('#bootstrap-table-toolbar'),
+            var tableToolbar = jQuery(table.data('toolbar')),
                 id = table.attr('id'),
                 useHead = table.data('use-head'),
                 url = table.data('fetch-url');
@@ -142,10 +142,11 @@ $(function () {
          * GLOBAL: Bootstrap table on page which provides filters
          */
         handleTableFilters = function (table) {
-            var tableFilterList = {},
+            var tableToolbarIdentifier = table.data('toolbar'),
+                tableFilterList = {},
                 queryParams = [];
 
-            $('#bootstrap-table-toolbar .dropup[data-property]').each(function () {
+            $(tableToolbarIdentifier + ' .dropup[data-property]').each(function () {
                 var dropup = $(this),
                     options = dropup.find('ul li a'),
                     property = dropup.data('property'),
@@ -179,7 +180,7 @@ $(function () {
             table.bootstrapTable('filterBy', tableFilterList);
 
             //add filter handler
-            $('#bootstrap-table-toolbar li a').on('click', function (e) {
+            $(tableToolbarIdentifier + ' li a').on('click', function (e) {
                 e.preventDefault();
                 var optionEl = $(this),
                     option = optionEl.get(0),
