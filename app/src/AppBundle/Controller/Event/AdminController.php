@@ -25,6 +25,7 @@ use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\Participant;
@@ -326,9 +327,6 @@ class AdminController
     {
         $this->denyAccessUnlessGranted('read', $event);
         $repository         = $this->getDoctrine()->getRepository(Event::class);
-        $ageDistribution    = $repository->participantsAgeDistribution($event);
-        $ageDistributionMax = count($ageDistribution) ? max($ageDistribution) : 0;
-        $genderDistribution = $repository->participantsGenderDistribution($event);
         $participantsCount  = $repository->participantsCount($event);
         $employeeCount      = $repository->employeeCount($event);
         
@@ -392,9 +390,6 @@ class AdminController
                 'detectingsCount'    => $detectingsCount,
                 'numberFieldCount'   => $numberFieldCount,
                 'pageDescription'    => $event->getDescriptionMeta(true),
-                'ageDistribution'    => $ageDistribution,
-                'ageDistributionMax' => $ageDistributionMax,
-                'genderDistribution' => $genderDistribution,
                 'participantsCount'  => $participantsCount,
                 'employeeCount'      => $employeeCount,
                 'form'               => $form->createView(),
@@ -661,6 +656,59 @@ class AdminController
         );
     }
     
+    /**
+     * Get participants information used for age/gender distribution display
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/participant-distribution.json", requirements={"eid": "\d+"}, name="event_participant_distribution")
+     * @Security("is_granted('participants_read', event)")
+     */
+    public function participantDistribution(Event $event): JsonResponse
+    {
+        $participationRepository = $this->doctrine->getRepository(Participation::class);
+        $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
+        
+        $hasUnconfirmed       = false;
+        $hasConfirmed         = false;
+        $hasWithdrawnRejected = false;
+        $hasDeleted           = false;
+        $distribution         = [];
+        /** @var Participant $participant */
+        foreach ($participantEntityList as $participant) {
+            $participantIsDeleted         = $participant->isDeleted();
+            $participantWithdrawnRejected = ($participant->isRejected() || $participant->isWithdrawn())
+                                            && !$participantIsDeleted;
+            $participantIsConfirmed       = $participant->isConfirmed() && !$participantWithdrawnRejected
+                                            && !$participantIsDeleted;
+            $participantIsUnconfirmed     = !$participant->isConfirmed() && !$participantIsDeleted
+                                            && !$participantWithdrawnRejected;
+            
+            $distribution[] = [
+                'gender'                => $participant->getGender(),
+                'years_of_life'         => $participant->getYearsOfLifeAtEvent(),
+                'is_unconfirmed'        => $participantIsUnconfirmed,
+                'is_confirmed'          => $participantIsConfirmed,
+                'is_withdrawn_rejected' => $participantWithdrawnRejected,
+                'is_deleted'            => $participantIsDeleted,
+            ];
+            
+            $hasUnconfirmed       = $hasUnconfirmed || $participantIsUnconfirmed;
+            $hasConfirmed         = $hasConfirmed || $participantIsConfirmed;
+            $hasWithdrawnRejected = $hasWithdrawnRejected || $participantWithdrawnRejected;
+            $hasDeleted           = $hasDeleted || $participantIsDeleted;
+            
+        }
+        
+        return new JsonResponse(
+            [
+                'participants'           => $distribution,
+                'has_unconfirmed'        => $hasUnconfirmed,
+                'has_confirmed'          => $hasConfirmed,
+                'has_withdrawn_rejected' => $hasWithdrawnRejected,
+                'has_deleted'            => $hasDeleted
+            ]
+        );
+    }
     
     /**
      * Detail page for one single event

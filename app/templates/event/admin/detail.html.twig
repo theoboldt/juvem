@@ -229,59 +229,16 @@
                         <div style="clear:both;">
                             <div style="float:left;"><h4>Verteilung</h4></div>
                             <div style="float:right;">
-                                {% if ageDistribution|length %}
-                                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal"
-                                            data-target="#modalHistory">
-                                        {{ 'signal'|glyph }}<span class="hidden-xs"> Verlauf</span>
-                                    </button>
-                                {% endif %}
+                                <button type="button" class="btn btn-default btn-sm" data-toggle="modal"
+                                        data-target="#modalHistory">
+                                    {{ 'signal'|glyph }}<span class="hidden-xs"> Verlauf</span>
+                                </button>
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        {% if ageDistribution|length %}
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="progress">
-                                        {% for code, genderData in genderDistribution %}
-                                            <div class="progress-bar {{ genderData.class }}"
-                                                 data-toggle="tooltip" title="{{ genderData.count  }}/{{ participantsCount }} Teilnehmer:innen sind {{ genderData.label }}"
-                                                 role="progressbar" aria-valuenow="{{ genderData.count }}"
-                                                 aria-valuemin="0" aria-valuemax="{{ participantsCount }}"
-                                                 style="width: {{ ((genderData.count/participantsCount)*100) }}%;">
-                                                <span class="sr-only">{{ genderData.count  }}/{{ participantsCount }} Teilnehmer:innen sind {{ genderData.label }}</span>
-                                                <span>{{ genderData.count }}</span>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% for age, count in ageDistribution %}
-                                <div class="row">
-                                    <div class="col-xs-2 col-sm-3 text-right">
-                                        {{ age }} <abbr title="vollendete Lebensjahre">J.</abbr>
-                                    </div>
-                                    <div class="col-xs-10 col-sm-9">
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ count }}"
-                                                 aria-valuemin="0" aria-valuemax="{{ ageDistributionMax }}"
-                                                 data-toggle="tooltip" title="{{ count }}/{{ participantsCount }} Teilnehmer:innen haben zu Beginn der Veranstaltung das {{ age }}.&nbsp;Lebensjahr vollendet"
-                                                 style="width: {{ ((count/ageDistributionMax)*100) }}%;">
-                                                <span class="sr-only">{{ count }}/{{ participantsCount }} Teilnehmer:innen haben zu Beginn der Veranstaltung das {{ age }}. Lebensjahr vollendet</span>
-                                                <span title="Anzahl">
-                                                    <abbr title="Teilnehmer:innen">{{ count }}</abbr>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                        {% else %}
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    Im Moment sind keine Teilnehmer:innen angemeldet.
-                                </div>
-                            </div>
-                        {% endif %}
+                        <div class="row event-participant-distribution loading" data-eid="{{ event.eid }}">
+
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <h4>Benutzer</h4>

@@ -523,6 +523,16 @@ abbr.unit {
   }
 }
 
+.event-participant-distribution {
+  max-height: 0;
+  overflow: hidden;
+
+  &.load {
+    @include transition(max-height 0.6s ease-out);
+    max-height: 600px;
+  }
+}
+
 #infoEventPaymentSummary {
   max-height: 0;
   overflow: hidden;

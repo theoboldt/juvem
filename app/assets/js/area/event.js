@@ -1115,4 +1115,211 @@ $(function () {
         cloudFileListingEl.find('button').on('click', loadCloudFiles);
     }
 
+    jQuery('.event-participant-distribution').each(function () {
+        const el = jQuery(this),
+            eid = el.data('eid');
+        if (!eid) {
+            return;
+        }
+        $.ajax({
+            type: 'GET',
+            url: '/admin/event/' + eid + '/participant-distribution.json',
+            success: function (response) {
+                el.removeClass('loading');
+                el.addClass('load');
+                const renderDistribution = function () {
+                    if (!response.participants.length) {
+                        return;
+                    }
+
+                    var html = '',
+                        filters = [],
+                        filteredParticipants,
+                        genderDistribution = {},
+                        ageDistribution = {},
+                        ageDistributionMax = 0;
+
+                    el.find('.filter').each(function () {
+                        const filterEl = jQuery(this),
+                            filter = filterEl.data('filter'),
+                            active = filterEl.hasClass('active');
+                        if (filter && active) {
+                            filters.push(filter);
+                        }
+                    });
+                    filteredParticipants = response.participants.filter(function (participant) {
+                        if (filters.length) {
+                            var include = false;
+                            filters.forEach(function (filter) {
+                                if (participant[filter]) {
+                                    include = true;
+                                }
+                            });
+                            return include;
+                        } else {
+                            return true;
+                        }
+                    });
+                    filteredParticipants.forEach(function (participant) {
+                        if (!genderDistribution[participant.gender]) {
+                            genderDistribution[participant.gender] = 0;
+                        }
+                        ++genderDistribution[participant.gender];
+                        if (!ageDistribution[participant.years_of_life]) {
+                            ageDistribution[participant.years_of_life] = 0;
+                        }
+                        ++ageDistribution[participant.years_of_life];
+                    });
+                    jQuery.each(ageDistribution, function (age, count) {
+                        if (count > ageDistributionMax) {
+                            ageDistributionMax = count;
+                        }
+                    });
+
+                    if (filteredParticipants.length) {
+                        html += ' <div class="progress">';
+                        jQuery.each(genderDistribution, function (gender, count) {
+                            const barClasses = ['progress-bar'];
+                            let tooltip = count + '/' + filteredParticipants.length;
+                            switch (gender) {
+                                case 'männlich':
+                                    barClasses.push('progress-bar-gender-1');
+                                    tooltip += ' Teilnehmern sind männlich';
+                                    break;
+                                case 'weiblich':
+                                    barClasses.push('progress-bar-gender-2');
+                                    tooltip += ' Teilnehmerinnen sind weiblich';
+                                    break;
+                                default:
+                                    barClasses.push('progress-bar-gender-0');
+                                    tooltip += ' Teilnehmer:innen sind weiblich';
+                                    break;
+                            }
+                            html += '<div' +
+                                ' class="' + barClasses.join(' ') + '"' +
+                                ' data-toggle="tooltip"' +
+                                ' title="' + tooltip + '"' +
+                                ' role="progressbar"' +
+                                ' aria-valuemin="0"' +
+                                ' aria-valuenow="' + count + '"' +
+                                ' aria-valuemax="' + filteredParticipants.length + '"' +
+                                ' style="width:' + ((count / filteredParticipants.length) * 100) + '%"' +
+                                '>';
+                            html += '  <span class="sr-only">' + tooltip + '</span>';
+                            html += '  <span>' + count + '</span>';
+                            html += ' </div>';
+                        });
+                        html += ' </div>';
+
+                        el.find('.distribution-gender').html(html);
+
+                        html = '';
+                        jQuery.each(ageDistribution, function (age, count) {
+                            html += ' <div class="row">' +
+                                '  <div class="col-xs-2 col-sm-3 text-right">' +
+                                '   ' + age + ' <abbr title="vollendete Lebensjahre">J.</abbr>' +
+                                '  </div>' +
+                                '  <div class="col-xs-10 col-sm-9">' +
+                                '   <div class="progress">' +
+                                '     <div class="progress-bar" role="progressbar" aria-valuemin="0" ' +
+                                ' data-toggle="tooltip"' +
+                                ' role="progressbar"' +
+                                ' aria-valuemin="0"' +
+                                ' aria-valuenow="' + count + '"' +
+                                ' aria-valuemax="' + ageDistributionMax + '"' +
+                                ' style="width:' + ((count / ageDistributionMax) * 100) + '%"' +
+                                ' title="' + count + '/' + filteredParticipants.length + ' Teilnehmer:innen haben zu Beginn der Veranstaltung das ' + age + '.&nbsp;Lebensjahr vollendet"' +
+                                '     >' +
+                                '      <span class="sr-only">' + count + '/' + filteredParticipants.length + ' Teilnehmer:innen haben zu Beginn der Veranstaltung das ' + age + '.&nbsp;Lebensjahr vollendet</span>' +
+                                '      <span title="Anzahl">' +
+                                '       <abbr title="Teilnehmer:innen">' + count + '</abbr>' +
+                                '      </span>' +
+                                '   </div>' +
+                                '   </div>' +
+                                '  </div>' +
+                                ' </div>';
+                        });
+                        el.find('.distribution-age').html(html);
+                    } else {
+                        html = '<div class="row">' +
+                            ' <div class="col-xs-12">' +
+                            '  Niemand erfüllt die gewünschten Filterkriterien.' +
+                            ' </div>' +
+                            '</div>';
+                        el.find('.distribution-gender').html(html);
+                        el.find('.distribution-age').html('');
+                    }
+
+                    el.find('[data-toggle="tooltip"]').tooltip({
+                        container: 'body'
+                    });
+                };
+
+                var html = '';
+                const createButtonHtml = function (filter, active, disabled, label, tooltip) {
+                    var html = '',
+                        classes = ['btn', 'btn-xs', 'btn-default'];
+                    if (active) {
+                        classes.push('active');
+                    }
+                    if ((response.has_confirmed && !response.has_unconfirmed && !response.has_withdrawn_rejected && !response.has_deleted)
+                        || (!response.has_confirmed && response.has_unconfirmed && !response.has_withdrawn_rejected && !response.has_deleted)
+                        || (!response.has_confirmed && !response.has_unconfirmed && response.has_withdrawn_rejected && !response.has_deleted)
+                        || (!response.has_confirmed && !response.has_unconfirmed && !response.has_withdrawn_rejected && response.has_deleted)
+                    ) {
+                        disabled = true;
+                    }
+                    if (disabled) {
+                        classes.push('disabled');
+                    }
+
+                    html += '  <div class="btn-group" role="group">';
+                    html += '   <button type="button" class="' + classes.join(' ') + ' filter" data-filter="' + filter + '" autocomplete="off" title="' + eHtml(tooltip) + '">';
+                    html += '  ' + label;
+                    html += '   </button>';
+                    html += '  </div>';
+                    return html;
+                }
+
+
+                if (response.participants.length) {
+                    html += '<div class="col-xs-12" style="margin-bottom: 5px;">';
+                    html += ' <div class="btn-group btn-group-justified" role="group" data-toggle="buttons" aria-label="Teilnehmer:innen Filter für die Verteilung">'
+
+                    html += createButtonHtml('is_unconfirmed', !response.has_confirmed, !response.has_unconfirmed, 'Unbestätigt', 'Unbestätigte Teilnehmer:innen berücksichtigen');
+                    html += createButtonHtml('is_confirmed', response.has_confirmed, !response.has_confirmed, 'Bestätigt', 'Bestätigte Teilnehmer:innen berücksichtigen');
+                    html += createButtonHtml('is_withdrawn_rejected', !response.has_confirmed, !response.has_withdrawn_rejected, 'Abgelehnt/Zur.', 'Abgelehnte oder zurückgezogene Teilnehmer:innen berücksichtigen');
+                    html += createButtonHtml('is_deleted', !response.has_confirmed, !response.has_deleted, 'Gelöscht', 'Gelöschte Teilnehmer:innen berücksichtigen');
+
+                    html += ' </div>';
+                    html += '</div>';
+
+                    html += '<div class="col-xs-12 distribution-gender" style="margin-bottom: 5px;">';
+                    html += '</div>';
+
+                    html += '<div class="col-xs-12 distribution-age" style="margin-bottom: 5px;">';
+                    html += '</div>';
+                } else {
+                    html = '<div class="col-xs-12">' +
+                        '  Im Moment sind keine Teilnehmer:innen angemeldet.' +
+                        '</div>';
+
+                }
+
+
+                el.append(html);
+                renderDistribution();
+
+                el.find('button.filter').click(function () {
+                    const btn = jQuery(this);
+                    if (!btn.hasClass('disabled')) {
+                        btn.toggleClass('active');
+                        renderDistribution();
+                    }
+                });
+            }
+        });
+
+
+    });
 });
