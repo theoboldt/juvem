@@ -667,12 +667,13 @@ class AdminController
     {
         $participationRepository = $this->doctrine->getRepository(Participation::class);
         $participantEntityList   = $participationRepository->participantsList($event, null, true, true);
-        
+    
         $hasUnconfirmed       = false;
         $hasConfirmed         = false;
         $hasWithdrawnRejected = false;
         $hasDeleted           = false;
         $distribution         = [];
+    
         /** @var Participant $participant */
         foreach ($participantEntityList as $participant) {
             $participantIsDeleted         = $participant->isDeleted();
@@ -682,30 +683,31 @@ class AdminController
                                             && !$participantIsDeleted;
             $participantIsUnconfirmed     = !$participant->isConfirmed() && !$participantIsDeleted
                                             && !$participantWithdrawnRejected;
-            
+        
             $distribution[] = [
                 'gender'                => $participant->getGender(),
                 'years_of_life'         => $participant->getYearsOfLifeAtEvent(),
+                'is_birthday_at_event'  => $participant->hasBirthdayAtEvent(),
                 'is_unconfirmed'        => $participantIsUnconfirmed,
                 'is_confirmed'          => $participantIsConfirmed,
                 'is_withdrawn_rejected' => $participantWithdrawnRejected,
                 'is_deleted'            => $participantIsDeleted,
             ];
-            
+        
             $hasUnconfirmed       = $hasUnconfirmed || $participantIsUnconfirmed;
             $hasConfirmed         = $hasConfirmed || $participantIsConfirmed;
             $hasWithdrawnRejected = $hasWithdrawnRejected || $participantWithdrawnRejected;
             $hasDeleted           = $hasDeleted || $participantIsDeleted;
-            
-        }
         
+        }
+    
         return new JsonResponse(
             [
                 'participants'           => $distribution,
                 'has_unconfirmed'        => $hasUnconfirmed,
                 'has_confirmed'          => $hasConfirmed,
                 'has_withdrawn_rejected' => $hasWithdrawnRejected,
-                'has_deleted'            => $hasDeleted
+                'has_deleted'            => $hasDeleted,
             ]
         );
     }

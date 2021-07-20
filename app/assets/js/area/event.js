@@ -1137,7 +1137,8 @@ $(function () {
                         filteredParticipants,
                         genderDistribution = {},
                         ageDistribution = {},
-                        ageDistributionMax = 0;
+                        ageDistributionMax = 0,
+                        birthdayAtEvent = 0;
 
                     el.find('.filter').each(function () {
                         const filterEl = jQuery(this),
@@ -1169,6 +1170,9 @@ $(function () {
                             ageDistribution[participant.years_of_life] = 0;
                         }
                         ++ageDistribution[participant.years_of_life];
+                        if (participant.is_birthday_at_event) {
+                            ++birthdayAtEvent;
+                        }
                     });
                     jQuery.each(ageDistribution, function (age, count) {
                         if (count > ageDistributionMax) {
@@ -1240,6 +1244,22 @@ $(function () {
                                 ' </div>';
                         });
                         el.find('.distribution-age').html(html);
+
+                        html = '';
+                        html += '<small>';
+                        if (birthdayAtEvent === 0) {
+                            html = 'Niemand hat während der Veranstaltung Geburtstag.';
+                        } else {
+                            html += '<span class="glyphicon glyphicon-gift" aria-hidden="true"></span> ';
+                            if (birthdayAtEvent === 1) {
+                                html += '1 Teilnehmer:in hat während der Veranstaltung Geburtstag.';
+                            } else {
+                                html += birthdayAtEvent + ' Teilnehmer:innen haben während der Veranstaltung Geburtstag.';
+                            }
+                        }
+                        html += '</small>';
+                        el.find('.distribution-birthday').html(html);
+
                     } else {
                         html = '<div class="row">' +
                             ' <div class="col-xs-12">' +
@@ -1248,6 +1268,7 @@ $(function () {
                             '</div>';
                         el.find('.distribution-gender').html(html);
                         el.find('.distribution-age').html('');
+                        el.find('.distribution-birthday').html('');
                     }
 
                     el.find('[data-toggle="tooltip"]').tooltip({
@@ -1298,6 +1319,9 @@ $(function () {
                     html += '</div>';
 
                     html += '<div class="col-xs-12 distribution-age" style="margin-bottom: 5px;">';
+                    html += '</div>';
+
+                    html += '<div class="col-xs-12 distribution-birthday" style="margin-bottom: 5px;">';
                     html += '</div>';
                 } else {
                     html = '<div class="col-xs-12">' +
