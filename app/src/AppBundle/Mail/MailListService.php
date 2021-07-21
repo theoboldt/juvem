@@ -16,6 +16,9 @@ use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use Ddeboer\Imap\Message\EmailAddress;
+use Ddeboer\Imap\MessageInterface;
+use Ddeboer\Imap\Search\Email\From;
+use Ddeboer\Imap\Search\Email\To;
 use Ddeboer\Imap\Search\Text\Text;
 use Ddeboer\Imap\SearchExpression;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -48,6 +51,20 @@ class MailListService
     }
     
     /**
+     * Sort mail fragments descending
+     *
+     * @param MailFragment[] $mails
+     */
+    private static function sortMailFragmentsDateDesc(array &$mails): void
+    {
+        usort(
+            $mails, function (MailFragment $a, MailFragment $b) {
+            return $b->getDate() <=> $a->getDate();
+        }
+        );
+    }
+    
+    /**
      * Determine if class is supported
      *
      * @param string $class
@@ -75,13 +92,37 @@ class MailListService
     }
     
     /**
+     * @param string $emailAddress
+     * @return MailFragment[]
+     */
+    public function findEmailsRelatedToAddress(string $emailAddress): array
+    {
+        return $this->cache->get(
+            'address-' . hash('sha256', $emailAddress),
+            function (ItemInterface $item) use ($emailAddress) {
+                $search = new SearchExpression();
+                $search->addCondition(new To($emailAddress));
+                $result = $this->fetchMessagesForSearch($search);
+                
+                $search = new SearchExpression();
+                $search->addCondition(new From($emailAddress));
+                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                
+                self::sortMailFragmentsDateDesc($result);
+                
+                return $result;
+            }
+        );
+    }
+    
+    /**
      * Find emails related to given entity
      *
      * @param string $class
      * @param int $id
-     * @return mixed
+     * @return MailFragment[]
      */
-    public function findEmailsRelatedToEntity(string $class, int $id)
+    public function findEmailsRelatedToEntity(string $class, int $id): array
     {
         if (!self::isClassSupported($class)) {
             throw new UnsupportedEmailRelationException('Class ' . $class . ' is not supported');
@@ -101,51 +142,68 @@ class MailListService
                         MailSendService::HEADER_RELATED_ENTITY_ID . ': ' . $id,
                     )
                 );
-                $mailboxes = $this->mailImapService->getMailboxes();
-                $result    = [];
-                foreach ($mailboxes as $mailbox) {
-                    $messages = $mailbox->getMessages($search);
-                    foreach ($messages as $message) {
-                        $fromList    = [];
-                        $messageFrom = $message->getFrom();
-                        if ($messageFrom instanceof EmailAddress) {
-                            $fromList[] = $messageFrom->getAddress();
-                        } elseif (is_array($messageFrom)) {
-                            /** @var EmailAddress $address */
-                            foreach ($messageFrom as $address) {
-                                $fromList[] = $address->getAddress();
-                            }
-                        }
-                        $toList    = [];
-                        $messageTo = $message->getTo();
-                        if (is_array($messageTo)) {
-                            /** @var EmailAddress $address */
-                            foreach ($message->getTo() as $address) {
-                                $toList[] = $address->getAddress();
-                            }
-                        }
-                        $result[] = new MailFragment(
-                            $fromList,
-                            $toList,
-                            $message->getSubject(),
-                            $message->getDate(),
-                            $mailbox->getName(),
-                            count($message->getAttachments())
-                        );
-                    }
-                }
-    
-                usort(
-                    $result, function (MailFragment $a, MailFragment $b) {
-                    return $b->getDate() <=> $a->getDate();
-                }
-                );
+                $result = $this->fetchMessagesForSearch($search);
                 
+                self::sortMailFragmentsDateDesc($result);
                 
                 return $result;
             }
         );
     }
     
+    /**
+     * Run configured in all mailboxes and provide aggregated result
+     *
+     * @param SearchExpression $searchExpression
+     * @return MailFragment[]
+     */
+    private function fetchMessagesForSearch(SearchExpression $searchExpression): array
+    {
+        $mailboxes = $this->mailImapService->getMailboxes();
+        $result    = [];
+        foreach ($mailboxes as $mailbox) {
+            $messages = $mailbox->getMessages($searchExpression);
+            foreach ($messages as $message) {
+                $result[] = $this->convertMailboxEmailToMailFragment($message, $mailbox->getName());
+            }
+        }
+        return $result;
+    }
     
+    /**
+     * Convert an IMAP message into internal mail fragment representation
+     *
+     * @param MessageInterface $message Message
+     * @param string $mailboxName       Mailbox to store
+     * @return MailFragment Result
+     */
+    private function convertMailboxEmailToMailFragment(MessageInterface $message, string $mailboxName): MailFragment
+    {
+        $fromList    = [];
+        $messageFrom = $message->getFrom();
+        if ($messageFrom instanceof EmailAddress) {
+            $fromList[] = $messageFrom->getAddress();
+        } elseif (is_array($messageFrom)) {
+            /** @var EmailAddress $address */
+            foreach ($messageFrom as $address) {
+                $fromList[] = $address->getAddress();
+            }
+        }
+        $toList    = [];
+        $messageTo = $message->getTo();
+        if (is_array($messageTo)) {
+            /** @var EmailAddress $address */
+            foreach ($message->getTo() as $address) {
+                $toList[] = $address->getAddress();
+            }
+        }
+        return new MailFragment(
+            $fromList,
+            $toList,
+            $message->getSubject(),
+            $message->getDate(),
+            $mailboxName,
+            count($message->getAttachments())
+        );
+    }
 }
