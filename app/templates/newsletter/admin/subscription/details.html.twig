@@ -32,6 +32,14 @@
                             <p class="help-block">Diese Schaltfläche ist aktiviert, wenn das Abonnement bestätigt wurde. In der Regel muss die Bestätigung durch den Empfänger des Newsletters erfolgen.</p>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="control-label" for="newsletter_subscription_confirmed">Nachrichten</label>
+                        </div>
+                        <div class="col-xs-12">
+                            {{ subscription|emailListingButton(true) }}
+                        </div>
+                    </div>
                 </div>
             {% endif %}
         </div>

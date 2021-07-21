@@ -20,6 +20,7 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -37,7 +38,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
  */
-class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface
+class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SupportsRelatedEmailsInterface
 {
     use CreatedModifiedTrait, SoftDeleteTrait, AddressTrait;
     

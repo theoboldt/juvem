@@ -12,6 +12,7 @@
 namespace AppBundle\Manager\Invoice;
 
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Invoice;
 use AppBundle\Entity\Participation;
 use AppBundle\Mail\MailSendService;
@@ -157,10 +158,14 @@ class InvoiceMailer
             $attachment->setFilename($name);
             $attachment->setContentType($type);
             $message->attach($attachment);
+    
+            MailSendService::addRelatedEntityMessageHeader(
+                $message, Participation::class, $participation->getPid()
+            );
+            MailSendService::addRelatedEntityMessageHeader(
+                $message, Event::class, $participation->getEvent()->getEid()
+            );
 
-            $headers = $message->getHeaders();
-            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
             if ($this->mailService->send($message)) {
                 $invoice->setIsSent(true);
                 $this->em->persist($invoice);

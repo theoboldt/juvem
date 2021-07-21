@@ -47,6 +47,10 @@ $(function () {
             const emails = commonCache.get(cacheKey);
             let html = '';
 
+            if (emails.length === 0) {
+                html += '<tr><td colspan="5" class="text-center">Keine passenden E-Mails gefunden.</td></tr>';
+            }
+
             jQuery.each(emails, function (key, email) {
                 html += '<tr>';
                 html += '<td><small>' + eHtml(email.from.join(', ')) + '</small></td>';

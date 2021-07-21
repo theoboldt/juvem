@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="newsletter_subscription")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\NewsletterSubscriptionRepository")
  */
-class NewsletterSubscription extends NewsletterAbstract
+class NewsletterSubscription extends NewsletterAbstract implements SupportsRelatedEmailsInterface
 {
 
     /**
@@ -239,5 +240,9 @@ class NewsletterSubscription extends NewsletterAbstract
     {
         return (bool)$this->isConfirmed;
     }
-
+    
+    public function getId(): ?int
+    {
+        return $this->rid;
+    }
 }

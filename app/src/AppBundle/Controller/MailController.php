@@ -13,8 +13,8 @@ namespace AppBundle\Controller;
 
 
 use AppBundle\Entity\NewsletterSubscription;
-use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
+use AppBundle\Entity\User;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\JsonResponse;
 use AppBundle\Mail\MailListService;
@@ -72,9 +72,9 @@ class MailController
     
         if ($relatedEntity instanceof Participation) {
             $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getEmail());
-        } elseif ($relatedEntity instanceof Participant) {
-            $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getParticipation()->getEmail());
         } elseif ($relatedEntity instanceof NewsletterSubscription) {
+            $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getEmail());
+        } elseif ($relatedEntity instanceof User) {
             $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getEmail());
         } else {
             $mails = $this->mailListService->findEmailsRelatedToEntity($className, $entityId);

@@ -23,6 +23,7 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentat
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -41,7 +42,7 @@ use JMS\Serializer\Annotation as Serialize;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, EntityHavingPhoneNumbersInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, HumanInterface
+class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, EntityHavingPhoneNumbersInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, HumanInterface, SupportsRelatedEmailsInterface
 {
     use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {

@@ -13,7 +13,7 @@ namespace AppBundle\Twig\Extension;
 
 
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
-use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Security\EmailVoter;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -115,6 +115,7 @@ class EmailListingButton extends AbstractExtension
         </table>
       </div>
       <div class="modal-footer">
+        <small style="float: left;">E-Mails, die vor August 2021 versendet wurden werden u.U. nicht angezeigt.</small>
         <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
       </div>
     </div>
@@ -126,12 +127,12 @@ HTML;
     /**
      * Generate button for changes in default size
      *
-     * @param SupportsChangeTrackingInterface $entity
+     * @param SupportsRelatedEmailsInterface $entity
      * @param bool $includeModal If set to true, modal is included. Use this, if this tracking button is the only one
      *                           on the page
      * @return string
      */
-    public function emailListingButton(SupportsChangeTrackingInterface $entity, bool $includeModal = true): string
+    public function emailListingButton(SupportsRelatedEmailsInterface $entity, bool $includeModal = true): string
     {
         return $this->emailListingButtonWithSize($entity, null, $includeModal);
     }
@@ -139,14 +140,14 @@ HTML;
     /**
      * Generate button for changes in specified size
      *
-     * @param SupportsChangeTrackingInterface $entity
+     * @param SupportsRelatedEmailsInterface $entity
      * @param string|null $size
      * @param bool $includeModal If set to true, modal is included. Use this, if this tracking button is the only one
      *                           on the page
      * @return string
      */
     public function emailListingButtonWithSize(
-        SupportsChangeTrackingInterface $entity, ?string $size, bool $includeModal = true
+        SupportsRelatedEmailsInterface $entity, ?string $size, bool $includeModal = true
     ): string
     {
         if (!$this->authorizationChecker->isGranted(EmailVoter::READ_EMAIL, $entity)) {

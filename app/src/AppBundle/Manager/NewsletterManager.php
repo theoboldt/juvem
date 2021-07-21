@@ -93,9 +93,9 @@ class NewsletterManager
         );
         $nameLast = $subscription->getNameLast();
         $message->setTo($subscription->getEmail(), $nameLast ?: null);
-        $headers = $message->getHeaders();
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
+        MailSendService::addRelatedEntityMessageHeader(
+            $message, NewsletterSubscription::class, $subscription->getRid()
+        );
         
         return $this->mailService->send($message);
     }
@@ -167,9 +167,12 @@ class NewsletterManager
                 }
 
                 $message = $this->mailService->getTemplatedMessage('general-markdown', $dataBoth);
-                $headers = $message->getHeaders();
-                $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, NewsletterSubscription::class);
-                $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $subscription->getRid());
+                MailSendService::addRelatedEntityMessageHeader(
+                    $message, NewsletterSubscription::class, $subscription->getRid()
+                );
+                MailSendService::addRelatedEntityMessageHeader(
+                    $message, Newsletter::class, $newsletter->getId()
+                );
 
                 if ($assignedUser) {
                     $message->setTo(

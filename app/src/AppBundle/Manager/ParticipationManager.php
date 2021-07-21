@@ -117,9 +117,12 @@ class ParticipationManager
             $participation->getEmail(),
             $participation->fullname()
         );
-        $headers = $message->getHeaders();
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
+        MailSendService::addRelatedEntityMessageHeader(
+            $message, Participation::class, $participation->getPid()
+        );
+        MailSendService::addRelatedEntityMessageHeader(
+            $message, Event::class, $event->getEid()
+        );
     
         $this->mailService->send($message);
     }
@@ -178,9 +181,12 @@ class ParticipationManager
                 $participation->getEmail(),
                 $participation->fullname()
             );
-            $headers = $message->getHeaders();
-            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, Participation::class);
-            $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $participation->getPid());
+            MailSendService::addRelatedEntityMessageHeader(
+                $message, Participation::class, $participation->getPid()
+            );
+            MailSendService::addRelatedEntityMessageHeader(
+                $message, Event::class, $event->getEid()
+            );
 
             $this->mailService->send($message);
         }
@@ -211,9 +217,9 @@ class ParticipationManager
             $user->getEmail(),
             $user->fullname()
         );
-        $headers = $message->getHeaders();
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_TYPE, User::class);
-        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY_ID, $user->getUid());
+        MailSendService::addRelatedEntityMessageHeader(
+            $message, User::class, $user->getUid()
+        );
 
         $this->mailService->send($message);
     }

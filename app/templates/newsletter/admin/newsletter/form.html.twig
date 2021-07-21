@@ -12,7 +12,13 @@
             <button type="button" id="openDialogSendTest" class="btn btn-default"
                     data-toggle="modal" data-target="#dialogSendTest">{{ 'flash'|glyph }} Test E-Mail versenden… <span class="caret-right"></span>
             </button>
+            {% if newsletter %}
+                {{ newsletter|emailListingButton(false) }}
+            {% endif %}
         </div>
+        {% if newsletter %}
+            {{ ''|emailListingModal }}
+        {% endif %}
         <div class="modal fade" id="dialogSend" tabindex="-1" role="dialog" aria-labelledby="dialogModalLabel" data-token="{{ csrf_token('newsletterSendDialog') }}">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

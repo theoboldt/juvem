@@ -13,6 +13,8 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="newsletter")
  */
-class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface, ProvidesCreatedInterface
+class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SupportsRelatedEmailsInterface
 {
     use CreatedModifiedTrait;
 
@@ -256,5 +258,14 @@ class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface
     {
         return $this->recipients;
     }
-
+    
+    public function getId(): ?int
+    {
+        return $this->lid;
+    }
+    
+    public static function getExcludedAttributes(): array
+    {
+        return [];
+    }
 }

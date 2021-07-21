@@ -28,6 +28,8 @@ class MailSendService implements UrlGeneratorInterface
     
     const HEADER_ORGANIZATION = 'X-Organization';
     
+    const HEADER_RELATED_ENTITY = 'X-Related-Entity';
+    
     const HEADER_RELATED_ENTITY_TYPE = 'X-Related-Type';
     
     const HEADER_RELATED_ENTITY_ID = 'X-Related-Id';
@@ -173,5 +175,23 @@ class MailSendService implements UrlGeneratorInterface
     public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
     {
         return $this->urlGenerator->generate($name, $parameters, $referenceType);
+    }
+    
+    /**
+     * Add related entity header to message
+     *
+     * @param Swift_Message $message
+     * @param string $class
+     * @param int|null $id
+     */
+    public static function addRelatedEntityMessageHeader(\Swift_Message $message, string $class, ?int $id = null)
+    {
+        $headers = $message->getHeaders();
+        $value   = $class;
+        if ($id) {
+            $value .= ':' . $id;
+        }
+        
+        $headers->addTextHeader(MailSendService::HEADER_RELATED_ENTITY, $value);
     }
 }

@@ -12,6 +12,7 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
+        {{ ''|emailListingModal }}
         <div class="modal fade" id="modalHistory" tabindex="-1" role="dialog" aria-labelledby="modalHistoryLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -126,6 +127,8 @@
                     {% if app.user is not null %}
                         <label id="event-subscription-button" class="btn btn-default {% if event.subscribedBy(app.user) %}active{% endif %}">{{ 'bell'|glyph }} <span class="hidden-xs">Abonnieren</span></label>
                     {% endif %}
+                    {{ event|emailListingButton(false) }}
+
                     <div class="modal fade" id="dialogModal" tabindex="-1" role="dialog"
                          aria-labelledby="dialogModalLabel">
                         <div class="modal-dialog" role="document">

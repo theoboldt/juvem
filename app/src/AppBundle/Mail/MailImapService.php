@@ -200,12 +200,32 @@ class MailImapService
         }
         
         $headers = $message->getHeaders();
-        if ($headers->has(MailSendService::HEADER_RELATED_ENTITY_TYPE)
-            && $headers->has(MailSendService::HEADER_RELATED_ENTITY_TYPE)
-        ) {
-            $relatedEntityType = $headers->get(MailSendService::HEADER_RELATED_ENTITY_TYPE)->getFieldBody();
-            $relatedEntityId   = (int)$headers->get(MailSendService::HEADER_RELATED_ENTITY_ID)->getFieldBody();
-            $this->cache->delete(MailListService::getCacheKey($relatedEntityType, $relatedEntityId));
+        if ($headers->has(MailSendService::HEADER_RELATED_ENTITY)) {
+            $relatedEntity = explode(':', $headers->get(MailSendService::HEADER_RELATED_ENTITY)->getFieldBody());
+            if (count($relatedEntity) === 2) {
+                $relatedEntityType = $relatedEntity[0];
+                $relatedEntityId   = (int)$relatedEntity[1];
+                $this->logger->info(
+                    'Resetting mail cache for entity {type} and id {id}',
+                    [
+                        'type' => $relatedEntityType,
+                        'id'   => $relatedEntityId,
+                    ]
+                );
+                $this->cache->delete(MailListService::getCacheKey($relatedEntityType, $relatedEntityId));
+            }
+        }
+        
+        foreach (array_keys($message->getTo()) as $address) {
+            if (is_string($address)) {
+                $this->cache->delete(MailListService::getAddressCacheKey($address));
+                $this->logger->info(
+                    'Resetting mail cache for address {email}',
+                    [
+                        'email' => $address,
+                    ]
+                );
+            }
         }
     }
     

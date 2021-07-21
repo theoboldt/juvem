@@ -12,11 +12,14 @@
 namespace AppBundle\Mail;
 
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
+use AppBundle\Entity\Event;
+use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
+use Ddeboer\Imap\Search\AbstractText;
 use Ddeboer\Imap\Search\Email\From;
 use Ddeboer\Imap\Search\Email\To;
 use Ddeboer\Imap\Search\Text\Text;
@@ -75,7 +78,9 @@ class MailListService
         return (
             $class === Participation::class
             || $class === User::class
+            || $class === Event::class
             || $class === NewsletterSubscription::class
+            || $class === Newsletter::class
         );
     }
     
@@ -92,13 +97,23 @@ class MailListService
     }
     
     /**
+     * Cache key for email address
+     *
+     * @param string $emailAddress
+     * @return string
+     */
+    public static function getAddressCacheKey(string $emailAddress): string {
+        return 'address_' . hash('sha256', $emailAddress);
+    }
+    
+    /**
      * @param string $emailAddress
      * @return MailFragment[]
      */
     public function findEmailsRelatedToAddress(string $emailAddress): array
     {
         return $this->cache->get(
-            'address-' . hash('sha256', $emailAddress),
+            self::getAddressCacheKey($emailAddress),
             function (ItemInterface $item) use ($emailAddress) {
                 $search = new SearchExpression();
                 $search->addCondition(new To($emailAddress));
@@ -106,6 +121,10 @@ class MailListService
                 
                 $search = new SearchExpression();
                 $search->addCondition(new From($emailAddress));
+                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                
+                $search = new SearchExpression();
+                $search->addCondition(new Text('Final-Recipient: rfc822; ' . $emailAddress));
                 $result = array_merge($result, $this->fetchMessagesForSearch($search));
                 
                 self::sortMailFragmentsDateDesc($result);
@@ -134,6 +153,15 @@ class MailListService
                 $search = new SearchExpression();
                 $search->addCondition(
                     new Text(
+                        MailSendService::HEADER_RELATED_ENTITY . ': ' . $class . ':' . $id,
+                    )
+                );
+                $result = $this->fetchMessagesForSearch($search);
+               
+                //LEGACY BEGIN
+                $search = new SearchExpression();
+                $search->addCondition(
+                    new Text(
                         MailSendService::HEADER_RELATED_ENTITY_TYPE . ': ' . $class,
                     )
                 );
@@ -142,7 +170,8 @@ class MailListService
                         MailSendService::HEADER_RELATED_ENTITY_ID . ': ' . $id,
                     )
                 );
-                $result = $this->fetchMessagesForSearch($search);
+                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                //LEGACY END
                 
                 self::sortMailFragmentsDateDesc($result);
                 
@@ -192,7 +221,6 @@ class MailListService
         $toList    = [];
         $messageTo = $message->getTo();
         if (is_array($messageTo)) {
-            /** @var EmailAddress $address */
             foreach ($message->getTo() as $address) {
                 $toList[] = $address->getAddress();
             }
