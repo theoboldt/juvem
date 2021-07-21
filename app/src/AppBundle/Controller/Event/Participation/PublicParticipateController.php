@@ -277,7 +277,7 @@ class PublicParticipateController
             );
 
             $participationManager = $this->participationManager;
-            $participationManager->mailParticipationRequested($participation, $event);
+            $participationManager->mailParticipationRequested($managedParticipation, $event);
 
             $request->getSession()->remove('participation-data-' . $eid);
 
