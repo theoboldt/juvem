@@ -153,6 +153,7 @@ class InvoiceManager
             throw new InvoiceTemplateMissingException('No invoice template available');
         }
         $templateProcessor = new TemplateProcessor($templatePath);
+        $templateVariables = $templateProcessor->getVariables();
 
         $toPayValue = $this->paymentManager->getToPayValueForParticipation($participation, false);
         if ($toPayValue === null) {
@@ -206,18 +207,21 @@ class InvoiceManager
                 ];
             }
         }
-        $templateProcessor->cloneRow('participantName', count($elements));
-        $i = 1;
-        foreach ($elements as $element) {
-            $templateProcessor->setValue(self::PLACEHOLDER_PARTICIPANT_NAME . '#' . $i, $element['participant']);
-            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_TYPE . '#' . $i, $element['description']);
-            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_DESCRIPTION . '#' . $i, $element['type']);
-            $templateProcessor->setValue(
-                self::PLACEHOLDER_INVOICE_ROW_TYPE_AND_DESCRIPTION . '#' . $i, $element['type_and_description']
-            );
-            $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_VALUE . '#' . $i, $element['value']);
-
-            ++$i;
+    
+        if (in_array('participantName', $templateVariables)) {
+            $templateProcessor->cloneRow('participantName', count($elements));
+            $i = 1;
+            foreach ($elements as $element) {
+                $templateProcessor->setValue(self::PLACEHOLDER_PARTICIPANT_NAME . '#' . $i, $element['participant']);
+                $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_TYPE . '#' . $i, $element['description']);
+                $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_DESCRIPTION . '#' . $i, $element['type']);
+                $templateProcessor->setValue(
+                    self::PLACEHOLDER_INVOICE_ROW_TYPE_AND_DESCRIPTION . '#' . $i, $element['type_and_description']
+                );
+                $templateProcessor->setValue(self::PLACEHOLDER_INVOICE_ROW_VALUE . '#' . $i, $element['value']);
+            
+                ++$i;
+            }
         }
 
         $eventStart = $event->getStartDate()->format(Event::DATE_FORMAT_DATE);
