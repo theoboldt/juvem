@@ -693,10 +693,9 @@ class AdminMultipleExportController
         /** @var Event $event */
         $event = $eventRepository->findOneBy(['eid' => $request->get('eid')]);
 
-        $filterConfirmed         = ExcelConfiguration::OPTION_CONFIRMED_CONFIRMED;
-        $filterPaid              = ExcelConfiguration::OPTION_PAID_ALL;
-        $filterRejectedWithdrawn = ExcelConfiguration::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN;
-
+        $filterConfirmed         = $processedConfiguration['filter']['confirmed'];
+        $filterPaid              = $processedConfiguration['filter']['paid'];
+        $filterRejectedWithdrawn = $processedConfiguration['filter']['rejectedwithdrawn'];
 
         $groupBy = null;
         if (isset($processedConfiguration['grouping_sorting']['grouping']['enabled']) && isset($processedConfiguration['grouping_sorting']['grouping']['field'])) {

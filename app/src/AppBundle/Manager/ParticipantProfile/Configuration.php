@@ -18,18 +18,6 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
 {
     const ROOT_NODE_NAME = 'profile';
 
-    const OPTION_CONFIRMED_ALL         = 'all';
-    const OPTION_CONFIRMED_CONFIRMED   = 'confirmed';
-    const OPTION_CONFIRMED_UNCONFIRMED = 'unconfirmed';
-
-    const OPTION_PAID_ALL     = 'all';
-    const OPTION_PAID_PAID    = 'paid';
-    const OPTION_PAID_NOTPAID = 'notpaid';
-
-    const OPTION_REJECTED_WITHDRAWN_ALL                    = 'all';
-    const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
-    const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
-
     /**
      * {@inheritDoc}
      */
@@ -44,6 +32,14 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->info('Titel')
                         ->defaultValue('Profile')
                     ->end()
+                    ->append(
+                        self::creatFilterNodes()
+                    )
+                    ->append(
+                        self::createGroupSortNodes(
+                            $participantNodes, 'Gruppieren (erscheint in der Kopfzeile, zunächst sortiert nach diesem Feld)'
+                        )
+                    )
                     ->arrayNode('general')
                         ->addDefaultsIfNotSet()
                         ->info('Allgemein')
@@ -64,11 +60,6 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                             ->append(self::booleanNodeCreator('includeNotSelected', 'Nicht zutreffende Optionen mit ausgeben (und als nicht zutreffend markieren)'))
                         ->end()
                 ->end()
-            ->append(
-                self::createGroupSortNodes(
-                    $participantNodes, 'Gruppieren (erscheint in der Kopfzeile, zunächst sortiert nach diesem Feld)'
-                )
-            )
             ->end()
         ;
         return $treeBuilder;

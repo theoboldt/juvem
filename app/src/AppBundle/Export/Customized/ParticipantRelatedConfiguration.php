@@ -31,6 +31,18 @@ abstract class ParticipantRelatedConfiguration
     const OPTION_GROUP_NONE = '___group_by_none';
     const OPTION_SORT_NONE = '___sort_by_none';
 
+    const OPTION_CONFIRMED_ALL         = 'all';
+    const OPTION_CONFIRMED_CONFIRMED   = 'confirmed';
+    const OPTION_CONFIRMED_UNCONFIRMED = 'unconfirmed';
+
+    const OPTION_PAID_ALL     = 'all';
+    const OPTION_PAID_PAID    = 'paid';
+    const OPTION_PAID_NOTPAID = 'notpaid';
+
+    const OPTION_REJECTED_WITHDRAWN_ALL                    = 'all';
+    const OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN = 'notrejectedwithdrawn';
+    const OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN     = 'rejectedwithdrawn';
+    
     /**
      * Event this export is configurated for
      *
@@ -185,6 +197,53 @@ abstract class ParticipantRelatedConfiguration
             }
         }
 
+        return $node;
+    }
+    
+    /**
+     * Provide participant filter options
+     *
+     * @return NodeDefinition
+     */
+    public static function creatFilterNodes(): NodeDefinition
+    {
+        $node = new ArrayNodeDefinition('filter');
+        $node->addDefaultsIfNotSet()
+             ->info('Filter')
+             ->children()
+             ->enumNode('confirmed')
+                 ->info('Bestätigt/Unbestätigt')
+                 ->values(
+                     [
+                         'Bestätigte und unbestätigt Teilnehmende mit aufnehmen' => self::OPTION_CONFIRMED_ALL,
+                         'Nur bestätigte Teilnehmende mit aufnehmen'             => self::OPTION_CONFIRMED_CONFIRMED,
+                         'Nur unbestätigte mit aufnehmen'                        => self::OPTION_CONFIRMED_UNCONFIRMED,
+                     ]
+                 )
+                 ->end()
+             ->enumNode('paid')
+                 ->info('Bezahlungsstatus')
+                 ->values(
+                     [
+                         'Teilnehmende unabhängig vom Bezahlungsstatus aufnehmen'               => self::OPTION_PAID_ALL,
+                         'Nur Teilnehmende deren Rechnung bezahlt ist mit aufnehmen'            => self::OPTION_PAID_PAID,
+                         'Nur Teilnehmende deren Rechnung noch nicht bezahlt ist mit aufnehmen' => self::OPTION_PAID_NOTPAID,
+                     ]
+                 )
+                 ->end()
+             ->enumNode('rejectedwithdrawn')
+                 ->info('Zurückgezogen und abgelehnt')
+                 ->values(
+                     [
+                         'Zurückgezogene/abgelehnte mit aufnehmen'                       => self::OPTION_REJECTED_WITHDRAWN_ALL,
+                         'Nur Teilnehmende die weder zurückgzogen noch abgelehnt wurden' => self::OPTION_REJECTED_WITHDRAWN_NOT_REJECTED_WITHDRAWN,
+                         'Nur Teilnehmende die zurückgzogen oder abgelehnt wurden'       => self::OPTION_REJECTED_WITHDRAWN_REJECTED_WITHDRAWN,
+                     ]
+                 )
+                 ->end()
+             ->end()
+        ->end();
+        
         return $node;
     }
 

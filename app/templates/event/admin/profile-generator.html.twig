@@ -21,7 +21,7 @@
           <div class="container">
             <div class="row">
               {% for groupName, group in config %}
-                {% if groupName != 'filter' and group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
+                {% if group is instanceof('Symfony\\Component\\Config\\Definition\\ArrayNode') %}
                   <div class="col-xs-12 col-sm-6">
                     <div class="panel panel-default">
                       <div class="panel-heading">
