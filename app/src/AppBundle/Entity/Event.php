@@ -381,10 +381,18 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     /**
      * Get title
      *
+     * @param bool $appendYearIfNotInText If set to true and title does not contain year, it will be appended to title in brackets
      * @return string
      */
-    public function getTitle()
+    public function getTitle(bool $appendYearIfNotInText = false)
     {
+        if ($appendYearIfNotInText) {
+            $year = $this->getStartDate()->format('Y');
+            if (strpos($this->title, $year) === false) {
+                return sprintf('%s (%s)', $this->title, $year);
+            }
+        }
+        
         return $this->title;
     }
     

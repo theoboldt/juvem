@@ -17,6 +17,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration extends ParticipantRelatedConfiguration implements ConfigurationInterface
 {
     const ROOT_NODE_NAME = 'profile';
+    
+    const LAYOUT_SMALL = 'layout_small';
+    const LAYOUT_LARGE = 'layout_large';
 
     /**
      * {@inheritDoc}
@@ -44,6 +47,15 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->addDefaultsIfNotSet()
                         ->info('Allgemein')
                         ->children()
+                            ->enumNode('layout')
+                                ->info('Layout')
+                                ->values(
+                                    [
+                                        'Normale Rand, kleinere Schrift, kompakter'      => self::LAYOUT_SMALL,
+                                        'Kein Rand, größere Schrift, eher seitenfüllend' => self::LAYOUT_LARGE,
+                                    ]
+                                )
+                            ->end()
                             ->append(self::booleanNodeCreator('includePrivate', 'Interne Felder mit ausgeben'))
                             ->append(self::booleanNodeCreator('includeDescription', 'Internen Erklärungstext der Felder mit ausgeben (wenn vorhanden)'))
                             ->append(self::booleanNodeCreator('includeComments', 'Anmerkungen mit ausgeben'))
