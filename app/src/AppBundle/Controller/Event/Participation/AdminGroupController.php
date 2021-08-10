@@ -210,9 +210,10 @@ class AdminGroupController
 
         /** @var AttributeChoiceOption $choiceOption */
         foreach ($attribute->getChoiceOptions() as $choiceOption) {
-            $countEmployees      = $distribution->getOptionDistribution($choiceOption)->getEmployeeCount();
-            $countParticipants   = $distribution->getOptionDistribution($choiceOption)->getParticipantsCount();
-            $countParticipations = $distribution->getOptionDistribution($choiceOption)->getParticipationCount();
+            $usage = $distribution->getOptionDistribution($choiceOption);
+            $countEmployees      = $usage->getEmployeeCount();
+            $countParticipants   = $usage->getParticipantsCount();
+            $countParticipations = $usage->getParticipationCount();
             
             $title = htmlentities($choiceOption->getManagementTitle(true));
 
@@ -231,7 +232,6 @@ class AdminGroupController
                 'countEmployees'      => $countEmployees,
                 'countParticipants'   => $countParticipants,
                 'countParticipations' => $countParticipations,
-
             ];
 
         }
