@@ -237,7 +237,7 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
             $this->participants = [];
             $repository         = $this->em->getRepository(Participation::class);
             $this->participants = $repository->participantsList(
-                $this->event, $this->participantIds, false, false
+                $this->event, $this->participantIds, true, true
             );
         }
 
