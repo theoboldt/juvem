@@ -841,7 +841,7 @@ class ParticipantProfile
                 $document,
                 [
                     'colsNum'   => $this->getStyleSetting('main_columns'),
-                    'colsSpace' => 100,
+                    'colsSpace' => $this->getStyleSetting('main_column_space'),
                 ]
             );
             if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
@@ -973,7 +973,7 @@ class ParticipantProfile
                     $document,
                     [
                         'colsNum'   => $this->getStyleSetting('main_columns'),
-                        'colsSpace' => 100,
+                        'colsSpace' => $this->getStyleSetting('main_column_space'),
                     ]
                 );
                 if (!$this->commentManager->countForParticipation($participation)
