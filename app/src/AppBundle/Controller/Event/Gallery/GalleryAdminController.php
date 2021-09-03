@@ -224,6 +224,10 @@ class GalleryAdminController extends BaseGalleryController
                     $iptcTitle = str_replace("\000", "", $iptc["2#105"][0]);
                     $iptcTitle = utf8_decode($iptcTitle);
                 }
+                if (!$iptcTitle && isset($iptc["2#005"])) {
+                    $iptcTitle = str_replace("\000", "", $iptc["2#005"][0]);
+                    $iptcTitle = utf8_decode($iptcTitle);
+                }
             }
             
             try {
