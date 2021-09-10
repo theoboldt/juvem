@@ -17,6 +17,7 @@ use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
+use Ddeboer\Imap\Message\Attachment;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
 use Ddeboer\Imap\Search\AbstractText;
@@ -112,6 +113,23 @@ class MailListService
      */
     public function findEmailsRelatedToAddress(string $emailAddress): array
     {
+                $search = new SearchExpression();
+                $search->addCondition(new To($emailAddress));
+                $result = $this->fetchMessagesForSearch($search);
+                
+                $search = new SearchExpression();
+                $search->addCondition(new From($emailAddress));
+                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                
+                $search = new SearchExpression();
+                $search->addCondition(new Text('Final-Recipient: rfc822; ' . $emailAddress));
+                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                
+                self::sortMailFragmentsDateDesc($result);
+                
+                return $result;
+
+
         return $this->cache->get(
             self::getAddressCacheKey($emailAddress),
             function (ItemInterface $item) use ($emailAddress) {
@@ -231,7 +249,31 @@ class MailListService
             $message->getSubject(),
             $message->getDate(),
             $mailboxName,
-            count($message->getAttachments())
+            $this->provideMailAttachmentFragments($message)
         );
+    }
+    
+    /**
+     * Convert list of attachments to list of attachment fragments
+     *
+     * @param MessageInterface $message
+     * @return MailAttachmentFragment[]
+     */
+    private function provideMailAttachmentFragments(MessageInterface $message): array
+    {
+        $fragmentAttachments = [];
+        
+        /** @var Attachment $attachment */
+        foreach ($message->getAttachments() as $attachment) {
+            $fragmentAttachments[] = new MailAttachmentFragment(
+                $attachment->getPartNumber(),
+                $attachment->getFilename(),
+                $attachment->getSize(),
+                $attachment->getType(),
+                $message->getSubtype()
+            );
+        }
+        
+        return $fragmentAttachments;
     }
 }

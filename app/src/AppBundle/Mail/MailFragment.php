@@ -61,13 +61,12 @@ class MailFragment
      */
     private string $mailbox;
     
-    
     /**
      * @Serialize\Expose
-     * @Serialize\Type("integer")
-     * @var int
+     *
+     * @var MailAttachmentFragment[]
      */
-    private int $attachmentCount;
+    private array $attachments;
     
     /**
      * MailFragment constructor.
@@ -77,18 +76,18 @@ class MailFragment
      * @param string $subject
      * @param \DateTimeImmutable $date
      * @param string $mailbox
-     * @param int $attachmentCount
+     * @param array $attachments
      */
-    public function __construct(array $from, array $to, string $subject, \DateTimeImmutable $date, string $mailbox,
-                                int $attachmentCount
+    public function __construct(
+        array $from, array $to, string $subject, \DateTimeImmutable $date, string $mailbox, array $attachments
     )
     {
-        $this->from            = $from;
-        $this->to              = $to;
-        $this->subject         = $subject;
-        $this->date            = $date;
-        $this->mailbox         = $mailbox;
-        $this->attachmentCount = $attachmentCount;
+        $this->from        = $from;
+        $this->to          = $to;
+        $this->subject     = $subject;
+        $this->date        = $date;
+        $this->mailbox     = $mailbox;
+        $this->attachments = $attachments;
     }
     
     /**
@@ -132,11 +131,23 @@ class MailFragment
     }
     
     /**
+     * @Serialize\Expose
+     * @Serialize\Type("integer")
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("attachment_count")
      * @return int
      */
     public function getAttachmentCount(): int
     {
-        return $this->attachmentCount;
+        return count($this->attachments);
+    }
+    
+    /**
+     * @return MailAttachmentFragment[]
+     */
+    public function getAttachments(): array
+    {
+        return $this->attachments;
     }
     
     
