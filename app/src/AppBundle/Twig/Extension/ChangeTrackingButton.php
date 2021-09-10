@@ -13,6 +13,7 @@ namespace AppBundle\Twig\Extension;
 
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Security\EventVoter;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Twig\Extension\AbstractExtension;
@@ -149,7 +150,7 @@ HTML;
         SupportsChangeTrackingInterface $entity, ?string $size, bool $includeModal = true
     ): string
     {
-        if ($this->authorizationChecker->isGranted('read', $entity)) {
+        if (!$this->authorizationChecker->isGranted(EventVoter::READ, $entity)) {
             $changes = 0;
         } else {
             $changes = $this->repository->countAllByEntity($entity);

@@ -387,6 +387,16 @@ services:
       tags:
         - security.voter
 
+    AppBundle\Security\ParticipationVoter:
+      autowire: true
+      tags:
+        - security.voter
+
+    AppBundle\Security\ParticipantVoter:
+      autowire: true
+      tags:
+        - security.voter
+
     AppBundle\LocalhostInformationProvider:
         arguments:
             - "@request_stack"

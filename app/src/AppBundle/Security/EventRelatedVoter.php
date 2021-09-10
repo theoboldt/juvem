@@ -25,6 +25,8 @@ class EventRelatedVoter extends AbstractDecisionManagerAwareVoter
      */
     protected function supports($attribute, $subject)
     {
+        //TODO is inactive
+        
         if (!in_array(
             $attribute,
             [
@@ -53,6 +55,8 @@ class EventRelatedVoter extends AbstractDecisionManagerAwareVoter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        //TODO is inactive
+        
         /** @var EventRelatedEntity $subject */
         return $this->decisionManager->decide($token, [$attribute], $subject->getEvent());
     }
