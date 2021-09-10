@@ -116,6 +116,7 @@ class EmailListingButton extends AbstractExtension
       </div>
       <div class="modal-footer">
         <small style="float: left;">E-Mails, die vor August 2021 versendet wurden werden u.U. nicht angezeigt.</small>
+        <button type="button" class="btn btn-default btn-refresh" data-title="Aktualisieren" data-toggle="tooltip"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
       </div>
     </div>
