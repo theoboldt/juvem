@@ -113,23 +113,6 @@ class MailListService
      */
     public function findEmailsRelatedToAddress(string $emailAddress): array
     {
-                $search = new SearchExpression();
-                $search->addCondition(new To($emailAddress));
-                $result = $this->fetchMessagesForSearch($search);
-                
-                $search = new SearchExpression();
-                $search->addCondition(new From($emailAddress));
-                $result = array_merge($result, $this->fetchMessagesForSearch($search));
-                
-                $search = new SearchExpression();
-                $search->addCondition(new Text('Final-Recipient: rfc822; ' . $emailAddress));
-                $result = array_merge($result, $this->fetchMessagesForSearch($search));
-                
-                self::sortMailFragmentsDateDesc($result);
-                
-                return $result;
-
-
         return $this->cache->get(
             self::getAddressCacheKey($emailAddress),
             function (ItemInterface $item) use ($emailAddress) {
