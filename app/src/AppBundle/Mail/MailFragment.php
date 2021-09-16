@@ -27,9 +27,9 @@ class MailFragment
      *
      * @Serialize\Expose
      * @Serialize\Type("integer")
-     * @var int
+     * @var int|null
      */
-    private int $number;
+    private ?int $number = null;
     
     /**
      * @Serialize\Expose
@@ -80,7 +80,7 @@ class MailFragment
     /**
      * MailFragment constructor.
      *
-     * @param int $number
+     * @param int|null $number
      * @param string[] $from
      * @param string[] $to
      * @param string $subject
@@ -89,7 +89,7 @@ class MailFragment
      * @param array $attachments
      */
     public function __construct(
-        int                $number,
+        ?int               $number,
         array              $from,
         array              $to,
         string             $subject,
@@ -108,9 +108,9 @@ class MailFragment
     }
     
     /**
-     * @return int
+     * @return int|null
      */
-    public function getNumber(): int
+    public function getNumber(): ?int
     {
         return $this->number;
     }
