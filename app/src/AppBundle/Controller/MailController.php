@@ -22,6 +22,7 @@ use AppBundle\Mail\MailListService;
 use AppBundle\SerializeJsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\ChangeTracking\EntityChange;
@@ -161,16 +162,16 @@ class MailController
                 $e
             );
         }
-        // required to generate filename header
-        $responseBinary = new BinaryFileResponse(__FILE__);
-        $responseBinary->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $mail->getSubject() . '.eml'
-        );
-        $headerContentDisposition = $responseBinary->headers->get('Content-Disposition');
-        
+        $filename = $messageNumber . '.eml';
+    
         $messageCallback = $this->mailListService->provideRawMessageCallback($mail);
         $response        = new StreamedResponse(
-            $messageCallback, 200, ['Content-Disposition' => $headerContentDisposition]
+            $messageCallback, 200,
+            [
+                'Content-Disposition' => HeaderUtils::makeDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename, $filename
+                )
+            ]
         );
         return $response;
     }
