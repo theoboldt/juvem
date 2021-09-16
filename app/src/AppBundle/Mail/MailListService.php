@@ -20,7 +20,6 @@ use AppBundle\Entity\User;
 use Ddeboer\Imap\Message\Attachment;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
-use Ddeboer\Imap\Search\AbstractText;
 use Ddeboer\Imap\Search\Email\From;
 use Ddeboer\Imap\Search\Email\To;
 use Ddeboer\Imap\Search\Text\Text;

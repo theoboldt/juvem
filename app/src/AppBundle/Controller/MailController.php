@@ -17,6 +17,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\JsonResponse;
+use AppBundle\Mail\MailboxNotFoundException;
 use AppBundle\Mail\MailListService;
 use AppBundle\SerializeJsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
@@ -91,7 +92,7 @@ class MailController
      *
      * @CloseSessionEarly
      * @Route("/admin/email/{mailboxName}/{messageNumber}.eml",
-     *     requirements={"mailboxName": "([a-zA-Z0-9_\.]+)", "messageNumber": "(\d+)"},
+     *     requirements={"mailboxName": "([^\/]+)", "messageNumber": "(\d+)"},
      *     name="admin_email_download", methods={"GET"})
      * @Security("is_granted('read_email')")
      * @param string $mailboxName
@@ -100,7 +101,14 @@ class MailController
      */
     public function downloadRawEmail(string $mailboxName, int $messageNumber): Response
     {
-        $mail = $this->mailListService->provideMailFragment($mailboxName, $messageNumber);
+        try {
+            $mail = $this->mailListService->provideMailFragment($mailboxName, $messageNumber);
+        } catch (MailboxNotFoundException $e) {
+            throw new NotFoundHttpException(
+                $e->getMessage(),
+                $e
+            );
+        }
         // required to generate filename header
         $responseBinary = new BinaryFileResponse(__FILE__);
         $responseBinary->setContentDisposition(

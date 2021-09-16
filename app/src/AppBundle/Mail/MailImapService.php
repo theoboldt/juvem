@@ -150,7 +150,7 @@ class MailImapService
             }
         }
         if (!$mailboxFound) {
-            throw new \RuntimeException('Mailbox "' . $mailboxName . '" not found');
+            throw new MailboxNotFoundException('Mailbox "' . $mailboxName . '" not found');
         }
         return null;
     }
