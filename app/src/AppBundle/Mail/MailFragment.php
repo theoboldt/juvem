@@ -132,6 +132,29 @@ class MailFragment
     
     /**
      * @Serialize\Expose
+     * @Serialize\Type("string")
+     * @Serialize\VirtualProperty()
+     * @Serialize\SerializedName("mailbox_symbol")
+     * @return null|string
+     */
+    public function getMailboxSymbol(): ?string
+    {
+        switch (mb_strtolower($this->mailbox)) {
+            case 'posteingang':
+            case 'inbox':
+                return 'log-in';
+            case 'sent':
+                case 'gesendete objekte';
+                case 'gesendet';
+                return 'log-out';
+            default:
+                return 'unchecked';
+        }
+        return null;
+    }
+    
+    /**
+     * @Serialize\Expose
      * @Serialize\Type("integer")
      * @Serialize\VirtualProperty()
      * @Serialize\SerializedName("attachment_count")

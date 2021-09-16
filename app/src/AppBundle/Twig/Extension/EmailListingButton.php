@@ -102,8 +102,7 @@ class EmailListingButton extends AbstractExtension
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>Absender</th>
-              <th>Empfänger</th>
+              <th>Beteilligte</th>
               <th>Datum</th>
               <th class="col-class">Betreff</th>
               <th>Verzeichnis</th>

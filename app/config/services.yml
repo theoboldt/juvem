@@ -320,6 +320,10 @@ services:
         tags:
             - { name: jms_serializer.event_subscriber}
 
+    AppBundle\EventSubscribers\MailFragmentDirectionMetadataSubscriber:
+        autoconfigure: true
+        autowire: true
+
     app.related_participants_finder:
         alias: AppBundle\Manager\RelatedParticipantsFinder
     AppBundle\Manager\RelatedParticipantsFinder:

@@ -38,10 +38,27 @@ $(function () {
                     html += '<tr><td colspan="5" class="text-center">Keine passenden E-Mails gefunden.</td></tr>';
                 }
 
+
                 jQuery.each(emails, function (key, email) {
+                    let emailAddressesFrom = eHtml(email.from.join(', '));
+                    let emailAddressesTo = eHtml(email.to.join(', '));
+
                     html += '<tr>';
-                    html += '<td><small>' + eHtml(email.from.join(', ')) + '</small></td>';
-                    html += '<td><small>' + eHtml(email.to.join(', ')) + '</small></td>';
+                    html += '<td>';
+
+                    if (email.organization_sender) {
+                        html += '<span class="label label-primary" title="'+emailAddressesFrom+'">Wir</span>';
+                    } else {
+                        html += '<small>' + emailAddressesFrom + '</small>';
+                    }
+                    html += ' &rarr; ';
+                    if (email.organization_receiver) {
+                        html += '<span class="label label-primary" title="'+emailAddressesTo+'">Uns</span>';
+                    } else {
+                        html += '<small>' + emailAddressesTo + '</small>';
+                    }
+
+                    html += '</td>';
                     html += '<td>' + eHtml(email.date) + '</td>';
                     html += '<td>';
                     if (email.attachment_count) {
@@ -51,7 +68,14 @@ $(function () {
                     }
                     html += eHtml(email.subject);
                     html += '</td>';
-                    html += '<td>' + eHtml(email.mailbox) + '</td>';
+
+                    html += '<td>';
+                    if (email.mailbox_symbol) {
+                        html += '<span class="glyphicon glyphicon-' + email.mailbox_symbol + '" aria-hidden="true"></span> ';
+                    }
+                    html += eHtml(email.mailbox);
+                    html += '</td>';
+
                     html += '</tr>';
                 });
                 tbodyEl.html(html);
