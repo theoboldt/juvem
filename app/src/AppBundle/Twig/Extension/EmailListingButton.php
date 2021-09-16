@@ -17,6 +17,7 @@ use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Security\EmailVoter;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -31,6 +32,11 @@ class EmailListingButton extends AbstractExtension
     protected $router;
     
     /**
+     * @var CsrfTokenManagerInterface
+     */
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    
+    /**
      * @var AuthorizationChecker
      */
     private $authorizationChecker;
@@ -39,12 +45,17 @@ class EmailListingButton extends AbstractExtension
      * EmailListingButton constructor.
      *
      * @param UrlGeneratorInterface $router
+     * @param CsrfTokenManagerInterface $csrfTokenManager
      * @param AuthorizationChecker $authorizationChecker
      */
-    public function __construct(UrlGeneratorInterface $router, AuthorizationChecker $authorizationChecker)
+    public function __construct(
+        UrlGeneratorInterface $router, CsrfTokenManagerInterface $csrfTokenManager,
+        AuthorizationChecker  $authorizationChecker
+    )
     {
         $this->router               = $router;
         $this->authorizationChecker = $authorizationChecker;
+        $this->csrfTokenManager = $csrfTokenManager;
     }
     
     
@@ -156,10 +167,17 @@ HTML;
         }
         
         $btnClass = $size ? 'btn-' . $size : '';
-        
-        
-        $url = $this->router->generate(
+    
+        $url        = $this->router->generate(
             'admin_email_related_list',
+            [
+                'entityId'        => $entity->getId(),
+                'classDescriptor' => EntityChangeRepository::convertClassNameForRoute(get_class($entity))
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $refreshUrl = $this->router->generate(
+            'admin_email_related_list_clear_cache',
             [
                 'entityId'        => $entity->getId(),
                 'classDescriptor' => EntityChangeRepository::convertClassNameForRoute(get_class($entity))
@@ -171,9 +189,13 @@ HTML;
         if ($includeModal) {
             $result .= $this->emailListingModal();
         }
+        $token = $this->csrfTokenManager->getToken('related-emails-clear-cache');
+        
         $result .= '<button class="btn-email-listing btn btn-default ' . $btnClass . '"' .
                    ' data-target="#modalEmailListing"' .
                    ' data-url="' . $url . '"' .
+                   ' data-refresh-url="' . $refreshUrl . '"' .
+                   ' data-refresh-token="' . $token . '"' .
                    ' data-type="' . get_class($entity) . '"' .
                    ' data-id="' . $entity->getId() . '"' .
                    ' title="Zugehörige E-Mails auflisten">' .

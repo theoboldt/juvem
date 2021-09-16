@@ -106,8 +106,16 @@ class MailListService
         return 'address_' . hash('sha256', $emailAddress);
     }
     
-    
-    
+    /**
+     * Clear cache
+     *
+     * @param string $emailAddress
+     * @return void
+     */
+    public function clearEmailAddressCache(string $emailAddress): void
+    {
+        $this->cache->delete(self::getAddressCacheKey($emailAddress));
+    }
     
     /**
      * @param string $emailAddress
@@ -168,6 +176,18 @@ class MailListService
             return $callback;
         }
         return null;
+    }
+    
+    /**
+     * Clear cache
+     *
+     * @param string $class
+     * @param int $id
+     * @return void
+     */
+    public function clearEntityRelatedCache(string $class, int $id): void
+    {
+        $this->cache->delete($this->getCacheKey($class, $id));
     }
     
     /**

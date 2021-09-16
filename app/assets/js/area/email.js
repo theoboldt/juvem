@@ -2,6 +2,8 @@ $(function () {
     jQuery('.btn-email-listing').each(function () {
         const btn = jQuery(this),
             url = btn.data('url'),
+            refreshUrl = btn.data('refresh-url'),
+            refreshToken = btn.data('refresh-token'),
             type = btn.data('type'),
             id = btn.data('id'),
             cacheKey = 'emails.list.' + type + '.id' + id,
@@ -34,7 +36,7 @@ $(function () {
                 const emails = commonCache.get(cacheKey);
                 let html = '';
 
-                if (emails.length === 0) {
+                if (emails && emails.length === 0) {
                     html += '<tr><td colspan="5" class="text-center">Keine passenden E-Mails gefunden.</td></tr>';
                 }
 
@@ -89,11 +91,11 @@ $(function () {
                 tbodyEl.html(html);
                 tbodyEl.toggleClass('loading-text', false);
             },
-            loadMails = function () {
+            loadMails = function (refresh) {
                 refreshButtonEl.toggleClass('disabled', true);
-                jQuery.ajax({
-                    type: 'GET',
-                    url: url,
+                const config = {
+                    type: refresh ? 'POST' : 'GET',
+                    url: refresh ? refreshUrl : url,
                     success: function (response) {
                         btn.toggleClass('disabled', false);
                         if (response && response.items) {
@@ -107,9 +109,15 @@ $(function () {
                         btn.toggleClass('disabled', false);
                         btn.toggleClass('loading-text', false);
                     }
-                });
+                };
+                if (refresh) {
+                    config.data = {
+                        _token: refreshToken
+                    };
+                }
+                jQuery.ajax(config);
             };
-        loadMails();
+        loadMails(false);
 
         refreshButtonEl.on('click', function () {
             if (refreshButtonEl.hasClass('disabled')) {
@@ -117,7 +125,7 @@ $(function () {
             }
             refreshButtonEl.toggleClass('disabled', true);
             tbodyEl.toggleClass('loading-text', true);
-            loadMails();
+            loadMails(true);
         });
 
         btn.on('click', function () {
