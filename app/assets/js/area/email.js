@@ -15,7 +15,7 @@ $(function () {
         }
 
         const updateButton = function (list) {
-            const btnTitle = list.length === 1 ? ' 1 E-Mail ' : ' ' + list.length + ' E-Mails ';
+            const btnTitle = list && list.length === 1 ? ' 1 E-Mail ' : ' ' + list.length + ' E-Mails ';
             btn.find('.hidden-xs').html(btnTitle);
         };
 
@@ -96,7 +96,7 @@ $(function () {
                     url: url,
                     success: function (response) {
                         btn.toggleClass('disabled', false);
-                        if (response.items) {
+                        if (response && response.items) {
                             commonCache.set(cacheKey, response.items);
                             updateButton(response.items);
                             renderEmails();
