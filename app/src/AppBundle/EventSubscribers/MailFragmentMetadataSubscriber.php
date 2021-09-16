@@ -16,9 +16,17 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class MailFragmentDirectionMetadataSubscriber implements EventSubscriberInterface
+class MailFragmentMetadataSubscriber implements EventSubscriberInterface
 {
+    
+    /**
+     * Router used to create the routes for the transmitted pages
+     *
+     * @var UrlGeneratorInterface
+     */
+    private UrlGeneratorInterface $urlGenerator;
     
     /**
      * @var MailConfigurationProvider
@@ -28,9 +36,13 @@ class MailFragmentDirectionMetadataSubscriber implements EventSubscriberInterfac
     /**
      * @param MailConfigurationProvider $mailConfigurationProvider
      */
-    public function __construct(MailConfigurationProvider $mailConfigurationProvider)
+    public function __construct(
+        UrlGeneratorInterface     $urlGenerator,
+        MailConfigurationProvider $mailConfigurationProvider
+    )
     {
         $this->mailConfigurationProvider = $mailConfigurationProvider;
+        $this->urlGenerator              = $urlGenerator;
     }
     
     /**
@@ -61,7 +73,7 @@ class MailFragmentDirectionMetadataSubscriber implements EventSubscriberInterfac
         ];
         $fromOrganization      = false;
         $toOrganization        = false;
-    
+        
         foreach ($mail->getFrom() as $mailFrom) {
             if (in_array($mailFrom, $organizationAddresses)) {
                 $fromOrganization = true;
@@ -72,8 +84,17 @@ class MailFragmentDirectionMetadataSubscriber implements EventSubscriberInterfac
                 $toOrganization = true;
             }
         }
-        
         $visitor->visitProperty(new StaticPropertyMetadata('', 'organization_receiver', null), $toOrganization);
         $visitor->visitProperty(new StaticPropertyMetadata('', 'organization_sender', null), $fromOrganization);
+        
+        $urlRaw = $this->urlGenerator->generate(
+            'admin_email_download',
+            [
+                'mailboxName'   => $mail->getMailbox(),
+                'messageNumber' => $mail->getNumber(),
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $visitor->visitProperty(new StaticPropertyMetadata('', 'url_download_raw', null), $urlRaw);
     }
 }

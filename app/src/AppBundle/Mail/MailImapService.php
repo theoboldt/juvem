@@ -16,6 +16,7 @@ use Ddeboer\Imap\ConnectionInterface;
 use Ddeboer\Imap\Exception\AuthenticationFailedException;
 use Ddeboer\Imap\Exception\ResourceCheckFailureException;
 use Ddeboer\Imap\Mailbox;
+use Ddeboer\Imap\MessageInterface;
 use Ddeboer\Imap\Server;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -57,8 +58,8 @@ class MailImapService
      */
     public function __construct(
         MailConfigurationProvider $mailConfigurationProvider,
-        CacheInterface $cacheAppEmail,
-        LoggerInterface $logger = null
+        CacheInterface            $cacheAppEmail,
+        LoggerInterface           $logger = null
     )
     {
         $this->cache                     = $cacheAppEmail;
@@ -129,6 +130,29 @@ class MailImapService
         );
         
         return $this->imapConnection;
+    }
+    
+    /**
+     * Get message by number from mailbox
+     *
+     * @param string $mailboxName Mailbox
+     * @param int $messageNumber  Message number
+     * @return MessageInterface|null
+     */
+    public function getMessageFromMailboxByNumber(string $mailboxName, int $messageNumber): ?MessageInterface
+    {
+        $mailboxFound = false;
+        foreach ($this->getMailboxes() as $mailbox) {
+            if ($mailbox->getName() === $mailboxName) {
+                $mailboxFound = true;
+                $message      = $mailbox->getMessage($messageNumber);
+                return $message;
+            }
+        }
+        if (!$mailboxFound) {
+            throw new \RuntimeException('Mailbox "' . $mailboxName . '" not found');
+        }
+        return null;
     }
     
     

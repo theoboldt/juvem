@@ -76,6 +76,14 @@ $(function () {
                     html += eHtml(email.mailbox);
                     html += '</td>';
 
+                    html += '<td>';
+                    if (email.url_download_raw) {
+                        html += '<a href="' + email.url_download_raw + '" target="_blank" title="E-Mail Quelltext herunterladen" class="btn btn-xs btn-default btn-download-email">' +
+                            '<span class="glyphicon glyphicon-download" aria-hidden="true"></span>' +
+                            '</a> ';
+                    }
+                    html += '</td>';
+
                     html += '</tr>';
                 });
                 tbodyEl.html(html);

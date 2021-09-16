@@ -107,15 +107,14 @@ class MailListService
         return 'address_' . hash('sha256', $emailAddress);
     }
     
+    
+    
     /**
      * @param string $emailAddress
      * @return MailFragment[]
      */
     public function findEmailsRelatedToAddress(string $emailAddress): array
     {
-        return $this->cache->get(
-            self::getAddressCacheKey($emailAddress),
-            function (ItemInterface $item) use ($emailAddress) {
                 $search = new SearchExpression();
                 $search->addCondition(new To($emailAddress));
                 $result = $this->fetchMessagesForSearch($search);
@@ -131,8 +130,39 @@ class MailListService
                 self::sortMailFragmentsDateDesc($result);
                 
                 return $result;
-            }
+    }
+    
+    /**
+     * Provide mail fragment for transmitted message identifiers
+     *
+     * @param string $mailboxName Mailbox
+     * @param int $messageNumber  Message number
+     * @return MailFragment
+     */
+    public function provideMailFragment(string $mailboxName, int $messageNumber): MailFragment
+    {
+        $message = $this->mailImapService->getMessageFromMailboxByNumber($mailboxName, $messageNumber);
+        return self::convertMailboxEmailToMailFragment($message, $mailboxName);
+    }
+    
+    /**
+     * Provide callback which echoes raw message
+     *
+     * @param MailFragment $mailFragment
+     * @return \Closure|null
+     */
+    public function provideRawMessageCallback(MailFragment $mailFragment)
+    {
+        $message = $this->mailImapService->getMessageFromMailboxByNumber(
+            $mailFragment->getMailbox(), $mailFragment->getNumber()
         );
+        if ($message) {
+            $callback = function () use ($message) {
+                echo $message->getRawMessage();
+            };
+            return $callback;
+        }
+        return null;
     }
     
     /**
@@ -149,7 +179,7 @@ class MailListService
         }
         
         return $this->cache->get(
-            $this->getCacheKey($class, $id),
+            $this->getCacheKey($class, $id).rand(),
             function (ItemInterface $item) use ($class, $id) {
                 $search = new SearchExpression();
                 $search->addCondition(
@@ -227,6 +257,7 @@ class MailListService
             }
         }
         return new MailFragment(
+            $message->getNumber(),
             $fromList,
             $toList,
             $message->getSubject(),

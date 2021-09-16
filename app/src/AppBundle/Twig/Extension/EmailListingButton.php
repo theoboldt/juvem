@@ -106,6 +106,7 @@ class EmailListingButton extends AbstractExtension
               <th>Datum</th>
               <th class="col-class">Betreff</th>
               <th>Verzeichnis</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

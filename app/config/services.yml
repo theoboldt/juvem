@@ -320,7 +320,7 @@ services:
         tags:
             - { name: jms_serializer.event_subscriber}
 
-    AppBundle\EventSubscribers\MailFragmentDirectionMetadataSubscriber:
+    AppBundle\EventSubscribers\MailFragmentMetadataSubscriber:
         autoconfigure: true
         autowire: true
 

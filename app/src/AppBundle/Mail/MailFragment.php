@@ -23,6 +23,15 @@ class MailFragment
 {
     
     /**
+     * Message number
+     *
+     * @Serialize\Expose
+     * @Serialize\Type("integer")
+     * @var int
+     */
+    private int $number;
+    
+    /**
      * @Serialize\Expose
      * @Serialize\Type("array<string>")
      *
@@ -71,6 +80,7 @@ class MailFragment
     /**
      * MailFragment constructor.
      *
+     * @param int $number
      * @param string[] $from
      * @param string[] $to
      * @param string $subject
@@ -79,15 +89,30 @@ class MailFragment
      * @param array $attachments
      */
     public function __construct(
-        array $from, array $to, string $subject, \DateTimeImmutable $date, string $mailbox, array $attachments
+        int                $number,
+        array              $from,
+        array              $to,
+        string             $subject,
+        \DateTimeImmutable $date,
+        string             $mailbox,
+        array              $attachments
     )
     {
+        $this->number      = $number;
         $this->from        = $from;
         $this->to          = $to;
         $this->subject     = $subject;
         $this->date        = $date;
         $this->mailbox     = $mailbox;
         $this->attachments = $attachments;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getNumber(): int
+    {
+        return $this->number;
     }
     
     /**

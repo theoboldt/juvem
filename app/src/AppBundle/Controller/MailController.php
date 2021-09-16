@@ -20,9 +20,12 @@ use AppBundle\JsonResponse;
 use AppBundle\Mail\MailListService;
 use AppBundle\SerializeJsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -83,4 +86,32 @@ class MailController
         return new SerializeJsonResponse(['items' => $mails]);
     }
     
+    /**
+     * Get list of changes for transmitted entity
+     *
+     * @CloseSessionEarly
+     * @Route("/admin/email/{mailboxName}/{messageNumber}.eml",
+     *     requirements={"mailboxName": "([a-zA-Z0-9_\.]+)", "messageNumber": "(\d+)"},
+     *     name="admin_email_download", methods={"GET"})
+     * @Security("is_granted('read_email')")
+     * @param string $mailboxName
+     * @param int $messageNumber
+     * @return Response
+     */
+    public function downloadRawEmail(string $mailboxName, int $messageNumber): Response
+    {
+        $mail = $this->mailListService->provideMailFragment($mailboxName, $messageNumber);
+        // required to generate filename header
+        $responseBinary = new BinaryFileResponse(__FILE__);
+        $responseBinary->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT, $mail->getSubject() . '.eml'
+        );
+        $headerContentDisposition = $responseBinary->headers->get('Content-Disposition');
+        
+        $messageCallback = $this->mailListService->provideRawMessageCallback($mail);
+        $response        = new StreamedResponse(
+            $messageCallback, 200, ['Content-Disposition' => $headerContentDisposition]
+        );
+        return $response;
+    }
 }
