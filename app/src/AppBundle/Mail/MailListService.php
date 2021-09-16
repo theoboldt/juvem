@@ -24,6 +24,8 @@ use Ddeboer\Imap\Search\Email\From;
 use Ddeboer\Imap\Search\Email\To;
 use Ddeboer\Imap\Search\Text\Text;
 use Ddeboer\Imap\SearchExpression;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -42,15 +44,25 @@ class MailListService
     private MailImapService $mailImapService;
     
     /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+    
+    /**
      * MailListService constructor.
      *
      * @param CacheInterface $cacheAppEmail
      * @param MailImapService $mailImapService
      */
-    public function __construct(CacheInterface $cacheAppEmail, MailImapService $mailImapService)
+    public function __construct(
+        CacheInterface  $cacheAppEmail,
+        MailImapService $mailImapService,
+        LoggerInterface $logger = null
+    )
     {
         $this->cache           = $cacheAppEmail;
         $this->mailImapService = $mailImapService;
+        $this->logger          = $logger ?? new NullLogger();
     }
     
     /**
@@ -115,6 +127,7 @@ class MailListService
     public function clearEmailAddressCache(string $emailAddress): void
     {
         $this->cache->delete(self::getAddressCacheKey($emailAddress));
+        $this->logger->notice('Cleared mail cache for address {address}', ['address', $emailAddress]);
     }
     
     /**
@@ -188,6 +201,7 @@ class MailListService
     public function clearEntityRelatedCache(string $class, int $id): void
     {
         $this->cache->delete($this->getCacheKey($class, $id));
+        $this->logger->notice('Cleared related mail cache for entity {class}:{id}', ['class', $class, 'id' => $id]);
     }
     
     /**
@@ -246,12 +260,21 @@ class MailListService
     {
         $mailboxes = $this->mailImapService->getMailboxes();
         $result    = [];
+        $timeBegin = microtime(true);
         foreach ($mailboxes as $mailbox) {
             $messages = $mailbox->getMessages($searchExpression);
             foreach ($messages as $message) {
                 $result[] = $this->convertMailboxEmailToMailFragment($message, $mailbox->getName());
             }
         }
+        $this->logger->notice(
+            'Fetched {messages} messages for {mailboxes} mailboxes in {duration} seconds',
+            [
+                'messages' => count($result),
+                'mailboxes' => count($mailboxes),
+                'duration' => round(microtime(true) - $timeBegin)
+            ]
+        );
         return $result;
     }
     
