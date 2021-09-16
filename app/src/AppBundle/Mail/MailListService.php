@@ -109,12 +109,16 @@ class MailListService
     
     
     
+    
     /**
      * @param string $emailAddress
      * @return MailFragment[]
      */
     public function findEmailsRelatedToAddress(string $emailAddress): array
     {
+        return $this->cache->get(
+            self::getAddressCacheKey($emailAddress),
+            function (ItemInterface $item) use ($emailAddress) {
                 $search = new SearchExpression();
                 $search->addCondition(new To($emailAddress));
                 $result = $this->fetchMessagesForSearch($search);
@@ -130,6 +134,8 @@ class MailListService
                 self::sortMailFragmentsDateDesc($result);
                 
                 return $result;
+            }
+        );
     }
     
     /**
@@ -179,7 +185,7 @@ class MailListService
         }
         
         return $this->cache->get(
-            $this->getCacheKey($class, $id).rand(),
+            $this->getCacheKey($class, $id),
             function (ItemInterface $item) use ($class, $id) {
                 $search = new SearchExpression();
                 $search->addCondition(
