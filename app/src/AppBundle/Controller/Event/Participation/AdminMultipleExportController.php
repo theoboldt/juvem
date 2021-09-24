@@ -785,7 +785,9 @@ class AdminMultipleExportController
         //filter name
         $filename = $event->getTitle() . ' - ' . $processedConfiguration['title'] . '.xlsx';
         $filename = preg_replace('/[^\x20-\x7e]{1}/', '', $filename);
-        $filename = str_replace('&', 'u.', $filename);
+        $filename = str_replace(' / ', ' o. ', $filename);
+        $filename = str_replace('/', ' o. ', $filename);
+        $filename = preg_replace('/([^a-zA-Z0-9\s_\\.\-\(\):])+/', '', $filename);
 
         return [
             'path' => $tmpPath,
