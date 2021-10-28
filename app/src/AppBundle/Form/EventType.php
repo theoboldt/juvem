@@ -36,94 +36,108 @@ class EventType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $dateTypeOptions = array(
+        $dateTypeOptions = [
             'years'  => range(Date('Y') - 1, Date('Y') + 1),
             'widget' => 'single_text',
             'format' => 'yyyy-MM-dd',
-        );
-        $smartCheckbox = array(
+        ];
+        $smartCheckbox   = [
             'required'   => false,
             'mapped'     => true,
-            'attr'       => array('class' => 'checkbox-smart'),
-            'label_attr' => array('class' => 'control-label checkbox-smart-label')
-        );
+            'attr'       => ['class' => 'checkbox-smart'],
+            'label_attr' => ['class' => 'control-label checkbox-smart-label'],
+        ];
 
         $builder
-            ->add('title', TextType::class, array('label' => 'Titel'))
+            ->add('title', TextType::class, ['label' => 'Titel'])
             ->add(
-                'description', TextareaType::class,
-                ['label' => 'Beschreibung', 'attr' => ['aria-describedby' => 'help-description', 'class' => 'markdown-editable']]
-            )
-            ->add(
-                'descriptionMeta', TextareaType::class,
+                'description',
+                TextareaType::class,
                 [
-                    'required' => false,
-                    'label'    => 'Kurzbeschreibung',
-                    'attr'     => ['aria-describedby' => 'help-description-short']
+                    'label' => 'Beschreibung',
+                    'attr'  => ['aria-describedby' => 'help-description', 'class' => 'markdown-editable'],
                 ]
             )
             ->add(
-                'startDate', DateType::class,
-                array_merge($dateTypeOptions, array('label' => 'Startdatum'))
+                'descriptionMeta',
+                TextareaType::class,
+                [
+                    'required' => false,
+                    'label'    => 'Kurzbeschreibung',
+                    'attr'     => ['aria-describedby' => 'help-description-short'],
+                ]
             )
             ->add(
-                'hasStartTime', CheckboxType::class,
-                array_merge($smartCheckbox, array('label' => 'Startzeit'))
-            )
-            ->add('startTime', TimeType::class, array('label' => 'Startzeit'))
-            ->add(
-                'hasEndDate', CheckboxType::class,
-                array_merge($smartCheckbox, array('label' => 'Enddatum'))
+                'startDate',
+                DateType::class,
+                array_merge($dateTypeOptions, ['label' => 'Startdatum'])
             )
             ->add(
-                'endDate', DateType::class,
-                array_merge($dateTypeOptions, array('label' => 'Enddatum'))
+                'hasStartTime',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Startzeit'])
+            )
+            ->add('startTime', TimeType::class, ['label' => 'Startzeit'])
+            ->add(
+                'hasEndDate',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Enddatum'])
             )
             ->add(
-                'hasEndTime', CheckboxType::class,
-                array_merge($smartCheckbox, array('label' => 'Endzeit'))
+                'endDate',
+                DateType::class,
+                array_merge($dateTypeOptions, ['label' => 'Enddatum'])
             )
-            ->add('endTime', TimeType::class, array('label' => 'Endzeit'))
             ->add(
-                'isActive', ChoiceType::class, array(
-                'label'             => 'Status',
-                'choices'           => array('Für Anmeldungen offen'     => true,
-                                             'Keine Anmeldungen möglich' => false
-                ),
-                'expanded'          => true
+                'hasEndTime',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Endzeit'])
             )
+            ->add('endTime', TimeType::class, ['label' => 'Endzeit'])
+            ->add(
+                'isActive',
+                ChoiceType::class, [
+                    'label'    => 'Status',
+                    'choices'  => [
+                        'Für Anmeldungen offen'     => true,
+                        'Keine Anmeldungen möglich' => false,
+                    ],
+                    'expanded' => true,
+                ]
             )
             ->add(
                 'isVisible',
                 ChoiceType::class,
                 [
                     'label'    => 'Sichtbarkeit',
-                    'choices'  => ['Auf Startseite präsentieren' => true,
-                                   'Nicht präsentieren'          => false
+                    'choices'  => [
+                        'Auf Startseite präsentieren' => true,
+                        'Nicht präsentieren'          => false,
                     ],
-                    'expanded' => true
+                    'expanded' => true,
                 ]
             )
             ->add(
-                'isAutoConfirm', ChoiceType::class, array(
-                                   'label'    => 'Anmeldungs-Bestätigung',
-                                   'choices'  => array(
-                                       'Eingegangene Anmeldungen einzeln bestätigen' => false,
-                                       'Alle Anmeldungen automatisch bestätigen'     => true
-
-                                   ),
-                                   'expanded' => true
-                               )
+                'isAutoConfirm',
+                ChoiceType::class, [
+                    'label'    => 'Anmeldungs-Bestätigung',
+                    'choices'  => [
+                        'Eingegangene Anmeldungen einzeln bestätigen' => false,
+                        'Alle Anmeldungen automatisch bestätigen'     => true,
+                    ],
+                    'expanded' => true,
+                ]
             )
             ->add(
-                'imageFile', VichImageType::class, array(
-                'label'         => 'Poster',
-                'required'      => false,
-                'allow_delete'  => true,
-                // not mandatory, default is true
-                'download_uri' => false,
-                // not mandatory, default is true
-            )
+                'imageFile',
+                VichImageType::class, [
+                    'label'        => 'Poster',
+                    'required'     => false,
+                    'allow_delete' => true,
+                    // not mandatory, default is true
+                    'download_uri' => false,
+                    // not mandatory, default is true
+                ]
             )
             ->add(
                 'invoiceTemplateFile',
@@ -136,14 +150,33 @@ class EventType extends AbstractType
                 ]
             )
             ->add(
-                'ageRange', TextType::class,
-                ['label' => 'Altersspanne', 'required' => false, 'empty_data' => null, 'attr' => ['aria-describedby' => 'help-age-range']]
+                'ageRange',
+                TextType::class,
+                ['label'      => 'Altersspanne',
+                 'required'   => false,
+                 'empty_data' => null,
+                 'attr'       => ['aria-describedby' => 'help-age-range'],
+                ]
             )
             ->add(
-                'price', MoneyType::class,
-                ['label' => 'Preis', 'required' => false, 'divisor' => 100, 'attr' => ['aria-describedby' => 'help-price'],]
+                'price',
+                MoneyType::class,
+                [
+                    'label'    => 'Preis',
+                    'required' => false,
+                    'divisor'  => 100,
+                    'attr'     => ['aria-describedby' => 'help-price'],
+                ]
             )
-            ->add('addressTitle', TextType::class, ['label' => 'Bezeichnung', 'required' => false, 'attr' => array('aria-describedby' => 'help-address-title')])
+            ->add(
+                'addressTitle',
+                TextType::class,
+                [
+                    'label'    => 'Bezeichnung',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-address-title'],
+                ]
+            )
             ->add('addressStreet', TextType::class, ['label' => 'Straße u. Hausnummer', 'required' => false])
             ->add('addressZip', TextType::class, ['label' => 'Postleitzahl', 'required' => false])
             ->add('addressCity', TextType::class, ['label' => 'Stadt', 'required' => false])
@@ -152,7 +185,7 @@ class EventType extends AbstractType
                 TextType::class,
                 [
                     'label'    => 'Land',
-                    'required' => true
+                    'required' => true,
                 ]
             )
             ->add(
@@ -171,19 +204,22 @@ class EventType extends AbstractType
                 ['label' => 'Wetterdaten anzeigen', 'mapped' => true, 'required' => false]
             )
             ->add(
-                'hasConfirmationMessage', CheckboxType::class,
-                array_merge($smartCheckbox, array('label' => 'Bestätigungs-Text'))
+                'hasConfirmationMessage',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Bestätigungs-Text'])
             )
             ->add(
-                'confirmationMessage', TextareaType::class,
-                array(
+                'confirmationMessage',
+                TextareaType::class,
+                [
                     'label' => 'Bestätigungs-Text',
-                    'attr'  => array('aria-describedby' => 'help-confirmation-message')
-                )
+                    'attr'  => ['aria-describedby' => 'help-confirmation-message'],
+                ]
             )
             ->add(
-                'hasWaitingListThreshold', CheckboxType::class,
-                array_merge($smartCheckbox, array('label' => 'Warteliste-Schwelle'))
+                'hasWaitingListThreshold',
+                CheckboxType::class,
+                array_merge($smartCheckbox, ['label' => 'Warteliste-Schwelle'])
             )
             ->add(
                 'waitingListThreshold',
@@ -203,10 +239,10 @@ class EventType extends AbstractType
                         return $er->createQueryBuilder('a')
                                   ->orderBy('a.managementTitle', 'ASC');
                     },
-                    'row_attr' => [
+                    'row_attr'      => [
                         'data-classes',
                     ],
-                    'choice_attr' => function (Attribute $attribute, $key, $value) {
+                    'choice_attr'   => function (Attribute $attribute, $key, $value) {
                         $classes = [];
                         if ($attribute->isDeleted()) {
                             $classes[] = 'is-deleted';
@@ -214,7 +250,7 @@ class EventType extends AbstractType
                         if ($attribute->isArchived()) {
                             $classes[] = 'is-archived';
                         }
-    
+
                         return ['class' => implode(' ', $classes)];
                     },
                     'choice_label'  => 'managementTitle',
@@ -261,9 +297,9 @@ class EventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => Event::class,
-            )
+            ]
         );
     }
 }
