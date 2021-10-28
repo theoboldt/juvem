@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Neuen Mitarbeiter anlegen ({{ event.title }})
+{% block title %}Neue:n Mitarbeiter:in anlegen ({{ event.title }})
 {% endblock %}
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Mitarbeiter', 'subtitle': 'anlegen'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Mitarbeiter:in', 'subtitle': 'anlegen'} %}
         {% block breadcrumb %}
                 <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
                 <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-                <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter</a></li>
-                <li class="active">Neuen Mitarbeiter anlegen</li>
+                <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter:in</a></li>
+                <li class="active">Neue:n Mitarbeiter:in anlegen</li>
         {% endblock %}
     {% endembed %}
     <div class="container">
         {% embed 'event/admin/employee/embed-form.html.twig' with {'form': form} %}
-            {% block submit %}Mitarbeiter anlegen{% endblock %}
+            {% block submit %}Mitarbeiter:in anlegen{% endblock %}
         {% endembed %}
     </div>
 

@@ -84,7 +84,7 @@ class EmployeesSheet extends AbstractSheet
      */
     public function setHeader(string $title = null, string $subtitle = null)
     {
-        parent::setHeader($this->event->getTitle(), 'Mitarbeiter');
+        parent::setHeader($this->event->getTitle(), 'Mitarbeitende');
         parent::setColumnHeaders();
     }
     

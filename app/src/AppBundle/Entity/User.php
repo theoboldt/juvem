@@ -18,9 +18,8 @@ use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @Serialize\ExclusionPolicy("all")
@@ -44,13 +43,13 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     const ROLE_ADMIN_EVENT_GLOBAL_LABEL = 'Veranstaltungsverwaltung (alle)';
 
     const ROLE_ADMIN_USER       = 'ROLE_ADMIN_USER';
-    const ROLE_ADMIN_USER_LABEL = 'Benutzerverwaltung';
+    const ROLE_ADMIN_USER_LABEL = 'Benutzer:innen-Verwaltung';
 
     const ROLE_ADMIN_NEWSLETTER       = 'ROLE_ADMIN_NEWSLETTER';
     const ROLE_ADMIN_NEWSLETTER_LABEL = 'Newsletterverwaltung';
 
     const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE_LABEL';
-    const ROLE_EMPLOYEE_LABEL = 'Mitarbeiterverwaltung';
+    const ROLE_EMPLOYEE_LABEL = 'Mitarbeiter:innen-Verwaltung';
 
     const ROLE_CLOUD = 'ROLE_CLOUD';
     const ROLE_CLOUD_LABEL = 'Cloud-Zugang';

@@ -77,7 +77,7 @@
                     {%- if is_granted('edit', event) -%}
                         <div class="btn-group" role="group">
                             <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
-                                class="btn btn-default" title="Mitarbeiter verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter</span></a>
+                                class="btn btn-default" title="Mitarbeiter:innen verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter:innen</span></a>
                             <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
                                class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
                         </div>

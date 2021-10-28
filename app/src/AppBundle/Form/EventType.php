@@ -97,10 +97,21 @@ class EventType extends AbstractType
             ->add(
                 'isActive',
                 ChoiceType::class, [
-                    'label'    => 'Status',
+                    'label'    => 'Teilnehmer:innen Anmeldung',
                     'choices'  => [
-                        'Für Anmeldungen offen'     => true,
-                        'Keine Anmeldungen möglich' => false,
+                        'Offen für Anmeldungen neuer Teilnehmer:innen' => true,
+                        'Keine Anmeldungen möglich'                    => false,
+                    ],
+                    'expanded' => true,
+                ]
+            )
+            ->add(
+                'isActiveRegistrationEmployee',
+                ChoiceType::class, [
+                    'label'    => 'Mitarbeiter:innen Anmeldung',
+                    'choices'  => [
+                        'Offen für Anmeldungen neuer Mitarbeiter:innen' => true,
+                        'Keine Mitarbeiter:innen Anmeldungen möglich'   => false,
                     ],
                     'expanded' => true,
                 ]
@@ -120,7 +131,7 @@ class EventType extends AbstractType
             ->add(
                 'isAutoConfirm',
                 ChoiceType::class, [
-                    'label'    => 'Anmeldungs-Bestätigung',
+                    'label'    => 'Anmeldungs-Bestätigung (Teilnehmer:innen)',
                     'choices'  => [
                         'Eingegangene Anmeldungen einzeln bestätigen' => false,
                         'Alle Anmeldungen automatisch bestätigen'     => true,

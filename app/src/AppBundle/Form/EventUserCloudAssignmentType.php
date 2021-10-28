@@ -33,7 +33,7 @@ class EventUserCloudAssignmentType extends AbstractType
             ->add(
                 'allowedCloudAccessTeam',
                 CheckboxType::class,
-                array_merge($smartCheckbox, ['label' => 'Hat Zugriff auf die Dateien in der Mitarbeiter-Cloud'])
+                array_merge($smartCheckbox, ['label' => 'Hat Zugriff auf die Dateien in der Mitarbeitenden-Cloud'])
             )
             ->add(
                 'allowedCloudAccessManagement',

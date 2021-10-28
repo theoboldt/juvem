@@ -12,7 +12,6 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\EventRepository;
-use AppBundle\Entity\Participation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -34,8 +33,8 @@ class MoveEmployeeType extends AbstractType
     
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $commentOld    = 'Dieser Mitarbeiter/Diese Mitarbeiterin wurde verschoben in die Veranstaltung "{EVENT_NEW}". Der neue Datensatz hat die Nummer #{GID_NEW}.';
-        $commentNew    = 'Dieser Mitarbeiter/Diese Mitarbeiterin ist verschoben worden von der Veranstaltung "{EVENT_OLD}". Der alte Datensatz hatte die Nummer #{GID_OLD}.';
+        $commentOld    = 'Diese:r Mitarbeiter:in wurde verschoben in die Veranstaltung "{EVENT_NEW}". Der neue Datensatz hat die Nummer #{GID_NEW}.';
+        $commentNew    = 'Diese:r Mitarbeiter:in ist verschoben worden von der Veranstaltung "{EVENT_OLD}". Der alte Datensatz hatte die Nummer #{GID_OLD}.';
         $Employee = null;
         if ($options[self::EMPLOYEE_OPTION]) {
             /** @var Employee $employee */
@@ -66,11 +65,11 @@ class MoveEmployeeType extends AbstractType
             )
             ->add(
                 'commentOldEmployee', TextareaType::class,
-                ['label' => 'Kommentar für originaleb Mitarbeiter-Datensatz', 'data' => $commentOld]
+                ['label' => 'Kommentar für originalen Mitarbeitenden-Datensatz', 'data' => $commentOld]
             )
             ->add(
                 'commentNewEmployee', TextareaType::class,
-                ['label' => 'Kommentar für neuen Mitarbeiter-Datensatz', 'data' => $commentNew]
+                ['label' => 'Kommentar für neuen Mitarbeitenden-Datensatz', 'data' => $commentNew]
             );
     }
     

@@ -171,7 +171,7 @@ class EmployeeController
         );
         ResponseHelper::configureAttachment(
             $response,
-            $event->getTitle() . ' - Mitarbeiter.xlsx',
+            $event->getTitle() . ' - Mitarbeitende.xlsx',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
         
@@ -502,7 +502,7 @@ class EmployeeController
             $em->flush();
             $this->addFlash(
                 'success',
-                sprintf('%d Mitarbeiter importiert', count($employees))
+                sprintf('%d Mitarbeitende importiert', count($employees))
             );
             
             return $this->redirectToRoute(
