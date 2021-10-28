@@ -114,6 +114,12 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     protected $isActive;
     
     /**
+     * @ORM\Column(type="boolean", name="is_active_registration_employee")
+     * @var bool
+     */
+    protected $isActiveRegistrationEmployee;
+
+    /**
      * @ORM\Column(type="boolean", name="is_visible")
      */
     protected $isVisible;
@@ -573,6 +579,23 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function isActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsActiveRegistrationEmployee()
+    {
+        return $this->isActiveRegistrationEmployee;
+    }
+
+    /**
+     * @param  bool $isActiveRegistrationEmployee
+     * @return void
+     */
+    public function setIsActiveRegistrationEmployee(bool $isActiveRegistrationEmployee = true): void
+    {
+        $this->isActiveRegistrationEmployee = $isActiveRegistrationEmployee;
     }
     
     /**
