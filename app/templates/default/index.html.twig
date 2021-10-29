@@ -114,7 +114,7 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-                                          {% if is_granted('read', event) %}
+                                          {% if event.isActiveRegistrationEmployee %}
                                             <a role="button"
                                                href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
                                                class="btn btn-default">Mitarbeiten
