@@ -30,8 +30,8 @@ use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Serialize\ExclusionPolicy("all")
@@ -111,6 +111,11 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
      * @var Employee|null
      */
     protected $predecessor = null;
+    
+    /**
+     * @ORM\Column(type="boolean", name="is_confirmed")
+     */
+    protected $isConfirmed = false;
     
     /**
      * Employee constructor.
@@ -229,6 +234,13 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
         return $this->event;
     }
 
+    /**
+     * @param Event $event
+     */
+    public function setEvent(?Event $event): void
+    {
+        $this->event = $event;
+    }
 
     /**
      * Set assignedUser
@@ -279,6 +291,22 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
         $this->predecessor = $predecessor;
         return $this;
     }
+    
+    /**
+     * @return bool
+     */
+    public function isConfirmed(): bool
+    {
+        return $this->isConfirmed;
+    }
+
+    /**
+     * @param bool $isConfirmed
+     */
+    public function setIsConfirmed(bool $isConfirmed = true): void
+    {
+        $this->isConfirmed = $isConfirmed;
+    }
 
     /**
      * Create a new employee for transmitted event based on data of given employee
@@ -303,6 +331,7 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
         $employee->setAddressCountry($employeePrevious->getAddressCountry());
         $employee->setEmail($employeePrevious->getEmail());
         $employee->setSalutation($employeePrevious->getSalutation());
+        $employee->setIsConfirmed(true);
         $employee->setPredecessor($employeePrevious);
 
         if ($copyPrivateFields) {

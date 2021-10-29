@@ -401,6 +401,11 @@ services:
       tags:
         - security.voter
 
+    AppBundle\Security\EmployeeVoter:
+      autowire: true
+      tags:
+        - security.voter
+
     AppBundle\LocalhostInformationProvider:
         arguments:
             - "@request_stack"

@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+{% import _self as m %}
+
+{% block title %}Mitarbeitenden-Anmeldedaten überprüfen - {{ event.title }}{% endblock %}
+
+{% block body %}
+    <div class="container page-participate">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
+                            <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a>
+                            </li>
+                            <li><a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Mitarbeitenden-Anmeldung zu
+                                    Veranstaltung ausfüllen</a></li>
+                            <li class="active">Daten überprüfen</li>
+                        </ol>
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': 'Mitarbeitenden-Anmeldedaten überprüfen', 'subtitle': event.title} %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>Überprüfen Sie jetzt bitte die Angaben auf Richtigkeit.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{ employee.nameLast }}, {{ employee.nameFirst }}</h3>
+                            </div>
+                            <div class="panel-body">
+                                <dl class="dl-horizontal">
+                                    <dt>Anrede</dt>
+                                    <dd>{{ employee.salutation }}</dd>
+                                    <dt>Vorname</dt>
+                                    <dd>{{ employee.nameFirst }}</dd>
+                                    <dt>Nachname</dt>
+                                    <dd>{{ employee.nameLast }}</dd>
+                                    <dt>Telefonnummern</dt>
+                                    <dd class="address-container">
+                                        {% for phoneNumber in employee.phoneNumbers %}
+                                            <address>
+                                                {% if phoneNumber.number %}
+                                                    <strong>
+                                                        {{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}
+                                                    </strong>
+                                                {% else %}
+                                                    <i>(keine)</i>
+                                                {% endif %}
+                                                {% if phoneNumber.description %}
+                                                    <br>{{ phoneNumber.description }}
+                                                {% endif %}
+                                            </address>
+                                        {% endfor %}
+                                    </dd>
+                                    <dt>Anschrift</dt>
+                                    <dd class="address-container">
+                                        <address>
+                                            <strong>{{ employee.nameFirst }} {{ employee.nameLast }}</strong><br>
+                                            {{ employee.addressStreet }}<br>
+                                            {{ employee.addressZip }} {{ employee.addressCity }}{% if employee.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}<br>
+                                    {{ employee.addressCountry }}{% endif %}
+                                        </address>
+                                    </dd>
+                                    <dt>E-Mail Adresse</dt>
+                                    <dd class="address-container">
+                                        <address>
+                                            {{ employee.email }}
+                                        </address>
+                                    </dd>
+                                    {% for fillout in employee.acquisitionAttributeFillouts %}
+                                        {% if fillout.attribute.public %}
+                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
+                                            <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
+                                        {% endif %}
+                                    {% endfor %}
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>Fortfahren</h3>
+                        <nav class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <a href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
+                                   class="btn btn-warning navbar-btn">Anmeldedaten korrigieren</a>
+                                <a href="{{ path('event_public_employee_confirm', {'eid': event.eid }) }}?confirm"
+                                   class="btn btn-success navbar-btn">Anmeldedaten bestätigen</a>
+                            </div>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

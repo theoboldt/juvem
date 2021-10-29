@@ -114,6 +114,12 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
+                                          {% if is_granted('read', event) %}
+                                            <a role="button"
+                                               href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
+                                               class="btn btn-default">Mitarbeiten
+                                            </a>
+                                          {% endif %}
                                             {% if is_granted('read', event) %}
                                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
                                                    class="btn btn-default">Verwalten{% if event.participantsUnconfirmedCount %}

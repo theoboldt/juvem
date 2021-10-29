@@ -329,12 +329,12 @@ class BootstrapGlyph extends AbstractExtension
     /**
      * Create html for a bootstrap glyph
      *
-     * @param   string      $glyph Glyph name
-     * @param   string|null $title Title text for glyph icon if not null
+     * @param string      $glyph Glyph name
+     * @param string|null $title Title text for glyph icon if not null
      * @return  string             Html bootstrap glyph snippet
      * @throws  InvalidArgumentException   If transmitted glyph is not available
      */
-    public function bootstrapGlyph($glyph, string $title = null)
+    static public function bootstrapGlyph($glyph, string $title = null): string
     {
         if (!self::isGlyhiconAvailable($glyph)) {
             throw new InvalidArgumentException('Transmitted glyph is not available');
@@ -342,11 +342,11 @@ class BootstrapGlyph extends AbstractExtension
 
         $attributes = [];
 
-        $attributes[]       = 'class="glyphicon glyphicon-' . $glyph.'"';
+        $attributes[] = 'class="glyphicon glyphicon-' . $glyph . '"';
         $attributes[] = 'aria-hidden="true"';
         if ($title) {
-            $attributes[] = 'title="'.$title.'"';
-            $attributes[] = 'data-original-title="'.$title.'"';
+            $attributes[] = 'title="' . $title . '"';
+            $attributes[] = 'data-original-title="' . $title . '"';
             $attributes[] = 'data-toggle="tooltip"';
         }
 

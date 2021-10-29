@@ -95,7 +95,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen
                     </button>
-                    <input type="submit" class="btn btn-primary" value="Bestätigen"/>
+                    <input type="submit" class="btn btn-primary" value="Fortfahren"/>
                 </div>
             </div>
             {{ form_end(formAction) }}
@@ -158,17 +158,28 @@
                         <div class="btn-group" role="group" aria-label="Daten bearbeiten">
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModalMoveEmployee">
-                                {{ 'arrow-right'|glyph }} Mitarbeiter:in verschieben…
+                                {{ 'arrow-right'|glyph }} Mitarbeiter:in verschieben <span class="caret-right"></span>
                             </button>
                             {% if employee.isDeleted %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="restore">
-                                    {{ 'repeat'|glyph }} wiederherstellen…
+                                    {{ 'repeat'|glyph }} wiederherstellen <span class="caret-right"></span>
                                 </button>
                             {% else %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="delete">
-                                    {{ 'trash'|glyph }} in Papierkorb…
+                                    {{ 'trash'|glyph }} in Papierkorb <span class="caret-right"></span>
+                                </button>
+                            {% endif %}
+                            {% if employee.isConfirmed %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="unconfirm">
+                                    {{ 'unchecked'|glyph }} Bestätigung zurücknehmen <span class="caret-right"></span>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="confirm">
+                                    {{ 'check'|glyph }} bestätigen <span class="caret-right"></span>
                                 </button>
                             {% endif %}
                         </div>
@@ -285,6 +296,14 @@
                                        href="{{ path('admin_employee_detail', {eid: similarEmployee.event.eid, gid: similarEmployee.gid}) }}">{{ similarEmployee.event.title }} ({{ similarEmployee.event.startDate|date("Y") }})</a>{% if not loop.last and loop.length > 1 %}, {% endif %}
                                 {% endfor %}
                             </dd>
+                            <dt>Status</dt>
+                            <dd>
+                                {% if employee.isConfirmed %}
+                                    <span class="label label-success">Bestätigt</span>
+                                {% else %}
+                                    <span class="label label-default">Unbestätigt</span>
+                                {% endif %}
+                            </dd>
                         </dl>
                     </div>
                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
@@ -381,12 +400,20 @@
 
                 switch (action) {
                     case 'delete':
-                        title = 'Anmeldung in Papierkorb verschieben';
-                        question = 'Soll diese Anmeldung wirklich in den Papierkorb verschoben werden?';
+                        title = 'Mitarbeiter:in in Papierkorb verschieben';
+                        question = 'Soll dieser Datensatz wirklich in den Papierkorb verschoben werden?';
                         break;
                     case 'restore':
-                        title = 'Anmeldung aus Papierkorb nehmen';
-                        question = 'Soll diese Anmeldung wirklich aus dem Papierkorb herausgeholt werden?';
+                        title = 'Mitarbeiter:in aus Papierkorb nehmen';
+                        question = 'Soll dieser Datensatz wirklich aus dem Papierkorb herausgeholt werden?';
+                        break;
+                    case 'confirm':
+                        title = 'Mitarbeiter:in bestätigen';
+                        question = 'Soll diese:r Mitarbeiter:in bestätigt werden?';
+                        break;
+                    case 'unconfirm':
+                        title = 'Bestätigung zurücknehmen';
+                        question = 'Soll die Bestätigung für diese:n Mitarbeiter:in zurückgenommen werden?';
                         break;
                 }
                 modal.find('.modal-title').text(title);

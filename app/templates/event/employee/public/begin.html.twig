@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+{% import _self as m %}
+
+{% block title %}Mitarbeitenden-Anmeldung - {{ event.title }}{% endblock %}
+
+{% block body %}
+<section><article>
+    <div class="container scrollspy-panels" {% if is_granted('participants_read', event) %}data-provide-proposals="{{ event.eid }}"{% endif %}>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-offset-1 col-md-10 col-lg-offset-1 col-lg-10">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
+                            <li><a href="{{ path('event_public_detail', {'eid': event.eid }) }}">{{ event.title }}</a>
+                            </li>
+                            <li class="active">Mitarbeitenden-Anmeldung ausfüllen</li>
+                        </ol>
+                        {% include 'common/header/inner-page-header.html.twig' with {'title': event.title, 'subtitle': 'Mitarbeitenden-Anmeldung ausfüllen'} %}
+                    </div>
+                </div>
+
+                {{ form_start(form) }}
+                <div class="row">
+                    {{ form_errors(form) }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3">
+                        {{ form_row(form.salutation) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.nameFirst) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.nameLast) }}
+                    </div>
+                </div>
+                <div class="row" id="participation-address">
+                    <div class="col-xs-12">
+                        {{ form_row(form.addressStreet) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-5">
+                        {{ form_row(form.addressZip) }}
+                    </div>
+                    <div class="col-xs-12 col-sm-7">
+                        {{ form_row(form.addressCity) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        {{ form_row(form.addressCountry) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+                {% for fieldName,formField in form %}
+                    {% if fieldName starts with 'acq_field_' %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {% include 'event/participation/public/embed-acquisition-field-public.html.twig' with {'acquisitionField': acquisitionFields[fieldName], 'formField': formField} %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label class="control-label">Telefonnummern</label>
+                    </div>
+                    {% macro prototypePhone(formElement) %}
+                        <div class="panel panel-default prototype-element">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-10 col-sm-8">
+                                        <h3 class="panel-title">
+                                            <!--<a role="button" data-toggle="collapse">-->
+                                            Telefonnummer
+                                            <!--</a>-->
+                                        </h3>
+                                    </div>
+                                    <div class="col-xs-2 col-sm-4 text-right">
+                                        <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                           title="Telefonnummer entfernen">{{ 'remove-sign'|glyph }} <span
+                                                    class="hidden-xs">Telefonnummer entfernen</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-5">
+                                        {{ form_errors(formElement) }}
+                                        <div class="form-group {% if not formElement.number.vars.valid %}has-error{% endif %}">
+                                            {{ form_label(formElement.number) }}
+                                            <div class="input-group">
+                                                <div class="input-group-addon">{{ 'phone-alt'|glyph }}</div>
+                                                {{ form_widget(formElement.number) }}
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
+                                                            data-content="Bitte geben Sie auch bei Festnetznummern aus Stuttgart die Ortsvorwahl 0711 an.">
+                                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            {{ form_errors(formElement.number) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-7">
+                                        {{ form_label(formElement.description) }}
+                                        <div class="input-group {% if not formElement.description.vars.valid %}has-error{% endif %}">
+                                            {{ form_widget(formElement.description) }}
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-default" data-toggle="popover"{{ tab.skip|raw }}
+                                                        data-content="Sie können hier einen kurzen Beschreibungstext zur Nummer angeben. Dies empfiehlt sich, wenn es sich bei dieser Telefonnummer beispielsweise um einen geschäftlichen Anschluss oder die Nummer der Großeltern handelt.">
+                                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                        {{ form_errors(formElement.description) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endmacro %}
+                    <div class="col-xs-12 phone-numbers prototype-container"
+                         data-prototype="{{ m.prototypePhone(form.phoneNumbers.vars.prototype, false)|e('html_attr') }}">
+                        <div class="prototype-elements">
+                            <div class="form-group">
+                                {{ form_errors(form.phoneNumbers) }}
+                                {% for phoneNumber in form.phoneNumbers %}
+                                    {{ m.prototypePhone(phoneNumber) }}
+                                {% endfor %}
+                                {% if form.phoneNumbers|length == 0 %}
+                                    {{ form_row(form.phoneNumbers) }}
+                                {% endif %}
+                                <div class="prototype-missing-message"{% if form.phoneNumbers|length > 0 %} style="display: none;"{% endif %}>
+                                    <div class="alert alert-danger">
+                                        <ul class="list-unstyled">
+                                            <li><span class="glyphicon glyphicon-exclamation-sign"></span> Bei einer Anmeldung muss mindestens eine Telefonnummer angegeben werden.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success prototype-add">{{ 'plus-sign'|glyph }}
+                            Weitere Telefonnummer hinzufügen
+                        </button>
+                    </div>
+                </div>
+
+                <hr/>
+
+                {# 
+                {% if customization.isCustomizationAvailable('conditions-employee-content') %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2>Teilnahmebedingungen für Mitarbeitende</h2>
+
+                            <div class="scrollspy-panel">
+                                {% if customization.isCustomizationAvailable('conditions-employee-scrollspy') %}
+                                    {{ customization.legalConditionsCoronaScrollspy|raw }}
+                                {% endif %}
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div data-spy="scroll" data-target="#navbar-conditions-of-corona"
+                                             data-offset="0" class="scroll">
+                                            {{ customization.legalConditionsCoronaContent|raw }}
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer">
+                                        {{ form_row(form.acceptConditionsCorona) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                 #}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Datenschutzerklärung</h2>
+
+                        <div class="scrollspy-panel">
+                            <nav id="navbar-privacy" class="navbar navbar-default navbar-static">
+                                <div class="container-fluid">
+                                    <div class="navbar-header">
+                                        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                                                data-target=".legal-privacy-scrollspy"><span class="sr-only">Navigation ein/ausklappen</span>
+                                            <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+                                                    class="icon-bar"></span></button>
+                                    </div>
+                                    <div class="collapse navbar-collapse legal-privacy-scrollspy">
+                                        <ul class="nav navbar-nav">
+                                            <li><a href="#verantwortlicher">Verantwortlicher</a></li>
+                                            <li><a href="#art">Arten</a></li>
+                                            <li><a href="#begrifflichkeiten">Begrifflichkeiten</a></li>
+                                            <li><a href="#rechtsgrundlagen">Rechtsgrundlagen</a></li>
+                                            <li><a href="#dritte"><abbr title="Zusammenarbeit mit Auftragsverarbeitern und Dritten">Dritte</abbr></a></li>
+                                            <li><a href="#rechte"><abbr title="Rechte der betroffenen Personen">Rechte</abbr></a></li>
+                                            <li><a href="#widerruf">Widerruf</a></li>
+                                            <li><a href="#cookies"><abbr title="Cookies und Widerspruchsrecht bei Direktwerbung">Cookies</abbr></a></li>
+                                            <li><a href="#loeschung"><abbr title="Löschung von Daten">Löschung</abbr></a></li>
+                                            <li><a href="#geschaeft"><abbr title="Geschäftsbezogene Verarbeitung">Verarbeitung</abbr></a></li>
+                                            <li><a href="#hosting">Hosting</a></li>
+                                            <li><a href="#vertrag">vertragliche Leistungen</a></li>
+                                            <li><a href="#registrieren">Registrierfunktion</a></li>
+                                            <li><a href="#kontakt">Kontaktaufnahme</a></li>
+                                            {% if featureNewsletter %}
+                                                <li><a href="#newsletter">Newsletter</a></li>
+                                            {% endif %}
+
+                                            <li><a href="#social"><abbr title="Onlinepräsenzen in sozialen Medien">Soziale Medien</abbr></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </nav>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div data-spy="scroll" data-target="#navbar-privacy" data-offset="0" class="scroll">
+                                        {% include 'legal/privacy-content.html.twig' %}
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    {{ form_row(form.acceptPrivacy) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Fortfahren</h2>
+                        <p>
+                            Sie können die Daten im nächsten Schritt noch mal überprüfen,
+                            bevor Sie die Anmeldung engültig abgeben.
+                        </p>
+                        <nav class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <input type="submit" class="btn btn-primary navbar-btn" value="Anmeldung überprüfen"/>
+                            </div>
+                        </nav>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</article></section>
+{% endblock %}

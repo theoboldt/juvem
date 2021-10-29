@@ -12,8 +12,9 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\Participation;
+use AppBundle\Twig\GlobalCustomization;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -21,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmployeeType extends AbstractType
 {
@@ -31,6 +33,8 @@ class EmployeeType extends AbstractType
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
     const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
+
+    const DISCLAIMER_FIELDS = 'disclaimerFields';
 
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -101,6 +105,36 @@ class EmployeeType extends AbstractType
             $attributes,
             isset($options['data']) ? $options['data'] : null
         );
+
+        if ($options[self::DISCLAIMER_FIELDS]) {
+            $builder->add(
+                'acceptPrivacy',
+                CheckboxType::class,
+                [
+                    'label'       => 'Ich habe die Datenschutzerklärung gelesen und erkläre mich mit den Angaben einverstanden. Ich kann diese Erklärung jederzeit Wiederrufen.',
+                    'required'    => true,
+                    'constraints' => new NotBlank(
+                        ['message' => 'Sie müssen sich mit der Datenschutzerklärung einverstanden erklären, um die Anmeldung abgeben zu können. In einzelnen Ausnahmefällen können Anmeldungen ohne Verwendung des Anmeldesystems abgegeben werden. Wenden Sie sich dazu bitte telefonisch oder per E-Mail an uns.']
+                    ),
+                    'mapped'      => false,
+                ]
+            );
+
+            if (GlobalCustomization::isCustomizationAvailable('conditions-employee-content')) {
+                $builder->add(
+                    'acceptEmployee',
+                    CheckboxType::class,
+                    [
+                        'label'       => 'Ich akzeptiere die Bedingungen für Mitarbeitende und erkläre mich mit den Angaben einverstanden.',
+                        'required'    => true,
+                        'constraints' => new NotBlank(
+                            ['message' => 'Sie müssen sich mit den Bedingungen für Mitarbeitende einverstanden erklären, um die Anmeldung abgeben zu können. Bei Fragen können Sie sich telefonisch oder per E-Mail an uns wenden.']
+                        ),
+                        'mapped'      => false
+                    ]
+                );
+            }
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -110,6 +144,9 @@ class EmployeeType extends AbstractType
 
         $resolver->setRequired(self::ACQUISITION_FIELD_PRIVATE);
         $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PRIVATE, 'bool');
+
+        $resolver->setRequired(self::DISCLAIMER_FIELDS);
+        $resolver->setAllowedTypes(self::DISCLAIMER_FIELDS, 'bool');
 
         $resolver->setDefault(self::EVENT_OPTION, null);
         $resolver->setAllowedTypes(self::EVENT_OPTION, [Event::class, 'null']);

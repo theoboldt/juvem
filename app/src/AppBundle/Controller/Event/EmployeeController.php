@@ -204,14 +204,22 @@ class EmployeeController
                 /** @var \libphonenumber\PhoneNumber $phoneNumber */
                 $phoneNumber         = $phoneNumberEntity->getNumber();
                 $employeePhoneList[] = $phoneNumberUtil->formatOutOfCountryCallingNumber($phoneNumber, 'DE');
+            }             
+            
+            $employeeStatus = '';
+            if ($employee->isConfirmed()) {
+                $employeeStatus .= '<span class="label label-success">Bestätigt</span>';
+            } else {
+                $employeeStatus .= '<span class="label label-default">Unbestätigt</span>';
             }
-
+            
             $participantEntry = [
                 'gid'       => $employee->getGid(),
                 'nameFirst' => $employee->getNameFirst(),
                 'nameLast'  => $employee->getNameLast(),
                 'phone'     => implode(', ', $employeePhoneList),
                 'email'     => $employee->getEmail(),
+                'status'    => $employeeStatus,
             ];
             /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
             foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
@@ -266,6 +274,12 @@ class EmployeeController
                     break;
                 case 'restore':
                     $employee->setDeletedAt(null);
+                    break;
+                case 'confirm':
+                    $employee->setIsConfirmed(true);
+                    break;
+                case 'unconfirm':
+                    $employee->setIsConfirmed(false);
                     break;
                 default:
                     throw new \InvalidArgumentException('Unknown action transmitted');
@@ -357,6 +371,7 @@ class EmployeeController
             [
                 EmployeeType::ACQUISITION_FIELD_PUBLIC  => true,
                 EmployeeType::ACQUISITION_FIELD_PRIVATE => true,
+                EmployeeType::DISCLAIMER_FIELDS         => false,
             ]
         );
 
@@ -533,6 +548,7 @@ class EmployeeController
     public function createAction(Event $event, Request $request)
     {
         $employee = new Employee($event);
+        $employee->setIsConfirmed(true);
 
         $form = $this->createForm(
             EmployeeType::class,
@@ -540,6 +556,7 @@ class EmployeeController
             [
                 EmployeeType::ACQUISITION_FIELD_PUBLIC  => true,
                 EmployeeType::ACQUISITION_FIELD_PRIVATE => true,
+                EmployeeType::DISCLAIMER_FIELDS         => false,
             ]
         );
         $form->handleRequest($request);

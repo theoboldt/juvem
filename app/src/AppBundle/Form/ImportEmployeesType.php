@@ -37,7 +37,8 @@ class ImportEmployeesType extends AbstractType
                     'entry_options' => [
                         EmployeeType::ACQUISITION_FIELD_PUBLIC  => true,
                         EmployeeType::ACQUISITION_FIELD_PRIVATE => true,
-                        EmployeeType::EVENT_OPTION              => $options[EmployeeType::EVENT_OPTION]
+                        EmployeeType::DISCLAIMER_FIELDS         => false,
+                        EmployeeType::EVENT_OPTION              => $options[EmployeeType::EVENT_OPTION],
                     ],
                     'empty_data'    => new Employee($options[EmployeeType::EVENT_OPTION])
                 ]
