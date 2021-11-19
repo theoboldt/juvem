@@ -23,6 +23,8 @@ parameters:
     app.web.root.path: "%kernel.project_dir%/web"
     app.data.root.path: "%app.var.root.path%/data"
     app.data.invoice.path: "%app.data.root.path%/invoice"
+    app.data.key.path: "%app.data.root.path%/keys"
+    app.data.key_user.path: "%app.data.key.path%/user"
 
 jms_serializer:
     metadata:

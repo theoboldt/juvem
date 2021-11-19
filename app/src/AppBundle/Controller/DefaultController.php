@@ -19,7 +19,6 @@ use AppBundle\Sitemap\PageFactory;
 use AppBundle\Twig\GlobalCustomization;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
-use Swift_Message;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -209,6 +208,7 @@ class DefaultController
 
     /**
      * @CloseSessionEarly
+     * @Route("")
      * @Route("/new")
      * @Route("/v2")
      * @Route("/v1")

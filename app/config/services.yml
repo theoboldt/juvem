@@ -172,6 +172,12 @@ services:
             $mailerPassword: "%mailer_password%"
             $mailerAddress: "%mailer_address%"
 
+    AppBundle\Manager\UserPublicKeyManager:
+        autowire: true
+        arguments:
+            $keyDir: "%app.data.key_user.path%"
+#            $userRepository: "@app.repository.user"
+
     AppBundle\Mail\MailImapService:
         autowire: true
 
