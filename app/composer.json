@@ -33,6 +33,7 @@
         "ext-simplexml": "*",
         "ext-xsl": "*",
         "ext-fileinfo": "*",
+        "ext-openssl": "*",
         "symfony/symfony": "4.4.*",
         "symfony/translation": "4.4.*",
         "symfony/proxy-manager-bridge": "4.4.*",
