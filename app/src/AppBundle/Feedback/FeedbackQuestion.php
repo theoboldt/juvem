@@ -10,6 +10,8 @@
 
 namespace AppBundle\Feedback;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
 {
     const TYPE_AGREEMENT = 1;
@@ -20,11 +22,15 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
     private string $uuid;
 
     /**
+     * @Assert\Type("string")
+     * @Assert\NotBlank()
      * @var string
      */
     private string $internalTitle;
 
     /**
+     * @Assert\Type("string")
+     * @Assert\NotBlank()
      * @var string
      */
     private string $questionText;
@@ -37,7 +43,7 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
 
     /**
      * Create from array
-     * 
+     *
      * @param array $data
      * @return FeedbackQuestion
      */
@@ -58,8 +64,8 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
      * @param string|null $uuid
      */
     public function __construct(
-        string  $internalTitle,
-        string  $questionText,
+        string  $internalTitle = '',
+        string  $questionText = '',
         int     $questionType = self::TYPE_AGREEMENT,
         ?string $uuid = null
     ) {
@@ -100,11 +106,28 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
     }
 
     /**
+     * @param string $internalTitle
+     */
+    public function setInternalTitle(string $internalTitle): void
+    {
+        $this->internalTitle = $internalTitle;
+    }
+
+
+    /**
      * @return string
      */
     public function getQuestionText(): string
     {
         return $this->questionText;
+    }
+
+    /**
+     * @param string $questionText
+     */
+    public function setQuestionText(string $questionText): void
+    {
+        $this->questionText = $questionText;
     }
 
     /**

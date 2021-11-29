@@ -280,6 +280,18 @@ class EventType extends AbstractType
                 UrlType::class,
                 ['label' => 'Link-URL (Spezial-Link)', 'required' => false]
             )
+            ->add(
+                'isFeedbackQuestionnaireEnabled',
+                ChoiceType::class, [
+                    'label'    => 'Feedback-Fragebogen',
+                    'choices'  => [
+                        'Keine Rückmeldungen sammeln'                              => false,
+                        'Feedback-Modul zum erfassen von Rückmeldungen aktivieren' => true,
+                    ],
+                    'expanded' => true,
+                    'attr'     => ['aria-describedby' => 'help-feedback'],
+                ]
+            )
             ->add('save', SubmitType::class);
 
         $builder->addEventListener(

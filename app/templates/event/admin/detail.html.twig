@@ -105,6 +105,10 @@
                         <a href="{{ path('admin_event_cloud', {'eid': event.eid }) }}"
                            class="btn btn-default feature-cloud" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></a>
                         {% endif %}
+                        {% if event.feedbackQuestionnaireEnabled %}
+                            <a href="{{ path('admin_feedback_event', {'eid': event.eid }) }}"
+                               class="btn btn-default feature-feedback" title="Feedback verwalten">{{ 'stats'|glyph }} <span class="hidden-xs">Feedback</span></a>
+                        {% endif %}
                     </div>
 
                     <a href="{{ path('admin_event_variable', {'eid': event.eid }) }}"

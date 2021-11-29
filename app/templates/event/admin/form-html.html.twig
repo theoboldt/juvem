@@ -24,24 +24,24 @@
         </div>
 
         <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-4">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 {{ form_row(form.startDate) }}
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="form-group">
                     {{ form_widget(form.hasStartTime) }}
                     {{ form_errors(form.startTime) }}
                     {{ form_widget(form.startTime) }}
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-4">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="form-group">
                     {{ form_widget(form.hasEndDate) }}
                     {{ form_errors(form.endDate) }}
                     {{ form_widget(form.endDate) }}
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="form-group">
                     {{ form_widget(form.hasEndTime) }}
                     {{ form_errors(form.endTime) }}
@@ -120,6 +120,26 @@
                 <p class="help-block" id="help-special-link">Vor allem wenn die Anmeldung auf einem externen Portal und nicht in dieser Juvem-Installation durchgeführt wird, kann hier ein spezieller Link zu einer Fremden Website konfigurtiert werden.
                 Nur wenn ein (kurzer) Titel für den Link und die URL (mit Protokoll) konfiguriert ist, wird ein entsprechender Knopf angezeigt.
                 </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    {{ form_label(form.isFeedbackQuestionnaireEnabled) }}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-10">
+                            <p class="help-block" id="help-feedback">Nach der Veranstaltung können die Eltern automatisiert per
+                                E-Mail zum Ausfüllen eines Feedback-Fragebogens gebeten werden. Der Feedback, und ob das Feedback
+                                automatisiert abgefragt werden soll, muss im Feedback-Modul für diese Veranstaltung konfiguriert
+                                werden.</p>
+                        </div>
+                        <div class="col-xs-12 col-sm-2">
+                            
+                        </div>
+                    </div>
+                    {{ form_widget(form.isFeedbackQuestionnaireEnabled) }}
+                    {{ form_errors(form.isFeedbackQuestionnaireEnabled) }}
+                </div>
             </div>
         </div>
     </div>

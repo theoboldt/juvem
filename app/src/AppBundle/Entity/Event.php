@@ -20,6 +20,7 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Feedback\FeedbackQuestion;
 use AppBundle\Feedback\FeedbackQuestionnaire;
 use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
@@ -368,7 +369,16 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     private $feedbackQuestionnaire = [];
 
     /**
-     * Set to true if feature questionnaire was sent in order to get feedback
+     * Set to true if feedback questionnaire is enabled for this event 
+     *
+     * @ORM\Column(type="boolean", name="is_feedback_questionnaire_enabled", options={"unsigned":true,"default":0}))
+     * @var bool
+     */
+    protected $isFeedbackQuestionnaireEnabled = false;
+
+
+    /**
+     * Set to true if questionnaire was sent in order to get feedback
      *
      * @ORM\Column(type="boolean", name="is_feedback_questionnaire_sent", options={"unsigned":true,"default":0}))
      * @var bool
@@ -1539,6 +1549,22 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     }
 
     /**
+     * @return bool
+     */
+    public function isFeedbackQuestionnaireEnabled(): bool
+    {
+        return $this->isFeedbackQuestionnaireEnabled;
+    }
+
+    /**
+     * @param bool $isFeedbackQuestionnaireEnabled
+     */
+    public function setIsFeedbackQuestionnaireEnabled(bool $isFeedbackQuestionnaireEnabled): void
+    {
+        $this->isFeedbackQuestionnaireEnabled = $isFeedbackQuestionnaireEnabled;
+    }
+
+    /**
      * Determine if feedback questionnaire is configured
      *
      * @return bool
@@ -1551,10 +1577,11 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     /**
      * @return array|FeedbackQuestionnaire
      */
-    public function getFeedbackQuestionnaire($decoded = false): ?array
+    public function getFeedbackQuestionnaire($decoded = false)
     {
         if ($this->feedbackQuestionnaire === null) {
-            $this->feedbackQuestionnaire = (new FeedbackQuestionnaire('', '', []))->jsonSerialize();
+            $this->feedbackQuestionnaire = 
+                (new FeedbackQuestionnaire('', '', 0, [new FeedbackQuestion('', '')]))->jsonSerialize();
         }
         if ($decoded) {
             return FeedbackQuestionnaire::createFromArray($this->feedbackQuestionnaire);
@@ -1619,6 +1646,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public static function getExcludedAttributes(): array
     {
         return [
+            'feedbackQuestionnaire',
             'imageFilename',
             'invoiceTemplateFilename',
         ];
