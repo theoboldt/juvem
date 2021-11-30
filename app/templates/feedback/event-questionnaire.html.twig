@@ -63,15 +63,25 @@
         </p>
       </div>
       <div class="col-xs-12">
-        <label class="control-label required control-label">Fragen</label>
+        <label class="control-label required control-label">Thesen</label>
         <div class="choice-options prototype-container"
              data-prototype="{{ m.prototypeQuestion(form.questions.vars.prototype, false)|e('html_attr') }}">
           <div class="row">
             <div class="col-xs-12">
               <div id='help-choice-options' class='help-block'>
-                <p>Jede Frage sollen die Eltern mit "Stimme völlig zu", "Stimme zu", "Stimme weder zu noch nicht zu",
-                  "Stimme nicht zu" oder "Stimme überhaupt nicht zu" beantworten. Es ist von Vorteil, wenn bei manchen
-                  Fragen "Stimme zu" positiv zu werten ist, während das bei anderen für "Stimme nicht zu" gilt.</p>
+                <p>Jede These sollen die Eltern im Rahmen einer <a
+                      href="https://www.google.de/search?q=likert+skala" target="_blank" rel="noopener">Likert Skala</a>
+                  mit "Stimme völlig zu", "Stimme zu", "Stimme weder zu noch nicht zu", "Stimme nicht zu" oder "Stimme
+                  überhaupt nicht zu" beantworten.
+                </p>
+                <p>Für die meisten Thesen sollte eine Gegenthese formuliert werden. Dadurch ergeben sich Möglichkeiten
+                  herauszufinden, ob die Fragen sorgfältig beantwortet wurden. Ausgefüllte Fragebögen bei denen sich
+                  starke Diskrepanzen ergeben, werden markiert. Ein Beispiel für These und Gegenthese für das Thema
+                  <code>Essen (Qualität)</code> wäre <code>Das Essen hat überwiegend gut geschmeckt.</code> und <code>Das
+                    Essen hat mir meistens nicht geschmeckt.</code>. Der Zusammenhang von These und Gegenthese wird zwar
+                  in der Auswertung, nicht jedoch im Fragebogen dargestellt. Alle Thesen (inklusive eventueller
+                  Gegenthesen) werden immer zufällig sortiert und dargestellt.
+                </p>
               </div>
             </div>
           </div>
@@ -123,11 +133,18 @@
                   <div class="col-xs-12">
                     {{ form_errors(formElement) }}
                   </div>
+                </div>
+                <div class="row">
                   <div class="col-xs-12">
-                    {{ form_row(formElement.internalTitle) }}
+                    {{ form_row(formElement.topic) }}
                   </div>
-                  <div class="col-xs-12">
-                    {{ form_row(formElement.questionText) }}
+                </div>
+                <div class="row">
+                  <div class="col-xs-12 col-lg-6">
+                    {{ form_row(formElement.thesis) }}
+                  </div>
+                  <div class="col-xs-12 col-lg-6">
+                    {{ form_row(formElement.counterThesis) }}
                   </div>
                 </div>
               </div>

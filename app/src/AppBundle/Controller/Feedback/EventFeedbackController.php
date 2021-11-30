@@ -15,6 +15,7 @@ use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Form\Feedback\QuestionnaireFilloutType;
 use AppBundle\Form\Feedback\QuestionnaireType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use Doctrine\Persistence\ManagerRegistry;
@@ -98,5 +99,38 @@ class EventFeedbackController
         );
     }
 
+    /**
+     * @CloseSessionEarly
+     * @Route("/admin/event/{eid}/feedback/test", requirements={"eid": "\d+"}, name="admin_feedback_event_test")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('read', event)")
+     */
+    public function eventFeedbackTestQuestionnaire(Event $event)
+    {
+        $questionnaire = $event->getFeedbackQuestionnaire(true);
+        $form          = $this->createForm(
+            QuestionnaireFilloutType::class,
+            null,
+            [
+                QuestionnaireFilloutType::QUESTIONNAIRE_OPTION => $questionnaire,
+            ]
+        );
+
+        $questions = [];
+        foreach ($questionnaire->getQuestions() as $question) {
+            $questions['question-' . $question->getUuid()] = $question;
+        }
+
+        return $this->render(
+            'feedback/event-questionnaire-fillout.html.twig',
+            [
+                'event'         => $event,
+                'questionnaire' => $questionnaire,
+                'questions'     => $questions,
+                'form'          => $form->createView(),
+            ]
+        );
+
+    }
 
 }

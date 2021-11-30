@@ -50,7 +50,7 @@ class FeedbackQuestionnaire implements \JsonSerializable
     /**
      * Listing of feedback questions
      *
-     * @var ArrayCollection|FeedbackQuestionInterface[]
+     * @var ArrayCollection|FeedbackQuestion[]
      */
     private $questions;
 
@@ -72,8 +72,8 @@ class FeedbackQuestionnaire implements \JsonSerializable
             if (is_array($question)) {
                 $question = FeedbackQuestion::createFromArray($question);
             }
-            if (!$question instanceof FeedbackQuestionInterface) {
-                throw new \InvalidArgumentException('Question must implement ' . FeedbackQuestionInterface::class);
+            if (!$question instanceof FeedbackQuestion) {
+                throw new \InvalidArgumentException('Question must implement ' . FeedbackQuestion::class);
             }
         } //foreach
         unset($question);
@@ -95,12 +95,12 @@ class FeedbackQuestionnaire implements \JsonSerializable
     }
 
     /**
-     * @param string                      $introductionEmail
-     * @param string                      $introductionQuestionnaire
-     * @param int                         $feedbackDaysAfterEvent
-     * @param FeedbackQuestionInterface[] $questions
-     * @param \DateTimeImmutable|null     $lastModified
-     * @param string|null                 $uuid
+     * @param string                  $introductionEmail
+     * @param string                  $introductionQuestionnaire
+     * @param int                     $feedbackDaysAfterEvent
+     * @param FeedbackQuestion[]      $questions
+     * @param \DateTimeImmutable|null $lastModified
+     * @param string|null             $uuid
      */
     public function __construct(
         string              $introductionEmail,
@@ -151,11 +151,28 @@ class FeedbackQuestionnaire implements \JsonSerializable
     }
 
     /**
-     * @return FeedbackQuestionInterface[]
+     * @return FeedbackQuestion[]
      */
     public function getQuestions(): array
     {
         return $this->questions->toArray();
+    }
+
+    /**
+     * Get thesis count
+     *
+     * @return int
+     */
+    public function getThesisCount(): int
+    {
+        $thesis = 0;
+        foreach ($this->questions as $question) {
+            ++$thesis;
+            if ($question->hasCounterThesis()) {
+                ++$thesis;
+            }
+        }
+        return $thesis;
     }
 
     /**
@@ -194,13 +211,13 @@ class FeedbackQuestionnaire implements \JsonSerializable
     }
 
     /**
-     * @param FeedbackQuestionInterface[]|ArrayCollection $questions
+     * @param FeedbackQuestion[]|ArrayCollection $questions
      */
     public function setQuestions($questions): void
     {
         $this->questions = $questions;
     }
-    
+
     /**
      * @return array
      */

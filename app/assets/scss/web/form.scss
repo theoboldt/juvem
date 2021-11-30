@@ -140,3 +140,23 @@ table.table.table-condensed {
   }
 }
 
+.feedback-questions {
+  th {
+    span {
+      font-weight: normal;
+    }
+  }
+  
+  .question {
+    label {
+      font-weight: normal;
+    }
+  }
+  .field {
+    label {
+      .hidden-sm.hidden-xs {
+        font-size: smaller;
+      }
+    }
+  }
+}

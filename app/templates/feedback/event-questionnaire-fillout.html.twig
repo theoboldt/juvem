@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feedback-Fragebogen - {{ event.title }}{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feedback-Fragebogen', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li>Rezepte</li>
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Feedback-Fragebogen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <p>
+          Sie haben diesen Fragebogen erhalten, weil Sie oder Ihre Kinder an der Veranstaltung <i>{{ event.title }}</i>
+          teilgenommen haben.
+          Um herausfinden zu können, wie es den Teilnehmenden gefallen hat, haben wir einige Thesen zur Freizeit
+          zusammengestellt. Bitte geben Sie an, in wie weit Sie diesen Thesen zustimmen können. Am Besten sind die
+          Teilnehmenden auch direkt beim Ausfüllen mit dabei. <b>Bitte nehmen Sie sich Zeit für diesen Fragebogen</b>.
+        </p>
+        <p>Die Erfassung des Feedbacks erfolgt anonym. Wenn Sie noch etwas klären möchten, oder falls Sie sich bei
+          etwaigen Nachfragen zur Verfügung stellen möchten, fügen Sie bitte einen Namen und eine Telefonnummer im Feld
+          <a href="#questionnaire_fillout_comment">Ergänzungen</a> an. Sollten Sie noch Fragen haben, können Sie uns
+          gerne <a href="#footer-imprint">kontaktieren</a>.</p>
+        </p>
+        <p>
+          Noch ein Hinweis: Den Link den Sie aufgerufen haben, um auf diese Seite zu kommen, wurde für Sie ganz
+          persönlich erstellt. Sie können ihre Angaben bis zur Auswertung der Fragebögen jederzeit ändern.
+        </p>
+
+      </div>
+    </div>
+    <div class="row">
+      {% form_theme form 'form/button_choice_type_fields.html.twig' %}
+      {{ form_start(form) }}
+      <div class="col-xs-12">
+        <div class="table-responsive">
+          <table class="table table-striped feedback-questions">
+            <thead>
+            <tr>
+              <th>These</th>
+              <th>Zustimmungsgrad: <span>Ich stimme…</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fieldName,formField in form %}
+              {% if fieldName starts with 'question-' %}
+                {% dump(formField) %}
+                <tr class="form-group {% if not formField.vars.valid %} has-error{% endif %}">
+                  <td class="question">{{ form_label(formField) }}</td>
+                  <td class="field">
+                    {{ form_widget(formField) }}
+                    {{ form_errors(formField) }}
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-xs-12">
+
+        {{ form_rest(form) }}
+      </div>
+      <div class="col-xs-12">
+        <input type="submit" value="Rückmeldung speichern" class="btn btn-primary navbar-btn"/>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+{% endblock %}

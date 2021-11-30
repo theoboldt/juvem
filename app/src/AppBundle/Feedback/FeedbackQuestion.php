@@ -12,7 +12,7 @@ namespace AppBundle\Feedback;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
+class FeedbackQuestion implements \JsonSerializable
 {
     const TYPE_AGREEMENT = 1;
 
@@ -26,14 +26,20 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
      * @Assert\NotBlank()
      * @var string
      */
-    private string $internalTitle;
+    private string $topic;
 
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank()
      * @var string
      */
-    private string $questionText;
+    private string $thesis;
+
+    /**
+     * @Assert\Type("string")
+     * @var string
+     */
+    private string $counterThesis = '';
 
     /**
      * @var int
@@ -50,27 +56,28 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
     public static function createFromArray(array $data): FeedbackQuestion
     {
         return new self(
-            $data['internalTitle'],
-            $data['questionText'],
+            $data['topic'],
+            $data['thesis'],
+            $data['counterThesis'],
             $data['questionType'],
             $data['uuid'],
         );
     }
 
     /**
-     * @param string      $internalTitle
-     * @param string      $questionText
      * @param int         $questionType
      * @param string|null $uuid
      */
     public function __construct(
-        string  $internalTitle = '',
-        string  $questionText = '',
+        string  $topic,
+        string  $thesis,
+        string  $counterThesis = '',
         int     $questionType = self::TYPE_AGREEMENT,
         ?string $uuid = null
     ) {
-        $this->internalTitle = $internalTitle;
-        $this->questionText  = $questionText;
+        $this->topic         = $topic;
+        $this->thesis        = $thesis;
+        $this->counterThesis = $counterThesis;
         $this->questionType  = $questionType;
         $this->uuid          = $uuid === null ? \Faker\Provider\Uuid::uuid() : $uuid;
     }
@@ -83,8 +90,9 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
     {
         return [
             'uuid'          => $this->uuid,
-            'internalTitle' => $this->internalTitle,
-            'questionText'  => $this->questionText,
+            'topic'         => $this->topic,
+            'thesis'        => $this->thesis,
+            'counterThesis' => $this->counterThesis,
             'questionType'  => $this->questionType,
         ];
     }
@@ -100,34 +108,57 @@ class FeedbackQuestion implements \JsonSerializable, FeedbackQuestionInterface
     /**
      * @return string
      */
-    public function getInternalTitle(): string
+    public function gettopic(): string
     {
-        return $this->internalTitle;
+        return $this->topic;
     }
 
     /**
-     * @param string $internalTitle
+     * @param string $topic
      */
-    public function setInternalTitle(string $internalTitle): void
+    public function settopic(string $topic): void
     {
-        $this->internalTitle = $internalTitle;
+        $this->topic = $topic;
     }
-
 
     /**
      * @return string
      */
-    public function getQuestionText(): string
+    public function getThesis(): string
     {
-        return $this->questionText;
+        return $this->thesis;
     }
 
     /**
-     * @param string $questionText
+     * @param string $thesis
      */
-    public function setQuestionText(string $questionText): void
+    public function setThesis(string $thesis): void
     {
-        $this->questionText = $questionText;
+        $this->thesis = $thesis;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCounterThesis(): bool
+    {
+        return !empty($this->counterThesis);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCounterThesis(): string
+    {
+        return $this->counterThesis;
+    }
+
+    /**
+     * @param string $counterThesis
+     */
+    public function setCounterThesis(string $counterThesis): void
+    {
+        $this->counterThesis = $counterThesis;
     }
 
     /**

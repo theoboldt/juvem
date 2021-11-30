@@ -15,6 +15,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class QuestionType extends AbstractType
@@ -23,21 +24,29 @@ class QuestionType extends AbstractType
     {
         $builder
             ->add(
-                'internalTitle',
+                'topic',
                 TextType::class,
                 [
-                    'label'    => 'Interner Kurztitel der Frage',
-                    'required' => true,
-                    'attr'     => ['aria-describedby' => 'help-internal-title'],
+                    'label'    => 'Thema (Intern)',
+                    'required' => false,
                 ]
             )
             ->add(
-                'questionText',
+                'thesis',
                 TextareaType::class,
                 [
-                    'label'    => 'Frage',
-                    'required' => true,
-                    'attr'     => ['aria-describedby' => 'help-question'],
+                    'label'      => 'These',
+                    'required'   => true,
+                    'empty_data' => '',
+                ]
+            )
+            ->add(
+                'counterThesis',
+                TextareaType::class,
+                [
+                    'label'      => 'Gegenthese/Kontrollfrage',
+                    'required'   => false,
+                    'empty_data' => '',
                 ]
             );
     }
@@ -47,6 +56,9 @@ class QuestionType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => FeedbackQuestion::class,
+                'empty_data' => function (FormInterface $form) {
+                    return new FeedbackQuestion('', '');
+                },
             ]
         );
     }

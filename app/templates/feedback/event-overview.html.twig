@@ -19,6 +19,10 @@
             <a href="{{ path('admin_feedback_event_questionnaire', {'eid': event.eid }) }}"
                class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Fragebogen konfigurieren</span></a>
           </div>
+          <div class="btn-group" role="group">
+            <a href="{{ path('admin_feedback_event_test', {'eid': event.eid }) }}" target="_blank"
+               class="btn btn-default">{{ 'eye-open'|glyph }} <span class="hidden-xs">Fragebogen</span> ansehen {{ 'new-window'|glyph }}</a>
+          </div>
         </div>
       </div>
     </div>
@@ -30,10 +34,10 @@
         {% else %}
           <span class="label label-primary">Automatische Benachrichtigung {{ questionnaire.feedbackDaysAfterEvent }} Tage nach der Veranstaltung</span>
         {% endif %}
+        
         <span class="label label-primary">
-          {{ questionnaire.questions|length }} Frage{% if questionnaire.questions|length != 1 %}n{% endif %}
+          {{ questionnaire.questions|length }} Frage{% if questionnaire.questions|length != 1 %}n{% endif %}, {{ questionnaire.getThesisCount() }} These{% if questionnaire.getThesisCount() != 1 %}n{% endif %}
         </span>
-
       </div>
     </div>
   </div>
