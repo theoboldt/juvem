@@ -62,7 +62,6 @@
             <tbody>
             {% for fieldName,formField in form %}
               {% if fieldName starts with 'question-' %}
-                {% dump(formField) %}
                 <tr class="form-group {% if not formField.vars.valid %} has-error{% endif %}">
                   <td class="question">{{ form_label(formField) }}</td>
                   <td class="field">
