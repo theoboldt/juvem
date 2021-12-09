@@ -12,6 +12,7 @@ namespace AppBundle\Form\Feedback;
 
 use AppBundle\Feedback\FeedbackQuestion;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,6 +30,20 @@ class QuestionType extends AbstractType
                 [
                     'label'    => 'Thema (Intern)',
                     'required' => false,
+                ]
+            )
+            ->add(
+                'interpretation',
+                ChoiceType::class,
+                [
+                    'label'      => 'Wertung (Intern)',
+                    'required'   => true,
+                    'empty_data' => FeedbackQuestion::INTERPRETATION_NEUTRAL,
+                    'choices'    => [
+                        FeedbackQuestion::INTERPRETATION_NEGATIVE_LABEL => FeedbackQuestion::INTERPRETATION_NEGATIVE,
+                        FeedbackQuestion::INTERPRETATION_NEUTRAL_LABEL  => FeedbackQuestion::INTERPRETATION_NEUTRAL,
+                        FeedbackQuestion::INTERPRETATION_POSITIVE_LABEL => FeedbackQuestion::INTERPRETATION_POSITIVE,
+                    ],
                 ]
             )
             ->add(

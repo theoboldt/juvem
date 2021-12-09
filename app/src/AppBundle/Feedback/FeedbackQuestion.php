@@ -16,6 +16,13 @@ class FeedbackQuestion implements \JsonSerializable
 {
     const TYPE_AGREEMENT = 1;
 
+    const INTERPRETATION_NEGATIVE       = 0;
+    const INTERPRETATION_NEGATIVE_LABEL = 'negativ';
+    const INTERPRETATION_NEUTRAL        = 1;
+    const INTERPRETATION_NEUTRAL_LABEL  = 'neutral';
+    const INTERPRETATION_POSITIVE       = 2;
+    const INTERPRETATION_POSITIVE_LABEL = 'positiv';
+
     /**
      * @var string
      */
@@ -42,9 +49,16 @@ class FeedbackQuestion implements \JsonSerializable
     private string $counterThesis = '';
 
     /**
+     * @Assert\Type("int")
      * @var int
      */
     private int $questionType = self::TYPE_AGREEMENT;
+
+    /**
+     * @Assert\Type("int")
+     * @var int
+     */
+    private int $interpretation = self::INTERPRETATION_NEUTRAL;
 
 
     /**
@@ -56,10 +70,11 @@ class FeedbackQuestion implements \JsonSerializable
     public static function createFromArray(array $data): FeedbackQuestion
     {
         return new self(
-            $data['topic'],
-            $data['thesis'],
-            $data['counterThesis'],
-            $data['questionType'],
+            $data['topic'] ?? '',
+            $data['thesis'] ?? '',
+            $data['counterThesis'] ?? '',
+            $data['questionType'] ?? self::TYPE_AGREEMENT,
+            $data['interpretation'] ?? self::INTERPRETATION_NEUTRAL,
             $data['uuid'],
         );
     }
@@ -73,13 +88,15 @@ class FeedbackQuestion implements \JsonSerializable
         string  $thesis,
         string  $counterThesis = '',
         int     $questionType = self::TYPE_AGREEMENT,
+        int     $interpretation = self::INTERPRETATION_NEUTRAL,
         ?string $uuid = null
     ) {
-        $this->topic         = $topic;
-        $this->thesis        = $thesis;
-        $this->counterThesis = $counterThesis;
-        $this->questionType  = $questionType;
-        $this->uuid          = $uuid === null ? \Faker\Provider\Uuid::uuid() : $uuid;
+        $this->topic          = $topic;
+        $this->thesis         = $thesis;
+        $this->counterThesis  = $counterThesis;
+        $this->questionType   = $questionType;
+        $this->interpretation = $interpretation;
+        $this->uuid           = $uuid === null ? \Faker\Provider\Uuid::uuid() : $uuid;
     }
 
 
@@ -89,11 +106,12 @@ class FeedbackQuestion implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'uuid'          => $this->uuid,
-            'topic'         => $this->topic,
-            'thesis'        => $this->thesis,
-            'counterThesis' => $this->counterThesis,
-            'questionType'  => $this->questionType,
+            'uuid'           => $this->uuid,
+            'topic'          => $this->topic,
+            'thesis'         => $this->thesis,
+            'counterThesis'  => $this->counterThesis,
+            'questionType'   => $this->questionType,
+            'interpretation' => $this->interpretation,
         ];
     }
 
@@ -108,7 +126,7 @@ class FeedbackQuestion implements \JsonSerializable
     /**
      * @return string
      */
-    public function gettopic(): string
+    public function getTopic(): string
     {
         return $this->topic;
     }
@@ -116,7 +134,7 @@ class FeedbackQuestion implements \JsonSerializable
     /**
      * @param string $topic
      */
-    public function settopic(string $topic): void
+    public function setTopic(string $topic): void
     {
         $this->topic = $topic;
     }
@@ -168,4 +186,21 @@ class FeedbackQuestion implements \JsonSerializable
     {
         return $this->questionType;
     }
+
+    /**
+     * @return int
+     */
+    public function getInterpretation(): int
+    {
+        return $this->interpretation;
+    }
+
+    /**
+     * @param int $interpretation
+     */
+    public function setInterpretation(int $interpretation): void
+    {
+        $this->interpretation = $interpretation;
+    }
+
 }

@@ -74,7 +74,13 @@
                   mit "Stimme völlig zu", "Stimme zu", "Stimme weder zu noch nicht zu", "Stimme nicht zu" oder "Stimme
                   überhaupt nicht zu" beantworten.
                 </p>
-                <p>Für die meisten Thesen sollte eine Gegenthese formuliert werden. Dadurch ergeben sich Möglichkeiten
+                <p>
+                  Das <b>Thema</b> wird bei der internen Auswertung als Kurzbezeichnung verwendet.
+                </p>
+                <p>
+                  Mithilfe der Einstellung der <b>Wertung</b> zur Eingruppierung von Thesen, deren Zustimmung eher als Positiv (oder Negativ) zu werten ist, ist es möglich in der Auswertung einen schnellen Überblick aufzubereiten, was schon sehr gut läuft und in welchen Bereichen es noch Nachholbedarf gibt.   
+                </p>
+                <p>Für die meisten <b>Thesen</b> sollte eine <b>Gegenthese</b> formuliert werden. Dadurch ergeben sich Möglichkeiten
                   herauszufinden, ob die Fragen sorgfältig beantwortet wurden. Ausgefüllte Fragebögen bei denen sich
                   starke Diskrepanzen ergeben, werden markiert. Ein Beispiel für These und Gegenthese für das Thema
                   <code>Essen (Qualität)</code> wäre <code>Das Essen hat überwiegend gut geschmeckt.</code> und <code>Das
@@ -135,8 +141,11 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-xs-12">
+                  <div class="col-xs-12 col-sm-9 col-md-6">
                     {{ form_row(formElement.topic) }}
+                  </div>
+                  <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+                    {{ form_row(formElement.interpretation) }}
                   </div>
                 </div>
                 <div class="row">
