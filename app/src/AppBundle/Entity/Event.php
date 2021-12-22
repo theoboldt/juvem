@@ -20,6 +20,7 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\FeedbackQuestionnaire\FeedbackQuestionnaireFillout;
 use AppBundle\Feedback\FeedbackQuestion;
 use AppBundle\Feedback\FeedbackQuestionnaire;
 use AppBundle\Mail\SupportsRelatedEmailsInterface;
@@ -281,7 +282,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     
     
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\FeedbackQuestionnaireFillout",
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\FeedbackQuestionnaire\FeedbackQuestionnaireFillout",
      *     mappedBy="event", cascade={"persist", "remove"})
      * @var Collection|FeedbackQuestionnaireFillout[]
      */

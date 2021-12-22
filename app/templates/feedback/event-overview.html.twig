@@ -3,6 +3,30 @@
 {% block title %}Feedback - {{ event.title }}{% endblock %}
 
 {% block body %}
+  <div class="modal fade" tabindex="-1" role="dialog" id="modalFeedbackEmail">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Feedback per E-Mail anfragen</h4>
+        </div>
+        {{ form_start(formAction) }}
+        <div class="modal-body">
+          {{ form_errors(formAction) }}
+          <p>Alle Eltern aller bestätigter Teilnehmer:innen erhalten eine E-Mail, in der sie um das Ausfüllen des Fragebogens gebeten werden.</p>
+          <p>Soll eine solche E-Mail verschickt werden?</p>
+          {{ form_rest(formAction) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+          <input type="submit" class="btn btn-primary" value="Feedback einholen"/>
+        </div>
+        {{ form_end(formAction) }}
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
   {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feedback', 'subtitle': event.title} %}
     {% block breadcrumb %}
       <li>Rezepte</li>
@@ -21,7 +45,13 @@
           </div>
           <div class="btn-group" role="group">
             <a href="{{ path('admin_feedback_event_test', {'eid': event.eid }) }}" target="_blank"
-               class="btn btn-default">{{ 'eye-open'|glyph }} <span class="hidden-xs">Fragebogen</span> ansehen {{ 'new-window'|glyph }}</a>
+               class="btn btn-default">{{ 'eye-open'|glyph }} <span class="hidden-xs">Fragebogen</span>
+              ansehen {{ 'new-window'|glyph }}</a>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default {% if event.feedbackQuestionnaireSent %} disabled{% endif %}" data-toggle="modal" data-target="#modalFeedbackEmail">
+              Feedback einholen <span class="caret-right">
+            </button>
           </div>
         </div>
       </div>
@@ -34,7 +64,7 @@
         {% else %}
           <span class="label label-primary">Automatische Benachrichtigung {{ questionnaire.feedbackDaysAfterEvent }} Tage nach der Veranstaltung</span>
         {% endif %}
-        
+
         <span class="label label-primary">
           {{ questionnaire.questions|length }} Frage{% if questionnaire.questions|length != 1 %}n{% endif %}, {{ questionnaire.getThesisCount() }} These{% if questionnaire.getThesisCount() != 1 %}n{% endif %}
         </span>

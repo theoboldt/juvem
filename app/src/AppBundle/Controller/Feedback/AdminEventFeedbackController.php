@@ -15,12 +15,14 @@ use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
+use AppBundle\Feedback\FeedbackManager;
 use AppBundle\Form\Feedback\QuestionnaireFilloutType;
 use AppBundle\Form\Feedback\QuestionnaireType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,10 +32,12 @@ use Twig\Environment;
 /**
  * @Security("is_granted('ROLE_ADMIN')")
  */
-class EventFeedbackController
+class AdminEventFeedbackController
 {
     use RenderingControllerTrait, FormAwareControllerTrait, DoctrineAwareControllerTrait, RoutingControllerTrait;
 
+    private FeedbackManager $feedbackManager;
+    
     /**
      * @param Environment $twig
      */
@@ -41,12 +45,14 @@ class EventFeedbackController
         Environment          $twig,
         FormFactoryInterface $formFactory,
         RouterInterface      $router,
-        ManagerRegistry      $doctrine
+        ManagerRegistry      $doctrine,
+        FeedbackManager      $feedbackManager
     ) {
-        $this->twig        = $twig;
-        $this->formFactory = $formFactory;
-        $this->router      = $router;
-        $this->doctrine    = $doctrine;
+        $this->twig            = $twig;
+        $this->formFactory     = $formFactory;
+        $this->router          = $router;
+        $this->doctrine        = $doctrine;
+        $this->feedbackManager = $feedbackManager;
     }
 
 
@@ -56,11 +62,21 @@ class EventFeedbackController
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('read', event)")
      */
-    public function eventFeedbackAction(Event $event)
+    public function eventFeedbackAction(Event $event, Request $request)
     {
+        $formAction = $this->createFormBuilder()
+                           ->add('action', HiddenType::class)
+                           ->getForm();
+        $formAction->handleRequest($request);
+        if ($formAction->isSubmitted() && $formAction->isValid()) {
+            $this->feedbackManager->requestFeedback($event);
+            return $this->redirectToRoute('admin_feedback_event', ['eid' => $event->getEid()]);
+        }
+
         return $this->render(
             'feedback/event-overview.html.twig',
             [
+                'formAction'    => $formAction->createView(),
                 'event'         => $event,
                 'questionnaire' => $event->getFeedbackQuestionnaire(true),
             ]

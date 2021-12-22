@@ -11,6 +11,7 @@
 namespace AppBundle\Form\Feedback;
 
 use AppBundle\Feedback\FeedbackQuestionnaire;
+use AppBundle\Feedback\FeedbackQuestionnaireFillout;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -69,7 +70,7 @@ class QuestionnaireFilloutType extends AbstractType
 
         $resolver->setDefaults(
             [
-                //                'data_class' => FeedbackQuestionnaire::class,
+                'data_class' => FeedbackQuestionnaireFillout::class,
             ]
         );
     }
