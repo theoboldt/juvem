@@ -1558,11 +1558,11 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     }
 
     /**
-     * @param bool $isFeedbackQuestionnaireEnabled
+     * @param bool|null $isFeedbackQuestionnaireEnabled
      */
-    public function setIsFeedbackQuestionnaireEnabled(bool $isFeedbackQuestionnaireEnabled): void
+    public function setIsFeedbackQuestionnaireEnabled(?bool $isFeedbackQuestionnaireEnabled): void
     {
-        $this->isFeedbackQuestionnaireEnabled = $isFeedbackQuestionnaireEnabled;
+        $this->isFeedbackQuestionnaireEnabled = (bool)$isFeedbackQuestionnaireEnabled;
     }
 
     /**

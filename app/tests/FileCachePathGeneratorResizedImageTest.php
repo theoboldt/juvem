@@ -55,7 +55,7 @@ class FileCachePathGeneratorResizedImageTest extends TestCase
         string $expectedPath
     ): void {
         $image = new FileCachePathGeneratorResizedImage($width, $height, $mode, $name);
-        var_dump($image->getPath());
+
         $this->assertEquals($expectedPath, $image->getPath());
         $this->assertEquals($expectedPath, (string)$image);
     }
