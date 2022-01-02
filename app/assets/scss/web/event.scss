@@ -1157,7 +1157,7 @@ body.feature-cloud-disabled .feature-cloud {
 
 .feedback-question-import {
   .question {
-    
+
     b, .checkbox {
       margin-bottom: 2px;
     }
@@ -1165,9 +1165,54 @@ body.feature-cloud-disabled .feature-cloud {
     b, .additions {
       padding-left: 20px;
     }
-    
+
     .counter-thesis {
       color: #999;
     }
   }
 }
+
+.feedback-questionnaire {
+  @media (min-width: $screen-lg-min) {
+    td.field {
+      min-width: 570px;
+    }
+  }
+
+  @media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+    td.field {
+      min-width: 500px;
+
+      .btn {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    }
+  }
+
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    td.field {
+      min-width: 200px;
+      
+      .btn {
+        min-width: 35px;
+      }
+    }
+  }
+  @media (max-width: $screen-xs-max) {
+    &.col-xs-12 {
+      padding: 0;
+    }
+
+    td.field {
+      min-width: 145px;
+
+      .btn {
+        min-width: 28px;
+        padding-left: 7px;
+        padding-right: 7px;
+      }
+    }
+  }
+}
+ 
