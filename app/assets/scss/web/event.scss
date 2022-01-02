@@ -1154,3 +1154,20 @@ body.feature-newsletter-disabled .feature-newsletter,
 body.feature-cloud-disabled .feature-cloud {
   display: none;
 }
+
+.feedback-question-import {
+  .question {
+    
+    b, .checkbox {
+      margin-bottom: 2px;
+    }
+
+    b, .additions {
+      padding-left: 20px;
+    }
+    
+    .counter-thesis {
+      color: #999;
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fragebogen  - {{ event.title }}{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Fragebogen-Fragen importieren', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li><a href="{{ path('admin_feedback_event', {'eid': event.eid }) }}">Feedback</a></li>
+      <li class="active">Fragebogen-Fragen importieren</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Die hier gewählten Fragen aus Fragebögen anderer Veranstaltungen werden in den Fragebogen für
+          <i>{{ event.title }}</i> übernommen.</p>
+        <p>Die Fragen können anschließend im Fragebogen dieser Veranstaltung textuell noch angepasst werden.</p>
+      </div>
+    </div>
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
+          <div class="btn-group" role="group">
+            <span class="btn btn-sm btn-default" id="selectAll">Alle auswählen</span>
+            <span class="btn btn-sm btn-default" id="selectNone">Keine auswählen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row feedback-question-import">
+      {% for fieldName,formField in form %}
+        <div class="col-xs-12">
+          <div class="form-group question{% if not formField.vars.valid %} has-error{% endif %}">
+            {% if questions[fieldName] is defined %}
+              {%- set question = questions[fieldName] %}
+              {% if question.topic %}<b title="Thema">{{ question.topic }}</b>{% endif %}
+
+              {% if question.interpretation == 1 %}
+                <span class="label label-danger" data-title="Diese Aussage wird negativ betrachtet"
+                      data-toggle="tooltip">Negativ</span>
+              {% elseif question.interpretation == 2 %}
+                <span class="label label-default" data-title="Diese Aussage ist weder negativ noch positiv"
+                      data-toggle="tooltip">Neutral</span>
+              {% elseif question.interpretation == 3 %}
+                <span class="label label-success" data-title="Diese Aussage wird positiv betrachtet"
+                      data-toggle="tooltip">Positiv</span>
+              {% endif %}
+
+              <span title="These">{{ form_widget(formField) }}</span>
+              <div class="additions">
+                {% if question.counterThesis %}
+                  <span class="counter-thesis" title="Gegenthese">{{ question.counterThesis }}</span>
+                {% endif %}
+              </div>
+              {{ form_errors(formField) }}
+            {% else %}
+              {{ form_row(formField) }}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_rest(form) }}
+        <input type="submit" value="Fragen importieren" class="btn btn-primary navbar-btn"/>
+      </div>
+    </div>
+    {{ form_end(form) }}
+  </div>
+
+{% endblock %}
+  {% block javascriptCustom %}
+    {% cspscript %}
+      <script type='text/javascript'>
+          jQuery('#selectAll').click(function () {
+              jQuery("[type=checkbox]").each(function () {
+                  jQuery(this).prop('checked', true);
+              });
+          });
+          jQuery('#selectNone').click(function () {
+              jQuery("[type=checkbox]").each(function () {
+                  jQuery(this).prop('checked', false);
+              });
+          });
+      </script>
+    {% endcspscript %}
+  {% endblock %}

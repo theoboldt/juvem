@@ -354,6 +354,8 @@ services:
             - 'AppBundle:User'
 
     app.repository.event:
+        alias: AppBundle\Entity\EventRepository
+    AppBundle\Entity\EventRepository:
         class: AppBundle\Entity\EventRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
@@ -436,6 +438,11 @@ services:
       autowire: true
       arguments:
           - '%app.gender.exclude%'
+      tags:
+        - form.type
+
+    AppBundle\Form\Feedback\ImportQuestionsType:
+      autowire: true
       tags:
         - form.type
 

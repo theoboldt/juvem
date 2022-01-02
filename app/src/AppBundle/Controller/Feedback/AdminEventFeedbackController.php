@@ -16,6 +16,7 @@ use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Feedback\FeedbackManager;
+use AppBundle\Form\Feedback\ImportQuestionsType;
 use AppBundle\Form\Feedback\QuestionnaireFilloutType;
 use AppBundle\Form\Feedback\QuestionnaireType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
@@ -37,7 +38,7 @@ class AdminEventFeedbackController
     use RenderingControllerTrait, FormAwareControllerTrait, DoctrineAwareControllerTrait, RoutingControllerTrait;
 
     private FeedbackManager $feedbackManager;
-    
+
     /**
      * @param Environment $twig
      */
@@ -85,7 +86,7 @@ class AdminEventFeedbackController
 
     /**
      * @CloseSessionEarly
-     * @Route("/admin/event/{eid}/feedback/questionnaire", requirements={"eid": "\d+"},
+     * @Route("/admin/event/{eid}/feedback/questionnaire-configure", requirements={"eid": "\d+"},
      *                                                     name="admin_feedback_event_questionnaire")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Security("is_granted('read', event)")
@@ -111,6 +112,53 @@ class AdminEventFeedbackController
             [
                 'event' => $event,
                 'form'  => $form->createView(),
+            ]
+        );
+    }
+
+    /**
+     * @CloseSessionEarly
+     * @Route("/admin/event/{eid}/feedback/questionnaire-import", requirements={"eid": "\d+"},
+     *                                                     name="admin_feedback_event_import")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('read', event)")
+     * @param Event $event
+     */
+    public function eventFeedbackImportQuestions(Event $event, Request $request)
+    {
+        $questions     = $this->feedbackManager->provideQuestions();
+        $questionnaire = $event->getFeedbackQuestionnaire(true);
+        $form          = $this->createForm(
+            ImportQuestionsType::class,
+            null,
+            [
+                ImportQuestionsType::QUESTIONNAIRE_OPTION => $questionnaire,
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $questionnaireQuestions = $questionnaire->getQuestions();
+            foreach ($form->getData() as $questionUuid => $copy) {
+                if ($copy) {
+                    $questionnaireQuestions[] = $questions[$questionUuid];
+                }
+            }
+            $questionnaire->setQuestions($questionnaireQuestions);
+            
+            $event->setFeedbackQuestionnaire($questionnaire);
+            $em->persist($event);
+            $em->flush();
+            return $this->redirectToRoute('admin_feedback_event_questionnaire', ['eid' => $event->getEid()]);
+        }
+
+        return $this->render(
+            'feedback/event-questionnaire-question-import.html.twig',
+            [
+                'event'     => $event,
+                'questions' => $questions,
+                'form'      => $form->createView(),
             ]
         );
     }

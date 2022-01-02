@@ -203,6 +203,20 @@ class EventRepository extends EntityRepository
     }
     
     /**
+     * Fetch all events having a feedback questionnaire configured
+     *
+     * @return Event[]
+     */
+    public function findAllHavingQuestionnaire(): array
+    {
+        $qb = $this->createQueryBuilder('e')
+                   ->andWhere('e.feedbackQuestionnaire IS NOT NULL')
+                   ->andWhere('e.feedbackQuestionnaire <> \'[]\'')
+                   ->andWhere('e.feedbackQuestionnaire <> \'{}\'');
+        return $qb->getQuery()->execute();
+    }
+    
+    /**
      * Fetch all events reverse ordered by date
      *
      * @param bool $excludeDeleted  Set to true to exclude deleted @see Event s

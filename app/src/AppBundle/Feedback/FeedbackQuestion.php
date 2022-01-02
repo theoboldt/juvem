@@ -16,11 +16,11 @@ class FeedbackQuestion implements \JsonSerializable
 {
     const TYPE_AGREEMENT = 1;
 
-    const INTERPRETATION_NEGATIVE       = 0;
+    const INTERPRETATION_NEGATIVE       = 1;
     const INTERPRETATION_NEGATIVE_LABEL = 'negativ';
-    const INTERPRETATION_NEUTRAL        = 1;
+    const INTERPRETATION_NEUTRAL        = 2;
     const INTERPRETATION_NEUTRAL_LABEL  = 'neutral';
-    const INTERPRETATION_POSITIVE       = 2;
+    const INTERPRETATION_POSITIVE       = 3;
     const INTERPRETATION_POSITIVE_LABEL = 'positiv';
 
     /**
@@ -201,6 +201,23 @@ class FeedbackQuestion implements \JsonSerializable
     public function setInterpretation(int $interpretation): void
     {
         $this->interpretation = $interpretation;
+    }
+
+    /**
+     * Determine if this question is equal (except for UUID) to another question
+     * 
+     * @param FeedbackQuestion $other
+     * @return bool
+     */
+    public function isSameAs(FeedbackQuestion $other): bool
+    {
+        return (
+            $this->topic === $other->getTopic()
+            && $this->questionType === $other->getQuestionType()
+            && $this->interpretation === $other->getInterpretation()
+            && $this->thesis === $other->getThesis()
+            && $this->counterThesis === $other->getCounterThesis()
+        );
     }
 
 }
