@@ -69,6 +69,10 @@
         <span class="label label-primary">
           {{ questionnaire.questions|length }} Frage{% if questionnaire.questions|length != 1 %}n{% endif %}, {{ questionnaire.getThesisCount() }} These{% if questionnaire.getThesisCount() != 1 %}n{% endif %}
         </span>
+        
+        {% if event.feedbackQuestionnaireSent %}
+          <span class="label label-primary">Teilnehmende benachrichtigt</span>
+        {% endif %}
       </div>
     </div>
   </div>
