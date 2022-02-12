@@ -33,7 +33,7 @@
     "npm": "^7.15.0",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
-    "vis-network": "<=7.5",
+    "vis-network": "^9.1",
     "trim-newlines": ">=3.0.1"
   }
 }
