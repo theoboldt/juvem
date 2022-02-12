@@ -175,8 +175,11 @@ class DefaultController
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
      * @Route("/robots.txt")
+     * @Route("/favicon.(ico|png|gif)")
      * @Route("/apple-touch-icon.png")
      * @Route("apple-touch-icon-{a}x{b}{c}.png", requirements={"a" = "\d+", "b" = "\d+", "c" = "-precomposed|"})
+     * @Route("/safari-pinned-tab.svg")
+     * @Route("/HNAP1")
      */
     public function ressourceUnavailableAction()
     {
