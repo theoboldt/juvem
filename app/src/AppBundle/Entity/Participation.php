@@ -11,9 +11,9 @@
 namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
-use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
@@ -30,8 +30,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Serialize\ExclusionPolicy("all")
@@ -640,36 +640,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
 
         /** @var Participant $participantPrevious */
         foreach ($participationPrevious->getParticipants() as $participantPrevious) {
-            $participant = new Participant($participation);
-            $participant->setNameLast($participantPrevious->getNameLast());
-            $participant->setNameFirst($participantPrevious->getNameFirst());
-            $participant->setBirthday($participantPrevious->getBirthday());
-            $participant->setFood($participantPrevious->getFood());
-            $participant->setGender($participantPrevious->getGender());
-            $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
-            $participant->setInfoMedical($participantPrevious->getInfoMedical());
-
-            /** @var Attribute $attribute */
-            foreach ($event->getAcquisitionAttributes(false, true, false, $copyPrivateFields, true) as $attribute) {
-                try {
-                    $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
-                        $attribute->getBid(), false
-                    );
-                } catch (\OutOfBoundsException $e) {
-                    continue;
-                }
-                $fillout = new Fillout();
-                $fillout->setParticipant($participant);
-                $fillout->setAttribute($attribute);
-                $fillout->setValue($filloutPrevious->getRawValue());
-                $participant->addAcquisitionAttributeFillout($fillout);
-            }
-
-            if ($copyPrivateFields) {
-                $participant->setStatus($participantPrevious->getStatus());
-            }
-
-            $participation->addParticipant($participant);
+            Participant::createFromTemplateForParticipation($participantPrevious, $participation, $copyPrivateFields);
         }
 
         return $participation;

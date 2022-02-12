@@ -14,6 +14,7 @@ use AppBundle\Entity\Employee;
 use AppBundle\Entity\EmployeeComment;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantComment;
 use AppBundle\Entity\ParticipantPaymentEvent;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\Participation as ParticipationEntity;
@@ -21,7 +22,7 @@ use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\User;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\MoveEmployeeType;
-use AppBundle\Form\MoveParticipationType;
+use AppBundle\Form\MoveParticipationEventType;
 use AppBundle\Mail\MailSendService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -275,14 +276,14 @@ class ParticipationManager
     /**
      * Perform move @see Participation action, which is actually creating a duplicate and adding some comments
      *
-     * @param Participation $oldParticipation The @see Participation to copy
-     * @param Event $newEvent                 Target event
-     * @param string $commentOldContent       Comment to add at old $oldParticipation
-     * @param string $commentNewContent       Comment to add at new participation
-     * @param User|null $responsibleUser      User performing this action
+     * @param Participation $oldParticipation  The {@see Participation} to copy
+     * @param Event         $newEvent          Target event
+     * @param string        $commentOldContent Comment to add at old $oldParticipation
+     * @param string        $commentNewContent Comment to add at new participation
+     * @param User|null     $responsibleUser   User performing this action
      * @return Participation The new created entry
      */
-    public function moveParticipation(
+    public function moveParticipationEvent(
         Participation $oldParticipation,
         Event $newEvent,
         string $commentOldContent,
@@ -305,10 +306,10 @@ class ParticipationManager
                 $em->flush();
                 
                 $updateComment = function($comment) use ($oldParticipation, $newParticipation) {
-                    $comment = str_replace(MoveParticipationType::PARAM_EVENT_OLD, $oldParticipation->getEvent()->getTitle(), $comment);
-                    $comment = str_replace(MoveParticipationType::PARAM_EVENT_NEW, $newParticipation->getEvent()->getTitle(), $comment);
-                    $comment = str_replace(MoveParticipationType::PARAM_PID_OLD, $oldParticipation->getId(), $comment);
-                    $comment = str_replace(MoveParticipationType::PARAM_PID_NEW, $newParticipation->getId(), $comment);
+                    $comment = str_replace(MoveParticipationEventType::PARAM_EVENT_OLD, $oldParticipation->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveParticipationEventType::PARAM_EVENT_NEW, $newParticipation->getEvent()->getTitle(), $comment);
+                    $comment = str_replace(MoveParticipationEventType::PARAM_PID_OLD, $oldParticipation->getId(), $comment);
+                    $comment = str_replace(MoveParticipationEventType::PARAM_PID_NEW, $newParticipation->getId(), $comment);
                     return $comment;
                 };
                 
@@ -331,6 +332,76 @@ class ParticipationManager
                 $em->flush();
                 
                 return $newParticipation;
+            }
+        );
+    }
+
+    /**
+     * Perform move @param Participation $oldParticipation The {@see Participation} where participants should be copied
+     *
+     * @param Participation $newParticipation  Target {@see Participation}
+     * @param string        $commentOldContent Comment to add to old participants
+     * @param string        $commentNewContent Comment to add to new participants
+     * @param User|null     $responsibleUser   User performing this action
+     * @return Participant[]
+     * @see Participation action, which is actually creating a duplicate and adding some comments
+     *
+     */
+    public function moveParticipationParticipation(
+        Participation $oldParticipation,
+        Participation $newParticipation,
+        string        $commentOldContent,
+        string        $commentNewContent,
+        User          $responsibleUser = null
+    ): array {
+        $updateComment = function ($comment) use ($oldParticipation, $newParticipation) {
+            $comment = str_replace(MoveParticipationEventType::PARAM_PID_OLD, $oldParticipation->getId(), $comment);
+            $comment = str_replace(MoveParticipationEventType::PARAM_PID_NEW, $newParticipation->getId(), $comment);
+            return $comment;
+        };
+        $commentOldContent = $updateComment($commentOldContent);
+        $commentNewContent = $updateComment($commentNewContent);
+        
+        return $this->em->transactional(
+            function (EntityManager $em) use (
+                $oldParticipation,
+                $newParticipation,
+                $commentOldContent,
+                $commentNewContent,
+                $responsibleUser
+            ) {
+                $deletionDate = new \DateTime('now');
+                $newParticipants = [];
+                
+                /** @var Participant $oldParticipant */
+                foreach ($oldParticipation->getParticipants() as $oldParticipant) {
+                    $newParticipant = Participant::createFromTemplateForParticipation(
+                        $oldParticipant, $newParticipation, true
+                    );
+                    $em->persist($newParticipant);
+                    $oldParticipant->setDeletedAt($deletionDate);
+                    $em->persist($oldParticipant);
+                    
+                    $commentOld = new ParticipantComment();
+                    $commentOld->setParticipant($oldParticipant);
+                    $commentOld->setCreatedAtNow();
+                    $commentOld->setCreatedBy($responsibleUser);
+                    $commentOld->setContent($commentOldContent);
+                    $em->persist($commentOld);
+
+                    $commentNew = new ParticipantComment();
+                    $commentNew->setParticipant($newParticipant);
+                    $commentNew->setCreatedAtNow();
+                    $commentNew->setCreatedBy($responsibleUser);
+                    $commentNew->setContent($commentNewContent);
+                    $em->persist($commentNew);
+                    
+                    $newParticipants[] = $newParticipant;
+                } //foreach
+                
+                $oldParticipation->setDeletedAt($deletionDate);
+                $em->flush();
+                return $newParticipants;
             }
         );
     }

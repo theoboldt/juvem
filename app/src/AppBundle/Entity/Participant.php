@@ -12,6 +12,8 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
@@ -683,5 +685,55 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
                 return implode(', ', $status->getActiveList(true));
             }
         ];
+    }
+
+    /**
+     * Create a new participant from template and add to transmitted participation
+     *
+     * @param Participant   $participantPrevious   Data template
+     * @param Participation $participation         Participation where templated participant should be added to
+     * @param bool          $copyPrivateFields     If set to true, also private acquisition data and user assignments
+     *                                             are copied
+     * @return Participant
+     */
+    public static function createFromTemplateForParticipation(
+        Participant   $participantPrevious,
+        Participation $participation,
+        bool          $copyPrivateFields = false
+    ): Participant {
+        $event = $participation->getEvent();
+
+        $participant = new Participant($participation);
+        $participant->setNameLast($participantPrevious->getNameLast());
+        $participant->setNameFirst($participantPrevious->getNameFirst());
+        $participant->setBirthday($participantPrevious->getBirthday());
+        $participant->setFood($participantPrevious->getFood());
+        $participant->setGender($participantPrevious->getGender());
+        $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
+        $participant->setInfoMedical($participantPrevious->getInfoMedical());
+
+        /** @var Attribute $attribute */
+        foreach ($event->getAcquisitionAttributes(false, true, false, $copyPrivateFields, true) as $attribute) {
+            try {
+                $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
+                    $attribute->getBid(), false
+                );
+            } catch (\OutOfBoundsException $e) {
+                continue;
+            }
+            $fillout = new Fillout();
+            $fillout->setParticipant($participant);
+            $fillout->setAttribute($attribute);
+            $fillout->setValue($filloutPrevious->getRawValue());
+            $participant->addAcquisitionAttributeFillout($fillout);
+        }
+
+        if ($copyPrivateFields) {
+            $participant->setStatus($participantPrevious->getStatus());
+        }
+
+        $participation->addParticipant($participant);
+
+        return $participant;
     }
 }

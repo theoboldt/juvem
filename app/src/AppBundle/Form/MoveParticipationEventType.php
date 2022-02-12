@@ -18,7 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MoveParticipationType extends AbstractType
+class MoveParticipationEventType extends AbstractType
 {
     
     const PARTICIPATION_OPTION = 'participation';

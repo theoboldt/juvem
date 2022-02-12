@@ -402,41 +402,42 @@
             {{ form_end(formAssignUser) }}
         </div>
     </div>
-    <div class="modal fade" id="dialogModalMoveParticipation" tabindex="-1" role="dialog" aria-labelledby="dialogModalMoveParticipationLabel">
+    <div class="modal fade" id="dialogModalMoveParticipationEvent" tabindex="-1" role="dialog" aria-labelledby="dialogModalMoveParticipationEventLabel">
         <div class="modal-dialog" role="document">
-            {{ form_start(formMoveParticipation) }}
+            {{ form_start(formMoveParticipationEvent) }}
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
                                 aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="dialogModalMoveParticipationLabel">Anmeldung verschieben</h4>
+                    <h4 class="modal-title" id="dialogModalMoveParticipationEventLabel">Anmeldung in andere Veranstaltung verschieben</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-xs-12">
                             <p>
-                                Falls die Anmeldung aus Versehen für die falsche Veranstaltung abgegeben wurde, kann sie verschoben werden.
-                                Dabei wird sie in die Ziel-Veranstaltung kopiert und , mit einem Kommentar versehen. Die Anmeldung hier
-                                wird mit einem Kommentar versehen und als zurückgezogen markiert. Der Text der Kommentare kann unten angepasst werden.
+                                Falls die Anmeldung irrtümlich für die falsche Veranstaltung abgegeben wurde, kann sie verschoben werden.
+                                Dabei wird sie in die Ziel-Veranstaltung kopiert und mit einem Kommentar versehen. Die Anmeldung hier
+                                wird mit einem Kommentar versehen und in den Papierkorb verschoben. Der Text der Kommentare kann unten angepasst werden.
+                                Zusätzliche Daten wie Kommentare oder der festgelegte Preis oder Zahlungen werden nicht verschoben.
                             </p>
                         </div>
                         <div class="col-xs-12">
                             <div class="form-group">
-                                {{ form_label(formMoveParticipation.targetEvent) }}
-                                {{ form_widget(formMoveParticipation.targetEvent) }}
-                                {{ form_errors(formMoveParticipation.targetEvent) }}
+                                {{ form_label(formMoveParticipationEvent.targetEvent) }}
+                                {{ form_widget(formMoveParticipationEvent.targetEvent) }}
+                                {{ form_errors(formMoveParticipationEvent.targetEvent) }}
                                 <p class="help-block">Zur Auswahl stehen nur im Moment aktive Veranstaltungen.</p>
                             </div>
                             <div class="form-group">
-                                {{ form_label(formMoveParticipation.commentOldParticipation) }}
-                                {{ form_widget(formMoveParticipation.commentOldParticipation) }}
-                                {{ form_errors(formMoveParticipation.commentOldParticipation) }}
+                                {{ form_label(formMoveParticipationEvent.commentOldParticipation) }}
+                                {{ form_widget(formMoveParticipationEvent.commentOldParticipation) }}
+                                {{ form_errors(formMoveParticipationEvent.commentOldParticipation) }}
                                 <p class="help-block">Der Platzhalter <code>{EVENT_NEW}</code> wird durch den Namen der oben gewählten Veranstaltung ersetzt. <code>{PID_NEW}</code> wird durch die neue Anmeldungsnummer ersetzt.</p>
                             </div>
                             <div class="form-group">
-                                {{ form_label(formMoveParticipation.commentNewParticipation) }}
-                                {{ form_widget(formMoveParticipation.commentNewParticipation) }}
-                                {{ form_errors(formMoveParticipation.commentNewParticipation) }}
+                                {{ form_label(formMoveParticipationEvent.commentNewParticipation) }}
+                                {{ form_widget(formMoveParticipationEvent.commentNewParticipation) }}
+                                {{ form_errors(formMoveParticipationEvent.commentNewParticipation) }}
                                 <p class="help-block">Der Platzhalter <code>{EVENT_OLD}</code> wird durch <i>{{ event.title }}</i> ersetzt. <code>{PID_OLD}</code> wird durch die alte Anmeldungsnummer <i>{{ participation.pid }}</i> ersetzt.</p>
                             </div>
                         </div>
@@ -444,10 +445,59 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                    <input type="submit" class="btn btn-primary" value="Anmeldung verschieben"/>
+                    <input type="submit" class="btn btn-primary" value="Anmeldung in Veranstaltung verschieben"/>
                 </div>
             </div>
-            {{ form_end(formMoveParticipation) }}
+            {{ form_end(formMoveParticipationEvent) }}
+        </div>
+    </div>
+    <div class="modal fade" id="dialogModalMoveParticipationParticipation" tabindex="-1" role="dialog" aria-labelledby="dialogModalMoveParticipationParticipationLabel">
+        <div class="modal-dialog" role="document">
+            {{ form_start(formMoveParticipationParticipation) }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Abbrechen"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="dialogModalMoveParticipationParticipationLabel">Teilnehmer:innen in andere Anmeldung verschieben</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p>
+                                Falls die Teilnehmer:innen dieser Anmeldung eigentlich zu einer anderen gehören, können sie verschoben werden.
+                                Dabei werden sie in die Ziel-Anmeldung kopiert und mit einem Kommentar versehen. Die Anmeldung hier
+                                wird mit einem Kommentar versehen und als zurückgezogen markiert. Der Text der Kommentare kann unten angepasst werden.
+                                Zusätzliche Daten wie Kommentare oder der festgelegte Preis oder Zahlungen werden nicht verschoben.
+                            </p>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                {{ form_label(formMoveParticipationParticipation.targetParticipation) }}
+                                {{ form_widget(formMoveParticipationParticipation.targetParticipation) }}
+                                {{ form_errors(formMoveParticipationParticipation.targetParticipation) }}
+                                <p class="help-block">Zur Auswahl stehen nur Anmeldungen die nicht gelöscht worden sind. In eckigen Klammern stehen die aktiven Teilnehmer:innen der Veranstaltung.</p>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formMoveParticipationParticipation.commentOld) }}
+                                {{ form_widget(formMoveParticipationParticipation.commentOld) }}
+                                {{ form_errors(formMoveParticipationParticipation.commentOld) }}
+                                <p class="help-block">Der Platzhalter <code>{PID_NEW}</code> wird durch die neue Anmeldungsnummer ersetzt.</p>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formMoveParticipationParticipation.commentNew) }}
+                                {{ form_widget(formMoveParticipationParticipation.commentNew) }}
+                                {{ form_errors(formMoveParticipationParticipation.commentNew) }}
+                                <p class="help-block">Der Platzhalter <code>{PID_OLD}</code> wird durch die alte Anmeldungsnummer <i>{{ participation.pid }}</i> ersetzt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Teilnehmer:innen verschieben"/>
+                </div>
+            </div>
+            {{ form_end(formMoveParticipationParticipation) }}
         </div>
     </div>
     {% endif -%}
@@ -533,21 +583,38 @@
                         {{ participation|changeTrackingButton(false) }}
                         {{ participation|emailListingButton(false) }}
                     </div>
-                    <div class="btn-group" role="group">
-                        {% if participation.isDeleted %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="restore">
-                                {{ 'repeat'|glyph }} wiederherstellen…
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#dialogModal" data-action="delete">
-                                {{ 'trash'|glyph }} in Papierkorb…
-                            </button>
-                        {% endif %}
-                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModalMoveParticipation">
-                            {{ 'arrow-right'|glyph }} <span class="hidden-xs">Anmeldung</span> verschieben <span class="caret-right"></span>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">{{ 'level-up'|glyph }}
+                            <span class="hidden-xs">Verschieben… <span class="caret"></span></span>
                         </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                {% if participation.isDeleted %}
+                                    <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="restore">
+                                        {{ 'repeat'|glyph }} wiederherstellen…
+                                    </a>
+                                {% else %}
+                                    <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="delete">
+                                        {{ 'trash'|glyph }} in Papierkorb…
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% if not participation.isDeleted %}
+                                <li>
+                                    <a href="#" data-toggle="modal" data-target="#dialogModalMoveParticipationEvent">
+                                        {{ 'calendar'|glyph }} in andere Veranstaltung…
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" data-toggle="modal"
+                                       data-target="#dialogModalMoveParticipationParticipation">
+                                        {{ 'user'|glyph }} in andere Anmeldung…
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
                     </div>
                 </div>
                 {% endif -%}

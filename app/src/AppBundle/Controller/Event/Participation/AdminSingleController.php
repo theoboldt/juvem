@@ -26,7 +26,8 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Entity\User;
-use AppBundle\Form\MoveParticipationType;
+use AppBundle\Form\MoveParticipationEventType;
+use AppBundle\Form\MoveParticipationParticipationType;
 use AppBundle\Form\ParticipantType;
 use AppBundle\Form\ParticipationAssignRelatedParticipantType;
 use AppBundle\Form\ParticipationAssignUserType;
@@ -259,18 +260,17 @@ class AdminSingleController
             }
         }
 
-        $formMoveParticipation = $this->createForm(
-            MoveParticipationType::class, null, [MoveParticipationType::PARTICIPATION_OPTION => $participation]
+        $formMoveParticipationEvent = $this->createForm(
+            MoveParticipationEventType::class, null, [MoveParticipationEventType::PARTICIPATION_OPTION => $participation]
         );
-        $formMoveParticipation->handleRequest($request);
-        if ($formMoveParticipation->isSubmitted() && $formMoveParticipation->isValid()) {
-
+        $formMoveParticipationEvent->handleRequest($request);
+        if ($formMoveParticipationEvent->isSubmitted() && $formMoveParticipationEvent->isValid()) {
             $user = $this->getUser();
-            $participationNew = $this->participationManager->moveParticipation(
+            $participationNew = $this->participationManager->moveParticipationEvent(
                 $participation,
-                $formMoveParticipation->get('targetEvent')->getData(),
-                $formMoveParticipation->get('commentOldParticipation')->getData(),
-                $formMoveParticipation->get('commentNewParticipation')->getData(),
+                $formMoveParticipationEvent->get('targetEvent')->getData(),
+                $formMoveParticipationEvent->get('commentOldParticipation')->getData(),
+                $formMoveParticipationEvent->get('commentNewParticipation')->getData(),
                 $user instanceof User ? $user : null
             );
             return $this->redirectToRoute(
@@ -281,6 +281,35 @@ class AdminSingleController
                 ]
             );
         }
+
+        $formMoveParticipationParticipation = $this->createForm(
+            MoveParticipationParticipationType::class,
+            null,
+            [
+                MoveParticipationParticipationType::PARTICIPATION_OPTION => $participation
+            ]
+        );
+        $formMoveParticipationParticipation->handleRequest($request);
+        if ($formMoveParticipationParticipation->isSubmitted() && $formMoveParticipationParticipation->isValid()) {
+            $user = $this->getUser();
+            $participantsNew = $this->participationManager->moveParticipationParticipation(
+                $participation,
+                $formMoveParticipationParticipation->get('targetParticipation')->getData(),
+                $formMoveParticipationParticipation->get('commentOld')->getData(),
+                $formMoveParticipationParticipation->get('commentNew')->getData(),
+                $user instanceof User ? $user : null
+            );
+            /** @var Participant $participantNew */
+            $participantNew = reset($participantsNew);
+            return $this->redirectToRoute(
+                'event_participation_detail',
+                [
+                    'eid' => $participantNew->getEvent()->getEid(),
+                    'pid' => $participantNew->getParticipation()->getPid(),
+                ]
+            );
+        }
+        
 
         $em = $this->getDoctrine()->getManager();
 
@@ -384,28 +413,29 @@ class AdminSingleController
                 )
             );
         }
-    
+
         return $this->render(
             'event/participation/admin/detail.html.twig',
             [
-                'commentManager'          => $this->commentManager,
-                'paymentManager'          => $this->paymentManager,
-                'paymentParticipation'    => $paymentParticipation,
-                'priceSuggestions'        => $priceSuggestions,
-                'paymentSuggestions'      => $paymentSuggestions,
-                'event'                   => $event,
-                'participation'           => $participation,
-                'similarParticipants'     => $similarParticipants,
-                'confirmedParticipants'   => $confirmedParticipants,
-                'unconfirmedParticipants' => $unconfirmedParticipants,
-                'allParticipantsInactive' => $allParticipantsInactive,
-                'foodFormatter'           => $foodFormatter,
-                'statusFormatter'         => $statusFormatter,
-                'phoneNumberList'         => $phoneNumberList,
-                'formAction'              => $formAction->createView(),
-                'formAssignUser'          => $formUser->createView(),
-                'formRelated'             => $formRelated->createView(),
-                'formMoveParticipation'   => $formMoveParticipation->createView(),
+                'commentManager'                     => $this->commentManager,
+                'paymentManager'                     => $this->paymentManager,
+                'paymentParticipation'               => $paymentParticipation,
+                'priceSuggestions'                   => $priceSuggestions,
+                'paymentSuggestions'                 => $paymentSuggestions,
+                'event'                              => $event,
+                'participation'                      => $participation,
+                'similarParticipants'                => $similarParticipants,
+                'confirmedParticipants'              => $confirmedParticipants,
+                'unconfirmedParticipants'            => $unconfirmedParticipants,
+                'allParticipantsInactive'            => $allParticipantsInactive,
+                'foodFormatter'                      => $foodFormatter,
+                'statusFormatter'                    => $statusFormatter,
+                'phoneNumberList'                    => $phoneNumberList,
+                'formAction'                         => $formAction->createView(),
+                'formAssignUser'                     => $formUser->createView(),
+                'formRelated'                        => $formRelated->createView(),
+                'formMoveParticipationEvent'         => $formMoveParticipationEvent->createView(),
+                'formMoveParticipationParticipation' => $formMoveParticipationParticipation->createView(),
             ]
         );
     }
