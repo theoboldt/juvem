@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            //disabled until {@see https://github.com/visjs/vis-network/issues/271} is fixed
+            //enabled as {@see https://github.com/visjs/vis-network/issues/271} seems to be fixed
             jsvis: {
                 files: [
                     {
@@ -173,12 +173,12 @@ module.exports = function (grunt) {
                 files: {
                     'web/js/all.min.js': ['web/js/all.js']
                 }
-            },
+            }/*, disabled as {@see https://github.com/visjs/vis-network/issues/271} seems to be fixed
             jsvis: {
                 files: {
                     'web/js/vis-network.min.js': ['<%= assetsPath %>/js/lib/vis-network.js']
                 }
-            }
+            }*/
         },
 
         cssmin: {
@@ -214,7 +214,7 @@ module.exports = function (grunt) {
         watch: {
             js: {
                 files: '<%= assetsPath %>/js/**/*.js',
-                tasks: ['clean:js', 'concat:distWebJs', 'uglify:js',  'uglify:jsvis'],
+                tasks: ['clean:js', 'concat:distWebJs', 'uglify:js',  /*'uglify:jsvis'*/],
                 options: {
                     livereload: false
                 }
@@ -250,7 +250,7 @@ module.exports = function (grunt) {
         [
             'clean:font', 'copy:font',
             'clean:dep', 'clean:css', 'sass', 'concat:distCssWeb', 'concat:distCssPrint', 'concat:distCssOwfont', 'cssmin',
-            'clean:js', 'concat:distWebJs', 'uglify:jsvis', /* disabled until {@see https://github.com/visjs/vis-network/issues/271} is fixed 'copy:jsvis',*/ 'concat:distCssPrint', 'concat:distCssOwfont', 'uglify',
+            'clean:js', 'concat:distWebJs', 'copy:jsvis', /* enabled as {@see https://github.com/visjs/vis-network/issues/271} seems to fixed; otherwise use 'uglify:jsvis',*/ 'concat:distCssPrint', 'concat:distCssOwfont', 'uglify',
             'clean:dep'
         ]
     );
