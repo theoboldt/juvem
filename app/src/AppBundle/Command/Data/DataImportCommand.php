@@ -202,8 +202,17 @@ class DataImportCommand extends DataCommandBase
             $output->writeln(' done.');
             
             $output->write('Preparing database import... ');
+            
+            $databaseZipPath = '/database.sql';
+            if ($this->archive->locateName($databaseZipPath) === false) {
+                $databaseZipPath = 'database.sql';
+            }
+            if ($this->archive->locateName($databaseZipPath) === false) {
+                $output->writeln('<error>Failed to find database file.</error>');
+                throw new \RuntimeException();
+            }            
             $databaseImagePath = $this->tmpRootPath . '/database.sql';
-            if (!$this->archive->extractTo($this->tmpRootPath, 'database.sql')) {
+            if (!$this->archive->extractTo($this->tmpRootPath, $databaseZipPath)) {
                 $output->writeln('<error>Failed to extract database file.</error>');
                 if ($password) {
                     $output->writeln('The password set might be incorrect');
