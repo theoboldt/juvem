@@ -14,6 +14,7 @@ namespace AppBundle\Command\Data;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
@@ -63,6 +64,7 @@ class DataImportCommand extends DataCommandBase
     {
         $this->setName('app:data:import')
              ->setDescription('Import an exported package containing database and file system contents')
+             ->addOption('exclude-data', 'd', InputOption::VALUE_NONE, 'Do not import or delete data files')
              ->addArgument('path', InputArgument::REQUIRED, 'Location where imported package is located')
              ->addArgument('password', InputArgument::OPTIONAL, 'Password which is used to encrypt archive');
     }
@@ -168,41 +170,45 @@ class DataImportCommand extends DataCommandBase
             
         }
         
+        //password handling
+        $password = $input->hasArgument('password') ? $input->getArgument('password') : null;
+        if (file_exists($password)) {
+            $password = file_get_contents(trim($password));
+        }
+        $this->openArchive($output, $password);
+
+        $excludeData = $input->getOption('exclude-data') !== false;
         try {
             $this->disableService();
-            
-            $output->write('Collecting current data files... ');
-            $dataPath              = $this->dataRootPath;
-            $this->dataFilesBefore = array_values(self::createFileListing($dataPath, '/data/'));
-            $output->writeln('done.');
-            
-            //password handling
-            $password = $input->hasArgument('password') ? $input->getArgument('password') : null;
-            if (file_exists($password)) {
-                $password = file_get_contents(trim($password));
-            }
-            $this->openArchive($output, $password);
-            
-            $result = $this->collectExpectedFiles($input, $output);
-            if ($result !== true) {
-                $this->enableService();
-                return $result;
-            }
-            
-            $output->writeln('Deleting gone files... ');
-            $progress = new ProgressBar($output, count($this->goneFiles));
-            foreach ($this->goneFiles as $path) {
-                $filePath = $dataPath . '/' . str_replace('/data/', '', $path);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
+
+            if (!$excludeData) {
+                $result = $this->collectExpectedFiles($input, $output);
+                if ($result !== true) {
+                    $this->enableService();
+                    return $result;
                 }
-                $progress->advance();
+
+                $output->write('Collecting current data files... ');
+                $dataPath              = $this->dataRootPath;
+                $this->dataFilesBefore = array_values(self::createFileListing($dataPath, '/data/'));
+                $output->writeln('done.');
+                
+                $output->writeln('Deleting gone files... ');
+                $progress = new ProgressBar($output, count($this->goneFiles));
+                foreach ($this->goneFiles as $path) {
+                    $filePath = $dataPath . '/' . str_replace('/data/', '', $path);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $progress->advance();
+                }
+                $progress->finish();
+                $output->writeln(' done.');
+            } else {
+                $output->writeln('Skipping data file handling.');
             }
-            $progress->finish();
-            $output->writeln(' done.');
             
             $output->write('Preparing database import... ');
-            
             $databaseZipPath = '/database.sql';
             if ($this->archive->locateName($databaseZipPath) === false) {
                 $databaseZipPath = 'database.sql';
@@ -236,21 +242,25 @@ class DataImportCommand extends DataCommandBase
             unlink($this->databaseConfigFilePath);
             unlink($databaseImagePath);
             
-            $output->writeln('Extracting files from backup... ');
-            $progress = new ProgressBar($output, count($this->dataFilesAfter));
-            foreach ($this->dataFilesAfter as $path) {
-                $targetPath = dirname($dataPath . '/' . str_replace('/data/', '', $path));
-                if (!file_exists($targetPath)) {
-                    mkdir($targetPath, 0777, true);
+            if (!$excludeData) {
+                $output->writeln('Extracting files from backup... ');
+                $progress = new ProgressBar($output, count($this->dataFilesAfter));
+                foreach ($this->dataFilesAfter as $path) {
+                    $targetPath = dirname($dataPath . '/' . str_replace('/data/', '', $path));
+                    if (!file_exists($targetPath)) {
+                        mkdir($targetPath, 0777, true);
+                    }
+                    if (!$this->archive->extractTo($dataPath . '/../', $path)) {
+                        $output->writeln('<error>Failed to extract file "' . $path . '"</error>');
+                    }
+
+                    $progress->advance();
                 }
-                if (!$this->archive->extractTo($dataPath . '/../', $path)) {
-                    $output->writeln('<error>Failed to extract file "'.$path.'"</error>');
-                }
-                
-                $progress->advance();
+                $progress->finish();
+                $output->writeln(' done.');
+            } else {
+                $output->writeln('Skipping data file extraction.');
             }
-            $progress->finish();
-            $output->writeln(' done.');
             
         } catch (\Exception $e) {
             $this->enableService();
