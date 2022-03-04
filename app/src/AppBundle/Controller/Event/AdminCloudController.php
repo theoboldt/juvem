@@ -21,9 +21,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\User;
-use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventAddUserCloudAssignmentsType;
-use AppBundle\Form\EventUserAssignmentsType;
 use AppBundle\Form\EventUserCloudAssignmentsType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
@@ -268,6 +266,8 @@ class AdminCloudController
             }
             $em->persist($event);
             $em->flush();
+            $this->fileSharingManager->updateCloudShareAssignments($event);
+            
             return $this->redirectToRoute('admin_event_cloud', ['eid' => $event->getEid()]);
         }
         
