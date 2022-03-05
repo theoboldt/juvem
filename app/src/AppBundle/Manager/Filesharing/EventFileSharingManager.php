@@ -237,6 +237,16 @@ class EventFileSharingManager
         }
         return (count($usersTeam) || count($usersManagement)) && $updated;
     }
+
+    /**
+     * Get a list of all usernames and the related e-mails used in ocs of enabled users
+     *
+     * @return string[]
+     */
+    public function listUsernamesAndEmails(): array
+    {
+        return $this->nextcloudManager->listUsernamesAndEmails();
+    }
     
     /**
      * Get share for purpose

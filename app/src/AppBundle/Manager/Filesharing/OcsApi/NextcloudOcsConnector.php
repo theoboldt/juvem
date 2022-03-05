@@ -278,4 +278,63 @@ class NextcloudOcsConnector extends AbstractNextcloudConnector
             ['username' => $username, 'group' => $group, 'duration' => $duration]
         );
     }
+
+    /**
+     * Get a list of all usernames and the related e-mails used in ocs of enabled users
+     * 
+     * @return string[]
+     */
+    public function listUsernamesAndEmails(): array
+    {
+        $start = microtime(true);
+        $users = [];
+
+        $response = $this->request(
+            'GET',
+            'cloud/users',
+            []
+        );
+        $xml        = self::extractXmlResponse($response);
+        $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
+        $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
+        if ($statusCode !== 100) {
+            throw new NextcloudPromoteUserToGroupAdminFailedException(
+                sprintf('Failed to list user ids, status: %s', $status)
+            );
+        }
+        $usernames = [];
+        foreach ($xml->xpath('//data/users/element') as $user) {
+            $usernames[] = (string)$user;
+        }
+        
+        foreach ($usernames as $username) {
+            $response = $this->request(
+                'GET',
+                'cloud/users/'.urlencode($username),
+                []
+            );
+            $xml        = self::extractXmlResponse($response);
+            $statusCode = (int)self::extractXmlProperty($xml, '//ocs/meta/statuscode');
+            $status     = self::extractXmlProperty($xml, '//ocs/meta/status');
+            if ($statusCode !== 100) {
+                throw new NextcloudPromoteUserToGroupAdminFailedException(
+                    sprintf('Failed to fetch details for "%s" of %d users, status: %s', $username, count($usernames), $status)
+                );
+            }
+            $enabled = self::extractXmlProperty($xml, '//data/enabled') === '1';
+            $email   = self::extractXmlProperty($xml, '//data/email');
+
+            if ($enabled) {
+                $users[$username] = $email;
+            }
+        }
+
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->debug(
+            'Fetched details for {users} users within {duration} ms',
+            ['users' => count($users), 'duration' => $duration]
+        );
+        
+        return $users;
+    }
 }

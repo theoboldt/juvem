@@ -341,6 +341,16 @@ class NextcloudManager
             ['name' => $group, 'duration' => $duration]
         );
     }
+
+    /**
+     * Get a list of all usernames and the related e-mails used in ocs of enabled users
+     *
+     * @return string[]
+     */
+    public function listUsernamesAndEmails(): array
+    {
+        return $this->ocsConnector->listUsernamesAndEmails();
+    }
     
     /**
      * Ensure that only transmitted users are assigned to transmitted group, plus admin user

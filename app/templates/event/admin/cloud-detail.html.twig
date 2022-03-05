@@ -62,6 +62,31 @@
           </div>
         </div>
       </div>
+      <div class="modal fade" id="dialogModalSyncUsers" tabindex="-1" role="dialog"
+           aria-labelledby="dialogModalSyncUsersLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"
+                      aria-label="Abbrechen"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="dialogModalSyncUsersLabel">Cloud-Nutzer aktualisieren</h4>
+            </div>
+            <div class="modal-body">
+              <p>Juvem merkt sich welche Nutzer-Accounts hier mit Accounts in der Cloud korrespondieren. Von Zeit zu
+                Zeit muss diese Zuordnung aktualisiert werden. Insbesondere dann, wenn neue Nutzer-Accounts hier oder in
+                der Cloud hinzugefügt werden.</p>
+              <p>Soll die Zuordnung jetzt aktualisiert werden?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-cloud-sync-users">
+                Cloud-Nutzer aktualisieren
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row" id="mainContent">
         {%- if featureCloud %}
           <div class="col-xs-12 col-md-8">
@@ -81,6 +106,10 @@
                       <span class="hidden-xs">Dateifreigaben </span>verwenden <span class="caret-right"></span>
                     </label>
                   </div>
+                  <label id="btnSyncUsers" data-toggle="modal" data-target="#dialogModalSyncUsers"
+                         class="btn btn-default">{{ 'refresh'|glyph }}
+                    Cloud-Nutzer aktualisieren <span class="caret-right"></span>
+                  </label>
                 </div>
               </div>
               <div class="col-xs-12">
@@ -342,6 +371,45 @@
                     error: function (response) {
                         $(document).trigger('add-alerts', {
                             message: 'Die Dateifreigaben für die Veranstaltung konnten nicht erstellt werden',
+                            priority: 'error'
+                        });
+                    },
+                    complete: function (response) {
+                        btn.removeClass('disabled');
+                    }
+                });
+            });
+
+            var cloudButtonUsers = $('#btn-cloud-sync-users');
+            cloudButtonUsers.click(function () {
+                $('#mainContent').addClass('hidden');
+                var btn = $(this),
+                    valueNew = !btn.hasClass('active');
+                if (btn.hasClass('disabled')) {
+                    return;
+                }
+                btn.addClass('disabled');
+
+                $(document).trigger('add-alerts', {
+                    message: 'Die Nutzerdaten von Juvem und der Cloud werden miteinander abgeglichen. Das kann einige Minuten dauern...',
+                    priority: 'info'
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path('admin_event_cloud_sync_users', {eid: event.eid, token: csrf_token('cloud-' ~  event.eid)}) }}',
+                    datatype: 'json',
+                    success: function () {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Nutzerdaten wurden abgeglichen.',
+                            priority: 'success'
+                        });
+                        btn.toggleClass('active', valueNew);
+                        location.reload();
+                    },
+                    error: function (response) {
+                        $(document).trigger('add-alerts', {
+                            message: 'Die Nutzerdaten konnten nicht abgeglichen werden!',
                             priority: 'error'
                         });
                     },

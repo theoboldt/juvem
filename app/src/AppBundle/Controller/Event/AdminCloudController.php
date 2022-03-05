@@ -138,6 +138,51 @@ class AdminCloudController
     }
     
     /**
+     * Sync user accounts between juvem and cloud
+     *
+     * @CloseSessionEarly
+     * @Route("/admin/event/{eid}/cloud/{token}/sync-users", requirements={"eid": "\d+", "token": ".*"},
+     *                                                   name="admin_event_cloud_sync_users")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('edit', event)")
+     * @param Event $event
+     * @param string $token
+     * @return Response
+     */
+    public function syncUsersAction(Event $event, string $token): Response
+    {
+        if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('cloud-' . $event->getEid(), $token))) {
+            throw new InvalidTokenHttpException();
+        }
+
+        $ocsUsers   = $this->fileSharingManager->listUsernamesAndEmails();
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $em = $this->getDoctrine()->getManager();
+        
+        $juvemUsers = $repository->findBy(['enabled' => true]);
+
+        /** @var User $juvemUser */
+        foreach ($juvemUsers as $juvemUser) {
+            $email = $juvemUser->getEmailCanonical();
+
+            $identified = false;
+            foreach ($ocsUsers as $ocsLogin => $ocsEmail) {
+                if ($ocsEmail === $email) {
+                    $juvemUser->setCloudUsername($ocsLogin);
+                    $identified = true;
+                }
+            }
+            if (!$identified) {
+                $juvemUser->setCloudUsername(null);
+            }
+            $em->persist($juvemUser);
+        }
+        $em->flush();
+        
+        return new JsonResponse([]);
+    }
+    
+    /**
      * Remove folders and groups related to this event
      *
      * @Route("/admin/event/{eid}/cloud/{token}/disable", requirements={"eid": "\d+", "token": ".*"},
