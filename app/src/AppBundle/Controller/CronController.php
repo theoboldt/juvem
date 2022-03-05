@@ -32,7 +32,7 @@ class CronController extends AbstractController
      */
     public function subscriptionMailAction(string $token, KernelInterface $kernel)
     {
-        if ($token != $this->getParameter('cron_secret')) {
+        if (!hash_equals($this->getParameter('cron_secret'), $token)) {
             throw new AccessDeniedException('Called cron task with incorrect credentials');
         }
 
@@ -59,7 +59,7 @@ class CronController extends AbstractController
      */
     public function cleanupUserRegistrationRequestsAction(string $token, KernelInterface $kernel)
     {
-        if ($token != $this->getParameter('cron_secret')) {
+        if (!hash_equals($this->getParameter('cron_secret'), $token)) {
             throw new AccessDeniedException('Called cron task with incorrect credentials');
         }
 
@@ -87,7 +87,7 @@ class CronController extends AbstractController
      */
     public function relatedParticipantsFinderAction(string $token, KernelInterface $kernel)
     {
-        if ($token != $this->getParameter('cron_secret')) {
+        if (!hash_equals($this->getParameter('cron_secret'), $token)) {
             throw new AccessDeniedException('Called cron task with incorrect credentials');
         }
 
