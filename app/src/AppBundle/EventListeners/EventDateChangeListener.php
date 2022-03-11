@@ -79,7 +79,7 @@ class EventDateChangeListener
      */
     private function updateEventCalendarEntry(Event $event): void
     {
-        if (!$event->isDeleted()) {
+        if (!$event->isDeleted() && $event->isCalendarEntryEnabled()) {
             $this->calendarManager->updateEventCalendarEntry($event);
         } else {
             try {
