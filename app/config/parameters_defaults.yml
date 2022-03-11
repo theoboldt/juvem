@@ -14,6 +14,9 @@ parameters:
     nextcloud.folder: 'Events'
     nextcloud.management: 'Management'
     nextcloud.team: 'Team'
+    calendar.base_uri: null 
+    calendar.username: null
+    calendar.password: null
     backup_password: null
     app.gender.exclude: ''
     mailer_imap_host: null

@@ -115,6 +115,7 @@ twig:
         featureRegistration: "%feature.registration%"
         featurePdfConversion: "%app.libreoffice_binary_path%"
         featureCloud: "%nextcloud.base_uri%"
+        featureCalendar: "%calendar.base_uri%"
         themeColor: "%customization.theme_color%"
         localhostInformationProvider: '@AppBundle\LocalhostInformationProvider'
         secureCacheDecider: '@app.secure_cache_decider'

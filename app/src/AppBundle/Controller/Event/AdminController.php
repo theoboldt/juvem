@@ -25,24 +25,20 @@ use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
-use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\EventUserAssignment;
-use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\User;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
-use AppBundle\Form\EventAddUserCloudAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
-use AppBundle\Form\EventUserCloudAssignmentsType;
-use AppBundle\Form\NewsletterMailType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Manager\Calendar\CalendarManager;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
 use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
@@ -81,6 +77,11 @@ class AdminController
      * @var PaymentManager
      */
     private PaymentManager $paymentManager;
+
+    /**
+     * @var CalendarManager 
+     */
+    private CalendarManager $calendarManager;
     
     /**
      * app.price_manager
@@ -116,24 +117,25 @@ class AdminController
     private CsrfTokenManagerInterface $csrfTokenManager;
     
     private MailGenerator $twigMailGenerator;
-    
+
     /**
      * AdminController constructor.
      *
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
-     * @param ManagerRegistry $doctrine
-     * @param RouterInterface $router
-     * @param Environment $twig
-     * @param FormFactoryInterface $formFactory
-     * @param PaymentManager $paymentManager
-     * @param PriceManager $priceManager
-     * @param ParticipationManager $participationManager
-     * @param UploadImageManager $uploadImageManager
-     * @param EventFileSharingManager $eventFileSharingManager
-     * @param MailGenerator $twigMailGenerator
-     * @param CsrfTokenManagerInterface $csrfTokenManager
-     * @param SessionInterface $session
+     * @param TokenStorageInterface         $tokenStorage
+     * @param ManagerRegistry               $doctrine
+     * @param RouterInterface               $router
+     * @param Environment                   $twig
+     * @param FormFactoryInterface          $formFactory
+     * @param PaymentManager                $paymentManager
+     * @param CalendarManager               $calendarManager
+     * @param PriceManager                  $priceManager
+     * @param ParticipationManager          $participationManager
+     * @param UploadImageManager            $uploadImageManager
+     * @param EventFileSharingManager       $eventFileSharingManager
+     * @param MailGenerator                 $twigMailGenerator
+     * @param CsrfTokenManagerInterface     $csrfTokenManager
+     * @param SessionInterface              $session
      */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
@@ -143,6 +145,7 @@ class AdminController
         Environment $twig,
         FormFactoryInterface $formFactory,
         PaymentManager $paymentManager,
+        CalendarManager $calendarManager,
         PriceManager $priceManager,
         ParticipationManager $participationManager,
         UploadImageManager $uploadImageManager,
@@ -154,6 +157,7 @@ class AdminController
     {
         $this->paymentManager          = $paymentManager;
         $this->priceManager            = $priceManager;
+        $this->calendarManager         = $calendarManager;
         $this->participationManager    = $participationManager;
         $this->uploadImageManager      = $uploadImageManager;
         $this->eventFileSharingManager = $eventFileSharingManager;
@@ -167,26 +171,38 @@ class AdminController
         $this->formFactory             = $formFactory;
         $this->session                 = $session;
     }
-    
+
     /**
      * Page for list of events
      *
      * @CloseSessionEarly
      * @Route("/admin/event/list", name="event_list")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return Response
      */
-    public function listAction()
+    public function listAction(Request $request): Response
     {
         $repository      = $this->getDoctrine()->getRepository(Event::class);
         $eventListFuture = $repository->findEidListFutureEvents();
         $eventListPast   = $repository->findEidListPastEvents();
         
+        $form = $this->createFormBuilder()
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->calendarManager->sync();
+            return $this->redirectToRoute('event_list');
+        }
+
         return $this->render(
             'event/admin/list.html.twig',
             [
+                'form' => $form->createView(),
                 'eventListFuture' => $eventListFuture,
-                'eventListPast'   => $eventListPast,
-                'eventList'       => array_merge($eventListFuture, $eventListPast),
+                'eventListPast' => $eventListPast,
+                'eventList' => array_merge($eventListFuture, $eventListPast),
             ]
         );
     }

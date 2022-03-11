@@ -47,6 +47,10 @@ parameters:
     nextcloud.folder: ~
     nextcloud.management: ~
 
+    calendar.base_uri: null 
+    calendar.username: null
+    calendar.password: null
+
     app.libreoffice_binary_path: ~
     app.geo.openweathermap.api_key: ~
 

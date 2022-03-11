@@ -9,11 +9,38 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
+      {% if featureCalendar %}
+        <div class="modal fade" id="modalCalendarSync" tabindex="-1" role="dialog"
+             aria-labelledby="modalCalendarSyncLabel">
+          <div class="modal-dialog modal-sm" role="document">
+            {{ form_start(form) }}
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
+                      aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalCalendarSyncLabel">Kalender Synchronisieren</h4>
+              </div>
+              <div class="modal-body">
+                <p>Sollen die Kalendereinträge für alle Veranstaltungen aktualisiert werden? Dies kann einige Minuten
+                  dauern.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                <input type="submit" class="btn btn-primary" value="Synchronisieren"/>
+              </div>
+            </div>
+            {{ form_end(form) }}
+          </div>
+        </div>
+      {% endif %}
         <div class="row">
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
                     <div class="form-group">
-                        <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} Neu</a>
+                        <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} <span class="hidden-xs">Neu</span></a>
+                        {% if featureCalendar %}
+                            <div class="btn btn-default" data-toggle="modal" data-target="#modalCalendarSync">{{ 'calendar'|glyph }} <span class="hidden-xs">Kalender… </span><span class="caret-right"></span></div>
+                        {% endif %}
                     </div>
                     <div class="btn-group" role="group">
                         {{ 'is_active'|tableFilterButtonTri(2, 'nur aktive', 'nur inaktive', 'aktive und inaktive', true) }}

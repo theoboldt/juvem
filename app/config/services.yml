@@ -525,6 +525,15 @@ services:
             - name: 'doctrine.event_listener'
               event: postFlush
 
+    AppBundle\EventListeners\EventDateChangeListener:
+        autowire: true
+        tags:
+            - name: 'doctrine.event_listener'
+              event: onFlush
+            - name: 'doctrine.event_listener'
+              event: preUpdate
+
+
     AppBundle\Twig\Extension\ChangeTrackingButton:
         arguments:
             - '@app.repository.entity_change'
@@ -557,6 +566,20 @@ services:
           - "%nextcloud.folder%"
           - "%nextcloud.team%"
           - "%nextcloud.management%"
+          - "@logger"
+
+    AppBundle\Manager\Calendar\CalendarManager:
+        autowire: true
+
+    AppBundle\Manager\Calendar\CalDav\CalDavVCalendarObjectFactory:
+        autowire: true
+
+    AppBundle\Manager\Calendar\CalDav\CalDavConnector:
+        factory: ['AppBundle\Manager\Calendar\CalDav\CalDavConnector', create]
+        arguments:
+          - "%calendar.base_uri%"
+          - "%calendar.username%"
+          - "%calendar.password%"
           - "@logger"
 
     AppBundle\Manager\Filesharing\EventFileSharingManager:
