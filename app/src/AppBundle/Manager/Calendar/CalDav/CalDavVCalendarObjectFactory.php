@@ -129,7 +129,7 @@ class CalDavVCalendarObjectFactory
             }
         }
 
-        if (true || $juvemEvent->isShowAddress()) {
+        if ($juvemEvent->isShowAddress()) {
             $location = '';
             if ($juvemEvent->getAddressTitle()) {
                 $location .= $juvemEvent->getAddressTitle();
@@ -153,10 +153,6 @@ class CalDavVCalendarObjectFactory
             if ($juvemEvent->getAddressCountry()) {
                 $address .= ', ' . $juvemEvent->getAddressCountry();
             }
-            if ($address) {
-                $location .= "\n" . $address;
-            }
-
             $vcalendar->VEVENT->add('LOCATION', $address);
 
             $coordinates = $this->addressResolver->provideCoordinates($juvemEvent);
