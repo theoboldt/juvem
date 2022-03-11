@@ -64,6 +64,7 @@
         "jms/serializer-bundle": "^3.4",
         "ifsnop/mysqldump-php": "^2.9",
         "fakerphp/faker": "^1.13",
+        "sabre/vobject": "^4.1",
         "ddeboer/imap": "^1.12"
     },
     "require-dev": {
