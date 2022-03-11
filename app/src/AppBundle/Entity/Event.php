@@ -1498,6 +1498,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     }
 
     /**
+     * @param bool $isCalendarEntryEnabled
+     */
+    public function setIsCalendarEntryEnabled(bool $isCalendarEntryEnabled): void
+    {
+        $this->isCalendarEntryEnabled = $isCalendarEntryEnabled;
+    }
+
+    /**
      * @return null
      */
     public function getLinkTitle()
