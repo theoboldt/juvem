@@ -432,6 +432,9 @@
                 {{ form_row(form.isShowAddress) }}
                 {{ form_row(form.isShowMap) }}
                 {{ form_row(form.isShowWeather) }}
+                {% if not featureCalendar %}<span style="display:none;">{% endif %}
+                    {{ form_row(form.isCalendarEntryEnabled) }}
+                {% if not featureCalendar %}</span>{% endif %}
             </div>
         </div>
         <div class="row">

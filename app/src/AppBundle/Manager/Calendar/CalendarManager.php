@@ -72,7 +72,7 @@ class CalendarManager
         $calendarEvents = $this->connector->fetchCalendarObjects();
         $juvemEvents    = $this->eventRepository->findAll();
         foreach ($juvemEvents as $juvemEvent) {
-            if (!$juvemEvent->isDeleted()) {
+            if (!$juvemEvent->isDeleted() && $juvemEvent->isCalendarEntryEnabled()) {
                 $this->updateEventCalendarEntry($juvemEvent);
             } else {
                 $name = self::createJuvemEventName($juvemEvent);

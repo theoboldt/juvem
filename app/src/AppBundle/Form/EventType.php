@@ -215,6 +215,11 @@ class EventType extends AbstractType
                 ['label' => 'Wetterdaten anzeigen', 'mapped' => true, 'required' => false]
             )
             ->add(
+                'isCalendarEntryEnabled',
+                CheckboxType::class,
+                ['label' => 'Kalendereintrag pflegen', 'mapped' => true, 'required' => false]
+            )
+            ->add(
                 'hasConfirmationMessage',
                 CheckboxType::class,
                 array_merge($smartCheckbox, ['label' => 'Bestätigungs-Text'])

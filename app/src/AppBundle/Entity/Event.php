@@ -338,6 +338,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     protected $isShowWeather = false;
 
     /**
+     * Set to true if a calendar object should be created (if calendar integration is active)
+     *
+     * @ORM\Column(type="boolean", name="is_calendar_entry_enabled")
+     * @var bool
+     */
+    protected $isCalendarEntryEnabled = true;
+
+    /**
      * Specifies title for a customer defined link url for an additional button for an event
      *
      * @ORM\Column(type="string", length=32, name="link_title", nullable=true)
@@ -1479,6 +1487,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
     public function setIsShowWeather(bool $isShowWeather): void
     {
         $this->isShowWeather = $isShowWeather;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCalendarEntryEnabled(): bool
+    {
+        return $this->isCalendarEntryEnabled;
     }
 
     /**
