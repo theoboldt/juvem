@@ -100,8 +100,8 @@ class CalDavVCalendarObjectFactory
 
         if ($juvemEvent->hasStartTime()) {
             $start = \DateTimeImmutable::createFromFormat(
-                'Y-m-d h:i',
-                $juvemEvent->getStartDate()->format('Y-m-d') . $juvemEvent->getStartTime()->format('h:i'),
+                'Y-m-d H:i',
+                $juvemEvent->getStartDate()->format('Y-m-d') . $juvemEvent->getStartTime()->format('H:i'),
                 new \DateTimeZone('Europe/Berlin')
             );
         } else {
@@ -110,8 +110,8 @@ class CalDavVCalendarObjectFactory
         if ($juvemEvent->hasEndDate()) {
             if ($juvemEvent->hasEndTime()) {
                 $end = \DateTimeImmutable::createFromFormat(
-                    'Y-m-d h:i',
-                    $juvemEvent->getEndDate()->format('Y-m-d') . $juvemEvent->getEndTime()->format('h:i'),
+                    'Y-m-d H:i',
+                    $juvemEvent->getEndDate()->format('Y-m-d') . $juvemEvent->getEndTime()->format('H:i'),
                     new \DateTimeZone('Europe/Berlin')
                 );
             } else {
@@ -120,8 +120,8 @@ class CalDavVCalendarObjectFactory
         } else {
             if ($juvemEvent->hasEndTime()) {
                 $end = \DateTimeImmutable::createFromFormat(
-                    'Y-m-d h:i',
-                    $juvemEvent->getStartDate()->format('Y-m-d') . $juvemEvent->getEndTime()->format('h:i'),
+                    'Y-m-d H:i',
+                    $juvemEvent->getStartDate()->format('Y-m-d') . $juvemEvent->getEndTime()->format('H:i'),
                     new \DateTimeZone('Europe/Berlin')
                 );
             } else {
