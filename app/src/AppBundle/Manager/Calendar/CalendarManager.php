@@ -110,6 +110,9 @@ class CalendarManager
      */
     public function updateEventCalendarEntry(Event $juvemEvent)
     {
+        if ($juvemEvent->getId() === null) {
+            return;
+        }
         $calendar = $this->calDavObjectFactory->createForJuvemEvent($juvemEvent);
 
         $this->connector->updateCalendarObject(
