@@ -32,7 +32,7 @@ class NewsletterSubscription extends NewsletterAbstract implements SupportsRelat
     /**
      * @ORM\Column(type="string", length=128, name="email")
      * @Assert\NotBlank()
-     * @Assert\Email()
+     * @Assert\Email(mode="strict")
      */
     protected $email;
 

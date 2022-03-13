@@ -75,6 +75,7 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     /**
      * @ORM\Column(type="string", length=128, name="email")
      * @Assert\NotBlank()
+     * @Assert\Email(mode="strict")
      */
     protected $email;
 
