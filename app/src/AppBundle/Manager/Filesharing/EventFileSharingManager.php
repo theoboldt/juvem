@@ -90,7 +90,7 @@ class EventFileSharingManager
             }
         } else {
             $directory = $this->nextcloudManager->createUniqueEventRootDirectory(
-                $event->getTitle(), $event->getStartDate()
+                $event->getTitle(true), $event->getStartDate()
             );
             $event->setShareDirectoryRootHref($directory->getHref());
             $em->persist($event);
