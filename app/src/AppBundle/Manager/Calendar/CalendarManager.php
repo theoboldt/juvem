@@ -98,6 +98,9 @@ class CalendarManager
      */
     public function removeCalendarObject(Event $juvemEvent)
     {
+        if (!$this->connector) {
+            return;
+        }
         $name = self::createJuvemEventName($juvemEvent);
         $this->connector->removeCalendarObject($name);
     }
@@ -110,7 +113,7 @@ class CalendarManager
      */
     public function updateEventCalendarEntry(Event $juvemEvent)
     {
-        if ($juvemEvent->getId() === null) {
+        if ($juvemEvent->getId() === null || !$this->connector) {
             return;
         }
         $calendar = $this->calDavObjectFactory->createForJuvemEvent($juvemEvent);
