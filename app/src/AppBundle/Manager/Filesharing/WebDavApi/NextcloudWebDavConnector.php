@@ -20,6 +20,7 @@ use AppBundle\Manager\Filesharing\NextcloudManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class NextcloudWebDavConnector extends AbstractNextcloudConnector
 {
@@ -178,6 +179,18 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
                 yield new NextcloudDirectory($href, $lastModified, $fileId, $size, $eTag);
             }
         }
+    }
+
+    /**
+     * Fetch file and provide response stream
+     * 
+     * @param NextcloudFile $nextcloudFile
+     * @return StreamInterface
+     */
+    public function fetchFileStream(NextcloudFile $nextcloudFile): StreamInterface
+    {
+        $response = $this->client()->get($nextcloudFile->getHref());
+        return $response->getBody();
     }
     
     /**
