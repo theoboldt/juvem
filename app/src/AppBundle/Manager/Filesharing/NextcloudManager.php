@@ -15,6 +15,7 @@ namespace AppBundle\Manager\Filesharing;
 use AppBundle\Manager\Filesharing\OcsApi\NextcloudOcsConnector;
 use AppBundle\Manager\Filesharing\OcsShareApi\NextcloudOcsShareConnector;
 use AppBundle\Manager\Filesharing\WebDavApi\NextcloudWebDavConnector;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -214,6 +215,17 @@ class NextcloudManager
         }
         
         return $result;
+    }
+
+    /**
+     * Fetch file from webdav via trusted href
+     *
+     * @param NextcloudFileInterface $file
+     * @return StreamInterface
+     */
+    public function fetchFile(NextcloudFileInterface $file): StreamInterface
+    {
+        return $this->webDavConnector->fetchFileStream($file);
     }
     
     /**

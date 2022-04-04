@@ -1089,6 +1089,10 @@ $(function () {
                                 html += '<td>'+eHtml(file.filename)+'</td>';
                                 html += '<td class="text-right">'+filesize(file.filesize)+'</td>';
                                 html += '<td>'+file.last_modified+'</td>';
+                                html += '<td class="text-right">';
+                                html += '<a href="' + file.download + '" class="btn btn-default btn-xs" title="Herunterladen" target="_blank"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>';
+                                html += '</td>';
+                                
                                 html += '</tr>';
                             });
                             html += '<tbody>';

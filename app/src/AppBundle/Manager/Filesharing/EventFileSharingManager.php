@@ -16,6 +16,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventFileShare;
 use AppBundle\Entity\EventFileShareRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Http\Message\StreamInterface;
 
 class EventFileSharingManager
 {
@@ -246,6 +247,17 @@ class EventFileSharingManager
     public function listUsernamesAndEmails(): array
     {
         return $this->nextcloudManager->listUsernamesAndEmails();
+    }
+
+    /**
+     * Fetch file from webdav via trusted href
+     *
+     * @param NextcloudFileInterface $file
+     * @return StreamInterface
+     */
+    public function fetchFile(NextcloudFileInterface $file): StreamInterface
+    {
+        return $this->nextcloudManager->fetchFile($file);
     }
     
     /**

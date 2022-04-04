@@ -184,12 +184,19 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
     /**
      * Fetch file and provide response stream
      * 
-     * @param NextcloudFile $nextcloudFile
+     * @param NextcloudFileInterface|string $nextcloudFile
      * @return StreamInterface
      */
-    public function fetchFileStream(NextcloudFile $nextcloudFile): StreamInterface
+    public function fetchFileStream($nextcloudFile): StreamInterface
     {
-        $response = $this->client()->get($nextcloudFile->getHref());
+        if ($nextcloudFile instanceof NextcloudFileInterface) {
+            $href = $nextcloudFile->getHref();
+        } elseif (is_string($nextcloudFile)) {
+            $href = $nextcloudFile;
+        } else {
+            throw new \InvalidArgumentException('Need to pass instance of '.NextcloudFile::class.' or href string');
+        }
+        $response = $this->client()->get($href);
         return $response->getBody();
     }
     

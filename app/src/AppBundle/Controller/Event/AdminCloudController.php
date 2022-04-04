@@ -29,14 +29,20 @@ use AppBundle\JsonResponse;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
 use AppBundle\Manager\Filesharing\NextcloudFile;
 use AppBundle\Manager\Filesharing\NextcloudFileInterface;
+use AppBundle\Security\AppSecretSigner;
 use AppBundle\Security\EventVoter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -68,21 +74,24 @@ class AdminCloudController
      */
     private EventFileSharingManager $fileSharingManager;
     
-    
+    private AppSecretSigner $signer;
+
     /**
      * AdminCloudController constructor.
      *
-     * @param EventFileSharingManager $fileSharingManager
-     * @param Environment $twig
-     * @param FormFactoryInterface $formFactory
-     * @param RouterInterface $router
-     * @param ManagerRegistry $doctrine
-     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param EventFileSharingManager       $fileSharingManager
+     * @param AppSecretSigner               $signer
+     * @param Environment                   $twig
+     * @param FormFactoryInterface          $formFactory
+     * @param RouterInterface               $router
+     * @param ManagerRegistry               $doctrine
+     * @param CsrfTokenManagerInterface     $csrfTokenManager
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface         $tokenStorage
      */
     public function __construct(
         EventFileSharingManager $fileSharingManager,
+        AppSecretSigner $signer,
         Environment $twig,
         FormFactoryInterface $formFactory,
         RouterInterface $router,
@@ -93,6 +102,7 @@ class AdminCloudController
     )
     {
         $this->fileSharingManager   = $fileSharingManager;
+        $this->signer               = $signer;
         $this->csrfTokenManager     = $csrfTokenManager;
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage         = $tokenStorage;
@@ -225,6 +235,83 @@ class AdminCloudController
         
         return new JsonResponse([]);
     }
+
+    /**
+     * Fetch file instance for transmitted href
+     *
+     * @param Event  $event Event where file is related to
+     * @param string $href  Href of file
+     * @return NextcloudFileInterface|null
+     */
+    private function provideFileForHref(Event $event, string $href): ?NextcloudFileInterface
+    {
+        if ($this->isGranted(EventVoter::CLOUD_ACCESS_TEAM, $event)) {
+            $files = $this->fileSharingManager->listFiles($event, EventFileShare::PURPOSE_TEAM);
+            /** @var NextcloudFileInterface $file */
+            foreach ($files as $file) {
+                if ($file->getHref() === $href) {
+                    return $file; 
+                }
+            }
+        }
+        if ($this->isGranted(EventVoter::CLOUD_ACCESS_MANAGEMENT, $event)) {
+            $files = $this->fileSharingManager->listFiles($event, EventFileShare::PURPOSE_MANAGEMENT);
+            foreach ($files as $file) {
+                if ($file->getHref() === $href) {
+                    return $file; 
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * @CloseSessionEarly
+     * @Route("/admin/event/{eid}/cloud/download/{signature}/{href}",
+     *     requirements={"eid": "\d+","signature": "\b[A-Fa-f0-9]{64}\b"},
+     *     name="admin_event_cloud_download_file")
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Security("is_granted('cloud_access_team', event) or is_granted('cloud_access_management', event)")
+     * @param Event  $event
+     * @param string $signature
+     * @param string $href
+     * @return Response
+     */
+    public function downloadCloudFileAction(Event $event, string $signature, string $href): Response
+    {
+        if (!$this->signer->isStringValid($href, $signature)) {
+            throw new BadRequestHttpException('Cloud download signature invalid for href "'.$href.'" failed');
+        }
+
+        $file = $this->provideFileForHref($event, urldecode($href));
+        if (!$file) {
+            throw new NotFoundHttpException('Failed to find file for href "'.$href.'"');
+        }
+
+        $stream   = $this->fileSharingManager->fetchFile($file);
+        $filename = $file->getName();
+        $response = new StreamedResponse(
+            function () use ($stream) {
+                while (!$stream->eof()) {
+                    echo $stream->read(8096);
+                }
+                $stream->close();
+            },
+            200,
+            [
+                'Content-Length'      => $file->getSize(),
+                'X-Juvem-File-Id'     => $file->getFileId(),
+                'ETag'                => $file->getEtag(),
+                'Last-Modified'       => $file->getLastModified()->format('r'),
+                'Content-Disposition' => HeaderUtils::makeDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename, $filename
+                ),
+            ]
+        );
+        
+        return $response;
+    }
     
     /**
      * Ensure all users having this event assigned have access to the related share
@@ -248,14 +335,24 @@ class AdminCloudController
                 $files, $this->fileSharingManager->listFiles($event, EventFileShare::PURPOSE_MANAGEMENT)
             );
         }
-        
+
         $result = [];
         /** @var NextcloudFileInterface $file */
         foreach ($files as $file) {
-            $fileData = [
-                'filename'      => $file->getName(),
-                'filesize'      => $file->getSize(),
-                'last_modified' => $file->getLastModified()->format(Event::DATE_FORMAT_DATE_TIME),
+            $href          = urlencode($file->getHref());
+            $hrefSignature = $this->signer->signString($href);
+            $fileData      = [
+                'download' => $this->router->generate(
+                    'admin_event_cloud_download_file',
+                    [
+                        'eid'       => $event->getEid(),
+                        'href'      => $href,
+                        'signature' => $hrefSignature,
+                    ]
+                ),
+                'filename'       => $file->getName(),
+                'filesize'       => $file->getSize(),
+                'last_modified'  => $file->getLastModified()->format(Event::DATE_FORMAT_DATE_TIME),
             ];
             if ($file instanceof NextcloudFile) {
                 $fileData['content_type'] = $file->getContentType();
