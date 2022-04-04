@@ -173,11 +173,11 @@ class AdminCloudController
 
         /** @var User $juvemUser */
         foreach ($juvemUsers as $juvemUser) {
-            $email = $juvemUser->getEmailCanonical();
+            $email = mb_strtolower($juvemUser->getEmailCanonical());
 
             $identified = false;
             foreach ($ocsUsers as $ocsLogin => $ocsEmail) {
-                if ($ocsEmail === $email) {
+                if (mb_strtolower($ocsEmail) === $email) {
                     $juvemUser->setCloudUsername($ocsLogin);
                     $identified = true;
                 }
