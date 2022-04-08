@@ -99,7 +99,7 @@ class ParticipantType extends AbstractType
                 DateType::class,
                 [
                     'label'    => 'Geburtsdatum',
-                    'years'    => range(Date('Y') - 35, Date('Y') - 3),
+                    'years'    => range(Date('Y') - 90, Date('Y') - 3),
                     //                      'widget' => 'single_text',
                     //                      'format' => 'yyyy-MM-dd',
                     'format'   => 'dd.MM.yyyy',
