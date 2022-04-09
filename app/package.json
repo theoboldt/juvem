@@ -29,7 +29,7 @@
     "marked": "^2.0.6",
     "masonry-layout": "^4.2",
     "merge": "^2.1.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "npm": "^7.15.0",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
