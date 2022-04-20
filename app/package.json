@@ -26,7 +26,6 @@
     "jquery-storage-api": "^1.9",
     "justified-layout": "^4.1.0",
     "lodash": "^4.17.21",
-    "marked": "^2.0.6",
     "masonry-layout": "^4.2",
     "merge": "^2.1.1",
     "moment": "^2.29.1",
@@ -34,6 +33,10 @@
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "tar": "^4.4",
     "vis-network": "^9.1",
-    "trim-newlines": ">=3.0.1"
+    "trim-newlines": ">=3.0.1",
+    "json-schema": ">=0.4.0",
+    "shelljs": ">=0.8.5",
+    "marked": ">=4.0.10",
+    "async": ">=2.6.4"
   }
 }
