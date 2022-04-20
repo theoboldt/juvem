@@ -20,7 +20,6 @@ use Ddeboer\Imap\MessageInterface;
 use Ddeboer\Imap\Server;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Swift_Mime_SimpleMessage;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class MailImapService
@@ -45,26 +44,35 @@ class MailImapService
      * @var MailConfigurationProvider
      */
     private MailConfigurationProvider $mailConfigurationProvider;
+
+    /**
+     * @var MailboxPlacementQueueManager 
+     */
+    private MailboxPlacementQueueManager $mailboxQueueManager;
     
     /**
      * @var LoggerInterface
      */
     private $logger;
-    
+
     /**
      * Initiate a participation manager service
      *
-     * @param LoggerInterface|null $logger
+     * @param MailConfigurationProvider    $mailConfigurationProvider
+     * @param MailboxPlacementQueueManager $mailboxQueueManager
+     * @param CacheInterface               $cacheAppEmail
+     * @param LoggerInterface|null         $logger
      */
     public function __construct(
-        MailConfigurationProvider $mailConfigurationProvider,
-        CacheInterface            $cacheAppEmail,
-        LoggerInterface           $logger = null
-    )
-    {
+        MailConfigurationProvider    $mailConfigurationProvider,
+        MailboxPlacementQueueManager $mailboxQueueManager,
+        CacheInterface               $cacheAppEmail,
+        LoggerInterface              $logger = null
+    ) {
         $this->cache                     = $cacheAppEmail;
         $this->logger                    = $logger ?? new NullLogger();
         $this->mailConfigurationProvider = $mailConfigurationProvider;
+        $this->mailboxQueueManager       = $mailboxQueueManager;
     }
 
     /**
@@ -126,6 +134,22 @@ class MailImapService
         }
         return $this->mailboxes;
     }
+
+    /**
+     * Get mailbox by name
+     *
+     * @param string $mailboxName Name of mailbox
+     * @return Mailbox|null
+     */
+    public function getMailbox(string $mailboxName): ?Mailbox
+    {
+        foreach ($this->getMailboxes() as $mailbox) {
+            if ($mailboxName === $mailbox->getName()) {
+                return $mailbox;
+            }
+        }
+        return null;
+    }
     
     /**
      * Get sent mailbox if any
@@ -149,92 +173,49 @@ class MailImapService
     }
     
     /**
-     * Add email to mailbox
+     * Add message to mailbox, if imap is not connected already, mail is added to queue
      *
-     * @param \Swift_Mime_SimpleMessage|string $message
-     * @param Mailbox $mailbox
-     * @return bool
-     */
-    public function addMessageToBox2($message, Mailbox $mailbox, bool $seen, \DateTimeInterface $messageDate = null): bool
-    {
-        $messageString = null;
-        if ($message instanceof \Swift_Mime_SimpleMessage) {
-            $messageString = $message->toString();
-        } elseif (is_string($message)) {
-            $messageString = $message;
-        } else {
-            throw new \InvalidArgumentException('Expecting ' . \Swift_Mime_SimpleMessage::class . ' or string');
-        }
-        
-        if (mb_strlen($messageString) < 5) {
-            throw new \InvalidArgumentException('Empty mail occurred');
-        }
-
-        if ($messageDate === null && $message instanceof \Swift_Mime_SimpleMessage) {
-            $messageDate = $message->getDate();
-        }
-
-        $result = $mailbox->addMessage($messageString, $seen ? '\\Seen' : null, $messageDate);
-        if ($result) {
-            if ($message instanceof \Swift_Mime_SimpleMessage) {
-                $this->logger->info(
-                    'Stored email {subject} to {recipient} in mailbox {mailbox}',
-                    [
-                        'subject'   => $message->getSubject(),
-                        'recipient' => implode(', ', $message->getTo()),
-                        'mailbox'   => $mailbox->getName(),
-                    ]
-                );
-            } else {
-                $this->logger->info(
-                    'Stored textual mail of length {size} in mailbox {mailbox}',
-                    [
-                        'size'    => mb_strlen($message),
-                        'mailbox' => $mailbox->getName(),
-                    ]
-                );
-            }
-        } else {
-            if ($message instanceof \Swift_Mime_SimpleMessage) {
-                $this->logger->error(
-                    'Failed to store email {subject} to {recipient} in mailbox {mailbox}',
-                    [
-                        'subject'   => $message->getSubject(),
-                        'recipient' => implode(', ', $message->getTo()),
-                        'mailbox'   => $mailbox->getName(),
-                    ]
-                );
-
-            } else {
-                $this->logger->error(
-                    'Failed to store textual mail of length {size} in mailbox {mailbox}',
-                    [
-                        'size'    => mb_strlen($message),
-                        'mailbox' => $mailbox->getName(),
-                    ]
-                );
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Add email to mailbox
-     *
-     * @param Swift_Mime_SimpleMessage $message
-     * @param Mailbox $mailbox
+     * @param \Swift_Mime_SimpleMessage $message     Mail
+     * @param string                    $mailboxName Target message mailbox
+     * @param bool                      $seen
      * @return void
      */
-    public function addMessageToBox(\Swift_Mime_SimpleMessage $message, Mailbox $mailbox, bool $seen): void
+    public function addMessageToMailbox(\Swift_Mime_SimpleMessage $message, string $mailboxName, bool $seen): void
     {
-        $result = $mailbox->addMessage($message->toString(), $seen ? '\\Seen' : null, $message->getDate());
-        if (!$result) {
-            $this->logger->error(
-                'Failed to store email {subject} to {recipient}',
+        if ($this->isImapConnected()) {
+            if ($mailboxName === MailboxPlacementQueueManager::SENT_MAILBOX_FOLDER) {
+                $mailbox = $this->getSentMailbox();
+            } else {
+                $mailbox = $this->getMailbox($mailboxName);
+            }
+
+            $result = $mailbox->addMessage($message->toString(), $seen ? '\\Seen' : null, $message->getDate());
+            if ($result) {
+                $this->logger->notice(
+                    'Stored email {subject} to {recipient} in mailbox {mailbox}, because IMAP is connected',
+                    [
+                        'subject'   => $message->getSubject(),
+                        'recipient' => implode(', ', $message->getTo()),
+                        'mailbox'   => $mailboxName,
+                    ]
+                );
+            } else {
+                $this->logger->error(
+                    'Failed to store email {subject} to {recipient}, because IMAP is connected',
+                    [
+                        'subject'   => $message->getSubject(),
+                        'recipient' => implode(', ', $message->getTo()),
+                    ]
+                );
+            }
+        } else {
+            $this->mailboxQueueManager->enqueue($message, $mailboxName);
+            $this->logger->notice(
+                'Added email {subject} to {recipient} to mailbox {mailbox} queue, because IMAP is disconnected',
                 [
                     'subject'   => $message->getSubject(),
                     'recipient' => implode(', ', $message->getTo()),
+                    'mailbox'   => $mailboxName,
                 ]
             );
         }
@@ -267,6 +248,35 @@ class MailImapService
                 );
             }
         }
+    }
+
+    /**
+     * Flush mail queue
+     * 
+     * @param bool $forceImapConnection Force if IMAP connection is not yet established
+     * @return void
+     */
+    public function flushMailboxPlacementQueue(bool $forceImapConnection = false) {
+        if (!$forceImapConnection && $this->isImapConnected()) {
+            $this->logger->notice(
+                'IMAP not connected, not flushing queue'
+            );
+        }
+        $this->mailboxQueueManager->flush(
+            function (string $mailFilePath) {
+                $mailboxName = basename(dirname($mailFilePath));
+                $mailFileContent = file_get_contents($mailFilePath);
+                
+                if (mb_strlen($mailFileContent) < 5) {
+                    throw new \InvalidArgumentException('Empty mail occurred');
+                }
+
+                $mailDate = \DateTimeImmutable::createFromFormat('U', filemtime($mailFilePath));
+                $mailbox = $this->getMailbox($mailboxName);
+                
+                return $mailbox->addMessage($mailFileContent, '\\Seen', $mailDate);
+            }
+        );
     }
 
     /**

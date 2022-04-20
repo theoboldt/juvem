@@ -57,37 +57,36 @@ class MailSendService implements UrlGeneratorInterface
      * @var MailConfigurationProvider
      */
     private MailConfigurationProvider $mailConfigurationProvider;
-    
+
     /**
      * @var LoggerInterface
      */
     protected $logger;
-    
+
     /**
      * Initiate a participation manager service
      *
      * @param MailConfigurationProvider $mailConfigurationProvider
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param \Swift_Mailer $mailer
-     * @param MailGenerator $mailGenerator
-     * @param MailImapService $mailImapService
-     * @param LoggerInterface|null $logger
+     * @param UrlGeneratorInterface     $urlGenerator
+     * @param \Swift_Mailer             $mailer
+     * @param MailGenerator             $mailGenerator
+     * @param MailImapService           $mailImapService
+     * @param LoggerInterface|null      $logger
      */
     public function __construct(
-        MailConfigurationProvider $mailConfigurationProvider,
-        UrlGeneratorInterface $urlGenerator,
-        \Swift_Mailer $mailer,
-        MailGenerator $mailGenerator,
-        MailImapService $mailImapService,
-        LoggerInterface $logger = null
-    )
-    {
-        $this->urlGenerator              = $urlGenerator;
-        $this->mailer                    = $mailer;
-        $this->mailGenerator             = $mailGenerator;
-        $this->logger                    = $logger ?? new NullLogger();
-        $this->mailImapService           = $mailImapService;
-        $this->mailConfigurationProvider = $mailConfigurationProvider;
+        MailConfigurationProvider    $mailConfigurationProvider,
+        UrlGeneratorInterface        $urlGenerator,
+        \Swift_Mailer                $mailer,
+        MailGenerator                $mailGenerator,
+        MailImapService              $mailImapService,
+        LoggerInterface              $logger = null
+    ) {
+        $this->urlGenerator                 = $urlGenerator;
+        $this->mailer                       = $mailer;
+        $this->mailGenerator                = $mailGenerator;
+        $this->logger                       = $logger ?? new NullLogger();
+        $this->mailImapService              = $mailImapService;
+        $this->mailConfigurationProvider    = $mailConfigurationProvider;
     }
     
     
@@ -128,14 +127,11 @@ class MailSendService implements UrlGeneratorInterface
             );
         }
         
-        $sentMailbox = $this->mailImapService->getSentMailbox();
-        if ($sentMailbox) {
-            $this->mailImapService->addMessageToBox(
-                $message,
-                $sentMailbox,
-                true
-            );
-        }
+        $this->mailImapService->addMessageToMailbox(
+            $message,
+            MailboxPlacementQueueManager::SENT_MAILBOX_FOLDER,
+            true
+        );
         
         return $sent;
     }

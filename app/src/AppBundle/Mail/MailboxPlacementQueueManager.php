@@ -24,11 +24,6 @@ class MailboxPlacementQueueManager
     private string $path;
 
     /**
-     * @var MailImapService
-     */
-    private MailImapService $imapService;
-
-    /**
      * @var resource|null
      */
     private $imapServiceLockHandle = null;
@@ -40,13 +35,11 @@ class MailboxPlacementQueueManager
 
     /**
      * @param string          $path
-     * @param MailImapService $imapService
      * @param LoggerInterface $logger
      */
-    public function __construct(string $path, MailImapService $imapService, LoggerInterface $logger)
+    public function __construct(string $path, LoggerInterface $logger)
     {
         $this->path        = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        $this->imapService = $imapService;
         $this->logger      = $logger;
     }
 
@@ -79,9 +72,10 @@ class MailboxPlacementQueueManager
     /**
      * Flush mailbox placement queue
      *
+     * @param callable $handleMail Handler, gets mail content passed as argument; Must return true in case of success
      * @return void
      */
-    public function flush(): void
+    public function flush(callable $handleMail): void
     {
         $begin     = microtime(true);
         $mailFiles = $this->listMailFiles();
@@ -99,33 +93,7 @@ class MailboxPlacementQueueManager
             return;
         }
 
-        $mailboxes = $this->imapService->getMailboxes();
-
         foreach ($mailFiles as $mailFilePath) {
-            $mailboxName   = basename(dirname($mailFilePath));
-            $targetMailbox = null;
-            if ($mailboxName === self::SENT_MAILBOX_FOLDER) {
-                $targetMailbox = $this->imapService->getSentMailbox();
-            } else {
-                foreach ($mailboxes as $mailbox) {
-                    if ($mailbox->getName() === $mailboxName) {
-                        $targetMailbox = $mailbox;
-                    }
-                }
-            } //fi
-
-            if (!$targetMailbox) {
-                $this->logger->warning(
-                    'Unable to find mailbox {mailbox} for mail file {path}, skipping',
-                    [
-                        'mailbox' => $mailboxName,
-                        'path'    => $mailFilePath,
-                    ]
-                );
-
-                continue;
-            }
-
             $mailFileStream = fopen($mailFilePath, 'r');
             if (!flock($mailFileStream, LOCK_EX)) {
                 $this->logger->notice(
@@ -134,15 +102,7 @@ class MailboxPlacementQueueManager
                 );
                 continue;
             }
-            $mailFileContent = file_get_contents($mailFilePath);
-            if (
-                $this->imapService->addMessageToBox2(
-                    $mailFileContent,
-                    $targetMailbox,
-                    true,
-                    \DateTimeImmutable::createFromFormat('U', filemtime($mailFilePath))
-                )
-            ) {
+            if ($handleMail($mailFilePath)) {
                 $this->logger->info(
                     'Stored {path} in mailbox, going to remove file',
                     ['path' => $mailFilePath]
