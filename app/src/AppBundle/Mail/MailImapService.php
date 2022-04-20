@@ -206,6 +206,77 @@ class MailImapService
     /**
      * Add email to mailbox
      *
+     * @param \Swift_Mime_SimpleMessage|string $message
+     * @param Mailbox $mailbox
+     * @return bool
+     */
+    public function addMessageToBox2($message, Mailbox $mailbox, bool $seen, \DateTimeInterface $messageDate = null): bool
+    {
+        $messageString = null;
+        if ($message instanceof \Swift_Mime_SimpleMessage) {
+            $messageString = $message->toString();
+        } elseif (is_string($message)) {
+            $messageString = $message;
+        } else {
+            throw new \InvalidArgumentException('Expecting ' . \Swift_Mime_SimpleMessage::class . ' or string');
+        }
+        
+        if (mb_strlen($messageString) < 5) {
+            throw new \InvalidArgumentException('Empty mail occurred');
+        }
+
+        if ($messageDate === null && $message instanceof \Swift_Mime_SimpleMessage) {
+            $messageDate = $message->getDate();
+        }
+
+        $result = $mailbox->addMessage($messageString, $seen ? '\\Seen' : null, $messageDate);
+        if ($result) {
+            if ($message instanceof \Swift_Mime_SimpleMessage) {
+                $this->logger->info(
+                    'Stored email {subject} to {recipient} in mailbox {mailbox}',
+                    [
+                        'subject'   => $message->getSubject(),
+                        'recipient' => implode(', ', $message->getTo()),
+                        'mailbox'   => $mailbox->getName(),
+                    ]
+                );
+            } else {
+                $this->logger->info(
+                    'Stored textual mail of length {size} in mailbox {mailbox}',
+                    [
+                        'size'    => mb_strlen($message),
+                        'mailbox' => $mailbox->getName(),
+                    ]
+                );
+            }
+        } else {
+            if ($message instanceof \Swift_Mime_SimpleMessage) {
+                $this->logger->error(
+                    'Failed to store email {subject} to {recipient} in mailbox {mailbox}',
+                    [
+                        'subject'   => $message->getSubject(),
+                        'recipient' => implode(', ', $message->getTo()),
+                        'mailbox'   => $mailbox->getName(),
+                    ]
+                );
+
+            } else {
+                $this->logger->error(
+                    'Failed to store textual mail of length {size} in mailbox {mailbox}',
+                    [
+                        'size'    => mb_strlen($message),
+                        'mailbox' => $mailbox->getName(),
+                    ]
+                );
+            }
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Add email to mailbox
+     *
      * @param Swift_Mime_SimpleMessage $message
      * @param Mailbox $mailbox
      * @return void

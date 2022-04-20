@@ -181,6 +181,11 @@ services:
     AppBundle\Mail\MailImapService:
         autowire: true
 
+    AppBundle\Mail\MailboxPlacementQueueManager:
+        autowire: true
+        arguments:
+            $path: "%app.data.mailbox_queue.path%"
+
     AppBundle\Mail\MailSendService:
         autowire: true
 
