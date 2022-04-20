@@ -190,6 +190,10 @@ class MailboxPlacementQueueManager
     private function listMailFiles(): array
     {
         $mailFiles = [];
+        
+        if (!is_readable($this->path)) {
+            return [];
+        }
 
         /** @var \SplFileInfo $item */
         foreach (
