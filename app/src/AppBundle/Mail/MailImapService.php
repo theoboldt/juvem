@@ -66,70 +66,15 @@ class MailImapService
         $this->logger                    = $logger ?? new NullLogger();
         $this->mailConfigurationProvider = $mailConfigurationProvider;
     }
-    
+
     /**
-     * Get IMAP connection to configured mail account
-     *
-     * @return ConnectionInterface|null
+     * Determine if IMAP connection is active
+     * 
+     * @return bool
      */
-    private function getImapConnection(): ?ConnectionInterface
+    public function isImapConnected(): bool 
     {
-        if ($this->imapConnectionTried) {
-            return $this->imapConnection;
-        }
-        $this->imapConnectionTried = true;
-        
-        if (!function_exists('imap_open')) {
-            $this->logger->warning('PHP IMAP Extension unavailable');
-            return null;
-        }
-        $timeBegin = microtime(true);
-        $server    = new Server($this->mailConfigurationProvider->getMailerImapHost());
-        try {
-            $this->imapConnection = $server->authenticate(
-                $this->mailConfigurationProvider->getMailerUser(), $this->mailConfigurationProvider->getMailerPassword()
-            );
-        } catch (AuthenticationFailedException $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
-                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-            return null;
-        } catch (ResourceCheckFailureException $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
-                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-            return null;
-        } catch (\Exception $e) {
-            $this->logger->error(
-                'IMAP authentication for {user} on {host} failed, generic exception {class} with message {message}: {trace}',
-                [
-                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
-                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
-                    'class'   => get_class($e),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString()
-                ]
-            );
-        }
-        $this->logger->info(
-            'Connected to mail in {duration} seconds', ['duration' => round(microtime(true) - $timeBegin)]
-        );
-        
-        return $this->imapConnection;
+        return (bool)$this->imapConnection;
     }
     
     /**
@@ -323,5 +268,70 @@ class MailImapService
             }
         }
     }
-    
+
+    /**
+     * Get IMAP connection to configured mail account
+     *
+     * @return ConnectionInterface|null
+     */
+    private function getImapConnection(): ?ConnectionInterface
+    {
+        if ($this->imapConnectionTried) {
+            return $this->imapConnection;
+        }
+        $this->imapConnectionTried = true;
+
+        if (!function_exists('imap_open')) {
+            $this->logger->warning('PHP IMAP Extension unavailable');
+            return null;
+        }
+        $timeBegin = microtime(true);
+        $server    = new Server($this->mailConfigurationProvider->getMailerImapHost());
+        try {
+            $this->imapConnection = $server->authenticate(
+                $this->mailConfigurationProvider->getMailerUser(), $this->mailConfigurationProvider->getMailerPassword()
+            );
+        } catch (AuthenticationFailedException $e) {
+            $this->logger->error(
+                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
+                [
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
+                    'class'   => get_class($e),
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                ]
+            );
+            return null;
+        } catch (ResourceCheckFailureException $e) {
+            $this->logger->error(
+                'IMAP authentication for {user} on {host} failed, exception {class} with message {message}: {trace}',
+                [
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
+                    'class'   => get_class($e),
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                ]
+            );
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->error(
+                'IMAP authentication for {user} on {host} failed, generic exception {class} with message {message}: {trace}',
+                [
+                    'user'    => $this->mailConfigurationProvider->getMailerUser(),
+                    'host'    => $this->mailConfigurationProvider->getMailerImapHost(),
+                    'class'   => get_class($e),
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                ]
+            );
+        }
+        $this->logger->info(
+            'Connected to mail in {duration} seconds', ['duration' => round(microtime(true) - $timeBegin)]
+        );
+
+        return $this->imapConnection;
+    }
+
 }
