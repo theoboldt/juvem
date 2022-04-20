@@ -26,7 +26,7 @@
     "jquery-storage-api": "^1.9",
     "justified-layout": "^4.1.0",
     "lodash": "^4.17.21",
-    "marked": "^2.0.6",
+    "marked": "^4.0.10",
     "masonry-layout": "^4.2",
     "merge": "^2.1.1",
     "moment": "^2.29.1",
