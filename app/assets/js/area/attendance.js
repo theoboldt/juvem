@@ -408,7 +408,7 @@ $(function () {
                 bid = $('#modalExport input[name=exportGroupBy]:checked').val(),
                 url = listId + '/export' + (bid ? '/' + bid : '');
 
-            elBtn.attr('href', url);
+            elBtn.attr('href', eHtml(url));
 
             handleDownloadBtnClick(elBtn);
             $('#modalExport').modal('hide');
@@ -435,7 +435,7 @@ $(function () {
 
             url += listIds.join(',');
 
-            elBtn.attr('href', url);
+            elBtn.attr('href', eHtml(url));
 
             handleDownloadBtnClick(elBtn);
             elBtn.off();
