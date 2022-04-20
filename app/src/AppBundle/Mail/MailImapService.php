@@ -143,6 +143,10 @@ class MailImapService
      */
     public function getMailbox(string $mailboxName): ?Mailbox
     {
+        if ($mailboxName === MailboxPlacementQueueManager::SENT_MAILBOX_FOLDER) {
+            return $this->getSentMailbox();
+        }
+
         foreach ($this->getMailboxes() as $mailbox) {
             if ($mailboxName === $mailbox->getName()) {
                 return $mailbox;
@@ -164,7 +168,6 @@ class MailImapService
             if ($mailbox->getAttributes() & \LATT_NOSELECT) {
                 continue;
             }
-            $mailboxNames[] = $mailbox->getName();
             if (in_array(mb_strtolower($mailbox->getName()), ['sent', 'gesendete objekte', 'gesendet'])) {
                 return $mailbox;
             }
@@ -183,13 +186,19 @@ class MailImapService
     public function addMessageToMailbox(\Swift_Mime_SimpleMessage $message, string $mailboxName, bool $seen): void
     {
         if ($this->isImapConnected()) {
-            if ($mailboxName === MailboxPlacementQueueManager::SENT_MAILBOX_FOLDER) {
-                $mailbox = $this->getSentMailbox();
-            } else {
-                $mailbox = $this->getMailbox($mailboxName);
+            $mailbox = $this->getMailbox($mailboxName);
+            if (!$mailbox) {
+                $this->logger->error(
+                    'Mailbox {mailbox} for email with {subject} to {recipient} not found',
+                    [
+                        'subject'   => $message->getSubject(),
+                        'recipient' => implode(', ', $message->getTo()),
+                        'mailbox'   => $mailboxName,
+                    ]
+                );
             }
-
-            $result = $mailbox->addMessage($message->toString(), $seen ? '\\Seen' : null, $message->getDate());
+            
+            $result  = $mailbox->addMessage($message->toString(), $seen ? '\\Seen' : null, $message->getDate());
             if ($result) {
                 $this->logger->notice(
                     'Stored email {subject} to {recipient} in mailbox {mailbox}, because IMAP is connected',
@@ -257,14 +266,14 @@ class MailImapService
      * @return void
      */
     public function flushMailboxPlacementQueue(bool $forceImapConnection = false) {
-        if (!$forceImapConnection && $this->isImapConnected()) {
+        if (!$forceImapConnection && !$this->isImapConnected()) {
             $this->logger->notice(
-                'IMAP not connected, not flushing queue'
+                'IMAP not connected and not forced, not flushing queue'
             );
         }
         $this->mailboxQueueManager->flush(
             function (string $mailFilePath) {
-                $mailboxName = basename(dirname($mailFilePath));
+                $mailboxName     = basename(dirname($mailFilePath));
                 $mailFileContent = file_get_contents($mailFilePath);
                 
                 if (mb_strlen($mailFileContent) < 5) {
@@ -272,7 +281,7 @@ class MailImapService
                 }
 
                 $mailDate = \DateTimeImmutable::createFromFormat('U', filemtime($mailFilePath));
-                $mailbox = $this->getMailbox($mailboxName);
+                $mailbox  = $this->getMailbox($mailboxName);
                 
                 return $mailbox->addMessage($mailFileContent, '\\Seen', $mailDate);
             }

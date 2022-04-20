@@ -201,7 +201,7 @@ class MailListService
     public function clearEntityRelatedCache(string $class, int $id): void
     {
         $this->cache->delete($this->getCacheKey($class, $id));
-        $this->logger->notice('Cleared related mail cache for entity {class}:{id}', ['class', $class, 'id' => $id]);
+        $this->logger->notice('Cleared related mail cache for entity {class}:{id}', ['class' => $class, 'id' => $id]);
     }
     
     /**
@@ -259,6 +259,8 @@ class MailListService
     private function fetchMessagesForSearch(SearchExpression $searchExpression): array
     {
         $mailboxes = $this->mailImapService->getMailboxes();
+        $this->mailImapService->flushMailboxPlacementQueue();
+        
         $result    = [];
         $timeBegin = microtime(true);
         foreach ($mailboxes as $mailbox) {
@@ -283,7 +285,7 @@ class MailListService
      *
      * @param MessageInterface $message Message
      * @param string $mailboxName       Mailbox to store
-     * @return MailFragment Result
+     * @return MailFragment             Result
      */
     private function convertMailboxEmailToMailFragment(MessageInterface $message, string $mailboxName): MailFragment
     {
