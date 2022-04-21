@@ -62,9 +62,6 @@
                                 <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer:innen-Herkunft untersuchen</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren…</a></li>
-                                <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'print' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe mit Deckblättern drucken (alt)</a></li>
-                                <li><a href="{{ path('event_participants_print', {'eid': event.eid, 'type': 'printdataonly' }) }}" target="_blank">{{ 'print'|glyph }} Steckbriefe ohne Deckblätter drucken (alt)</a></li>
-                                <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen…</a></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer:innen exportieren…</a></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren…</a></li>

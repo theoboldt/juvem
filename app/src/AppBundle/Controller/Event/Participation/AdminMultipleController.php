@@ -514,31 +514,6 @@ class AdminMultipleController
      *
      * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants/{type}", requirements={"eid": "\d+", "type": "(print|printdataonly)"}, name="event_participants_print")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function printParticipantsAction(Event $event, $eid, $type)
-    {
-        $participationRepository = $this->doctrine->getRepository(Participation::class);
-        $participants            = $participationRepository->participantsList($event);
-
-        return $this->render(
-            'event/participation/admin/participants-print.html.twig',
-            [
-                'event'           => $event,
-                'participants'    => $participants,
-                'commentManager'  => $this->commentManager,
-                'type'            => $type,
-                'statusFormatter' => ParticipantStatus::formatter(),
-            ]
-        );
-    }
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @CloseSessionEarly
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @Route("/admin/event/{eid}/participate-timeline.json", requirements={"eid": "\d+"}, name="event_participate_timeline")
      * @Security("is_granted('read', event)")
      */
