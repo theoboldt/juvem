@@ -61,6 +61,7 @@ class ParticipantType extends AbstractType
         unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
     
         $genderChoices = [
+            ''                                     => '',
             Participant::LABEL_GENDER_FEMALE       => Participant::LABEL_GENDER_FEMALE,
             Participant::LABEL_GENDER_MALE         => Participant::LABEL_GENDER_MALE,
             Participant::LABEL_GENDER_FEMALE_ALIKE => Participant::LABEL_GENDER_FEMALE_ALIKE,
