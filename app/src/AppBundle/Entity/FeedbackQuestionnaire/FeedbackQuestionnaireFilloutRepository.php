@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\FeedbackQuestionnaire;
 
+use AppBundle\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -18,6 +19,19 @@ use Doctrine\ORM\EntityRepository;
 class FeedbackQuestionnaireFilloutRepository extends EntityRepository
 {
 
-    
-    
+    /**
+     * @param Event $event
+     * @return int
+     */
+    public function fetchResponseCount(Event $event): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select(['COUNT(c)'])
+           ->andWhere('c.event = :eventId');
+
+        $qb->setParameter('eventId', $event->getEid());
+        
+        return (int)$qb->getQuery()->getSingleScalarResult();
+    }
+
 }

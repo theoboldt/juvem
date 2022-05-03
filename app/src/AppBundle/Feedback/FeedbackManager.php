@@ -82,7 +82,18 @@ class FeedbackManager
         $this->participationManager = $participationManager;
         $this->mailService          = $mailService;
     }
-
+    
+    /**
+     * Get questionnaire response count
+     *
+     * @param Event $event
+     * @return int
+     */
+    public function fetchResponseCount(Event $event): int
+    {
+        $repository = $this->em->getRepository(FeedbackQuestionnaireFillout::class);
+        return $repository->fetchResponseCount($event);
+    }
 
     /**
      * Request feedback from participations via email

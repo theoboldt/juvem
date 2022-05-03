@@ -206,11 +206,13 @@ class PublicEventFeedbackController
                 $em->persist($fillout);
             }
             $em->flush();
-            $this->addFlash(
-                'success',
-                'Die Antworten wurden für alle ' . count($collections) .
-                ' Fragebögen gespeichert, vorhandene Daten wurden gegebenfalls überschrieben. Vielen Dank fürs ausfüllen, das hilft uns sehr. Während der Fragebogen geöffnet ist, können die gegebenen Antworten jederzeit geändert werden.'
-            );
+            
+            $message = 'Die Antworten wurden ';
+            if (count($collections) > 1) {
+                $message .= 'für alle ' . count($collections).' Fragebögen ';
+            }
+            $message .= 'gespeichert, vorhandene Daten wurden gegebenfalls überschrieben. Vielen Dank fürs ausfüllen, das hilft uns sehr. Während der Fragebogen für Einsendung geöffnet ist, können die gegebenen Antworten jederzeit geändert werden.';
+            $this->addFlash('success', $message);
         }
         $questions = [];
         foreach ($questionnaire->getQuestions() as $question) {

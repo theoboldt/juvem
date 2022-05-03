@@ -14,7 +14,7 @@
         {{ form_start(formAction) }}
         <div class="modal-body">
           {{ form_errors(formAction) }}
-          <p>Alle Eltern aller bestätigter Teilnehmer:innen erhalten eine E-Mail, in der sie um das Ausfüllen des Fragebogens gebeten werden.</p>
+          <p>Alle Eltern aller bestätigter (und nicht zurückgezogener/abgelehnter) Teilnehmer:innen erhalten eine E-Mail, in der sie um das Ausfüllen des Fragebogens gebeten werden.</p>
           <p>Soll eine solche E-Mail verschickt werden?</p>
           {{ form_rest(formAction) }}
         </div>
@@ -66,12 +66,24 @@
           <span class="label label-primary">Automatische Benachrichtigung {{ questionnaire.feedbackDaysAfterEvent }} Tage nach der Veranstaltung</span>
         {% endif %}
 
+        &nbsp;
+        {% if responseCount == 0 %}
+          <span class="label label-default">Keine Rückmeldungen</span>
+        {% else %}
+          <span class="label label-primary">
+          {{ responseCount }} Rückmeldung{% if responseCount > 1 %}en{% endif %}
+          </span>
+        {% endif %}
+
+        &nbsp;
         <span class="label label-primary">
           {{ questionnaire.questions|length }} Frage{% if questionnaire.questions|length != 1 %}n{% endif %}, {{ questionnaire.getThesisCount() }} These{% if questionnaire.getThesisCount() != 1 %}n{% endif %}
         </span>
-        
+        &nbsp;
         {% if event.feedbackQuestionnaireSent %}
-          <span class="label label-primary">Teilnehmende benachrichtigt</span>
+          <span class="label label-primary">Teilnehmende wurden benachrichtigt</span>
+        {% else %}
+          <span class="label label-default">Teilnehmende wurden noch nicht benachrichtigt</span>
         {% endif %}
       </div>
     </div>

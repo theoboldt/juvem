@@ -77,6 +77,7 @@ class AdminEventFeedbackController
         return $this->render(
             'feedback/event-overview.html.twig',
             [
+                'responseCount' => $this->feedbackManager->fetchResponseCount($event),
                 'formAction'    => $formAction->createView(),
                 'event'         => $event,
                 'questionnaire' => $event->getFeedbackQuestionnaire(true),
