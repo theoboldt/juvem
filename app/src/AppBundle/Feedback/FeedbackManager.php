@@ -32,8 +32,14 @@ class FeedbackManager
      */
     private RouterInterface $router;
 
+    /**
+     * @var AppSecretSigner 
+     */
     private AppSecretSigner $signer;
 
+    /**
+     * @var ParticipationManager 
+     */
     private ParticipationManager $participationManager;
 
     /**
