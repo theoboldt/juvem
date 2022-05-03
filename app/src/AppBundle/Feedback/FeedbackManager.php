@@ -226,6 +226,13 @@ Vielen Dank für eure Mithilfe!';
         $this->em->flush();
     }
 
+    /**
+     * Create signature for collections
+     * 
+     * @param int    $eid
+     * @param string $collections
+     * @return string
+     */
     public function createCollectionsSignature(int $eid, string $collections): string
     {
         return $this->signer->signArray(
