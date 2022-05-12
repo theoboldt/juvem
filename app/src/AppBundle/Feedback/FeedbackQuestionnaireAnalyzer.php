@@ -91,12 +91,15 @@ class FeedbackQuestionnaireAnalyzer
     public function getQuestionAnswerDistributions(): array
     {
         if (!$this->answerDistribution) {
-            $rawAnswerDistribution = $this->getRawAnswerDistribution();
+            $this->answerDistribution = [];
+            $rawAnswerDistribution    = $this->getRawAnswerDistribution();
             foreach ($this->getQuestions() as $question) {
                 switch ($question->getQuestionType()) {
                     case FeedbackQuestion::TYPE_AGREEMENT:
                         $this->answerDistribution[$question->getUuid()]
-                            = QuestionAgreementAnswerDistribution::createFromRawDistribution($question, $rawAnswerDistribution);
+                            = QuestionAgreementAnswerDistribution::createFromRawDistribution(
+                            $question, $rawAnswerDistribution
+                        );
                         break;
                     default:
                         throw new \RuntimeException(
