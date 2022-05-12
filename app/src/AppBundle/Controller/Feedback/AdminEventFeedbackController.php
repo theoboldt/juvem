@@ -16,6 +16,7 @@ use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Feedback\FeedbackManager;
+use AppBundle\Feedback\FeedbackQuestionnaireAnalyzer;
 use AppBundle\Form\Feedback\ImportQuestionsType;
 use AppBundle\Form\Feedback\QuestionnaireFilloutType;
 use AppBundle\Form\Feedback\QuestionnaireType;
@@ -73,14 +74,20 @@ class AdminEventFeedbackController
             $this->feedbackManager->requestFeedback($event);
             return $this->redirectToRoute('admin_feedback_event', ['eid' => $event->getEid()]);
         }
-
+        
+        $analyzer = new FeedbackQuestionnaireAnalyzer(
+            $event->getFeedbackQuestionnaire(true),
+            FeedbackManager::extractFilloutsFromEntities($this->feedbackManager->fetchFillouts($event))
+        );
+dump($analyzer->getQuestionAnswerDistributions());
         return $this->render(
             'feedback/event-overview.html.twig',
             [
-                'responseCount' => $this->feedbackManager->fetchResponseCount($event),
-                'formAction'    => $formAction->createView(),
-                'event'         => $event,
-                'questionnaire' => $event->getFeedbackQuestionnaire(true),
+                'responseCount'      => $this->feedbackManager->fetchResponseCount($event),
+                'answerDistribution' => $analyzer->getQuestionAnswerDistributions(),
+                'formAction'         => $formAction->createView(),
+                'event'              => $event,
+                'questionnaire'      => $event->getFeedbackQuestionnaire(true),
             ]
         );
     }

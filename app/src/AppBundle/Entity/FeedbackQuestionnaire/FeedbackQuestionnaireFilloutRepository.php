@@ -34,4 +34,19 @@ class FeedbackQuestionnaireFilloutRepository extends EntityRepository
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * Fetch all fillouts
+     * 
+     * @param Event $event
+     * @return FeedbackQuestionnaireFillout[]
+     */
+    public function fetchFillouts(Event $event): array
+    {
+        return $this->findBy(
+            [
+                'event' => $event->getEid(),
+            ]
+        );
+    }
+
 }

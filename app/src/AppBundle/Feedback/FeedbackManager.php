@@ -82,6 +82,27 @@ class FeedbackManager
         $this->participationManager = $participationManager;
         $this->mailService          = $mailService;
     }
+
+    /**
+     * Extract fillouts from entities
+     *
+     * @param \AppBundle\Entity\FeedbackQuestionnaire\FeedbackQuestionnaireFillout[] $filloutEntities
+     * @return \AppBundle\Feedback\FeedbackQuestionnaireFillout[]
+     */
+    public static function extractFilloutsFromEntities(array $filloutEntities): array {
+        $fillouts = [];
+        foreach ($filloutEntities as $filloutEntity) {
+            if ($filloutEntity instanceof FeedbackQuestionnaireFillout) {
+                $fillout = $filloutEntity->getFillout(true);
+                if ($fillout) {
+                    $fillouts[] = $fillout;
+                }
+            } else {
+                throw new \InvalidArgumentException('Expected class '.FeedbackQuestionnaireFillout::class);
+            }
+        }
+        return $fillouts;
+    }
     
     /**
      * Get questionnaire response count
@@ -93,6 +114,17 @@ class FeedbackManager
     {
         $repository = $this->em->getRepository(FeedbackQuestionnaireFillout::class);
         return $repository->fetchResponseCount($event);
+    }
+
+    /**
+     * Fetch all questionnaire fillouts for event
+     * 
+     * @param Event $event
+     * @return array
+     */    
+    public function fetchFillouts(Event $event): array {
+        $repository = $this->em->getRepository(FeedbackQuestionnaireFillout::class);
+        return $repository->fetchFillouts($event);
     }
 
     /**
@@ -512,7 +544,7 @@ Vielen Dank für eure Mithilfe!';
 
         return $this->questionCache;
     }
-
+    
     /**
      * Get question usage for transmitted question
      *

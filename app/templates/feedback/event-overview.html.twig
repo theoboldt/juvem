@@ -14,7 +14,8 @@
         {{ form_start(formAction) }}
         <div class="modal-body">
           {{ form_errors(formAction) }}
-          <p>Alle Eltern aller bestätigter (und nicht zurückgezogener/abgelehnter) Teilnehmer:innen erhalten eine E-Mail, in der sie um das Ausfüllen des Fragebogens gebeten werden.</p>
+          <p>Alle Eltern aller bestätigter (und nicht zurückgezogener/abgelehnter) Teilnehmer:innen erhalten eine
+            E-Mail, in der sie um das Ausfüllen des Fragebogens gebeten werden.</p>
           <p>Soll eine solche E-Mail verschickt werden?</p>
           {{ form_rest(formAction) }}
         </div>
@@ -41,7 +42,8 @@
           <div class="btn-group" role="group">
             <a href="{{ path('admin_feedback_event_questionnaire', {'eid': event.eid }) }}"
                class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Fragebogen konfigurieren</span></a>
-            <a href="{{ path('admin_feedback_event_import', {'eid': event.eid }) }}"  title="Fragen von Fragebögen anderer Veranstaltungen importieren"
+            <a href="{{ path('admin_feedback_event_import', {'eid': event.eid }) }}"
+               title="Fragen von Fragebögen anderer Veranstaltungen importieren"
                class="btn btn-default">{{ 'import'|glyph }} <span class="hidden-xs">Fragen importieren</span></a>
           </div>
           <div class="btn-group" role="group">
@@ -50,7 +52,8 @@
               ansehen {{ 'new-window'|glyph }}</a>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default {% if event.feedbackQuestionnaireSent %} disabled{% endif %}" data-toggle="modal" data-target="#modalFeedbackEmail">
+            <button type="button" class="btn btn-default {% if event.feedbackQuestionnaireSent %} disabled{% endif %}"
+                    data-toggle="modal" data-target="#modalFeedbackEmail">
               Feedback einholen <span class="caret-right"></span>
             </button>
           </div>
@@ -84,6 +87,44 @@
           <span class="label label-primary">Teilnehmende wurden benachrichtigt</span>
         {% else %}
           <span class="label label-default">Teilnehmende wurden noch nicht benachrichtigt</span>
+        {% endif %}
+
+        {% if answerDistribution|length %}
+          {% for distributionItem in answerDistribution %}
+            <div class="row">
+              <div class="col-xs-12 feedback-question">
+                <div class="question-pre"></div>
+                <div class="question">
+                  <h3>
+                    {{ distributionItem.question.topic }}
+                    <small>
+                      {% if distributionItem.question.interpretation == 1 %}
+                        <span class="label label-danger"
+                              data-title="Zustimmung zu dieser Aussage wird negativ betrachtet"
+                              data-toggle="tooltip">Negativ</span>
+                      {% elseif distributionItem.question.interpretation == 2 %}
+                        <span class="label label-default" data-title="Diese Aussage ist weder negativ noch positiv"
+                              data-toggle="tooltip">Neutral</span>
+                      {% elseif distributionItem.question.interpretation == 3 %}
+                        <span class="label label-success"
+                              data-title="Zustimmung zu dieser Aussage wird positiv betrachtet"
+                              data-toggle="tooltip">Positiv</span>
+                      {% endif %}
+                      {% if distributionItem.distributionCombined.total <5 %}
+                        <span class="label label-warning"
+                              data-title="Lediglich {{ distributionItem.distributionCombined.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
+                              data-toggle="tooltip">Wenig Rückmeldung</span>
+                      {% endif %}
+                    </small>
+                  </h3>
+                  <p>{{ distributionItem.question.thesis }}</p>
+                </div>
+                <div class="question-post"></div>
+              </div>
+            </div>
+            {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionCombined} %}{% endembed %}
+
+          {% endfor %}
         {% endif %}
       </div>
     </div>
