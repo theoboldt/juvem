@@ -79,7 +79,7 @@ class AdminEventFeedbackController
             $event->getFeedbackQuestionnaire(true),
             FeedbackManager::extractFilloutsFromEntities($this->feedbackManager->fetchFillouts($event))
         );
-dump($analyzer->getQuestionAnswerDistributions());
+
         return $this->render(
             'feedback/event-overview.html.twig',
             [
