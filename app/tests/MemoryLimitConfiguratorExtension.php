@@ -20,10 +20,13 @@ class MemoryLimitConfiguratorExtension implements AfterLastTestHook
     private $memoryLimitGb;
 
     /**
-     * @param int $memoryLimitGb
+     * @param int|null $memoryLimitGb
      */
-    public function __construct(int $memoryLimitGb = 1)
+    public function __construct(?int $memoryLimitGb = 1)
     {
+        if ($memoryLimitGb === null) {
+            $memoryLimitGb = 1;
+        }
         $this->memoryLimitGb = $memoryLimitGb;
     }
 
