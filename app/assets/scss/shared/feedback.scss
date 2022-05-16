@@ -49,9 +49,13 @@
     font-size: 50%;
 
     .agreement-bar {
-      padding: 0 2px;
+      padding: 0;
       text-align: center;
       height: 25px;
+      
+      div {
+        flex: 1;
+      }
     }
   }
 
