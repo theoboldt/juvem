@@ -235,7 +235,7 @@ abstract class AbstractSheet
         $headerFooter->setFirstFooter($footerText);
         $headerFooter->setOddFooter($footerText);
 
-        $this->rowHeaderLine = $this->row(0);
+        $this->rowHeaderLine = $this->row(1, false);
         $sheet->getRowDimension($this->rowHeaderLine)
               ->setRowHeight(22);
 
@@ -326,8 +326,9 @@ abstract class AbstractSheet
               ->setWidth(3);
         
         $this->setCellsToRepeat();
-        
-        $sheet->getStyleByColumnAndRow(0, $row, $column, $row)
+        var_dump($row);
+        var_dump($column);
+        $sheet->getStyleByColumnAndRow(1, $row, $column, $row)
               ->applyFromArray(
                   array(
                       'fill' => array(
