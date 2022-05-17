@@ -326,8 +326,6 @@ abstract class AbstractSheet
               ->setWidth(3);
         
         $this->setCellsToRepeat();
-        var_dump($row);
-        var_dump($column);
         $sheet->getStyleByColumnAndRow(1, $row, $column, $row)
               ->applyFromArray(
                   array(
