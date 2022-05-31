@@ -16,7 +16,6 @@ use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 use AppBundle\Manager\Geo\OpenStreetMapElement;
 use AppBundle\Manager\Geo\OpenStreetMapPlace;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -185,6 +184,8 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
     
     /**
      * Configure address
+     * 
+     * Configure address, truncating text snippets which are too long
      *
      * @param string $addressStreetName
      * @param string $addressStreetNumber
@@ -200,11 +201,11 @@ class LocationDescription implements AddressAwareInterface, CoordinatesAwareInte
         string $addressCountry = Event::DEFAULT_COUNTRY
     ): void
     {
-        $this->addressStreetName   = $addressStreetName;
-        $this->addressStreetNumber = $addressStreetNumber;
-        $this->addressCity         = $addressCity;
-        $this->addressZip          = $addressZip;
-        $this->addressCountry      = $addressCountry;
+        $this->addressStreetName   = mb_substr($addressStreetName, 0, 128);
+        $this->addressStreetNumber = mb_substr($addressStreetNumber, 0, 16);
+        $this->addressCity         = mb_substr($addressCity, 0, 128);
+        $this->addressZip          = mb_substr($addressZip, 0, 16);
+        $this->addressCountry      = mb_substr($addressCountry, 0, 128);
     }
     
     /**

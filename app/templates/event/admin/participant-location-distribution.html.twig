@@ -21,23 +21,23 @@
       <div class="col-xs-12" id="participantsLocationDistribution"
            data-url="{{ url('event_participants_location_data', {'eid': event.eid}) }}">
         <div class="btn-toolbar" role="toolbar">
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default disabled" id="levels">
+          <div class="btn-group" data-toggle="buttons" id="levels">
+            <label class="btn btn-default disabled">
               <input type="radio" name="detail" id="level0"> Nationen
             </label>
-            <label class="btn btn-default disabled" id="detail-detailed">
+            <label class="btn btn-default disabled">
               <input type="radio" name="detail" id="level1"> Länder
             </label>
-            <label class="btn btn-default disabled" id="detail-detailed">
+            <label class="btn btn-default disabled">
               <input type="radio" name="detail" id="level2"> Kreise
             </label>
-            <label class="btn btn-default disabled active" id="detail-detailed">
+            <label class="btn btn-default disabled active">
               <input type="radio" name="detail" id="level3" checked> Städte
             </label>
-            <label class="btn btn-default disabled" id="detail-detailed">
+            <label class="btn btn-default disabled">
               <input type="radio" name="detail" id="level4"> Teile
             </label>
-            <label class="btn btn-default disabled" id="detail-detailed">
+            <label class="btn btn-default disabled">
               <input type="radio" name="detail" id="level5"> Bezirke
             </label>
           </div>

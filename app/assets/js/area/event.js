@@ -986,12 +986,14 @@ $(function () {
     if (participantsLocationDistributionEl) {
         var tbody = participantsLocationDistributionEl.find('table tbody');
         participantsLocationDistributionEl.find('.btn').click(function () {
-            var el = $(this);
+            var el = $(this),
+                elId = el.find('input').attr('id');
+
             if (el.hasClass('disabled')) {
                 return;
             }
             for (var i = 0; i <= 5; ++i) {
-                participantsLocationDistributionEl.find('table').toggleClass('level' + i, el.find('input').attr('id') === 'level' + i);
+                participantsLocationDistributionEl.find('table').toggleClass('level' + i, elId === 'level' + i);
             }
         });
         $.ajax({
@@ -1015,8 +1017,7 @@ $(function () {
                     $.each(items, function (key, item) {
                         if (item.n !== 'Unbekannt') {
                             result = false;
-                        }
-                        if (item.c && item.c.length) {
+                        } else if (item.c && item.c.length) {
                             result = allBelowUnknown(item.c);
                         }
                         if (!result) {

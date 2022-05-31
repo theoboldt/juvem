@@ -54,11 +54,11 @@ class LocationDescriptionRepository extends EntityRepository
     {
         return $this->findOneBy(
             [
-                'addressStreetName'   => $addressStreetName,
-                'addressStreetNumber' => $addressStreetNumber,
-                'addressCity'         => $addressCity,
-                'addressZip'          => $addressZip,
-                'addressCountry'      => $addressCountry,
+                'addressStreetName'   => mb_substr($addressStreetName, 0, 128),
+                'addressStreetNumber' => mb_substr($addressStreetNumber, 0, 16),
+                'addressCity'         => mb_substr($addressCity, 0, 128),
+                'addressZip'          => mb_substr($addressZip, 0, 16),
+                'addressCountry'      => mb_substr($addressCountry, 0, 128),
             ]
         );
     }
