@@ -23,8 +23,12 @@ class DateFilloutValue extends FilloutValue
     public function __construct(Attribute $attribute, $rawValue = null)
     {
         if ($rawValue !== null & !$rawValue instanceof \DateTimeInterface) {
-            $rawValue = new \DateTime($rawValue);
-            $rawValue->setTime(10, 0, 0);
+            try {
+                $rawValue = new \DateTime($rawValue);
+                $rawValue->setTime(10, 0, 0);
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException('Failed to convert "'.$rawValue.'" to datetime', 0, $e);
+            }
         }
         
         //intentionally not calling parent
