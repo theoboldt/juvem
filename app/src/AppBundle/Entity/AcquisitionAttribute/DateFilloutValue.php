@@ -22,9 +22,6 @@ class DateFilloutValue extends FilloutValue
      */
     public function __construct(Attribute $attribute, $rawValue = null)
     {
-        if ($rawValue === '-' || $rawValue === '') {
-            $rawValue = null;
-        }
         if ($rawValue !== null & !$rawValue instanceof \DateTimeInterface) {
             try {
                 $rawValue = new \DateTime($rawValue);
