@@ -124,7 +124,6 @@ class LocationController
                                     if ($address['place_type'] === 'state') {
                                         $state = $localname;
                                     } else {
-                                        $a = 1;
                                         if ($address['class'] === 'boundary') {
                                             if ($address['rank_address'] < 13) {
                                                 $boundary = $localname;
