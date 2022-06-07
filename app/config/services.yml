@@ -229,7 +229,8 @@ services:
         public: true
     app.payment_manager:
         alias: AppBundle\Manager\Payment\PaymentManager
-
+        public: true
+        
     AppBundle\Manager\Payment\PaymentManager:
         class: AppBundle\Manager\Payment\PaymentManager
         arguments:
