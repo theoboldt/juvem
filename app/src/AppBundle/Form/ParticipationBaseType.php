@@ -38,7 +38,7 @@ class ParticipationBaseType extends AbstractType
                 ChoiceType::class,
                 [
                     'label'    => 'Anrede',
-                    'choices'  => ['Frau' => 'Frau', 'Herr' => 'Herr'],
+                    'choices'  => ['' => '', 'Frau' => 'Frau', 'Herr' => 'Herr'],
                     'expanded' => false,
                     'required' => true
                 ]
