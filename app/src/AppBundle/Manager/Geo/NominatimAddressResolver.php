@@ -14,6 +14,7 @@ namespace AppBundle\Manager\Geo;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Psr\Log\LoggerInterface;
 
 class NominatimAddressResolver implements AddressResolverInterface
 {
@@ -37,15 +38,24 @@ class NominatimAddressResolver implements AddressResolverInterface
      * @var Client
      */
     private $client;
-    
+
+    /**
+     * Logger
+     * 
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
     /**
      * NominatimAddressResolver constructor.
      *
-     * @param string $lastAccessFile
+     * @param string          $lastAccessFile
+     * @param LoggerInterface $logger
      */
-    public function __construct(string $lastAccessFile)
+    public function __construct(string $lastAccessFile, LoggerInterface $logger)
     {
         $this->lastAccessFile = $lastAccessFile;
+        $this->logger         = $logger;
     }
     
     /**
@@ -140,6 +150,7 @@ class NominatimAddressResolver implements AddressResolverInterface
     {
         $abortAt = new \DateTime('+30 seconds', new \DateTimeZone('UTC'));
         $this->waitForAccessAndLock($abortAt);
+        $start    = microtime(true);
         $response = $this->client()->get(
             '/search',
             [
@@ -161,6 +172,14 @@ class NominatimAddressResolver implements AddressResolverInterface
         if ($data === null) {
             throw new \InvalidArgumentException('Failed to fetch address info: ' . json_last_error_msg());
         }
+        $this->logger->notice(
+            'Fetched place by search for {zip} {city} within {duration} ms',
+            [
+                'duration' => round((microtime(true) - $start) * 1000),
+                'zip'      => $item->getAddressZip(),
+                'city'     => $item->getAddressCity(),
+            ]
+        );
         return new OpenStreetMapPlace($data);
     }
     
@@ -174,6 +193,7 @@ class NominatimAddressResolver implements AddressResolverInterface
     {
         $abortAt = new \DateTime('+20 seconds', new \DateTimeZone('UTC'));
         $this->waitForAccessAndLock($abortAt);
+        $start    = microtime(true);
         $response = $this->client()->get(
             '/details',
             [
@@ -192,6 +212,14 @@ class NominatimAddressResolver implements AddressResolverInterface
         if ($data === null) {
             throw new \InvalidArgumentException('Failed to fetch place details: ' . json_last_error_msg());
         }
+        $this->logger->notice(
+            'Fetched place details for osm {osmtype} {osmid} within {duration} ms',
+            [
+                'duration' => round((microtime(true) - $start) * 1000),
+                'osmtype'  => $place->getOsmType(),
+                'osmid'    => $place->getOsmId(),
+            ]
+        );
         return DetailedOpenStreetMapPlace::upgradePlace($place, $data);
     }
     

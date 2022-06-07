@@ -12,6 +12,7 @@ namespace AppBundle\Manager\Geo;
 
 use AppBundle\Entity\Geo\LocationDescription;
 use AppBundle\Entity\Geo\LocationDescriptionRepository;
+use Psr\Log\LoggerInterface;
 
 class AddressResolver implements AddressResolverInterface
 {
@@ -30,17 +31,29 @@ class AddressResolver implements AddressResolverInterface
      * @var \AppBundle\Entity\Geo\LocationDescriptionRepository
      */
     private $repository;
+    
+    /**
+     * Logger
+     * 
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
 
     /**
      * AddressResolver constructor.
      *
-     * @param AddressResolverInterface $resolver
+     * @param AddressResolverInterface                            $resolver
      * @param \AppBundle\Entity\Geo\LocationDescriptionRepository $repository
+     * @param LoggerInterface                                     $logger
      */
-    public function __construct(AddressResolverInterface $resolver, LocationDescriptionRepository $repository)
-    {
+    public function __construct(
+        AddressResolverInterface      $resolver,
+        LocationDescriptionRepository $repository,
+        LoggerInterface               $logger
+    ) {
         $this->resolver   = $resolver;
         $this->repository = $repository;
+        $this->logger     = $logger;
     }
 
     /**
@@ -131,6 +144,14 @@ class AddressResolver implements AddressResolverInterface
                 $location = LocationDescription::createByAddress($address);
             }
             $this->repository->persist($location);
+        } else {
+            $this->logger->notice(
+                'Found location for address {zip} {city} in database',
+                [
+                    'zip' => $address->getAddressZip(),
+                    'city' => $address->getAddressCity(),
+                ]
+            );
         }
 
         return $location;
