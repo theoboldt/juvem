@@ -107,6 +107,7 @@ class FeedbackQuestionnaireAnalyzer
                         );
                 }
             }
+            ksort($this->answerDistribution);
         }
         return $this->answerDistribution;
     }
