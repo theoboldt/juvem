@@ -96,7 +96,7 @@ class FeedbackQuestionnaireAnalyzer
             foreach ($this->getQuestions() as $question) {
                 switch ($question->getQuestionType()) {
                     case FeedbackQuestion::TYPE_AGREEMENT:
-                        $this->answerDistribution[$question->getUuid()]
+                        $this->answerDistribution[$question->getTopic()][$question->getUuid()]
                             = QuestionAgreementAnswerDistribution::createFromRawDistribution(
                             $question, $rawAnswerDistribution
                         );

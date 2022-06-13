@@ -25,6 +25,14 @@ class QuestionType extends AbstractType
     {
         $builder
             ->add(
+                'title',
+                TextType::class,
+                [
+                    'label'    => 'Kurztitel (Intern)',
+                    'required' => false,
+                ]
+            )
+            ->add(
                 'topic',
                 TextType::class,
                 [
@@ -72,7 +80,7 @@ class QuestionType extends AbstractType
             [
                 'data_class' => FeedbackQuestion::class,
                 'empty_data' => function (FormInterface $form) {
-                    return new FeedbackQuestion('', '');
+                    return new FeedbackQuestion('', '', '');
                 },
             ]
         );

@@ -90,44 +90,61 @@
         {% endif %}
 
         {% if answerDistribution|length %}
-          {% for distributionItem in answerDistribution %}
+          {% for topic, distributionItems in answerDistribution %}
             <div class="row">
               <div class="col-xs-12 feedback-question">
                 <div class="question-pre"></div>
                 <div class="question">
                   <h3>
-                    {{ distributionItem.question.topic }}
-                    <small>
-                      {% if distributionItem.question.interpretation == 1 %}
-                        <span class="label label-danger"
-                              data-title="Zustimmung zu dieser Aussage wird negativ betrachtet"
-                              data-toggle="tooltip">Negativ</span>
-                      {% elseif distributionItem.question.interpretation == 2 %}
-                        <span class="label label-default" data-title="Diese Aussage ist weder negativ noch positiv"
-                              data-toggle="tooltip">Neutral</span>
-                      {% elseif distributionItem.question.interpretation == 3 %}
-                        <span class="label label-success"
-                              data-title="Zustimmung zu dieser Aussage wird positiv betrachtet"
-                              data-toggle="tooltip">Positiv</span>
-                      {% endif %}
-                      {% if distributionItem.distributionCombined.total == 0 %}
-                        <span class="label label-warning"
-                              data-title="Es liegt keine Rückmeldung vor."
-                              data-toggle="tooltip">Keine Rückmeldung</span>
-                      {% elseif distributionItem.distributionCombined.total <5 %}
-                        <span class="label label-warning"
-                              data-title="Lediglich {{ distributionItem.distributionCombined.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
-                              data-toggle="tooltip">Wenig Rückmeldung</span>
-                      {% endif %}
-                    </small>
+                    {% if topic %}
+                      {{ topic }}
+                    {% else %}
+                      <i>Allgemein</i>
+                    {% endif %}
                   </h3>
-                  <p>{{ distributionItem.question.thesis }}</p>
                 </div>
                 <div class="question-post"></div>
               </div>
             </div>
-            {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionCombined} %}{% endembed %}
+            {% for distributionItem in distributionItems %}
+              <div class="row">
+                <div class="col-xs-12 feedback-question">
+                  <div class="question-pre"></div>
+                  <div class="question">
+                    <h4>
+                      {{ distributionItem.question.title }}
+                      <small>
+                        {% if distributionItem.question.interpretation == 1 %}
+                          <span class="label label-danger"
+                                data-title="Zustimmung zu dieser Aussage wird negativ betrachtet"
+                                data-toggle="tooltip">Negativ</span>
+                        {% elseif distributionItem.question.interpretation == 2 %}
+                          <span class="label label-default" data-title="Diese Aussage ist weder negativ noch positiv"
+                                data-toggle="tooltip">Neutral</span>
+                        {% elseif distributionItem.question.interpretation == 3 %}
+                          <span class="label label-success"
+                                data-title="Zustimmung zu dieser Aussage wird positiv betrachtet"
+                                data-toggle="tooltip">Positiv</span>
+                        {% endif %}
+                        {% if distributionItem.distributionCombined.total == 0 %}
+                          <span class="label label-warning"
+                                data-title="Es liegt keine Rückmeldung vor."
+                                data-toggle="tooltip">Keine Rückmeldung</span>
+                        {% elseif distributionItem.distributionCombined.total <5 %}
+                          <span class="label label-warning"
+                                data-title="Lediglich {{ distributionItem.distributionCombined.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
+                                data-toggle="tooltip">Wenig Rückmeldung</span>
+                        {% endif %}
+                      </small>
+                    </h4>
+                    <p>{{ distributionItem.question.thesis }}</p>
+                  </div>
+                  <div class="question-post"></div>
+                </div>
+              </div>
+              {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionCombined} %}{% endembed %}
 
+            {% endfor %}
           {% endfor %}
         {% endif %}
       </div>

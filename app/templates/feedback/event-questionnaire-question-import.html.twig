@@ -37,8 +37,8 @@
           <div class="form-group question{% if not formField.vars.valid %} has-error{% endif %}">
             {% if questions[fieldName] is defined %}
               {%- set question = questions[fieldName] %}
-              {% if question.topic %}<b title="Thema">{{ question.topic }}</b>{% endif %}
-
+              {% if question.title %}<b title="Titel">{{ question.title }}</b>{% endif %}
+              {% if question.topic %}<i title="Thema">{{ question.topic }}</i>{% endif %}
               {% if question.interpretation == 1 %}
                 <span class="label label-danger" data-title="Diese Aussage wird negativ betrachtet"
                       data-toggle="tooltip">Negativ</span>

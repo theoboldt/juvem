@@ -1,3 +1,16 @@
+.feedback-question {
+  h3 {
+    margin-top: 25px;
+    margin-bottom: 0;
+    background: #333;
+    padding: 5px;
+    color: #fff;
+  }
+  h4 {
+    margin-bottom: 5px;
+  }
+}
+
 .agreement .agreement-bars .agreement-bar,
 .feedback-question,
 .agreement {
@@ -52,7 +65,7 @@
       padding: 0;
       text-align: center;
       height: 25px;
-      
+
       div {
         flex: 1;
       }

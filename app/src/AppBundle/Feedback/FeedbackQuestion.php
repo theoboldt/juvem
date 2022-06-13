@@ -40,6 +40,13 @@ class FeedbackQuestion implements \JsonSerializable
      * @Assert\NotBlank()
      * @var string
      */
+    private string $title;
+
+    /**
+     * @Assert\Type("string")
+     * @Assert\NotBlank()
+     * @var string
+     */
     private string $thesis;
 
     /**
@@ -71,6 +78,7 @@ class FeedbackQuestion implements \JsonSerializable
     {
         return new self(
             $data['topic'] ?? '',
+            $data['title'] ?? '',
             $data['thesis'] ?? '',
             $data['counterThesis'] ?? '',
             $data['questionType'] ?? self::TYPE_AGREEMENT,
@@ -85,6 +93,7 @@ class FeedbackQuestion implements \JsonSerializable
      */
     public function __construct(
         string  $topic,
+        string  $title,
         string  $thesis,
         string  $counterThesis = '',
         int     $questionType = self::TYPE_AGREEMENT,
@@ -92,6 +101,7 @@ class FeedbackQuestion implements \JsonSerializable
         ?string $uuid = null
     ) {
         $this->topic          = $topic;
+        $this->title          = $title;
         $this->thesis         = $thesis;
         $this->counterThesis  = $counterThesis;
         $this->questionType   = $questionType;
@@ -108,6 +118,7 @@ class FeedbackQuestion implements \JsonSerializable
         return [
             'uuid'           => $this->uuid,
             'topic'          => $this->topic,
+            'title'          => $this->title,
             'thesis'         => $this->thesis,
             'counterThesis'  => $this->counterThesis,
             'questionType'   => $this->questionType,
@@ -132,11 +143,27 @@ class FeedbackQuestion implements \JsonSerializable
     }
 
     /**
-     * @param string $topic
+     * @return string
      */
-    public function setTopic(string $topic): void
+    public function getTitle(): string
     {
-        $this->topic = $topic;
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     */
+    public function setTitle(?string $title): void
+    {
+        $this->title = $title ?? '';
+    }
+
+    /**
+     * @param string|null $topic
+     */
+    public function setTopic(?string $topic): void
+    {
+        $this->topic = $topic ?? '';
     }
 
     /**
@@ -205,7 +232,7 @@ class FeedbackQuestion implements \JsonSerializable
 
     /**
      * Determine if this question is equal (except for UUID) to another question
-     * 
+     *
      * @param FeedbackQuestion $other
      * @return bool
      */
@@ -213,6 +240,7 @@ class FeedbackQuestion implements \JsonSerializable
     {
         return (
             $this->topic === $other->getTopic()
+            && $this->title === $other->getTitle()
             && $this->questionType === $other->getQuestionType()
             && $this->interpretation === $other->getInterpretation()
             && $this->thesis === $other->getThesis()

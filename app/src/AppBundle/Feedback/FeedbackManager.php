@@ -329,6 +329,7 @@ Vielen Dank für eure Mithilfe!';
         $questions = [
             new FeedbackQuestion(
                 'Essen',
+                'Essen (Qualität)',
                 'Das Essen hat meistens gut geschmeckt.',
                 'Das Essen war nicht gut.',
                 FeedbackQuestion::TYPE_AGREEMENT,
@@ -336,6 +337,16 @@ Vielen Dank für eure Mithilfe!';
                 'ce7990d4-c4be-3532-925a-ec8e9d5ade0e'
             ),
             new FeedbackQuestion(
+                'Essen',
+                'Essen (Menge)',
+                'Es gab meistens genug zu essen.',
+                '',
+                FeedbackQuestion::TYPE_AGREEMENT,
+                FeedbackQuestion::INTERPRETATION_POSITIVE,
+                'ce7990d4-c4be-3532-925a-ec8e9d5ade0f'
+            ),
+            new FeedbackQuestion(
+                '',
                 'Wiederholen',
                 'Wenn ich könnte, würde ich beim nächstes Mal wieder dabei sein wollen.',
                 'Auch wenn noch mal mit dürfte, möchte beim nächsten Mal ich nicht kommen.',
@@ -344,14 +355,7 @@ Vielen Dank für eure Mithilfe!';
                 '9f28a002-4d72-306d-86be-165b476bdc7e'
             ),
             new FeedbackQuestion(
-                'Angebot',
-                'Ich habe gerne beim Programm (die Aktionen, die Spiele) mitgemacht.',
                 '',
-                FeedbackQuestion::TYPE_AGREEMENT,
-                FeedbackQuestion::INTERPRETATION_POSITIVE,
-                '1a0313ab-57a5-33ad-9c77-6bf4cfbc1943'
-            ),
-            new FeedbackQuestion(
                 'Mitbestimmung',
                 'Ich konnte selbst mitbestimmen und meine Meinung wurde gehört.',
                 'Ich durfte (z.B. beim Programm) nicht mitreden und mitentscheiden.',
@@ -360,6 +364,7 @@ Vielen Dank für eure Mithilfe!';
                 '75e81f95-3bff-3741-9c96-11eb9db6f73a'
             ),
             new FeedbackQuestion(
+                '',
                 'Langeweile',
                 'Ich habe mich oft gelangweilt.',
                 '',
@@ -368,6 +373,7 @@ Vielen Dank für eure Mithilfe!';
                 '71d043fa-33fc-3e7c-af4e-01cd72bbe2f3'
             ),
             new FeedbackQuestion(
+                'Mitarbeitende',
                 'Mitarbeitende (Nett)',
                 'Die meisten Mitarbeitenden waren überwiegend freundlich und nett.',
                 'Die Mitarbeitenden waren unfreundlich.',
@@ -376,6 +382,7 @@ Vielen Dank für eure Mithilfe!';
                 '2e2d8d02-ca9d-38dc-bcba-dd911702c5c4'
             ),
             new FeedbackQuestion(
+                'Mitarbeitende',
                 'Mitarbeitende (Hilfe)',
                 'Ich habe Mitarbeitende gefunden, denen ich vertrauen konnte und die mir bei Problemen halfen.',
                 'Ich konnte keinem der Mitarbeitenden richtig vertrauen.',
@@ -384,6 +391,7 @@ Vielen Dank für eure Mithilfe!';
                 'c6fee88d-31e8-3cfb-90f6-bcdd8667ac55'
             ),
             new FeedbackQuestion(
+                '',
                 'Einsamkeit',
                 'Ich habe mich manchmal einsam gefühlt.',
                 '',
@@ -392,6 +400,7 @@ Vielen Dank für eure Mithilfe!';
                 '8cc30a44-5d9b-3847-a9f4-3b29245dc6c6'
             ),
             new FeedbackQuestion(
+                '',
                 'Heimweh',
                 'Ich hatte manchmal Heimweh.',
                 '',
@@ -400,6 +409,7 @@ Vielen Dank für eure Mithilfe!';
                 'f3195a8b-ec76-338d-b5ff-1481161c95fe'
             ),
             new FeedbackQuestion(
+                'Ärger',
                 'Ärger (Gruppe)',
                 'Es gab oft Ärger und Streit in unserer Gruppe.',
                 '',
@@ -408,6 +418,7 @@ Vielen Dank für eure Mithilfe!';
                 '1228109e-ca0d-39db-a374-4db811e91101'
             ),
             new FeedbackQuestion(
+                'Ärger',
                 'Ärger (selbst)',
                 'Ich wurde viel geärgert.',
                 '',
@@ -416,6 +427,7 @@ Vielen Dank für eure Mithilfe!';
                 '57262d4e-efd6-33cf-bce4-1e626deb3ecd'
             ),
             new FeedbackQuestion(
+                '',
                 'Strenge',
                 'Die Regeln waren zu streng.',
                 '',
@@ -424,6 +436,7 @@ Vielen Dank für eure Mithilfe!';
                 '7568094e-7440-33c4-bbeb-8e9d5626568d'
             ),
             new FeedbackQuestion(
+                '',
                 'Freunde',
                 'Ich habe neue Freundinnen & Freunde kennengelernt.',
                 'Ich habe niemanden gefunden, mit dem ich mich gut verstanden habe.',
@@ -432,6 +445,7 @@ Vielen Dank für eure Mithilfe!';
                 '55bd8739-296c-3eee-8a52-acc9c71f8ea2'
             ),
             new FeedbackQuestion(
+                '',
                 'Zufriedenheit',
                 'Ich habe viele schöne Erlebnisse gehabt.',
                 'Die meiste Zeit hat mir nicht gefallen.',
@@ -440,6 +454,7 @@ Vielen Dank für eure Mithilfe!';
                 'af77b5e1-7b6f-361e-9915-ad535d716c47'
             ),
             new FeedbackQuestion(
+                '',
                 'Gruppe',
                 'Ich habe mich in der Gruppe wohlgefühlt.',
                 '',
@@ -448,14 +463,7 @@ Vielen Dank für eure Mithilfe!';
                 '075186ac-2dcf-31da-8fbc-efda67cff4f9'
             ),
             new FeedbackQuestion(
-                'Bewegung',
-                'Ich habe mich viel bewegt & Sport gemacht.',
                 '',
-                FeedbackQuestion::TYPE_AGREEMENT,
-                FeedbackQuestion::INTERPRETATION_POSITIVE,
-                '97a56947-c11e-3ac8-b69e-10f316e0e0fd'
-            ),
-            new FeedbackQuestion(
                 'Selbstreflexion',
                 'Ich habe oft über mich selbst nachgedacht.',
                 '',
@@ -464,6 +472,25 @@ Vielen Dank für eure Mithilfe!';
                 '3201b6ce-c64f-3035-8986-f33c7b6517e3'
             ),
             new FeedbackQuestion(
+                'Programm',
+                'Angebot',
+                'Ich habe gerne beim Programm (die Aktionen, die Spiele) mitgemacht.',
+                '',
+                FeedbackQuestion::TYPE_AGREEMENT,
+                FeedbackQuestion::INTERPRETATION_POSITIVE,
+                '1a0313ab-57a5-33ad-9c77-6bf4cfbc1943'
+            ),
+            new FeedbackQuestion(
+                'Programm',
+                'Bewegung',
+                'Ich habe mich viel bewegt & Sport gemacht.',
+                '',
+                FeedbackQuestion::TYPE_AGREEMENT,
+                FeedbackQuestion::INTERPRETATION_POSITIVE,
+                '97a56947-c11e-3ac8-b69e-10f316e0e0fd'
+            ),
+            new FeedbackQuestion(
+                'Programm',
                 'Mehr Ausflüge',
                 'Ich hätte mir mehr Ausflüge oder Unternehmungen gewünscht.',
                 '',
@@ -472,6 +499,7 @@ Vielen Dank für eure Mithilfe!';
                 '58fe375c-893e-3153-bde2-d9326b0d9b54'
             ),
             new FeedbackQuestion(
+                'Programm',
                 'Mehr Sport',
                 'Ich hätte mir mehr Sportangebote gewünscht.',
                 '',
@@ -480,6 +508,7 @@ Vielen Dank für eure Mithilfe!';
                 '8c93f812-ca5f-39a8-b190-93e2ee737fd2'
             ),
             new FeedbackQuestion(
+                'Programm',
                 'Mehr Musik',
                 'Ich hätte gern mehr gesungen und Musik gemacht.',
                 '',
@@ -488,6 +517,7 @@ Vielen Dank für eure Mithilfe!';
                 '7681e805-6212-3892-89e9-191f1603aaad'
             ),
             new FeedbackQuestion(
+                '',
                 'Erstes Mal',
                 'Ich war zum ersten Mal mit euch auf Freizeit.',
                 '',
