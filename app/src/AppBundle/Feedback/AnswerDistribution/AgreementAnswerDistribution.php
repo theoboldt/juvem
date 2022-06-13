@@ -100,43 +100,43 @@ class AgreementAnswerDistribution
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getDisagreementFullShare(): float
+    public function getDisagreementFullShare(): ?float
     {
-        return $this->disagreementFull / $this->total;
+        return $this->total > 0 ? $this->disagreementFull / $this->total : null;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getDisagreementPartialShare(): float
+    public function getDisagreementPartialShare(): ?float
     {
-        return $this->disagreementPartial / $this->total;
+        return $this->total > 0 ? $this->disagreementPartial / $this->total : null;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getNeutralShare(): float
+    public function getNeutralShare(): ?float
     {
-        return $this->neutral / $this->total;
+        return $this->total > 0 ? $this->neutral / $this->total : null;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getAgreementPartialShare(): float
+    public function getAgreementPartialShare(): ?float
     {
-        return $this->agreementPartial / $this->total;
+        return $this->total > 0 ? $this->agreementPartial / $this->total : null;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getAgreementFullShare(): float
+    public function getAgreementFullShare(): ?float
     {
-        return $this->agreementFull / $this->total;
+        return $this->total > 0 ? $this->agreementFull / $this->total : null;
     }
 
     /**
@@ -145,7 +145,8 @@ class AgreementAnswerDistribution
      */
     public function getDisagreementFullPercentage(int $decimalPlaces = 0): string
     {
-        return number_format($this->getDisagreementFullShare() * 100, $decimalPlaces, ',', '');
+        $share = $this->getDisagreementFullShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces);
     }
 
     /**
@@ -154,7 +155,8 @@ class AgreementAnswerDistribution
      */
     public function getDisagreementPartialPercentage(int $decimalPlaces = 0): string
     {
-        return number_format($this->getDisagreementPartialShare() * 100, $decimalPlaces, ',', '');
+        $share =$this->getDisagreementPartialShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces);
     }
 
     /**
@@ -163,7 +165,8 @@ class AgreementAnswerDistribution
      */
     public function getNeutralPercentage(int $decimalPlaces = 0): string
     {
-        return number_format($this->getNeutralShare() * 100, $decimalPlaces, ',', '');
+        $share = $this->getNeutralShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces);
     }
 
     /**
@@ -172,7 +175,8 @@ class AgreementAnswerDistribution
      */
     public function getAgreementPartialPercentage(int $decimalPlaces = 0): string
     {
-        return number_format($this->getAgreementPartialShare() * 100, $decimalPlaces, ',', '');
+        $share = $this->getAgreementPartialShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces);
     }
 
     /**
@@ -181,7 +185,19 @@ class AgreementAnswerDistribution
      */
     public function getAgreementFullPercentage(int $decimalPlaces = 0): string
     {
-        return number_format($this->getAgreementFullShare() * 100, $decimalPlaces, ',', '');
+        $share = $this->getAgreementFullShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces);
     }
 
+    /**
+     * Format share using decimal places
+     * 
+     * @param float|null $share         Share
+     * @param int        $decimalPlaces Specify amount of decimal places
+     * @return string
+     */
+    public static function formatShareDecimalPlaces(?float $share, int $decimalPlaces): string
+    {
+        return $share === null ? '' : number_format($share * 100, $decimalPlaces, ',', '');
+    }
 }

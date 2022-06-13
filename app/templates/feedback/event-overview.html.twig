@@ -110,7 +110,11 @@
                               data-title="Zustimmung zu dieser Aussage wird positiv betrachtet"
                               data-toggle="tooltip">Positiv</span>
                       {% endif %}
-                      {% if distributionItem.distributionCombined.total <5 %}
+                      {% if distributionItem.distributionCombined.total == 0 %}
+                        <span class="label label-warning"
+                              data-title="Es liegt keine Rückmeldung vor."
+                              data-toggle="tooltip">Keine Rückmeldung</span>
+                      {% elseif distributionItem.distributionCombined.total <5 %}
                         <span class="label label-warning"
                               data-title="Lediglich {{ distributionItem.distributionCombined.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
                               data-toggle="tooltip">Wenig Rückmeldung</span>

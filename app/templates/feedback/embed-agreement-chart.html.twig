@@ -1,88 +1,89 @@
-<div class="row">
-  <div class="col-xs-12 agreement">
-    <div class="agreement-pre-bars">
-      {% if distribution.disagreementFullPercentage < 1 %}
-        <div class="agreement-bar bar--2"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getDisagreementFull }} von {{ distribution.total }} ({{ distribution.getDisagreementFullPercentage(1) }}%) stimmen überhaupt nicht zu">
-          <div>{{ distribution.getDisagreementFullPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.disagreementFullPercentage < 1 and distribution.disagreementPartialPercentage < 1 %}
-        <div class="agreement-bar bar--1"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getDisagreementPartial }} von {{ distribution.total }} ({{ distribution.getDisagreementPartialPercentage(1) }}%) stimmen eher nicht zu">
-          <div>{{ distribution.getDisagreementPartialPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.disagreementFullPercentage < 1 and distribution.disagreementPartialPercentage < 1 and distribution.neutralPercentage < 1 %}
-        <div class="agreement-bar bar-0"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
-          <div>{{ distribution.getNeutralPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-    </div>
-    <div class="agreement-bars">
-      {% if distribution.disagreementFullPercentage >= 1 %}
-        <div class="agreement-bar bar--2" style="width: {{ distribution.disagreementFullShare*100 }}%;"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getDisagreementFull }} von {{ distribution.total }} ({{ distribution.getDisagreementFullPercentage(1) }}%) stimmen überhaupt nicht zu">
-          <div>{{ distribution.disagreementFullPercentage }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.disagreementPartialPercentage >= 1 %}
-        <div class="agreement-bar bar--1" style="width: {{ distribution.disagreementPartialShare*100 }}%;"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getDisagreementPartial }} von {{ distribution.total }} ({{ distribution.getDisagreementPartialPercentage(1) }}%) stimmen eher nicht zu">
-          <div>{{ distribution.disagreementPartialPercentage }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.neutralPercentage >= 1 %}
-        <div class="agreement-bar bar-0" style="width: {{ distribution.neutralShare*100 }}%;"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
-          <div>{{ distribution.neutralPercentage }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.agreementPartialPercentage >= 1 %}
-        <div class="agreement-bar bar-1" style="width: {{ distribution.agreementPartialShare*100 }}%;"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getAgreementPartial }} von {{ distribution.total }} ({{ distribution.getAgreementPartialPercentage(1) }}%) stimmen eher zu">
-          <div>{{ distribution.agreementPartialPercentage }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.agreementFullPercentage >= 1 %}
-        <div class="agreement-bar bar-2" style="width: {{ distribution.agreementFullShare*100 }}%;"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getAgreementFull }} von {{ distribution.total }} ({{ distribution.getAgreementFullPercentage(1) }}%) stimmen völlig zu">
-          <div>{{ distribution.agreementFullPercentage }}&hairsp;%</div>
-        </div>
-      {% endif %}
-    </div>
-    <div class="agreement-post-bars">
-      {% if distribution.getNeutralPercentage(1) < 1 %}
-        <div class="agreement-bar bar-0"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
-          <div>{{ distribution.getNeutralPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.agreementPartialPercentage < 1 %}
-        <div class="agreement-bar bar-1"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getAgreementPartial }} von {{ distribution.total }} ({{ distribution.getAgreementPartialPercentage(1) }}%) stimmen eher zu">
-          <div>{{ distribution.getAgreementPartialPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-      {% if distribution.agreementPartialPercentage < 1 and distribution.agreementFullPercentage < 1 %}
-        <div class="agreement-bar bar-2"
-             data-toggle="tooltip" data-placement="top"
-             title="{{ distribution.getAgreementFull }} von {{ distribution.total }} ({{ distribution.getAgreementFullPercentage(1) }}%) stimmen völlig zu">
-          <div>{{ distribution.getAgreementFullPercentage(1) }}&hairsp;%</div>
-        </div>
-      {% endif %}
-
+{% if distribution.total > 0 %}
+  <div class="row">
+    <div class="col-xs-12 agreement">
+      <div class="agreement-pre-bars">
+        {% if distribution.disagreementFullPercentage < 1 %}
+          <div class="agreement-bar bar--2"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getDisagreementFull }} von {{ distribution.total }} ({{ distribution.getDisagreementFullPercentage(1) }}%) stimmen überhaupt nicht zu">
+            <div>{{ distribution.getDisagreementFullPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.disagreementFullPercentage < 1 and distribution.disagreementPartialPercentage < 1 %}
+          <div class="agreement-bar bar--1"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getDisagreementPartial }} von {{ distribution.total }} ({{ distribution.getDisagreementPartialPercentage(1) }}%) stimmen eher nicht zu">
+            <div>{{ distribution.getDisagreementPartialPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.disagreementFullPercentage < 1 and distribution.disagreementPartialPercentage < 1 and distribution.neutralPercentage < 1 %}
+          <div class="agreement-bar bar-0"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
+            <div>{{ distribution.getNeutralPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="agreement-bars">
+        {% if distribution.disagreementFullPercentage >= 1 %}
+          <div class="agreement-bar bar--2" style="width: {{ distribution.disagreementFullShare*100 }}%;"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getDisagreementFull }} von {{ distribution.total }} ({{ distribution.getDisagreementFullPercentage(1) }}%) stimmen überhaupt nicht zu">
+            <div>{{ distribution.disagreementFullPercentage }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.disagreementPartialPercentage >= 1 %}
+          <div class="agreement-bar bar--1" style="width: {{ distribution.disagreementPartialShare*100 }}%;"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getDisagreementPartial }} von {{ distribution.total }} ({{ distribution.getDisagreementPartialPercentage(1) }}%) stimmen eher nicht zu">
+            <div>{{ distribution.disagreementPartialPercentage }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.neutralPercentage >= 1 %}
+          <div class="agreement-bar bar-0" style="width: {{ distribution.neutralShare*100 }}%;"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
+            <div>{{ distribution.neutralPercentage }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.agreementPartialPercentage >= 1 %}
+          <div class="agreement-bar bar-1" style="width: {{ distribution.agreementPartialShare*100 }}%;"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getAgreementPartial }} von {{ distribution.total }} ({{ distribution.getAgreementPartialPercentage(1) }}%) stimmen eher zu">
+            <div>{{ distribution.agreementPartialPercentage }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.agreementFullPercentage >= 1 %}
+          <div class="agreement-bar bar-2" style="width: {{ distribution.agreementFullShare*100 }}%;"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getAgreementFull }} von {{ distribution.total }} ({{ distribution.getAgreementFullPercentage(1) }}%) stimmen völlig zu">
+            <div>{{ distribution.agreementFullPercentage }}&hairsp;%</div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="agreement-post-bars">
+        {% if distribution.getNeutralPercentage(1) < 1 %}
+          <div class="agreement-bar bar-0"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getNeutral }} von {{ distribution.total }} ({{ distribution.getNeutralPercentage(1) }}%) stimmen weder zu noch nicht zu">
+            <div>{{ distribution.getNeutralPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.agreementPartialPercentage < 1 %}
+          <div class="agreement-bar bar-1"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getAgreementPartial }} von {{ distribution.total }} ({{ distribution.getAgreementPartialPercentage(1) }}%) stimmen eher zu">
+            <div>{{ distribution.getAgreementPartialPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+        {% if distribution.agreementPartialPercentage < 1 and distribution.agreementFullPercentage < 1 %}
+          <div class="agreement-bar bar-2"
+               data-toggle="tooltip" data-placement="top"
+               title="{{ distribution.getAgreementFull }} von {{ distribution.total }} ({{ distribution.getAgreementFullPercentage(1) }}%) stimmen völlig zu">
+            <div>{{ distribution.getAgreementFullPercentage(1) }}&hairsp;%</div>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
-</div>
+{% endif %}
