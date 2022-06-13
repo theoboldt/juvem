@@ -76,12 +76,12 @@ jobs:
 
       - name: Install Composer dependencies
         run: |
-          composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --working-dir=app
+          composer install --no-progress --prefer-dist --optimize-autoloader --working-dir=app
 
       - name: Run Migration
         run: |
-          php app/bin/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
-          php app/bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
+          php app/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
+          php app/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
 
       - name: Copy test config
         run: cp phpunit.xml.dist phpunit.xml
