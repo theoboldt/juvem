@@ -245,7 +245,6 @@ class ReplacementTest extends TestCase
         );
         $replacement = $replacementFirstName->provideReplacement();
         $this->assertNotEquals($valueFirstName, $replacement);
-        $this->assertLessThanOrEqual(mb_strlen($valueFirstName)+1, mb_strlen($replacement));
     }
     
     public function testReplacerFakerType(): void
