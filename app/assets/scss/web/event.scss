@@ -1203,14 +1203,19 @@ body.feature-cloud-disabled .feature-cloud {
     &.col-xs-12 {
       padding: 0;
     }
-
+    
+    td.question {
+      padding-right: 0;
+    }
+    
     td.field {
       min-width: 145px;
+      padding-right: 0;
 
       .btn {
-        min-width: 28px;
-        padding-left: 7px;
-        padding-right: 7px;
+        min-width: 26px;
+        padding-left: 3px;
+        padding-right: 3px;
       }
     }
   }
