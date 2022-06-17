@@ -14,7 +14,7 @@ use AppBundle\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * EmployeeRepository
+ * Repository
  */
 class FeedbackQuestionnaireFilloutRepository extends EntityRepository
 {
@@ -27,9 +27,11 @@ class FeedbackQuestionnaireFilloutRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('c');
         $qb->select(['COUNT(c)'])
-           ->andWhere('c.event = :eventId');
+           ->andWhere('c.event = :eventId')
+           ->andWhere('c.fillout <> :fillout');
 
         $qb->setParameter('eventId', $event->getEid());
+        $qb->setParameter('fillout', '[]');
         
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
