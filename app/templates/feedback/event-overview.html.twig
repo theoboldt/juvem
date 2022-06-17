@@ -127,18 +127,23 @@
                                   data-title="Zustimmung zu dieser Aussage wird positiv betrachtet"
                                   data-toggle="tooltip">Positiv</span>
                           {% endif %}
-                          {% if distributionItem.distributionCombined.total == 0 %}
+                          {% if distributionItem.distributionThesis.total == 0 %}
                             <span class="label label-warning"
                                   data-title="Es liegt keine Rückmeldung vor."
                                   data-toggle="tooltip">Keine Rückmeldung</span>
-                          {% elseif distributionItem.distributionCombined.total <5 %}
+                          {% elseif distributionItem.distributionThesis.total <5 %}
                             <span class="label label-warning"
-                                  data-title="Lediglich {{ distributionItem.distributionCombined.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
+                                  data-title="Lediglich {{ distributionItem.distributionThesis.total }} Rückmeldungen liegen vor; Vorsicht bei der Deutung."
                                   data-toggle="tooltip">Wenig Rückmeldung</span>
                           {% else %}
                             <span class="label label-info"
-                                  data-title="Es liegt {{ distributionItem.distributionCombined.total }} Rückmeldung vor."
-                                  data-toggle="tooltip">{{ distributionItem.distributionCombined.total }} Rückmeldungen</span>
+                                  data-title="Es liegt {{ distributionItem.distributionThesis.total }} Rückmeldung vor."
+                                  data-toggle="tooltip">{{ distributionItem.distributionThesis.total }} Rückmeldungen</span>
+                          {% endif %}
+                          {% if distributionItem.hasDistributionCounterThesis %}
+                            <span class="label label-info"
+                                  data-title="Gegenthese vorhanden"
+                                  data-toggle="tooltip">Gegenthese vorhanden</span>
                           {% endif %}
                         </small>
                       </h4>
@@ -147,7 +152,7 @@
                     <div class="question-post"></div>
                   </div>
                 </div>
-                {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionCombined} %}{% endembed %}
+                {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionThesis} %}{% endembed %}
               </div>
             {% endfor %}
           {% endfor %}

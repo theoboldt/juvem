@@ -26,9 +26,9 @@ class QuestionAgreementAnswerDistribution implements QuestionAnswerDistributionI
     private AgreementAnswerDistribution $distributionThesis;
 
     /**
-     * @var AgreementAnswerDistribution
+     * @var AgreementAnswerDistribution|null
      */
-    private AgreementAnswerDistribution $distributionCounterThesis;
+    private ?AgreementAnswerDistribution $distributionCounterThesis;
 
     /**
      * @var AgreementAnswerDistribution
@@ -83,38 +83,46 @@ class QuestionAgreementAnswerDistribution implements QuestionAnswerDistributionI
             $distribution['thesis'][LikertChoiceType::AGREEMENT_FULL],
         );
 
-        $distributionCounterThesis = new AgreementAnswerDistribution(
-            $distribution['counter-thesis'][LikertChoiceType::DISAGREEMENT_FULL],
-            $distribution['counter-thesis'][LikertChoiceType::DISAGREEMENT_PARTIAL],
-            $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_NEUTRAL],
-            $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_PARTIAL],
-            $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_FULL],
-        );
+        if ($question->hasCounterThesis()) {
+            $distributionCounterThesis = new AgreementAnswerDistribution(
+                $distribution['counter-thesis'][LikertChoiceType::DISAGREEMENT_FULL],
+                $distribution['counter-thesis'][LikertChoiceType::DISAGREEMENT_PARTIAL],
+                $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_NEUTRAL],
+                $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_PARTIAL],
+                $distribution['counter-thesis'][LikertChoiceType::AGREEMENT_FULL],
+            );
+        } else {
+            $distributionCounterThesis = null;
+        }
 
         return new self($question, $distributionThesis, $distributionCounterThesis);
     }
 
     /**
-     * @param FeedbackQuestion            $question
-     * @param AgreementAnswerDistribution $distributionThesis
-     * @param AgreementAnswerDistribution $distributionCounterThesis
+     * @param FeedbackQuestion                 $question
+     * @param AgreementAnswerDistribution      $distributionThesis
+     * @param AgreementAnswerDistribution|null $distributionCounterThesis
      */
     public function __construct(
-        FeedbackQuestion            $question,
-        AgreementAnswerDistribution $distributionThesis,
-        AgreementAnswerDistribution $distributionCounterThesis
+        FeedbackQuestion             $question,
+        AgreementAnswerDistribution  $distributionThesis,
+        ?AgreementAnswerDistribution $distributionCounterThesis
     ) {
         $this->question                  = $question;
         $this->distributionThesis        = $distributionThesis;
         $this->distributionCounterThesis = $distributionCounterThesis;
 
-        $this->distributionCombined = new AgreementAnswerDistribution(
-            $distributionThesis->getDisagreementFull() + $distributionCounterThesis->getDisagreementFull(),
-            $distributionThesis->getDisagreementPartial() + $distributionCounterThesis->getDisagreementPartial(),
-            $distributionThesis->getNeutral() + $distributionCounterThesis->getNeutral(),
-            $distributionThesis->getAgreementPartial() + $distributionCounterThesis->getAgreementPartial(),
-            $distributionThesis->getAgreementFull() + $distributionCounterThesis->getAgreementFull(),
-        );
+        if ($distributionCounterThesis) {
+            $this->distributionCombined = new AgreementAnswerDistribution(
+                $distributionThesis->getDisagreementFull() + $distributionCounterThesis->getAgreementFull(),
+                $distributionThesis->getDisagreementPartial() + $distributionCounterThesis->getAgreementPartial(),
+                $distributionThesis->getNeutral() + $distributionCounterThesis->getNeutral(),
+                $distributionThesis->getAgreementPartial() + $distributionCounterThesis->getDisagreementPartial(),
+                $distributionThesis->getAgreementFull() + $distributionCounterThesis->getDisagreementFull(),
+            );
+        } else {
+            $this->distributionCombined = clone $distributionThesis;
+        }
     }
 
     /**
@@ -134,11 +142,21 @@ class QuestionAgreementAnswerDistribution implements QuestionAnswerDistributionI
     }
 
     /**
-     * @return AgreementAnswerDistribution
+     * @return AgreementAnswerDistribution|null
      */
-    public function getDistributionCounterThesis(): AgreementAnswerDistribution
+    public function getDistributionCounterThesis(): ?AgreementAnswerDistribution
     {
         return $this->distributionCounterThesis;
+    }
+
+    /**
+     * Determine if counter thesis distribution is present at all
+     * 
+     * @return bool
+     */
+    public function hasDistributionCounterThesis(): bool
+    {
+        return $this->distributionCounterThesis !== null;
     }
 
     /**
