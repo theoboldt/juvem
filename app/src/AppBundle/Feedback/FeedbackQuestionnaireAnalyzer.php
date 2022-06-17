@@ -11,6 +11,7 @@
 namespace AppBundle\Feedback;
 
 use AppBundle\Feedback\AnswerDistribution\QuestionAgreementAnswerDistribution;
+use AppBundle\Feedback\AnswerDistribution\QuestionAnswerDistributionInterface;
 
 class FeedbackQuestionnaireAnalyzer
 {
@@ -106,8 +107,18 @@ class FeedbackQuestionnaireAnalyzer
                             'Unknown question type ' . $question->getQuestionType() . ' appeared'
                         );
                 }
-            }
+            } //foreach question
             ksort($this->answerDistribution);
+            $questions = null;
+            foreach ($this->answerDistribution as $topic => &$questions) {
+                usort(
+                    $questions,
+                    function (QuestionAnswerDistributionInterface $a, QuestionAnswerDistributionInterface $b) {
+                        return $a->getQuestion()->getTitle() <=> $b->getQuestion()->getTitle();
+                    }
+                );
+            }
+            unset($questions);
         }
         return $this->answerDistribution;
     }

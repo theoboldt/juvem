@@ -74,6 +74,7 @@
   }
 
   .agreement-bars {
+    display: flex;
     width: 90%;
 
     .agreement-bar {
@@ -88,16 +89,50 @@
       width: 33.33%;
     }
   }
-  
+
   .agreement-bar {
     padding: 0 5px;
     color: #fff;
     display: flex;
     align-items: center;
 
+    &.perc-1,
+    &.perc-2,
+    &.perc-3 {
+      padding: 0;
+      justify-content: center;
+      font-size: 70%;
+
+      div {
+        text-align: center;
+      }
+    }
+
+    &.perc-4,
+    &.perc-5 {
+      padding: 0;
+      justify-content: center;
+      font-size: 90%;
+
+      div {
+        text-align: center;
+      }
+    }
+
     @media (max-width: $screen-xs) {
       //small bar (percentage < 12)
-      &.bar-small-width {
+      &.perc-1,
+      &.perc-2,
+      &.perc-3,
+      &.perc-4,
+      &.perc-5,
+      &.perc-6,
+      &.perc-7,
+      &.perc-8,
+      &.perc-9,
+      &.perc-10,
+      &.perc-11,
+      &.perc-12 {
         padding: 0;
         justify-content: center;
         font-size: 80%;

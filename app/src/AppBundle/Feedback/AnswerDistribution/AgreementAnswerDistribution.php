@@ -140,64 +140,73 @@ class AgreementAnswerDistribution
     }
 
     /**
-     * @param int $decimalPlaces Specify amount of decimal places
+     * @param int    $decimalPlaces    Specify amount of decimal places
+     * @param string $decimalSeparator Decimal separator to use
      * @return string
      */
-    public function getDisagreementFullPercentage(int $decimalPlaces = 0): string
+    public function getDisagreementFullPercentage(int $decimalPlaces = 0, string $decimalSeparator = ','): string
     {
         $share = $this->getDisagreementFullShare();
-        return self::formatShareDecimalPlaces($share, $decimalPlaces);
+        return self::formatShareDecimalPlaces($share, $decimalPlaces, $decimalSeparator);
     }
 
     /**
-     * @param int $decimalPlaces Specify amount of decimal places
+     * @param int    $decimalPlaces    Specify amount of decimal places
+     * @param string $decimalSeparator Decimal separator to use
      * @return string
      */
-    public function getDisagreementPartialPercentage(int $decimalPlaces = 0): string
+    public function getDisagreementPartialPercentage(int $decimalPlaces = 0, string $decimalSeparator = ','): string
     {
-        $share =$this->getDisagreementPartialShare();
-        return self::formatShareDecimalPlaces($share, $decimalPlaces);
+        $share = $this->getDisagreementPartialShare();
+        return self::formatShareDecimalPlaces($share, $decimalPlaces, $decimalSeparator);
     }
 
     /**
-     * @param int $decimalPlaces Specify amount of decimal places
+     * @param int    $decimalPlaces    Specify amount of decimal places
+     * @param string $decimalSeparator Decimal separator to use
      * @return string
      */
-    public function getNeutralPercentage(int $decimalPlaces = 0): string
+    public function getNeutralPercentage(int $decimalPlaces = 0, string $decimalSeparator = ','): string
     {
         $share = $this->getNeutralShare();
-        return self::formatShareDecimalPlaces($share, $decimalPlaces);
+        return self::formatShareDecimalPlaces($share, $decimalPlaces, $decimalSeparator);
     }
 
     /**
-     * @param int $decimalPlaces Specify amount of decimal places
+     * @param int    $decimalPlaces    Specify amount of decimal places
+     * @param string $decimalSeparator Decimal separator to use
      * @return string
      */
-    public function getAgreementPartialPercentage(int $decimalPlaces = 0): string
+    public function getAgreementPartialPercentage(int $decimalPlaces = 0, string $decimalSeparator = ','): string
     {
         $share = $this->getAgreementPartialShare();
-        return self::formatShareDecimalPlaces($share, $decimalPlaces);
+        return self::formatShareDecimalPlaces($share, $decimalPlaces, $decimalSeparator);
     }
 
     /**
-     * @param int $decimalPlaces Specify amount of decimal places
+     * @param int    $decimalPlaces    Specify amount of decimal places
+     * @param string $decimalSeparator Decimal separator to use
      * @return string
      */
-    public function getAgreementFullPercentage(int $decimalPlaces = 0): string
+    public function getAgreementFullPercentage(int $decimalPlaces = 0, string $decimalSeparator = ','): string
     {
         $share = $this->getAgreementFullShare();
-        return self::formatShareDecimalPlaces($share, $decimalPlaces);
+        return self::formatShareDecimalPlaces($share, $decimalPlaces, $decimalSeparator);
     }
 
     /**
      * Format share using decimal places
-     * 
-     * @param float|null $share         Share
-     * @param int        $decimalPlaces Specify amount of decimal places
+     *
+     * @param float|null $share            Share
+     * @param int        $decimalPlaces    Specify amount of decimal places
+     * @param string     $decimalSeparator Decimal separator to use
      * @return string
      */
-    public static function formatShareDecimalPlaces(?float $share, int $decimalPlaces): string
-    {
-        return $share === null ? '' : number_format($share * 100, $decimalPlaces, ',', '');
+    public static function formatShareDecimalPlaces(
+        ?float $share,
+        int    $decimalPlaces,
+        string $decimalSeparator = ','
+    ): string {
+        return $share === null ? '' : number_format($share * 100, $decimalPlaces, $decimalSeparator, '');
     }
 }
