@@ -2,10 +2,11 @@
   h3 {
     margin-top: 25px;
     margin-bottom: 0;
-    background: #333;
+    background: $brandPrimaryDark;
     padding: 5px;
     color: #fff;
   }
+
   h4 {
     margin-bottom: 5px;
   }
@@ -87,14 +88,31 @@
       width: 33.33%;
     }
   }
-
+  
   .agreement-bar {
     padding: 0 5px;
     color: #fff;
     display: flex;
     align-items: center;
-  }
 
+    @media (max-width: $screen-xs) {
+      //small bar (percentage < 12)
+      &.bar-small-width {
+        padding: 0;
+        justify-content: center;
+        font-size: 80%;
+
+        div {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+
+/* Colors */
+.agreement {
   .bar--2 {
     background: $brand-danger;
   }
@@ -114,6 +132,50 @@
 
   .bar-2 {
     background: darken($brand-success, 10%);
+  }
+}
+
+.question-interpretation-1 .agreement {
+  .bar--2 {
+    background: darken($brand-success, 10%);
+  }
+
+  .bar--1 {
+    background: $brand-success;
+  }
+
+  .bar-0 {
+    // nothing
+  }
+
+  .bar-1 {
+    background: lighten($brand-danger, 10%);
+  }
+
+  .bar-2 {
+    background: $brand-danger;
+  }
+}
+
+.question-interpretation-2 .agreement {
+  .bar--2 {
+    background: $brand-warning;
+  }
+
+  .bar--1 {
+    background: lighten($brand-warning, 10%);
+  }
+
+  .bar-0 {
+    // nothing
+  }
+
+  .bar-1 {
+    background: $brand-info;
+  }
+
+  .bar-2 {
+    background: darken($brand-info, 10%);
   }
 
 }
