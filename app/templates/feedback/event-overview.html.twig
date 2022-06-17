@@ -35,7 +35,7 @@
       <li class="active">Feedback</li>
     {% endblock %}
   {% endembed %}
-  <div class="container">
+  <div class="container container-feedback">
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
@@ -107,7 +107,7 @@
               </div>
             </div>
             {% for distributionItem in distributionItems %}
-              <div class="question question-interpretation-{{ distributionItem.question.interpretation }}">
+              <div class="distribution-item">
                 <div class="row">
                   <div class="col-xs-12 feedback-question">
                     <div class="question-pre"></div>
@@ -142,15 +142,48 @@
                           {% endif %}
                           {% if distributionItem.hasDistributionCounterThesis %}
                             <span class="label label-info">Gegenthese vorhanden</span>
+                            <button type="button" class="btn btn-xs btn-default btn-toggle-counter-thesis"
+                                    data-toggle="button" aria-pressed="false">
+                              <span class="hidden-xs">Gegenthese zeigen</span>
+                              <span class="visible-xs">+</span>
+                            </button>
                           {% endif %}
                         </small>
                       </h4>
-                      <p>{{ distributionItem.question.thesis }}</p>
+                      <p>
+                        {% if distributionItem.hasDistributionCounterThesis %}
+                          <b>These: </b>
+                        {% endif %}
+                        {{ distributionItem.question.thesis }}
+                      </p>
                     </div>
                     <div class="question-post"></div>
                   </div>
                 </div>
-                {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionThesis} %}{% endembed %}
+                <div class="question-interpretation-{{ distributionItem.question.interpretation }}">
+                  {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionThesis} %}{% endembed %}
+                </div>
+                {% if distributionItem.hasDistributionCounterThesis %}
+                  <div class="counter-thesis">
+                    <div class="row">
+                      <div class="col-xs-12 feedback-question">
+                        <div class="question-pre"></div>
+                        <div class="question">
+                          <p>
+                            <b>Gegenthese: </b>
+                            {{ distributionItem.question.counterThesis }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="question-interpretation-
+                      {%- if distributionItem.question.interpretation == 1 -%}3
+                      {%- elseif distributionItem.question.interpretation == 3 -%}1
+                      {%- else -%}{{ distributionItem.question.interpretation }}{%- endif -%}">
+                      {% embed 'feedback/embed-agreement-chart.html.twig' with {'distribution': distributionItem.distributionCounterThesis} %}{% endembed %}
+                    </div>
+                  </div>
+                {% endif %}
               </div>
             {% endfor %}
           {% endfor %}

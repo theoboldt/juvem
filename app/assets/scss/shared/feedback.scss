@@ -12,6 +12,12 @@
   }
 }
 
+.container-feedback {
+  p {
+    margin-bottom: 2px;
+  }
+}
+
 .agreement .agreement-bars .agreement-bar,
 .feedback-question,
 .agreement {
@@ -213,4 +219,28 @@
     background: darken($brand-info, 10%);
   }
 
+}
+
+.distribution-item {
+  p b {
+    display: none;
+  }
+
+  .counter-thesis {
+    overflow: hidden;
+    max-height: 0;
+    -webkit-transition: max-height 0.2s ease-out;
+    -moz-transition: max-height 0.2s ease-out;
+    transition: max-height 0.2s ease-out;
+  }
+
+  &.counter-thesis-visible {
+    p b {
+      display: inline;
+    }
+
+    .counter-thesis {
+      max-height: 500px;
+    }
+  }
 }

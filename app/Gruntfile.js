@@ -105,6 +105,7 @@ module.exports = function (grunt) {
                     '<%= assetsPath %>/js/area/dependencies.js',
                     '<%= assetsPath %>/js/area/employee.js',
                     '<%= assetsPath %>/js/area/event_export.js',
+                    '<%= assetsPath %>/js/area/event_feedback.js',
                     '<%= assetsPath %>/js/area/participation.js',
                     '<%= assetsPath %>/js/area/newsletter.js',
                     '<%= assetsPath %>/js/area/meals.js',
