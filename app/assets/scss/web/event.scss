@@ -1181,7 +1181,8 @@ body.feature-cloud-disabled .feature-cloud {
 
   @media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
     td.field {
-      min-width: 500px;
+      min-width: 505px;
+      padding-right: 0;
 
       .btn {
         padding-left: 5px;
