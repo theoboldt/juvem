@@ -13,6 +13,8 @@ namespace AppBundle\Entity\AttendanceList;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\Event;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,16 +22,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Table(name="attendance_list")
  */
-class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
+class AttendanceList implements SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SpecifiesChangeTrackingStorableRepresentationInterface
 {
-    use CreatedModifiedTrait;
+    use SoftDeleteTrait, CreatedModifiedTrait;
 
     /**
      * @ORM\Column(type="integer")
@@ -39,7 +41,7 @@ class AttendanceList implements ProvidesModifiedInterface, ProvidesCreatedInterf
     protected $tid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="attendanceLists", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Event", inversedBy="attendanceLists")
      * @ORM\JoinColumn(name="eid", referencedColumnName="eid", onDelete="cascade")
      */
     protected $event;

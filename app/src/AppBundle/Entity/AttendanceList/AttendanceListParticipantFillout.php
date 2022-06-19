@@ -15,8 +15,6 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
@@ -30,7 +28,7 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AttendanceList", inversedBy="fillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceList", inversedBy="fillouts", cascade={"persist"})
      * @ORM\JoinColumn(name="list_id", referencedColumnName="tid", onDelete="cascade", nullable=false)
      * @var AttendanceList
      */
@@ -38,7 +36,7 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Participant", inversedBy="attendanceListsFillouts", cascade={"persist"})
      * @ORM\JoinColumn(name="participant_id", referencedColumnName="aid", onDelete="cascade", nullable=false)
      * @var Participant
      */
@@ -46,14 +44,14 @@ class AttendanceListParticipantFillout implements ProvidesModifiedInterface, Pro
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="fillouts", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="fillouts", cascade={"persist"})
      * @ORM\JoinColumn(name="column_id", referencedColumnName="column_id", onDelete="cascade", nullable=false)
      * @var AttendanceListColumn
      */
     protected $column;
     
     /**
-     * @ORM\ManyToOne(targetEntity="AttendanceListColumnChoice", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceListColumnChoice", cascade={"persist"})
      * @ORM\JoinColumn(name="choice_id", referencedColumnName="choice_id", onDelete="cascade", nullable=true)
      * @var AttendanceListColumnChoice|null
      */

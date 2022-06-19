@@ -10,18 +10,22 @@
 
 namespace AppBundle\Entity\AttendanceList;
 
+use AppBundle\Entity\Audit\SoftDeleteableInterface;
+use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="attendance_list_column_choices")
  */
-class AttendanceListColumnChoice
+class AttendanceListColumnChoice implements SoftDeleteableInterface
 {
+    use SoftDeleteTrait;
+
     /**
      * @ORM\Column(type="integer", name="choice_id", options={"unsigned"=true})
      * @ORM\Id
@@ -31,7 +35,7 @@ class AttendanceListColumnChoice
     protected $choiceId;
     
     /**
-     * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="choices", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AttendanceListColumn", inversedBy="choices", cascade={"persist"})
      * @ORM\JoinColumn(name="column_id", referencedColumnName="column_id", onDelete="cascade", nullable=false)
      * @var AttendanceListColumn
      */

@@ -16,13 +16,13 @@ use AppBundle\Entity\AttendanceList\AttendanceListColumnRepository;
 use AppBundle\Form\AttendanceListColumnType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 
 class ConfigurationController extends AbstractController
@@ -61,8 +61,10 @@ class ConfigurationController extends AbstractController
     /**
      * Show column details
      *
-     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
-     * @Route("/admin/attendance/columns/{column_id}", requirements={"column_id": "\d+"}, name="attendance_column_detail")
+     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" =
+     *                           "column_id"})
+     * @Route("/admin/attendance/columns/{column_id}", requirements={"column_id": "\d+"},
+     *                                                 name="attendance_column_detail")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column
      * @return Response
@@ -80,8 +82,10 @@ class ConfigurationController extends AbstractController
     /**
      * Edit column
      *
-     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" = "column_id"})
-     * @Route("/admin/attendance/columns/{column_id}/edit", requirements={"column_id": "\d+"}, name="attendance_column_edit")
+     * @ParamConverter("column", class="AppBundle\Entity\AttendanceList\AttendanceListColumn", options={"id" =
+     *                           "column_id"})
+     * @Route("/admin/attendance/columns/{column_id}/edit", requirements={"column_id": "\d+"},
+     *                                                      name="attendance_column_edit")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      * @param AttendanceListColumn $column
      * @param Request $request
@@ -98,11 +102,21 @@ class ConfigurationController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()
-                       ->getManager();
-            foreach ($originalChoices as $choice) {
-                if (false === $column->getChoices()->contains($choice)) {
-                    $em->remove($choice);
+            $em  = $this->getDoctrine()
+                ->getManager();
+            $now = new \DateTime();
+
+            foreach ($originalChoices as $originalChoice) {
+                $found = false;
+                foreach ($column->getChoices(false) as $currentChoice) {
+                    if ($currentChoice->getChoiceId() === $originalChoice->getChoiceId()) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $originalChoice->setDeletedAt($now);
+                    $em->persist($originalChoice);
                 }
             }
             

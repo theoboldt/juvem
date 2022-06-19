@@ -34,7 +34,7 @@
             <label class="col-sm-4 control-label">Optionen</label>
             <div class="col-sm-8">
               <ul class="form-control-static">
-                {% for choice in column.choices %}
+                {% for choice in column.getChoices(false) %}
                   <li>
                     <b>Kürzel:</b>
                     <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
@@ -46,6 +46,27 @@
               </ul>
             </div>
           </div>
+          {% if column.hasDeletedChoices %}
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Gelöschte Optionen</label>
+              <div class="col-sm-8">
+                <ul class="form-control-static">
+                  {% for choice in column.getChoices(true) %}
+                    {% if choice.isDeleted %}
+                      <li>
+                        <b>Kürzel:</b>
+                        <span class="label label-primary">{{ choice.getShortTitle(true) }}</span>
+                        <br>
+                        <b>Interner Titel:</b>
+                        <span>{{ choice.title }}</span>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+        </div>
         </div>
       </div>
     </div>
