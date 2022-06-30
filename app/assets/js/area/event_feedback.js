@@ -1,6 +1,4 @@
 $(function () {
-
-
     /**
      * EVENT FEEDBACK DETAILS: Show/Hide counter thesis
      */
@@ -18,4 +16,33 @@ $(function () {
             distributionEl.toggleClass('counter-thesis-visible', true);
         }
     });
+
+    let form = $('#feedback_questionnaire_fillout'),
+        silentSubmitFeedbackFormRequested = false,
+        silentSubmitFeedbackFormActive = false;
+    if (form) {
+        let silentSubmitFeedbackForm = function () {
+            if (silentSubmitFeedbackFormActive) {
+                silentSubmitFeedbackFormRequested = true;
+                return;
+            }
+            silentSubmitFeedbackFormRequested = false;
+            silentSubmitFeedbackFormActive = true;
+
+            let xhr = new XMLHttpRequest();
+            let data = new FormData(form.get(0));
+            xhr.open('POST', window.location.href + '?empty_response=1', true);
+            xhr.onreadystatechange = function (response) {
+                silentSubmitFeedbackFormActive = false;
+                if (silentSubmitFeedbackFormRequested) {
+                    silentSubmitFeedbackForm();
+                }
+            };
+            xhr.send(data);
+        };
+        $('#feedback_questionnaire_fillout input[type=radio]').change(function () {
+            silentSubmitFeedbackForm();
+        });
+    }
+
 });

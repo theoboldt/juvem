@@ -48,7 +48,7 @@
     </div>
     <div class="row">
       {% form_theme form 'form/button_choice_type_fields.html.twig' %}
-      {{ form_start(form) }}
+      {{ form_start(form,  {'attr': {'id': 'feedback_questionnaire_fillout'}}) }}
       <div class="col-xs-12 feedback-questionnaire">
         <div class="table">
           <table class="table table-striped feedback-questions">

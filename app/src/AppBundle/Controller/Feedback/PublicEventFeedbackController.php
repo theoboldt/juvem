@@ -141,16 +141,20 @@ class PublicEventFeedbackController
         foreach ($questionnaire->getQuestions() as $question) {
             $questions['question-' . $question->getUuid()] = $question;
         }
-
-        return $this->render(
-            'feedback/event-questionnaire-fillout.html.twig',
-            [
-                'event'         => $event,
-                'questionnaire' => $questionnaire,
-                'questions'     => $questions,
-                'form'          => $form->createView(),
-            ]
-        );
+        $emptyResponse = $request->query->getBoolean('empty_response');
+        if ($emptyResponse) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        } else {
+            return $this->render(
+                'feedback/event-questionnaire-fillout.html.twig',
+                [
+                    'event'         => $event,
+                    'questionnaire' => $questionnaire,
+                    'questions'     => $questions,
+                    'form'          => $form->createView(),
+                ]
+            );
+        }
     }
 
 
@@ -219,15 +223,20 @@ class PublicEventFeedbackController
             $questions['question-' . $question->getUuid()] = $question;
         }
 
-        return $this->render(
-            'feedback/event-questionnaire-fillout.html.twig',
-            [
-                'event'         => $event,
-                'questionnaire' => $questionnaire,
-                'questions'     => $questions,
-                'form'          => $form->createView(),
-            ]
-        );
+        $emptyResponse = $request->query->getBoolean('empty_response');
+        if ($emptyResponse) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        } else {
+            return $this->render(
+                'feedback/event-questionnaire-fillout.html.twig',
+                [
+                    'event'         => $event,
+                    'questionnaire' => $questionnaire,
+                    'questions'     => $questions,
+                    'form'          => $form->createView(),
+                ]
+            );
+        }
     }
 
 }
