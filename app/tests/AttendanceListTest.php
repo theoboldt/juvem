@@ -25,7 +25,7 @@ class AttendanceListTest extends JuvemKernelTestCase
 {
     use ParticipantTestingDataTrait;
 
-    public static function setUpBeforeClass(): void
+    public function setUp(): void
     {
         parent::setUpBeforeClass();
         $kernel = static::bootKernel();
