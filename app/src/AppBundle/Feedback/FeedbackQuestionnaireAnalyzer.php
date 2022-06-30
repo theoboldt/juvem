@@ -135,4 +135,20 @@ class FeedbackQuestionnaireAnalyzer
         return $this->answerDistribution[$question->getUuid()] ?? null;
     }
 
+    /**
+     * Get fillout comments
+     *
+     * @return string[]
+     */
+    public function getFilloutComments(): array
+    {
+        $comments = [];
+        foreach ($this->fillouts as $fillout) {
+            /** @var FeedbackQuestionnaireAnswer $answer */
+            if ($fillout->getComment()) {
+                $comments[] = $fillout->getComment();
+            }
+        }
+        return $comments;
+    }
 }

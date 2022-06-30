@@ -86,6 +86,7 @@ class AdminEventFeedbackController
                 'responseCount'          => $this->feedbackManager->fetchResponseCount($event),
                 'filloutsSubmittedCount' => $this->feedbackManager->fetchFilloutSubmittedTotalCount($event),
                 'answerDistribution'     => $analyzer->getQuestionAnswerDistributions(),
+                'filloutComments'        => $analyzer->getFilloutComments(),
                 'formAction'             => $formAction->createView(),
                 'event'                  => $event,
                 'questionnaire'          => $event->getFeedbackQuestionnaire(true),

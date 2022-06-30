@@ -188,6 +188,20 @@
               </div>
             {% endfor %}
           {% endfor %}
+          {% if filloutComments|length > 0 %}
+            <div class="row">
+              <div class="col-xs-12 feedback-question feedback-comments">
+                <div class="question-pre"></div>
+                <div class="question">
+                  <h3><i>Schriftliche Rückmeldungen</i></h3>
+                  {% for filloutComment in filloutComments %}
+                  <p>{{ filloutComment }}</p>
+                  {% endfor %}
+                </div>
+                <div class="question-post"></div>
+              </div>
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     </div>
