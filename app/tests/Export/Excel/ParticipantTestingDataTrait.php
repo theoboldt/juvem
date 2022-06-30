@@ -95,7 +95,19 @@ trait ParticipantTestingDataTrait
     {
         $event = new Event();
         $event->setTitle('Camping Trip');
+        $event->setDescription('Funny camping trip');
         $event->setStartDate(new \DateTime('2010-01-01 10:00:00'));
+        $event->setIsActive(false);
+        $event->setIsVisible(false);
+        $event->setIsActiveRegistrationEmployee(false);
+        $event->setIsAutoConfirm(false);
+        $event->setIsCalendarEntryEnabled(false);
+        $event->setIsFeedbackQuestionnaireEnabled(false);
+        $event->setIsFeedbackQuestionnaireSent(false);
+        $event->setIsGalleryLinkSharing(false);
+        $event->setIsShowAddress(false);
+        $event->setIsShowMap(false);
+        $event->setIsShowWeather(false);
 
         return $event;
     }

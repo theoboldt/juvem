@@ -14,7 +14,7 @@ namespace Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class JuvemKernelTestCase extends KernelTestCase
+abstract class JuvemKernelTestCase extends KernelTestCase
 {
     use JuvemDatabaseAwareTestCaseTrait;
     

@@ -14,7 +14,7 @@ namespace Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class JuvemWebTestCase extends WebTestCase
+abstract class JuvemWebTestCase extends WebTestCase
 {
     use JuvemDatabaseAwareTestCaseTrait;
     
