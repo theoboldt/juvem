@@ -4,10 +4,10 @@ $(function () {
      */
     $(".feedback-question .question .btn-toggle-counter-thesis").click(function (event) {
         event.preventDefault();
-        var btnEl = $(this),
+        const btnEl = $(this),
             distributionEl = btnEl.parent().parent().parent().parent().parent().parent();
 
-        if (distributionEl) {
+        if (!distributionEl) {
             return;
         }
         if (distributionEl.hasClass('counter-thesis-visible')) {
