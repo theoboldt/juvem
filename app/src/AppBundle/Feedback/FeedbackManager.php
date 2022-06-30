@@ -117,6 +117,18 @@ class FeedbackManager
     }
 
     /**
+     * Get questionnaire fillout count (of all which were submitted)
+     *
+     * @param Event $event
+     * @return int
+     */
+    public function fetchFilloutSubmittedTotalCount(Event $event): int
+    {
+        $repository = $this->em->getRepository(FeedbackQuestionnaireFillout::class);
+        return $repository->fetchFilloutSubmittedTotalCount($event);
+    }
+
+    /**
      * Fetch all questionnaire fillouts for event
      * 
      * @param Event $event

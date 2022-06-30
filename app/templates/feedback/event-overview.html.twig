@@ -68,13 +68,14 @@
         {% else %}
           <span class="label label-primary">Automatische Benachrichtigung {{ questionnaire.feedbackDaysAfterEvent }} Tage nach der Veranstaltung</span>
         {% endif %}
-
         &nbsp;
-        {% if responseCount == 0 %}
+        {% if responseCount == 0 or filloutsSubmittedCount == 0 %}
           <span class="label label-default">Keine Rückmeldungen</span>
         {% else %}
-          <span class="label label-primary">
-          {{ responseCount }} Rückmeldung{% if responseCount > 1 %}en{% endif %}
+          <span class="label label-primary"
+                data-title="{{ responseCount }} Rückmeldung{% if responseCount > 1 %}en{% endif %} (von {{ filloutsSubmittedCount }})"
+                data-toggle="tooltip">
+            Rücklaufquote {{ (responseCount/filloutsSubmittedCount*100) | round }}&hairsp;%
           </span>
         {% endif %}
 

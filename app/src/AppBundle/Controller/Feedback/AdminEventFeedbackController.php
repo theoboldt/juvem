@@ -83,11 +83,12 @@ class AdminEventFeedbackController
         return $this->render(
             'feedback/event-overview.html.twig',
             [
-                'responseCount'      => $this->feedbackManager->fetchResponseCount($event),
-                'answerDistribution' => $analyzer->getQuestionAnswerDistributions(),
-                'formAction'         => $formAction->createView(),
-                'event'              => $event,
-                'questionnaire'      => $event->getFeedbackQuestionnaire(true),
+                'responseCount'          => $this->feedbackManager->fetchResponseCount($event),
+                'filloutsSubmittedCount' => $this->feedbackManager->fetchFilloutSubmittedTotalCount($event),
+                'answerDistribution'     => $analyzer->getQuestionAnswerDistributions(),
+                'formAction'             => $formAction->createView(),
+                'event'                  => $event,
+                'questionnaire'          => $event->getFeedbackQuestionnaire(true),
             ]
         );
     }

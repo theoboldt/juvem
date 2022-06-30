@@ -37,6 +37,21 @@ class FeedbackQuestionnaireFilloutRepository extends EntityRepository
     }
 
     /**
+     * @param Event $event
+     * @return int
+     */
+    public function fetchFilloutSubmittedTotalCount(Event $event): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select(['COUNT(c)'])
+           ->andWhere('c.event = :eventId');
+
+        $qb->setParameter('eventId', $event->getEid());
+        
+        return (int)$qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
      * Fetch all fillouts
      * 
      * @param Event $event
