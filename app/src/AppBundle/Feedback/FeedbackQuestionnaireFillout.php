@@ -122,10 +122,9 @@ class FeedbackQuestionnaireFillout implements \JsonSerializable
      *
      * @param string $name                        Name of question
      * @param bool   $createInstanceIfNotExisting If true, answer is automatically created if not yet available
-     * @return FeedbackQuestionnaireAnswer
-     * @throws \OutOfBoundsException If answer not found and should not be created
+     * @return FeedbackQuestionnaireAnswer|null
      */
-    public function getAnswer(string $name, bool $createInstanceIfNotExisting = false): FeedbackQuestionnaireAnswer
+    public function getAnswer(string $name, bool $createInstanceIfNotExisting = false): ?FeedbackQuestionnaireAnswer
     {
         /** @var FeedbackQuestionnaireAnswer $answer */
         foreach ($this->answers as $answer) {
@@ -139,7 +138,7 @@ class FeedbackQuestionnaireFillout implements \JsonSerializable
             return $answer;
         }
 
-        throw new \OutOfBoundsException('Answer for question ' . $name . ' unavailable');
+        return null;
     }
 
     /**

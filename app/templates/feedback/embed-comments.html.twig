@@ -1,0 +1,17 @@
+{% if filloutComments|length > 0 %}
+  <div class="row">
+    <div class="col-xs-12">
+      {% for filloutComment in filloutComments %}
+        <div class="panel panel-default">
+          <div class="panel-body">
+            {{ filloutComment }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info" role="alert">
+    Es wurden keine Kommentare/Ergänzungen abgegeben.
+  </div>
+{% endif %}

@@ -74,10 +74,10 @@ class AdminEventFeedbackController
             $this->feedbackManager->requestFeedback($event);
             return $this->redirectToRoute('admin_feedback_event', ['eid' => $event->getEid()]);
         }
-        
-        $analyzer = new FeedbackQuestionnaireAnalyzer(
+        $filloutEntities = $this->feedbackManager->fetchFillouts($event);
+        $analyzer        = new FeedbackQuestionnaireAnalyzer(
             $event->getFeedbackQuestionnaire(true),
-            FeedbackManager::extractFilloutsFromEntities($this->feedbackManager->fetchFillouts($event))
+            FeedbackManager::extractFilloutsFromEntities($filloutEntities)
         );
 
         return $this->render(
@@ -87,6 +87,7 @@ class AdminEventFeedbackController
                 'filloutsSubmittedCount' => $this->feedbackManager->fetchFilloutSubmittedTotalCount($event),
                 'answerDistribution'     => $analyzer->getQuestionAnswerDistributions(),
                 'filloutComments'        => $analyzer->getFilloutComments(),
+                'filloutEntities'        => $filloutEntities,
                 'formAction'             => $formAction->createView(),
                 'event'                  => $event,
                 'questionnaire'          => $event->getFeedbackQuestionnaire(true),

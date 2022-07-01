@@ -1,0 +1,142 @@
+{% if filloutEntities|length > 0 %}
+  <div class="row">
+    <div class="col-xs-12">
+      {% for filloutEntity in filloutEntities %}
+        {% set fillout = filloutEntity.getFillout(true) %}
+        {% if fillout %}
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th>Typ</th>
+                  <th><abbr title="Interpretation">Interpr.</abbr></th>
+                  <th>These</th>
+                  <th><span data-toggle="tooltip" data-placement="top" title="stimme überhaupt nicht zu">--</span></th>
+                  <th><span data-toggle="tooltip" data-placement="top" title="stimme eher nicht zu">-</span></th>
+                  <th><span data-toggle="tooltip" data-placement="top" title="weder zu noch nicht zu">0</span></th>
+                  <th><span data-toggle="tooltip" data-placement="top" title="stimme eher zu">+</span></th>
+                  <th><span data-toggle="tooltip" data-placement="top" title="stimme völlig zu">++</span></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for question in questionnaire.questions %}
+                  <tr>
+                    <td>These</td>
+                    <td>
+                      {% if question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE') %}
+                        {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE_LABEL') }}
+                      {% elseif question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEUTRAL') %}
+                        {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEUTRAL_LABEL') }}
+                      {% elseif question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_POSITIVE') %}
+                        {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_POSITIVE_LABEL') }}
+                      {% endif %}
+                    </td>
+
+                    {# thesis #}
+                    <td>{{ question.thesis }}</td>
+                    {% set answer = fillout.answer('question-'~question.uuid ~ '-thesis') %}
+                    <td>
+                      {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL') %}
+                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL')) }}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL') %}
+                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL')) }}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL') %}
+                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL')) }}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL') %}
+                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL')) }}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL') %}
+                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL')) }}
+                      {% endif %}
+                    </td>
+                  </tr>
+
+                  {% if question.counterThesis %}
+                    <tr>
+                      <td><abbr title="Gegenthese">Gegenth.</abbr></td>
+                      <td>
+                        {% if question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE') %}
+                          {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE_LABEL') }}
+                        {% elseif question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEUTRAL') %}
+                          {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEUTRAL_LABEL') }}
+                        {% elseif question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_POSITIVE') %}
+                          {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_POSITIVE_LABEL') }}
+                        {% endif %}
+                      </td>
+
+                      {# counter thesis #}
+                      <td>{{ question.counterThesis }}</td>
+                      {% set answer = fillout.answer('question-'~question.uuid ~ '-counter-thesis') %}
+                      <td>
+                        {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL') %}
+                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL')) }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL') %}
+                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL')) }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL') %}
+                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL')) }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL') %}
+                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL')) }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL') %}
+                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL')) }}
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                </tbody>
+              </table>
+
+              {% if fillout.comment %}
+                <div class="panel panel-default" style="margin-bottom: 0;">
+                  <div class="panel-body">
+                    <b>Kommentar:</b> {{ fillout.comment }}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+            <div class="panel-footer">
+              Fragebogen wurde am
+              {{ filloutEntity.createdAt.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE_TIME')) }}
+              versandt
+              {%- if filloutEntity.modifiedAt -%}
+                , <abbr
+                  title="ausgefüllt (beziehungsweise zuletzt geändert)">ausgefüllt</abbr> am {{ filloutEntity.modifiedAt.format(constant('AppBundle\\Entity\\Event::DATE_FORMAT_DATE_TIME')) }}.
+              {%- else -%}
+                .
+              {%- endif -%}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info" role="alert">
+    Es sind noch keine Antworten erfasst.
+  </div>
+{% endif %}
