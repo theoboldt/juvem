@@ -103,10 +103,11 @@
           #}
           <li role="presentation" class="active">
             <a href="#answer-distribution" aria-controls="answer-distribution" role="tab"
-               data-toggle="tab">Zustimmungsverteilung zu den Thesen</a>
+               data-toggle="tab">Zustimmungsverteilung<span class="visible-lg"> zu den Thesen</span></a>
           </li>
           <li role="presentation" class="{% if filloutComments|length == 0 %}disabled{% endif %}">
-            <a href="#comments" aria-controls="comments" role="tab" data-toggle="tab">Schriftliche Ergänzungen</a>
+            <a href="#comments" aria-controls="comments" role="tab" data-toggle="tab">
+              <span class="visible-lg">Schriftliche </span>Ergänzungen</a>
           </li>
           <li role="presentation">
             <a href="#fillouts" aria-controls="fillouts" role="tab" data-toggle="tab">Einzelantworten</a>
