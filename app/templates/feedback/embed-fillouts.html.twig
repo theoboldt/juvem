@@ -9,22 +9,38 @@
               <table class="table table-striped">
                 <thead>
                 <tr>
-                  <th>Typ</th>
-                  <th><abbr title="Interpretation">Interpr.</abbr></th>
+                  <th class="small-xs">Typ</th>
+                  <th class="small-xs"><abbr title="Interpretation">Interpr.</abbr></th>
                   <th>These</th>
-                  <th><span data-toggle="tooltip" data-placement="top" title="stimme überhaupt nicht zu">--</span></th>
-                  <th><span data-toggle="tooltip" data-placement="top" title="stimme eher nicht zu">-</span></th>
-                  <th><span data-toggle="tooltip" data-placement="top" title="weder zu noch nicht zu">0</span></th>
-                  <th><span data-toggle="tooltip" data-placement="top" title="stimme eher zu">+</span></th>
-                  <th><span data-toggle="tooltip" data-placement="top" title="stimme völlig zu">++</span></th>
+                  <th class="agreement-column">
+                    <span data-toggle="tooltip" data-placement="top" title="stimme überhaupt nicht zu">--</span>
+                  </th>
+                  <th class="agreement-column">
+                    <span data-toggle="tooltip" data-placement="top" title="stimme eher nicht zu">-</span>
+                  </th>
+                  <th class="agreement-column">
+                    <span data-toggle="tooltip" data-placement="top" title="weder zu noch nicht zu">0</span>
+                  </th>
+                  <th class="agreement-column">
+                    <span data-toggle="tooltip" data-placement="top" title="stimme eher zu">+</span>
+                  </th>
+                  <th class="agreement-column">
+                    <span data-toggle="tooltip" data-placement="top" title="stimme völlig zu">++</span>
+                  </th>
                 </tr>
                 </thead>
                 <tbody>
-
                 {% for question in questionnaire.questions %}
                   <tr>
-                    <td>These</td>
                     <td>
+                      <span class="hidden-xs">
+                        These
+                      </span>
+                      <span class="visible-xs">
+                        <abbr title="These">T</abbr>
+                      </span>
+                    </td>
+                    <td class="small-xs">
                       {% if question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE') %}
                         {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE_LABEL') }}
                       {% elseif question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEUTRAL') %}
@@ -35,38 +51,51 @@
                     </td>
 
                     {# thesis #}
-                    <td>{{ question.thesis }}</td>
+                    <td class="small-xs">{{ question.thesis }}</td>
                     {% set answer = fillout.answer('question-'~question.uuid ~ '-thesis') %}
-                    <td>
+                    <td class="agreement-column">
                       {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL') %}
-                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL')) }}
+                        <span data-toggle="tooltip" data-placement="top"
+                              title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL') }}">--</span>
                       {% endif %}
                     </td>
-                    <td>
+                    <td class="agreement-column">
                       {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL') %}
-                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL')) }}
+                        <span data-toggle="tooltip" data-placement="top"
+                              title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL') }}">-</span>
                       {% endif %}
                     </td>
-                    <td>
+                    <td class="agreement-column">
                       {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL') %}
-                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL')) }}
+                        <span data-toggle="tooltip" data-placement="top"
+                              title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL') }}">0</span>
                       {% endif %}
                     </td>
-                    <td>
+                    <td class="agreement-column">
                       {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL') %}
-                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL')) }}
+                        <span data-toggle="tooltip" data-placement="top"
+                              title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL') }}">+</span>
                       {% endif %}
                     </td>
-                    <td>
+                    <td class="agreement-column">
                       {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL') %}
-                        {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL')) }}
+                        <span data-toggle="tooltip" data-placement="top"
+                              title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL') }}">++</span>
                       {% endif %}
                     </td>
+
                   </tr>
 
                   {% if question.counterThesis %}
                     <tr>
-                      <td><abbr title="Gegenthese">Gegenth.</abbr></td>
+                      <td>
+                        <span class="hidden-xs">
+                          <small>Gegenthese</small>
+                        </span>
+                        <span class="visible-xs">
+                          <abbr title="Gegenthese">G</abbr>
+                      </span>
+                      </td>
                       <td>
                         {% if question.interpretation == constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE') %}
                           {{ constant('AppBundle\\Feedback\\FeedbackQuestion::INTERPRETATION_NEGATIVE_LABEL') }}
@@ -78,31 +107,36 @@
                       </td>
 
                       {# counter thesis #}
-                      <td>{{ question.counterThesis }}</td>
+                      <td class="small-xs">{{ question.counterThesis }}</td>
                       {% set answer = fillout.answer('question-'~question.uuid ~ '-counter-thesis') %}
-                      <td>
+                      <td class="agreement-column">
                         {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL') %}
-                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL')) }}
+                          <span data-toggle="tooltip" data-placement="top"
+                                title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_FULL_LABEL') }}">--</span>
                         {% endif %}
                       </td>
-                      <td>
+                      <td class="agreement-column">
                         {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL') %}
-                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL')) }}
+                          <span data-toggle="tooltip" data-placement="top"
+                                title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::DISAGREEMENT_PARTIAL_LABEL') }}">-</span>
                         {% endif %}
                       </td>
-                      <td>
+                      <td class="agreement-column">
                         {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL') %}
-                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL')) }}
+                          <span data-toggle="tooltip" data-placement="top"
+                                title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_NEUTRAL_LABEL') }}">0</span>
                         {% endif %}
                       </td>
-                      <td>
+                      <td class="agreement-column">
                         {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL') %}
-                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL')) }}
+                          <span data-toggle="tooltip" data-placement="top"
+                                title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_PARTIAL_LABEL') }}">+</span>
                         {% endif %}
                       </td>
-                      <td>
+                      <td class="agreement-column">
                         {% if answer and answer.answer == constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL') %}
-                          {{ 'ok'|glyph(constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL')) }}
+                          <span data-toggle="tooltip" data-placement="top"
+                                title="{{ constant('AppBundle\\Form\\Feedback\\LikertChoiceType::AGREEMENT_FULL_LABEL') }}">++</span>
                         {% endif %}
                       </td>
                     </tr>

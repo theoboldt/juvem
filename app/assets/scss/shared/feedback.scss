@@ -251,3 +251,38 @@
     }
   }
 }
+
+#fillouts {
+  .agreement-column {
+    min-width: 30px;
+    text-align: center;
+  }
+
+  @media (max-width: $screen-xs) {
+    .panel-body {
+      padding: 0;
+
+      .panel {
+        margin: 5px;
+
+        .panel-body {
+          padding: 5px;
+        }
+      }
+
+    }
+
+    .table > thead > tr > th,
+    .table > thead > tr > td,
+    .table > tbody > tr > th,
+    .table > tbody > tr > td,
+    .table > tfoot > tr > th,
+    .table > tfoot > tr > td {
+      padding: 4px;
+    }
+
+    .agreement-column {
+      min-width: 21px;
+    }
+  }
+}

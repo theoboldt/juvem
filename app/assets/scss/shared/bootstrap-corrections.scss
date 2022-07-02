@@ -93,3 +93,9 @@
   margin-top: 9px;
   margin-bottom: 0;
 }
+
+.small-xs {
+  @media (max-width: $screen-xs) {
+    font-size: 85%;
+  }
+}
