@@ -32,7 +32,7 @@
     "marked": ">=4.0.10",
     "masonry-layout": "^4.2",
     "merge": "^2.1.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "npm": "^8.12.1",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "shelljs": ">=0.8.5",
