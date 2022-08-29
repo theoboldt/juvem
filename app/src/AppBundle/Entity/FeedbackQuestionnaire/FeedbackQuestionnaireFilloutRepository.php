@@ -20,20 +20,40 @@ class FeedbackQuestionnaireFilloutRepository extends EntityRepository
 {
 
     /**
+     * Non-empty response count
+     * 
      * @param Event $event
      * @return int
      */
     public function fetchResponseCount(Event $event): int
     {
         $qb = $this->createQueryBuilder('c');
-        $qb->select(['COUNT(c)'])
+        $qb->select(['c'])
            ->andWhere('c.event = :eventId')
            ->andWhere('c.fillout <> :fillout');
 
         $qb->setParameter('eventId', $event->getEid());
         $qb->setParameter('fillout', '[]');
+        $query = $qb->getQuery();
         
-        return (int)$qb->getQuery()->getSingleScalarResult();
+        $responseCount = 0;
+        /** @var FeedbackQuestionnaireFillout $feedback */
+        foreach ($query->execute() as $feedback) {
+            /** @var \AppBundle\Feedback\FeedbackQuestionnaireFillout|null $fillout */
+            $fillout = $feedback->getFillout(true);
+            
+            if ($fillout) {
+                foreach ($fillout->getAnswers() as $answer) {
+                    $decodedAnswer = $answer->getAnswer();
+                    if ($decodedAnswer !== null) {
+                        ++$responseCount;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $responseCount;
     }
 
     /**
