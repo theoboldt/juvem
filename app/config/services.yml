@@ -586,6 +586,7 @@ services:
           - "%calendar.base_uri%"
           - "%calendar.username%"
           - "%calendar.password%"
+          - "%calendar.public_uri%"
           - "@logger"
 
     AppBundle\Manager\Filesharing\EventFileSharingManager:

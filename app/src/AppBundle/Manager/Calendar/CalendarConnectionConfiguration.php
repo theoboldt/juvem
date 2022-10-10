@@ -37,17 +37,26 @@ class CalendarConnectionConfiguration
     private string $password;
 
     /**
+     * Public calendar uri if configured
+     * 
+     * @var string|null 
+     */
+    private ?string $publicUri;
+
+    /**
      * NextcloudConnectionConfiguration constructor.
      *
-     * @param string $baseUri
-     * @param string $username
-     * @param string $password
+     * @param string      $baseUri
+     * @param string      $username
+     * @param string      $password
+     * @param string|null $publicUri
      */
-    public function __construct(string $baseUri, string $username, string $password)
+    public function __construct(string $baseUri, string $username, string $password, ?string $publicUri)
     {
-        $this->baseUri  = rtrim($baseUri, '/').'/';
-        $this->username = $username;
-        $this->password = $password;
+        $this->baseUri   = rtrim($baseUri, '/') . '/';
+        $this->username  = $username;
+        $this->password  = $password;
+        $this->publicUri = $publicUri;
     }
 
     /**
@@ -73,4 +82,20 @@ class CalendarConnectionConfiguration
     {
         return $this->password;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPublicUri(): ?string
+    {
+        return $this->publicUri;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPublicUri(): bool
+    {
+        return $this->publicUri !== null;
+    } 
 }

@@ -15,6 +15,7 @@ parameters:
     nextcloud.management: 'Management'
     nextcloud.team: 'Team'
     calendar.base_uri: null 
+    calendar.public_uri: null
     calendar.username: null
     calendar.password: null
     backup_password: null

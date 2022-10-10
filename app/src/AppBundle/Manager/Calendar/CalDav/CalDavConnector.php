@@ -20,6 +20,9 @@ use Psr\Log\NullLogger;
 use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Reader;
 
+/**
+ * @url https://sabre.io/dav/building-a-caldav-client/
+ */
 class CalDavConnector
 {
     const USER_AGENT = 'Juvem/0.9';
@@ -76,6 +79,22 @@ class CalDavConnector
         return $this->ctag;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getPublicUri(): ?string
+    {
+        return $this->configuration->getPublicUri();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPublicUri(): bool
+    {
+        return $this->configuration->hasPublicUri();
+    } 
+    
     /**
      * Delete calendar object
      *
@@ -332,6 +351,7 @@ class CalDavConnector
      * @param string|null          $baseUri
      * @param string|null          $username
      * @param string|null          $password
+     * @param string|null          $publicUri
      * @param LoggerInterface|null $logger
      * @return CalDavConnector|null
      */
@@ -339,6 +359,7 @@ class CalDavConnector
         ?string         $baseUri = '',
         ?string         $username = '',
         ?string         $password = '',
+        ?string         $publicUri = '',
         LoggerInterface $logger = null
     ): ?CalDavConnector {
         $baseUri  = trim($baseUri);
@@ -349,7 +370,7 @@ class CalDavConnector
             return null;
         }
 
-        $configuration = new CalendarConnectionConfiguration($baseUri, $username, $password);
+        $configuration = new CalendarConnectionConfiguration($baseUri, $username, $password, $publicUri);
         return new self($configuration, $logger);
     }
 
