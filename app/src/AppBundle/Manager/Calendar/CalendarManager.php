@@ -164,7 +164,7 @@ class CalendarManager
      */
     public function hasPublicCalendarUri(): bool
     {
-        return $this->connector->hasPublicUri();
+        return $this->hasConnector() ? $this->connector->hasPublicUri() : false;
     }
 
     /**
@@ -175,6 +175,9 @@ class CalendarManager
      */
     public function getPublicCalendarUri(bool $excludeParameters = false): ?string
     {
+        if (!$this->hasConnector()) {
+            return null;
+        }
         $uri = $this->connector->getPublicUri();
         if ($excludeParameters && preg_match('/([^\?]+)(\?{0,1})([^\?]*)/', $uri, $matches) !== false) {
             return $matches[1];
