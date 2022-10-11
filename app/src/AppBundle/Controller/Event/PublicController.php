@@ -134,7 +134,7 @@ class PublicController
     public function provideCalendarEntryAction(Event $event) {
         $calendarEntry = null;
 
-        if ($this->calendarManager->hasPublicCalendarUri()) {
+        if ($event->isCalendarEntryEnabled() && $this->calendarManager->hasPublicCalendarUri()) {
             return new RedirectResponse(
                 $this->calendarManager->getPublicCalendarUri(true)
                 . '/'
@@ -142,7 +142,7 @@ class PublicController
                 . '.ics',
                 Response::HTTP_MOVED_PERMANENTLY
             );
-        } elseif ($this->calendarManager->hasConnector()) {
+        } else {
             $calendarEntry = $this->calendarManager->provideEventCalendarEntry($event);
         }
 

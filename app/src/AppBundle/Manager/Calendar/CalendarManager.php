@@ -129,7 +129,7 @@ class CalendarManager
         if ($juvemEvent->getId() === null) {
             return null;
         }
-        if ($this->hasConnector()) {
+        if ($this->hasConnector() && $juvemEvent->isCalendarEntryEnabled()) {
             return $this->connector->fetchCalendarObject(
                 self::createJuvemEventName($juvemEvent)
             );
