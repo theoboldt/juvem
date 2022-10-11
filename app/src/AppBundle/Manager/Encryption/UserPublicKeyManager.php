@@ -8,18 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Manager;
+namespace AppBundle\Manager\Encryption;
 
 use AppBundle\Entity\User;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class UserPublicKeyManager
+class UserPublicKeyManager extends AbstractPublicKeyManager
 {
-    const FILE_PRIVATE_KEY = 'key';
-
-    const FILE_PUBLIC_KEY = 'pub';
-
     /**
      * @var string
      */
@@ -30,16 +26,6 @@ class UserPublicKeyManager
      */
     private LoggerInterface $logger;
 
-    /**
-     * Ensure service is usable
-     *
-     * @return bool
-     */
-    public static function isConfigured(): bool
-    {
-        return function_exists('\openssl_pkey_new');
-    }
-    
     /**
      * @param string         $keyDir
      */
@@ -75,7 +61,7 @@ class UserPublicKeyManager
      * @param User $user
      * @return bool
      */
-    public function isKeyAvailable(User $user)
+    public function isKeyAvailable(User $user): bool
     {
         $userId = $user->getId();
         if (!$userId) {

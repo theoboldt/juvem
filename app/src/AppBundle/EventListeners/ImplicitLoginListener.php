@@ -10,7 +10,7 @@
 
 namespace AppBundle\EventListeners;
 
-use AppBundle\Manager\UserPublicKeyManager;
+use AppBundle\Manager\Encryption\UserPublicKeyManager;
 use FOS\UserBundle\Event\UserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserInterface;

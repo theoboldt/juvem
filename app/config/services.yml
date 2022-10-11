@@ -172,7 +172,7 @@ services:
             $mailerPassword: "%mailer_password%"
             $mailerAddress: "%mailer_address%"
 
-    AppBundle\Manager\UserPublicKeyManager:
+    AppBundle\Manager\Encryption\UserPublicKeyManager:
         autowire: true
         arguments:
             $keyDir: "%app.data.key_user.path%"
