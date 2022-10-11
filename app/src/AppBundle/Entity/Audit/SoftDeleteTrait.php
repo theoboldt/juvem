@@ -10,7 +10,6 @@
 
 namespace AppBundle\Entity\Audit;
 
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
 trait SoftDeleteTrait
@@ -24,11 +23,11 @@ trait SoftDeleteTrait
     /**
      * Set deletedAt
      *
-     * @param \DateTime $deletedAt
+     * @param \DateTime|null $deletedAt
      *
      * @return self
      */
-    public function setDeletedAt($deletedAt)
+    public function setDeletedAt(?\DateTimeInterface $deletedAt)
     {
         $this->deletedAt = $deletedAt;
 
@@ -40,7 +39,7 @@ trait SoftDeleteTrait
      *
      * @return \DateTime|null
      */
-    public function getDeletedAt()
+    public function getDeletedAt(): ?\DateTimeInterface
     {
         return $this->deletedAt;
     }
