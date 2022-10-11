@@ -10,6 +10,8 @@
 
 namespace AppBundle\Manager\Calendar\CalDav;
 
+use AppBundle\Manager\Calendar\CalendarOperationFailedException;
+
 class CalendarObjectNotFoundException extends CalendarOperationFailedException
 {
 
