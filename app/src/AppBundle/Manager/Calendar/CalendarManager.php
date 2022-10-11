@@ -106,6 +106,41 @@ class CalendarManager
     }
 
     /**
+     * Determine if connector to calendar is configured
+     *
+     * @return bool
+     */
+    public function hasConnector(): bool
+    {
+        return $this->connector !== null;
+    }
+
+    /**
+     * Provide calendar entry
+     *
+     * Provide calendar entry. Either from real connected calendar service, or generated
+     * by {@see CalDavVCalendarObjectFactory}
+     *
+     * @param Event $juvemEvent
+     * @return string|null
+     */
+    public function provideEventCalendarEntry(Event $juvemEvent): ?string
+    {
+        if ($juvemEvent->getId() === null) {
+            return null;
+        }
+        if ($this->hasConnector()) {
+            return $this->connector->fetchCalendarObject(
+                self::createJuvemEventName($juvemEvent)
+            );
+
+        } else {
+            $calendar = $this->calDavObjectFactory->createForJuvemEvent($juvemEvent);
+            return $calendar->serialize();
+        }
+    }
+
+    /**
      * Create or update a calendar entry for transmitted event
      *
      * @param Event $juvemEvent
@@ -122,6 +157,29 @@ class CalendarManager
             self::createJuvemEventName($juvemEvent),
             $calendar
         );
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPublicCalendarUri(): bool
+    {
+        return $this->connector->hasPublicUri();
+    }
+
+    /**
+     * Access public calendar uri
+     *
+     * @param bool $excludeParameters If set to true, uri parameters are extracted
+     * @return string|null
+     */
+    public function getPublicCalendarUri(bool $excludeParameters = false): ?string
+    {
+        $uri = $this->connector->getPublicUri();
+        if ($excludeParameters && preg_match('/([^\?]+)(\?{0,1})([^\?]*)/', $uri, $matches) !== false) {
+            return $matches[1];
+        }
+        return $uri;
     }
 
     /**

@@ -65,10 +65,29 @@
             <div class="col-xs-12 col-sm-4 event-meta">
               <div class="row">
                 <div class="col-xs-12">
-                <p>
+                <div class="p">
                     {{ 'calendar'|glyph }} {{ event|eventStartDate }}
                     {% if event.hasEndDate or event.hasEndTime %}
                         - {{ event|eventEndDate }}
+                    {% endif %}
+                    {% if publicCalendarUri %}
+                      <div class="btn-group">
+                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                          {{ 'download'|glyph }} Kalendareintrag <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="{{ publicCalendarUri }}" target="_blank">{{ 'cloud-download'|glyph }} Öffentlichen
+                              Kalender abonnieren {{ 'new-window'|glyph }}</a></li>
+                          <li><a href="{{ path('event_public_calendar', {'eid': event.eid }) }}"
+                                 target="_blank">{{ 'download'|glyph }} Kalendareintrag herunterladen</a></li>
+                        </ul>
+                      </div>
+                    {% else %}
+                      <a class="btn btn-xs btn-default" href="{{ path('event_public_calendar', {'eid': event.eid }) }}"
+                         data-toggle="tooltip" data-placement="top" title="Kalendareintrag herunterladen" role="button">
+                        {{ 'download'|glyph }} Kalendareintrag
+                      </a>
                     {% endif %}
                   {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) %}
                       {% if event.isActive() %}
@@ -82,7 +101,7 @@
                           <span class="label label-default">Versteckt</span>
                       {% endif %}
                   {% endif %}
-                </p>
+                </div>
                 {% if event.ageRange %}
                     <p itemprop="typicalAgeRange">{{ event.ageRange }} Jahre</p>
                 {% endif %}

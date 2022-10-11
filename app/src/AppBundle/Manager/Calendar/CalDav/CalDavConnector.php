@@ -93,8 +93,48 @@ class CalDavConnector
     public function hasPublicUri(): bool
     {
         return $this->configuration->hasPublicUri();
-    } 
-    
+    }
+
+    /**
+     * Fetch textual calendar object
+     *
+     * @param string $name
+     * @return string|null
+     */
+    public function fetchCalendarObject(string $name): ?string
+    {
+        $start      = microtime(true);
+        $response   = $this->request(
+            'GET',
+            urlencode($name) . '.ics',
+            [
+                RequestOptions::HEADERS => [
+                    'Content-Type' => 'text/calendar; charset=utf-8',
+                ],
+            ]
+        );
+        $statusCode = $response->getStatusCode();
+        $content    = $response->getBody()->getContents();
+
+        if ($statusCode === 404) {
+            throw new CalendarOperationFailedException(
+                'Calendar object "' . $name . '" not found'
+            );
+        } elseif ($statusCode !== 200 && $statusCode !== 204) {
+            throw new CalendarOperationFailedException(
+                'Response code ' . $response->getStatusCode() .
+                ' provided while trying to fetch calendar object "' . $name . '"'
+            );
+        }
+        $duration = round((microtime(true) - $start) * 1000);
+        $this->logger->info(
+            'Fetched calendar object for item {name} within {duration} ms',
+            ['name' => $name, 'duration' => $duration]
+        );
+
+        return $content;
+    }
+
     /**
      * Delete calendar object
      *
@@ -206,9 +246,9 @@ class CalDavConnector
                 ],
             ]
         );
-
-        $xml = $this->extractXmlResponse($response);
-        $r   = $xml->xpath('//d:multistatus/d:response');
+        $c        = $response->getBody()->getContents();
+        $xml      = $this->extractXmlResponse($response);
+        $r        = $xml->xpath('//d:multistatus/d:response');
 
         $calendarObjects = [];
 

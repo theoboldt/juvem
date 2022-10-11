@@ -18,12 +18,16 @@ use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\Event;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
+use AppBundle\Manager\Calendar\CalendarManager;
 use AppBundle\Manager\UploadImageManager;
+use AppBundle\ResponseHelper;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
@@ -39,26 +43,33 @@ class PublicController
      * @var UploadImageManager
      */
     private UploadImageManager $uploadImageManager;
-    
+
+    /**
+     * @var CalendarManager 
+     */
+    private CalendarManager $calendarManager;
+
     /**
      * PublicController constructor.
      *
      * @param UploadImageManager $uploadImageManager
-     * @param Environment $twig
-     * @param RouterInterface $router
-     * @param ManagerRegistry $doctrine
-     * @param SessionInterface $session
+     * @param CalendarManager    $calendarManager
+     * @param Environment        $twig
+     * @param RouterInterface    $router
+     * @param ManagerRegistry    $doctrine
+     * @param SessionInterface   $session
      */
     public function __construct(
         UploadImageManager $uploadImageManager,
-        Environment $twig,
-        RouterInterface $router,
-        ManagerRegistry $doctrine,
-        SessionInterface $session
-    
-    )
-    {
+        CalendarManager    $calendarManager,
+        Environment        $twig,
+        RouterInterface    $router,
+        ManagerRegistry    $doctrine,
+        SessionInterface   $session
+
+    ) {
         $this->uploadImageManager = $uploadImageManager;
+        $this->calendarManager    = $calendarManager;
         $this->twig               = $twig;
         $this->router             = $router;
         $this->doctrine           = $doctrine;
@@ -101,11 +112,55 @@ class PublicController
      */
     public function showAction(Event $event)
     {
+        $publicCalendarUri = $this->calendarManager ? $this->calendarManager->getPublicCalendarUri() : null;
         $this->addWaitingListFlashIfRequired($event);
         return $this->render(
             'event/public/detail.html.twig',
-            ['event' => $event, 'pageDescription' => $event->getDescriptionMeta(true)]
+            [
+                'event'             => $event,
+                'pageDescription'   => $event->getDescriptionMeta(true),
+                'publicCalendarUri' => $publicCalendarUri,
+            ]
         );
+    }
+
+    /**
+     * @CloseSessionEarly
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/event/juvem-event-{eid}.ics", requirements={"eid": "\d+"}, name="event_public_calendar")
+     * @param Event $event
+     * @return Response
+     */
+    public function provideCalendarEntryAction(Event $event) {
+        $calendarEntry = null;
+
+        if ($this->calendarManager->hasPublicCalendarUri()) {
+            return new RedirectResponse(
+                $this->calendarManager->getPublicCalendarUri(true)
+                . '/'
+                . CalendarManager::createJuvemEventName($event)
+                . '.ics',
+                Response::HTTP_MOVED_PERMANENTLY
+            );
+        } elseif ($this->calendarManager->hasConnector()) {
+            $calendarEntry = $this->calendarManager->provideEventCalendarEntry($event);
+        }
+
+        if (!$calendarEntry) {
+            throw new BadRequestHttpException(
+                'Failed to fetch or generate calendar entry for event ' . $event->getEid()
+            );
+        }
+
+        $response = new Response($calendarEntry);
+
+        ResponseHelper::configureAttachment(
+            $response,
+            CalendarManager::createJuvemEventName($event) . '.ics',
+            'text/calendar; charset=utf-8; component=vevent'
+        );
+
+        return $response;
     }
 
     /**
