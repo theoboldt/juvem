@@ -176,7 +176,16 @@ services:
         autowire: true
         arguments:
             $keyDir: "%app.data.key_user.path%"
-#            $userRepository: "@app.repository.user"
+
+    AppBundle\Manager\Encryption\EventPublicKeyManager:
+        autowire: true
+        arguments:
+            $keyDir: "%app.data.key_event.path%"
+
+    AppBundle\Manager\Encryption\EventUserPublicKeyManager:
+        autowire: true
+        arguments:
+            $keyDir: "%app.data.key_event_user.path%"
 
     AppBundle\Mail\MailImapService:
         autowire: true

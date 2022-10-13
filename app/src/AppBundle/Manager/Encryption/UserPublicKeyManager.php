@@ -14,12 +14,12 @@ use AppBundle\Entity\User;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class UserPublicKeyManager extends AbstractPublicKeyManager
+class UserPublicKeyManager
 {
     /**
-     * @var string
+     * @var PublicKeyProvider
      */
-    private string $keyDir;
+    private PublicKeyProvider $publicKeyProvider;
 
     /**
      * @var LoggerInterface
@@ -27,32 +27,13 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
     private LoggerInterface $logger;
 
     /**
-     * @param string $keyDir
+     * @param string               $keyDir
+     * @param LoggerInterface|null $logger
      */
     public function __construct(string $keyDir, ?LoggerInterface $logger = null)
     {
-        $this->keyDir = $keyDir;
-        $this->logger = $logger ?? new NullLogger();
-    }
-
-    /**
-     * @param int    $userId
-     * @param string $key
-     * @return string
-     */
-    private function getUserKeyPath(int $userId, string $key): string
-    {
-        return $this->keyDir . '/' . $userId . '_' . $key;
-    }
-
-    /**
-     * @param int    $userId
-     * @param string $key
-     * @return bool
-     */
-    private function isUserKeyAvailable(int $userId, string $key): bool
-    {
-        return file_exists($this->getUserKeyPath($userId, $key));
+        $this->publicKeyProvider = new PublicKeyProvider($keyDir, $logger);
+        $this->logger            = $logger ?? new NullLogger();
     }
 
     /**
@@ -63,11 +44,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
      */
     public function getUserPublicKey(int $userId): ?string
     {
-        if ($this->isUserKeyAvailable($userId, self::FILE_PUBLIC_KEY)) {
-            return file_get_contents($this->getUserKeyPath($userId, self::FILE_PUBLIC_KEY));
-        } else {
-            return null;
-        }
+        return $this->publicKeyProvider->getPublicKey($userId);
     }
 
     /**
@@ -83,8 +60,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
             return false;
         }
 
-        return $this->isUserKeyAvailable($userId, self::FILE_PRIVATE_KEY)
-               && $this->isUserKeyAvailable($userId, self::FILE_PUBLIC_KEY);
+        return $this->publicKeyProvider->isKeyPairAvailable($userId);
     }
 
     /**
@@ -96,8 +72,11 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
     public function ensureKeyPairAvailable(User $user, string $password): void
     {
         $userId = $user->getId();
-        if (!file_exists($this->getUserKeyPath($userId, self::FILE_PRIVATE_KEY))) {
-            $this->createKeyPair($user, $password);
+        if (!$userId) {
+            return;
+        }
+        if (!$this->publicKeyProvider->isKeyPairAvailable($userId)) {
+            $this->publicKeyProvider->createKeyPair($userId, $password);
         }
     }
 
@@ -106,55 +85,14 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
      *
      * @param User   $user
      * @param string $password
-     * @return bool
+     * @return void
      */
-    public function createKeyPair(User $user, string $password): bool
+    public function createKeyPair(User $user, string $password): void
     {
-        $timeStart = microtime(true);
-        $userId    = $user->getId();
-
-        if (!self::isConfigured()) {
-            throw new \InvalidArgumentException('ext-openssl missing');
+        $userId = $user->getId();
+        if (!$userId) {
+            return;
         }
-
-        $keyOptions = [
-            'private_key_bits' => 4096,
-            'encrypt_key'      => true,
-        ];
-
-        $privateKey   = \openssl_pkey_new($keyOptions);
-        $publicKeyPem = \openssl_pkey_get_details($privateKey)['key'];
-
-        if (!file_exists($this->keyDir)) {
-            $this->logger->notice('Going to create public key dir {dir}', ['dir' => $this->keyDir]);
-            $umask = umask(0);
-            if (!mkdir($this->keyDir, 0777, true)) {
-                throw new \RuntimeException('Failed to create key dir');
-            }
-            umask($umask);
-        }
-
-        $this->logger->debug('Going to write public key for user {id}', ['id' => $userId]);
-        if (!file_put_contents(
-            $this->getUserKeyPath($userId, self::FILE_PUBLIC_KEY),
-            $publicKeyPem
-        )) {
-            throw new \RuntimeException('Failed to write public key');
-        }
-
-        $this->logger->debug('Going to write private key for user {id}', ['id' => $userId]);
-        if (!openssl_pkey_export_to_file(
-            $privateKey,
-            $this->getUserKeyPath($userId, self::FILE_PRIVATE_KEY),
-            $password
-        )) {
-            throw new \RuntimeException('Failed to export private key');
-        }
-
-        $this->logger->notice(
-            'Generated and wrote keys for user {id} within {duration} ms',
-            ['id' => $userId, 'duration' => (int)round((microtime(true) - $timeStart) * 1000)]
-        );
-        return true;
+        $this->publicKeyProvider->createKeyPair($userId, $password);
     }
 }

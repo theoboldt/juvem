@@ -10,6 +10,7 @@
 
 namespace AppBundle\EventListeners;
 
+use AppBundle\Manager\Encryption\PublicKeyProvider;
 use AppBundle\Manager\Encryption\UserPublicKeyManager;
 use FOS\UserBundle\Event\UserEvent;
 use FOS\UserBundle\FOSUserEvents;
@@ -107,7 +108,7 @@ class ImplicitLoginListener implements EventSubscriberInterface
      */
     private function handleUserKeys(UserInterface $user, Request $request): void
     {
-        if (!UserPublicKeyManager::isConfigured()) {
+        if (!PublicKeyProvider::isConfigured()) {
             $this->logger->info(UserPublicKeyManager::class . ' is not configured');
             return;
         }

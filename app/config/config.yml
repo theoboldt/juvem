@@ -25,6 +25,8 @@ parameters:
     app.data.invoice.path: "%app.data.root.path%/invoice"
     app.data.key.path: "%app.data.root.path%/keys"
     app.data.key_user.path: "%app.data.key.path%/user"
+    app.data.key_event.path: "%app.data.key.path%/event"
+    app.data.key_event_user.path: "%app.data.key.path%/event_user"
     app.data.mailbox_queue.path: "%app.data.root.path%/mailbox_queue"
 
 jms_serializer:
