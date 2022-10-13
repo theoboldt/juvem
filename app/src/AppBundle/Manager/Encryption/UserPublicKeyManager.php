@@ -22,17 +22,17 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
     private string $keyDir;
 
     /**
-     * @var LoggerInterface 
+     * @var LoggerInterface
      */
     private LoggerInterface $logger;
 
     /**
-     * @param string         $keyDir
+     * @param string $keyDir
      */
     public function __construct(string $keyDir, ?LoggerInterface $logger = null)
     {
-        $this->keyDir         = $keyDir;
-        $this->logger         = $logger ?? new NullLogger();
+        $this->keyDir = $keyDir;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -56,6 +56,21 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
     }
 
     /**
+     * Get public key for transmitted user (id) if configured
+     *
+     * @param int $userId User id
+     * @return string|null Public key
+     */
+    public function getUserPublicKey(int $userId): ?string
+    {
+        if ($this->isUserKeyAvailable($userId, self::FILE_PUBLIC_KEY)) {
+            return file_get_contents($this->getUserKeyPath($userId, self::FILE_PUBLIC_KEY));
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Determine if public/private keys are available for user
      *
      * @param User $user
@@ -73,8 +88,8 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
     }
 
     /**
-     * Ensure that a key pair is stored for a user 
-     * 
+     * Ensure that a key pair is stored for a user
+     *
      * @param User   $user
      * @param string $password
      */
@@ -111,7 +126,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
         $publicKeyPem = \openssl_pkey_get_details($privateKey)['key'];
 
         if (!file_exists($this->keyDir)) {
-            $this->logger->notice('Going to create public key dir {dir}', ['dir' => $this->keyDir]); 
+            $this->logger->notice('Going to create public key dir {dir}', ['dir' => $this->keyDir]);
             $umask = umask(0);
             if (!mkdir($this->keyDir, 0777, true)) {
                 throw new \RuntimeException('Failed to create key dir');
@@ -119,7 +134,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
             umask($umask);
         }
 
-        $this->logger->debug('Going to write public key for user {id}', ['id' => $userId]); 
+        $this->logger->debug('Going to write public key for user {id}', ['id' => $userId]);
         if (!file_put_contents(
             $this->getUserKeyPath($userId, self::FILE_PUBLIC_KEY),
             $publicKeyPem
@@ -127,7 +142,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
             throw new \RuntimeException('Failed to write public key');
         }
 
-        $this->logger->debug('Going to write private key for user {id}', ['id' => $userId]); 
+        $this->logger->debug('Going to write private key for user {id}', ['id' => $userId]);
         if (!openssl_pkey_export_to_file(
             $privateKey,
             $this->getUserKeyPath($userId, self::FILE_PRIVATE_KEY),
@@ -138,7 +153,7 @@ class UserPublicKeyManager extends AbstractPublicKeyManager
 
         $this->logger->notice(
             'Generated and wrote keys for user {id} within {duration} ms',
-            ['id' => $userId, 'duration' => (int)round((microtime(true) - $timeStart)*1000)]
+            ['id' => $userId, 'duration' => (int)round((microtime(true) - $timeStart) * 1000)]
         );
         return true;
     }
