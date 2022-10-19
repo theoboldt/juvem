@@ -177,6 +177,13 @@ services:
         arguments:
             $keyDir: "%app.data.key_user.path%"
 
+    AppBundle\Manager\Encryption\EventUserKeyManagement\EventUserKeyManager:
+        autowire: true
+        arguments:
+            $userRepository: '@app.repository.user'
+            $accessDecisionManager: '@security.access.decision_manager'
+            $authorizationChecker: '@security.authorization_checker'
+
     AppBundle\Manager\Encryption\EventPublicKeyManager:
         autowire: true
         arguments:
