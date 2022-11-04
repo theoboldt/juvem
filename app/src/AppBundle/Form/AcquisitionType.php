@@ -106,6 +106,13 @@ class AcquisitionType extends AbstractType
                 'required' => false
             ]
         )->add(
+            'isCommentEnabled',
+            CheckboxType::class,
+            [
+                'label'    => 'Ergänzungen ermöglichen',
+                'required' => false
+            ]
+        )->add(
             'isPublic',
             CheckboxType::class,
             [

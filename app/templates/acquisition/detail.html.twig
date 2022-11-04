@@ -290,6 +290,20 @@
 
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Ergänzungen ermöglichen</label>
+
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if acquisition.isCommentEnabled %}
+                                    ja
+                                {% else %}
+                                    nein
+                                {% endif %}
+                            </p>
+
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-6">
