@@ -10,6 +10,7 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormula as AssertValidFormula;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
@@ -29,14 +30,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
-use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType as FormTextType;
-use AppBundle\Entity\AcquisitionAttribute\Formula\ValidFormula as AssertValidFormula;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @AssertValidFormula()
@@ -182,6 +181,15 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
      * @ORM\Column(type="string", length=255, name="price_formula", nullable=true)
      */
     protected $priceFormula = null;
+
+    /**
+     * Specifies if fillout accept comments/textual amendments
+     * 
+     * @ORM\Column(name="is_comment_enabled", type="smallint", options={"unsigned":true,"default":0})
+     *
+     * @var boolean
+     */
+    protected $isCommentEnabled = false;
     
     /**
      * Constructor
@@ -826,6 +834,28 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
      */
     public function getFormulaVariable() {
         return self::FORMULA_VARIABLE_PREFIX.$this->getBid();
+    }
+
+    /**
+     * Determine if fillout accept comments/textual amendments for this field
+     * 
+     * @return bool
+     */
+    public function isCommentEnabled(): bool
+    {
+        return $this->isCommentEnabled;
+    }
+
+    /**
+     * Configure if fillout accept comments/textual amendments for this field
+     * 
+     * @param bool $isCommentEnabled
+     * @return Attribute
+     */
+    public function setIsCommentEnabled(bool $isCommentEnabled): Attribute
+    {
+        $this->isCommentEnabled = $isCommentEnabled;
+        return $this;
     }
     
     /**

@@ -22,10 +22,8 @@ use AppBundle\Form\BankAccountType;
 use AppBundle\Form\GroupType;
 use AppBundle\Form\ParticipantDetectingType;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -73,6 +71,12 @@ class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackin
      * @var string
      */
     protected $value;
+
+    /**
+     * @ORM\Column(type="string", length=2048, name="comment", nullable=true)
+     * @var string|null
+     */
+    protected ?string $comment = null;
 
     /**
      * Get oid
@@ -288,6 +292,43 @@ class Fillout implements SupportsChangeTrackingInterface, SpecifiesChangeTrackin
         /** @var ChoiceFilloutValue $value */
         $value = $this->getValue();
         return $value->getSelectedChoices();
+    }
+
+    /**
+     * Determine if comment is set
+     * 
+     * @return bool
+     */
+    public function hasComment(): bool
+    {
+        return $this->comment !== null;
+    }
+
+    /**
+     * Get comment
+     * 
+     * @return string|null
+     */
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Configure comment for this fillout
+     *
+     * @param string|null $comment
+     * @return Fillout
+     */
+    public function setComment(?string $comment = null): Fillout
+    {
+        $comment = trim($comment);
+        if (empty($comment)) {
+            $comment = null;
+        }
+        $this->comment = $comment;
+
+        return $this;
     }
 
     /**
