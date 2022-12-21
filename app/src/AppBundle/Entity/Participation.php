@@ -185,11 +185,10 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     /**
      * Set deletedAt, cascading to participants
      *
-     * @param \DateTime $deletedAt
-     *
-     * @return Participation
+     * @param \DateTime|null $deletedAt
+     * @return void
      */
-    public function setDeletedAt($deletedAt)
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): void
     {
         $this->traitSetDeletedAt($deletedAt);
 
@@ -197,8 +196,6 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
         foreach ($this->getParticipants() as $participant) {
             $participant->setDeletedAt($deletedAt);
         }
-
-        return $this;
     }
 
     /**

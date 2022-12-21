@@ -24,14 +24,11 @@ trait SoftDeleteTrait
      * Set deletedAt
      *
      * @param \DateTime|null $deletedAt
-     *
-     * @return self
+     * @return void
      */
-    public function setDeletedAt(?\DateTimeInterface $deletedAt)
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): void
     {
         $this->deletedAt = $deletedAt;
-
-        return $this;
     }
 
     /**
