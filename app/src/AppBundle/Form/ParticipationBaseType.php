@@ -11,6 +11,7 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\Participation;
+use AppBundle\Form\CustomField\CustomFieldValuesType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -40,7 +41,7 @@ class ParticipationBaseType extends AbstractType
                     'label'    => 'Anrede',
                     'choices'  => ['' => '', 'Frau' => 'Frau', 'Herr' => 'Herr'],
                     'expanded' => false,
-                    'required' => true
+                    'required' => true,
                 ]
             )
             ->add('nameFirst', TextType::class, ['label' => 'Vorname', 'required' => true])
@@ -50,7 +51,7 @@ class ParticipationBaseType extends AbstractType
                 [
                     'label'    => 'Straße u. Hausnummer',
                     'required' => true,
-                    'attr'     => ['data-typeahead-source' => 'address_street']
+                    'attr'     => ['data-typeahead-source' => 'address_street'],
                 ]
             )
             ->add(
@@ -59,7 +60,7 @@ class ParticipationBaseType extends AbstractType
                 [
                     'label'    => 'Postleitzahl',
                     'required' => true,
-                    'attr'     => ['data-typeahead-source' => 'address_zip']
+                    'attr'     => ['data-typeahead-source' => 'address_zip'],
                 ]
             )
             ->add(
@@ -68,7 +69,7 @@ class ParticipationBaseType extends AbstractType
                 [
                     'label'    => 'Stadt',
                     'required' => true,
-                    'attr'     => ['data-typeahead-source' => 'address_city']
+                    'attr'     => ['data-typeahead-source' => 'address_city'],
                 ]
             )
             ->add(
@@ -77,7 +78,7 @@ class ParticipationBaseType extends AbstractType
                 [
                     'label'    => 'Land',
                     'required' => true,
-                    'attr'     => ['data-typeahead-source' => 'address_country']
+                    'attr'     => ['data-typeahead-source' => 'address_country'],
                 ]
             )
             ->add('email', EmailType::class, ['label' => 'E-Mail', 'required' => true])
@@ -90,7 +91,7 @@ class ParticipationBaseType extends AbstractType
                     'allow_add'    => true,
                     'allow_delete' => true,
                     'attr'         => ['aria-describedby' => 'help-info-phone-numbers'],
-                    'required'     => true
+                    'required'     => true,
                 ]
             )
             ->add(
@@ -109,9 +110,23 @@ class ParticipationBaseType extends AbstractType
                     'required'      => true,
                 ]
             );
+        $builder->add(
+            'customFieldValues',
+            CustomFieldValuesType::class,
+            [
+                'by_reference'                                => true,
+                'property_path'                               => 'customFieldValueCollection',
+                'mapped'                                      => true,
+                'cascade_validation'                          => true,
+                CustomFieldValuesType::ENTITY_OPTION          => $participation,
+                CustomFieldValuesType::INCLUDE_PRIVATE_OPTION => $options[self::ACQUISITION_FIELD_PRIVATE],
+                CustomFieldValuesType::INCLUDE_PUBLIC_OPTION  => $options[self::ACQUISITION_FIELD_PUBLIC],
+            ]
+        );
+        return;
 
-        $event                = $participation->getEvent();
-        $attributes           = $event->getAcquisitionAttributes(
+        $event      = $participation->getEvent();
+        $attributes = $event->getAcquisitionAttributes(
             true, false, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
         );
 
