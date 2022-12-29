@@ -127,7 +127,7 @@ class MailListService
     public function clearEmailAddressCache(string $emailAddress): void
     {
         $this->cache->delete(self::getAddressCacheKey($emailAddress));
-        $this->logger->notice('Cleared mail cache for address {address}', ['address', $emailAddress]);
+        $this->logger->notice('Cleared mail cache for address {address}', ['address' => $emailAddress]);
     }
     
     /**
@@ -310,7 +310,7 @@ class MailListService
             $message->getNumber(),
             $fromList,
             $toList,
-            $message->getSubject(),
+            (string)$message->getSubject(),
             $message->getDate(),
             $mailboxName,
             $this->provideMailAttachmentFragments($message)
