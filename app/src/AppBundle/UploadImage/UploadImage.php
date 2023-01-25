@@ -94,7 +94,7 @@ class UploadImage
      *
      * @return resource
      */
-    public function getResource(): resource
+    public function getResource()
     {
         $handle = fopen($this->path, 'r');
         return $handle;
