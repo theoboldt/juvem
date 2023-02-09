@@ -174,6 +174,7 @@ class DefaultController
      * @Route("/js/all.js.map")
      * @Route("/css/all.min.css.map")
      * @Route("/js/all.min.js.map")
+     * @Route("/js/ekko-lightbox.js.map")
      * @Route("/robots.txt")
      * @Route("/favicon.(ico|png|gif)")
      * @Route("/apple-touch-icon.png")
