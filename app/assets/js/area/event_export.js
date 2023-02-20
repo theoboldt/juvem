@@ -134,7 +134,7 @@ $(function () {
                 inputTitle.val('');
                 break;
         }
-        const regex = /config\[(participant|participation)\]\[acquisitionFields\]\[acq_field_(\d+)\]\[enabled\]/;
+        const regex = /config\[(participant|participation)\]\[acquisitionFields\]\[custom_field_(\d+)\]\[enabled\]/;
 
         inputs.each(function () {
             const input = $(this),
@@ -146,7 +146,7 @@ $(function () {
                     const result = regex.exec(name),
                         fieldArea = result[1],
                         fieldId = result[2],
-                        baseFieldName = '.form-file-download select[name="config[' + fieldArea + '][acquisitionFields][acq_field_' + fieldId + ']',
+                        baseFieldName = '.form-file-download select[name="config[' + fieldArea + '][acquisitionFields][custom_field_' + fieldId + ']',
                         hasField = includeAcquisitionFields[fieldArea] !== null,
                         valueDisplay = hasField && includeAcquisitionFields[fieldArea]['display'] ? includeAcquisitionFields[fieldArea]['display'] : null,
                         selectDisplay = $(baseFieldName + '[display]"]'),

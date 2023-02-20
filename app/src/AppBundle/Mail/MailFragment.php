@@ -51,9 +51,9 @@ class MailFragment
     /**
      * @Serialize\Expose
      * @Serialize\Type("string")
-     * @var string
+     * @var string|null
      */
-    private string $subject;
+    private ?string $subject;
     
     /**
      * @Serialize\Expose
@@ -76,23 +76,23 @@ class MailFragment
      * @var MailAttachmentFragment[]
      */
     private array $attachments;
-    
+
     /**
      * MailFragment constructor.
      *
-     * @param int|null $number
-     * @param string[] $from
-     * @param string[] $to
-     * @param string $subject
+     * @param int|null           $number
+     * @param string[]           $from
+     * @param string[]           $to
+     * @param string|null        $subject
      * @param \DateTimeImmutable $date
-     * @param string $mailbox
-     * @param array $attachments
+     * @param string             $mailbox
+     * @param array              $attachments
      */
     public function __construct(
         ?int               $number,
         array              $from,
         array              $to,
-        string             $subject,
+        ?string            $subject,
         \DateTimeImmutable $date,
         string             $mailbox,
         array              $attachments
@@ -134,7 +134,7 @@ class MailFragment
     /**
      * @return string
      */
-    public function getSubject(): string
+    public function getSubject(): ?string
     {
         return $this->subject;
     }
@@ -175,7 +175,6 @@ class MailFragment
             default:
                 return 'unchecked';
         }
-        return null;
     }
     
     /**
@@ -197,6 +196,4 @@ class MailFragment
     {
         return $this->attachments;
     }
-    
-    
 }

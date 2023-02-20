@@ -14,7 +14,8 @@ namespace Tests\Export\Excel;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
-use AppBundle\Export\ParticipantsMailExport;
+use AppBundle\Export\Customized\CustomizedExport;
+use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -23,6 +24,9 @@ class ParticipantsMailExportTest extends ExportTestCase
 
     public function testParticipationsExport(): void
     {
+        $kernel = static::bootKernel();
+        $kernel->boot();
+
         $user  = $this->user();
         $event = $this->event();
 
@@ -54,8 +58,57 @@ class ParticipantsMailExportTest extends ExportTestCase
         $participant3->setGender(Participant::LABEL_GENDER_MALE);
         $participation1->addParticipant($participant3);
 
-        $export = new ParticipantsMailExport(
-            $this->customization(), $event, [$participant1, $participant2, $participant3], [$participation1], $user
+
+        $configuration = [
+            'filter'           =>
+                [
+                    'confirmed'         => 'all',
+                    'paid'              => 'all',
+                    'rejectedwithdrawn' => 'notrejectedwithdrawn',
+                ],
+            'participant'      =>
+                [
+                    'nameFirst'         => true,
+                    'nameLast'          => true,
+                    'birthday'          => true,
+                    'ageAtEvent'        => 'completed',
+                    'gender'            => true,
+                    'foodVegetarian'    => true,
+                    'foodLactoseFree'   => true,
+                    'foodLactoseNoPork' => true,
+                    'infoMedical'       => true,
+                    'infoGeneral'       => true,
+                    'basePrice'         => true,
+                    'price'             => true,
+                    'toPay'             => true,
+                    'customFieldValues' => [],
+                    'grouping_sorting'  => [],
+                ],
+            'participation'    =>
+                [
+                    'salutation'        => true,
+                    'nameFirst'         => true,
+                    'nameLast'          => true,
+                    'email'             => true,
+                    'phoneNumber'       => 'comma',
+                    'addressStreet'     => true,
+                    'addressCity'       => true,
+                    'addressZip'        => true,
+                    'customFieldValues' => [],
+                ],
+            'title'            => 'Teilnehmende',
+            'additional_sheet' => [
+                'participation' => true,
+            ],
+        ];
+
+        $export = new CustomizedExport(
+            $this->customization(),
+            $kernel->getContainer()->get(PaymentManager::class),
+            $event,
+            [$participant1, $participant2, $participant3],
+            $user,
+            $configuration
         );
         $export->setMetadata();
 

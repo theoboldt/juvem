@@ -20,18 +20,19 @@ use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Form\GroupFieldAssignEntitiesType;
 use AppBundle\Form\GroupType;
 use AppBundle\Group\AttributeChoiceOptionUsageDistribution;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\JsonResponse;
+use AppBundle\Twig\Extension\CustomFieldValue;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -331,15 +332,16 @@ class AdminGroupController
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $entities = $form->get('assign')->getData();
-                /** @var EntityHavingFilloutsInterface $entity */
+                /** @var EntityHavingCustomFieldValueInterface $entity */
                 foreach ($entities as $entity) {
                     $this->denyAccessUnlessGranted('participants_edit', $event);
-
-                    /** @var Fillout $fillout */
-                    $fillout = $entity->getAcquisitionAttributeFillout($bid, true);
-                    $value   = GroupFilloutValue::createForChoiceOption($choiceOption);
-                    $fillout->setValue($value->getRawValue());
-                    $em->persist($fillout);
+                    $customFieldValueContainer = $entity->getCustomFieldValues()->getByCustomField($choiceOption->getAttribute());
+                    $customFieldValue = $customFieldValueContainer->getValue();
+                    if (!$customFieldValue instanceof GroupCustomFieldValue) {
+                        throw new \InvalidArgumentException('Unexpected class '.get_class($customFieldValue));
+                    }
+                    $customFieldValue->setValue($choiceOption->getId());
+                    $em->persist($entity);
                     $changed = true;
                 }
             }
@@ -382,6 +384,11 @@ class AdminGroupController
         $usage      = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
         $result     = [];
 
+        $customFieldValueExtension = $this->twig->getExtension(CustomFieldValue::class);
+        if (!$customFieldValueExtension instanceof CustomFieldValue) {
+            throw new \RuntimeException('Need to fetch '.CustomFieldValue::class.' from twig');
+        }
+        
         /** @var Employee $employee */
         foreach ($usage->getEmployees() as $employee) {
             $row = [
@@ -389,13 +396,11 @@ class AdminGroupController
                 'nameFirst' => $employee->getNameFirst(),
                 'nameLast'  => $employee->getNameLast(),
             ];
-
-            /** @var Fillout $fillout */
-            foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if ($fillout->getAttribute()->getUseAtEmployee()) {
-                    $row['acq_field_' . $fillout->getAttribute()->getBid()]
-                        = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
-                }
+            
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($employee->getCustomFieldValues() as $customFieldValueContainer) {
+                $row['custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $employee, false);
             }
             $result[] = $row;
         };
@@ -425,6 +430,11 @@ class AdminGroupController
         $repository      = $this->getDoctrine()->getRepository(Attribute::class);
         $usage           = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
         $result          = [];
+
+        $customFieldValueExtension = $this->twig->getExtension(CustomFieldValue::class);
+        if (!$customFieldValueExtension instanceof CustomFieldValue) {
+            throw new \RuntimeException('Need to fetch '.CustomFieldValue::class.' from twig');
+        }
 
         /** @var Participant $participant */
         foreach ($usage->getParticipants() as $participant) {
@@ -465,21 +475,15 @@ class AdminGroupController
                 'gender'                   => $participant->getGender(),
             ];
 
-            /** @var Fillout $fillout */
-            foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
-                    continue;
-                }
-                $row['participation_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($participation->getCustomFieldValues() as $customFieldValueContainer) {
+                $row['participation_custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $participation, false);
             }
-
-            foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
-                    continue;
-                }
-                $row['participant_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($participant->getCustomFieldValues() as $customFieldValueContainer) {
+                $row['participant_custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $participant, false);
             }
 
 
@@ -511,21 +515,27 @@ class AdminGroupController
         $usage      = $repository->fetchAttributeChoiceUsage($event, $choiceOption);
         $result     = [];
 
+        $customFieldValueExtension = $this->twig->getExtension(CustomFieldValue::class);
+        if (!$customFieldValueExtension instanceof CustomFieldValue) {
+            throw new \RuntimeException('Need to fetch ' . CustomFieldValue::class . ' from twig');
+        }
+
         /** @var Participation $participation */
         foreach ($usage->getParticipations() as $participation) {
             $row = [
-                'pid'       => $participation->getPid(),
+                'pid' => $participation->getPid(),
                 'nameFirst' => $participation->getNameFirst(),
-                'nameLast'  => $participation->getNameLast(),
+                'nameLast' => $participation->getNameLast(),
             ];
 
-            /** @var Fillout $fillout */
-            foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
-                if ($fillout->getAttribute()->getUseAtEmployee()) {
-                    $row['acq_field_' . $fillout->getAttribute()->getBid()]
-                        = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
-                }
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($participation->getCustomFieldValues() as $customFieldValueContainer) {
+                $row['custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue(
+                    $this->twig, $customFieldValueContainer, $participation, false
+                );
             }
+
             $result[] = $row;
         };
         return new JsonResponse($result);

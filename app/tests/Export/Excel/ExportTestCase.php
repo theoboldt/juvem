@@ -11,10 +11,10 @@
 
 namespace Tests\Export\Excel;
 
-use PHPUnit\Framework\TestCase;
 use Tests\Export\TmpDirAccessingTestTrait;
+use Tests\JuvemKernelTestCase;
 
-abstract class ExportTestCase extends TestCase
+abstract class ExportTestCase extends JuvemKernelTestCase
 {
     use ParticipantTestingDataTrait, TmpDirAccessingTestTrait;
 

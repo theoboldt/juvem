@@ -75,7 +75,7 @@ class EmployeesSheet extends AbstractSheet
     
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, false, true, true, true) as $attribute) {
-            $this->addColumn(new EntityAttributeColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
+            $this->addColumn(new EntityAttributeColumn('custom_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
         }
     }
     

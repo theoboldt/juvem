@@ -35,25 +35,29 @@
         <a href="mailto:{{ participation.email }}">{{ participation.email }}</a>
       </address>
     </dd>
-    {% for fillout in participation.acquisitionAttributeFillouts %}
-      <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-          data-placement="right">
-        {%- if not fillout.attribute.isPublic -%}
-          {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-        {% endif %}
-        {%- if fillout.attribute.isDeleted -%}
-            {{ 'trash'|glyph('Dieses Feld ist im Papierkorb') }}
-        {% endif %}
-        {%- if fillout.attribute.isArchived -%}
-            {{ 'folder-close'|glyph('Dieses ist archiviert') }}
-        {% endif %}
-        {{ fillout.attribute.managementTitle }}
-      </dt>
-      <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
+    {% for customField in event.getAcquisitionAttributes(true, false, false, true, true) %}
+        <dt {% if customField.formDescription != customField.managementTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+            {%- if not customField.isPublic -%}
+                {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+            {% endif %}
+            {%- if customField.isDeleted -%}
+                {{ 'trash'|glyph('Dieses Feld ist im Papierkorb') }}
+            {% endif %}
+            {%- if customField.isArchived -%}
+                {{ 'folder-close'|glyph('Dieses ist archiviert') }}
+            {% endif %}
+            {{ customField.managementTitle }}
+        </dt>
+        <dd>
+            {% set customFieldValueContainer = participation.customFieldValues.get(customField.id) %}
+            {% if customFieldValueContainer %}
+                {{ customFieldValueContainer|customFieldValue(participation, true) }}
+            {% else %}
+                <i class="empty value-not-specified"><span></span></i>
+            {% endif %}
+        </dd>
     {% endfor %}
-    <dt title=
-        "Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang
-    </dt>
+    <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
     <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
     <dt title="Ist die Anmeldung mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
         data-toggle="tooltip" data-placement="right">

@@ -48,7 +48,7 @@ class BasePriceSummand extends BaseSummand implements SummandInterface
      * @param bool $inEuro If set to true, value is returned in euro
      * @return float|int
      */
-    public function getValue($inEuro = false)
+    public function getValue(bool $inEuro = false)
     {
         $price = $this->impacted->getBasePrice($inEuro);
         if ($price === null) {

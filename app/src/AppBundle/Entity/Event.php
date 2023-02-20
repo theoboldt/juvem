@@ -20,6 +20,7 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\FeedbackQuestionnaire\FeedbackQuestionnaireFillout;
 use AppBundle\Feedback\FeedbackQuestion;
 use AppBundle\Feedback\FeedbackQuestionnaire;
@@ -1015,7 +1016,7 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @param bool $includeEmployeeFields
      * @param bool $includePrivate             If non-public fields should be included
      * @param bool $includePublic              If public fields should be included
-     * @return ArrayCollection|array Result
+     * @return ArrayCollection|Attribute[] Result
      */
     public function getAcquisitionAttributes(
         bool $includeParticipationFields = true,
@@ -1046,11 +1047,36 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
                     ($includePrivate && !$acquisitionAttribute->isPublic())
                 )
             ) {
-                $acquisitionAttributes[$acquisitionAttribute->getName()] = $acquisitionAttribute;
+                $acquisitionAttributes[$acquisitionAttribute->getCustomFieldName()] = $acquisitionAttribute;
             }
         }
 
         return $acquisitionAttributes;
+    }
+
+    /**
+     * Get custom fields used for transmitted entity
+     *
+     * @param EntityHavingCustomFieldValueInterface $entity         Entity to fetch used {@see Attribute}
+     * @param bool                                  $includePrivate If non-public fields should be included
+     * @param bool                                  $includePublic  If public fields should be included
+     * @return Attribute[]                                          Assigned custom fields
+     */
+    public function getCustomFieldsForEntity(
+        EntityHavingCustomFieldValueInterface $entity,
+        bool                                  $includePrivate = true,
+        bool                                  $includePublic = true
+    ): array {
+
+        if ($entity instanceof Participation) {
+            return $this->getAcquisitionAttributes(true, false, false, $includePrivate, $includePublic);
+        } elseif ($entity instanceof Participant) {
+            return $this->getAcquisitionAttributes(false, true, false, $includePrivate, $includePublic);
+        } elseif ($entity instanceof Employee) {
+            return $this->getAcquisitionAttributes(false, true, false, $includePrivate, $includePublic);
+        } else {
+            throw new \InvalidArgumentException('Unknown class provided: ' . get_class($entity));
+        }
     }
 
     /**

@@ -12,12 +12,31 @@
 namespace AppBundle\Entity\AcquisitionAttribute;
 
 
+use AppBundle\Entity\CustomField\ChoiceCustomFieldValue;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\Event;
 use AppBundle\Group\ChoiceOptionUsage;
 use Doctrine\ORM\EntityRepository;
 
 class AcquisitionAttributeRepository extends EntityRepository
 {
+
+    /**
+     * Find all {@see Attribute} including options if choice attribute
+     * 
+     * @return Attribute[]
+     */
+    public function findAllWithOptions(): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('a', 'o')
+           ->indexBy('a', 'a.bid')
+           ->leftJoin('a.choiceOptions', 'o');
+        
+        return $qb->getQuery()->execute();
+    }
+    
     /**
      * Find one single events having acquisition attributes joined
      *
@@ -40,7 +59,7 @@ class AcquisitionAttributeRepository extends EntityRepository
     }
     
     /**
-     * Find list of all attributes used at event and using textual fillouts
+     * Find list of all attributes used at event and using textual custom field values
      *
      * @param Event $event
      * @return array|Attribute[]
@@ -67,12 +86,12 @@ class AcquisitionAttributeRepository extends EntityRepository
     }
     
     /**
-     * Find all unique fillout values for transmitted attributes
+     * Find all unique custom field values for transmitted attributes
      *
      * @param array $attributes
      * @return array
      */
-    public function findAllAttributeValuesForFillouts(array $attributes): array
+    public function findAllValuesForCustomFields(array $attributes): array
     {
         $bids = [];
         /** @var Attribute $attribute */
@@ -82,18 +101,37 @@ class AcquisitionAttributeRepository extends EntityRepository
         if (!count($bids)) {
             return [];
         }
-        $qb = $this->_em->getConnection()->createQueryBuilder();
-        $qb->select('f.bid', 'f.value')
-           ->from('acquisition_attribute_fillout', 'f')
-           ->andWhere($qb->expr()->in('f.bid', $bids))
-           ->andWhere('f.value IS NOT NULL')
-           ->groupBy('f.bid', 'f.value');
-        
+
         $result = [];
-        $queryResult = $qb->execute();
-        while ($row = $queryResult->fetch()) {
-            $result['acq_field_'.$row['bid']][] = $row['value'];
+        foreach (['participation', 'participant', 'employee'] as $table) {
+            $qb = $this->_em->getConnection()->createQueryBuilder();
+            $qb->select('e.custom_field_values')
+               ->from($table, 'e')
+               ->andWhere('e.custom_field_values IS NOT NULL');
+
+            $queryResult = $qb->execute();
+            while ($row = $queryResult->fetchOne()) {
+                $rowCustomFieldValues = json_decode($row, true);
+                if (is_array($rowCustomFieldValues)) {
+                    $rowCustomFieldValueCollection = CustomFieldValueCollection::createFromArray($rowCustomFieldValues);
+                    /** @var CustomFieldValueContainer $customFieldValueContainer */
+                    foreach ($rowCustomFieldValueCollection->getIterator() as $customFieldValueContainer) {
+                        $bid = $customFieldValueContainer->getCustomFieldId();
+                        if (in_array($bid, $bids)) {
+                            $value                            = $customFieldValueContainer->getValue();
+                            $result['custom_field_' . $bid][] = $value->getTextualValue();
+                        }
+                    }
+                }
+            }
         }
+
+        $values = null;
+        foreach ($result as &$values) {
+            $values = array_values(array_unique($values));
+        }
+        unset($values);
+
         return $result;
     }
     
@@ -117,7 +155,7 @@ class AcquisitionAttributeRepository extends EntityRepository
     }
     
     /**
-     * Fetch amount of occurrence of @see ChoiceFilloutValue
+     * Fetch amount of occurrence of {@see ChoiceCustomFieldValue}
      *
      * @param Event $event
      * @param AttributeChoiceOption $choiceOption

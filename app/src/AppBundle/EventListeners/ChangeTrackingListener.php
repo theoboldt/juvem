@@ -11,6 +11,7 @@
 namespace AppBundle\EventListeners;
 
 
+use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 use AppBundle\Entity\ChangeTracking\ScheduledEntityChange;
@@ -18,7 +19,11 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersIn
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\User;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -97,6 +102,20 @@ class ChangeTrackingListener
                 //do not treat deletedAt changes as update
                 continue;
             }
+            
+            if ($attribute === 'customFieldValues') {
+                $comparableBefore = $this->getComparableCustomFieldValueCollectionRepresentation($values[0]);
+                $comparableAfter  = $this->getComparableCustomFieldValueCollectionRepresentation($values[1]);
+                
+                $this->compareCustomFieldCollectionsAndAddChanges(
+                    $entity,
+                    $comparableBefore,
+                    $comparableAfter,
+                    $change
+                );
+                
+                continue;
+            }
             $comparableBefore = $this->getComparableRepresentation($attribute, $entity, $values[0]);
             $comparableAfter  = $this->getComparableRepresentation($attribute, $entity, $values[1]);
 
@@ -109,7 +128,7 @@ class ChangeTrackingListener
                 $comparableBefore = (string)$comparableBefore;
                 $comparableAfter  = (string)$comparableAfter;
             }
-
+            
             if ($comparableBefore !== $comparableAfter) {
                 foreach ($values as $key => $value) {
                     if ($entity instanceof SpecifiesChangeTrackingAttributeConvertersInterface) {
@@ -131,6 +150,86 @@ class ChangeTrackingListener
         }
     }
 
+    /**
+     * Provide custom field name
+     *
+     * @param Attribute[]               $customFields              List of known custom fields
+     * @param CustomFieldValueContainer $customFieldValueContainer Custom field value container
+     * @return string Name
+     */
+    private static function provideCustomFieldName(
+        array                     $customFields,
+        CustomFieldValueContainer $customFieldValueContainer
+    ): string {
+        $attributeName = 'Feld #' . $customFieldValueContainer->getCustomFieldId();
+        foreach ($customFields as $customField) {
+            if ($customField->getBid() === $customFieldValueContainer->getCustomFieldId()) {
+                $attributeName = $customField->getManagementTitle() . ' [' . $attributeName . ']';
+            }
+        }
+        return $attributeName;
+    }
+
+    /**
+     * Compare custom fields and register changes if any available
+     *
+     * @todo  Needs to be improved so choice options etc. can be interpret 
+     * @param SupportsChangeTrackingInterface $entity
+     * @param CustomFieldValueCollection      $comparableBefore
+     * @param CustomFieldValueCollection      $comparableAfter
+     * @param ScheduledEntityChange           $change
+     * @return void
+     */
+    private function compareCustomFieldCollectionsAndAddChanges(
+        SupportsChangeTrackingInterface $entity,
+        CustomFieldValueCollection $comparableBefore,
+        CustomFieldValueCollection $comparableAfter,
+        ScheduledEntityChange      $change
+    ) {
+        if (!$entity instanceof EntityHavingCustomFieldValueInterface) {
+            throw new \RuntimeException('Entity must be of class '.EntityHavingCustomFieldValueInterface::class);
+        }
+        
+        $customFields = $entity->getEvent()->getAcquisitionAttributes();
+        if ($customFields instanceof Collection) {
+            $customFields = $customFields->toArray();
+        }
+        /** @var CustomFieldValueContainer $customFieldValueContainerAfter */
+        foreach ($comparableAfter->getIterator() as $customFieldValueContainerAfter) {
+            $attributeName = self::provideCustomFieldName($customFields, $customFieldValueContainerAfter);
+            
+            $customFieldValueContainerBefore = $comparableBefore->get(
+                $customFieldValueContainerAfter->getCustomFieldId()
+            );
+            if ($customFieldValueContainerBefore) {
+                $customFieldValueContainerBeforeRepresentation = $this->getStorableRepresentation(
+                    $attributeName, $entity, $customFieldValueContainerBefore
+                );
+            } else {
+                $customFieldValueContainerBeforeRepresentation = '';
+            }
+            if (!$customFieldValueContainerBefore
+                || !$customFieldValueContainerBefore->isEqualTo($customFieldValueContainerAfter)) {
+                $change->addAttributeChange(
+                    $attributeName,
+                    $customFieldValueContainerBeforeRepresentation,
+                    $this->getStorableRepresentation($attributeName, $entity, $customFieldValueContainerAfter)
+                );
+            }
+        }
+        /** @var CustomFieldValueContainer $customFieldValueContainerBefore */
+        foreach ($comparableBefore->getIterator() as $customFieldValueContainerBefore) {
+            if (!$customFieldValueContainerAfter->getValue($customFieldValueContainerBefore->getCustomFieldId())) {
+                $attributeName = self::provideCustomFieldName($customFields, $customFieldValueContainerBefore);
+                $change->addAttributeChange(
+                    $attributeName,
+                    $this->getStorableRepresentation($attributeName, $entity, $customFieldValueContainerBefore),
+                    ''
+                );
+            }
+        }
+    }
+    
     /**
      * On entity remove
      *
@@ -266,6 +365,26 @@ class ChangeTrackingListener
         }
     }
 
+    /**
+     * Create comparable custom field value collection representation
+     *
+     * @param null|array|CustomFieldValueCollection $value Value
+     * @return CustomFieldValueCollection
+     */
+    private function getComparableCustomFieldValueCollectionRepresentation(
+        $value
+    ): CustomFieldValueCollection {
+        if ($value === null) {
+            $value = [];
+        }
+        if (is_array($value)) {
+            return CustomFieldValueCollection::createFromArray($value);
+        } elseif ($value instanceof CustomFieldValueCollection) {
+            return $value;
+        } else {
+            throw new \RuntimeException('Unknown value for custom fields occurred: ' . json_encode($value));
+        }
+    }
 
     /**
      * Get a comparable representation for value
@@ -303,7 +422,7 @@ class ChangeTrackingListener
                         'attribute'   => $attribute,
                         'entityClass' => get_class($entity),
                         'entityId'    => $entity->getId(),
-                    ]
+                    ],
                 ]
             );
             $value = implode(', ', $value);
@@ -326,6 +445,12 @@ class ChangeTrackingListener
             return $value->getChangeTrackingStorableRepresentation();
         } elseif ($value instanceof \DateTimeInterface) {
             return $value->format(DATE_ATOM);
+        } elseif ($value instanceof CustomFieldValueContainer) {
+            $result = $value->getValue()->getTextualValue();
+            if ($value->hasComment()) {
+                $result .= "\nAnmerkung: ".$value->getComment();
+            }
+            return $result;
         } elseif (is_object($value)) {
             if (method_exists($value, '__toString')) {
                 return $value->__toString();

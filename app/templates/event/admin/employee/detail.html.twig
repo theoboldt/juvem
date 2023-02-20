@@ -257,16 +257,29 @@
                                     {{ employee.email }}
                                 </address>
                             </dd>
-                            {% for fillout in employee.acquisitionAttributeFillouts %}
-                                <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                                    data-placement="right">
-                                    {%- if not fillout.attribute.isPublic -%}
-                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Datenerfassung angezeigt') }}
+                            {% for customField in event.getAcquisitionAttributes(false, false, true, true, true) %}
+                                <dt {% if customField.formDescription != customField.managementTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+                                    {%- if not customField.isPublic -%}
+                                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht öffentlich angezeigt') }}
                                     {% endif %}
-                                    {{ fillout.attribute.formTitle }}
+                                    {%- if customField.isDeleted -%}
+                                        {{ 'trash'|glyph('Dieses Feld ist im Papierkorb') }}
+                                    {% endif %}
+                                    {%- if customField.isArchived -%}
+                                        {{ 'folder-close'|glyph('Dieses ist archiviert') }}
+                                    {% endif %}
+                                    {{ customField.managementTitle }}
                                 </dt>
-                                <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
+                                <dd>
+                                    {% set customFieldValueContainer = employee.customFieldValues.get(customField.id) %}
+                                    {% if customFieldValueContainer %}
+                                        {{ customFieldValueContainer|customFieldValue(employee, true) }}
+                                    {% else %}
+                                        <i class="empty value-not-specified"><span></span></i>
+                                    {% endif %}
+                                </dd>
                             {% endfor %}
+
                             <dt title="Ist der Mitarbeiter:in mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
                                 data-toggle="tooltip" data-placement="right">
                                 Benutzerkonto
@@ -360,7 +373,7 @@
                                             <td class="value text-right">
                                                 {{ summand.getValue(true)|number_format(2, ',', ".") }}&nbsp;€
                                             </td>
-                                            {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand') %}
+                                            {% if summand is instanceof('AppBundle\\Manager\\Payment\\PriceSummand\\CustomFieldValueSummand') %}
                                                 <td>{{ summand.attribute.managementTitle }}</td>
                                             {% else %}
                                                 <td><code>{{ summand.type }}</code></td>

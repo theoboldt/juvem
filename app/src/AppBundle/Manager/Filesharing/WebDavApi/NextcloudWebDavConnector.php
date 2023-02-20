@@ -216,6 +216,27 @@ class NextcloudWebDavConnector extends AbstractNextcloudConnector
         return null;
     }
     
+    public function move() {
+        $response = $this->request(
+            'PROPFIND',
+            self::API_PATH . 'files/juvem/Talk'
+        );
+        $r = $response->getBody()->getContents();
+
+        $response = $this->request(
+            'MOVE',
+            self::API_PATH . 'files/theoboldt.erik/Talk',
+            [
+                RequestOptions::HEADERS => [
+                    'Destination' => $this->configuration->getBaseUri() . self::API_PATH .
+                                     'files/theoboldt.erik/Freizeiten',
+                ],
+            ]
+        );
+        $r = $response->getBody()->getContents();
+        $a=1;
+    }
+    
     /**
      * List all existing event directories
      *

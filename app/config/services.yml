@@ -163,6 +163,10 @@ services:
         arguments: ['@doctrine', '@security.token_storage']
         public: true
 
+    AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeManager:
+        class: AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeManager
+        arguments: ['@doctrine']
+
     AppBundle\Mail\MailConfigurationProvider:
         autowire: true
         arguments:
@@ -566,6 +570,14 @@ services:
             - { name: twig.extension }
 
     AppBundle\Twig\Extension\EmailListingButton:
+        autowire: true
+        arguments:
+            $authorizationChecker: '@security.authorization_checker'
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\Extension\CustomFieldValue:
         autowire: true
         arguments:
             $authorizationChecker: '@security.authorization_checker'

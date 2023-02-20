@@ -16,8 +16,8 @@ use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceList;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\Sheet\Column\AbstractColumn;
-use AppBundle\Export\Sheet\Column\AcquisitionAttributeAttributeColumn;
 use AppBundle\Export\Sheet\Column\AttendanceListColumn;
+use AppBundle\Export\Sheet\Column\CustomFieldColumn;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
@@ -81,8 +81,11 @@ class AttendanceListSheet extends AbstractSheet
         $this->addColumn(new EntityAttributeColumn('nameLast', 'Nachname'));
 
         if ($this->groupBy) {
-            $column = new AcquisitionAttributeAttributeColumn(
-                $this->groupBy->getName(), $this->groupBy->getManagementTitle(), $this->groupBy
+            $column = new CustomFieldColumn(
+                $this->groupBy->getCustomFieldName(), 
+                $this->groupBy->getManagementTitle(),
+                $this->groupBy,
+                []
             );
             $column->setWidth(12);
             $column->addDataStyleCalback(
@@ -169,8 +172,8 @@ class AttendanceListSheet extends AbstractSheet
             $row         = $this->row();
 
             if ($this->groupBy && $previousParticipant) {
-                $currentValue  = $textualAccessor($participant, $this->groupBy->getName());
-                $previousValue = $textualAccessor($previousParticipant, $this->groupBy->getName());
+                $currentValue  = $textualAccessor($participant, $this->groupBy->getCustomFieldName());
+                $previousValue = $textualAccessor($previousParticipant, $this->groupBy->getCustomFieldName());
                 if ($currentValue != $previousValue) {
                     if (!isset($columnIndex)) {
                         $columnIndex = 1;

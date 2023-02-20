@@ -36,6 +36,14 @@ abstract class AbstractColumn
 	 * @var	string
 	 */
 	protected $numberFormat = NumberFormat::FORMAT_TEXT;
+	
+    /**
+	 * Contains the number data type which will be applied to each value column
+	 *
+     * @see \PhpOffice\PhpSpreadsheet\Cell\DataType
+	 * @var	string|null
+	 */
+	protected ?string $dataType = null;
 
 	/**
 	 * May contain a converter for given value
@@ -145,6 +153,16 @@ abstract class AbstractColumn
 		return $this->converter;
 	}
 
+    /**
+     * Determine if converter is configured
+     * 
+     * @return bool
+     */
+    public function hasConverter(): bool
+    {
+        return ($this->converter !== null && is_callable($this->converter));
+    }
+
 	/**
 	 * @param callable|null $converter
 	 * @return AbstractColumn
@@ -165,6 +183,22 @@ abstract class AbstractColumn
 		return $this;
 	}
 
+    /**
+     * @return string|null
+     */
+    public function getDataType(): ?string
+    {
+        return $this->dataType;
+    }
+
+    /**
+     * @param string|null $dataType
+     */
+    public function setDataType(?string $dataType): void
+    {
+        $this->dataType = $dataType;
+    }
+    
 	/**
 	 * Get column width
 	 *

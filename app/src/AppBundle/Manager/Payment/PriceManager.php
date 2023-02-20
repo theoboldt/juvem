@@ -13,27 +13,27 @@ namespace AppBundle\Manager\Payment;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
+use AppBundle\Entity\CustomField\ChoiceCustomFieldValue;
+use AppBundle\Entity\CustomField\CustomFieldValueInterface;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\EntityHavingFilloutsInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
+use AppBundle\Manager\Payment\PriceSummand\CustomFieldValueSummand;
 use AppBundle\Manager\Payment\PriceSummand\EntityPriceTag;
-use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
 use AppBundle\Manager\Payment\PriceSummand\Formula\AttributeChoiceFormulaVariable;
 use AppBundle\Manager\Payment\PriceSummand\Formula\AttributeFormulaVariable;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableInterface;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableProvider;
 use AppBundle\Manager\Payment\PriceSummand\Formula\FormulaVariableResolver;
-use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
+use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -59,28 +59,28 @@ class PriceManager
      * @var FormulaVariableResolver|null
      */
     private $resolver;
-    
+
     /**
      * Cache for @see Attribute entities from database
      *
      * @var array|null|Attribute[]
      */
     private $attributesCache = null;
-    
+
     /**
      * Cache for {@see EventSpecificVariable} entities from database
      *
      * @var array|null|EventSpecificVariable[]
      */
     private $eventVariablesCache = null;
-    
+
     /**
      * Cache for values for event specific variables
      *
      * @var array|array[]
      */
     private $eventVariableValueCache = [];
-    
+
     /**
      * Price tag cache
      *
@@ -96,7 +96,7 @@ class PriceManager
     private $basePriceCache = [];
 
     /**
-     * Cache for calculated @see FilloutSummand objects
+     * Cache for calculated @see customFieldValueSummand objects
      *
      * @var array|array[]
      */
@@ -109,7 +109,7 @@ class PriceManager
      * @param ExpressionLanguageProvider $expressionLanguageProvider
      */
     public function __construct(
-        EntityManagerInterface $em,
+        EntityManagerInterface     $em,
         ExpressionLanguageProvider $expressionLanguageProvider
     ) {
         $this->em                         = $em;
@@ -127,7 +127,7 @@ class PriceManager
     {
         $allNull = true;
         $prices  = [];
-        
+
         /** @var Participant $participant */
         foreach ($participation->getParticipants() as $participant) {
             if ($participant->isWithdrawn() || $participant->isRejected() || $participant->getDeletedAt()) {
@@ -159,10 +159,11 @@ class PriceManager
 
 
     /**
-     * Fetch all current base prices for all @see Participant of transmitted @see Event
+     * Fetch all current base prices for all @param Event $event Desired Event
      *
-     * @param Event $event Desired Event
      * @return void
+     * @see Participant of transmitted @see Event
+     *
      */
     private function fetchMostRecentPricesForEvent(Event $event): void
     {
@@ -194,10 +195,11 @@ class PriceManager
     }
 
     /**
-     * Get current price for transmitted @see Participant
+     * Get current price for transmitted @param Participant $participant Desired participant
      *
-     * @param Participant $participant Desired participant
      * @return int
+     * @see Participant
+     *
      */
     private function getMostRecentBasePriceForParticipant(Participant $participant)
     {
@@ -234,10 +236,10 @@ class PriceManager
                     $summands[0] = new BasePriceSummand($causingEntity);
                 }
                 $participation = $causingEntity->getParticipation();
-                $summands = array_merge($summands, $this->getEntitySummands($impactedEntity, $participation));
+                $summands      = array_merge($summands, $this->getEntitySummands($impactedEntity, $participation));
             }
-    
-            if ($causingEntity instanceof EntityHavingFilloutsInterface) {
+
+            if ($causingEntity instanceof EntityHavingCustomFieldValueInterface) {
                 $event = $causingEntity->getEvent();
                 /** @var Attribute $eventAttribute */
                 foreach ($event->getAcquisitionAttributes(
@@ -250,9 +252,13 @@ class PriceManager
                     if (!$attribute->isPriceFormulaEnabled() || !$attribute->getPriceFormula()) {
                         continue;
                     }
-                    $bid     = $attribute->getBid();
-                    $fillout = $causingEntity->getAcquisitionAttributeFillout($bid, true);
-                    $summand = $this->filloutSummand($fillout, $impactedEntity);
+                    $bid                        = $attribute->getBid();
+                    $customFieldValueCollection = $causingEntity->getCustomFieldValues();
+                    $customFieldValueContainer  = $customFieldValueCollection->getByCustomField($attribute);
+                    $customFieldValue           = $customFieldValueContainer->getValue();
+                    $summand                    = $this->customFieldValueSummand(
+                        $causingEntity, $attribute, $customFieldValue, $impactedEntity
+                    );
                     if ($summand) {
                         $summands[$bid] = $summand;
                     }
@@ -275,49 +281,47 @@ class PriceManager
     }
 
     /**
-     * Resolve transmitted variable for fillout and impacted entity
+     * Resolve transmitted variable for custom field, custom field value and impacted entity
      *
-     * @param FormulaVariableInterface $variable       Variable to resolve
-     * @param Fillout                  $fillout        Current fillout having validity for field requiring the variable
+     * @param FormulaVariableInterface  $variable Variable to resolve
+     * @param Attribute                 $customField
+     * @param CustomFieldValueInterface $customFieldValue
+     * @param SummandCausableInterface  $causingEntity
      * @return int|float|bool
      */
     private function resolveVariable(
-        FormulaVariableInterface $variable,
-        Fillout $fillout
+        FormulaVariableInterface  $variable,
+        Attribute                 $customField,
+        CustomFieldValueInterface $customFieldValue,
+        SummandCausableInterface  $causingEntity
     ) {
-        $name         = $variable->getName();
-        $filloutValue = $fillout->getValue();
-    
+        $name  = $variable->getName();
+        $event = $causingEntity->getEvent();
+
         if ($name === FormulaVariableProvider::VARIABLE_VALUE) {
-            return (float)$filloutValue->getTextualValue();
+            return (float)$customFieldValue->getTextualValue();
         } elseif ($name === FormulaVariableProvider::VARIABLE_VALUE_NOT_EMPTY) {
-            return !empty($fillout->getValue()->getTextualValue());
+            return !empty($customFieldValue->getTextualValue());
         } elseif ($name === FormulaVariableProvider::VARIABLE_CHOICE_SELECTED_COUNT) {
-            if ($fillout->getAttribute()->getFieldType() !== ChoiceType::class ||
-                !$filloutValue instanceof ChoiceFilloutValue) {
+            if ($customField->getFieldType() !== ChoiceType::class ||
+                !$customFieldValue instanceof ChoiceCustomFieldValue) {
                 throw new \InvalidArgumentException('Using choice count variable in non-choice attribute');
             }
-            return count($filloutValue->getSelectedChoices());
+            return count($customFieldValue->getSelectedChoices());
         } elseif ($variable instanceof AttributeChoiceFormulaVariable) {
-            if ($fillout->getAttribute()->getFieldType() !== ChoiceType::class ||
-                !$filloutValue instanceof ChoiceFilloutValue) {
+            if ($customField->getFieldType() !== ChoiceType::class ||
+                !$customFieldValue instanceof ChoiceCustomFieldValue) {
                 throw new \InvalidArgumentException('Using choice count variable in non-choice attribute');
             }
             $expectedChoiceId = $variable->getChoice()->getId();
-            
-            foreach ($filloutValue->getSelectedChoices() as $selectedChoice) {
-                if ($expectedChoiceId === $selectedChoice->getId()) {
+
+            foreach ($customFieldValue->getSelectedChoices() as $selectedChoiceId) {
+                if ($expectedChoiceId === $selectedChoiceId) {
                     return true;
                 }
             }
             return false;
         } elseif ($variable instanceof AttributeFormulaVariable) {
-            //only one if the three
-            $filloutEmployee      = $fillout->getEmployee();
-            $filloutParticipant   = $fillout->getParticipant();
-            $filloutParticipation = $fillout->getParticipation();
-
-            $event            = $fillout->getEvent();
             $relatedAttribute = $variable->getAttribute();
             if (!$relatedAttribute->isPriceFormulaEnabled()) {
                 return 0; //related formula does not have formula enabled (no more)
@@ -326,36 +330,36 @@ class PriceManager
                 if ($relatedAttribute->getBid() === $attribute->getBid()) {
                     //related attribute is also assigned to this event, so calculate
 
-                    if ($relatedAttribute->getUseAtEmployee() && $filloutEmployee) {
-                        return $this->getValueFor($filloutEmployee, $relatedAttribute);
+                    if ($relatedAttribute->getUseAtEmployee() && $causingEntity instanceof Employee) {
+                        return $this->getValueFor($causingEntity, $relatedAttribute);
                     }
-                    if ($relatedAttribute->getUseAtParticipant() && $filloutParticipant) {
-                        return $this->getValueFor($filloutParticipant, $relatedAttribute);
+                    if ($relatedAttribute->getUseAtParticipant() && $causingEntity instanceof Participant) {
+                        return $this->getValueFor($causingEntity, $relatedAttribute);
                     }
                     if ($relatedAttribute->getUseAtParticipation()) {
-                        if ($filloutParticipation) {
-                            return $this->getValueFor($filloutParticipation, $relatedAttribute);
-                        } elseif ($filloutParticipant) {
-                            return $this->getValueFor($filloutParticipant->getParticipation(), $relatedAttribute);
+                        if ($causingEntity instanceof Participation) {
+                            return $this->getValueFor($causingEntity, $relatedAttribute);
+                        } elseif ($causingEntity instanceof Participant) {
+                            return $this->getValueFor($causingEntity->getParticipation(), $relatedAttribute);
                         }
                     }
                     return 0;
-                    //related formula is calculated at employee but fillout is related
+                    //related formula is calculated at employee but custom field value is related
                     //to participant/participation or vice versa
                 }
             }
             return 0; //related attribute is not assigned to this @see Event
         } elseif ($variable instanceof EventSpecificVariable) {
-            return $this->getValueForEventVariable($variable, $fillout->getEvent());
+            return $this->getValueForEventVariable($variable, $event);
         }
-        throw new \InvalidArgumentException('Unknown variable type '.get_class($variable));
+        throw new \InvalidArgumentException('Unknown variable type ' . get_class($variable));
     }
-    
+
     /**
      * Get the (cached) value for the transmitted event for a event specific variable
      *
      * @param EventSpecificVariable $variable Variable
-     * @param Event $event Related event
+     * @param Event                 $event    Related event
      * @return float|int
      */
     private function getValueForEventVariable(EventSpecificVariable $variable, Event $event)
@@ -369,87 +373,86 @@ class PriceManager
             } catch (NoDefaultValueSpecifiedException $e) {
                 throw CalculationImpossibleException::create($variable, $e);
             }
-        
+
             $this->eventVariableValueCache[$variable->getId()][$event->getEid()] = $value->getValue();
         }
-    
+
         return $this->eventVariableValueCache[$variable->getId()][$event->getEid()];
     }
-    
+
     /**
-     * Iterate @see Fillout for transmitted @see $entity until finding fillout for transmitted @see Attribute,
-     * then returning relateds value
+     * Extract value
      *
-     * @param EntityHavingFilloutsInterface $entity
-     * @param Attribute $relatedAttribute
+     * @param EntityHavingCustomFieldValueInterface $entity
+     * @param Attribute                             $customField
      * @return float|int
      */
-    private function getValueFor(EntityHavingFilloutsInterface $entity, Attribute $relatedAttribute)
+    private function getValueFor(EntityHavingCustomFieldValueInterface $entity, Attribute $customField)
     {
-        $bid = $relatedAttribute->getBid();
+        $bid = $customField->getBid();
         $id  = $entity->getId();
         if (!isset($this->attributeFormulaResultCache[$bid])
         ) {
             $this->attributeFormulaResultCache[$bid] = [];
         }
         if (!array_key_exists($id, $this->attributeFormulaResultCache[$bid])) {
-            $result     = 0;
-            
-            
-            foreach ($entity->getAcquisitionAttributeFillouts() as $relatedFillout) {
-                if ($relatedFillout->getAttribute()->getBid() === $bid) {
-                    $formula = $relatedAttribute->getPriceFormula();
-                    
-                    if ($formula) {
-                        $used     = $this->resolver()->getUsedVariables($relatedAttribute);
-                        $values   = [];
-                        foreach ($used as $variable) {
-                            $values[$variable->getName()] = $this->resolveVariable(
-                                $variable, $relatedFillout
-                            );
-                        }
-                        
-                        $result = $this->expressionLanguage()->evaluate($formula, $values);
-                        break;
+            $result = 0;
+
+            $customFieldValueContainer = $entity->getCustomFieldValues()->getByCustomField($customField);
+            $customFieldValue          = $customFieldValueContainer->getValue();
+            $formula                   = $customField->getPriceFormula();
+            if ($formula) {
+                $used   = $this->resolver()->getUsedVariables($customField);
+                $values = [];
+                foreach ($used as $variable) {
+                    if (!$entity instanceof SummandCausableInterface) {
+                        throw new \RuntimeException('Unexpected entity occurred');
                     }
+                    $values[$variable->getName()] = $this->resolveVariable(
+                        $variable, $customField, $customFieldValue, $entity
+                    );
                 }
+
+                $result = $this->expressionLanguage()->evaluate($formula, $values);
             }
             $this->attributeFormulaResultCache[$bid][$id] = $result;
         }
-        
+
         return $this->attributeFormulaResultCache[$bid][$id];
     }
-    
-    
+
+
     /**
-     * Generate fillout summand for transmitted @see Fillout
+     * Generate custom field value summand for transmitted
      *
-     * @param Fillout $fillout
-     * @param SummandImpactedInterface $impactedEntity
-     * @return FilloutSummand|null
+     * @param SummandCausableInterface  $causingEntity
+     * @param Attribute                 $customField
+     * @param CustomFieldValueInterface $customFieldValue
+     * @param SummandImpactedInterface  $impactedEntity
+     * @return CustomFieldValueSummand|null
      */
-    private function filloutSummand(
-        Fillout $fillout,
-        SummandImpactedInterface $impactedEntity
-    )
-    {
-        $attribute = $fillout->getAttribute();
-        $formula   = $attribute->getPriceFormula();
-        
+    private function customFieldValueSummand(
+        SummandCausableInterface  $causingEntity,
+        Attribute                 $customField,
+        CustomFieldValueInterface $customFieldValue,
+        SummandImpactedInterface  $impactedEntity
+    ): ?CustomFieldValueSummand {
+        $formula = $customField->getPriceFormula();
+
         if (!$formula) {
             return null;
         }
-        $used     = $this->resolver()->getUsedVariables($attribute);
-        $values   = [];
+        $used   = $this->resolver()->getUsedVariables($customField);
+        $values = [];
         foreach ($used as $variable) {
             $values[$variable->getName()] = $this->resolveVariable(
-                $variable, $fillout
+                $variable, $customField, $customFieldValue, $causingEntity
             );
         }
         $result = $this->expressionLanguage()->evaluate($formula, $values);
-        return new FilloutSummand($impactedEntity, $fillout, $result);
+        return new CustomFieldValueSummand($causingEntity, $impactedEntity, $customField, $customFieldValue, $result);
     }
-    
+
     /**
      * Fetch cached attributes
      *
@@ -462,7 +465,7 @@ class PriceManager
         }
         return $this->attributesCache;
     }
-    
+
     /**
      * Fetch cached variables
      *
@@ -475,11 +478,13 @@ class PriceManager
         }
         return $this->eventVariablesCache;
     }
+
     /**
-     * Fetch @see Attribute by transmitted bid (cached)
+     * Fetch @param int $bid ID
      *
-     * @param int $bid ID
      * @return Attribute Entitiy
+     * @see Attribute by transmitted bid (cached)
+     *
      */
     private function attribute(int $bid): Attribute
     {
@@ -488,15 +493,16 @@ class PriceManager
     }
 
     /**
-     * Get cached @see ExpressionLanguage
+     * Get cached @return ExpressionLanguage
      *
-     * @return ExpressionLanguage
+     * @see ExpressionLanguage
+     *
      */
     private function expressionLanguage(): ExpressionLanguage
     {
         return $this->expressionLanguageProvider->provide();
     }
-    
+
     /**
      * Provide cached formula variable resolver
      *

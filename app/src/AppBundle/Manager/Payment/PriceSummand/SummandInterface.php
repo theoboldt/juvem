@@ -21,7 +21,7 @@ interface SummandInterface
      * @param bool $inEuro If set to true, value is returned in euro
      * @return float|int
      */
-    public function getValue($inEuro = false);
+    public function getValue(bool $inEuro = false);
 
     /**
      * Get short textual description of this summand's kind
@@ -38,13 +38,13 @@ interface SummandInterface
     public function getImpacted(): SummandImpactedInterface;
 
     /**
-     * Get cause for this summand, which might differ from value of @see getImpacted()
+     * Get cause for this summand, which might differ from value of {@see getImpacted()}
      *
-     * Get cause for this summand, which might differ from value of @see getImpacted(), for example if this is an
-     *
-     * @see Participant and the cause for this summand is because of a @see Participation fillout
+     * Get cause for this summand, which might differ from value of {@see getImpacted()}, for example if this is an
      *
      * @return SummandCausableInterface
+     * @see Participant and the cause for this summand is because of a {@see Participation} custom field value
+     *
      */
     public function getCause(): SummandCausableInterface;
 }

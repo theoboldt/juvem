@@ -22,8 +22,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipationBaseType extends AbstractType
 {
-    use AcquisitionAttributeIncludingTypeTrait;
-
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
     const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
@@ -31,7 +29,7 @@ class ParticipationBaseType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var Participation $participation */
-        $participation = $options['data'];
+        $participation = $options['data'] ?? null;
 
         $builder
             ->add(
@@ -103,9 +101,9 @@ class ParticipationBaseType extends AbstractType
                     'allow_add'     => true,
                     'allow_delete'  => true,
                     'entry_options' => [
-                        'participation'                 => $participation,
-                        self::ACQUISITION_FIELD_PUBLIC  => $options[self::ACQUISITION_FIELD_PUBLIC],
-                        self::ACQUISITION_FIELD_PRIVATE => $options[self::ACQUISITION_FIELD_PRIVATE],
+                        ParticipantType::PARTICIPATION_FIELD       => $participation,
+                        ParticipantType::ACQUISITION_FIELD_PUBLIC  => $options[self::ACQUISITION_FIELD_PUBLIC],
+                        ParticipantType::ACQUISITION_FIELD_PRIVATE => $options[self::ACQUISITION_FIELD_PRIVATE],
                     ],
                     'required'      => true,
                 ]
@@ -115,25 +113,12 @@ class ParticipationBaseType extends AbstractType
             CustomFieldValuesType::class,
             [
                 'by_reference'                                => true,
-                'property_path'                               => 'customFieldValueCollection',
                 'mapped'                                      => true,
                 'cascade_validation'                          => true,
                 CustomFieldValuesType::ENTITY_OPTION          => $participation,
                 CustomFieldValuesType::INCLUDE_PRIVATE_OPTION => $options[self::ACQUISITION_FIELD_PRIVATE],
                 CustomFieldValuesType::INCLUDE_PUBLIC_OPTION  => $options[self::ACQUISITION_FIELD_PUBLIC],
             ]
-        );
-        return;
-
-        $event      = $participation->getEvent();
-        $attributes = $event->getAcquisitionAttributes(
-            true, false, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
-        );
-
-        $this->addAcquisitionAttributesToBuilder(
-            $builder,
-            $attributes,
-            isset($options['data']) ? $options['data'] : null
         );
     }
 

@@ -123,8 +123,24 @@ class EntityAttributeColumn extends AbstractColumn
         return self::$accessor->getValue($entity, $this->dataAttribute);
 	}
 
-	/**
-	 * Write element to excel file
+    /**
+     * Apply {@see self::converter} to {@see getData()} value if configured
+     *
+     * @param mixed $value  Extracted value
+     * @param mixed $entity Full entity passed to {@see process()}
+     * @return mixed Converted value or original value
+     */
+    public function getConvertedData($value, $entity)
+    {
+        if ($this->hasConverter()) {
+            $converter = $this->converter;
+            $value     = call_user_func($converter, $value, $entity);
+        }
+        return $value;
+    }
+
+    /**
+	 * Write element to Excel file
 	 *
 	 * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet Excel sheet to write
 	 * @param integer $row Current row
@@ -132,14 +148,10 @@ class EntityAttributeColumn extends AbstractColumn
 	 */
 	public function process($sheet, $row, $entity)
 	{
-		$value = $this->getData($entity);
-
-        if ($this->converter !== null && is_callable($this->converter)) {
-            $converter = $this->converter;
-            $value     = $converter($value, $entity);
-        }
-
-		$sheet->setCellValueByColumnAndRow($this->columnIndex, $row, $value);
+        $data          = $this->getData($entity);
+        $dataConverted = $this->getConvertedData($data, $entity);
+        
+		$sheet->setCellValueByColumnAndRow($this->columnIndex, $row, $dataConverted);
 		if ($this->numberFormat !== null) {
             $sheet->getStyleByColumnAndRow($this->columnIndex, $row)->getNumberFormat()->setFormatCode(
                 $this->numberFormat

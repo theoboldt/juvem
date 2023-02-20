@@ -28,6 +28,11 @@ abstract class ParticipantRelatedConfiguration
     const OPTION_VALUE_MANAGEMENT = 'managementTitle';
     const OPTION_VALUE_SHORT      = 'shortTitle';
 
+    const OPTION_COMMENT_NONE = 'commentNotUsed';
+    const OPTION_COMMENT_NEWLINE = 'commentNewline';
+    const OPTION_COMMENT_COLUMN  = 'commentColumn';
+    const OPTION_COMMENT_COMMENT = 'commentExcelComment';
+
     const OPTION_GROUP_NONE = '___group_by_none';
     const OPTION_SORT_NONE = '___sort_by_none';
 
@@ -60,7 +65,13 @@ abstract class ParticipantRelatedConfiguration
         $this->event = $event;
     }
 
-    public static function booleanNodeCreator($name, $info)
+    /**
+     * @param string $name        Node identifier
+     * @param string $info        Text used as info
+     * @param bool   $defaultTrue If set to true, default value will be enabled
+     * @return BooleanNodeDefinition
+     */
+    public static function booleanNodeCreator(string $name, string $info, bool $defaultTrue = false)
     {
         $node = new BooleanNodeDefinition($name);
         $node->beforeNormalization()
@@ -68,6 +79,10 @@ abstract class ParticipantRelatedConfiguration
              ->then(function ($v) { return (bool)$v; })
              ->end()
              ->info($info);
+        if ($defaultTrue) {
+            $node->defaultTrue();
+        }
+
         return $node;
     }
 
@@ -104,12 +119,13 @@ abstract class ParticipantRelatedConfiguration
     {
         $nodes   = [];
         $nodes[] = Configuration::booleanNodeCreator('aid', 'AID (Eindeutige Teilnahme-Nummer)');
-        $nodes[] = Configuration::booleanNodeCreator('nameFirst', 'Vorname');
-        $nodes[] = Configuration::booleanNodeCreator('nameLast', 'Nachname');
-        $nodes[] = Configuration::booleanNodeCreator('birthday', 'Geburtsdatum');
+        $nodes[] = Configuration::booleanNodeCreator('nameFirst', 'Vorname', true);
+        $nodes[] = Configuration::booleanNodeCreator('nameLast', 'Nachname', true);
+        $nodes[] = Configuration::booleanNodeCreator('birthday', 'Geburtsdatum', true);
 
         $node = new EnumNodeDefinition('ageAtEvent');
         $node->info('Alter (bei Beginn der Veranstaltung)')
+             ->defaultValue('none')
              ->values(
                  [
                      'Nicht exportieren'         => 'none',
@@ -130,24 +146,24 @@ abstract class ParticipantRelatedConfiguration
         $nodes[] = Configuration::booleanNodeCreator('price', 'Preis (inkl. Formeln)');
         $nodes[] = Configuration::booleanNodeCreator('toPay', 'Zu zahlen (offener Zahlungsbetrag)');
         if ($this->event) {
-            $nodes[] = $this->addAcquisitionAttributesNode(false, true);
+            $nodes[] = $this->addCustomFieldNode(false, true);
         }
 
         return $nodes;
     }
 
     /**
-     * Add fields for acquisition attributes
+     * Add fields for custom fields attributes
      *
      * @param bool $participation Set to true to include participation fields
      * @param bool $participant   Set to true to include participant fields
      * @return ArrayNodeDefinition|NodeDefinition
      */
-    protected function addAcquisitionAttributesNode($participation, $participant)
+    protected function addCustomFieldNode(bool $participation, bool $participant)
     {
         $attributes = $this->event->getAcquisitionAttributes($participation, $participant, false, true, true);
         $builder    = new TreeBuilder();
-        $node       = $builder->root('acquisitionFields')
+        $node       = $builder->root('customFieldValues')
                               ->addDefaultsIfNotSet()
                               ->info('Felder');
         $children   = $node->children();
@@ -155,11 +171,14 @@ abstract class ParticipantRelatedConfiguration
         /** @var Attribute $attribute */
         foreach ($attributes as $attribute) {
             $attributeChildren = $children
-                ->arrayNode('acq_field_' . $attribute->getBid())
+                ->arrayNode('custom_field_' . $attribute->getBid())
                 ->addDefaultsIfNotSet()
                 ->info($attribute->getManagementTitle())
                 ->children();
 
+            $attributeChildren
+                ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen', true));
+            
             if ($attribute->isChoiceType()) {
                 if ($attribute->isMultipleChoiceType()) {
                     $displayList = [
@@ -170,6 +189,8 @@ abstract class ParticipantRelatedConfiguration
                         'Gewählte Antwort anzeigen' => 'selectedAnswer',
                     ];
                 }
+                $displayDefault = reset($displayList);
+                
                 $displayList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen']
                     = self::OPTION_SEPARATE_COLUMNS;
 
@@ -180,19 +201,31 @@ abstract class ParticipantRelatedConfiguration
                 ];
 
                 $attributeChildren
-                    ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen'))
                     ->enumNode('display')
                     ->values($displayList)
+                    ->defaultValue($displayDefault)
                     ->end()
                     ->enumNode('optionValue')
                     ->values($optionValueList)
-                    ->end()
-                    ->end()
+                    ->defaultValue(self::OPTION_VALUE_MANAGEMENT)
                     ->end();
-            } else {
+            }
+            if ($attribute->isCommentEnabled()) {
                 $attributeChildren
-                    ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen'))
-                    ->end()
+                    ->enumNode('optionComment')
+                    ->defaultValue(self::OPTION_COMMENT_COMMENT)
+                    ->values(
+                        [
+                            'Ergänzungen in Wertspalte in neuer Zeile in derselben Zelle wie die Werte hinzufügen' =>
+                                self::OPTION_COMMENT_NEWLINE,
+                            'Ergänzungen in eigener Spalte einfügen'                                               =>
+                                self::OPTION_COMMENT_COLUMN,
+                            'Ergänzungen als Excel-Kommentare zur Zelle der Werte hinzufügen'                      =>
+                                self::OPTION_COMMENT_COMMENT,
+                            'Ergänzungen ignorieren'                                                               =>
+                                self::OPTION_COMMENT_NONE,
+                        ]
+                    )
                     ->end();
             }
         }

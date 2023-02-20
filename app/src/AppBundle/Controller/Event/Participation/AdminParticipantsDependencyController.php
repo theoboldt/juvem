@@ -14,13 +14,12 @@ namespace AppBundle\Controller\Event\Participation;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
-use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\GroupType;
-use AppBundle\Form\ParticipantDetectingType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\JsonResponse;
@@ -58,21 +57,33 @@ class AdminParticipantsDependencyController extends AbstractController
         if ($token != $csrf->getToken('detecting' . $event->getEid())) {
             throw new InvalidTokenHttpException();
         }
-        $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
-        $value = $fillout->getValue();
-        if (!$value instanceof GroupFilloutValue) {
-            throw new \InvalidArgumentException('Invalid fillout value provided');
-        }
 
+        $customFields = $participant->getEvent()->getAcquisitionAttributes(false, true, false, true, true);
+        if (!count($customFields)) {
+            throw new \InvalidArgumentException('Event does not have custom fields assigned');
+        }
+        $customFieldValueContainer = null;
+        foreach ($customFields as $customField) {
+            if ($customField->getBid() === $bid) {
+                $customFieldValueContainer = $participant->getCustomFieldValues()->getByCustomField($customField);
+                break;
+            }
+        }
+        if (!$customFieldValueContainer) {
+            throw new \InvalidArgumentException('Custom field value container not found');
+        }
+        $customFieldValue = $customFieldValueContainer->getValue();
+        if (!$customFieldValue instanceof GroupCustomFieldValue) {
+            throw new \InvalidArgumentException('Invalid custom field value provided');
+        }
         $em = $this->getDoctrine()->getManager();
 
-        $choices = $fillout->getAttribute()->getChoiceOptions();
+        $choices = $customField->getChoiceOptions();
         /** @var AttributeChoiceOption $choice */
         foreach ($choices as $choice) {
             if ($choiceId === $choice->getId()) {
-                $value = GroupFilloutValue::createForChoiceOption($choice);
-                $fillout->setValue($value->getRawValue());
-                $em->persist($fillout);
+                $customFieldValue->setValue($choiceId);
+                $em->persist($participant);
                 $em->flush();
                 return new JsonResponse(['success' => true]);
             }
@@ -307,74 +318,68 @@ class AdminParticipantsDependencyController extends AbstractController
             foreach ($attributes as $attribute) {
                 $bid = $attribute->getBid();
                 if ($attribute->getUseAtParticipant()) {
-                    $fillout = $participant->getAcquisitionAttributeFillout($bid, true);
-                    $value   = $fillout->getValue();
+                    $customFieldValueContainer = $participant->getCustomFieldValues()->getByCustomField($attribute);
+                    $customFieldValue = $customFieldValueContainer->getValue();
                 } else {
                     continue;
                 }
-                switch ($attribute->getFieldType()) {
-                    case ParticipantDetectingType::class:
-                        /** @var ParticipantFilloutValue $value */
-
-                        $selectedAid = $value->getSelectedParticipantId();
-                        if ($selectedAid) {
-                            $edge = [
-                                'from'   => self::participantNodeId($participant->getId()),
-                                'type'   => 'detecting',
-                                'title'  => sprintf(
-                                                '<i>%s</i> ist bei <i>%s</i> mit <i>%s</i>, <i>%s</i> verknüpft',
-                                                htmlspecialchars($participant->getNameFirst()),
-                                                htmlspecialchars($attribute->getManagementTitle()),
-                                                htmlspecialchars($value->getRelatedLastName()),
-                                                htmlspecialchars($value->getRelatedFirstName())
-                                            ) . ($value->isSystemSelection() ? ' (automatisch)' : ''),
-                                'to'     => self::participantNodeId($selectedAid),
-                                'arrows' => 'to',
-                                'color'  => ['color' => $attributeColors[$bid]],
-                            ];
-                            if ($value->isSystemSelection()) {
-                                $edge['dashes'] = true;
-                            }
-
-                            $edges[] = $edge;
+                
+                if ($customFieldValue instanceof ParticipantDetectingCustomFieldValue) {
+                    $selectedAid = $customFieldValue->getParticipantAid();
+                    if ($selectedAid) {
+                        $edge = [
+                            'from'   => self::participantNodeId($participant->getId()),
+                            'type'   => 'detecting',
+                            'title'  => sprintf(
+                                            '<i>%s</i> ist bei <i>%s</i> mit <i>%s</i>, <i>%s</i> verknüpft',
+                                            htmlspecialchars($participant->getNameFirst()),
+                                            htmlspecialchars($attribute->getManagementTitle()),
+                                            htmlspecialchars($customFieldValue->getRelatedLastName()),
+                                            htmlspecialchars($customFieldValue->getRelatedFirstName())
+                                        ) . ($customFieldValue->isSystemSelection() ? ' (automatisch)' : ''),
+                            'to'     => self::participantNodeId($selectedAid),
+                            'arrows' => 'to',
+                            'color'  => ['color' => $attributeColors[$bid]],
+                        ];
+                        if ($customFieldValue->isSystemSelection()) {
+                            $edge['dashes'] = true;
                         }
-                        break;
-                    case GroupType::class:
-                        /** @var GroupFilloutValue $value */
-                        $groupId = $value->getGroupId();
-                        if ($groupId) {
-                            $selectedChoice = $value->getSelectedChoices();
-                            $selectedChoice = reset($selectedChoice);
-    
-                            if (!isset($attributeOptionColors[$bid])) {
-                                throw new \OutOfBoundsException($bid . ' is not in color list');
-                            }
-                            if (!isset($attributeOptionColors[$bid][$groupId])) {
-                                throw new \OutOfBoundsException(
-                                    'Group ' . $groupId . ' not in color list of ' . $bid
-                                );
-                            } else {
-                                $color = $attributeOptionColors[$bid][$groupId];
-                            }
-                            
-                            $edge    = [
-                                'from'     => self::participantNodeId($participant->getId()),
-                                'to'       => self::choiceOptionNodeId($bid, $groupId),
-                                'type'     => 'choice',
-                                'title'    => sprintf(
-                                    '<i>%s</i> ist bei <i>%s</i> eingeteilt in <i>%s</i>',
-                                    htmlspecialchars($participant->getNameFirst()),
-                                    htmlspecialchars($attribute->getManagementTitle()),
-                                    htmlspecialchars($selectedChoice->getManagementTitle(true))
-                                ),
-                                'bid'      => $bid,
-                                'choiceId' => $groupId,
-                                'color'    => ['color' => $color],
-                            ];
-                            $edges[] = $edge;
+
+                        $edges[] = $edge;
+                    }
+                } elseif ($customFieldValue instanceof GroupCustomFieldValue) {
+                    $groupId = $customFieldValue->getValue();
+                    if ($groupId) {
+                        $selectedChoice = $attribute->getChoiceOption($groupId);
+                        if (!isset($attributeOptionColors[$bid])) {
+                            throw new \OutOfBoundsException($bid . ' is not in color list');
                         }
-                        break;
+                        if (!isset($attributeOptionColors[$bid][$groupId])) {
+                            throw new \OutOfBoundsException(
+                                'Group ' . $groupId . ' not in color list of ' . $bid
+                            );
+                        } else {
+                            $color = $attributeOptionColors[$bid][$groupId];
+                        }
+
+                        $edge    = [
+                            'from'     => self::participantNodeId($participant->getId()),
+                            'to'       => self::choiceOptionNodeId($bid, $groupId),
+                            'type'     => 'choice',
+                            'title'    => sprintf(
+                                '<i>%s</i> ist bei <i>%s</i> eingeteilt in <i>%s</i>',
+                                htmlspecialchars($participant->getNameFirst()),
+                                htmlspecialchars($attribute->getManagementTitle()),
+                                htmlspecialchars($selectedChoice->getManagementTitle(true))
+                            ),
+                            'bid'      => $bid,
+                            'choiceId' => $groupId,
+                            'color'    => ['color' => $color],
+                        ];
+                        $edges[] = $edge;
+                    }
                 }
+
             }
         }
 

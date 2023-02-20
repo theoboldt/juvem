@@ -12,8 +12,6 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
@@ -22,7 +20,9 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
-use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueTrait;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Mail\SupportsRelatedEmailsInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandCausableInterface;
@@ -42,13 +42,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ParticipationRepository")
  */
-class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingFilloutsInterface, EntityHavingPhoneNumbersInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, HumanInterface, SupportsRelatedEmailsInterface
+class Participation implements EventRelatedEntity, SummandCausableInterface, EntityHavingPhoneNumbersInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, HumanInterface, SupportsRelatedEmailsInterface, EntityHavingCustomFieldValueInterface
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
+    use HumanTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
     }
-
+    use CustomFieldValueTrait;
+    
     /**
      * @ORM\Column(type="integer", name="pid")
      * @ORM\Id
@@ -106,11 +107,16 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
     protected $participants;
 
     /**
-     * Contains the participants assigned to this participation
+     * Custom field value collection containing a list of {@see CustomFieldValueContainer}
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participation")
+     * Stores array or {@see CustomFieldValueCollection} which can be generated from this array containing a list
+     * of {@see CustomFieldValueContainer} identified by the related {@see Attribute} id. Is encoded to JSON
+     * when entity is persisted to database
+     * 
+     * @var CustomFieldValueCollection|array
+     * @ORM\Column(type="json", length=16777215, name="custom_field_values", nullable=true)
      */
-    protected $acquisitionAttributeFillouts;
+    private $customFieldValues = [];
 
     /**
      * {@inheritdoc}
@@ -159,8 +165,6 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
             $participant = new Participant($this);
             $this->addParticipant($participant);
         }
-
-        $this->acquisitionAttributeFillouts = new ArrayCollection();
 
         $this->modifiedAt = new \DateTime();
         $this->createdAt  = new \DateTime();
@@ -622,20 +626,16 @@ class Participation implements EventRelatedEntity, SummandCausableInterface, Ent
             $participation->addPhoneNumber($number);
         }
 
+        $previousCustomFieldValueCollection      = $participationPrevious->getCustomFieldValues();
+        $participationCustomFieldValueCollection = $participation->getCustomFieldValues();
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(true, false, false, $copyPrivateFields, true) as $attribute) {
-            try {
-                $filloutPrevious = $participationPrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
-            } catch (\OutOfBoundsException $e) {
-                continue;
+            $previousCustomFieldValueContainer = $previousCustomFieldValueCollection->get($attribute->getBid());
+            if ($previousCustomFieldValueContainer) {
+                $participationCustomFieldValueCollection->add(clone $previousCustomFieldValueContainer);
             }
-            $fillout = new Fillout();
-            $fillout->setParticipation($participation);
-            $fillout->setAttribute($attribute);
-            $fillout->setValue($filloutPrevious->getRawValue());
-            $participation->addAcquisitionAttributeFillout($fillout);
         }
-
+        
         /** @var Participant $participantPrevious */
         foreach ($participationPrevious->getParticipants() as $participantPrevious) {
             Participant::createFromTemplateForParticipation($participantPrevious, $participation, $copyPrivateFields);

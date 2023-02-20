@@ -12,16 +12,19 @@
 namespace AppBundle\Form;
 
 
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * ParticipantDetectingType
+ * 
+ * Can not be moved in code right now because class name is used in database 
+ */
 class ParticipantDetectingType extends AbstractType
 {
-
-    const FIELD_NAME_FIRST_NAME = 'participantDetectingFirstName';
-    const FIELD_NAME_LAST_NAME  = 'participantDetectingLastName';
-
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
@@ -31,7 +34,7 @@ class ParticipantDetectingType extends AbstractType
         $builder->setAttribute('class', 'participant-detecting');
         $builder
             ->add(
-                self::FIELD_NAME_FIRST_NAME,
+                'relatedFirstName',
                 TextType::class,
                 [
                     'label'    => 'Vorname (verknüpfte Teilnehmer:in)',
@@ -40,7 +43,7 @@ class ParticipantDetectingType extends AbstractType
                 ]
             )
             ->add(
-                self::FIELD_NAME_LAST_NAME,
+                'relatedLastName',
                 TextType::class,
                 [
                     'label'    => 'Nachname (verknüpfte Teilnehmer:in)',
@@ -50,4 +53,14 @@ class ParticipantDetectingType extends AbstractType
 
             );
     }
+    
+    /**
+     * @param OptionsResolver $resolver
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('data_class', ParticipantDetectingCustomFieldValue::class);
+    }
+    
 }

@@ -14,7 +14,8 @@ namespace Tests\Export\Excel;
 
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
-use AppBundle\Export\ParticipantsExport;
+use AppBundle\Export\Customized\CustomizedExport;
+use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -23,6 +24,9 @@ class ParticipantsExportTest extends ExportTestCase
 
     public function testParticipationsExport(): void
     {
+        $kernel = static::bootKernel();
+        $kernel->boot();
+
         $user  = $this->user();
         $event = $this->event();
 
@@ -54,8 +58,54 @@ class ParticipantsExportTest extends ExportTestCase
         $participant3->setGender(Participant::LABEL_GENDER_MALE);
         $participation1->addParticipant($participant3);
 
-        $export = new ParticipantsExport(
-            $this->customization(), $event, [$participant1, $participant2, $participant3], $user
+        $configuration = [
+            'filter'           =>
+                [
+                    'confirmed'         => 'all',
+                    'paid'              => 'all',
+                    'rejectedwithdrawn' => 'notrejectedwithdrawn',
+                ],
+            'participant'      =>
+                [
+                    'nameFirst'         => true,
+                    'nameLast'          => true,
+                    'birthday'          => true,
+                    'ageAtEvent'        => 'completed',
+                    'gender'            => true,
+                    'foodVegetarian'    => true,
+                    'foodLactoseFree'   => true,
+                    'foodLactoseNoPork' => true,
+                    'infoMedical'       => true,
+                    'infoGeneral'       => true,
+                    'basePrice'         => true,
+                    'price'             => true,
+                    'toPay'             => true,
+                    'customFieldValues' => [],
+                    'grouping_sorting'  => [],
+                ],
+            'participation'    =>
+                [
+                    'salutation'        => true,
+                    'nameFirst'         => true,
+                    'nameLast'          => true,
+                    'email'             => true,
+                    'phoneNumber'       => 'comma',
+                    'addressStreet'     => true,
+                    'addressCity'       => true,
+                    'addressZip'        => true,
+                    'customFieldValues' => [],
+                ],
+            'title'            => 'Teilnehmende',
+            'additional_sheet' => [],
+        ];
+
+        $export = new CustomizedExport(
+            $this->customization(),
+            $kernel->getContainer()->get(PaymentManager::class),
+            $event,
+            [$participant1, $participant2, $participant3],
+            $user,
+            $configuration
         );
         $export->setMetadata();
 
@@ -101,7 +151,7 @@ class ParticipantsExportTest extends ExportTestCase
         $this->assertEqualsSheetValue($sheet, 8, 4, 'nein');
         $this->assertEqualsSheetValue($sheet, 9, 4, '');
         $this->assertEqualsSheetValue($sheet, 10, 4, '');
-        
+
         $properties = $spreadsheet->getProperties();
         $this->assertEquals('Juvem', $properties->getCategory());
         $this->assertEquals($user->fullname(), $properties->getCreator());

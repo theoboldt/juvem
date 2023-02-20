@@ -27,8 +27,12 @@ DATEN DER ELTERN:
     {{ participation.addressZip }} {{ participation.addressCity }}{% if participation.addressCountry != constant('AppBundle\\Entity\\Event::DEFAULT_COUNTRY') %}
     {{ participation.addressCountry }}{% endif %}
   E-Mail Adresse: {{ participation.email }}
-{% for fillout in  participation.acquisitionAttributeFillouts %}
-    {% if fillout.attribute.public %}{{ fillout.attribute.formTitle }}: {{ fillout }}{% endif %}{% endfor %}
+  {%- for customField in event.getAcquisitionAttributes(true, false, false, false, true) -%}
+    {%- set customFieldValueContainer = participation.customFieldValues.get(customField.id) -%}
+    {%- if customFieldValueContainer and customFieldValueContainer.value -%}
+    {{ customField.formTitle }}: {{ customFieldValueContainer.value.textualValue }} {% if customFieldValueContainer.comment %}({{ customFieldValueContainer.comment }}){% endif %}
+    {% endif %}
+  {% endfor %}
 
 DATEN DER TEILNEHMER:
 {% for participant in participation.getParticipants() %}
@@ -38,8 +42,12 @@ DATEN DER TEILNEHMER:
     Geschlecht: {{ participant.getGender() }}
     Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
     Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
-{% for fillout in participant.acquisitionAttributeFillouts %}
-    {% if fillout.attribute.public %}{{ fillout.attribute.formTitle }}: {{ fillout }}{% endif %}{% endfor %}
+    {%- for customField in event.getAcquisitionAttributes(false, true, false, false, true) -%}
+      {%- set customFieldValueContainer = participant.customFieldValues.get(customField.id) -%}
+      {%- if customFieldValueContainer and customFieldValueContainer.value -%}
+      {{ customField.formTitle }}: {{ customFieldValueContainer.value.textualValue }} {% if customFieldValueContainer.comment %}({{ customFieldValueContainer.comment }}){% endif %}
+      {% endif %}
+    {% endfor %}
 
     Medizinische Hinweise: {% if not participant.infoMedical %}(keine Besonderheiten){% else %}
        {{ participant.infoMedical }}{% endif %}
@@ -83,13 +91,11 @@ Mit besten Grüßen,
                 <td class="thead" style="min-width:150px;">Nachname</td>
                 <td>{{ participation.nameLast }}</td>
             </tr>
-            {% for fillout in participation.acquisitionAttributeFillouts %}
-                {% if fillout.attribute.public %}
-                    <tr>
-                        <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                        <td>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</td>
-                    </tr>
-                {% endif %}
+            {% for customField in event.getAcquisitionAttributes(true, false, false, false, true) %}
+              <tr>
+                <td class="thead" title="{{ customField.formDescription }}">{{ customField.formTitle }}</td>
+                <td>{{ participation.customFieldValues.get(customField.id)|customFieldValue(participation, false) }}</td>
+              </tr>
             {% endfor %}
             <tr>
                 <td class="thead"><abbr title="Telefonnummern">Telefon</abbr></td>
@@ -147,13 +153,11 @@ Mit besten Grüßen,
                     <td class="thead">Geburtsdatum</td>
                     <td>{{ participant.getBirthday|date("d.m.Y") }}</td>
                 </tr>
-                {% for fillout in participant.acquisitionAttributeFillouts %}
-                    {% if fillout.attribute.public %}
-                        <tr>
-                            <td class="thead" title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</td>
-                            <td>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</td>
-                        </tr>
-                    {% endif -%}
+                {% for customField in event.getAcquisitionAttributes(false, true, false, false, true) %}
+                  <tr>
+                    <td class="thead" title="{{ customField.formDescription }}">{{ customField.formTitle }}</td>
+                    <td>{{ participant.customFieldValues.get(customField.id)|customFieldValue(participant, false) }}</td>
+                  </tr>
                 {% endfor %}
                 <tr>
                     <td class="thead">Ernährung</td>

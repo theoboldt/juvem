@@ -18,11 +18,12 @@ use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariableValue;
 use AppBundle\Entity\AcquisitionAttribute\Variable\NoDefaultValueSpecifiedException;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
+use AppBundle\Entity\CustomField\NumberCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\EventUserAssignment;
@@ -1069,7 +1070,7 @@ class AdminController
             
             if ($attribute->getUseAtParticipant()) {
                 $elements = $participationRepository->participantsList($event, null, true, true);
-                $this->updateFilloutOrder($elements, $attributeBid, $reset);
+                $this->updateCustomFieldValueOrder($elements, $attribute, $reset);
                 $this->addFlash(
                     'success',
                     'Reihenfolge für Teilnehmer:innen für das Feld <i>' . htmlspecialchars($attribute->getManagementTitle()) .
@@ -1078,7 +1079,7 @@ class AdminController
             }
             if ($attribute->getUseAtParticipation()) {
                 $elements = $participationRepository->participationsList($event, false, true, null);
-                $this->updateFilloutOrder($elements, $attributeBid, $reset);
+                $this->updateCustomFieldValueOrder($elements, $attribute, $reset);
                 $this->addFlash(
                     'success',
                     'Reihenfolge für Anmeldungen für das Feld <i>' .
@@ -1104,40 +1105,44 @@ class AdminController
             ]
         );
     }
-    
+
     /**
-     * Update fillout order
+     * Update custom field value order
      *
-     * @CloseSessionEarly
-     * @param array $elements
-     * @param int $attributeBid
-     * @param bool $reset
+     * @param EntityHavingCustomFieldValueInterface[] $elements
+     * @param Attribute                               $attribute
+     * @param bool                                    $reset
      * @return int
      */
-    private function updateFilloutOrder(array $elements, int $attributeBid, bool $reset): int
+    private function updateCustomFieldValueOrder(array $elements, Attribute $attribute, bool $reset): int
     {
         $valueMax = 0;
-        /** @var FilloutTrait $element */
+        /** @var EntityHavingCustomFieldValueInterface $element */
         foreach ($elements as $element) {
-            $fillout = $element->getAcquisitionAttributeFillout($attributeBid, true);
-            $value   = $fillout->getValue()->getTextualValue();
-            
-            if ($reset) {
-                $fillout->setValue('');
-            } elseif (!empty($value) && $value > $valueMax) {
-                $valueMax = $value;
+            if (!$element instanceof EntityHavingCustomFieldValueInterface) {
+                throw new \InvalidArgumentException(
+                    'All transmitted elements must be of class ' . EntityHavingCustomFieldValueInterface::class
+                );
             }
-        }
+            $customFieldContainer = $element->getCustomFieldValues()->getByCustomField($attribute);
+            $customFieldValue     = $customFieldContainer->getValue();
+            if ($customFieldValue instanceof NumberCustomFieldValue) {
+                if ($reset) {
+                    $customFieldValue->setValue('');
+                } elseif (!empty($value) && $value > $valueMax) {
+                    $valueMax = $value;
+                }
+            }
         
         $em = $this->getDoctrine()->getManager();
 
         shuffle($elements);
         $index = ($valueMax + 1);
-        foreach ($elements as $element) {
-            $fillout = $element->getAcquisitionAttributeFillout($attributeBid, true);
-            if (empty($fillout->getValue()->getTextualValue())) {
-                $fillout->setValue($index++);
-                $em->persist($fillout);
+            $customFieldContainer = $element->getCustomFieldValues()->getByCustomField($attribute);
+            $customFieldValue     = $customFieldContainer->getValue();
+            if ($customFieldValue instanceof NumberCustomFieldValue && empty($customFieldValue)) {
+                $customFieldValue->setValue($index++);
+                $em->persist($element);
             }
         }
         

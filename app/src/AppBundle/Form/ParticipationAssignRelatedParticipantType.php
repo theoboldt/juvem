@@ -13,7 +13,6 @@ namespace AppBundle\Form;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
-use AppBundle\Entity\Participation;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -31,7 +30,15 @@ class ParticipationAssignRelatedParticipantType extends AbstractType
         $eid   = $event->getEid();
         $builder
             ->add(
-                'oid',
+                'bid',
+                HiddenType::class
+            )
+            ->add(
+                'entityClass',
+                HiddenType::class
+            )
+            ->add(
+                'entityId',
                 HiddenType::class
             )
             ->add(

@@ -11,21 +11,22 @@
 namespace AppBundle\EventListeners;
 
 
-use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use AppBundle\Entity\Event;
-use AppBundle\Form\ParticipantDetectingType;
 use AppBundle\Manager\RelatedParticipantsLocker;
 use Doctrine\ORM\EntityManager;
 
 abstract class AbstractRelatedParticipantResetListener extends RelatedParticipantsLocker
 {
-    
+
     /**
      * Reset proposed participants for an complete event
      *
-     * @param EntityManager $em Entity manage
-     * @param Event $event Related event
-     * @param int $maxWait If defined, specifies maximum time to wait for lock
+     * @param EntityManager $em      Entity manage
+     * @param Event         $event   Related event
+     * @param int           $maxWait If defined, specifies maximum time to wait for lock
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -34,25 +35,66 @@ abstract class AbstractRelatedParticipantResetListener extends RelatedParticipan
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             $em->getConnection()->beginTransaction();
-            $result = $em->getConnection()->executeQuery(
-                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value
-                   FROM acquisition_attribute_fillout
-             INNER JOIN acquisition_attribute ON (acquisition_attribute_fillout.bid = acquisition_attribute.bid)
-             INNER JOIN event_acquisition_attribute ON (event_acquisition_attribute.bid = acquisition_attribute.bid)
-                  WHERE acquisition_attribute.field_type = ?
-                    AND event_acquisition_attribute.eid = ?',
-                [ParticipantDetectingType::class, $event->getEid()]
-            );
-            while ($row = $result->fetch()) {
-                $filloutValue = $row['fillout_value'];
-                if ($filloutValue !== null) {
-                    $filloutDecoded = json_decode($filloutValue, true);
-                    if (is_array($filloutDecoded)
-                        && isset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS])) {
-                        unset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS]);
+            foreach (['participation' => 'pid', 'participant' => 'aid', 'employee' => 'gid'] as $table => $idColumn) {
+
+                switch ($table) {
+                    case 'participation':
+                        $result = $em->getConnection()->executeQuery(
+                            'SELECT p.pid AS id, p.custom_field_values
+                   FROM participation p
+                  WHERE p.custom_field_values IS NOT NULL
+                    AND p.eid = ?',
+                            [$event->getEid()]
+                        );
+                        break;
+                    case 'participant':
+
+                        $result = $em->getConnection()->executeQuery(
+                            'SELECT a.aid AS id, a.custom_field_values
+                   FROM participation p
+             INNER JOIN participant a ON (a.pid = p.pid)
+                  WHERE a.custom_field_values IS NOT NULL
+                    AND p.eid = ?',
+                            [$event->getEid()]
+                        );
+                        break;
+                    case 'employee':
+                        $result = $em->getConnection()->executeQuery(
+                            'SELECT e.gid AS id, e.custom_field_values
+                   FROM employee e
+                  WHERE e.custom_field_values IS NOT NULL
+                    AND e.eid = ?',
+                            [$event->getEid()]
+                        );
+                        break;
+                    default:
+                        throw new \RuntimeException('Unknown table provided');
+                }
+
+                while ($row = $result->fetchAssociative()) {
+                    $rowCustomFieldValues           = $row['custom_field_values'] ? json_decode(
+                        $row['custom_field_values'], true
+                    ) : [];
+                    $collectionModified             = false;
+                    $rowCustomFieldValuesCollection = CustomFieldValueCollection::createFromArray(
+                        $rowCustomFieldValues
+                    );
+                    /** @var CustomFieldValueContainer $customFieldValueContainer */
+                    foreach ($rowCustomFieldValuesCollection->getIterator() as $customFieldValueContainer) {
+                        $customFieldValue = $customFieldValueContainer->getValue();
+                        if ($customFieldValue instanceof ParticipantDetectingCustomFieldValue) {
+                            $customFieldValue->setProposedParticipants(null);
+                            $collectionModified = true;
+                        }
+                    }
+                    if ($collectionModified) {
                         $em->getConnection()->executeStatement(
-                            'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
-                            [json_encode($filloutDecoded), $row['oid']]
+                            'UPDATE ' . $table .
+                            ' SET custom_field_values = :custom_field_values WHERE ' . $idColumn . ' = :id',
+                            [
+                                'id'                  => $row['id'],
+                                'custom_field_values' => json_encode($rowCustomFieldValuesCollection),
+                            ]
                         );
                     }
                 }
@@ -60,7 +102,7 @@ abstract class AbstractRelatedParticipantResetListener extends RelatedParticipan
             $em->getConnection()->commit();
             $this->release($event, $lockHandle);
         } else {
-            
+
             $this->closeLockHandle($lockHandle);
             $sleep = 2;
             sleep($sleep);

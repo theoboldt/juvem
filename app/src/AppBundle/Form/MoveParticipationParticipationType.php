@@ -63,6 +63,7 @@ class MoveParticipationParticipationType extends AbstractType
                     'choice_label'  => function (Participation $p) {
                         $label        = $p->fullname() . ' ';
                         $participants = [];
+                        /* //todo deactivated
                         foreach ($p->getParticipants() as $participant) {
                             if (!$participant->isWithdrawn()
                                 && !$participant->isRejected()
@@ -70,6 +71,7 @@ class MoveParticipationParticipationType extends AbstractType
                                 $participants[] = $participant;
                             }
                         } //foreach
+                        */
                         if (count($participants)) {
                             $label .= '[' . ParticipationsParticipantsNamesGrouped::combineNames($participants) . ']';
                         } else {

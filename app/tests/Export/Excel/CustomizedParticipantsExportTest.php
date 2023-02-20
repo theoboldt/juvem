@@ -96,7 +96,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'basePrice'         => true,
                     'price'             => true,
                     'toPay'             => true,
-                    'acquisitionFields' => [],
+                    'customFieldValues' => [],
                     'grouping_sorting'  =>
                         [
                             'grouping' => ['field' => 'nameFirst',],
@@ -113,9 +113,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'addressStreet'     => true,
                     'addressCity'       => true,
                     'addressZip'        => true,
-                    'acquisitionFields' =>
-                        [
-                        ],
+                    'customFieldValues' => [],
                 ],
             'title'            => 'Teilnehmende',
             'additional_sheet' => [],
@@ -236,7 +234,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'basePrice'         => true,
                     'price'             => true,
                     'toPay'             => true,
-                    'acquisitionFields' => [],
+                    'customFieldValues' => [],
                     'grouping_sorting'  =>
                         [
                             'grouping' => ['field' => 'nameFirst',],
@@ -253,9 +251,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'addressStreet'     => true,
                     'addressCity'       => true,
                     'addressZip'        => true,
-                    'acquisitionFields' =>
-                        [
-                        ],
+                    'customFieldValues' => [],
                 ],
             'title'            => 'Teilnehmende',
             'additional_sheet' => [
@@ -326,7 +322,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'basePrice'         => true,
                     'price'             => true,
                     'toPay'             => true,
-                    'acquisitionFields' => [],
+                    'customFieldValues' => [],
                     'grouping_sorting'  =>
                         [
                             'grouping' => ['field' => 'nameFirst',],
@@ -343,9 +339,7 @@ class CustomizedParticipantsExportTest extends JuvemKernelTestCase
                     'addressStreet'     => true,
                     'addressCity'       => true,
                     'addressZip'        => true,
-                    'acquisitionFields' =>
-                        [
-                        ],
+                    'customFieldValues' => [],
                 ],
             'title'            => 'Teilnehmende',
             'additional_sheet' => [

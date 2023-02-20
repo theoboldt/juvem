@@ -7,18 +7,18 @@ $(function () {
         switch (action) {
             case 'select':
                 var optionId = el.data('id');
-                $('.acq_field_' + bid + ' select').each(function () {
+                $('.custom-field-field-' + bid + ' select').each(function () {
                     $(this).find('option[value="' + optionId + '"]').prop('selected', true);
                 });
-                $('.acq_field_' + bid + ' input[type="radio"]').each(function () {
+                $('.custom-field-field-' + bid + ' input[type="radio"]').each(function () {
                     $(this).prop('checked', false);
                 });
-                $('.acq_field_' + bid + ' input[value="' + optionId + '"]').each(function () {
+                $('.custom-field-field-' + bid + ' input[value="' + optionId + '"]').each(function () {
                     $(this).prop('checked', true);
                 });
                 break;
             case 'clear':
-                $('.acq_field_' + bid + ' input').each(function () {
+                $('.custom-field-field-' + bid + ' input').each(function () {
                     $(this).val('');
                 });
                 break;

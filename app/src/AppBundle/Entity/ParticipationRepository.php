@@ -136,10 +136,9 @@ class ParticipationRepository extends EntityRepository
 
         //fetch @see Participant
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a', 'aaf')
+        $qb->select('a')
            ->from(Participant::class, 'a', 'a.aid')
            ->innerJoin('a.participation', 'p')
-           ->leftJoin('a.acquisitionAttributeFillouts', 'aaf')
            ->andWhere('p.event = :eid')
            ->orderBy('a.nameLast, a.nameFirst', 'ASC');
 
@@ -165,9 +164,8 @@ class ParticipationRepository extends EntityRepository
 
         //fetch @see Participation and phone numbers
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('p, pn, paf')
+        $qb->select('p, pn')
            ->from(Participation::class, 'p')
-           ->leftJoin('p.acquisitionAttributeFillouts', 'paf')
            ->leftJoin('p.phoneNumbers', 'pn')
            ->andWhere('p.event = :eid')
            ->setParameter('eid', $eid);

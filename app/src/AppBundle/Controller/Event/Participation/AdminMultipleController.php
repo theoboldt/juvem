@@ -15,9 +15,8 @@ use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\Event\Gallery\GalleryPublicController;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Participant;
@@ -29,6 +28,7 @@ use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Twig\Extension\BootstrapGlyph;
+use AppBundle\Twig\Extension\CustomFieldValue;
 use AppBundle\Twig\Extension\PaymentInformation;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
@@ -136,7 +136,8 @@ class AdminMultipleController
      *
      * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants-age", requirements={"eid": "\d+"}, name="event_participants_list_specific_age")
+     * @Route("/admin/event/{eid}/participants-age", requirements={"eid": "\d+"},
+     *                                               name="event_participants_list_specific_age")
      * @Security("is_granted('participants_read', event)")
      */
     public function listParticipantsWithSpecificAgeAction(Event $event)
@@ -151,7 +152,8 @@ class AdminMultipleController
      *
      * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants-specific-age.json", requirements={"eid": "\d+"}, name="event_participants_list_specific_age_data")
+     * @Route("/admin/event/{eid}/participants-specific-age.json", requirements={"eid": "\d+"},
+     *                                                             name="event_participants_list_specific_age_data")
      * @Security("is_granted('participants_read', event)")
      */
     public function listParticipantsWithSpecificAgeDataAction(Event $event, Request $request)
@@ -205,7 +207,9 @@ class AdminMultipleController
      * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
      * @ParamConverter("expectedParticipation", class="AppBundle:Participation", options={"id" = "pid"})
-     * @Route("/admin/event/{eid}/participation/{pid}/{direction}", requirements={"eid": "\d+", "pid": "\d+", "direction":"previous|next"}, name="admin_participation_navigate")
+     * @Route("/admin/event/{eid}/participation/{pid}/{direction}", requirements={"eid": "\d+", "pid": "\d+",
+     *                                                              "direction":"previous|next"},
+     *                                                              name="admin_participation_navigate")
      * @param Event $event
      * @param Participation $expectedParticipation
      * @param string $direction Either previous or next
@@ -298,6 +302,11 @@ class AdminMultipleController
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $statusFormatter = ParticipantStatus::formatter();
+        
+        $customFieldValueExtension = $this->twig->getExtension(CustomFieldValue::class);
+        if (!$customFieldValueExtension instanceof CustomFieldValue) {
+            throw new \RuntimeException('Need to fetch '.CustomFieldValue::class.' from twig');
+        }
 
         $participantList = array();
         /** @var Participant $participant */
@@ -372,7 +381,7 @@ class AdminMultipleController
                 'status'                   => $participantStatusText,
                 'gender'                   => $participant->getGender(),
                 'registrationDate'         => $participationDate->format(Event::DATE_FORMAT_DATE_TIME),
-                'action'                   => $participantAction
+                'action'                   => $participantAction,
             ];
 
             if ($includePayment) {
@@ -415,24 +424,17 @@ class AdminMultipleController
 
                 $participantEntry['payment_price'] = $paymentPrice;
             }
-
-            /** @var Fillout $fillout */
-            foreach ($participation->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
-                    continue;
-                }
-                $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($participation->getCustomFieldValues() as $customFieldValueContainer) {
+                $participantEntry['participation_custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $participation, false);
             }
-
-            foreach ($participant->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->isUseForParticipationsOrParticipants()) {
-                    continue;
-                }
-                $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($participant->getCustomFieldValues() as $customFieldValueContainer) {
+                $participantEntry['participant_custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $participant, false);
             }
-
             $participantList[] = $participantEntry;
         }
 
@@ -514,7 +516,8 @@ class AdminMultipleController
      *
      * @CloseSessionEarly
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participate-timeline.json", requirements={"eid": "\d+"}, name="event_participate_timeline")
+     * @Route("/admin/event/{eid}/participate-timeline.json", requirements={"eid": "\d+"},
+     *                                                        name="event_participate_timeline")
      * @Security("is_granted('read', event)")
      */
     public function provideParticipateTimelineDataAction(Event $event)
@@ -567,7 +570,7 @@ class AdminMultipleController
             $history[$year][$month][] = [
                 'day'   => $day,
                 'count' => $countCurrent,
-                'days'  => $diff->days
+                'days'  => $diff->days,
             ];
 
 

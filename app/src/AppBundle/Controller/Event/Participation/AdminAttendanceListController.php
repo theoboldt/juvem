@@ -487,7 +487,7 @@ class AdminAttendanceListController
 
         if ($attribute) {
             $participantList = ParticipationRepository::sortAndGroupParticipantList(
-                $participantList, null, $attribute->getName()
+                $participantList, null, $attribute->getCustomFieldName()
             );
         }
 

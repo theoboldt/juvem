@@ -14,18 +14,20 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\OptionProvidingCustomFieldValueInterface;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Export\AttributeOptionExplanation;
 use AppBundle\Export\Customized\Configuration;
-use AppBundle\Export\Sheet\Column\AcquisitionAttributeAttributeColumn;
 use AppBundle\Export\Sheet\Column\CallableAccessingColumn;
+use AppBundle\Export\Sheet\Column\CustomFieldColumn;
+use AppBundle\Export\Sheet\Column\CustomFieldCommentColumn;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
-use AppBundle\Export\Sheet\Column\ParticipationAcquisitionAttributeColumn;
+use AppBundle\Export\Sheet\Column\ParticipationCustomFieldColumn;
+use AppBundle\Export\Sheet\Column\ParticipationCustomFieldCommentColumn;
 use AppBundle\Form\GroupType;
 use AppBundle\Manager\Payment\PaymentManager;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -254,7 +256,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
 
-        $this->appendParticipantAcquisitionColumns($event, $configParticipant['acquisitionFields']);
+        $this->appendParticipantCustomFieldColumns($event, $configParticipant['customFieldValues']);
 
 
         $configParticipation = $config['participation'];
@@ -359,67 +361,71 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $this->addColumn($column);
         }
 
-        $this->appendParticipationAcquisitionColumns($event, $configParticipation['acquisitionFields']);
+        $this->appendParticipationCustomFieldColumns($event, $configParticipation['customFieldValues']);
     }
 
     /**
-     * Append participant related acquisition field fillouts
+     * Append participant related acquisition custom field values
      *
      * @param Event $event  Related event
-     * @param array $config Related config for all participant related fillouts
+     * @param array $config Related config for all participant related custom field values
      */
-    private function appendParticipantAcquisitionColumns(Event $event, array $config)
+    private function appendParticipantCustomFieldColumns(Event $event, array $config)
     {
-        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true, false, true, true) as $attribute) {
-            $this->appendAcquisitionColumn('participant', $attribute, $config);
+            $this->appendCustomFieldColumn('participant', $attribute, $config);
         }
     }
 
     /**
-     * Append participation related acquisition field fillouts
+     * Append participation related acquisition field custom field values
      *
      * @param Event $event  Related event
-     * @param array $config Related config for all participation related fillouts
+     * @param array $config Related config for all participation related custom field values
      */
-    private function appendParticipationAcquisitionColumns(Event $event, array $config)
+    private function appendParticipationCustomFieldColumns(Event $event, array $config)
     {
-        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(true, false, false, true, true) as $attribute) {
-            $this->appendAcquisitionColumn('participation', $attribute, $config);
+            $this->appendCustomFieldColumn('participation', $attribute, $config);
         }
     }
 
     /**
      * Append transmitted acquisition attribute column
      *
-     * @param string               $group     Either participant or participation
-     * @param \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute Related attribute entity
-     * @param array                $config    Column config
+     * @param string    $group     Either participant or participation
+     * @param Attribute $attribute Related attribute entity
+     * @param array     $config    Column config
      */
-    private function appendAcquisitionColumn(
+    private function appendCustomFieldColumn(
         string $group,
         Attribute $attribute,
         array $config
     ) {
-        $bid = 'acq_field_' . $attribute->getBid();
+        $bid = 'custom_field_' . $attribute->getBid();
         if (!isset($config[$bid]) || !self::issetAndTrue($config[$bid], 'enabled')) {
             return;
         }
         switch ($group) {
             case 'participant':
-                $class = AcquisitionAttributeAttributeColumn::class;
+                $class        = CustomFieldColumn::class;
+                $classComment = CustomFieldCommentColumn::class;
                 break;
             case 'participation':
-                $class = ParticipationAcquisitionAttributeColumn::class;
+                $class        = ParticipationCustomFieldColumn::class;
+                $classComment = ParticipationCustomFieldCommentColumn::class;
                 break;
             default:
                 throw new \InvalidArgumentException('Unknown acquisition field appended');
         }
-
-        $configDisplay = Configuration::OPTION_DEFAULT;
-        if (isset($config[$bid]['display'])) {
-            $configDisplay = $config[$bid]['display'];
+        
+        if (!isset($config[$bid]['display'])) {
+            $config[$bid]['display'] = Configuration::OPTION_DEFAULT;
+        }
+        if (!isset($config[$bid]['optionComment'])) {
+            $config[$bid]['optionComment'] = Configuration::OPTION_COMMENT_NEWLINE;
         }
 
         if ($attribute->getFieldType() === ChoiceType::class
@@ -438,102 +444,87 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
         } else {
             $explanation = null;
         }
-
-        switch ($configDisplay) {
-            case Configuration::OPTION_SEPARATE_COLUMNS:
-                if ($attribute->getFieldType() === ChoiceType::class
-                    || $attribute->getFieldType() === GroupType::class
+        
+        if ($config[$bid]['display'] === Configuration::OPTION_SEPARATE_COLUMNS
+            && ($attribute->getFieldType() === ChoiceType::class || $attribute->getFieldType() === GroupType::class)
+        ) {
+            if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_NEWLINE) {
+                //newline option not possible, so using comment option
+                $config[$bid]['optionComment'] = Configuration::OPTION_COMMENT_COMMENT;
+            }
+            
+            $choiceFirst = true;
+            $choices = $attribute->getChoiceOptions();
+            /** @var AttributeChoiceOption $choice */
+            foreach ($choices as $choice) {
+                if ($choice->isDeleted()) {
+                    continue;
+                }
+                $optionKey = $choice->getId();
+                $optionLabel = $this->fetchChoiceOptionLabel($choice, $configOptionValue);
+                $converter = function (CustomFieldValueContainer $customFieldValueContainer = null) use (
+                    $choice,
+                    $configOptionValue,
+                    $explanation,
+                    $choiceFirst
                 ) {
-                    $choices = $attribute->getChoiceOptions();
-                    /** @var AttributeChoiceOption $choice */
-                    foreach ($choices as $choice) {
-                        $optionKey = $choice->getId();
-
-                        $optionLabel = $this->fetchChoiceOptionLabel($choice, $configOptionValue);
-                        $converter   = function (Fillout $fillout = null) use ($choice, $configOptionValue, $explanation) {
-                            if ($fillout) {
-                                /** @var ChoiceFilloutValue $value */
-                                $value = $fillout->getValue();
-                                if ($value->getSelectedChoices()) {
-                                    foreach ($value->getSelectedChoices() as $selectedChoice) {
-                                        if ($choice->getId() === $selectedChoice->getId()) {
-                                            if ($explanation) {
-                                                $explanation->register($choice);
-                                            }
-                                            return 'x';
-                                        }
-                                    }
+                    $customFieldValue = $customFieldValueContainer->getValue();
+                    if ($customFieldValue instanceof OptionProvidingCustomFieldValueInterface) {
+                        foreach ($customFieldValue->getSelectedChoices() as $selectedChoiceId) {
+                            if ($choice->getId() === $selectedChoiceId) {
+                                if ($explanation) {
+                                    $explanation->register($choice);
                                 }
-
+                                return 'x';
                             }
-                            return '';
-                        };
-                        /** @var AcquisitionAttributeAttributeColumn $column */
-                        $column = new $class(
-                            $group . '_' . $bid . '_' . $optionKey,
-                            $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
-                            $attribute
-                        );
-                        $this->rotadedColumnHeader($column, 4, $converter);
-                        $this->addColumn($column);
+                        }
+                    } elseif ($choiceFirst) {
+                        return $customFieldValue->getTextualValue();
                     }
-                }
-                break;
-            default:
-                /** @var AcquisitionAttributeAttributeColumn $column */
+                    return '';
+                };
+                /** @var CustomFieldColumn $column */
                 $column = new $class(
-                    $group . '_' . $bid, $attribute->getManagementTitle(), $attribute
+                    $group . '_' . $bid . '_' . $optionKey,
+                    $optionLabel . ' (' . $attribute->getManagementTitle() . ')',
+                    $attribute,
+                    $config[$bid]
                 );
-
-                if ($attribute->getFieldType() === ChoiceType::class
-                    || $attribute->getFieldType() === GroupType::class
-                ) {
-                    $optionValue = $configOptionValue;
-                    $converter   = function (Fillout $fillout = null) use ($optionValue, $explanation) {
-                        $selectedOptions = [];
-
-                        if ($fillout === null) {
-                            return '';
-                        }
-
-                        foreach ($fillout->getSelectedChoices() as $choice) {
-                            if ($explanation) {
-                                $explanation->register($choice);
-                            }
-                            switch ($optionValue) {
-                                case Configuration::OPTION_VALUE_FORM:
-                                    $selectedOptions[] = $choice->getFormTitle();
-                                    break;
-                                case Configuration::OPTION_VALUE_MANAGEMENT:
-                                    $selectedOptions[] = $choice->getManagementTitle(true);
-                                    break;
-                                case Configuration::OPTION_VALUE_SHORT:
-                                default:
-                                    $selectedOptions[] = $choice->getShortTitle(true);
-                                    break;
-                            }
-                        }
-
-                        return implode(', ', $selectedOptions);
-                    };
-                    $column->setConverter($converter);
-                }
+                $this->rotadedColumnHeader($column, 4, $converter);
                 $this->addColumn($column);
-                break;
+                $choiceFirst = false;
+                if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_COMMENT) {
+                    //if added as comment to first column, not adding to followup columns
+                    $config[$bid]['optionComment'] = Configuration::OPTION_COMMENT_NONE;
+                }
+            }
+        } else {
+            /** @var CustomFieldColumn $column */
+            $column = new $class(
+                $group . '_' . $bid, $attribute->getManagementTitle(), $attribute, $config[$bid], $explanation
+            );
+            $this->addColumn($column);
+        }
+
+        if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_COLUMN) {
+            $columnComment = new $classComment(
+                $group . '_' . $bid.'_comment', 'Ergänzungen für '.$attribute->getManagementTitle(), $attribute
+            );
+            $this->addColumn($columnComment);
         }
     }
 
     /**
      * Rotate column, update width accordingly, possibly configure converter
      *
-     * @param AcquisitionAttributeAttributeColumn $column Column to modify
-     * @param int|null                   $width           If not null, transmitted width will be set
-     * @param callable|null              $converter       Converter function if should be set
+     * @param CustomFieldColumn $column    Column to modify
+     * @param int|null          $width     If not null, transmitted width will be set
+     * @param callable|null     $converter Converter function if should be set
      */
     private function rotadedColumnHeader(
-        AcquisitionAttributeAttributeColumn $column,
-        int $width = null,
-        callable $converter = null
+        CustomFieldColumn $column,
+        int               $width = null,
+        callable          $converter = null
     ) {
         $column->addHeaderStyleCallback(
             function ($style) {

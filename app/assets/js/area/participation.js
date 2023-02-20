@@ -204,7 +204,7 @@ $(function () {
                             symbolTitle = 'Grundpreis';
                             description = 'Grundpreis';
                             break;
-                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\FilloutSummand':
+                        case 'AppBundle\\Manager\\Payment\\PriceSummand\\CustomFieldValueSummand':
                             glyph = 'edit';
                             symbolTitle = 'Formel mit Eingabewert';
                             description = 'Feld <i>' + eHtml(rowData.attribute_name) + '</i>';

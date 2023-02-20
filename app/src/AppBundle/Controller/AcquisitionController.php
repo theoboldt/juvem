@@ -10,6 +10,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\AcquisitionAttribute\AcquisitionAttributeManager;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Form\AcquisitionFormulaType;
@@ -33,12 +34,17 @@ use Twig\Environment;
 class AcquisitionController
 {
     
-    use RenderingControllerTrait, DoctrineAwareControllerTrait, FormAwareControllerTrait, RoutingControllerTrait;
+    use RenderingControllerTrait, FormAwareControllerTrait, RoutingControllerTrait;
     
     /**
      * @var RepositoryFormulaVariableProvider
      */
     private RepositoryFormulaVariableProvider $variableProvider;
+
+    /**
+     * @var AcquisitionAttributeManager
+     */
+    private AcquisitionAttributeManager $attributeManager;
     
     /**
      * AcquisitionController constructor.
@@ -54,14 +60,15 @@ class AcquisitionController
         Environment $twig,
         FormFactoryInterface $formFactory,
         RouterInterface $router,
-        RepositoryFormulaVariableProvider $variableProvider
+        RepositoryFormulaVariableProvider $variableProvider,
+        AcquisitionAttributeManager $attributeManager
     )
     {
-        $this->doctrine         = $doctrine;
         $this->twig             = $twig;
         $this->formFactory      = $formFactory;
         $this->router           = $router;
         $this->variableProvider = $variableProvider;
+        $this->attributeManager = $attributeManager;
     }
     
     /**
@@ -83,13 +90,11 @@ class AcquisitionController
      */
     public function listDataAction(Request $request)
     {
-        $repository          = $this->getDoctrine()->getRepository(Attribute::class);
-        $attributeEntityList = $repository->findAll();
+        $attributeEntityList = $this->attributeManager->getAttributes();
 
         $attributeList = [];
-        /** @var \AppBundle\Entity\AcquisitionAttribute\Attribute $attribute */
+        /** @var Attribute $attribute */
         foreach ($attributeEntityList as $attribute) {
-    
             $attributeList[] = [
                 'bid'                    => $attribute->getBid(),
                 'management_title'       => $attribute->getManagementTitle(),
@@ -103,7 +108,6 @@ class AcquisitionController
                 'is_archived'            => $attribute->isArchived() ? 1 : 0,
             ];
         }
-
 
         return new JsonResponse($attributeList);
     }
@@ -140,9 +144,7 @@ class AcquisitionController
                     $attribute->setIsArchived(false);
                     break;
             }
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($attribute);
-            $em->flush();
+            $this->attributeManager->persistAndFlush($attribute);
             return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
 
@@ -172,9 +174,7 @@ class AcquisitionController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($attribute);
-            $em->flush();
+            $this->attributeManager->persistAndFlush($attribute);
 
             return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
@@ -208,16 +208,12 @@ class AcquisitionController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()
-                       ->getManager();
             /** @var AttributeChoiceOption $option */
             foreach ($attribute->getChoiceOptions() as $option) {
                 $option->setAttribute($attribute);
             }
-
-            $em->persist($attribute);
-            $em->flush();
-
+            $this->attributeManager->persistAndFlush($attribute);
+            
             return $this->redirectToRoute('acquisition_detail', ['bid' => $attribute->getBid()]);
         }
 
@@ -250,11 +246,7 @@ class AcquisitionController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()
-                       ->getManager();
-
-            $em->persist($attribute);
-            $em->flush();
+            $this->attributeManager->persistAndFlush($attribute);
 
             return $this->redirectToRoute('acquisition_list');
         }

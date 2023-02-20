@@ -41,21 +41,27 @@
                 <i class="empty no-special"><span></span></i>
             {% endif %}
         </dd>
-        {% for fillout in participant.acquisitionAttributeFillouts %}
-            <dt title="{{ fillout.attribute.formDescription }}" data-toggle="tooltip"
-                data-placement="right">
-                {%- if not fillout.attribute.isPublic -%}
+        {% for customField in event.getAcquisitionAttributes(false, true, false, true, true) %}
+            <dt {% if customField.formDescription != customField.managementTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+                {%- if not customField.isPublic -%}
                     {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
                 {% endif %}
-                {%- if fillout.attribute.isDeleted -%}
+                {%- if customField.isDeleted -%}
                     {{ 'trash'|glyph('Dieses Feld ist im Papierkorb') }}
                 {% endif %}
-                {%- if fillout.attribute.isArchived -%}
+                {%- if customField.isArchived -%}
                     {{ 'folder-close'|glyph('Dieses ist archiviert') }}
                 {% endif %}
-                {{ fillout.attribute.managementTitle }}
+                {{ customField.managementTitle }}
             </dt>
-            <dd>{% include '/acquisition/embed-fillout-management.html.twig' with {'fillout': fillout, 'event': event} %}</dd>
+            <dd>
+                {% set customFieldValueContainer = participant.customFieldValues.get(customField.id) %}
+                {% if customFieldValueContainer %}
+                    {{ customFieldValueContainer|customFieldValue(participant, true) }}
+                {% else %}
+                    <i class="empty value-not-specified"><span></span></i>
+                {% endif %}
+            </dd>
         {% endfor %}
         {% if paymentManager and event.price %}
             <dt>Preis</dt>

@@ -52,6 +52,7 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->append(Configuration::booleanNodeCreator('email', 'E-Mail Adresse'))
                         ->enumNode('phoneNumber')
                             ->info('Telefonnummern')
+                            ->defaultValue('comma')
                             ->values([
                                          'Nicht exportieren'                 => 'none',
                                          'Kommasepariert, ohne Beschreibung' => 'comma',
@@ -63,7 +64,7 @@ class Configuration extends ParticipantRelatedConfiguration implements Configura
                         ->append(Configuration::booleanNodeCreator('addressStreet', 'Straße (Anschrift)'))
                         ->append(Configuration::booleanNodeCreator('addressCity', 'Stadt (Anschrift)'))
                         ->append(Configuration::booleanNodeCreator('addressZip', 'PLZ (Anschrift'))
-                        ->append($this->addAcquisitionAttributesNode(true, false))
+                        ->append($this->addCustomFieldNode(true, false))
                     ->end()
                 ->end()
                 ->arrayNode('additional_sheet')

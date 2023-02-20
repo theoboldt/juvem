@@ -12,6 +12,7 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
+use AppBundle\Form\CustomField\CustomFieldValuesType;
 use AppBundle\Twig\GlobalCustomization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -26,8 +27,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmployeeType extends AbstractType
 {
-    use AcquisitionAttributeIncludingTypeTrait;
-
     const EVENT_OPTION = 'event';
 
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
@@ -48,15 +47,11 @@ class EmployeeType extends AbstractType
             'attr'       => ['class' => 'checkbox-smart'],
             'label_attr' => ['class' => 'control-label'],
         ];
-    
-        if (isset($options[self::EVENT_OPTION])) {
-            $event = $options[self::EVENT_OPTION];
-        } else {
-            /** @var Employee $employee */
-            $employee = $options['data'];
-            $event    = $employee->getEvent();
-        }
-    
+
+        /** @var Employee $employee */
+        $employee = $options['data'] ?? null;
+        $event    = $options[self::EVENT_OPTION];
+
         $builder
             ->add(
                 'salutation',
@@ -78,7 +73,7 @@ class EmployeeType extends AbstractType
                 TextType::class,
                 [
                     'label'    => 'Land',
-                    'required' => true
+                    'required' => true,
                 ]
             )
             ->add('email', EmailType::class, ['label' => 'E-Mail'])
@@ -96,16 +91,20 @@ class EmployeeType extends AbstractType
 
             );
 
-        $attributes = $event->getAcquisitionAttributes(
-            false, false, true, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
+        $builder->add(
+            'customFieldValues',
+            CustomFieldValuesType::class,
+            [
+                'by_reference'                                => true,
+                'mapped'                                      => true,
+                'cascade_validation'                          => true,
+                CustomFieldValuesType::RELATED_EVENT          => $event,
+                CustomFieldValuesType::RELATED_CLASS_OPTION   => Employee::class,
+                CustomFieldValuesType::ENTITY_OPTION          => $employee,
+                CustomFieldValuesType::INCLUDE_PRIVATE_OPTION => $options[self::ACQUISITION_FIELD_PRIVATE],
+                CustomFieldValuesType::INCLUDE_PUBLIC_OPTION  => $options[self::ACQUISITION_FIELD_PUBLIC],
+            ]
         );
-
-        $this->addAcquisitionAttributesToBuilder(
-            $builder,
-            $attributes,
-            isset($options['data']) ? $options['data'] : null
-        );
-
         if ($options[self::DISCLAIMER_FIELDS]) {
             $builder->add(
                 'acceptPrivacy',
@@ -130,7 +129,7 @@ class EmployeeType extends AbstractType
                         'constraints' => new NotBlank(
                             ['message' => 'Sie müssen sich mit den Bedingungen für Mitarbeitende einverstanden erklären, um die Anmeldung abgeben zu können. Bei Fragen können Sie sich telefonisch oder per E-Mail an uns wenden.']
                         ),
-                        'mapped'      => false
+                        'mapped'      => false,
                     ]
                 );
             }
@@ -150,7 +149,7 @@ class EmployeeType extends AbstractType
 
         $resolver->setDefault(self::EVENT_OPTION, null);
         $resolver->setAllowedTypes(self::EVENT_OPTION, [Event::class, 'null']);
-    
+
         $resolver->setDefaults(
             [
                 'data_class'         => Employee::class,

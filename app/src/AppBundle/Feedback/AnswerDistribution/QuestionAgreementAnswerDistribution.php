@@ -171,11 +171,13 @@ class QuestionAgreementAnswerDistribution implements QuestionAnswerDistributionI
      * @return float
      * @todo
      */
-    public function getThesisCounterThesisDeviation(): float
+    public function getThesisCounterThesisDeviationScore(): ?float
     {
-        throw new \Exception('Todo');
-        $thesisDistribution        = $this->getThesisDistribution();
-        $counterThesisDistribution = $this->getCounterThesisDistribution();
+        if (!$this->hasDistributionCounterThesis()) {
+            return null;
+        }
+        $thesisDistribution        = $this->getDistributionThesis();
+        $counterThesisDistribution = $this->getDistributionCounterThesis();
     }
 
 }

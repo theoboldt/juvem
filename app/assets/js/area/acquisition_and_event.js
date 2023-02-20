@@ -77,7 +77,7 @@ $(function () {
     };
 
     /**
-     * Add proposals for fillouts of autocomplete fields
+     * Add proposals for custom field values of autocomplete fields
      */
     var provideProposals = ($('[data-provide-proposals]').length > 0),
         proposals = [],

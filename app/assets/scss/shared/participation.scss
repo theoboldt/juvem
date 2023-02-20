@@ -3,6 +3,7 @@ i.empty.empty-empty,
 i.empty.empty-none,
 i.empty.no-special,
 i.empty.value-null,
+i.empty.value-not-specified,
 i.empty.no-selection {
   color: #333;
 }
@@ -13,6 +14,10 @@ i.empty.no-special span:after {
 
 i.empty.value-null span:after {
   content: '(Keine Eingabe)';
+}
+
+i.empty.value-not-specified span:after {
+  content: '(Nicht erfasst)';
 }
 
 i.empty.no-selection span:after {
