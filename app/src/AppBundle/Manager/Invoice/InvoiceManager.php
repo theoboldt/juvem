@@ -150,7 +150,7 @@ class InvoiceManager
             $templatePath = $this->getInvoiceTemplatePath();
         }
         if (!file_exists($templatePath)) {
-            throw new InvoiceTemplateMissingException('No invoice template available');
+            throw new InvoiceTemplateMissingException('No invoice template available at '.$templatePath);
         }
         $templateProcessor = new TemplateProcessor($templatePath);
         $templateVariables = $templateProcessor->getVariables();
