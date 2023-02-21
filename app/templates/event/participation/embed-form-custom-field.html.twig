@@ -1,10 +1,7 @@
-<div class="custom-field acquisition-attribute acquisition-attribute-deprecated field-{{ formField.vars.custom_field.fieldType|replace({"\\": '-'})|lower }}">
+<div class="custom-field {% if formField.offsetExists('comment') %}custom-field-having-comment{% endif %} acquisition-attribute acquisition-attribute-deprecated field-{{ formField.vars.custom_field.fieldType|replace({"\\": '-'})|lower }}">
   <div class="form-group {% if formField.vars.errors|length or not formField.value.vars.valid %}has-error{% endif %}">
     {{ form_label(formField) }}
-    {%- set customField = formField.vars.custom_field -%}
-    {% if helpExpanded and customField.formDescription and customField.formDescription != formField.vars.label %}
-      <p class="help-block">{{ customField.formDescription }}</p>
-    {% endif %}
+    {%- set customField = formField.vars.custom_field %}
     {% if not customField.isPublic %}
       {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
     {%- endif -%}
@@ -21,10 +18,15 @@
         <span class="glyphicon glyphicon-comment"></span>
       </a>
     {% endif %}
-    {% if formField.value %}
-      {{ form_widget(formField.value) }}
-      {{ form_errors(formField.value) }}
-    {% endif %}
+    <div class="form-group-after-label">
+      {% if helpExpanded and customField.formDescription and customField.formDescription != formField.vars.label %}
+        <p class="help-block">{{ customField.formDescription }}</p>
+      {% endif %}
+      {% if formField.value %}
+        {{ form_widget(formField.value) }}
+        {{ form_errors(formField.value) }}
+      {% endif %}
+    </div>
   </div>
   {% if formField.offsetExists('comment') %}
     <div class="form-group custom-field-comment-group {% if not formField.comment.vars.valid %} has-error{% endif %}">

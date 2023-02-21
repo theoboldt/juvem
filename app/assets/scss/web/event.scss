@@ -39,6 +39,23 @@ iframe[name=export-generator-frame] {
   }
 }
 
+.custom-field {
+  .custom-field-comment-group,
+  .form-group-after-label {
+    padding-left: 10px;
+  }
+}
+
+.custom-field-having-comment {
+  .form-group {
+    margin-bottom: 5px;
+  }
+
+  > .form-group:last-child {
+    margin-bottom: 15px;
+  }
+}
+
 .custom-field-comment-group label {
   margin-bottom: 0;
 }
