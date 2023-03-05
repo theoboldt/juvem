@@ -1,4 +1,5 @@
-<div class="custom-field {% if formField.offsetExists('comment') %}custom-field-having-comment{% endif %} acquisition-attribute acquisition-attribute-deprecated field-{{ formField.vars.custom_field.fieldType|replace({"\\": '-'})|lower }}">
+<div
+    class="custom-field {% if formField.offsetExists('comment') %}custom-field-having-comment{% endif %} acquisition-attribute acquisition-attribute-deprecated field-{{ formField.vars.custom_field.fieldType|replace({"\\": '-'})|lower }}">
   <div class="form-group {% if formField.vars.errors|length or not formField.value.vars.valid %}has-error{% endif %}">
     {{ form_label(formField) }}
     {%- set customField = formField.vars.custom_field %}
@@ -12,7 +13,7 @@
       </button>
     {% endif %}
     {% if formField.offsetExists('comment') %}
-      <a href="#{{ formField.comment.vars.id }}" class="btn btn-default btn-xs btn-round"
+      <a href="#{{ formField.comment.vars.id }}_block" class="btn btn-default btn-xs btn-round"
          data-toggle="tooltip" data-placement="top"{{ tab.skip|raw }}
          data-title="Zu diesem Feld können schriftliche Ergänzungen gemacht werden">
         <span class="glyphicon glyphicon-comment"></span>
@@ -29,7 +30,8 @@
     </div>
   </div>
   {% if formField.offsetExists('comment') %}
-    <div class="form-group custom-field-comment-group {% if not formField.comment.vars.valid %} has-error{% endif %}">
+    <div class="form-group custom-field-comment-group {% if not formField.comment.vars.valid %} has-error{% endif %}"
+         id="{{ formField.comment.vars.id }}_block">
       {{ form_label(formField.comment) }}
       <p class="help-block">Hier können schriftliche Ergänzungen zum Feld <a
             href="#{{ formField.value.vars.id }}"><i>{{ formField.vars.custom_field.formTitle }}</i></a> gemacht werden

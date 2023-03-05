@@ -2,31 +2,26 @@
 {{ form_start(form) }}
 <div class="row">
     <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-        <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
-            <div class="btn-group" role="group">
-                <input type="submit" value="{{ submitTitle }}" class="btn btn-primary"/>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
         {{ form_errors(form) }}
         <div class="row">
-            <div class="col-xs-12 col-sm-4{% if not form.managementTitle.vars.valid %} has-error{% endif %}">
-                {{ form_label(form.managementTitle) }}
-                {{ form_widget(form.managementTitle) }}
-                {{ form_errors(form.managementTitle) }}
-                <p class="help-block" id="help-management-title">Wird für die Tabellenspalten in der Verwaltung
-                    verwendet, sollte möglichst kurz sein</p>
-            </div>
-            <div class="col-xs-12 col-sm-8{% if not form.managementDescription.vars.valid %} has-error{% endif %}">
-                {{ form_label(form.managementDescription) }}
-                {{ form_widget(form.managementDescription) }}
-                {{ form_errors(form.managementDescription) }}
-                <p class="help-block" id="help-management-description">Wird in der Verwaltung in Tooltips zu den
-                    Tabellenspalten angezeigt</p>
-            </div>
+            {% if form.offsetExists('managementTitle') %}
+                <div class="col-xs-12 col-sm-4{% if not form.managementTitle.vars.valid %} has-error{% endif %}">
+                    {{ form_label(form.managementTitle) }}
+                    {{ form_widget(form.managementTitle) }}
+                    {{ form_errors(form.managementTitle) }}
+                    <p class="help-block" id="help-management-title">Wird für die Tabellenspalten in der Verwaltung
+                        verwendet, sollte möglichst kurz sein</p>
+                </div>
+            {% endif %}
+            {% if form.offsetExists('managementDescription') %}
+                <div class="col-xs-12 col-sm-8{% if not form.managementDescription.vars.valid %} has-error{% endif %}">
+                    {{ form_label(form.managementDescription) }}
+                    {{ form_widget(form.managementDescription) }}
+                    {{ form_errors(form.managementDescription) }}
+                    <p class="help-block" id="help-management-description">Wird in der Verwaltung in Tooltips zu den
+                        Tabellenspalten angezeigt</p>
+                </div>
+            {% endif %}
         </div>
         {{ form_row(form.formTitle) }}
         {{ form_row(form.formDescription) }}
@@ -40,32 +35,40 @@
                     {{ form_row(form.useAtEmployee) }}
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-6">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label">Gewichtung</label>
-                            {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+            {% if form.offsetExists('isRequired') or form.offsetExists('isPublic') or form.offsetExists('isCommentEnabled') %}
+                <div class="col-xs-12 col-sm-6">
+                    {% if form.offsetExists('isRequired') %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">Gewichtung</label>
+                                    {{ form_row(form.isRequired, {'label': 'Das Feld als Pflichtfeld behandeln, es muss etwas eingegeben/ausgewählt werden'}) }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label">Öffentlich</label>
-                            {{ form_row(form.isPublic, {'label': 'Wenn das Feld öffentlich erfasst wird, wird es im Anmeldeformular aufgeführt. Wenn nicht, können die Werte für dieses Feld nur von Administratoren eingegeben/gesehen werden.'}) }}
+                    {% endif %}
+                    {% if form.offsetExists('isPublic') %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">Öffentlich</label>
+                                    {{ form_row(form.isPublic, {'label': 'Wenn das Feld öffentlich erfasst wird, wird es im Anmeldeformular aufgeführt. Wenn nicht, können die Werte für dieses Feld nur von Administratoren eingegeben/gesehen werden.'}) }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label">Ergänzungen</label>
-                            {{ form_row(form.isCommentEnabled, {'label': 'Wenn bei dem Feld Ergänzungen ermöglicht werden, wird dem Feld im Formular bei der Erfassung ein weiteres Textfeld mit dem Hinweis "Ergänzungen" hinzugefügt. So kann die Auswahl bspw. begründet oder auf eine fehlende Auswahlmöglichkeit hingewiesen werden.'}) }}
+                    {% endif %}
+                    {% if form.offsetExists('isCommentEnabled') %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label">Ergänzungen</label>
+                                    {{ form_row(form.isCommentEnabled, {'label': 'Wenn bei dem Feld Ergänzungen ermöglicht werden, wird dem Feld im Formular bei der Erfassung ein weiteres Textfeld mit dem Hinweis "Ergänzungen" hinzugefügt. So kann die Auswahl bspw. begründet oder auf eine fehlende Auswahlmöglichkeit hingewiesen werden.'}) }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
-            </div>
+            {% endif %}
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="control-label">Auswirkung auf Preis/Aufwandsentschädigung</label>
@@ -74,17 +77,24 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-4 col-md-4">
-                {{ form_row(form.fieldType) }}
-            </div>
-        </div>
-        <div class="form-group-choice" style="{% if not (showChoiceOptions) %}display:none;{% endif %}">
-            <div class="row form-group-choice-multiple" style="{% if not (showChoiceMultipleOptions) %}display:none;{% endif %}">
+        
+        {% if form.offsetExists('fieldType') %}
+            <div class="row">
                 <div class="col-xs-12 col-sm-4 col-md-4">
-                    {{ form_row(form.isMultipleChoiceType) }}
+                    {{ form_row(form.fieldType) }}
                 </div>
             </div>
+        {% endif %}
+
+        <div class="form-group-choice" style="{% if not showChoiceOptions %}display:none;{% endif %}">
+            {% if form.offsetExists('isMultipleChoiceType') %}
+                <div class="row form-group-choice-multiple"
+                     style="{% if not showChoiceMultipleOptions %}display:none;{% endif %}">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        {{ form_row(form.isMultipleChoiceType) }}
+                    </div>
+                </div>
+            {% endif %}
             <div class="row">
                 <div class="col-xs-12">
                     <label class="control-label required control-label">Optionen der Auswahl</label>
@@ -146,6 +156,7 @@
                 </div>
             </div>
         </div>
+        
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <input type="submit" value="{{ submitTitle }}" class="btn btn-primary navbar-btn"/>
@@ -163,8 +174,15 @@
                             <h3 class="panel-title">Option</h3>
                         </div>
                         <div class="col-xs-2 col-sm-4 text-right">
-                            <a href="#" class="btn btn-danger btn-xs prototype-remove"
-                               title="Option entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Option entfernen</span></a>
+                            {% if formElement.vars.value is null or not formElement.vars.value.isSystem %}
+                                <a href="#" class="btn btn-danger btn-xs prototype-remove"
+                                   title="Option entfernen">{{ 'remove-sign'|glyph }} <span class="hidden-xs">Option entfernen</span></a>
+                            {% endif %}
+                            {% if formElement.vars.value is not null and formElement.vars.value.isSystem %}
+                                    <span class="label label-info"
+                                          data-title="Dieses Feld ist ein eingebautes Systemfeld, welches nicht entfernt werden kann."
+                                          data-toggle="tooltip">Systemfeld</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -187,30 +205,36 @@
                         </div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-xs-12 col-sm-9">
-                            {{ form_label(formElement.managementTitle) }}
-                            <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
-                                {{ form_widget(formElement.managementTitle) }}
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default" href="#help-choice-options-internal-title"{{ tab.skip|raw }}>
+                        {% if formElement.offsetExists('managementTitle') %}
+                            <div class="col-xs-12 col-sm-9">
+                                {{ form_label(formElement.managementTitle) }}
+                                <div class="input-group {% if not formElement.managementTitle.vars.valid %}has-error{% endif %}">
+                                    {{ form_widget(formElement.managementTitle) }}
+                                    <span class="input-group-btn">
+                                    <a class="btn btn-default"
+                                       href="#help-choice-options-internal-title"{{ tab.skip|raw }}>
                                         <span class="glyphicon glyphicon-question-sign"></span>
                                     </a>
                                 </span>
+                                </div>
+                                {{ form_errors(formElement.managementTitle) }}
                             </div>
-                            {{ form_errors(formElement.managementTitle) }}
-                        </div>
-                        <div class="col-xs-12 col-sm-3">
-                            {{ form_label(formElement.shortTitle) }}
-                            <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
-                                {{ form_widget(formElement.shortTitle) }}
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default" href="#help-choice-options-internal-short"{{ tab.skip|raw }}>
+                        {% endif %}
+                        {% if formElement.offsetExists('shortTitle') %}
+                            <div class="col-xs-12 col-sm-3">
+                                {{ form_label(formElement.shortTitle) }}
+                                <div class="input-group {% if not formElement.shortTitle.vars.valid %}has-error{% endif %}">
+                                    {{ form_widget(formElement.shortTitle) }}
+                                    <span class="input-group-btn">
+                                    <a class="btn btn-default"
+                                       href="#help-choice-options-internal-short"{{ tab.skip|raw }}>
                                         <span class="glyphicon glyphicon-question-sign"></span>
                                     </a>
                                 </span>
+                                </div>
+                                {{ form_errors(formElement.shortTitle) }}
                             </div>
-                            {{ form_errors(formElement.shortTitle) }}
-                        </div>
+                        {% endif %}
                       </div>
                     <div class="row form-group">
                         <div class="col-xs-12">
@@ -224,13 +248,15 @@
                             {{ form_errors(formElement.formDescription) }}
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            {{ form_label(formElement.isArchived) }}
-                            {{ form_widget(formElement.isArchived) }}
-                            {{ form_errors(formElement.isArchived) }}
+                    {% if formElement.offsetExists('isArchived') %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {{ form_label(formElement.isArchived) }}
+                                {{ form_widget(formElement.isArchived) }}
+                                {{ form_errors(formElement.isArchived) }}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

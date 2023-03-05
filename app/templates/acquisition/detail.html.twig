@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Feld ({{ acquisition.managementTitle }}){% endblock %}
+{% block title %}{{ acquisition.managementTitle }} - Feld (Details){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Feld', 'subtitle': 'Detailansicht'} %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': acquisition.managementTitle, 'subtitle': 'Feld (Details)'} %}
         {% block breadcrumb %}
             <li><a href="{{ path('acquisition_list') }}">Felder</a></li>
             <li class="active">{{ acquisition.managementTitle }}</li>
@@ -53,55 +53,64 @@
                            class="btn btn-default {% if not acquisition.priceFormulaEnabled %}disabled{% endif %}">{{ 'equalizer'|glyph }} Formeleditor</a>
                     {% endif %}
 
-                  <div class="btn-group">
-                    {% if not acquisition.isArchived %}
-                      <button type="button" class="btn btn-default" data-toggle="modal"
-                              data-target="#dialogModal" data-action="archive">
-                        {{ 'folder-close'|glyph }}<span class="hidden-xs"> Archivieren</span> <span
-                            class="caret-right"></span>
-                      </button>
-                    {% elseif not acquisition.isDeleted %}
-                      <button type="button" class="btn btn-default" data-toggle="modal"
-                              data-target="#dialogModal" data-action="delete">
-                        {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span> <span class="caret-right"></span>
-                      </button>
-                    {% else %}
-                      <button type="button" class="btn btn-default" data-toggle="modal"
-                              data-target="#dialogModal" data-action="restore">
-                        {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen </span> <span
-                            class="caret-right"></span>
-                      </button>
+                    {% if not acquisition.isSystem %}
+                        <div class="btn-group">
+                            {% if not acquisition.isArchived %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="archive">
+                                    {{ 'folder-close'|glyph }}<span class="hidden-xs"> Archivieren</span> <span
+                                        class="caret-right"></span>
+                                </button>
+                            {% elseif not acquisition.isDeleted %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="delete">
+                                    {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span> <span
+                                        class="caret-right"></span>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-default" data-toggle="modal"
+                                        data-target="#dialogModal" data-action="restore">
+                                    {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen </span> <span
+                                        class="caret-right"></span>
+                                </button>
+                            {% endif %}
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Archivieren oder in Papierkorb verschieben…</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    {% if acquisition.isDeleted %}
+                                        <a href="#" data-toggle="modal" data-target="#dialogModal"
+                                           data-action="restore">
+                                            {{ 'repeat'|glyph }} aus Papierkorb zurückholen <span
+                                                class="caret-right"></span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="delete">
+                                            {{ 'trash'|glyph }} in Papierkorb verschieben <span
+                                                class="caret-right"></span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    {% if acquisition.isArchived %}
+                                        <a href="#" data-toggle="modal" data-target="#dialogModal"
+                                           data-action="unarchive">
+                                            {{ 'folder-open'|glyph }} aus dem Archiv zurückholen <span
+                                                class="caret-right"></span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" data-toggle="modal" data-target="#dialogModal"
+                                           data-action="archive">
+                                            {{ 'folder-close'|glyph }} archivieren <span class="caret-right"></span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
                     {% endif %}
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                      <span class="caret"></span>
-                      <span class="sr-only">Archivieren oder in Papierkorb verschieben…</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li>
-                        {% if acquisition.isDeleted %}
-                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="restore">
-                            {{ 'repeat'|glyph }} aus Papierkorb zurückholen <span class="caret-right"></span>
-                          </a>
-                        {% else %}
-                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="delete">
-                            {{ 'trash'|glyph }} in Papierkorb verschieben <span class="caret-right"></span>
-                          </a>
-                        {% endif %}
-                      </li>
-                      <li>
-                        {% if acquisition.isArchived %}
-                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="unarchive">
-                            {{ 'folder-open'|glyph }} aus dem Archiv zurückholen <span class="caret-right"></span>
-                          </a>
-                        {% else %}
-                          <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="archive">
-                            {{ 'folder-close'|glyph }} archivieren <span class="caret-right"></span>
-                          </a>
-                        {% endif %}
-                      </li>
-                    </ul>
-                  </div>
                   {{ acquisition|changeTrackingButton }}
                 </div>
                 <div class="form-horizontal">
@@ -119,6 +128,12 @@
 
                                 {% if acquisition.isArchived %}
                                     <span class="label label-info">archiviert</span>
+                                {% endif %}
+
+                                {% if acquisition.isSystem %}
+                                    <span class="label label-info"
+                                          data-title="Dieses Feld ist ein eingebautes Systemfeld. Manche Eigenschaften können nicht geändert werden."
+                                          data-toggle="tooltip">Systemfeld</span>
                                 {% endif %}
                             </p>
                         </div>
@@ -219,6 +234,12 @@
                                                 <b>Erläuternde Beschreibung im Formular:</b>
                                                 {{ choice.formDescription }}
                                             {% endif %}
+                                          {% if choice.isSystem %}
+                                            <br>
+                                            <span class="label label-info"
+                                                  data-title="Dieses Option ist ein eingebautes Systemfeld. Manche Eigenschaften können nicht geändert werden."
+                                                  data-toggle="tooltip">Systemfeld</span>
+                                          {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>

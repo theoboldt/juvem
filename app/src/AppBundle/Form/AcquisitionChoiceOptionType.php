@@ -18,8 +18,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AcquisitionChoiceOptionType extends AbstractType {
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+class AcquisitionChoiceOptionType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $data     = isset($options['data']) ? $options['data'] : null;
+        $isSystem = $data instanceof AttributeChoiceOption && $data->isSystem();
 
         $builder
             ->add(
@@ -28,43 +32,59 @@ class AcquisitionChoiceOptionType extends AbstractType {
                 [
                     'label'    => 'Titel im Formular',
                     'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-info-choice-option-title']
+                    'attr'     => ['aria-describedby' => 'help-info-choice-option-title'],
                 ]
-            )->add(
-                'managementTitle',
-                TextType::class,
-                [
-                    'label'    => 'Interner Titel',
-                    'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-info-choice-option-management']
-                ]
-            )->add(
-                'shortTitle',
-                TextType::class,
-                [
-                    'label'    => 'Internes Kürzel',
-                    'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-info-choice-option-short']
-                ]
-            )->add(
+            );
+
+        if ($isSystem) {
+            $builder
+                ->add(
+                    'managementTitle',
+                    TextType::class,
+                    [
+                        'label'    => 'Interner Titel',
+                        'required' => false,
+                        'attr'     => ['aria-describedby' => 'help-info-choice-option-management'],
+                    ]
+                );
+            $builder
+                ->add(
+                    'shortTitle',
+                    TextType::class,
+                    [
+                        'label'    => 'Internes Kürzel',
+                        'required' => false,
+                        'attr'     => ['aria-describedby' => 'help-info-choice-option-short'],
+                    ]
+                );
+        }
+        
+        $builder
+            ->add(
                 'formDescription',
                 TextareaType::class,
                 [
                     'label'    => 'Erläuternde Beschreibung im Formular',
                     'required' => false,
-                    'attr'     => ['aria-describedby' => 'help-info-choice-option-form-description']
-                ]
-            )->add(
-                'isArchived',
-                CheckboxType::class,
-                [
-                    'label'    => 'Option als archiviert behandeln. Wurde die Option gewählt, bleibt diese Einstellung erhalten. Sie kann in Formularen jedoch nicht mehr ausgewählt werden.',
-                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-info-choice-option-form-description'],
                 ]
             );
+
+        if ($isSystem) {
+            $builder
+                ->add(
+                    'isArchived',
+                    CheckboxType::class,
+                    [
+                        'label'    => 'Option als archiviert behandeln. Wurde die Option gewählt, bleibt diese Einstellung erhalten. Sie kann in Formularen jedoch nicht mehr ausgewählt werden.',
+                        'required' => false,
+                    ]
+                );
+        }
     }
 
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(
             [
                 'data_class' => AttributeChoiceOption::class,
