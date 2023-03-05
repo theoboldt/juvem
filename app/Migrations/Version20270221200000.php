@@ -85,7 +85,7 @@ final class Version20270221200000 extends AbstractMigration
         $this->connection->executeQuery(
             "INSERT INTO acquisition_attribute (management_title, management_description, form_title, form_description, field_type, field_options, use_at_participation, use_at_participant, is_required, created_at, modified_at, deleted_at, is_public, use_at_employee, is_price_formula_enabled, price_formula, is_archived, is_comment_enabled, is_system)
 VALUES
-	('Ernährung', 'Angaben zur Ernährung wie vegetarisch, laktosefrei...', 'Ernährung', 'Bitte geben Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, geben Sie dies bitte als Ergänzung zu diesem Feld an.', 'Symfony\\\Component\\\Form\\\Extension\\\Core\\\Type\\\ChoiceType', '[]', 0, 1, 1, '2000-01-01 10:00:00', '2000-01-01 10:00:00', NULL, 1, 0, 0, NULL, 0, 1, 1)",
+	('Ernährung', 'Angaben zur Ernährung wie vegetarisch, laktosefrei...', 'Ernährung', 'Bitte geben Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, geben Sie dies bitte als Ergänzung zu diesem Feld an.', 'Symfony\\\Component\\\Form\\\Extension\\\Core\\\Type\\\ChoiceType', '[]', 0, 1, 0, '2000-01-01 10:00:00', '2000-01-01 10:00:00', NULL, 1, 0, 0, NULL, 0, 1, 1)",
             []
         );
         $bid = (int)$this->connection->lastInsertId();
