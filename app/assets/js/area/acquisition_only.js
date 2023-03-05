@@ -8,9 +8,12 @@ $(function () {
     updateType = function () {
         var el = $(elementType),
             val = el ? el.val() : null;
-        if (el
-            && (val === "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType"
-                || val === "AppBundle\\Form\\GroupType")
+        if (!el || !el.length) {
+            return;
+        }
+
+        if (val === "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType"
+            || val === "AppBundle\\Form\\GroupType"
         ) {
             $('.form-group-choice').css('display', 'block');
         } else {

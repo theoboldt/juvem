@@ -1,7 +1,6 @@
 $(function () {
     var g = {};
     $(g).bind('prototype-element.added', function (event, data) {
-        ensureLactoseFreeAnnotations();
         addElementHandlers(data.element);
         updateFieldProposals();
     });
