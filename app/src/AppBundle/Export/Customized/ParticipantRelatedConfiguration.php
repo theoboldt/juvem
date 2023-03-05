@@ -137,9 +137,6 @@ abstract class ParticipantRelatedConfiguration
         $nodes[] = $node;
 
         $nodes[] = Configuration::booleanNodeCreator('gender', 'Geschlecht');
-        $nodes[] = Configuration::booleanNodeCreator('foodVegetarian', 'Vegetarisch (Essgewohnheiten)');
-        $nodes[] = Configuration::booleanNodeCreator('foodLactoseFree', 'Laktosefrei (Essgewohnheiten)');
-        $nodes[] = Configuration::booleanNodeCreator('foodLactoseNoPork', 'Ohne Schwein (Essgewohnheiten)');
         $nodes[] = Configuration::booleanNodeCreator('infoMedical', 'Medizinische Hinweise');
         $nodes[] = Configuration::booleanNodeCreator('infoGeneral', 'Allgemeine Hinweise');
         $nodes[] = Configuration::booleanNodeCreator('basePrice', 'Grundpreis');

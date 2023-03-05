@@ -143,14 +143,6 @@
                                         <dd>{{ participant.getGender() }}</dd>
                                         <dt>Geburtsdatum</dt>
                                         <dd>{{ participant.getBirthday|date("d.m.Y") }}</dd>
-                                        <dd>
-                                            {% set participantFood = participant.getFood(true) %}
-                                            {% if participantFood.getValue() %}
-                                                {{ ' '|bitmask(participantFood) }}
-                                            {% else %}
-                                                <i class="empty no-special"><span></span></i>
-                                            {% endif %}
-                                        </dd>
                                         <dt>Medizinische Hinweise</dt>
                                         <dd>
                                             {% if participant.infoMedical %}

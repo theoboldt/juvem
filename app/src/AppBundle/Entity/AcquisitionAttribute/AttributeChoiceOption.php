@@ -10,11 +10,11 @@
 
 namespace AppBundle\Entity\AcquisitionAttribute;
 
+use AppBundle\Entity\AcquisitionAttribute\Formula\OnlyNumericManagementDescriptionsUsed as AssertOnlyNumericManagementDescriptionsUsed;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\Audit\SoftDeleteTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use \AppBundle\Entity\AcquisitionAttribute\Formula\OnlyNumericManagementDescriptionsUsed as AssertOnlyNumericManagementDescriptionsUsed;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -54,6 +54,25 @@ class AttributeChoiceOption implements SoftDeleteableInterface
      */
     protected $shortTitle = null;
 
+    /**
+     * @ORM\Column(type="text", name="form_description", length=65535)
+     */
+    protected $formDescription = '';
+
+    /**
+     * Stores if option is archived and not suitable to be used for new events
+     *
+     * @ORM\Column(type="boolean", name="is_archived", options={"default":0})
+     */
+    protected $isArchived = false;
+ 
+    /**
+     * Stores if option is a built-in element
+     *
+     * @ORM\Column(type="boolean", name="is_system", options={"default":0})
+     */
+    protected $isSystem = false;
+    
     /**
      * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="choiceOptions")
      * @ORM\JoinColumn(name="bid", referencedColumnName="bid", onDelete="cascade")
@@ -160,6 +179,67 @@ class AttributeChoiceOption implements SoftDeleteableInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getFormDescription(): string
+    {
+        return $this->formDescription;
+    }
+
+    /**
+     * @param string|null $formDescription
+     */
+    public function setFormDescription(?string $formDescription): void
+    {
+        if ($formDescription === null) {
+            $formDescription = '';
+        }
+        $this->formDescription = trim($formDescription);
+    }
+
+    /**
+     * Determine if form description is available
+     * 
+     * @return bool
+     */
+    public function hasFormDescription(): bool
+    {
+        return !empty($this->formDescription);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArchived(): bool
+    {
+        return $this->isArchived;
+    }
+
+    /**
+     * @param bool $isArchived
+     */
+    public function setIsArchived(bool $isArchived): void
+    {
+        $this->isArchived = $isArchived;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
+    }
+    
     /**
      * Get related @see Attribute
      *

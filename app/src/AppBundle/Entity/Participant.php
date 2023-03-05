@@ -10,7 +10,6 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
@@ -78,11 +77,6 @@ class Participant implements EventRelatedEntity, SummandImpactedInterface, SoftD
      * @Assert\NotBlank()
      */
     protected $gender = '';
-
-    /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true})
-     */
-    protected $food = 0;
 
     /**
      * @ORM\Column(type="date")
@@ -248,39 +242,6 @@ class Participant implements EventRelatedEntity, SummandImpactedInterface, SoftD
                 break;
         }
         return $term;
-    }
-
-    /**
-     * Set food
-     *
-     * @param integer|ParticipantFood $food
-     *
-     * @return Participant
-     */
-    public function setFood($food)
-    {
-        if ($food instanceof ParticipantFood) {
-            $food = $food->getValue();
-        }
-
-        $this->food = $food;
-
-        return $this;
-    }
-
-    /**
-     * Get food
-     *
-     * @param bool $asMask Set to true to get value as mask
-     * @return integer|ParticipantFood
-     */
-    public function getFood($asMask = false)
-    {
-        if ($asMask) {
-            return new ParticipantFood($this->food);
-        }
-
-        return $this->food;
     }
 
     /**
@@ -683,10 +644,6 @@ class Participant implements EventRelatedEntity, SummandImpactedInterface, SoftD
             'status' => function ($value) {
                 $status = new ParticipantStatus($value);
                 return implode(', ', $status->getActiveList(true));
-            },
-            'food'   => function ($value) {
-                $status = new ParticipantFood($value);
-                return implode(', ', $status->getActiveList(true));
             }
         ];
     }
@@ -711,7 +668,6 @@ class Participant implements EventRelatedEntity, SummandImpactedInterface, SoftD
         $participant->setNameLast($participantPrevious->getNameLast());
         $participant->setNameFirst($participantPrevious->getNameFirst());
         $participant->setBirthday($participantPrevious->getBirthday());
-        $participant->setFood($participantPrevious->getFood());
         $participant->setGender($participantPrevious->getGender());
         $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
         $participant->setInfoMedical($participantPrevious->getInfoMedical());

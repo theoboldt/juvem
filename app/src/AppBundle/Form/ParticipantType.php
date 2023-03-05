@@ -10,11 +10,9 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\CustomField\CustomFieldValuesType;
-use AppBundle\Form\Transformer\FoodTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -57,11 +55,7 @@ class ParticipantType extends AbstractType
     {
         /** @var Participant $participant */
         $participant = $options['data'] ?? null;
-
-        $foodMask   = new ParticipantFood();
-        $foodLabels = $foodMask->labels();
-        unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
-
+        
         $genderChoices = [
             ''                                     => '',
             Participant::LABEL_GENDER_FEMALE       => Participant::LABEL_GENDER_FEMALE,
@@ -129,22 +123,6 @@ class ParticipantType extends AbstractType
                  'empty_data' => '',
                  //may not work due to issue https://github.com/symfony/symfony/issues/5906
                 ]
-            )
-            ->add(
-                'food',
-                ChoiceType::class,
-                [
-                    'label'    => 'Ernährung',
-                    'choices'  => array_flip($foodLabels),
-                    'expanded' => true,
-                    'multiple' => true,
-                    'required' => false,
-                    'attr'     => [
-                        'aria-describedby'         => 'help-food',
-                        'class'                    => 'food-options',
-                        'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE,
-                    ],
-                ]
             );
 
         /** @var Participation $participation */
@@ -165,8 +143,6 @@ class ParticipantType extends AbstractType
                 CustomFieldValuesType::INCLUDE_PUBLIC_OPTION  => $options[self::ACQUISITION_FIELD_PUBLIC],
             ]
         );
-
-        $builder->get('food')->addModelTransformer(new FoodTransformer());
     }
 
     /**

@@ -264,18 +264,6 @@
                                             {{ form_errors(formElement.infoGeneral) }}
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6 ">
-                                        <div class="form-group">
-                                            {{ form_label(formElement.food) }}
-                                            <button type="button" class="btn btn-default btn-xs btn-round"
-                                                    data-toggle="popover"{{ tab.skip|raw }}
-                                                    data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
-                                                <span class="glyphicon glyphicon-question-sign"></span>
-                                            </button>
-                                            {{ form_widget(formElement.food) }}
-                                            {{ form_errors(formElement.food) }}
-                                        </div>
-                                    </div>
                                     {% for fieldName,formField in formElement.customFieldValues %}
                                       {% if fieldName starts with 'custom_field_' %}
                                         <div class="col-xs-12">

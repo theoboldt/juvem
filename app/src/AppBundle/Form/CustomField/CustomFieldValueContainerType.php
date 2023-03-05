@@ -11,6 +11,7 @@
 namespace AppBundle\Form\CustomField;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
+use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -67,10 +68,28 @@ class CustomFieldValueContainerType extends AbstractType
         ];
         $attributeOptions['by_reference']  = true;
         $attributeOptions['property_path'] = 'value.formValue';
+        
+        $options = array_merge($attributeOptions, $customField->getFieldOptions());
+        if ($customField->isChoiceType()) {
+            $options['choice_attr'] = function($optionId) use ($customField) {
+                /** @var AttributeChoiceOption $choiceOption */
+                foreach ($customField->getChoiceOptions() as $choiceOption) {
+                    if ($choiceOption->getId() === $optionId) {
+                        if ($choiceOption->hasFormDescription()) {
+                            return [
+                                'data-description' => $choiceOption->getFormDescription(),
+                            ];
+                        }
+                    }
+                }
+                return [];
+            };
+        }
+        
         $builder->add(
             'value',
             $customField->getFieldType(),
-            array_merge($attributeOptions, $customField->getFieldOptions())
+            $options
         );
         if ($customField->isChoiceType() && !$customField->isMultipleChoiceType()) {
             $builder->get('value')->addModelTransformer(

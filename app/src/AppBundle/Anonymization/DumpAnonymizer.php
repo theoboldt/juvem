@@ -147,6 +147,7 @@ class DumpAnonymizer
      * @param string $column      Column this value is related to
      * @param scalar|array $value Actual value or decoded json
      * @param array $row          Whole row data as well
+     * @todo Prepare for custom Fields
      * @return ReplacementInterface|null
      */
     private function detectDatumType(string $table, string $column, $value, array $row): ?ReplacementInterface

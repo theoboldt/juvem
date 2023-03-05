@@ -10,7 +10,6 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\DoctrineAwareControllerTrait;
@@ -363,7 +362,6 @@ class AdminSingleController
         }
 
         $statusFormatter = ParticipantStatus::formatter();
-        $foodFormatter   = new LabelFormatter();
 
         $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */
@@ -430,7 +428,6 @@ class AdminSingleController
                 'confirmedParticipants'              => $confirmedParticipants,
                 'unconfirmedParticipants'            => $unconfirmedParticipants,
                 'allParticipantsInactive'            => $allParticipantsInactive,
-                'foodFormatter'                      => $foodFormatter,
                 'statusFormatter'                    => $statusFormatter,
                 'phoneNumberList'                    => $phoneNumberList,
                 'formAction'                         => $formAction->createView(),

@@ -158,6 +158,13 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     protected $isArchived = false;
 
     /**
+     * Stores if option is a built-in element
+     *
+     * @ORM\Column(type="boolean", name="is_system", options={"default":0})
+     */
+    protected $isSystem = false;
+   
+    /**
      * Contains the choice options the user can use
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption", cascade={"all"},
@@ -835,6 +842,22 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
+    }
+    
     /**
      * Get price formula if set
      *

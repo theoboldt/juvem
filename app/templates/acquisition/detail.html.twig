@@ -214,6 +214,11 @@
                                                         <i class="empty value-null"><span></span></i>
                                                     {% endif %}
                                                 </span>
+                                            {% if choice.hasFormDescription() %}
+                                                <br>
+                                                <b>Erläuternde Beschreibung im Formular:</b>
+                                                {{ choice.formDescription }}
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>

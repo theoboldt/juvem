@@ -11,8 +11,9 @@
 namespace AppBundle\Form;
 
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Form\Transformer\AcquistionFormulaTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,6 +45,21 @@ class AcquisitionChoiceOptionType extends AbstractType {
                     'label'    => 'Internes Kürzel',
                     'required' => false,
                     'attr'     => ['aria-describedby' => 'help-info-choice-option-short']
+                ]
+            )->add(
+                'formDescription',
+                TextareaType::class,
+                [
+                    'label'    => 'Erläuternde Beschreibung im Formular',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-info-choice-option-form-description']
+                ]
+            )->add(
+                'isArchived',
+                CheckboxType::class,
+                [
+                    'label'    => 'Option als archiviert behandeln. Wurde die Option gewählt, bleibt diese Einstellung erhalten. Sie kann in Formularen jedoch nicht mehr ausgewählt werden.',
+                    'required' => false,
                 ]
             );
     }

@@ -12,18 +12,6 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-12 col-sm-6 ">
-        <div class="form-group">
-            {{ form_label(form.food) }}
-            <button type="button" class="btn btn-default btn-xs btn-round"{{ tab.skip|raw }}
-                    data-toggle="popover"
-                    data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
-                {{ 'question-sign'|glyph }}
-            </button>
-            {{ form_widget(form.food) }}
-            {{ form_errors(form.food) }}
-        </div>
-    </div>
     <div class="col-xs-12 col-sm-6">
         <div class="row">
             <div class="col-xs-12">

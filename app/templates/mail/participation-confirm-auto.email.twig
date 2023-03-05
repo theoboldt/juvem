@@ -45,7 +45,6 @@ DATEN DER TEILNEHMER:INNEN:
     Nachname: {{ participant.nameLast }}
     Geschlecht: {{ participant.getGender() }}
     Geburtsdatum: {{ participant.getBirthday|date("d.m.Y") }}
-    Ernährung: {% set participantFood = participant.getFood(true) %}{% if participantFood.getValue() %}{{ participantFood.getActiveList(true)|join(', ') }}{% else %}(keine Besonderheiten){% endif %}
     {%- for customField in event.getAcquisitionAttributes(false, true, false, false, true) -%}
       {%- set customFieldValueContainer = participant.customFieldValues.get(customField.id) -%}
       {%- if customFieldValueContainer and customFieldValueContainer.value -%}
@@ -166,17 +165,6 @@ Mit besten Grüßen,
                 <tr>
                     <td class="thead">Geburtsdatum</td>
                     <td>{{ participant.getBirthday|date("d.m.Y") }}</td>
-                </tr>
-                <tr>
-                    <td class="thead">Ernährung</td>
-                    <td>
-                        {% set participantFood = participant.getFood(true) %}
-                        {% if participantFood.getValue() %}
-                            {{ participantFood.getActiveList(true)|join(', ') }}
-                        {% else %}
-                            <i class="empty no-special"><span></span></i>
-                        {% endif %}
-                    </td>
                 </tr>
                 <tr>
                     <td class="thead"><abbr title="Medizinische">Med.</abbr> Hinweise</td>

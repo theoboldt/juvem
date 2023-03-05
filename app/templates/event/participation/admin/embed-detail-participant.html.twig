@@ -16,15 +16,6 @@
         <dt>Alter</dt>
         <dd><span data-toggle="tooltip" title="{{ participant.nameFirst }} hat zu Beginn der Veranstaltung das {{ participant.yearsOfLifeAtEvent }}.&nbsp;Lebensjahr erreicht">{{ participant.yearsOfLifeAtEvent }} Jahre</span> (rund {{ participant.getAgeAtEvent|number_format(1) }} Jahre)
         </dd>
-        <dt>Ernährung</dt>
-        <dd>
-            {% set participantFood = participant.getFood(true) %}
-            {% if participantFood.getValue() %}
-                {{ ' '|bitmask(participantFood) }}
-            {% else %}
-                <i class="empty no-special"><span></span></i>
-            {% endif %}
-        </dd>
         <dt>Medizinische Hinweise</dt>
         <dd>
             {% if participant.infoMedical %}

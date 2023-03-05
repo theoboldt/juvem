@@ -111,6 +111,10 @@
                                         ein Code als <span>Internes Kürzel</span> angegebene werden. Im Normalfall
                                         besteht er nur aus Buchstaben. Für eine Schwimmanfänger-Option könnte der Wert
                                         bspw. „<i>SA</i>“ lauten.</p>
+                                  <p id="help-choice-options-form-description">Sind Angaben bei <i>Erläuternde
+                                      Beschreibung im Formular</i> vorhanden, wird im Formular ein Knopf mit dem
+                                    Symbol {{ 'question-sign'|glyph }} angezeigt, welches per Mausklick den angegebenen
+                                    Text anzeigt.</p>
                                 </div>
                             </div>
                         </div>
@@ -206,6 +210,25 @@
                                 </span>
                             </div>
                             {{ form_errors(formElement.shortTitle) }}
+                        </div>
+                      </div>
+                    <div class="row form-group">
+                        <div class="col-xs-12">
+                            {{ form_label(formElement.formDescription) }}
+                            <a class="btn btn-default btn-xs btn-round"
+                               href="#help-choice-options-form-description"{{ tab.skip|raw }}>
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </a>
+
+                            {{ form_widget(formElement.formDescription) }}
+                            {{ form_errors(formElement.formDescription) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_label(formElement.isArchived) }}
+                            {{ form_widget(formElement.isArchived) }}
+                            {{ form_errors(formElement.isArchived) }}
                         </div>
                     </div>
                 </div>

@@ -10,7 +10,6 @@
 
 namespace AppBundle\Form\Transformer;
 
-use AppBundle\BitMask\ParticipantFood;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class AcquistionFormulaTransformer implements DataTransformerInterface

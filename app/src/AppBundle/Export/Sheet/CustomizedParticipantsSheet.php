@@ -11,7 +11,6 @@
 namespace AppBundle\Export\Sheet;
 
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
 use AppBundle\Entity\CustomField\CustomFieldValueContainer;
@@ -150,7 +149,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             );
             $this->addColumn($column);
         }
-
+/*
         if (self::issetAndTrue($configParticipant, 'foodVegetarian')) {
             $column = EntityAttributeColumn::createYesNoColumn('food_vegetarian', 'Vegetarisch', 'food');
             $column->setConverter(
@@ -183,7 +182,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             );
             $this->addColumn($column);
         }
-
+*/
         if (self::issetAndTrue($configParticipant, 'infoMedical')) {
             $column = new EntityAttributeColumn('infoMedical', 'Medizinische Hinweise');
             $column->addDataStyleCalback(

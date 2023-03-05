@@ -917,7 +917,6 @@ class ParticipantProfile
             }
             $this->addDatum($section, 'Medizinische Hinweise', $participant->getInfoMedical());
             $this->addDatum($section, 'Allgemeine Hinweise', $participant->getInfoGeneral());
-            $this->addDatum($section, 'Ernährung', implode(', ', $participant->getFood(true)->getActiveList(true)));
 
             $this->addCustomFieldValuesToSection($participant, $section);
 
