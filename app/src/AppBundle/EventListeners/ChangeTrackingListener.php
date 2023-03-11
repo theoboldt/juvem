@@ -134,7 +134,7 @@ class ChangeTrackingListener
                     if ($entity instanceof SpecifiesChangeTrackingAttributeConvertersInterface) {
                         $converters = $entity->getChangeTrackingAttributeConverters();
                         if (isset($converters[$attribute])) {
-                            $values[$key] = $result = call_user_func($converters[$attribute], $values[$key]);
+                            $values[$key] = call_user_func($converters[$attribute], $values[$key]);
                         }
                     }
                 }
@@ -185,7 +185,7 @@ class ChangeTrackingListener
         CustomFieldValueCollection $comparableBefore,
         CustomFieldValueCollection $comparableAfter,
         ScheduledEntityChange      $change
-    ) {
+    ): void {
         if (!$entity instanceof EntityHavingCustomFieldValueInterface) {
             throw new \RuntimeException('Entity must be of class '.EntityHavingCustomFieldValueInterface::class);
         }
