@@ -219,7 +219,7 @@ class ChangeTrackingListener
         }
         /** @var CustomFieldValueContainer $customFieldValueContainerBefore */
         foreach ($comparableBefore->getIterator() as $customFieldValueContainerBefore) {
-            if (!$customFieldValueContainerAfter->getValue($customFieldValueContainerBefore->getCustomFieldId())) {
+            if (!$comparableAfter->get($customFieldValueContainerBefore->getCustomFieldId())) {
                 $attributeName = self::provideCustomFieldName($customFields, $customFieldValueContainerBefore);
                 $change->addAttributeChange(
                     $attributeName,
