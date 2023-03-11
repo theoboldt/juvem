@@ -104,13 +104,10 @@ class ChangeTrackingListener
             }
             
             if ($attribute === 'customFieldValues') {
-                $comparableBefore = $this->getComparableCustomFieldValueCollectionRepresentation($values[0]);
-                $comparableAfter  = $this->getComparableCustomFieldValueCollectionRepresentation($values[1]);
-                
                 $this->compareCustomFieldCollectionsAndAddChanges(
                     $entity,
-                    $comparableBefore,
-                    $comparableAfter,
+                    $this->getComparableCustomFieldValueCollectionRepresentation($values[0]),
+                    $this->getComparableCustomFieldValueCollectionRepresentation($values[1]),
                     $change
                 );
                 
