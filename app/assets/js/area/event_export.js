@@ -12,7 +12,7 @@ $(function () {
             selectAge = $('.form-file-download select[name="config[participant][ageAtEvent]"]'),
             selectPhone = $('.form-file-download select[name="config[participation][phoneNumber]"]');
         var includeFields = [],
-            includeAcquisitionFields = {
+            includeCustomFields = {
                 participant: {
                     display: null,
                     optionValue: null
@@ -44,8 +44,8 @@ $(function () {
                 ];
                 selectAge.val('completed');
                 selectPhone.val('comma');
-                includeAcquisitionFields.participant.display = 'selectedAnswer';
-                includeAcquisitionFields.participant.optionValue = 'managementTitle';
+                includeCustomFields.participant.display = 'selectedAnswer';
+                includeCustomFields.participant.optionValue = 'managementTitle';
                 inputTitle.val('Teilnehmende');
                 break;
             case 'food':
@@ -97,10 +97,10 @@ $(function () {
                 ];
                 selectAge.val('completed');
                 selectPhone.val('comma_description');
-                includeAcquisitionFields.participant.display = 'separateColumns';
-                includeAcquisitionFields.participant.optionValue = 'managementTitle';
-                includeAcquisitionFields.participation.display = 'separateColumns';
-                includeAcquisitionFields.participation.optionValue = 'managementTitle';
+                includeCustomFields.participant.display = 'separateColumns';
+                includeCustomFields.participant.optionValue = 'managementTitle';
+                includeCustomFields.participation.display = 'separateColumns';
+                includeCustomFields.participation.optionValue = 'managementTitle';
                 inputTitle.val('Serienbrief');
                 break;
             case 'nx':
@@ -134,7 +134,7 @@ $(function () {
                 inputTitle.val('');
                 break;
         }
-        const regex = /config\[(participant|participation)\]\[acquisitionFields\]\[custom_field_(\d+)\]\[enabled\]/;
+        const regex = /config\[(participant|participation)\]\[customFieldValues\]\[custom_field_(\d+)\]\[enabled\]/;
 
         inputs.each(function () {
             const input = $(this),
@@ -146,12 +146,13 @@ $(function () {
                     const result = regex.exec(name),
                         fieldArea = result[1],
                         fieldId = result[2],
-                        baseFieldName = '.form-file-download select[name="config[' + fieldArea + '][acquisitionFields][custom_field_' + fieldId + ']',
-                        hasField = includeAcquisitionFields[fieldArea] !== null,
-                        valueDisplay = hasField && includeAcquisitionFields[fieldArea]['display'] ? includeAcquisitionFields[fieldArea]['display'] : null,
+                        baseFieldName = '.form-file-download select[name="config[' + fieldArea + '][customFieldValues][custom_field_' + fieldId + ']',
+                        hasField = includeCustomFields[fieldArea] !== null,
+                        valueDisplay = hasField && includeCustomFields[fieldArea]['display'] ? includeCustomFields[fieldArea]['display'] : null,
                         selectDisplay = $(baseFieldName + '[display]"]'),
-                        valueOptionValue = hasField && includeAcquisitionFields[fieldArea]['optionValue'] ? includeAcquisitionFields[fieldArea]['optionValue'] : null,
-                        selectOptionValue = $(baseFieldName + '[optionValue]"]');
+                        valueOptionValue = hasField && includeCustomFields[fieldArea]['optionValue'] ? includeCustomFields[fieldArea]['optionValue'] : null,
+                        selectOptionValue = $(baseFieldName + '[optionValue]"]'),
+                        selectOptionComment = $(baseFieldName + '[optionComment]"]');
 
                     if (valueDisplay !== null) {
                         newValue = true;
@@ -169,6 +170,9 @@ $(function () {
                         }
                         if (selectOptionValue && selectOptionValue.length) {
                             selectOptionValue.val(valueOptionValue);
+                        }
+                        if (selectOptionComment && selectOptionComment.length) {
+                            selectOptionComment.val('commentColumn');
                         }
                     }
                 } else {
