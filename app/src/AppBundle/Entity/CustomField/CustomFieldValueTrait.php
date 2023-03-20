@@ -107,7 +107,7 @@ trait CustomFieldValueTrait
     public function __get($key)
     {
         if (preg_match('/custom_field_(\d+)/', $key, $bidData)) {
-            return $this->getCustomFieldValues()->get($bidData[1], true);
+            return $this->getCustomFieldValues()->get($bidData[1], false);
         }
         throw new \InvalidArgumentException(sprintf('Unknown property "%s" accessed', $key));
     }
