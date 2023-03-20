@@ -174,7 +174,7 @@ abstract class ParticipantRelatedConfiguration
                 ->children();
 
             $attributeChildren
-                ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen', true));
+                ->append(Configuration::booleanNodeCreator('enabled', 'Feld anzeigen', false));
             
             if ($attribute->isChoiceType()) {
                 if ($attribute->isMultipleChoiceType()) {

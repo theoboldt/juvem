@@ -170,6 +170,20 @@ class AdminMultipleExportController
         $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
 
         $processedConfiguration = $processor->processConfiguration($configuration, $config);
+
+        $processedConfigurationParticipantCustomField = null;
+        foreach ($processedConfiguration['participant']['customFieldValues'] as &$processedConfigurationParticipantCustomField) {
+            $processedConfigurationParticipantCustomField['enabled'] = true;
+        }
+        unset($processedConfigurationParticipantCustomField);
+
+
+        $processedConfigurationParticipationCustomField = null;
+        foreach ($processedConfiguration['participation']['customFieldValues'] as &$processedConfigurationParticipationCustomField) {
+            $processedConfigurationParticipationCustomField['enabled'] = true;
+            unset($processedConfigurationParticipationCustomField);
+        }
+        unset($processedConfigurationParticipationCustomField);
         
         $user   = $this->getUser();
         $export = new CustomizedExport(
