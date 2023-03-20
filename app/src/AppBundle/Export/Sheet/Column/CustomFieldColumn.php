@@ -153,7 +153,8 @@ class CustomFieldColumn extends EntityAttributeColumn
                         $selectedOptions[] = $choiceId;
                     }
                 }
-                if ($this->config['optionComment'] === Configuration::OPTION_COMMENT_NEWLINE) {
+                if (!isset($this->config['optionComment'])
+                    || $this->config['optionComment'] === Configuration::OPTION_COMMENT_NEWLINE) {
                     //this is impossible for this field type, so changing to comment instead
                     $this->config['optionComment'] = Configuration::OPTION_COMMENT_COMMENT;
                 }
