@@ -496,7 +496,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     $attribute,
                     $config[$bid]
                 );
-                $this->rotadedColumnHeader($column, 3.5, $converter);
+                $this->rotatedColumnHeader($column, 3.5, $converter);
                 $this->addColumn($column);
                 $choiceFirst = false;
                 if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_COMMENT) {
@@ -527,7 +527,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
      * @param float|null        $width     If not null, transmitted width will be set
      * @param callable|null     $converter Converter function if should be set
      */
-    private function rotadedColumnHeader(
+    private function rotatedColumnHeader(
         CustomFieldColumn $column,
         float             $width = null,
         callable          $converter = null
