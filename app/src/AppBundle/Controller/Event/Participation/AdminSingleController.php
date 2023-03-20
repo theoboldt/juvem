@@ -343,6 +343,8 @@ class AdminSingleController
                 $customFieldValue = $customFieldValueContainer->getValue();
                 if ($customFieldValue instanceof ParticipantDetectingCustomFieldValue) {
                     $customFieldValue->setParticipantAid($relatedParticipant->getAid());
+                    $customFieldValue->setParticipantFirstName($relatedParticipant->getNameFirst());
+                    $customFieldValue->setParticipantLastName($relatedParticipant->getNameLast());
                     $participationChanged = true;
                 }
             }
