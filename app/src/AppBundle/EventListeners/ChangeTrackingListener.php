@@ -11,7 +11,6 @@
 namespace AppBundle\EventListeners;
 
 
-use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\ChangeTracking\EntityChange;
 use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 use AppBundle\Entity\ChangeTracking\ScheduledEntityChange;
@@ -21,9 +20,7 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentatio
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
 use AppBundle\Entity\CustomField\CustomFieldValueCollection;
 use AppBundle\Entity\CustomField\CustomFieldValueContainer;
-use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\User;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -96,6 +93,9 @@ class ChangeTrackingListener
             $change->setOccurrenceDate($changes['modifiedAt'][1]);
         }
 
+        // might become a service later on
+        $customFieldChangeDetector = new CustomFieldValueContainerChangeDetector();
+
         foreach ($changes as $attribute => $values) {
             if ($attribute === 'deletedAt' || $attribute === 'modifiedAt'
                 || in_array($attribute, $entity::getExcludedAttributes())) {
@@ -104,13 +104,12 @@ class ChangeTrackingListener
             }
             
             if ($attribute === 'customFieldValues') {
-                $this->compareCustomFieldCollectionsAndAddChanges(
+                $customFieldChangeDetector->detect(
                     $entity,
                     $this->getComparableCustomFieldValueCollectionRepresentation($values[0]),
                     $this->getComparableCustomFieldValueCollectionRepresentation($values[1]),
                     $change
                 );
-                
                 continue;
             }
             $comparableBefore = $this->getComparableRepresentation($attribute, $entity, $values[0]);
@@ -144,86 +143,6 @@ class ChangeTrackingListener
         }
         if (!$isScheduled && (count($change) || $change->getOperation() !== EntityChange::OPERATION_UPDATE)) {
             $this->changes->enqueue($change);
-        }
-    }
-
-    /**
-     * Provide custom field name
-     *
-     * @param Attribute[]               $customFields              List of known custom fields
-     * @param CustomFieldValueContainer $customFieldValueContainer Custom field value container
-     * @return string Name
-     */
-    private static function provideCustomFieldName(
-        array                     $customFields,
-        CustomFieldValueContainer $customFieldValueContainer
-    ): string {
-        $attributeName = 'Feld #' . $customFieldValueContainer->getCustomFieldId();
-        foreach ($customFields as $customField) {
-            if ($customField->getBid() === $customFieldValueContainer->getCustomFieldId()) {
-                $attributeName = $customField->getManagementTitle() . ' [' . $attributeName . ']';
-            }
-        }
-        return $attributeName;
-    }
-
-    /**
-     * Compare custom fields and register changes if any available
-     *
-     * @todo  Needs to be improved so choice options etc. can be interpret 
-     * @param SupportsChangeTrackingInterface $entity
-     * @param CustomFieldValueCollection      $comparableBefore
-     * @param CustomFieldValueCollection      $comparableAfter
-     * @param ScheduledEntityChange           $change
-     * @return void
-     */
-    private function compareCustomFieldCollectionsAndAddChanges(
-        SupportsChangeTrackingInterface $entity,
-        CustomFieldValueCollection $comparableBefore,
-        CustomFieldValueCollection $comparableAfter,
-        ScheduledEntityChange      $change
-    ): void {
-        if (!$entity instanceof EntityHavingCustomFieldValueInterface) {
-            throw new \RuntimeException('Entity must be of class '.EntityHavingCustomFieldValueInterface::class);
-        }
-        
-        $customFields = $entity->getEvent()->getAcquisitionAttributes();
-        if ($customFields instanceof Collection) {
-            $customFields = $customFields->toArray();
-        }
-        /** @var CustomFieldValueContainer $customFieldValueContainerAfter */
-        foreach ($comparableAfter->getIterator() as $customFieldValueContainerAfter) {
-            $attributeName = self::provideCustomFieldName($customFields, $customFieldValueContainerAfter);
-            
-            $customFieldValueContainerBefore = $comparableBefore->get(
-                $customFieldValueContainerAfter->getCustomFieldId()
-            );
-            if ($customFieldValueContainerBefore) {
-                $customFieldValueContainerBeforeRepresentation = $this->getStorableRepresentation(
-                    $attributeName, $entity, $customFieldValueContainerBefore
-                );
-            } else {
-                $customFieldValueContainerBeforeRepresentation = '';
-            }
-            if (!$customFieldValueContainerBefore
-                || !$customFieldValueContainerBefore->isEqualTo($customFieldValueContainerAfter)) {
-                $change->addAttributeChange(
-                    $attributeName,
-                    $customFieldValueContainerBeforeRepresentation,
-                    $this->getStorableRepresentation($attributeName, $entity, $customFieldValueContainerAfter)
-                );
-            }
-        }
-        /** @var CustomFieldValueContainer $customFieldValueContainerBefore */
-        foreach ($comparableBefore->getIterator() as $customFieldValueContainerBefore) {
-            if (!$comparableAfter->get($customFieldValueContainerBefore->getCustomFieldId())) {
-                $attributeName = self::provideCustomFieldName($customFields, $customFieldValueContainerBefore);
-                $change->addAttributeChange(
-                    $attributeName,
-                    $this->getStorableRepresentation($attributeName, $entity, $customFieldValueContainerBefore),
-                    ''
-                );
-            }
         }
     }
     
