@@ -550,11 +550,18 @@ class ParticipantProfile
         );
 
         foreach ($customFields as $customField) {
+            if ($customField->isDeleted()) {
+                continue;
+            }
+            
             $title       = $customField->getManagementTitle();
             $description = $customField->getManagementDescription();
 
             if (!$customField->isPublic()) {
                 $title .= "\xc2\xa0\u{1f512}";
+            }
+            if ($customField->isArchived()) {
+                $title .= "\xc2\xa0\u{1f4c1}";
             }
 
             $this->addDatumTitle($section, $title, $description);
