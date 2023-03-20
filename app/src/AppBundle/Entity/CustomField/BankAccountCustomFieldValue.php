@@ -14,6 +14,8 @@ class BankAccountCustomFieldValue implements CustomFieldValueInterface
 {
     const TYPE = 'bank_account';
 
+    const KEY_VALUE = 'value';
+
     const KEY_BIC = 'bic';
 
     const KEY_IBAN = 'iban';
@@ -51,9 +53,9 @@ class BankAccountCustomFieldValue implements CustomFieldValueInterface
         array $data
     ): BankAccountCustomFieldValue {
         return new self(
-            $data[self::KEY_BIC] ?? null,
-            $data[self::KEY_IBAN] ?? null,
-            $data[self::KEY_OWNER] ?? null
+            $data[self::KEY_VALUE][self::KEY_BIC] ?? null,
+            $data[self::KEY_VALUE][self::KEY_IBAN] ?? null,
+            $data[self::KEY_VALUE][self::KEY_OWNER] ?? null
         );
     }
 
@@ -162,9 +164,11 @@ class BankAccountCustomFieldValue implements CustomFieldValueInterface
     public function jsonSerialize(): array
     {
         return [
-            self::KEY_BIC   => $this->bic,
-            self::KEY_IBAN  => $this->iban,
-            self::KEY_OWNER => $this->owner,
+            self::KEY_VALUE => [
+                self::KEY_BIC   => $this->bic,
+                self::KEY_IBAN  => $this->iban,
+                self::KEY_OWNER => $this->owner,
+            ],
         ];
     }
 
@@ -198,7 +202,7 @@ class BankAccountCustomFieldValue implements CustomFieldValueInterface
         $this->iban  = $value->getIban();
         $this->owner = $value->getOwner();
     }
-    
+
     /**
      * Determine if this value is equal to transmitted one
      *
