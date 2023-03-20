@@ -192,12 +192,12 @@ final class Version20221110000000 extends AbstractMigration
                 );
             }
         }
+        $this->connection->commit();
+
         $this->connection->executeStatement(
-            'DELETE FROM acquisition_attribute_fillout',
+            'DROP TABLE acquisition_attribute_fillout',
             []
         );
-
-        $this->connection->commit();
     }
 
     /**
@@ -207,12 +207,25 @@ final class Version20221110000000 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('SELECT 1');
-        $this->connection->beginTransaction();
+        
         $this->connection->executeStatement(
-            'DELETE FROM acquisition_attribute_fillout',
+            'CREATE TABLE acquisition_attribute_fillout (oid INT AUTO_INCREMENT NOT NULL, bid INT DEFAULT NULL, pid INT DEFAULT NULL, aid INT DEFAULT NULL, gid INT DEFAULT NULL, value VARCHAR(2048) DEFAULT NULL, comment VARCHAR(2048) DEFAULT NULL, INDEX IDX_A1C5AC794AF2B3F3 (bid), INDEX IDX_A1C5AC795550C4ED (pid), INDEX IDX_A1C5AC7948B40DAA (aid), INDEX IDX_A1C5AC794C397118 (gid), PRIMARY KEY(oid)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB',
             []
         );
+        $this->connection->executeStatement(
+            'ALTER TABLE acquisition_attribute_fillout ADD CONSTRAINT FK_A1C5AC794AF2B3F3 FOREIGN KEY (bid) REFERENCES acquisition_attribute (bid) ON DELETE CASCADE'
+        );
+        $this->connection->executeStatement(
+            'ALTER TABLE acquisition_attribute_fillout ADD CONSTRAINT FK_A1C5AC795550C4ED FOREIGN KEY (pid) REFERENCES participation (pid) ON DELETE CASCADE'
+        );
+        $this->connection->executeStatement(
+            'ALTER TABLE acquisition_attribute_fillout ADD CONSTRAINT FK_A1C5AC7948B40DAA FOREIGN KEY (aid) REFERENCES participant (aid) ON DELETE CASCADE'
+        );
+        $this->connection->executeStatement(
+            'ALTER TABLE acquisition_attribute_fillout ADD CONSTRAINT FK_A1C5AC794C397118 FOREIGN KEY (gid) REFERENCES employee (gid) ON DELETE CASCADE'
+        );
 
+        $this->connection->beginTransaction();
         foreach (['participation', 'participant', 'employee'] as $table) {
             switch ($table) {
                 case 'participation':
