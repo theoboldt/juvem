@@ -444,13 +444,15 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
             $explanation = null;
         }
         
-        if ($config[$bid]['display'] === Configuration::OPTION_SEPARATE_COLUMNS
+        if (($config[$bid]['display'] === Configuration::OPTION_SEPARATE_COLUMNS
+            || $config[$bid]['display'] === Configuration::OPTION_SEPARATE_COLUMNS_SHORT)
             && ($attribute->getFieldType() === ChoiceType::class || $attribute->getFieldType() === GroupType::class)
         ) {
             if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_NEWLINE) {
                 //newline option not possible, so using comment option
                 $config[$bid]['optionComment'] = Configuration::OPTION_COMMENT_COMMENT;
             }
+            $configDisplayValue = $config[$bid]['display'];
             
             $choiceFirst = true;
             $choices = $attribute->getChoiceOptions();
@@ -462,6 +464,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                 $optionKey = $choice->getId();
                 $optionLabel = $this->fetchChoiceOptionLabel($choice, $configOptionValue);
                 $converter = function (CustomFieldValueContainer $customFieldValueContainer = null) use (
+                    $configDisplayValue,
                     $choice,
                     $configOptionValue,
                     $explanation,
@@ -474,7 +477,11 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                                 if ($explanation) {
                                     $explanation->register($choice);
                                 }
-                                return 'x';
+                                if ($configDisplayValue === Configuration::OPTION_SEPARATE_COLUMNS_SHORT) {
+                                    return $choice->getShortTitle(true);
+                                } else {
+                                    return 'x';
+                                }
                             }
                         }
                     } elseif ($choiceFirst) {
@@ -489,7 +496,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     $attribute,
                     $config[$bid]
                 );
-                $this->rotadedColumnHeader($column, 4, $converter);
+                $this->rotadedColumnHeader($column, 3.5, $converter);
                 $this->addColumn($column);
                 $choiceFirst = false;
                 if ($config[$bid]['optionComment'] === Configuration::OPTION_COMMENT_COMMENT) {
@@ -517,12 +524,12 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
      * Rotate column, update width accordingly, possibly configure converter
      *
      * @param CustomFieldColumn $column    Column to modify
-     * @param int|null          $width     If not null, transmitted width will be set
+     * @param float|null        $width     If not null, transmitted width will be set
      * @param callable|null     $converter Converter function if should be set
      */
     private function rotadedColumnHeader(
         CustomFieldColumn $column,
-        int               $width = null,
+        float             $width = null,
         callable          $converter = null
     ) {
         $column->addHeaderStyleCallback(

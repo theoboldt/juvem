@@ -23,6 +23,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 abstract class ParticipantRelatedConfiguration
 {
     const OPTION_SEPARATE_COLUMNS = 'separateColumns';
+    
+    const OPTION_SEPARATE_COLUMNS_SHORT = 'separateColumnsShort';
 
     const OPTION_VALUE_FORM       = 'formTitle';
     const OPTION_VALUE_MANAGEMENT = 'managementTitle';
@@ -188,6 +190,9 @@ abstract class ParticipantRelatedConfiguration
                 }
                 $displayDefault = reset($displayList);
                 
+                $displayList['Antwortmöglichkeiten in Spalten aufteilen, für gewählte deren Kürzel anzeigen']
+                    = self::OPTION_SEPARATE_COLUMNS_SHORT;
+
                 $displayList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen']
                     = self::OPTION_SEPARATE_COLUMNS;
 
