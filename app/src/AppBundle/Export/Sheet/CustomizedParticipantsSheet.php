@@ -44,6 +44,52 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
     private $explanations = [];
 
     /**
+     * Get the highest AID of participants
+     *
+     * @param Participant[] $participants
+     * @return int
+     */
+    private static function getMaxAid(array $participants): int
+    {
+        return max(array_keys($participants));
+    }
+
+    /**
+     * Get the highest PID of all participants
+     *
+     * @param Participant[] $participants
+     * @return int
+     */
+    private static function getMaxPid(array $participants): int
+    {
+        $pids = [];
+        foreach ($participants as $participant) {
+            $pids[] = $participant->getParticipation()->getPid();
+        }
+
+        return max($pids);
+    }
+
+    /**
+     * Provide column width to fit transmitted number
+     *
+     * @param int $number Number to fit
+     * @return float Excel column width
+     */
+    private static function provideColumnWidthByNumber(int $number): float
+    {
+        if ($number < 100) {
+            return 3.75;
+        } elseif ($number < 1000) {
+            return 4;
+        } elseif ($number < 10000) {
+            return 5;
+        } else {
+            return 6;
+        }
+    }
+    
+    /**
      * CustomizedParticipantsSheet constructor.
      *
      * @param Worksheet           $sheet        The excel workbook to use
@@ -68,7 +114,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
 
         if (self::issetAndTrue($configParticipant, 'aid')) {
             $column = new EntityAttributeColumn('aid', 'AID');
-            $column->setWidth(4);
+            $column->setWidth(self::provideColumnWidthByNumber(self::getMaxAid($participants)));
             $this->addColumn($column);
         }
 
@@ -79,7 +125,7 @@ class CustomizedParticipantsSheet extends ParticipantsSheetBase implements Sheet
                     return $value->getPid();
                 }
             );
-            $column->setWidth(4);
+            $column->setWidth(self::provideColumnWidthByNumber(self::getMaxPid($participants)));
             $this->addColumn($column);
         }
 
