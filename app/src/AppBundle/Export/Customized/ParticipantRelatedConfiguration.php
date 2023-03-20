@@ -193,7 +193,7 @@ abstract class ParticipantRelatedConfiguration
                 $displayList['Antwortmöglichkeiten in Spalten aufteilen, für gewählte deren Kürzel anzeigen']
                     = self::OPTION_SEPARATE_COLUMNS_SHORT;
 
-                $displayList['Antwortmöglichkeiten in Spalten aufteilen, gewählte ankreuzen']
+                $displayList['Antwortmöglichkeiten in Spalten aufteilen, gewählte mit \'x\' anzeigen']
                     = self::OPTION_SEPARATE_COLUMNS;
 
                 $optionValueList = [

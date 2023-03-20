@@ -34,9 +34,6 @@ $(function () {
                     'config[participant][nameLast]',
                     'config[participant][birthday]',
                     'config[participant][gender]',
-                    'config[participant][foodVegetarian]',
-                    'config[participant][foodLactoseFree]',
-                    'config[participant][foodLactoseNoPork]',
                     'config[participant][infoMedical]',
                     'config[participant][infoGeneral]',
                     'config[participant][price]',
@@ -47,20 +44,6 @@ $(function () {
                 includeCustomFields.participant.display = 'selectedAnswer';
                 includeCustomFields.participant.optionValue = 'managementTitle';
                 inputTitle.val('Teilnehmende');
-                break;
-            case 'food':
-                includeFields = [
-                    'config[participant][nameFirst]',
-                    'config[participant][nameLast]',
-                    'config[participant][foodVegetarian]',
-                    'config[participant][foodLactoseFree]',
-                    'config[participant][foodLactoseNoPork]',
-                    'config[participant][infoMedical]',
-                    'config[participant][infoGeneral]',
-                ];
-                selectAge.val('none');
-                selectPhone.val('comma');
-                inputTitle.val('Ernährung');
                 break;
             case 'phone_list':
                 includeFields = [
@@ -79,9 +62,6 @@ $(function () {
                     'config[participant][nameLast]',
                     'config[participant][birthday]',
                     'config[participant][gender]',
-                    'config[participant][foodVegetarian]',
-                    'config[participant][foodLactoseFree]',
-                    'config[participant][foodLactoseNoPork]',
                     'config[participant][infoMedical]',
                     'config[participant][infoGeneral]',
                     'config[participant][price]',
@@ -110,9 +90,6 @@ $(function () {
                     'config[participant][nameLast]',
                     'config[participant][birthday]',
                     'config[participant][gender]',
-                    'config[participant][foodVegetarian]',
-                    'config[participant][foodLactoseFree]',
-                    'config[participant][foodLactoseNoPork]',
                     'config[participant][infoMedical]',
                     'config[participant][infoGeneral]',
                     'config[participant][price]',
@@ -162,7 +139,10 @@ $(function () {
                                 var el = $(this);
                                 options.push(el.attr('value'));
                             });
-                            if ($.inArray(valueDisplay, options) !== -1) {
+                            if (input.get(0) && $.trim(input.get(0).nextSibling.textContent) === 'Ernährung') {
+                                //special for Ernährung field
+                                selectDisplay.val('separateColumnsShort');
+                            } else if ($.inArray(valueDisplay, options) !== -1) {
                                 selectDisplay.val(valueDisplay);
                             } else {
                                 selectDisplay.val('commaSeparated');
