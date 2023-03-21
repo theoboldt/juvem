@@ -34,14 +34,18 @@
         </div>
       {% endif %}
         <div class="row">
+          <div class="col-xs-12">
+            <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} <span
+                  class="hidden-xs">Neu</span></a>
+            {% if featureCalendar %}
+              <div class="btn btn-default" data-toggle="modal" data-target="#modalCalendarSync">{{ 'calendar'|glyph }}
+                <span class="hidden-xs">Kalender… </span><span class="caret-right"></span></div>
+            {% endif %}
+            <a href="{{ path('admin_participant_search') }}" class="btn btn-default">{{ 'search'|glyph }}
+              Teilnehmer:innen suchen… </span><span class="caret-right"></span></a>
+          </div>
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
-                    <div class="form-group">
-                        <a class="btn btn-primary" href="{{ path('event_new') }}">{{ 'plus'|glyph }} <span class="hidden-xs">Neu</span></a>
-                        {% if featureCalendar %}
-                            <div class="btn btn-default" data-toggle="modal" data-target="#modalCalendarSync">{{ 'calendar'|glyph }} <span class="hidden-xs">Kalender… </span><span class="caret-right"></span></div>
-                        {% endif %}
-                    </div>
                     <div class="btn-group" role="group">
                         {{ 'is_active'|tableFilterButtonTri(2, 'nur aktive', 'nur inaktive', 'aktive und inaktive', true) }}
                         {{ 'is_visible'|tableFilterButtonTri(2, 'nur sichtbare', 'nur versteckte', 'sichtbare und versteckte') }}

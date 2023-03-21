@@ -36,6 +36,7 @@ use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
 use AppBundle\Form\EventType;
 use AppBundle\Form\EventUserAssignmentsType;
+use AppBundle\Form\SearchParticipant\SearchParticipantType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
@@ -213,6 +214,42 @@ class AdminController
                 'eventListFuture' => $eventListFuture,
                 'eventListPast' => $eventListPast,
                 'eventList' => array_merge($eventListFuture, $eventListPast),
+            ]
+        );
+    }
+
+    /**
+     * Search participants by a specific list of filters
+     *
+     * @CloseSessionEarly
+     * @Route("/admin/event/search-participants", name="admin_participant_search")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
+     * @param Request $request
+     * @return Response
+     */
+    public function searchParticipantsAction(Request $request): Response
+    {
+        $form = $this->createForm(SearchParticipantType::class);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search       = $form->getData();
+            $repository   = $this->getDoctrine()->getRepository(Participation::class);
+            $participants = array_filter(
+                $repository->findParticipants($search),
+                function (Participant $participant) {
+                    return $this->authorizationChecker->isGranted('read', $participant->getParticipation()->getEvent());
+                }
+            );
+        } else {
+            $participants = null;
+        }
+
+        return $this->render(
+            'event/admin/search-participants.html.twig',
+            [
+                'form'         => $form->createView(),
+                'participants' => $participants,
             ]
         );
     }

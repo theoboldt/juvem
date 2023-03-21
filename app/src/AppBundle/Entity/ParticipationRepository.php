@@ -13,6 +13,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
+use AppBundle\Form\SearchParticipant\ParticipantSearch;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -48,6 +49,54 @@ class ParticipationRepository extends EntityRepository
             return $result;
         }
         return null;
+    }
+
+    /**
+     * Find {@see Participant} by search request
+     *
+     * @param ParticipantSearch $search Search config
+     * @return Participant[] Result
+     */
+    public function findParticipants(ParticipantSearch $search): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('a', 'p', 'e')
+           ->from(Participant::class, 'a', 'a.aid')
+           ->innerJoin('a.participation', 'p')
+           ->innerJoin('p.event', 'e')
+           ->addOrderBy('e.startDate', 'DESC')
+           ->addOrderBy('a.nameLast, a.nameFirst', 'ASC');
+
+        switch ($search->getEventFilter()) {
+            case ParticipantSearch::INCLUDE_EVENT_ACTIVE:
+                $qb->andWhere('e.isActive = 1');
+                break;
+        }
+
+        if ($search->getParticipationEmail()) {
+            $qb->andWhere('p.email LIKE :participationEmail');
+            $qb->setParameter('participationEmail', '%' . $search->getParticipationEmail() . '%');
+        }
+
+        if ($search->getParticipationLastName()) {
+            $qb->andWhere('p.nameLast LIKE :participationLastName');
+            $qb->setParameter('participationLastName', '%' . $search->getParticipationLastName() . '%');
+        }
+        if ($search->getParticipationFirstName()) {
+            $qb->andWhere('p.nameFirst LIKE :participationFirstName');
+            $qb->setParameter('participationFirstName', '%' . $search->getParticipationFirstName() . '%');
+        }
+
+        if ($search->getParticipantLastName()) {
+            $qb->andWhere('a.nameFirst LIKE :participantLastName');
+            $qb->setParameter('participantLastName', '%' . $search->getParticipantLastName() . '%');
+        }
+        if ($search->getParticipantFirstName()) {
+            $qb->andWhere('a.nameFirst LIKE :participantFirstName');
+            $qb->setParameter('participantFirstName', '%' . $search->getParticipantFirstName() . '%');
+        }
+
+        return $qb->getQuery()->execute();
     }
 
     /**
