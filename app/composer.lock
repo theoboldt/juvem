@@ -2550,16 +2550,16 @@
         },
         {
             "name": "ifsnop/mysqldump-php",
-            "version": "v2.10",
+            "version": "v2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ifsnop/mysqldump-php.git",
-                "reference": "16f36121df7e5484d0847cbf7f603b00a3747fca"
+                "reference": "ec6a777062b287cd25cb1cd916b3d14c595ebdb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ifsnop/mysqldump-php/zipball/16f36121df7e5484d0847cbf7f603b00a3747fca",
-                "reference": "16f36121df7e5484d0847cbf7f603b00a3747fca",
+                "url": "https://api.github.com/repos/ifsnop/mysqldump-php/zipball/ec6a777062b287cd25cb1cd916b3d14c595ebdb8",
+                "reference": "ec6a777062b287cd25cb1cd916b3d14c595ebdb8",
                 "shasum": ""
             },
             "require": {
@@ -2603,9 +2603,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ifsnop/mysqldump-php/issues",
-                "source": "https://github.com/ifsnop/mysqldump-php/tree/v2.10"
+                "source": "https://github.com/ifsnop/mysqldump-php/tree/v2.11"
             },
-            "time": "2023-02-09T02:00:29+00:00"
+            "time": "2023-03-18T00:37:42+00:00"
         },
         {
             "name": "imagine/imagine",
@@ -6737,16 +6737,16 @@
         },
         {
             "name": "vich/uploader-bundle",
-            "version": "1.21.1",
+            "version": "1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "6b428642694cbfeb1be6e956ba59382d89ae1ee6"
+                "reference": "8655c362102ec7cbb277faeb864af9756358ffbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/6b428642694cbfeb1be6e956ba59382d89ae1ee6",
-                "reference": "6b428642694cbfeb1be6e956ba59382d89ae1ee6",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/8655c362102ec7cbb277faeb864af9756358ffbc",
+                "reference": "8655c362102ec7cbb277faeb864af9756358ffbc",
                 "shasum": ""
             },
             "require": {
@@ -6839,9 +6839,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dustin10/VichUploaderBundle/issues",
-                "source": "https://github.com/dustin10/VichUploaderBundle/tree/1.21.1"
+                "source": "https://github.com/dustin10/VichUploaderBundle/tree/1.22.0"
             },
-            "time": "2022-08-12T07:38:44+00:00"
+            "time": "2023-03-18T12:46:44+00:00"
         },
         {
             "name": "yellowskies/qr-code-bundle",
