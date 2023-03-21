@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Convert participant food field to system custom food field
  */
-final class Version20270221200000 extends AbstractMigration
+final class Version20230310200000 extends AbstractMigration
 {
 
     const TYPE_FOOD_VEGAN        = 1;
