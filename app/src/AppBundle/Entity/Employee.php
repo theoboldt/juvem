@@ -13,8 +13,6 @@ namespace AppBundle\Entity;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
@@ -24,7 +22,9 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersIn
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
-use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueTrait;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Manager\Geo\AddressAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,9 +42,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EmployeeRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, EntityHavingPhoneNumbersInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface, HumanInterface
+class Employee implements EventRelatedEntity, EntityHavingCustomFieldValueInterface, EntityHavingPhoneNumbersInterface, SummandImpactedInterface, SoftDeleteableInterface, AddressAwareInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface, HumanInterface
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
+    use HumanTrait, CreatedModifiedTrait, AddressTrait, CommentableTrait;
+    use CustomFieldValueTrait;
     
     use SoftDeleteTrait {
         setDeletedAt as traitSetDeletedAt;
@@ -90,15 +91,19 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\EmployeeComment", cascade={"all"}, mappedBy="employee")
      */
     protected $comments;
-    
+
     /**
-     * Contains the participants assigned to this employee
+     * Custom field value collection containing a list of {@see CustomFieldValueContainer}
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout",
-     *     cascade={"all"}, mappedBy="employee")
+     * Stores array or {@see CustomFieldValueCollection} which can be generated from this array containing a list
+     * of {@see CustomFieldValueContainer} identified by the related {@see Attribute} id. Is encoded to JSON
+     * when entity is persisted to database
+     * 
+     * @var CustomFieldValueCollection|array
+     * @ORM\Column(type="json", length=16777215, name="custom_field_values", nullable=true)
      */
-    protected $acquisitionAttributeFillouts;
-    
+    private $customFieldValues = [];
+
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedEmployees")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid", onDelete="SET NULL")
@@ -124,8 +129,6 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
      */
     public function __construct(Event $event = null)
     {
-        $this->acquisitionAttributeFillouts = new ArrayCollection();
-        
         $this->phoneNumbers = new ArrayCollection();
         $this->comments     = new ArrayCollection();
         $this->modifiedAt   = new \DateTime();
@@ -311,14 +314,14 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
     /**
      * Create a new employee for transmitted event based on data of given employee
      *
-     * @param Employee $employeePrevious Data template
-     * @param Event $event                         Event this new employee should belong to
-     * @param bool $copyPrivateFields              If set to true, also private acquisition data and user assignments
+     * @param Employee $employeePrevious           Data template
+     * @param Event    $event                      Event this new employee should belong to
+     * @param bool     $copyPrivateFields          If set to true, also private acquisition data and user assignments
      *                                             are copied
      * @return Employee
      */
     public static function createFromTemplateForEvent(
-        Employee $employeePrevious, Event $event, $copyPrivateFields = false
+        Employee $employeePrevious, Event $event, bool $copyPrivateFields = false
     )
     {
         /** @var Employee $employee */
@@ -347,18 +350,14 @@ class Employee implements EventRelatedEntity, EntityHavingFilloutsInterface, Ent
             $employee->addPhoneNumber($number);
         }
 
+        $previousCustomFieldValueCollection = $employeePrevious->getCustomFieldValues();
+        $employeeCustomFieldValueCollection = $employee->getCustomFieldValues();
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, false, true, $copyPrivateFields, true) as $attribute) {
-            try {
-                $filloutPrevious = $employeePrevious->getAcquisitionAttributeFillout($attribute->getBid(), false);
-            } catch (\OutOfBoundsException $e) {
-                continue;
+            $previousCustomFieldValueContainer = $previousCustomFieldValueCollection->get($attribute->getBid());
+            if ($previousCustomFieldValueContainer) {
+                $employeeCustomFieldValueCollection->add(clone $previousCustomFieldValueContainer);
             }
-            $fillout = new Fillout();
-            $fillout->setEmployee($employee);
-            $fillout->setAttribute($attribute);
-            $fillout->setValue($filloutPrevious->getRawValue());
-            $employee->addAcquisitionAttributeFillout($fillout);
         }
 
         return $employee;

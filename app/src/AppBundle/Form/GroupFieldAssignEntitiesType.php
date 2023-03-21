@@ -12,8 +12,8 @@ namespace AppBundle\Form;
 
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -74,13 +74,8 @@ class GroupFieldAssignEntitiesType extends AbstractType
                             $entityType,
                             $attribute
                         ) {
-                            $qbf = $this->em->createQueryBuilder();
-                            $qbf->select('f')
-                                ->from(Fillout::class, 'f')
-                                ->andWhere($qbf->expr()->eq('f.attribute', $attribute->getBid()));
-
                             $qbe = $this->em->createQueryBuilder();
-                            $qbe->select(['i.nameFirst', 'i.nameLast'])
+                            $qbe->select(['i.nameFirst', 'i.nameLast', 'i.customFieldValues'])
                                 ->from($entityType, 'i')
                                 ->andWhere('i.deletedAt IS NULL')
                                 ->addOrderBy('i.nameLast')
@@ -91,21 +86,16 @@ class GroupFieldAssignEntitiesType extends AbstractType
                                     $qbe->addSelect(['i.aid', 'i.birthday', 'i.status']);
                                     $qbe->innerJoin('i.participation', 'p', Join::WITH);
                                     $qbe->andWhere($qbe->expr()->eq('p.event', ':eid'));
-                                    $qbf->andWhere($qbf->expr()->in('f.participant', ':ids'));
                                     break;
                                 case Participation::class:
                                     $qbe->indexBy('i', 'i.pid');
                                     $qbe->addSelect('i.pid');
                                     $qbe->andWhere($qbe->expr()->eq('i.event', ':eid'));
-
-                                    $qbf->andWhere($qbf->expr()->in('f.participation', ':ids'));
                                     break;
                                 case Employee::class:
                                     $qbe->indexBy('i', 'i.gid');
                                     $qbe->addSelect('i.gid');
                                     $qbe->andWhere($qbe->expr()->eq('i.event', ':eid'));
-
-                                    $qbf->andWhere($qbf->expr()->in('f.employee', ':ids'));
                                     break;
                                 default:
                                     throw new InvalidArgumentException('Unknown entity class transmitted');
@@ -114,50 +104,34 @@ class GroupFieldAssignEntitiesType extends AbstractType
 
                             $entities = $qbe->getQuery()->execute();
 
-                            if (!count($entities)) {
-                                return [];
-                            }
-
-                            $qbf->setParameter('ids', array_keys($entities));
-                            $fillouts = $qbf->getQuery()->execute();
-
-                            /** @var Fillout $fillout */
-                            foreach ($fillouts as $fillout) {
-                                /** @var GroupFilloutValue $value */
-                                $value = $fillout->getValue();
-                                switch ($entityType) {
-                                    case Participant::class:
-                                        $id = $fillout->getParticipant()->getAid();
-                                        break;
-                                    case Participation::class:
-                                        $id = $fillout->getParticipation()->getPid();
-                                        break;
-                                    case Employee::class:
-                                        $id = $fillout->getEmployee()->getGid();
-                                        break;
-                                    default:
-                                        throw new InvalidArgumentException('Unknown entity class transmitted');
-                                }
-                                $groupId = $value->getGroupId();
-                                if ($groupId === null) {
-                                    continue;
-                                } elseif ($groupId === $currentGroupOption->getId()) {
-                                    if (isset($entities[$id])) {
-                                        unset($entities[$id]);
+                            foreach ($entities as $id => $entity) {
+                                $entities[$id]['groups'] = [];
+                                if (is_array($entity['customFieldValues'])) {
+                                    $customFieldValueCollection = CustomFieldValueCollection::createFromArray(
+                                        $entity['customFieldValues']
+                                    );
+                                    $customFieldValueContainer = $customFieldValueCollection->get($attribute->getBid());
+                                    if ($customFieldValueContainer) {
+                                        $customFieldValue = $customFieldValueContainer->getValue();
+                                        if ($customFieldValue instanceof GroupCustomFieldValue) {
+                                            $customFieldValueGroupId = $customFieldValue->getValue();
+                                            
+                                            if ($customFieldValueGroupId === $currentGroupOption->getId()) {
+                                                //already part of this group
+                                                unset($entities[$id]);
+                                            } elseif ($customFieldValueGroupId) {
+                                                $customFieldChoiceOption =$attribute->getChoiceOption($customFieldValueGroupId); 
+                                                if ($customFieldChoiceOption) {
+                                                    $entities[$id]['groups'][] = $customFieldChoiceOption->getManagementTitle(true);
+                                                } else {
+                                                    $entities[$id]['groups'][] = $customFieldValueGroupId;
+                                                }
+                                            }
+                                        }
                                     }
-                                } else {
-                                    $option = $attribute->getChoiceOption($groupId);
-                                    if (!$option) {
-                                        continue;
-                                    }
-                                    if (!isset($entities[$id]['groups'])) {
-                                        $entities[$id]['groups'] = [];
-                                    }
-                                    $entities[$id]['groups'][] = $option->getManagementTitle(true);
-
                                 }
                             }
-    
+
                             $choiceOptions = [];
                             foreach ($entities as $id => $entity) {
                                 $choiceOption = new GroupFieldAssignEntityChoiceOption(

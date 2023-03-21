@@ -84,15 +84,15 @@
                         {{ form_row(form.email) }}
                     </div>
                 </div>
-                {% for fieldName,formField in form %}
-                    {% if fieldName starts with 'acq_field_' %}
-                        <div class="row">
-                            <div class="col-xs-12">
-                                {% include 'event/participation/public/embed-acquisition-field-public.html.twig' with {'acquisitionField': acquisitionFieldsParticipation[fieldName], 'formField': formField} %}
-                            </div>
-                        </div>
+                <div class="row">
+                  {% for fieldName,formField in form.customFieldValues %}
+                    {% if fieldName starts with 'custom_field_' %}
+                      <div class="col-xs-12">
+                          {% include 'event/participation/embed-form-custom-field.html.twig' with {'formField': formField, 'helpExpanded': true} %}
+                      </div>
                     {% endif %}
-                {% endfor %}
+                  {% endfor %}
+                </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <label class="control-label">Telefonnummern</label>
@@ -264,26 +264,12 @@
                                             {{ form_errors(formElement.infoGeneral) }}
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6 ">
-                                        <div class="form-group">
-                                            {{ form_label(formElement.food) }}
-                                            <button type="button" class="btn btn-default btn-xs btn-round"
-                                                    data-toggle="popover"{{ tab.skip|raw }}
-                                                    data-content="Bitte kreuzen Sie hier an, falls bei der Ernährung dieses Kindes etwas besonders zu beachten ist. Falls weitere Allergien oder Unverträglichkeiten vorhanden sind, tragen Sie diese bitte in ein anderes geeignetes Feld ein.">
-                                                <span class="glyphicon glyphicon-question-sign"></span>
-                                            </button>
-                                            {{ form_widget(formElement.food) }}
-                                            {{ form_errors(formElement.food) }}
+                                    {% for fieldName,formField in formElement.customFieldValues %}
+                                      {% if fieldName starts with 'custom_field_' %}
+                                        <div class="col-xs-12">
+                                          {% include 'event/participation/embed-form-custom-field.html.twig' with {'formField': formField, 'helpExpanded': true} %}
                                         </div>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6">
-                                    </div>
-                                    {% for fieldName,formField in formElement %}
-                                        {% if fieldName starts with 'acq_field_' %}
-                                            <div class="col-xs-12">
-                                                {% include 'event/participation/public/embed-acquisition-field-public.html.twig' with {'acquisitionField': acquisitionFieldsParticipant[fieldName], 'formField': formField} %}
-                                            </div>
-                                        {% endif %}
+                                      {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>

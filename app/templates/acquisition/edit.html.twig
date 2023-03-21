@@ -12,6 +12,13 @@
         {% endblock %}
     {% endembed %}
     <div class="container">
-        {% include '/acquisition/form.html.twig' with {'form': form, submitTitle: 'Änderungen speichern', showChoiceOptions: showChoiceOptions} %}
+      <div class="row">
+        <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+          <div class="alert alert-info">
+            Dies ist ein Systemfeld. Einige Eigenschaften können nicht bearbeitet werden.
+          </div>
+        </div>
+      </div>
+      {% include '/acquisition/form.html.twig' with {'form': form, submitTitle: 'Änderungen speichern', showChoiceOptions: showChoiceOptions} %}
     </div>
 {% endblock %}

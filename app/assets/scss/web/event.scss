@@ -37,9 +37,47 @@ iframe[name=export-generator-frame] {
   i {
     opacity: 0.2;
   }
-
 }
 
+.custom-field {
+  .custom-field-comment-group,
+  .form-group-after-label {
+    padding-left: 10px;
+  }
+}
+
+.custom-field-having-comment {
+  .form-group {
+    margin-bottom: 5px;
+  }
+
+  > .form-group:last-child {
+    margin-bottom: 15px;
+  }
+}
+
+.custom-field-comment-group label {
+  margin-bottom: 0;
+}
+
+.custom-field.field-appbundle-form-bankaccounttype {
+  .custom-field-field .form-group,
+  .custom-field-comment-group {
+    margin-left: 10px;
+  }
+}
+
+.field-appbundle-form-participantdetectingtype {
+  .custom-field-field {
+    @include make-row();
+
+    .form-group {
+      @include make-sm-column(6);
+    }
+  }
+}
+
+/*
 .acquisition-attribute.field-appbundle-form-participantdetectingtype > div,
 .acquisition-attribute.field-appbundle-form-bankaccounttype > div {
   @include make-row();
@@ -56,7 +94,7 @@ iframe[name=export-generator-frame] {
 .acquisition-attribute > div > div {
   @include make-xs-column(12);
 }
-
+*/
 #specificAge {
   width: 65px;
 }
@@ -83,7 +121,7 @@ div.help-block {
   margin: 0 0 10px;
 }
 
-div.help-block > p {
+p.help-block, div.help-block > p {
   margin: 0 0 5px;
 }
 
@@ -284,7 +322,7 @@ input.input-formula, textarea.input-formula {
     padding: 0;
   }
 
-  .fillout-participant-detecting button {
+  .custom-field-participant-detecting button {
     display: none;
   }
 
@@ -1194,7 +1232,7 @@ body.feature-cloud-disabled .feature-cloud {
   @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
     td.field {
       min-width: 200px;
-      
+
       .btn {
         min-width: 35px;
       }
@@ -1204,11 +1242,11 @@ body.feature-cloud-disabled .feature-cloud {
     &.col-xs-12 {
       padding: 0;
     }
-    
+
     td.question {
       padding-right: 0;
     }
-    
+
     td.field {
       min-width: 145px;
       padding-right: 0;

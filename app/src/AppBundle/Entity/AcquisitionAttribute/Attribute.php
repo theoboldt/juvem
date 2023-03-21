@@ -19,6 +19,15 @@ use AppBundle\Entity\Audit\SoftDeleteTrait;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\CustomField\BankAccountCustomFieldValue;
+use AppBundle\Entity\CustomField\ChoiceCustomFieldValue;
+use AppBundle\Entity\CustomField\CustomFieldValueInterface;
+use AppBundle\Entity\CustomField\DateCustomFieldValue;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
+use AppBundle\Entity\CustomField\NumberCustomFieldValue;
+use AppBundle\Entity\CustomField\OptionProvidingCustomFieldValueInterface;
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
+use AppBundle\Entity\CustomField\TextualCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participation;
 use AppBundle\Form\BankAccountType;
@@ -30,7 +39,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType as FormDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType as FormDateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType as FormNumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType as FormTextareaType;
@@ -52,7 +60,6 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     const LABEL_FIELD_TEXTAREA    = 'Textfeld (Mehrzeilig)';
     const LABEL_FIELD_CHOICE      = 'Auswahl';
     const LABEL_FIELD_DATE        = 'Datum';
-    const LABEL_FIELD_DATE_TIME   = 'Datum und Uhrzeit';
     const LABEL_FIELD_BANK        = 'Bankverbindung';
     const LABEL_FIELD_NUMBER      = 'Eingabefeld (Ganzzahl)';
     const LABEL_FIELD_GROUP       = 'Einteilungsfeld';
@@ -137,14 +144,6 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     protected $events;
 
     /**
-     * Contains the participants assigned to this participation
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"},
-     *                                                                             mappedBy="attribute")
-     */
-    protected $fillouts;
-
-    /**
      * Stores if attribute is public (and included in form or not)
      *
      * @ORM\Column(type="boolean", name="is_public")
@@ -158,6 +157,13 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
      */
     protected $isArchived = false;
 
+    /**
+     * Stores if option is a built-in element
+     *
+     * @ORM\Column(type="boolean", name="is_system", options={"default":0})
+     */
+    protected $isSystem = false;
+   
     /**
      * Contains the choice options the user can use
      *
@@ -183,7 +189,7 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     protected $priceFormula = null;
 
     /**
-     * Specifies if fillout accept comments/textual amendments
+     * Specifies if custom field value accept comments/textual amendments
      * 
      * @ORM\Column(name="is_comment_enabled", type="smallint", options={"unsigned":true,"default":0})
      *
@@ -197,7 +203,6 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     public function __construct()
     {
         $this->events                 = new ArrayCollection();
-        $this->fillouts               = new ArrayCollection();
         $this->choiceOptions          = new ArrayCollection();
     }
 
@@ -214,11 +219,22 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     /**
      * Get the name for the field, used in forms
      *
+     * @deprecated
      * @return string
      */
     public function getName()
     {
         return 'acq_field_' . $this->bid;
+    }
+
+    /**
+     * Get the name for the custom field
+     *
+     * @return string
+     */
+    public function getCustomFieldName(): string
+    {
+        return 'custom_field_' . $this->bid;
     }
 
     /**
@@ -382,8 +398,6 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
                     return self::LABEL_FIELD_NUMBER;
                 case FormDateType::class:
                     return self::LABEL_FIELD_DATE;
-                case FormDateTimeType::class:
-                    return self::LABEL_FIELD_DATE_TIME;
                 case BankAccountType::class;
                     return self::LABEL_FIELD_BANK;
                 case GroupType::class;
@@ -396,6 +410,63 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
         return $this->fieldType;
     }
 
+    /**
+     * Provide custom field value type used for this custom field
+     * 
+     * @todo remove after transition phase
+     * @return string
+     */
+    public function getCustomFieldValueType(): string {
+        switch ($this->fieldType) {
+            case FormTextType::class:
+            case FormTextareaType::class;
+                return TextualCustomFieldValue::TYPE;
+            case FormChoiceType::class;
+                return ChoiceCustomFieldValue::TYPE;
+            case FormNumberType::class;
+                return NumberCustomFieldValue::TYPE;
+            case FormDateType::class:
+                return DateCustomFieldValue::TYPE;
+            case BankAccountType::class;
+                return BankAccountCustomFieldValue::TYPE;
+            case GroupType::class;
+                return GroupCustomFieldValue::TYPE;
+            case ParticipantDetectingType::class:
+                return ParticipantDetectingCustomFieldValue::TYPE;
+            default:
+                throw new \RuntimeException('Unknown type ' . $this->fieldType . ' occurred');
+        }
+    }
+
+    /**
+     * Convert a transmitted custom field value to a textual representation
+     *
+     * @param CustomFieldValueInterface $customFieldValue
+     * @return string
+     */
+    public function getTextualValue(CustomFieldValueInterface $customFieldValue): string
+    {
+        if ($customFieldValue instanceof OptionProvidingCustomFieldValueInterface) {
+            $textualOptions = [];
+            foreach ($customFieldValue->getSelectedChoices() as $choiceId) {
+                $choice = $this->getChoiceOption($choiceId);
+                if ($choice) {
+                    $textualOptions[] = $choice->getManagementTitle(true);
+                } else {
+                    $textualOptions[] = $choiceId;
+                }
+            }
+            if (count($textualOptions)) {
+                sort($textualOptions);
+                return implode(', ', $textualOptions);
+            } else {
+                return '';
+            }
+        } else {
+            return $customFieldValue->getTextualValue();
+        }
+    }
+    
     /**
      * Set fieldOptions
      *
@@ -676,40 +747,6 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     }
 
     /**
-     * Add fillout
-     *
-     * @param Fillout $fillout
-     *
-     * @return Attribute
-     */
-    public function addFillout(Fillout $fillout)
-    {
-        $this->fillouts[] = $fillout;
-
-        return $this;
-    }
-
-    /**
-     * Remove fillout
-     *
-     * @param Fillout $fillout
-     */
-    public function removeFillout(Fillout $fillout)
-    {
-        $this->fillouts->removeElement($fillout);
-    }
-
-    /**
-     * Get fillouts
-     *
-     * @return Collection
-     */
-    public function getFillouts()
-    {
-        return $this->fillouts;
-    }
-
-    /**
      * Add choiceOption
      *
      * @param AttributeChoiceOption $choiceOption
@@ -806,6 +843,22 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     }
 
     /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
+    }
+    
+    /**
      * Get price formula if set
      *
      * @return string|null
@@ -837,7 +890,7 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     }
 
     /**
-     * Determine if fillout accept comments/textual amendments for this field
+     * Determine if custom field value accept comments/textual amendments for this field
      * 
      * @return bool
      */
@@ -847,7 +900,7 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     }
 
     /**
-     * Configure if fillout accept comments/textual amendments for this field
+     * Configure if custom field value accept comments/textual amendments for this field
      * 
      * @param bool $isCommentEnabled
      * @return Attribute

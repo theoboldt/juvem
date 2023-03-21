@@ -19,7 +19,7 @@ use AppBundle\Entity\User;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PriceSummand\AttributeAwareInterface;
 use AppBundle\Manager\Payment\PriceSummand\BasePriceSummand;
-use AppBundle\Manager\Payment\PriceSummand\FilloutSummand;
+use AppBundle\Manager\Payment\PriceSummand\CustomFieldValueSummand;
 use AppBundle\Manager\Payment\PriceSummand\SummandInterface;
 use AppBundle\Twig\Extension\ParticipationsParticipantsNamesGrouped;
 use Doctrine\ORM\EntityManagerInterface;
@@ -150,7 +150,7 @@ class InvoiceManager
             $templatePath = $this->getInvoiceTemplatePath();
         }
         if (!file_exists($templatePath)) {
-            throw new InvoiceTemplateMissingException('No invoice template available');
+            throw new InvoiceTemplateMissingException('No invoice template available at '.$templatePath);
         }
         $templateProcessor = new TemplateProcessor($templatePath);
         $templateVariables = $templateProcessor->getVariables();
@@ -181,7 +181,7 @@ class InvoiceManager
                     $type               = 'Grundpreis';
                     $description        = 'Grundpreis';
                     $typeAndDescription = [$type];
-                } elseif ($summand instanceof FilloutSummand) {
+                } elseif ($summand instanceof CustomFieldValueSummand) {
                     if ($summandValueCents > 0) {
                         $type = 'Aufschlag';
                     } else {

@@ -10,11 +10,8 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\FilloutTrait;
 use AppBundle\Entity\AttendanceList\AttendanceListParticipantFillout;
 use AppBundle\Entity\Audit\CreatedModifiedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
@@ -25,7 +22,9 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersIn
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
-use AppBundle\Form\EntityHavingFilloutsInterface;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueTrait;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Manager\Payment\PriceSummand\SummandImpactedInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -41,10 +40,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
-class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface, HumanInterface
+class Participant implements EventRelatedEntity, SummandImpactedInterface, SoftDeleteableInterface, ProvidesModifiedInterface, ProvidesCreatedInterface, SupportsChangeTrackingInterface, SpecifiesChangeTrackingStorableRepresentationInterface, SpecifiesChangeTrackingComparableRepresentationInterface, SpecifiesChangeTrackingAttributeConvertersInterface, HumanInterface, EntityHavingCustomFieldValueInterface
 {
-    use HumanTrait, FilloutTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
-
+    use HumanTrait, CreatedModifiedTrait, SoftDeleteTrait, CommentableTrait, BirthdayTrait;
+    use CustomFieldValueTrait;
+    
     const LABEL_GENDER_MALE         = 'männlich';
     const LABEL_GENDER_MALE_ALIKE   = 'divers, eher männlich';
     const LABEL_GENDER_DIVERSE      = 'divers';
@@ -79,11 +79,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
     protected $gender = '';
 
     /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true})
-     */
-    protected $food = 0;
-
-    /**
      * @ORM\Column(type="date")
      * @Assert\NotBlank()
      * @Assert\Type("\DateTime")
@@ -111,14 +106,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      * @ORM\Column(type="integer", options={"unsigned":true}, nullable=true, name="price")
      */
     protected $basePrice = null;
-
-    /**
-     * Contains the participants assigned to this participation
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AcquisitionAttribute\Fillout", cascade={"all"}, mappedBy="participant")
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    protected $acquisitionAttributeFillouts;
 
     /**
      * Contains the list of attendance lists fillouts of this participation
@@ -152,11 +139,23 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
      * @Serialize\Type("DateTime<'d.m.Y H:i'>")
      */
     protected $confirmationSentAt = null;
-    
+
+    /**
+     * Custom field value collection containing a list of {@see CustomFieldValueContainer}
+     *
+     * Stores array or {@see CustomFieldValueCollection} which can be generated from this array containing a list
+     * of {@see CustomFieldValueContainer} identified by the related {@see Attribute} id. Is encoded to JSON
+     * when entity is persisted to database
+     * 
+     * @var CustomFieldValueCollection|array
+     * @ORM\Column(type="json", length=16777215, name="custom_field_values", nullable=true)
+     */
+    private $customFieldValues = [];
+
     /**
      * Constructor
      *
-     * @param Participation $participation  Related participation
+     * @param Participation|null $participation Related participation
      */
     public function __construct(Participation $participation = null)
     {
@@ -170,10 +169,9 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         $this->modifiedAt = new \DateTime();
         $this->createdAt  = new \DateTime();
 
-        $this->acquisitionAttributeFillouts = new ArrayCollection();
-        $this->attendanceListsFillouts      = new ArrayCollection();
-        $this->comments                     = new ArrayCollection();
-        $this->paymentEvents                = new ArrayCollection();
+        $this->attendanceListsFillouts = new ArrayCollection();
+        $this->comments                = new ArrayCollection();
+        $this->paymentEvents           = new ArrayCollection();
     }
 
     /**
@@ -244,39 +242,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
                 break;
         }
         return $term;
-    }
-
-    /**
-     * Set food
-     *
-     * @param integer|ParticipantFood $food
-     *
-     * @return Participant
-     */
-    public function setFood($food)
-    {
-        if ($food instanceof ParticipantFood) {
-            $food = $food->getValue();
-        }
-
-        $this->food = $food;
-
-        return $this;
-    }
-
-    /**
-     * Get food
-     *
-     * @param bool $asMask Set to true to get value as mask
-     * @return integer|ParticipantFood
-     */
-    public function getFood($asMask = false)
-    {
-        if ($asMask) {
-            return new ParticipantFood($this->food);
-        }
-
-        return $this->food;
     }
 
     /**
@@ -679,10 +644,6 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
             'status' => function ($value) {
                 $status = new ParticipantStatus($value);
                 return implode(', ', $status->getActiveList(true));
-            },
-            'food'   => function ($value) {
-                $status = new ParticipantFood($value);
-                return implode(', ', $status->getActiveList(true));
             }
         ];
     }
@@ -707,25 +668,18 @@ class Participant implements EventRelatedEntity, EntityHavingFilloutsInterface, 
         $participant->setNameLast($participantPrevious->getNameLast());
         $participant->setNameFirst($participantPrevious->getNameFirst());
         $participant->setBirthday($participantPrevious->getBirthday());
-        $participant->setFood($participantPrevious->getFood());
         $participant->setGender($participantPrevious->getGender());
         $participant->setInfoGeneral($participantPrevious->getInfoGeneral());
         $participant->setInfoMedical($participantPrevious->getInfoMedical());
 
+        $previousCustomFieldValueCollection    = $participantPrevious->getCustomFieldValues();
+        $participantCustomFieldValueCollection = $participant->getCustomFieldValues();
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, true, false, $copyPrivateFields, true) as $attribute) {
-            try {
-                $filloutPrevious = $participantPrevious->getAcquisitionAttributeFillout(
-                    $attribute->getBid(), false
-                );
-            } catch (\OutOfBoundsException $e) {
-                continue;
+            $previousCustomFieldValueContainer = $previousCustomFieldValueCollection->get($attribute->getBid());
+            if ($previousCustomFieldValueContainer) {
+                $participantCustomFieldValueCollection->add(clone $previousCustomFieldValueContainer);
             }
-            $fillout = new Fillout();
-            $fillout->setParticipant($participant);
-            $fillout->setAttribute($attribute);
-            $fillout->setValue($filloutPrevious->getRawValue());
-            $participant->addAcquisitionAttributeFillout($fillout);
         }
 
         if ($copyPrivateFields) {

@@ -13,7 +13,7 @@ namespace AppBundle\Manager\Payment\PriceSummand;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\CustomField\CustomFieldValueInterface;
 
 interface AttributeAwareInterface
 {
@@ -27,9 +27,9 @@ interface AttributeAwareInterface
 
 
     /**
-     * Get related fillout
+     * Get custom field value
      *
-     * @return Fillout
+     * @return CustomFieldValueInterface
      */
-    public function getFillout(): Fillout;
+    public function getCustomFieldValue(): CustomFieldValueInterface;
 }

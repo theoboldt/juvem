@@ -46,25 +46,14 @@
     </div>
 </div>
 <div class="row">
-    {% for fieldName,formField in form %}
-        {% if fieldName starts with 'acq_field_' %}
-            <div class="col-xs-12 col-sm-6">
-                <div class="form-group acquisition-attribute{% if not formField.vars.valid %} has-error{% endif %}">
-                    {{ form_label(formField) }}
-                    {%- set acquisitionField = acquisitionFields[fieldName] -%}
-                    {% if not acquisitionField.isPublic %}
-                        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
-                    {%- endif -%}
-                    {% if acquisitionField.formDescription %}
-                        <button type="button" class="btn btn-default btn-xs btn-round" data-toggle="popover"{{ tab.skip|raw }}
-                                data-content="{{ acquisitionField.formDescription }}">
-                            <span class="glyphicon glyphicon-question-sign"></span>
-                        </button>
-                    {% endif %}
-                    {{ form_widget(formField) }}
-                    {{ form_errors(formField) }}
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+  {% if form.customFieldValues.children|length == 0 %}
+    <div style="display: none">{{ form_row(form.customFieldValues) }}</div>
+  {% endif %}
+  {% for fieldName,formField in form.customFieldValues %}
+    {% if fieldName starts with 'custom_field_' %}
+      <div class="col-xs-12 col-sm-6">
+        {% include 'event/participation/embed-form-custom-field.html.twig' with {'formField': formField, helpExpanded: false} %}
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>

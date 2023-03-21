@@ -8,9 +8,12 @@ $(function () {
     updateType = function () {
         var el = $(elementType),
             val = el ? el.val() : null;
-        if (el
-            && (val === "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType"
-                || val === "AppBundle\\Form\\GroupType")
+        if (!el || !el.length) {
+            return;
+        }
+
+        if (val === "Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType"
+            || val === "AppBundle\\Form\\GroupType"
         ) {
             $('.form-group-choice').css('display', 'block');
         } else {
@@ -49,7 +52,7 @@ $(function () {
     });
 
     $('#dialogModalRelateParticipant').on('show.bs.modal', function (event) {
-        var buttonEl = $(event.relatedTarget),
+        let buttonEl = $(event.relatedTarget),
             modalEl = $(this),
             title = buttonEl.data('title'),
             description = buttonEl.data('description'),
@@ -61,18 +64,27 @@ $(function () {
         modalEl.find('.modal-body p.description').text(description);
         modalEl.find('.modal-body .first-name').text(firstName);
         modalEl.find('.modal-body .last-name').text(lastName);
-        modalEl.find('#participation_assign_related_participant_oid').val(buttonEl.data('oid'));
-        modalEl.find('#participation_assign_related_participant_related').val(buttonEl.data('aid'));
+        modalEl.find('#participation_assign_related_participant_bid').val(buttonEl.data('bid'));
+        modalEl.find('#participation_assign_related_participant_entityClass').val(buttonEl.data('entity-class'));
+        modalEl.find('#participation_assign_related_participant_entityId').val(buttonEl.data('entity-id'));
+        modalEl.find('#participation_assign_related_participant_related').val(buttonEl.data('related-aid'));
+        
+        tbodyEl.html('<tr><td colspan="5" class="text-center loading">(Wird geladen)</td></tr>');
 
-        tbodyEl.html('<tr><td colspan="4" class="text-center loading">(Wird geladen)</td></tr>');
-
-        $.get({
-            url: '../participant_proposal/' + buttonEl.data('oid'),
+        $.ajax({
+            type: 'POST',
+            url: '../participant_proposals',
+            data: {
+                bid: buttonEl.data('bid'),
+                entityClass: buttonEl.data('entity-class'),
+                entityId: buttonEl.data('entity-id'),
+            },
             success: function (response) {
-                if (response && response.rows && response.rows.length) {
+                if (response && !response.success && response.message) {
+                    tbodyEl.html('<td colspan="5" class="text-center">'+response.message+'</td>');
+                } else if (response && response.rows && response.rows.length) {
                     var tableBody = '';
                     jQuery.each(response.rows, function (key, row) {
-
                         tableBody += '<tr>' +
                             '<td>' + row.firstName + '</td>' +
                             '<td>' + row.lastName + '</td>' +
@@ -105,7 +117,7 @@ $(function () {
 
             },
             error: function () {
-                tbodyEl.html('<td colspan="5" class="text-center">(Fehler beim laden der Vorschläge)</td>');
+                tbodyEl.html('<td colspan="5" class="text-center">(Fehler beim Laden der Vorschläge)</td>');
             },
         });
     });

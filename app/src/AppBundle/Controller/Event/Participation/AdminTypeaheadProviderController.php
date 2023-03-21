@@ -35,7 +35,7 @@ class AdminTypeaheadProviderController extends AbstractController
      * @Security("is_granted('participants_read', event)")
      * @Security("is_granted('ROLE_ADMIN_EVENT')")
      */
-    public function participationConfirmAction(Event $event, Request $request)
+    public function typeaheadProposalsAction(Event $event, Request $request)
     {
         /** @var ParticipationRepository $repository */
         $repository   = $this->getDoctrine()->getRepository(Participation::class);
@@ -47,13 +47,13 @@ class AdminTypeaheadProviderController extends AbstractController
             }
         }
         $participation = $repository->getFieldProposals();
-        
+
         /** @var AcquisitionAttributeRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Attribute::class);
-        $attributes = $repository->findTextualAttributesForEvent($event);
-        $fillouts     = $repository->findAllAttributeValuesForFillouts($attributes);
+        $repository        = $this->getDoctrine()->getRepository(Attribute::class);
+        $attributes        = $repository->findTextualAttributesForEvent($event);
+        $customFieldValues = $repository->findAllValuesForCustomFields($attributes);
         
-        $response = new JsonResponse(['proposals' => array_merge($fillouts, $participation)]);
+        $response = new JsonResponse(['proposals' => array_merge($customFieldValues, $participation)]);
         $response->setLastModified($lastModified ? new \DateTime($lastModified) : null)
                  ->setMaxAge(1 * 60 * 60)
                  ->setETag($expectedEtag)

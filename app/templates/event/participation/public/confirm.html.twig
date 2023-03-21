@@ -73,10 +73,19 @@
                                             {{ participation.email }}
                                         </address>
                                     </dd>
-                                    {% for fillout in participation.acquisitionAttributeFillouts %}
-                                        {% if fillout.attribute.public %}
-                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                            <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
+                                    {% for customField in event.getAcquisitionAttributes(true, false, false, false, true) %}
+                                        {%- if not customField.isDeleted -%}
+                                            <dt {% if customField.formDescription != customField.formTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+                                                {{ customField.formTitle }}
+                                            </dt>
+                                            <dd>
+                                                {% set customFieldValueContainer = participation.customFieldValues.get(customField.id) %}
+                                                {% if customFieldValueContainer %}
+                                                    {{ customFieldValueContainer|customFieldValue(participation) }}
+                                                {% else %}
+                                                    <i class="empty value-not-specified"><span></span></i>
+                                                {% endif %}
+                                            </dd>
                                         {% endif %}
                                     {% endfor %}
                                 </dl>
@@ -117,19 +126,19 @@
                                                         <i class="empty no-special"><span></span></i>
                                                     {% endif %}
                                                 </dd>
-                                                <dt>Ernährung</dt>
-                                                <dd>
-                                                    {% set participantFood = participant.getFood(true) %}
-                                                    {% if participantFood.getValue() %}
-                                                        {{ ' '|bitmask(participantFood) }}
-                                                    {% else %}
-                                                        <i class="empty no-special"><span></span></i>
-                                                    {% endif %}
-                                                </dd>
-                                                {% for fillout in participant.acquisitionAttributeFillouts %}
-                                                    {% if fillout.attribute.public %}
-                                                        <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                                        <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
+                                                {% for customField in event.getAcquisitionAttributes( false, true, false, false, true) %}
+                                                    {%- if not customField.isDeleted -%}
+                                                        <dt {% if customField.formDescription != customField.formTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+                                                            {{ customField.formTitle }}
+                                                        </dt>
+                                                        <dd>
+                                                            {% set customFieldValueContainer = participant.customFieldValues.get(customField.id) %}
+                                                            {% if customFieldValueContainer %}
+                                                                {{ customFieldValueContainer|customFieldValue(participant) }}
+                                                            {% else %}
+                                                                <i class="empty value-not-specified"><span></span></i>
+                                                            {% endif %}
+                                                        </dd>
                                                     {% endif %}
                                                 {% endfor %}
                                             </dl>

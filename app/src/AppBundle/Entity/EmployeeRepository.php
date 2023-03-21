@@ -31,10 +31,10 @@ class EmployeeRepository extends EntityRepository
         $eid = $event->getEid();
 
         $qb = $this->createQueryBuilder('g')
-                   ->select(['g', 'f', 'a', 'pn'])
+                   ->select(['g', 'e', 'a', 'pn'])
                    ->andWhere('g.event = :eid')
-                   ->leftJoin('g.acquisitionAttributeFillouts', 'f')
-                   ->leftJoin('f.attribute', 'a')
+                   ->innerJoin('g.event', 'e')
+                   ->leftJoin('e.acquisitionAttributes', 'a')
                    ->leftJoin('g.phoneNumbers', 'pn')
                    ->orderBy('g.nameFirst, g.nameLast', 'ASC');
 
@@ -64,9 +64,9 @@ class EmployeeRepository extends EntityRepository
     public function findByIdList(array $idList): array
     {
         $qb = $this->createQueryBuilder('g')
-                   ->select(['g', 'f', 'a', 'pn'])
-                   ->leftJoin('g.acquisitionAttributeFillouts', 'f')
-                   ->leftJoin('f.attribute', 'a')
+                   ->select(['g', 'e', 'a', 'pn'])
+                   ->innerJoin('g.event', 'e')
+                   ->leftJoin('e.acquisitionAttributes', 'a')
                    ->leftJoin('g.phoneNumbers', 'pn')
                    ->orderBy('g.nameFirst, g.nameLast', 'ASC');
         

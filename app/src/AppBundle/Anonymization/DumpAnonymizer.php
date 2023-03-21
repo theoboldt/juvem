@@ -12,6 +12,7 @@
 namespace AppBundle\Anonymization;
 
 
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
 use AppBundle\Entity\Participant;
 use AppBundle\Form\BankAccountType;
 use AppBundle\Form\GroupType;
@@ -38,6 +39,11 @@ class DumpAnonymizer
      * @var array|string[][]
      */
     private $replacements = [];
+
+    /**
+     * @var array 
+     */
+    private $acquisitionAttributes = [];
     
     /**
      * DumpAnonymizer constructor.
@@ -141,6 +147,7 @@ class DumpAnonymizer
      * @param string $column      Column this value is related to
      * @param scalar|array $value Actual value or decoded json
      * @param array $row          Whole row data as well
+     * @todo Prepare for custom Fields
      * @return ReplacementInterface|null
      */
     private function detectDatumType(string $table, string $column, $value, array $row): ?ReplacementInterface
@@ -184,8 +191,18 @@ class DumpAnonymizer
         $keepTables = [
             'food_property',
         ];
-        if ($table === 'acquisition_attribute_fillout' && $column === 'value') {
-            $name      = 'acquisition_attribute_fillout_' . $row['bid'];
+        if ($column === 'custom_field_values') {
+            return null;
+            
+            if ($value) {
+                $valueDecoded = json_decode($value, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    return null;             
+                }
+            } else {
+                $valueDecoded = [];
+            }
+            $customFieldValueCollection = CustomFieldValueCollection::createFromArray($valueDecoded);
             $attribute = $this->acquisitionAttributes[$row['bid']] ?? null;
         
             switch ($attribute['field_type']) {

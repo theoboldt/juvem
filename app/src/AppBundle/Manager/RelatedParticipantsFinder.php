@@ -13,9 +13,8 @@ namespace AppBundle\Manager;
 
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
-use AppBundle\Entity\AcquisitionAttribute\RequestedFilloutNotFoundException;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -68,25 +67,26 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     }
 
     /**
-     * Get proposed @see Participant for transmitted @see Fillout
+     * Get proposed
      *
-     * @param Fillout $fillout Related fillout
-     * @return array|Participant[]
+     * @param ParticipantDetectingCustomFieldValue $customFieldValue
+     * @param Event                                $event
+     * @return array|Participant
+     * @see Participant for custom field
      */
-    public function proposedParticipants(Fillout $fillout): array
-    {
-        $filloutValue = $fillout->getValue();
-        if (!$filloutValue instanceof ParticipantFilloutValue) {
-            return [];
-        }
-            $this->calculateProposedParticipantsForEventAndAttributes($fillout->getEvent(), [$fillout->getAttribute()]);
+    public function proposedParticipants(
+        ParticipantDetectingCustomFieldValue $customFieldValue,
+        Attribute                            $customField,
+        Event                                $event
+    ): array {
+        $this->calculateProposedParticipantsForEventAndAttributes($event, [$customField]);
 
-        if (!$filloutValue->hasProposedParticipantsCalculated()) {
-            $this->calculateProposedParticipantsForEventAndAttributes($fillout->getEvent(), [$fillout->getAttribute()]);
+        if (!$customFieldValue->getProposedParticipants()) {
+            $this->calculateProposedParticipantsForEventAndAttributes($event, [$customField]);
         }
+
         $result = [];
-        $filloutValue = $fillout->getValue(); //refetch
-        foreach ($filloutValue->getProposedParticipantIds() as $aid) {
+        foreach ($customFieldValue->getProposedParticipants() as $aid) {
             $result[] = $this->getParticipant($aid);
         }
         return $result;
@@ -121,11 +121,11 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     /**
      * Calculate all
      *
-     * @param Event       $event      Related event
-     * @param Attribute[] $attributes Attributes
+     * @param Event       $event        Related event
+     * @param Attribute[] $customFields Attributes
      * @see Participant for transmitted @see Attribute
      */
-    private function calculateProposedParticipantsForEventAndAttributes(Event $event, array $attributes)
+    private function calculateProposedParticipantsForEventAndAttributes(Event $event, array $customFields)
     {
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
@@ -138,50 +138,39 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
             foreach ($participants as $participant) {
                 $this->participantsCache[$participant->getAid()] = $participant;
 
-                foreach ($attributes as $attribute) {
-                    try {
-                        $fillout = $participant->getAcquisitionAttributeFillout($attribute->getBid(), false);
-                    } catch (RequestedFilloutNotFoundException $e) {
+                foreach ($customFields as $customField) {
+                    $customFieldValueContainer = $participant->getCustomFieldValues()->getByCustomField($customField);
+                    if ($customFieldValueContainer->getType() !== ParticipantDetectingCustomFieldValue::TYPE) {
                         continue;
                     }
-                    $qualified = $this->calculateProposedParticipantsForFillout($fillout, $participants);
+                    /** @var ParticipantDetectingCustomFieldValue $customFieldValue */
+                    $customFieldValue = $customFieldValueContainer->getValue();
 
-                    /** @var ParticipantFilloutValue $value */
-                    $filloutRawValue = $fillout->getRawValue();
-                    if (is_string($filloutRawValue)) {
-                        $filloutRawValue = json_decode($filloutRawValue, true);
-                    }
-                    if (!is_array($filloutRawValue)) {
-                        $filloutRawValue = [];
-                    }
+                    $qualified = $this->calculateProposedParticipantsForCustomFieldValue(
+                        $customFieldValueContainer, $participants
+                    );
 
-                    /** @var ParticipantFilloutValue $value */
-                    $value = $fillout->getValue();
-                    if ($value->getSelectedParticipantId() === null) {
+                    if ($customFieldValue->getParticipantAid() === null) {
                         //check for exact match
                         foreach ($qualified as $relatedParticipant) {
-                            if ($relatedParticipant->getNameFirst() === $value->getRelatedFirstName()
-                                && $relatedParticipant->getNameLast() === $value->getRelatedLastName()
+                            if ($relatedParticipant->getNameFirst() === $customFieldValue->getRelatedFirstName()
+                                && $relatedParticipant->getNameLast() === $customFieldValue->getRelatedLastName()
                             ) {
-                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_AID]
-                                    = $relatedParticipant->getAid();
-                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_FIRST]
-                                    = $relatedParticipant->getNameFirst();
-                                $filloutRawValue[ParticipantFilloutValue::KEY_SELECTED_LAST]
-                                    = $relatedParticipant->getNameLast();
-                                $filloutRawValue[ParticipantFilloutValue::KEY_SYSTEM_SELECTION] = true;
+                                $customFieldValue->setParticipantAid($relatedParticipant->getAid());
+                                $customFieldValue->setParticipantFirstName($relatedParticipant->getNameFirst());
+                                $customFieldValue->setParticipantLastName($relatedParticipant->getNameLast());
+                                $customFieldValue->setIsSystemSelection(true);
                             }
                         }
                     }
 
-                    $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
+                    $proposedIds = [];
                     /** @var Participant $qualifiedParticipant */
                     foreach ($qualified as $qualifiedParticipant) {
-                        $filloutRawValue[ParticipantFilloutValue::KEY_PROPOSED_IDS][] = $qualifiedParticipant->getAid();
+                        $proposedIds[] = $qualifiedParticipant->getAid();
                     }
-                    $fillout->setValue($filloutRawValue);
-                    $this->em->persist($fillout);
-
+                    $customFieldValue->setProposedParticipants($proposedIds);
+                    $this->em->persist($participant);
                 }
             }
             $startFlush = microtime(true);
@@ -193,7 +182,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 [
                     'event'         => $event->getEid(),
                     'participants'  => count($participants),
-                    'attributes'    => count($attributes),
+                    'attributes'    => count($customFields),
                     'duration'      => $durationParticipants,
                     'durationFetch' => $durationFetch,
                     'durationFlush' => $durationFlush,
@@ -207,70 +196,35 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                 ['event' => $event->getEid()]
             );
             sleep(2);
-            $this->calculateProposedParticipantsForEventAndAttributes($event, $attributes);
+            $this->calculateProposedParticipantsForEventAndAttributes($event, $customFields);
         }
     }
 
-    /**
-     * Reset proposed participants for an complete event
-     *
-     * @param Event $event
-     */
-    public function resetProposedParticipantsForEvent(Event $event)
-    {
-        $lockHandle = $this->lock($event);
-        if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
-            $result = $this->em->getConnection()->executeQuery(
-                'SELECT acquisition_attribute_fillout.oid, acquisition_attribute_fillout.value AS fillout_value
-                   FROM acquisition_attribute_fillout
-             INNER JOIN acquisition_attribute ON (acquisition_attribute_fillout.bid = acquisition_attribute.bid)
-             INNER JOIN event_acquisition_attribute ON (event_acquisition_attribute.bid = acquisition_attribute.bid)
-                  WHERE acquisition_attribute.field_type = ?
-                    AND event_acquisition_attribute.eid = ?',
-                [ParticipantDetectingType::class, $event->getEid()]
-            );
-            $this->em->getConnection()->beginTransaction();
-            while ($row = $result->fetch()) {
-                $filloutValue = $row['fillout_value'];
-                if ($filloutValue !== null) {
-                    $filloutDecoded = json_decode($filloutValue, true);
-                    if (is_array($filloutDecoded) &&
-                        isset($filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS])) {
-                        $filloutDecoded[ParticipantFilloutValue::KEY_PROPOSED_IDS] = [];
-                        $this->em->getConnection()->executeStatement(
-                            'UPDATE acquisition_attribute_fillout SET value = ? WHERE oid = ?',
-                            [json_encode($filloutDecoded), $row['oid']]
-                        );
-                    }
-                }
-            }
-            $this->em->getConnection()->commit();
-        } else {
-            $this->closeLockHandle($lockHandle);
-            sleep(2);
-            $this->resetProposedParticipantsForEvent($event);
-        }
-    }
 
     /**
-     * Calculate qualified similar @see Participant for transmitted @see Fillout
+     * Calculate qualified similar
      *
-     * @param Fillout             $fillout      Source @see Fillout
-     * @param array|Participant[] $participants Pool of possible matching @see Participant
-     * @return array|Participant[]
+     * @param CustomFieldValueContainer $customFieldValueContainer Custom field value container
+     * @param array|Participant         $participants              Pool of possible matching @see Participant
+     * @return array|Participant
+     * @see Participant for transmitted custom field
+     *
      */
-    private function calculateProposedParticipantsForFillout(Fillout $fillout, array $participants): array
-    {
-        $filloutValue = $fillout->getValue();
-        if (!$filloutValue instanceof ParticipantFilloutValue) {
+    private function calculateProposedParticipantsForCustomFieldValue(
+        CustomFieldValueContainer $customFieldValueContainer,
+        array                     $participants
+    ): array {
+        if ($customFieldValueContainer->getType() !== ParticipantDetectingCustomFieldValue::TYPE) {
             return [];
         }
-        $qualified = [];
+        /** @var ParticipantDetectingCustomFieldValue $customFieldValue */
+        $customFieldValue = $customFieldValueContainer->getValue();
+        $qualified        = [];
 
         /** @var Participant $participant */
         foreach ($participants as $participant) {
-            $diffFirstName = levenshtein($filloutValue->getRelatedFirstName(), trim($participant->getNameFirst()));
-            $diffLastName  = levenshtein($filloutValue->getRelatedLastName(), trim($participant->getNameLast()));
+            $diffFirstName = levenshtein($customFieldValue->getRelatedFirstName(), trim($participant->getNameFirst()));
+            $diffLastName  = levenshtein($customFieldValue->getRelatedLastName(), trim($participant->getNameLast()));
 
             if ($diffFirstName < 2 && $diffLastName < 2) {
                 $qualified[($diffFirstName + $diffLastName)][] = $participant;
@@ -282,7 +236,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         }
 
         ksort($qualified);
-        $result    = [];
+        $result = [];
         foreach ($qualified as $subQualified) {
             foreach ($subQualified as $participant) {
                 $result[$participant->getAid()] = $participant;
@@ -293,10 +247,11 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
     }
 
     /**
-     * Fetch @see Participant by id from cache
+     * Fetch @param int $aid Id
      *
-     * @param int $aid Id
      * @return Participant Entity
+     * @see Participant by id from cache
+     *
      */
     private function getParticipant(int $aid): Participant
     {

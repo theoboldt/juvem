@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 
-
 namespace AppBundle\Form;
 
-
+use AppBundle\Entity\CustomField\BankAccountCustomFieldValue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,9 +21,9 @@ use Symfony\Component\Validator\Constraints\Iban;
 class BankAccountType extends AbstractType
 {
 
-    const FIELD_NAME_BIC = 'bankAccountBic';
-    const FIELD_NAME_IBAN = 'bankAccountIban';
-    const FIELD_NAME_OWNER = 'bankAccountOwner';
+    const FIELD_NAME_BIC   = 'bic';
+    const FIELD_NAME_IBAN  = 'iban';
+    const FIELD_NAME_OWNER = 'owner';
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -54,14 +53,15 @@ class BankAccountType extends AbstractType
                 self::FIELD_NAME_OWNER,
                 TextType::class,
                 [
-                    'label'       => 'Kontoinhaber (Bankverbindung)',
-                    'required'    => false,
-                    'attr'        => ['class' => 'col-md-3 bank-account-owner'],
+                    'label'    => 'Kontoinhaber (Bankverbindung)',
+                    'required' => false,
+                    'attr'     => ['class' => 'bank-account-owner'],
                 ]
             );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
+        $resolver->setDefault('data_class', BankAccountCustomFieldValue::class);
     }
 }

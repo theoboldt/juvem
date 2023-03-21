@@ -91,12 +91,12 @@
                         <th data-field="payment_to_pay" data-visible="false" data-sortable="true" data-class="payment-cell" data-sorter="germanNumberFormatSorter"><abbr title="Noch zu zahlender Betrag">Offen</abbr></th>
                         <th data-field="status" data-sortable="false">Status</th>
                         {% for attribute in event.getAcquisitionAttributes(true, false, false, true, true) %}
-                            <th data-field="participation_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
+                            <th data-field="participation_custom_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
                                 <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                             </th>
                         {% endfor %}
                         {% for attribute in event.getAcquisitionAttributes(false, true, false, true, true) %}
-                            <th data-field="participant_acq_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
+                            <th data-field="participant_custom_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
                                 <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                             </th>
                         {% endfor %}

@@ -10,7 +10,6 @@
 
 namespace AppBundle\Controller\Event\Participation;
 
-use AppBundle\BitMask\LabelFormatter;
 use AppBundle\BitMask\ParticipantStatus;
 use AppBundle\Controller\AuthorizationAwareControllerTrait;
 use AppBundle\Controller\DoctrineAwareControllerTrait;
@@ -18,9 +17,9 @@ use AppBundle\Controller\FlashBagAwareControllerTrait;
 use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\AcquisitionAttribute\Formula\CalculationImpossibleException;
-use AppBundle\Entity\AcquisitionAttribute\ParticipantFilloutValue;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
+use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -39,7 +38,6 @@ use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PaymentSuggestionManager;
-use AppBundle\Manager\RelatedParticipantsFinder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -51,7 +49,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -85,12 +82,7 @@ class AdminSingleController
      * @var ParticipationManager
      */
     private ParticipationManager $participationManager;
-    
-    /**
-     * @var RelatedParticipantsFinder
-     */
-    private RelatedParticipantsFinder $relatedParticipantsFinder;
-    
+
     /**
      * app.comment_manager
      *
@@ -112,7 +104,6 @@ class AdminSingleController
      * @param PaymentManager                $paymentManager
      * @param ParticipationManager          $participationManager
      * @param PaymentSuggestionManager      $paymentSuggestionManager
-     * @param RelatedParticipantsFinder     $relatedParticipantsFinder
      * @param CommentManager                $commentManager
      */
     public function __construct(
@@ -127,7 +118,6 @@ class AdminSingleController
         PaymentManager $paymentManager,
         ParticipationManager $participationManager,
         PaymentSuggestionManager $paymentSuggestionManager,
-        RelatedParticipantsFinder $relatedParticipantsFinder,
         CommentManager $commentManager
     ) {
         $this->twig                 = $twig;
@@ -140,10 +130,8 @@ class AdminSingleController
         $this->paymentManager       = $paymentManager;
         $this->participationManager = $participationManager;
         $this->session              = $session;
-
         
         $this->paymentSuggestionManager  = $paymentSuggestionManager;
-        $this->relatedParticipantsFinder = $relatedParticipantsFinder;
         $this->commentManager            = $commentManager;
     }
     
@@ -318,31 +306,46 @@ class AdminSingleController
         );
         $formRelated->handleRequest($request);
         if ($formRelated->isSubmitted() && $formRelated->isValid()) {
-            $oid = (int)$formRelated->get('oid')->getData();
+            $bid         = (int)$formRelated->get('bid')->getData();
+            $entityClass = $formRelated->get('entityClass')->getData();
+            $entityId    = (int)$formRelated->get('entityId')->getData();
+            $entity      = null;
+            /** @var Participant $relatedParticipant */
             $relatedParticipant = $formRelated->get('related')->getData();
 
-            $formRelatedUpdateFillout = function (\Traversable $fillouts) use (
-                $oid, $em, $event, $relatedParticipant, &$participationChanged
-            ) {
-                /** @var Fillout $fillout */
-                foreach ($fillouts as $fillout) {
-                    $filloutValue = $fillout->getValue();
-                    if ($fillout->getOid() === $oid && $filloutValue instanceof ParticipantFilloutValue) {
-                        $this->denyAccessUnlessGranted('participants_edit', $event);
-                        $filloutValue = $filloutValue->createWithParticipantSelected($relatedParticipant, false);
-                        $fillout->setValue($filloutValue->getRawValue());
-                        $em->persist($fillout);
-                        $participationChanged = true;
-                        return true;
+            switch ($entityClass) {
+                case Participation::class:
+                    if ($entityId === $participation->getPid()) {
+                        $entity = $participation;
+                    } else {
+                        throw new \InvalidArgumentException('Trying to update unexpected participation');
                     }
-                }
-                return false;
-            };
-            if (!$formRelatedUpdateFillout($participation->getAcquisitionAttributeFillouts())) {
-                foreach ($participation->getParticipants() as $participant) {
-                    if ($formRelatedUpdateFillout($participant->getAcquisitionAttributeFillouts())) {
-                        break;
+                    break;
+                case Participant::class:
+                    foreach ($participation->getParticipants() as $participant) {
+                        if ($entityId === $participant->getAid()) {
+                            $entity = $participant;
+                        }
                     }
+                    if (!$entity) {
+                        throw new \InvalidArgumentException('Trying to update unexpected participant');
+                    }
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unexpected class given');
+                    break;
+            }
+            if (!$entity instanceof EntityHavingCustomFieldValueInterface) {
+                throw new \InvalidArgumentException('Unexpected entity selected');
+            }
+            $customFieldValueContainer = $entity->getCustomFieldValues()->get($bid);
+            if ($customFieldValueContainer) {
+                $customFieldValue = $customFieldValueContainer->getValue();
+                if ($customFieldValue instanceof ParticipantDetectingCustomFieldValue) {
+                    $customFieldValue->setParticipantAid($relatedParticipant->getAid());
+                    $customFieldValue->setParticipantFirstName($relatedParticipant->getNameFirst());
+                    $customFieldValue->setParticipantLastName($relatedParticipant->getNameLast());
+                    $participationChanged = true;
                 }
             }
         }
@@ -361,7 +364,6 @@ class AdminSingleController
         }
 
         $statusFormatter = ParticipantStatus::formatter();
-        $foodFormatter   = new LabelFormatter();
 
         $phoneNumberList = array();
         /** @var PhoneNumber $phoneNumberEntity */
@@ -428,7 +430,6 @@ class AdminSingleController
                 'confirmedParticipants'              => $confirmedParticipants,
                 'unconfirmedParticipants'            => $unconfirmedParticipants,
                 'allParticipantsInactive'            => $allParticipantsInactive,
-                'foodFormatter'                      => $foodFormatter,
                 'statusFormatter'                    => $statusFormatter,
                 'phoneNumberList'                    => $phoneNumberList,
                 'formAction'                         => $formAction->createView(),
@@ -979,7 +980,6 @@ class AdminSingleController
      * @Route("/admin/event/{eid}/participant/{aid}", requirements={"eid": "\d+", "aid": "\d+"},
      *                                                name="admin_participant_detail")
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("fillout", class="AppBundle:Participant", options={"id" = "aid"})
      * @Security("is_granted('participants_read', event)")
      */
     public function participantDetailAction(Event $event, Participant $participant)
@@ -988,52 +988,4 @@ class AdminSingleController
             'event_participation_detail', ['eid' => $event->getEid(), 'pid' => $participant->getParticipation()->getPid()]
         );
     }
-
-    /**
-     * Get proposal
-     *
-     * @CloseSessionEarly
-     * @Route("/admin/event/{eid}/participant_proposal/{oid}", requirements={"eid": "\d+", "oid": "\d+"},
-     *                                                                  name="admin_event_participant_proposal")
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @ParamConverter("fillout", class="AppBundle\Entity\AcquisitionAttribute\Fillout", options={"id" = "oid"})
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function relatedParticipantProposalAction(Event $event, Fillout $fillout) {
-        $filloutValue = $fillout->getValue();
-        if (!$filloutValue instanceof ParticipantFilloutValue) {
-            throw new NotFoundHttpException('Provided fillout is not a participant fillout type');
-        }
-        $statusFormatter = ParticipantStatus::formatter();
-
-        /** @var RelatedParticipantsFinder $repository */
-        $finder       = $this->relatedParticipantsFinder;
-        $participants = $finder->proposedParticipants($fillout);
-
-        /** @var ParticipantFilloutValue $value */
-        $value = $fillout->getValue();
-
-        $result = [];
-        foreach ($participants as $participant) {
-            $participantStatusText = $statusFormatter->formatMask($participant->getStatus(true));
-            if ($participant->getDeletedAt()) {
-                $participantStatusText .= ' <span class="label label-danger">gelöscht</span>';
-            }
-    
-            $isSelected = $participant->getAid() === (int)$value->getSelectedParticipantId();
-    
-            $result[] = [
-                'aid'       => $participant->getAid(),
-                'firstName' => $participant->getNameFirst(),
-                'lastName'  => $participant->getNameLast(),
-                'age'       => $participant->getYearsOfLifeAtEvent(),
-                'status'    => $participantStatusText,
-                'selected'  => $isSelected,
-                'system'    => $isSelected && $value->isSystemSelection()
-            ];
-        }
-
-        return new JsonResponse(['rows' => $result, 'success' => true]);
-    }
-
 }

@@ -11,7 +11,6 @@
 namespace AppBundle\Entity\ChangeTracking;
 
 use AppBundle\Entity\EntityHavingPhoneNumbersInterface;
-use AppBundle\Form\EntityHavingFilloutsInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 

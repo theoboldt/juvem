@@ -14,6 +14,7 @@ namespace AppBundle\Export\Sheet;
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
+use AppBundle\Export\Sheet\Column\CustomFieldColumn;
 use AppBundle\Export\Sheet\Column\EntityAttributeColumn;
 use AppBundle\Export\Sheet\Column\EntityPhoneNumberSheetAttributeColumn;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -75,7 +76,10 @@ class EmployeesSheet extends AbstractSheet
     
         /** @var Attribute $attribute */
         foreach ($event->getAcquisitionAttributes(false, false, true, true, true) as $attribute) {
-            $this->addColumn(new EntityAttributeColumn('acq_field_' . $attribute->getBid(), $attribute->getManagementTitle()));
+            $column = new CustomFieldColumn(
+                'custom_field_' . $attribute->getBid(), $attribute->getManagementTitle(), $attribute, [], null
+            );
+            $this->addColumn($column);
         }
     }
     

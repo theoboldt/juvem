@@ -15,8 +15,9 @@ use AppBundle\Controller\DoctrineAwareControllerTrait;
 use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
 use AppBundle\Entity\ExportTemplate;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -25,8 +26,6 @@ use AppBundle\Entity\User;
 use AppBundle\Export\Customized\Configuration as ExcelConfiguration;
 use AppBundle\Export\Customized\CustomizedExport;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
-use AppBundle\Export\ParticipantsExport;
-use AppBundle\Export\ParticipantsMailExport;
 use AppBundle\Export\ParticipationsExport;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
@@ -165,10 +164,35 @@ class AdminMultipleExportController
         $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
         $participantList         = $participationRepository->participantsList($event);
     
+        $processor     = new Processor();
+        $configuration = new ExcelConfiguration($event);
+        
+        $config = ['export' => ['participant' => ['nameFirst' => true, 'nameLast' => false]]];
+
+        $processedConfiguration = $processor->processConfiguration($configuration, $config);
+
+        $processedConfigurationParticipantCustomField = null;
+        foreach ($processedConfiguration['participant']['customFieldValues'] as &$processedConfigurationParticipantCustomField) {
+            $processedConfigurationParticipantCustomField['enabled'] = true;
+        }
+        unset($processedConfigurationParticipantCustomField);
+
+
+        $processedConfigurationParticipationCustomField = null;
+        foreach ($processedConfiguration['participation']['customFieldValues'] as &$processedConfigurationParticipationCustomField) {
+            $processedConfigurationParticipationCustomField['enabled'] = true;
+            unset($processedConfigurationParticipationCustomField);
+        }
+        unset($processedConfigurationParticipationCustomField);
+        
         $user   = $this->getUser();
-        $export = new ParticipantsExport(
-            $this->twigGlobalCustomization, $event, $participantList,
-            ($user instanceof User) ? $user : null
+        $export = new CustomizedExport(
+            $this->twigGlobalCustomization,
+            $this->paymentManager,
+            $event, 
+            $participantList,
+            ($user instanceof User) ? $user : null,
+            $processedConfiguration
         );
         $export->setMetadata();
         $export->process();
@@ -250,42 +274,6 @@ class AdminMultipleExportController
         ResponseHelper::configureAttachment(
             $response,
             $event->getTitle() . ' - Teilnehmende.xlsx',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
-
-        return $response;
-    }
-
-    /**
-     * Page for list of participants of an event
-     *
-     * @CloseSessionEarly
-     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participants_mail/export", requirements={"eid": "\d+"},
-     *                                                    name="event_participants_mail_export")
-     * @Security("is_granted('participants_read', event)")
-     */
-    public function exportExcelParticipantsMailAction(Event $event)
-    {
-        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
-        $participantList         = $participationRepository->participantsList($event);
-        $participationsList      = $participationRepository->participationsList($event);
-
-        $user   = $this->getUser();
-        $export = new ParticipantsMailExport(
-            $this->twigGlobalCustomization, $event, $participantList, $participationsList, ($user instanceof User) ? $user : null
-        );
-        $export->setMetadata();
-        $export->process();
-
-        $response = new StreamedResponse(
-            function () use ($export) {
-                $export->write('php://output');
-            }
-        );
-        ResponseHelper::configureAttachment(
-            $response,
-            $event->getTitle() . ' - Anmeldungen.xlsx',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
 
@@ -608,8 +596,14 @@ class AdminMultipleExportController
 
         return function (Participant $entity, string $property) use ($accessor) {
             $value = $accessor->getValue($entity, $property);
-            if ($value instanceof Fillout) {
-                $value = $value->getValue()->getTextualValue();
+            
+            if ($value instanceof CustomFieldValueContainer) {
+                try {
+                    $customField = $entity->getEvent()->getAcquisitionAttribute($value->getCustomFieldId());
+                } catch (EventAcquisitionAttributeUnavailableException $e) {
+                    return $value->getValue()->getTextualValue();
+                }
+                return $customField->getTextualValue($value->getValue());
             }
             return $value;
         };

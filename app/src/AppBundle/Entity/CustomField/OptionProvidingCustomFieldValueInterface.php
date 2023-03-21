@@ -8,11 +8,12 @@
  * file that was distributed with this source code.
  */
 
+namespace AppBundle\Entity\CustomField;
 
-namespace AppBundle\Entity\AcquisitionAttribute;
-
-
-class RequestedFilloutNotFoundException extends \OutOfBoundsException
+interface OptionProvidingCustomFieldValueInterface
 {
-    protected $message = 'Requested fillout was not found';
+    /**
+     * @return int[]
+     */
+    public function getSelectedChoices(): array;
 }

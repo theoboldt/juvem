@@ -18,6 +18,8 @@ use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingAttributeConvertersIn
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingComparableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SpecifiesChangeTrackingStorableRepresentationInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\User;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -91,10 +93,23 @@ class ChangeTrackingListener
             $change->setOccurrenceDate($changes['modifiedAt'][1]);
         }
 
+        // might become a service later on
+        $customFieldChangeDetector = new CustomFieldValueContainerChangeDetector();
+
         foreach ($changes as $attribute => $values) {
             if ($attribute === 'deletedAt' || $attribute === 'modifiedAt'
                 || in_array($attribute, $entity::getExcludedAttributes())) {
                 //do not treat deletedAt changes as update
+                continue;
+            }
+            
+            if ($attribute === 'customFieldValues') {
+                $customFieldChangeDetector->detect(
+                    $entity,
+                    $this->getComparableCustomFieldValueCollectionRepresentation($values[0]),
+                    $this->getComparableCustomFieldValueCollectionRepresentation($values[1]),
+                    $change
+                );
                 continue;
             }
             $comparableBefore = $this->getComparableRepresentation($attribute, $entity, $values[0]);
@@ -109,13 +124,13 @@ class ChangeTrackingListener
                 $comparableBefore = (string)$comparableBefore;
                 $comparableAfter  = (string)$comparableAfter;
             }
-
+            
             if ($comparableBefore !== $comparableAfter) {
                 foreach ($values as $key => $value) {
                     if ($entity instanceof SpecifiesChangeTrackingAttributeConvertersInterface) {
                         $converters = $entity->getChangeTrackingAttributeConverters();
                         if (isset($converters[$attribute])) {
-                            $values[$key] = $result = call_user_func($converters[$attribute], $values[$key]);
+                            $values[$key] = call_user_func($converters[$attribute], $values[$key]);
                         }
                     }
                 }
@@ -130,7 +145,7 @@ class ChangeTrackingListener
             $this->changes->enqueue($change);
         }
     }
-
+    
     /**
      * On entity remove
      *
@@ -266,6 +281,26 @@ class ChangeTrackingListener
         }
     }
 
+    /**
+     * Create comparable custom field value collection representation
+     *
+     * @param null|array|CustomFieldValueCollection $value Value
+     * @return CustomFieldValueCollection
+     */
+    private function getComparableCustomFieldValueCollectionRepresentation(
+        $value
+    ): CustomFieldValueCollection {
+        if ($value === null) {
+            $value = [];
+        }
+        if (is_array($value)) {
+            return CustomFieldValueCollection::createFromArray($value);
+        } elseif ($value instanceof CustomFieldValueCollection) {
+            return $value;
+        } else {
+            throw new \RuntimeException('Unknown value for custom fields occurred: ' . json_encode($value));
+        }
+    }
 
     /**
      * Get a comparable representation for value
@@ -303,7 +338,7 @@ class ChangeTrackingListener
                         'attribute'   => $attribute,
                         'entityClass' => get_class($entity),
                         'entityId'    => $entity->getId(),
-                    ]
+                    ],
                 ]
             );
             $value = implode(', ', $value);
@@ -326,6 +361,12 @@ class ChangeTrackingListener
             return $value->getChangeTrackingStorableRepresentation();
         } elseif ($value instanceof \DateTimeInterface) {
             return $value->format(DATE_ATOM);
+        } elseif ($value instanceof CustomFieldValueContainer) {
+            $result = $value->getValue()->getTextualValue();
+            if ($value->hasComment()) {
+                $result .= "\nAnmerkung: ".$value->getComment();
+            }
+            return $result;
         } elseif (is_object($value)) {
             if (method_exists($value, '__toString')) {
                 return $value->__toString();

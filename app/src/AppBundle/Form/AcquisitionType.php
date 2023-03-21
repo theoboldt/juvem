@@ -26,24 +26,30 @@ class AcquisitionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $data     = isset($options['data']) ? $options['data'] : null;
+        $isSystem = $data instanceof Attribute && $data->isSystem();
 
+        if (!$isSystem) {
+            $builder->add(
+                'managementTitle',
+                TextType::class,
+                [
+                    'label'    => 'Titel (Intern)',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-management-title'],
+                ]
+            )->add(
+                'managementDescription',
+                TextType::class,
+                [
+                    'label'    => 'Beschreibung (Intern)',
+                    'required' => false,
+                    'attr'     => ['aria-describedby' => 'help-management-description'],
+                ]
+            );
+        }
+        
         $builder->add(
-            'managementTitle',
-            TextType::class,
-            [
-                'label'    => 'Titel (Intern)',
-                'required' => false,
-                'attr'     => ['aria-describedby' => 'help-management-title'],
-            ]
-        )->add(
-            'managementDescription',
-            TextType::class,
-            [
-                'label'    => 'Beschreibung (Intern)',
-                'required' => false,
-                'attr'     => ['aria-describedby' => 'help-management-description'],
-            ]
-        )->add(
             'formTitle',
             TextType::class,
             [
@@ -59,25 +65,31 @@ class AcquisitionType extends AbstractType
                 'required' => false,
                 'attr'     => ['aria-describedby' => 'help-form-description'],
             ]
-        )->add(
-            'fieldType',
-            ChoiceType::class,
-            [
-                'label'    => 'Typ',
-                'choices'  => [
-                    Attribute::LABEL_FIELD_TEXT        => TextType::class,
-                    Attribute::LABEL_FIELD_TEXTAREA    => TextareaType::class,
-                    Attribute::LABEL_FIELD_NUMBER      => NumberType::class,
-                    Attribute::LABEL_FIELD_CHOICE      => ChoiceType::class,
-                    Attribute::LABEL_FIELD_DATE        => DateType::class,
-                    Attribute::LABEL_FIELD_BANK        => BankAccountType::class,
-                    Attribute::LABEL_FIELD_GROUP       => GroupType::class,
-                    Attribute::LABEL_FIELD_PARTICIPANT => ParticipantDetectingType::class,
-                ],
-                'required' => true,
-                'attr'     => ['aria-describedby' => 'help-type'],
-            ]
-        )->add(
+        );
+            
+        if (!$isSystem) {
+            $builder->add(
+                'fieldType',
+                ChoiceType::class,
+                [
+                    'label'    => 'Typ',
+                    'choices'  => [
+                        Attribute::LABEL_FIELD_TEXT        => TextType::class,
+                        Attribute::LABEL_FIELD_TEXTAREA    => TextareaType::class,
+                        Attribute::LABEL_FIELD_NUMBER      => NumberType::class,
+                        Attribute::LABEL_FIELD_CHOICE      => ChoiceType::class,
+                        Attribute::LABEL_FIELD_DATE        => DateType::class,
+                        Attribute::LABEL_FIELD_BANK        => BankAccountType::class,
+                        Attribute::LABEL_FIELD_GROUP       => GroupType::class,
+                        Attribute::LABEL_FIELD_PARTICIPANT => ParticipantDetectingType::class,
+                    ],
+                    'required' => true,
+                    'attr'     => ['aria-describedby' => 'help-type'],
+                ]
+            );
+        }
+        
+        $builder->add(
             'useAtParticipation',
             CheckboxType::class,
             [
@@ -89,51 +101,57 @@ class AcquisitionType extends AbstractType
             CheckboxType::class,
             [
                 'label'    => 'Je Teilnehmer:in erfassen',
-                'required' => false
+                'required' => false,
             ]
         )->add(
             'useAtEmployee',
             CheckboxType::class,
             [
                 'label'    => 'Bei Mitarbeiter:innen erfassen',
-                'required' => false
+                'required' => false,
             ]
-        )->add(
-            'isRequired',
-            CheckboxType::class,
-            [
-                'label'    => 'Pflichtfeld',
-                'required' => false
-            ]
-        )->add(
-            'isCommentEnabled',
-            CheckboxType::class,
-            [
-                'label'    => 'Ergänzungen ermöglichen',
-                'required' => false
-            ]
-        )->add(
-            'isPublic',
-            CheckboxType::class,
-            [
-                'label'    => 'Sichtbarkeit',
-                'required' => false
-            ]
-        )->add(
-            'isMultipleChoiceType',
-            ChoiceType::class,
-            [
-                'label'      => 'Typ der Auswahl',
-                'label_attr' => ['class' => 'control-label required'],
-                //label_attr has to be defined here due to an error
-                'choices'    => [
-                    'Mehrere Optionen auswählbar' => 1,
-                    'Nur eine Option auswählbar'  => 0
-                ],
-                'mapped'     => true,
-                'required'   => false
-            ]
-        )->add(
+        );
+            
+        if (!$isSystem) {
+            $builder->add(
+                'isRequired',
+                CheckboxType::class,
+                [
+                    'label'    => 'Pflichtfeld',
+                    'required' => false,
+                ]
+            )->add(
+                'isCommentEnabled',
+                CheckboxType::class,
+                [
+                    'label'    => 'Ergänzungen ermöglichen',
+                    'required' => false,
+                ]
+            )->add(
+                'isPublic',
+                CheckboxType::class,
+                [
+                    'label'    => 'Sichtbarkeit',
+                    'required' => false,
+                ]
+            )->add(
+                'isMultipleChoiceType',
+                ChoiceType::class,
+                [
+                    'label'      => 'Typ der Auswahl',
+                    'label_attr' => ['class' => 'control-label required'],
+                    //label_attr has to be defined here due to an error
+                    'choices'    => [
+                        'Mehrere Optionen auswählbar' => 1,
+                        'Nur eine Option auswählbar'  => 0,
+                    ],
+                    'mapped'     => true,
+                    'required'   => false,
+                ]
+            );
+        }
+        
+        $builder->add(
             'choiceOptions',
             CollectionType::class,
             [
@@ -143,7 +161,7 @@ class AcquisitionType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true,
                 'attr'         => ['aria-describedby' => 'help-choice-options'],
-                'required'     => true
+                'required'     => true,
             ]
         )->add(
             'isPriceFormulaEnabled',

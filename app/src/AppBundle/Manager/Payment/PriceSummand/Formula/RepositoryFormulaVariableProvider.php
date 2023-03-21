@@ -5,7 +5,6 @@ namespace AppBundle\Manager\Payment\PriceSummand\Formula;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\Variable\EventSpecificVariable;
-use AppBundle\Entity\AcquisitionAttribute\Variable\VariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RepositoryFormulaVariableProvider implements FormulaVariableProviderInterface

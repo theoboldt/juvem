@@ -1,63 +1,27 @@
 $(function () {
     var g = {};
     $(g).bind('prototype-element.added', function (event, data) {
-        ensureLactoseFreeAnnotations();
         addElementHandlers(data.element);
         updateFieldProposals();
     });
 
     /**
-     * EVENT: Participate lactose-free food option force hint
+     * EVENT: Custom field choice options with description text
      */
-    var ensureLactoseFreeAnnotations = function () {
-        var lactoseFreeOption,
-            foodOptionFields = $('.food-options').first();
+    $('.custom-field input[type=\'checkbox\'][data-description]').each(function () {
+        let el = $(this),
+            elDiv = el.parent().parent(),
+            description = eHtml(el.data('description')),
+            buttonHtml = ' <button type="button" class="btn btn-default btn-xs btn-round" tabIndex="-1" data-custom-option="checkbox-popover">' +
+                '<span class="glyphicon glyphicon-question-sign"></span></button>';
 
-        if (foodOptionFields.length > 0) {
-            lactoseFreeOption = foodOptionFields.data('food-lactose-option');
-
-            $('.food-options div').each(function () {
-                var popover,
-                    button,
-                    element = $(this),
-                    input = element.find('input');
-
-                if (input.val() == lactoseFreeOption && !element.find('button').length) {
-                    element.append(' <button type="button" class="btn btn-default btn-xs btn-round" tabindex="-1">' +
-                        '<span class="glyphicon glyphicon-question-sign"></span>' +
-                        '</button>');
-                    button = element.find('button');
-
-                    popover = button.popover({
-                        content: 'Bitte geben Sie im Feld für <i>Medizinische Hinweise</i> detailierte Informationen zur Ausprägung der Unverträglichkeit an. Müssen konsequent laktosefreie Produkte verwendet werden (bspw. auch bei Schokoriegeln) oder ist es ausreichend auf laktosearme Produkte zu achten? Verwendet die angemeldete Person Laktase-Tabletten?',
-                        html: true,
-                        trigger: 'manual'
-                    });
-
-                    element.find('button').on('click', function (e) {
-                        e.preventDefault();
-                        popover.popover('show');
-                        return false;
-                    });
-
-                    popover.on('shown.bs.popover', function () {
-                        $('body').one('click', function () {
-                            if (button.next('div.popover:visible').length) {
-                                popover.popover('hide');
-                            }
-                        });
-                    });
-
-                    element.find('label input').on('click', function (e) {
-                        if ($(this).prop('checked') && !button.next('div.popover:visible').length) {
-                            popover.popover('show');
-                        }
-                    });
-                }
-            });
-        }
-    };
-    ensureLactoseFreeAnnotations();
+        elDiv.append(buttonHtml);
+        let elButton = elDiv.find('button');
+        elButton.popover({
+            content: description,
+            trigger: 'click|focus'
+        });
+    });
 
     var addElementHandlers = function (element) {
         if (!element) {
@@ -77,7 +41,7 @@ $(function () {
     };
 
     /**
-     * Add proposals for fillouts of autocomplete fields
+     * Add proposals for custom field values of autocomplete fields
      */
     var provideProposals = ($('[data-provide-proposals]').length > 0),
         proposals = [],

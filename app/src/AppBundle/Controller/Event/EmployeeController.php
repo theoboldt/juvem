@@ -16,7 +16,7 @@ use AppBundle\Controller\FlashBagAwareControllerTrait;
 use AppBundle\Controller\FormAwareControllerTrait;
 use AppBundle\Controller\RenderingControllerTrait;
 use AppBundle\Controller\RoutingControllerTrait;
-use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\PhoneNumber;
@@ -33,6 +33,7 @@ use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\ResponseHelper;
 use AppBundle\Security\EventVoter;
+use AppBundle\Twig\Extension\CustomFieldValue;
 use AppBundle\Twig\GlobalCustomization;
 use Doctrine\Persistence\ManagerRegistry;
 use libphonenumber\PhoneNumberUtil;
@@ -193,6 +194,11 @@ class EmployeeController
         $employeeEntities = $repository->findForEvent($event);
         $result           = [];
 
+        $customFieldValueExtension = $this->twig->getExtension(CustomFieldValue::class);
+        if (!$customFieldValueExtension instanceof CustomFieldValue) {
+            throw new \RuntimeException('Need to fetch '.CustomFieldValue::class.' from twig');
+        }
+
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         /** @var Employee $employee */
@@ -221,24 +227,18 @@ class EmployeeController
                 'email'     => $employee->getEmail(),
                 'status'    => $employeeStatus,
             ];
-            /** @var \AppBundle\Entity\AcquisitionAttribute\Fillout $fillout */
-            foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->getUseAtEmployee()) {
-                    continue;
-                }
-
-                $participantEntry['participation_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($employee->getCustomFieldValues() as $customFieldValueContainer) {
+                $participantEntry['custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $employee, false);
             }
-
-            foreach ($employee->getAcquisitionAttributeFillouts() as $fillout) {
-                if (!$fillout->getAttribute()->getUseAtEmployee()) {
-                    continue;
-                }
-                $participantEntry['participant_acq_field_' . $fillout->getAttribute()->getBid()]
-                    = $fillout->getTextualValue(AttributeChoiceOption::PRESENTATION_MANAGEMENT_TITLE);
+            /** @var CustomFieldValueContainer $customFieldValueContainer */
+            foreach ($employee->getCustomFieldValues() as $customFieldValueContainer) {
+                $participantEntry['custom_field_' . $customFieldValueContainer->getCustomFieldId()]
+                    = $customFieldValueExtension->customFieldValue($this->twig, $customFieldValueContainer, $employee, false);
             }
-
+            
             $result[] = $participantEntry;
         }
 

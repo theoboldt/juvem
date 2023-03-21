@@ -14,65 +14,132 @@ namespace AppBundle\Group;
 
 use AppBundle\Entity\AcquisitionAttribute\Attribute;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
+use AppBundle\Entity\CustomField\CustomFieldValueCollection;
+use AppBundle\Entity\CustomField\CustomFieldValueContainer;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr\Join;
 
 class AttributeChoiceOptionUsageDistribution
 {
-    
+
     /**
      * EntityManager
      *
      * @var EntityManagerInterface
      */
     private $em;
-    
+
     /**
      * Related attribute
      *
      * @var Attribute
      */
     private $attribute;
-    
+
     /**
      * Related event
      *
      * @var Event
      */
     private $event;
-    
+
     /**
      * distribution
      *
      * @var null
      */
     private $distribution = null;
-    
+
     /**
      * ChoiceOptionUsage constructor.
      *
-     * @param EntityManagerInterface $em Entity manager
-     * @param Event $event               Related event
-     * @param Attribute $attribute       Related attribute
+     * @param EntityManagerInterface $em        Entity manager
+     * @param Event                  $event     Related event
+     * @param Attribute              $attribute Related attribute
      */
     public function __construct(
         EntityManagerInterface $em,
-        Event $event,
-        Attribute $attribute
-    )
-    {
+        Event                  $event,
+        Attribute              $attribute
+    ) {
         $this->em        = $em;
         $this->event     = $event;
         $this->attribute = $attribute;
     }
-    
+
+    private function processEntityUsageCount(string $relatedClass): void
+    {
+        $bid = $this->attribute->getBid();
+
+        $qb = $this->em->createQueryBuilder();
+
+        switch ($relatedClass) {
+            case Participation::class:
+                $qb->select(['e.pid AS id', 'e.customFieldValues AS customFieldValues']);
+                $qb->from($relatedClass, 'e')
+                   ->andWhere($qb->expr()->eq('e.event', $this->event->getEid()));
+                break;
+            case Participant::class:
+                $qb->select(['a.aid AS id', 'a.customFieldValues AS customFieldValues']);
+                $qb->from(Participation::class, 'p')
+                   ->innerJoin('p.participants', 'a')
+                   ->andWhere($qb->expr()->eq('p.event', $this->event->getEid()));
+                break;
+            case Employee::class:
+                $qb->select(['e.gid AS id', 'e.customFieldValues AS customFieldValues']);
+                $qb->from($relatedClass, 'e')
+                   ->andWhere($qb->expr()->eq('e.event', $this->event->getEid()));
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown class ' . $relatedClass . ' transmitted');
+        }
+
+        $query = $qb->getQuery();
+        foreach ($query->execute() as $row) {
+            if (is_array($row['customFieldValues'])) {
+                $customFieldCollectionValues = [];
+                foreach ($row['customFieldValues'] as $customFieldValueData) {
+                    $customFieldCollectionValues[] = CustomFieldValueContainer::createFromArray(
+                        $customFieldValueData
+                    );
+                }
+                $customFieldValueCollection = new CustomFieldValueCollection($customFieldCollectionValues);
+                $customFieldValueContainer  = $customFieldValueCollection->get($bid);
+                if (!$customFieldValueContainer) {
+                    continue;
+                }
+                $customFieldValue = $customFieldValueContainer->getValue();
+                if ($customFieldValue instanceof GroupCustomFieldValue) {
+                    $groupId = $customFieldValue->getValue();
+                    if (!$groupId) {
+                        continue;
+                    }
+                    
+                    /** @var FetchedChoiceOptionUsage $usage */
+                    $usage = $this->distribution[$groupId];
+
+                    switch ($relatedClass) {
+                        case Participation::class:
+                            $usage->addParticipationId($row['id']);
+                            break;
+                        case Participant::class:
+                            $usage->addParticipantId($row['id']);
+                            break;
+                        case Employee::class:
+                            $usage->addEmployeeId($row['id']);
+                            break;
+                        default:
+                            throw new \InvalidArgumentException('Unknown class ' . $relatedClass . ' transmitted');
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Fetch counts for usage from database
      */
@@ -81,100 +148,31 @@ class AttributeChoiceOptionUsageDistribution
         if ($this->distribution !== null) {
             return;
         }
-        
-        $bid = $this->attribute->getBid();
-        $qb  = $this->em->createQueryBuilder();
-        $qb->select(
-            [
-                'p.pid AS pid',
-                'a.aid AS aid',
-                'g.gid AS gid',
-                'f.value AS value',
-            ]
-        )
-           ->from(Fillout::class, 'f')
-           ->leftJoin('f.participation', 'p')
-           ->leftJoin('f.participant', 'a')
-           ->leftJoin('a.participation', 'ap')
-           ->leftJoin('f.employee', 'g')
-           ->andWhere($qb->expr()->eq('f.attribute', $bid));
-        
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'p.pid IS NULL',
-                $qb->expr()->eq('p.event', $this->event->getEid())
-            
-            )
-        );
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'a.aid IS NULL',
-                $qb->expr()->eq('ap.event', $this->event->getEid())
-            
-            )
-        );
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'g.gid IS NULL',
-                $qb->expr()->eq('g.event', $this->event->getEid())
-            
-            )
-        );
-        $qb->andWhere('f.value is NOT NULL AND f.value <> \'\'');
-        
-        $query = $qb->getQuery();
-        
         $this->distribution = [];
-        foreach ($query->execute() as $row) {
-            if (empty($row['value'])) {
-                continue;
-            }
-            $value = Fillout::convertRawValueForField($this->attribute, $row['value']);
-            if (!$value instanceof GroupFilloutValue) {
-                throw new \InvalidArgumentException('Unexpected value type occured');
-            }
-            $groupId = $value->getGroupId();
-            if (!isset($this->distribution[$groupId])) {
-                /** @var AttributeChoiceOption $choiceOption */
-                $choice = null;
-                foreach ($this->attribute->getChoiceOptions() as $choiceOption) {
-                    if ($groupId === $choiceOption->getId()) {
-                        $choice = $choiceOption;
-                        break;
-                    }
-                }
-                if (!$choice) {
-                    throw new \InvalidArgumentException('Required choice option with id "' . $groupId . '" not found');
-                }
-                $this->distribution[$groupId] = new FetchedChoiceOptionUsage($choice);
-            }
-            /** @var FetchedChoiceOptionUsage $usage */
-            $usage = $this->distribution[$groupId];
-            
-            if ($row['pid']) {
-                $usage->addParticipationId($row['pid']);
-            }
-            if ($row['aid']) {
-                $usage->addParticipantId($row['aid']);
-            }
-            if ($row['gid']) {
-                $usage->addEmployeeId($row['gid']);
-            }
-        }
-    
+
         foreach ($this->attribute->getChoiceOptions() as $choiceOption) {
             $choiceOptionId = $choiceOption->getId();
             if (!isset($this->distribution[$choiceOptionId])) {
                 $this->distribution[$choiceOptionId] = new FetchedChoiceOptionUsage($choiceOption);
             }
         }
-        
+
+        if ($this->attribute->getUseAtParticipation()) {
+            $this->processEntityUsageCount(Participation::class);
+        }
+        if ($this->attribute->getUseAtParticipant()) {
+            $this->processEntityUsageCount(Participant::class);
+        }
+        if ($this->attribute->getUseAtEmployee()) {
+            $this->processEntityUsageCount(Employee::class);
+        }
+
         /** @var FetchedChoiceOptionUsage $usage */
         foreach ($this->distribution as $usage) {
             $usage->freeze();
         }
     }
-    
+
     /**
      * Get full distribution details
      *
@@ -185,7 +183,7 @@ class AttributeChoiceOptionUsageDistribution
         $this->ensureFetched();
         return $this->distribution;
     }
-    
+
     /**
      * Get distribution for transmitted option
      *

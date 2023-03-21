@@ -1,0 +1,35 @@
+<div class="form-group custom-field acquisition-attribute acquisition-attribute-deprecated {% if formField.vars.errors|length %}has-error{% endif %} field-{{ formField.vars.custom_field.fieldType|replace({"\\": '-'})|lower }}">
+    {{ form_label(formField) }}
+    {% if not formField.vars.custom_field.isPublic %}
+        {{ 'lock'|glyph('Dieses Feld wird nur intern und nicht in der öffentlichen Anmeldung angezeigt') }}
+    {%- endif -%}
+    {%- if formField.vars.custom_field.formDescription -%}
+        <p class="help-block">{{ formField.vars.custom_field.formDescription }}</p>
+    {%- endif -%}
+{#         
+  {% if formField.value %}
+    <div class="form-group {% if not formField.value.vars.valid %} has-error{% endif %}">
+      {{ form_widget(formField.value) }}
+      {{ form_errors(formField.value) }}
+    </div>
+  {% endif %}
+#}
+  {# 
+  {% if formField.comment %}
+    <div class="form-group {% if not formField.comment.vars.valid %} has-error{% endif %}">
+      {{ form_label(formField.comment) }}
+      <p class="help-block">
+        Hier können schriftliche Ergänzungen zum Feld <i>{{ formField.vars.custom_field.formTitle }}</i> gemacht werden
+        {%- if formField.vars.custom_field.isChoiceType -%}
+          , falls beispielsweise die Optionen die zur Auswahl stehen ihren Fall nicht gut abdecken.
+        {%- endif -%}
+        .
+      </p>
+      {{ form_widget(formField.comment) }}
+      {{ form_errors(formField.comment) }}
+    </div>
+  {% endif %}
+ #}
+    {{ form_widget(formField) }}
+    {{ form_errors(formField) }}
+</div>

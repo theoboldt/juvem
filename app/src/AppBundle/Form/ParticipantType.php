@@ -10,10 +10,9 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
-use AppBundle\Form\Transformer\FoodTransformer;
+use AppBundle\Form\CustomField\CustomFieldValuesType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -25,19 +24,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantType extends AbstractType
 {
-   use AcquisitionAttributeIncludingTypeTrait;
-
     const PARTICIPATION_FIELD = 'participation';
 
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
     const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
-    
+
     /**
      * @var string[]
      */
     private $excludedGenderChoices = [];
-    
+
     /**
      * ParticipantType constructor.
      *
@@ -50,16 +47,15 @@ class ParticipantType extends AbstractType
             $this->excludedGenderChoices = $excludedGenderChoices;
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $foodMask   = new ParticipantFood();
-        $foodLabels = $foodMask->labels();
-        unset($foodLabels[ParticipantFood::TYPE_FOOD_VEGAN]);
-    
+        /** @var Participant $participant */
+        $participant = $options['data'] ?? null;
+        
         $genderChoices = [
             ''                                     => '',
             Participant::LABEL_GENDER_FEMALE       => Participant::LABEL_GENDER_FEMALE,
@@ -74,7 +70,7 @@ class ParticipantType extends AbstractType
                 unset($genderChoices[$excludedGenderChoice]);
             }
         }
-        
+
         $builder
             ->add(
                 'nameFirst',
@@ -105,7 +101,7 @@ class ParticipantType extends AbstractType
                     //                      'format' => 'yyyy-MM-dd',
                     'format'   => 'dd.MM.yyyy',
                     'required' => true,
-                    'attr'     => ['class' => 'form-date']
+                    'attr'     => ['class' => 'form-date'],
                 ]
             )
             ->add(
@@ -127,38 +123,26 @@ class ParticipantType extends AbstractType
                  'empty_data' => '',
                  //may not work due to issue https://github.com/symfony/symfony/issues/5906
                 ]
-            )
-            ->add(
-                'food',
-                ChoiceType::class,
-                [
-                    'label'    => 'Ernährung',
-                    'choices'  => array_flip($foodLabels),
-                    'expanded' => true,
-                    'multiple' => true,
-                    'required' => false,
-                    'attr'     => [
-                        'aria-describedby'         => 'help-food',
-                        'class'                    => 'food-options',
-                        'data-food-lactose-option' => ParticipantFood::TYPE_FOOD_LACTOSE_FREE,
-                    ],
-                ]
             );
 
         /** @var Participation $participation */
-        $participation        = $options[self::PARTICIPATION_FIELD];
-        $event                = $participation->getEvent();
-        $attributes           = $event->getAcquisitionAttributes(
-            false, true, false, $options[self::ACQUISITION_FIELD_PRIVATE], $options[self::ACQUISITION_FIELD_PUBLIC]
-        );
+        $participation = $options[self::PARTICIPATION_FIELD];
+        $event         = $participation->getEvent();
 
-        $this->addAcquisitionAttributesToBuilder(
-            $builder,
-            $attributes,
-            isset($options['data']) ? $options['data'] : null
+        $builder->add(
+            'customFieldValues',
+            CustomFieldValuesType::class,
+            [
+                'by_reference'                                => true,
+                'mapped'                                      => true,
+                'cascade_validation'                          => true,
+                CustomFieldValuesType::ENTITY_OPTION          => $participant,
+                CustomFieldValuesType::RELATED_CLASS_OPTION   => Participant::class,
+                CustomFieldValuesType::RELATED_EVENT          => $event,
+                CustomFieldValuesType::INCLUDE_PRIVATE_OPTION => $options[self::ACQUISITION_FIELD_PRIVATE],
+                CustomFieldValuesType::INCLUDE_PUBLIC_OPTION  => $options[self::ACQUISITION_FIELD_PUBLIC],
+            ]
         );
-
-        $builder->get('food')->addModelTransformer(new FoodTransformer());
     }
 
     /**

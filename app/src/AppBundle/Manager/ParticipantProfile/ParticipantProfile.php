@@ -13,10 +13,10 @@ namespace AppBundle\Manager\ParticipantProfile;
 
 use AppBundle\Controller\Event\Participation\AdminMultipleExportController;
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\ChoiceFilloutValue;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
-use AppBundle\Entity\AcquisitionAttribute\GroupFilloutValue;
 use AppBundle\Entity\CommentBase;
+use AppBundle\Entity\CustomField\ChoiceCustomFieldValue;
+use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
+use AppBundle\Entity\CustomField\GroupCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\PhoneNumber;
@@ -24,6 +24,8 @@ use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpWord\Element\Section;
+use PhpOffice\PhpWord\Element\Text;
+use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
@@ -41,6 +43,8 @@ class ParticipantProfile
     const STYLE_FONT_LABEL = 'LabelF';
 
     const STYLE_FONT_NONE = 'NoneF';
+
+    const STYLE_FONT_CUSTOM_FIELD_COMMENT = 'CustomCommentF';
 
     const STYLE_PARAGRAPH_COMMENT = 'CommentP';
 
@@ -372,7 +376,7 @@ class ParticipantProfile
             self::STYLE_FONT_LIST_END, ['size' => 2, 'spaceAfter' => 0]
         );
 
-        //fillout attribute description style
+        //custom field description style
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_DESCRIPTION,
             ['spaceBefore' => 10, 'spaceAfter' => 10, 'keepNext' => true, 'marginLeft' => 400, 'marginRight' => 600]
@@ -381,14 +385,22 @@ class ParticipantProfile
             self::STYLE_FONT_DESCRIPTION,
             ['size' => $this->getStyleSetting('description_font_size'), 'color' => '333333', 'spaceAfter' => 10]
         );
-
-        //none fillout value style
+        
+        //custom field value style
         $document->addFontStyle(
             self::STYLE_FONT_NONE,
             [
                 'size' => $this->getStyleSetting('description_font_size'), 'color' => '666666', 'italic' => true
             ]
         );
+        //custom field value comment style
+        $document->addFontStyle(
+            self::STYLE_FONT_CUSTOM_FIELD_COMMENT,
+            [
+                'italic' => true
+            ]
+        );
+
 
         //label style
         $document->addFontStyle(
@@ -521,80 +533,104 @@ class ParticipantProfile
     }
 
     /**
-     * Add transmitted fillouts to transmitted section
+     * Add transmitted custom field values to transmitted section
      *
-     * @param array|Fillout[] $fillouts List of fillouts
-     * @param Section $section          Document
+     * @param EntityHavingCustomFieldValueInterface $entity  Entity providing custom field values
+     * @param Section                               $section Document
      */
-    private function addFilloutsToSection(array $fillouts, Section $section): void
-    {
-        /** @var Fillout $fillout */
-        foreach ($fillouts as $fillout) {
-            $attribute = $fillout->getAttribute();
+    private function addCustomFieldValuesToSection(
+        EntityHavingCustomFieldValueInterface $entity,
+        Section                               $section
+    ): void {
+        $customFieldValueCollection = $entity->getCustomFieldValues();
+        $customFields               = $entity->getEvent()->getCustomFieldsForEntity(
+            $entity,
+            $this->isConfigurationEnabled('general', 'includePrivate'),
+            true
+        );
 
-            if (!$this->isConfigurationEnabled('general', 'includePrivate') && $attribute->isPublic()) {
+        foreach ($customFields as $customField) {
+            if ($customField->isDeleted()) {
                 continue;
             }
-            $title       = $attribute->getManagementTitle();
-            $description = $attribute->getManagementDescription();
+            
+            $title       = $customField->getManagementTitle();
+            $description = $customField->getManagementDescription();
 
-            if (!$attribute->isPublic()) {
+            if (!$customField->isPublic()) {
                 $title .= "\xc2\xa0\u{1f512}";
+            }
+            if ($customField->isArchived()) {
+                $title .= "\xc2\xa0\u{1f4c1}";
             }
 
             $this->addDatumTitle($section, $title, $description);
 
-            $value = $fillout->getValue();
-            if ($value instanceof GroupFilloutValue) {
-                $choices = $value->getSelectedChoices();
-                if (count($choices)) {
-                    /** @var AttributeChoiceOption $choice */
-                    $choice    = reset($choices);
-                    $groupLink = $this->urlGenerator->generate(
-                        'admin_event_group_detail',
-                        [
-                            'bid' => $attribute->getBid(),
-                            'eid' => $this->getEvent()->getEid(),
-                            'cid' => $choice->getId(),
-                        ],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    );
-                    $table     = $section->addTable(
-                        [
-                            'unit'  => TblWidth::PERCENT,
-                            'width' => 100 * 50,
-                        ]
-                    );
-                    $row       = $table->addRow();
-                    $cell      = $row->addCell();
-                    $cell->addLink($groupLink, $choice->getManagementTitle(true));
+            $customFieldValueContainer = $customFieldValueCollection->getByCustomField($customField);
+            $customFieldValue          = $customFieldValueContainer->getValue();
 
-                    $cell = $row->addCell();
-                    $run  = $cell->addTextRun();
-                    $run->addImage(
-                        $this->temporaryBarCodeGenerator->createCode('url:' . $groupLink, $this->getStyleSetting('group_qr_code_size')),
-                        [
-                            'width'         => $this->getStyleSetting('group_qr_code_image_size'),
-                            'height'        => $this->getStyleSetting('group_qr_code_image_size'),
-                            'positioning'   => 'relative',
-                            'marginTop'     => 0,
-                            'marginLeft'    => 1,
-                            'wrappingStyle' => 'tight'
-                        ]
-                    );
+            $textrun = null;
+            if ($customFieldValue instanceof GroupCustomFieldValue) {
+                $choiceIds = $customFieldValue->getSelectedChoices();
+                if (count($choiceIds)) {
+                    /** @var AttributeChoiceOption $choice */
+                    $choiceId = reset($choiceIds);
+                    $choice   = $customField->getChoiceOption($choiceId);
+                    if ($choice) {
+                        $groupLink = $this->urlGenerator->generate(
+                            'admin_event_group_detail',
+                            [
+                                'bid' => $customField->getBid(),
+                                'eid' => $this->getEvent()->getEid(),
+                                'cid' => $choice->getId(),
+                            ],
+                            UrlGeneratorInterface::ABSOLUTE_URL
+                        );
+                        $table     = $section->addTable(
+                            [
+                                'unit'  => TblWidth::PERCENT,
+                                'width' => 100 * 50,
+                            ]
+                        );
+                        $row       = $table->addRow();
+                        $cell      = $row->addCell();
+                        $cell->addLink($groupLink, $choice->getManagementTitle(true));
+
+                        $cell = $row->addCell();
+                        $run  = $cell->addTextRun();
+                        $run->addImage(
+                            $this->temporaryBarCodeGenerator->createCode(
+                                'url:' . $groupLink, $this->getStyleSetting('group_qr_code_size')
+                            ),
+                            [
+                                'width'         => $this->getStyleSetting('group_qr_code_image_size'),
+                                'height'        => $this->getStyleSetting('group_qr_code_image_size'),
+                                'positioning'   => 'relative',
+                                'marginTop'     => 0,
+                                'marginLeft'    => 1,
+                                'wrappingStyle' => 'tight',
+                            ]
+                        );
+                    } else {
+                        $section->addText($choiceId.' (Unbekannte Auswahl)', self::STYLE_FONT_NONE);
+                    }
                 } else {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 }
-            } elseif ($value instanceof ChoiceFilloutValue) {
-                $choices  = $attribute->getChoiceOptions();
-                $selected = $value->getSelectedChoices();
+            } elseif ($customFieldValue instanceof ChoiceCustomFieldValue) {
+                $choices  = $customField->getChoiceOptions();
+                $choicesSelected = [];
+                foreach ($customFieldValue->getSelectedChoices() as $choiceId) {
+                    $choice                     = $customField->getChoiceOption($choiceId);
+                    $choicesSelected[$choiceId] = $choice ?? $choiceId;
+                }
 
-                if (!count($selected) && !$this->isConfigurationEnabled('choices', 'includeNotSelected')) {
+                if (!count($choicesSelected) && !$this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                     $section->addText('(Keine Auswahl)', self::STYLE_FONT_NONE);
                 } else {
-                    if ($attribute->isMultipleChoiceType() || $this->isConfigurationEnabled('choices', 'includeNotSelected')) {
+                    if ($customField->isMultipleChoiceType() || $this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                         foreach ($choices as $choice) {
-                            if (isset($selected[$choice->getId()])) {
+                            if (isset($choicesSelected[$choice->getId()])) {
                                 $fontStyleLabel     = self::STYLE_FONT_LABEL;
                                 $listStyle          = self::STYLE_LIST;
                                 $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
@@ -625,15 +661,33 @@ class ParticipantProfile
                                 );
                             }
                         }
-                        $section->addText("\xc2\xa0", self::STYLE_FONT_LIST_END, self::STYLE_PARAGRAPH_LIST_END);
+                        if (!$customFieldValueContainer->hasComment()) {
+                            //not needed if comment is following
+                            $section->addText("\xc2\xa0", self::STYLE_FONT_LIST_END, self::STYLE_PARAGRAPH_LIST_END);
+                        }
                     } else {
-                        $choice = reset($selected);
-                        $section->addText($choice->getManagementTitle(true));
+                        $choice = reset($choicesSelected);
+                        $section->addText(
+                            $choice instanceof AttributeChoiceOption ? $choice->getManagementTitle(true) : $choice
+                        );
                     }
                 }
             } else {
                 $textrun = $section->addTextRun();
-                $textrun->addText($fillout->getValue()->getTextualValue());
+                $textrun->addText($customFieldValue->getTextualValue());
+            }
+
+            if ($customFieldValueContainer->hasComment()) {
+                //configure keep next at previous text run
+                if ($textrun instanceof Text || $textrun instanceof TextRun) {
+                    $textrunStyle = $textrun->getParagraphStyle();
+                    if (!is_string($textrunStyle)) {
+                        $textrunStyle->setKeepNext(true);
+                    }
+                }
+
+                $textrun = $section->addTextRun();
+                $textrun->addText($customFieldValueContainer->getComment(), self::STYLE_FONT_CUSTOM_FIELD_COMMENT);
             }
         }
     }
@@ -870,9 +924,8 @@ class ParticipantProfile
             }
             $this->addDatum($section, 'Medizinische Hinweise', $participant->getInfoMedical());
             $this->addDatum($section, 'Allgemeine Hinweise', $participant->getInfoGeneral());
-            $this->addDatum($section, 'Ernährung', implode(', ', $participant->getFood(true)->getActiveList(true)));
 
-            $this->addFilloutsToSection($participant->getAcquisitionAttributeFillouts()->toArray(), $section);
+            $this->addCustomFieldValuesToSection($participant, $section);
 
             //participations data
             $section = $this->addSection($document);
@@ -901,7 +954,7 @@ class ParticipantProfile
 
             $this->addDatum($section, 'Eingang', $participant->getCreatedAt()->format(Event::DATE_FORMAT_DATE_TIME));
 
-            $this->addFilloutsToSection($participation->getAcquisitionAttributeFillouts()->toArray(), $section);
+            $this->addCustomFieldValuesToSection($participation, $section);
 
             $section = $this->addSection($document);
             $section->addTitle('Telefonnummern', 3);

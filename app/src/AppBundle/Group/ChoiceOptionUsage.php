@@ -13,7 +13,6 @@ namespace AppBundle\Group;
 
 
 use AppBundle\Entity\AcquisitionAttribute\AttributeChoiceOption;
-use AppBundle\Entity\AcquisitionAttribute\Fillout;
 use AppBundle\Entity\Employee;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -94,8 +93,8 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
      * @param AttributeChoiceOption $choiceOption Related choice option
      */
     public function __construct(
-        EntityManager $em,
-        Event $event,
+        EntityManager         $em,
+        Event                 $event,
         AttributeChoiceOption $choiceOption
     ) {
         $this->em           = $em;
@@ -111,68 +110,13 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
         if ($this->participationIds !== null) {
             return;
         }
-        $bid = $this->choiceOption->getAttribute()->getBid();
-        $qb  = $this->em->createQueryBuilder();
-        $qb->select(
-            [
-                'p.pid AS pid',
-                'a.aid AS aid',
-                'g.gid AS gid',
-            ]
-        )
-           ->from(Fillout::class, 'f')
-           ->leftJoin('f.participation', 'p')
-           ->leftJoin('f.participant', 'a')
-           ->leftJoin('a.participation', 'ap')
-           ->leftJoin('f.employee', 'g')
-           ->andWhere($qb->expr()->eq('f.attribute', $bid))
-           ->andWhere(
-               $qb->expr()->orX(
-                   $qb->expr()->eq('f.value', ':option'),
-                   $qb->expr()->like('f.value', ':likeOption')
-               )
-           )
-           ->setParameter('option', $this->choiceOption->getId())
-           ->setParameter('likeOption', "'%\'" . $this->choiceOption->getId() . "\'%'");
-
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'p.pid IS NULL',
-                $qb->expr()->eq('p.event', $this->event->getEid())
-
-            )
+        $attributeChoiceOptionUsage = new AttributeChoiceOptionUsageDistribution(
+            $this->em, $this->event, $this->choiceOption->getAttribute()
         );
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'a.aid IS NULL',
-                $qb->expr()->eq('ap.event', $this->event->getEid())
-
-            )
-        );
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'g.gid IS NULL',
-                $qb->expr()->eq('g.event', $this->event->getEid())
-
-            )
-        );
-
-        $query = $qb->getQuery();
-
-        $this->participationIds = [];
-        $this->participantIds   = [];
-        $this->employeeIds      = [];
-        foreach ($query->execute() as $row) {
-            if ($row['pid']) {
-                $this->participationIds[] = $row['pid'];
-            }
-            if ($row['aid']) {
-                $this->participantIds[] = $row['aid'];
-            }
-            if ($row['gid']) {
-                $this->employeeIds[] = $row['gid'];
-            }
-        }
+        $optionDistribution         = $attributeChoiceOptionUsage->getOptionDistribution($this->choiceOption);
+        $this->participationIds     = $optionDistribution->getParticipationIds();
+        $this->participantIds       = $optionDistribution->getParticipantIds();
+        $this->employeeIds          = $optionDistribution->getEmployeeIds();
     }
 
     /**
@@ -186,9 +130,10 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
     }
 
     /**
-     * Get all assigned @see Participation
+     * Get all assigned @return Participation[]|array
      *
-     * @return Participation[]|array
+     * @see Participation
+     *
      */
     public function getParticipations(): array
     {
@@ -226,9 +171,10 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
     }
 
     /**
-     * Get all assigned @see Participant
+     * Get all assigned @return Participant[]|array
      *
-     * @return Participant[]|array
+     * @see Participant
+     *
      */
     public function getParticipants(): array
     {
@@ -287,9 +233,10 @@ class ChoiceOptionUsage implements ChoiceOptionUsageInterface
     }
 
     /**
-     * Get all assigned @see Employee
+     * Get all assigned @return Employee[]|array
      *
-     * @return Employee[]|array
+     * @see Employee
+     *
      */
     public function getEmployees()
     {

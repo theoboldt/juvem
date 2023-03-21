@@ -29,7 +29,7 @@ class AttendanceListType extends AbstractType
                 'startDate',
                 DateType::class,
                 ['label'    => 'Datum',
-                 'years'    => range(Date('Y') - 2, Date('Y') + 2),
+                 'years'    => range(Date('Y') - 2, (int)Date('Y') + 2),
                  'format'   => 'dd.MM.yyyy',
                  'required' => false,
                 ]

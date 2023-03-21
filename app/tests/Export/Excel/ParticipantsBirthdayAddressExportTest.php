@@ -12,7 +12,6 @@
 namespace Tests\Export\Excel;
 
 
-use AppBundle\BitMask\ParticipantFood;
 use AppBundle\Entity\Participant;
 use AppBundle\Export\ParticipantsBirthdayAddressExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -32,7 +31,6 @@ class ParticipantsBirthdayAddressExportTest extends ExportTestCase
         $participant1->setNameLast('Doe');
         $participant1->setNameFirst('Testchild');
         $participant1->setBirthday(new \DateTime('2000-01-01 10:00:00'));
-        $participant1->setFood(new ParticipantFood(4));
         $participant1->setGender(Participant::LABEL_GENDER_FEMALE);
         $participant1->setInfoGeneral('Nothing special to know');
         $participant1->setInfoMedical('No medication needed');
@@ -42,7 +40,6 @@ class ParticipantsBirthdayAddressExportTest extends ExportTestCase
         $participant2->setNameLast('Doe');
         $participant2->setNameFirst('Secondchild');
         $participant2->setBirthday(new \DateTime('2000-01-10 10:00:00'));
-        $participant2->setFood(new ParticipantFood(4 + 2 + 8));
         $participant2->setGender(Participant::LABEL_GENDER_MALE);
         $participation1->addParticipant($participant2);
 
@@ -50,7 +47,6 @@ class ParticipantsBirthdayAddressExportTest extends ExportTestCase
         $participant3->setNameLast('Doe');
         $participant3->setNameFirst('Thirdchild');
         $participant3->setBirthday(new \DateTime('2000-01-15 10:00:00'));
-        $participant3->setFood(new ParticipantFood(2));
         $participant3->setGender(Participant::LABEL_GENDER_MALE);
         $participation1->addParticipant($participant3);
 

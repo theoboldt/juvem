@@ -13,8 +13,7 @@
             <th data-field="nameLast" data-sortable="true">Nachname</th>
             <th data-field="nameFirst" data-sortable="true">Vorname</th>
             {% for attribute in event.getAcquisitionAttributes(false, false, true, true, true) %}
-                <th data-field="acq_field_{{ attribute.getBid }}" data-sortable="true"
-                    data-visible="false">
+                <th data-field="custom_field_{{ attribute.getBid }}" data-sortable="true" data-visible="false">
                     <abbr title="{{ attribute.managementDescription }}">{{ attribute.managementTitle }}</abbr>
                 </th>
             {% endfor %}
