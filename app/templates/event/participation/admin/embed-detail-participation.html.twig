@@ -59,6 +59,20 @@
     {% endfor %}
     <dt title="Eingang der Anmeldung" data-toggle="tooltip" data-placement="right">Eingang</dt>
     <dd>{{ participation.createdAt|date("d.m.Y H:i") }}</dd>
+    <dt>Letzte Änderung</dt>
+    <dd>
+      {%- if participation.createdAt.format('U') == participation.modifiedAt.format('U') -%}
+        <i data-toggle="tooltip" data-placement="bottom" title="{{ participation.modifiedAt|date("d.m.Y H:i:s") }}">
+          (keine)
+        </i>
+      {%- else -%}
+        {{ participation.modifiedAt|date("d.m.Y") }}
+        <span data-toggle="tooltip" data-placement="bottom" title="{{ participation.modifiedAt|date("H:i:s") }}">
+          {{ participation.modifiedAt|date("H:i") }}
+        </span>
+      {%- endif -%}
+    </dd>
+
     <dt title="Ist die Anmeldung mit einem Benutzerkonto verknüpft, ist dieses hier angegeben"
         data-toggle="tooltip" data-placement="right">
       Benutzerkonto

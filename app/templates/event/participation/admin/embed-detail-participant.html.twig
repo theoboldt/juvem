@@ -70,7 +70,30 @@
                 {% endif -%}
             </dd>
         {% endif -%}
-        {% if similarParticipants -%}
+        <dt>Bestätgung</dt>
+        <dd>
+            {% if participant.confirmed %}bestätigt{%- endif -%}
+            {%- if participant.confirmationSentAt -%}
+                {% if not participant.confirmed %}momentan unbestätigt, zwischenzeitlich{% else %}, {% endif %}
+                <span data-toggle="tooltip" data-placement="top"
+                      title="{% if participant.confirmationSentAt|date("U") != "946717200" %}Benachrichtigung versandt am {{ participant.confirmationSentAt|date("d.m.Y H:i") }}{% else %}Zeitpunkt der Benachrichtigung unbekannt{% endif %}"
+                >benachrichtigt</span>
+            {% else %}
+                unbestätigt
+            {% endif %}
+        </dd>
+        <dt>Letzte Änderung</dt>
+        <dd>
+            {%- if participant.createdAt.format('U') == participant.modifiedAt.format('U') -%}
+                <i data-toggle="tooltip" data-placement="bottom"
+                   title="{{ participant.modifiedAt|date("d.m.Y H:i:s") }}">
+                    (keine)
+                </i>
+            {%- else -%}
+                {{ participant.modifiedAt|date("d.m.Y H:i:s") }}
+            {%- endif -%}
+        </dd>
+    {% if similarParticipants -%}
         <dt>Weitere Teilnahmen</dt>
         <dd class="participant-additional-occurrences">
             {% if similarParticipants[participant.aid]|length == 0 %}
@@ -85,18 +108,6 @@
             {% endfor %}
         </dd>
         {% endif %}
-        <dt>Bestätgung</dt>
-        <dd>
-            {% if participant.confirmed %}bestätigt{%- endif -%}
-            {%- if participant.confirmationSentAt -%}
-                {% if not participant.confirmed %}momentan unbestätigt, zwischenzeitlich{% else %}, {% endif %}
-                <span data-toggle="tooltip" data-placement="top"
-                      title="{% if participant.confirmationSentAt|date("U") != "946717200" %}Benachrichtigung versandt am {{ participant.confirmationSentAt|date("d.m.Y H:i") }}{% else %}Zeitpunkt der Benachrichtigung unbekannt{% endif %}"
-                >benachrichtigt</span>
-            {% else %}
-                unbestätigt
-            {% endif %}
-        </dd>
     </dl>
 </div>
 <div class="col-xs-12 status-label-list">
