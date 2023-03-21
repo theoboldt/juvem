@@ -71,10 +71,19 @@
                                             {{ employee.email }}
                                         </address>
                                     </dd>
-                                    {% for fillout in employee.acquisitionAttributeFillouts %}
-                                        {% if fillout.attribute.public %}
-                                            <dt title="{{ fillout.attribute.formDescription }}">{{ fillout.attribute.formTitle }}</dt>
-                                            <dd>{% include '/acquisition/embed-fillout-public.html.twig' with {'fillout': fillout} %}</dd>
+                                    {% for customField in event.getAcquisitionAttributes(false, false, true, false, true) %}
+                                        {%- if not customField.isDeleted -%}
+                                            <dt {% if customField.formDescription != customField.formTitle %} title="{{ customField.formDescription }}" data-toggle="tooltip" data-placement="right"{% endif %}>
+                                                {{ customField.formTitle }}
+                                            </dt>
+                                            <dd>
+                                                {% set customFieldValueContainer = employee.customFieldValues.get(customField.id) %}
+                                                {% if customFieldValueContainer %}
+                                                    {{ customFieldValueContainer|customFieldValue(employee) }}
+                                                {% else %}
+                                                    <i class="empty value-not-specified"><span></span></i>
+                                                {% endif %}
+                                            </dd>
                                         {% endif %}
                                     {% endfor %}
                                 </dl>
