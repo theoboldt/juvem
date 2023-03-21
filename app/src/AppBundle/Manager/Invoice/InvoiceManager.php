@@ -323,6 +323,25 @@ class InvoiceManager
     }
 
     /**
+     * Remove invoice and related file
+     *
+     * @param Invoice $invoice Invoice entity
+     * @return void
+     */
+    public function removeInvoice(Invoice $invoice): void
+    {
+        if ($this->hasFile($invoice)) {
+            $path    = $this->getInvoiceFilePath($invoice);
+            $success = unlink($path);
+            if (!$success) {
+                throw new \RuntimeException('Failed to delete invoice ' . $path);
+            }
+        }
+        $this->em->remove($invoice);
+        $this->em->flush();
+    }
+
+    /**
      * Get path to @see Invoice file
      *
      * @param Invoice $invoice Related invoice

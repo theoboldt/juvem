@@ -33,7 +33,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
-                    {%- if is_granted('participants_read', event) %}
+                    {%- if is_granted('participants_read', event) and not event.isCleared %}
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_participants_list', {'eid': event.eid }) }}"
                                class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer:innen
@@ -73,27 +73,31 @@
                     {%- endif %}
                     {%- if is_granted('edit', event) -%}
                         <div class="btn-group" role="group">
-                            <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
+                            {% if not event.isCleared %}
+                                <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
                                 class="btn btn-default" title="Mitarbeiter:innen verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter:innen</span></a>
+                            {% endif %}
                             <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
                                class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
                         </div>
-                        <div class="btn-group" role="group">
-                            <a href="{{ path('event_edit', {'eid': event.eid }) }}"
-                               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
-                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
-                                    data-property="isVisible" data-entity-id="{{ event.eid }}"
-                                    data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
-                                    data-button-enable-label="Sichtbar schalten" data-button-enable-glyph="eye-open"
-                                    data-button-disable-label="Verstecken"
-                                    data-button-disable-glyph="eye-close">{{ 'option-horizontal'|glyph }}</button>
-                            <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
-                                    data-property="isActive" data-entity-id="{{ event.eid }}"
-                                    data-token="{{ csrf_token('Event' ~ 'isActive' ~ event.eid ) }}"
-                                    data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
-                                    data-button-disable-label="Deaktivieren"
-                                    data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
-                        </div>
+                        {% if not event.isCleared %}
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('event_edit', {'eid': event.eid }) }}"
+                                   class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+                                <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                        data-property="isVisible" data-entity-id="{{ event.eid }}"
+                                        data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
+                                        data-button-enable-label="Sichtbar schalten" data-button-enable-glyph="eye-open"
+                                        data-button-disable-label="Verstecken"
+                                        data-button-disable-glyph="eye-close">{{ 'option-horizontal'|glyph }}</button>
+                                <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
+                                        data-property="isActive" data-entity-id="{{ event.eid }}"
+                                        data-token="{{ csrf_token('Event' ~ 'isActive' ~ event.eid ) }}"
+                                        data-button-enable-label="Aktivieren" data-button-enable-glyph="folder-open"
+                                        data-button-disable-label="Deaktivieren"
+                                        data-button-disable-glyph="folder-close">{{ 'option-horizontal'|glyph }}</button>
+                            </div>
+                        {% endif %}
                     {% endif -%}
                     <div class="btn-group" role="group">
                         <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
@@ -111,17 +115,35 @@
                     <a href="{{ path('admin_event_variable', {'eid': event.eid }) }}"
                        class="btn btn-default" title="Veranstaltungsspezifische Variablen verwalten">{{ 'equalizer'|glyph }} <span class="hidden-xs">Variablen</span></a>
                     {{ event|changeTrackingButton }}
-                    {%- if is_granted('edit', event) -%}
+
+                    {%- if is_granted('edit', event) and not event.isCleared -%}
                         {% if event.isDeleted -%}
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="restore" title="aus dem Papierkorb zurückholen">
                                 {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen…</span>
                             </button>
                         {% else %}
+                        <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModal" data-action="delete" title="in den Papierkorb verschieben">
                                 {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
                             </button>
+                            
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Menü erweitern</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#" data-toggle="modal" data-target="#dialogModal"
+                                            data-action="delete" title="in den Papierkorb verschieben">
+                                        {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
+                                    </a>
+                                </li>
+                                <li><a href="{{ path('event_admin_clear', {'eid': event.eid }) }}">{{ 'remove-circle'|glyph }} Alle zugehörigen Anmeldedaten löschen…</a></li>
+                            </ul>
+                        </div>
                         {%- endif -%}
                     {%- endif -%}
 
@@ -174,6 +196,9 @@
                     {% endif %}
 
                     <span class="status-label-list">
+                    {% if event.isCleared %}
+                        <span class="label label-primary">Zugehörige Daten gelöscht</span>
+                    {% endif %}
                     {% if event.isVisible() %}
                         <span class="label label-primary option-isVisible">Sichtbar</span>
                     {% else %}
@@ -229,6 +254,7 @@
                             </div>
                         {% endif %}
                     </div>
+                    {% if not event.isCleared %}
                     <div class="col-xs-12 flat-progress-bar">
                         <div style="clear:both;">
                             <div style="float:left;"><h4>Verteilung</h4></div>
@@ -244,6 +270,7 @@
 
                         </div>
                     </div>
+                    {% endif %}
                     <div class="col-xs-12">
                         <h4>Benutzer</h4>
                         {% if event.userAssignments|length %}
@@ -262,7 +289,7 @@
                     <div class="col-xs-12 event-meta">
                     {% embed 'event/public/embed-event-meta.html.twig' with {'event': event} %}{% endembed %}
                     </div>
-                    {% if event.price %}
+                    {% if event.price and not event.isCleared %}
                     <div class="col-xs-12">
                         <div id="infoEventPaymentSummary" data-eid="{{ event.eid }}">
                             <h4>Zahlungen

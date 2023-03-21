@@ -329,6 +329,14 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
      * @var bool
      */
     protected $isShowMap = false;
+    
+    /**
+     * Is set to true if all related participant and employee data has been removed 
+     *
+     * @ORM\Column(type="boolean", name="is_cleared", options={"default":0}))
+     * @var bool
+     */
+    protected $isCleared = false;
 
     /**
      * Set to true if weather info should be shown to public users
@@ -1515,6 +1523,22 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         $this->isShowWeather = $isShowWeather;
     }
 
+    /**
+     * @return bool
+     */
+    public function isCleared(): bool
+    {
+        return $this->isCleared;
+    }
+
+    /**
+     * @param bool $isCleared
+     */
+    public function setIsCleared(bool $isCleared): void
+    {
+        $this->isCleared = $isCleared;
+    }
+    
     /**
      * @return bool
      */

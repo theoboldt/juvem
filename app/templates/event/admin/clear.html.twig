@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anmeldedaten & Daten der Mitarbeiter:innen löschen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Anmeldedaten & Daten der Mitarbeiter:innen löschen', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Anmeldedaten & Daten der Mitarbeiter:innen löschen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="alert alert-warning" role="alert">
+          <p>Sollen wirklich die zur Veranstaltung zugehörigen Daten gelöscht werden? Dies umfasst:</p>
+          <ul>
+            <li>Anmeldungen & Teilnehmer:innen</li>
+            <li>Mitarbeiter:innen</li>
+            <li>Rechnungen</li>
+          </ul>
+          <br>
+          <p>Davon ausgeschlossen sind:</p>
+          <ul>
+            <li>Benutzerzuweisung</li>
+            <li>Cloud-Daten & Konfiguration</li>
+            <li>Bildergalerie</li>
+          </ul>
+          <br>
+          <p>Dieser Vorgang kann nicht rückgängig gemacht werden, allerdings zuvor ein Backup erstellt. Dies kann eine
+            Weile dauern.</p>
+          <p>Zugewiesene Benutzer werden per E-Mail benachrichtigt.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        {{ form_start(form) }}
+        {{ form_widget(form.submit) }} <a href="{{ path('event', {'eid': event.eid }) }}" class="btn btn-default">Abbrechen</a>
+        {{ form_end(form) }}
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

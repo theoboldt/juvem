@@ -221,6 +221,9 @@ services:
     Skies\QRcodeBundle\Generator\Generator:
         alias: 'skies_barcode.generator'
 
+    AppBundle\Manager\EventClearDataManager:
+        autowire: true
+
     app.payment.invoice_manager:
         alias: AppBundle\Manager\Invoice\InvoiceManager
     AppBundle\Manager\Invoice\InvoiceManager:

@@ -40,6 +40,7 @@ use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\ImageResponse;
 use AppBundle\InvalidTokenHttpException;
 use AppBundle\Manager\Calendar\CalendarManager;
+use AppBundle\Manager\EventClearDataManager;
 use AppBundle\Manager\Filesharing\EventFileSharingManager;
 use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
@@ -53,6 +54,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -120,6 +122,11 @@ class AdminController
     private MailGenerator $twigMailGenerator;
 
     /**
+     * @var EventClearDataManager 
+     */
+    private EventClearDataManager $eventClearDataManager;
+
+    /**
      * AdminController constructor.
      *
      * @param AuthorizationCheckerInterface $authorizationChecker
@@ -134,34 +141,36 @@ class AdminController
      * @param ParticipationManager          $participationManager
      * @param UploadImageManager            $uploadImageManager
      * @param EventFileSharingManager       $eventFileSharingManager
+     * @param EventClearDataManager         $eventClearDataManager
      * @param MailGenerator                 $twigMailGenerator
      * @param CsrfTokenManagerInterface     $csrfTokenManager
      * @param SessionInterface              $session
      */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
-        TokenStorageInterface $tokenStorage,
-        ManagerRegistry $doctrine,
-        RouterInterface $router,
-        Environment $twig,
-        FormFactoryInterface $formFactory,
-        PaymentManager $paymentManager,
-        CalendarManager $calendarManager,
-        PriceManager $priceManager,
-        ParticipationManager $participationManager,
-        UploadImageManager $uploadImageManager,
-        EventFileSharingManager $eventFileSharingManager,
-        MailGenerator $twigMailGenerator,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        SessionInterface $session
-    )
-    {
+        TokenStorageInterface         $tokenStorage,
+        ManagerRegistry               $doctrine,
+        RouterInterface               $router,
+        Environment                   $twig,
+        FormFactoryInterface          $formFactory,
+        PaymentManager                $paymentManager,
+        CalendarManager               $calendarManager,
+        PriceManager                  $priceManager,
+        ParticipationManager          $participationManager,
+        UploadImageManager            $uploadImageManager,
+        EventFileSharingManager       $eventFileSharingManager,
+        EventClearDataManager         $eventClearDataManager,
+        MailGenerator                 $twigMailGenerator,
+        CsrfTokenManagerInterface     $csrfTokenManager,
+        SessionInterface              $session
+    ) {
         $this->paymentManager          = $paymentManager;
         $this->priceManager            = $priceManager;
         $this->calendarManager         = $calendarManager;
         $this->participationManager    = $participationManager;
         $this->uploadImageManager      = $uploadImageManager;
         $this->eventFileSharingManager = $eventFileSharingManager;
+        $this->eventClearDataManager   = $eventClearDataManager;
         $this->csrfTokenManager        = $csrfTokenManager;
         $this->authorizationChecker    = $authorizationChecker;
         $this->twigMailGenerator       = $twigMailGenerator;
@@ -332,6 +341,50 @@ class AdminController
             ]
         );
     }
+
+    /**
+     * Clear page for single event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
+     * @Route("/admin/event/{eid}/clear", requirements={"eid": "\d+"}, name="event_admin_clear")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
+     */
+    public function clearAction(Request $request, Event $event): Response
+    {
+        $this->denyAccessUnlessGranted('edit', $event);
+
+        $form = $this->createFormBuilder()
+                     ->add(
+                         'submit', 
+                         SubmitType::class,
+                         [
+                             'label' => 'Ja, alle Daten von "' . $event->getTitle(true) . ' löschen',
+                             'attr'  => ['class' => 'btn btn-primary'],
+                         ]
+                     )
+                     ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $status = $this->eventClearDataManager->clearEventData($event);
+            if ($status) {
+                $this->addFlash(
+                    'success',
+                    $status
+                );
+            }
+
+            return $this->redirectToRoute('event', ['eid' => $event->getEid()]);
+        }
+
+        return $this->render(
+            'event/admin/clear.html.twig',
+            [
+                'event' => $event,
+                'form'  => $form->createView(),
+            ]
+        );
+    }
     
     /**
      * Detail page for one single event
@@ -346,7 +399,7 @@ class AdminController
         $repository         = $this->getDoctrine()->getRepository(Event::class);
         $participantsCount  = $repository->participantsCount($event);
         $employeeCount      = $repository->employeeCount($event);
-        
+
         $form = $this->createFormBuilder()
                      ->add('action', HiddenType::class)
                      ->getForm();
