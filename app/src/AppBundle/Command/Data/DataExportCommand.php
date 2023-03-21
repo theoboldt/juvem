@@ -117,7 +117,7 @@ class DataExportCommand extends DataCommandBase
     
             $archive        = new \ZipArchive();
             $archiveTmpPath = $this->temporaryFileName('data_export');
-            if (!$archive->open($archiveTmpPath, \ZipArchive::CREATE)) {
+            if (!$archive->open($archiveTmpPath, \ZipArchive::OVERWRITE)) {
                 $output->writeln('failed.');
                 $output->writeln(
                     '<error>Failed to open "' . $archiveTmpPath . '", ' . $archive->getStatusString() . '</error>'
@@ -275,7 +275,7 @@ class DataExportCommand extends DataCommandBase
      */
     private function cleanup()
     {
-        if (file_exists($this->dbImagePath)) {
+        if ($this->dbImagePath && file_exists($this->dbImagePath)) {
             unlink($this->dbImagePath);
         }
     }
