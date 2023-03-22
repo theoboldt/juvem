@@ -24,8 +24,11 @@ class AuditEvent implements AuditEventInterface
 
     const TYPE_DELETE = 'delete';
 
-    const TYPE_COMMENT = 'comment';
+    const TYPE_COMMENT_CREATE = 'comment_create';
 
+    const TYPE_COMMENT_MODIFY = 'comment_modify';
+
+    const TYPE_COMMENT_DELETE = 'comment_delete';
     /**
      * @var string
      */
@@ -86,7 +89,7 @@ class AuditEvent implements AuditEventInterface
     ): self {
         //todo should be improved later
         $class = str_replace('Proxies\__CG__\\', '', get_class($object));
-        
+
         if ($object instanceof Participant) {
             $title = $object->fullname();
         } elseif ($object instanceof Participation) {
@@ -149,8 +152,12 @@ class AuditEvent implements AuditEventInterface
                 return 'Datensatz geändert';
             case self::TYPE_DELETE:
                 return 'Datensatz gelöscht';
-            case self::TYPE_COMMENT:
+            case self::TYPE_COMMENT_CREATE:
                 return 'Anmerkung hinzugefügt';
+            case self::TYPE_COMMENT_MODIFY:
+                return 'Anmerkung geändert';
+            case self::TYPE_COMMENT_DELETE:
+                return 'Anmerkung gelöscht';
             default:
                 return $this->getType();
         }

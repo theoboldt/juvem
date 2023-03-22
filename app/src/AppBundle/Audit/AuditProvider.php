@@ -14,6 +14,7 @@ use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesModifiedInterface;
 use AppBundle\Entity\Audit\SoftDeleteableInterface;
 use AppBundle\Entity\ChangeTracking\SupportsChangeTrackingInterface;
+use AppBundle\Entity\CommentBase;
 use AppBundle\Entity\EmployeeRepository;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
@@ -60,7 +61,7 @@ class AuditProvider
 
     /**
      * Provide audit events
-     * 
+     *
      * @param Event              $event
      * @param \DateTimeInterface $date
      * @return AuditEvent[]
@@ -91,16 +92,87 @@ class AuditProvider
             $this->processItems($employees, $date)
         );
 
+
+        $this->commentManager->ensureFetchedForEvent($event);
+        foreach ($participants as $participant) {
+            $comments    = $this->commentManager->forParticipant($participant);
+            $auditEvents = array_merge(
+                $auditEvents,
+                $this->processItemComments($participant, $comments, $date)
+            );
+        }
+
+        foreach ($participations as $participation) {
+            $comments    = $this->commentManager->forParticipation($participation);
+            $auditEvents = array_merge(
+                $auditEvents,
+                $this->processItemComments($participation, $comments, $date)
+            );
+        }
+
+        foreach ($employees as $employee) {
+            $comments    = $this->commentManager->forEmployee($employee);
+            $auditEvents = array_merge(
+                $auditEvents,
+                $this->processItemComments($employee, $comments, $date)
+            );
+        }
+
         usort(
             $auditEvents,
             function (AuditEventInterface $a, AuditEventInterface $b) {
                 return $b->getOccurrenceDate() <=> $a->getOccurrenceDate();
             }
         );
-        
+
         return $auditEvents;
     }
 
+    /**
+     * Process item comments
+     *
+     * @param SupportsChangeTrackingInterface $item
+     * @param array                           $comments
+     * @param \DateTimeInterface              $date
+     * @return AuditEventInterface[]
+     */
+    private function processItemComments(
+        SupportsChangeTrackingInterface $item,
+        array                           $comments,
+        \DateTimeInterface              $date
+    ) {
+        $result = [];
+
+        /** @var CommentBase $comment */
+        foreach ($comments as $comment) {
+            if ($comment instanceof ProvidesCreatedInterface) {
+                if ($comment->getCreatedAt() >= $date) {
+                    $result[] = AuditEvent::create($item, AuditEvent::TYPE_COMMENT_CREATE, $comment->getCreatedAt());
+                }
+            }
+            if ($comment instanceof ProvidesModifiedInterface) {
+                if ($comment->getModifiedAt() !== null
+                    && $comment->getModifiedAt() >= $date
+                    && ($comment instanceof ProvidesCreatedInterface &&
+                        !$comment->getCreatedAt()->format('U') !== $comment->getModifiedAt()->format('U'))
+                ) {
+                    $result[] = AuditEvent::create($item, AuditEvent::TYPE_COMMENT_MODIFY, $comment->getModifiedAt());
+                }
+            }
+            if ($comment instanceof SoftDeleteableInterface) {
+                if ($comment->isDeleted() && $comment->getDeletedAt() >= $date) {
+                    $result[] = AuditEvent::create($item, AuditEvent::TYPE_COMMENT_DELETE, $comment->getDeletedAt());
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param array              $items
+     * @param \DateTimeInterface $date
+     * @return AuditEventInterface[]
+     */
     private function processItems(array $items, \DateTimeInterface $date): array
     {
         $result = [];
