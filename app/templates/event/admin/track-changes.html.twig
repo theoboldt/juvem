@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Änderungen untersuchen{% endblock %}
+
+{% block body %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Änderungen untersuchen', 'subtitle': event.title} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">Änderungen untersuchen</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-9">
+        <p>
+          Zeigt alle Änderungen & Kommentare bei Anmeldungen, Teilnehmer:innen, Mitarbeiter:innen seit dem gewählten
+          Datum an.
+        </p>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="row">
+          {{ form_start(form) }}
+          <div class="col-xs-12">
+            {{ form_errors(form) }}
+          </div>
+          <div class="col-xs-12">
+            {{ form_row(form.date) }}
+          </div>
+          <div class="col-xs-12">
+            {{ form_rest(form) }}
+            <input type="submit" class="btn btn-primary" value="Verlauf anzeigen"/>
+          </div>
+          {{ form_end(form) }}
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+          <div class="panel-body text-center">
+            Jetzt
+          </div>
+        </div>
+        {% for auditEvent in auditEvents %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <b>{{ auditEvent.title }}</b>
+              {% if auditEvent.relatedClass == 'AppBundle\\Entity\\Participant' %}
+                Teilnehmer:in
+              {% elseif auditEvent.relatedClass == 'AppBundle\\Entity\\Participation' %}
+                Anmeldung
+              {% elseif auditEvent.relatedClass == 'AppBundle\\Entity\\Employee' %}
+                Mitarbeiter:in
+              {% else %}
+                <code>{{ auditEvent.relatedClass }}</code>
+              {% endif %}
+            </div>
+            <div class="panel-body">
+              {{ auditEvent.typeLabel }}
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                <div class="col-xs-12 col-sm-8">
+                  {{ auditEvent.occurrenceDate.format('d.m.Y H:i:s') }}
+                </div>
+                <div class="col-xs-12 col-sm-4 text-right">
+                  {% if auditEvent.relatedClass == 'AppBundle\\Entity\\Participant' %}
+                    <a href="{{ path('admin_participant_detail', {eid: event.eid, aid: auditEvent.relatedId}) }}"
+                       target="_blank" class="btn btn-sm btn-default">Datensatz {{ 'new-window'|glyph }}</a>
+                  {% elseif auditEvent.relatedClass == 'AppBundle\\Entity\\Participation' %}
+                    <a href="{{ path('event_participation_detail', {eid: event.eid, pid: auditEvent.relatedId}) }}"
+                       target="_blank" class="btn btn-sm btn-default">Datensatz {{ 'new-window'|glyph }}</a>
+                  {% elseif auditEvent.relatedClass == 'AppBundle\\Entity\\Employee' %}
+                    <a href="{{ path('admin_employee_detail', {eid: event.eid, gid: auditEvent.relatedId}) }}"
+                       target="_blank" class="btn btn-sm btn-default">Datensatz {{ 'new-window'|glyph }}</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        <div class="panel panel-default">
+          <div class="panel-body text-center">
+            {{ date.format('d.m.Y') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

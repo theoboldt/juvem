@@ -47,6 +47,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer:innen verwalten</a></li>
+                                <li><a href="{{ path('event_participants_changes', {'eid': event.eid }) }}">{{ 'time'|glyph }} Änderungen untersuchen</a></li>
                                 <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">{{ 'transfer'|glyph }} {{ groupCount }} Einteilungsfeld{% if groupCount != 1 %}er{% endif %} verwalten</a></li>
                                 {% if numberFieldCount > 0 %}
                                     <li><a href="{{ path('event_admin_order', {'eid': event.eid }) }}">{{ 'sort-by-order'|glyph }}

@@ -21,4 +21,10 @@ interface SoftDeleteableInterface extends \Gedmo\SoftDeleteable\SoftDeleteable
      */
     public function isDeleted(): bool;
     
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTimeInterface|null
+     */
+    public function getDeletedAt(): ?\DateTimeInterface;
 }

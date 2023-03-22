@@ -395,6 +395,12 @@ services:
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
             - 'AppBundle:Participation'
+    
+    app.repository.employee:
+        class: AppBundle\Entity\EmployeeRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - 'AppBundle:Employee'
 
     app.repository.open_street_map_element:
         class: AppBundle\Entity\Geo\LocationDescriptionRepository
@@ -419,6 +425,12 @@ services:
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
             - 'AppBundle:ChangeTracking\EntityChange'
+
+    AppBundle\Audit\AuditProvider:
+        autowire: true
+        arguments:
+            $participationRepository: '@app.repository.participation'
+            $employeeRepository: '@app.repository.employee'
 
     AppBundle\Security\ApiAccessDeniedHandler:
       autoconfigure: true
