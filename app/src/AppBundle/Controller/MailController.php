@@ -18,6 +18,7 @@ use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
 use AppBundle\Http\Annotation\CloseSessionEarly;
 use AppBundle\InvalidTokenHttpException;
+use AppBundle\Mail\ImapFullTextSearchNotSupportedException;
 use AppBundle\Mail\MailboxNotFoundException;
 use AppBundle\Mail\MailListService;
 use AppBundle\SerializeJsonResponse;
@@ -108,6 +109,8 @@ class MailController
         $className     = EntityChangeRepository::convertRouteToClassName($classDescriptor);
         $relatedEntity = $this->fetchRelatedEntity($className, $entityId);
 
+        $result = [];
+        
         if ($relatedEntity instanceof Participation) {
             $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getEmail());
         } elseif ($relatedEntity instanceof NewsletterSubscription) {
@@ -115,10 +118,15 @@ class MailController
         } elseif ($relatedEntity instanceof User) {
             $mails = $this->mailListService->findEmailsRelatedToAddress($relatedEntity->getEmail());
         } else {
-            $mails = $this->mailListService->findEmailsRelatedToEntity($className, $entityId);
+            try {
+                $mails = $this->mailListService->findEmailsRelatedToEntity($className, $entityId);
+            } catch (ImapFullTextSearchNotSupportedException $e) {
+                $mails                                   = [];
+                $result['enableImapFullTextSearchError'] = true;
+            }
         }
         
-        $result = ['items' => $mails];
+        $result['items'] = $mails;
 
         if ($this->mailListService->isHasImapFinalRecipientError()) {
             $result['enableImapFinalRecipientWarning'] = true;

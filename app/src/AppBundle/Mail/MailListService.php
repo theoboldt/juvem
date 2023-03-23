@@ -245,13 +245,26 @@ class MailListService
         return $this->cache->get(
             $this->getCacheKey($class, $id),
             function (ItemInterface $item) use ($class, $id) {
-                $search = new SearchExpression();
-                $search->addCondition(
-                    new Text(
-                        MailSendService::HEADER_RELATED_ENTITY . ': ' . $class . ':' . $id,
-                    )
-                );
-                $result = $this->fetchMessagesForSearch($search);
+                try {
+                    $search = new SearchExpression();
+                    $search->addCondition(
+                        new Text(
+                            MailSendService::HEADER_RELATED_ENTITY . ': ' . $class . ':' . $id,
+                        )
+                    );
+                    $result = $this->fetchMessagesForSearch($search);
+                } catch (InvalidSearchCriteriaException $e) {
+                    $this->logger->warning(
+                        'Unable to full text search. Exception in {file}:{line}. Message: {message}; Trace: {trace}',
+                        [
+                            'message' => $e->getMessage(),
+                            'file'    => $e->getFile(),
+                            'line'    => $e->getLine(),
+                            'trace'   => $e->getTraceAsString(),
+                        ]
+                    );
+                    throw new ImapFullTextSearchNotSupportedException('Failed to do related header imap search', 0, $e);
+                }
                
                 //LEGACY BEGIN
                 $search = new SearchExpression();

@@ -98,14 +98,20 @@ $(function () {
                     url: refresh ? refreshUrl : url,
                     success: function (response) {
                         btn.toggleClass('disabled', false);
-                        if (response && response.items) {
-                            commonCache.set(cacheKey, response.items);
-                            updateButton(response.items);
-                            renderEmails();
-                        }
-                        if (response && response.enableImapFinalRecipientWarning) {
-                            modalEl.find('.imap-final-recipient-warning').html(
-                                '<div class="alert alert-warning">Aus technischen Gründen konnte keine Suche nach Nachrichten, die über nicht zugestellte E-Mails berichten, durchgeführt werden.</div>');
+                        if (response) {
+                            if (response.items) {
+                                commonCache.set(cacheKey, response.items);
+                                updateButton(response.items);
+                                renderEmails();
+                            }
+                            if (response.enableImapFinalRecipientWarning) {
+                                modalEl.find('.imap-final-recipient-warning').html(
+                                    '<div class="alert alert-warning">Aus technischen Gründen konnte keine Suche nach Nachrichten, die über nicht zugestellte E-Mails berichten, durchgeführt werden.</div>');
+                            }
+                            if (response.enableImapFullTextSearchError) {
+                                modalEl.find('.imap-final-recipient-error').html(
+                                    '<div class="alert alert-error">Aus technischen Gründen kann nicht nach zugehörigen E-Mails gesucht werden.</div>');
+                            }
                         }
                     },
                     complete: function () {

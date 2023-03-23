@@ -112,6 +112,7 @@ class EmailListingButton extends AbstractExtension
       <div class="modal-body">
         <div class="row">
           <div class="col-xs-12">
+            <div class="imap-final-recipient-error"></div>
             <div class="imap-final-recipient-warning"></div>
             </div>
           <div class="col-xs-12">
