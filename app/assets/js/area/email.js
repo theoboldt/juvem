@@ -103,6 +103,10 @@ $(function () {
                             updateButton(response.items);
                             renderEmails();
                         }
+                        if (response && response.enableImapFinalRecipientWarning) {
+                            modalEl.find('.imap-final-recipient-warning').html(
+                                '<div class="alert alert-warning">Aus technischen Gründen konnte keine Suche nach Nachrichten, die über nicht zugestellte E-Mails berichten, durchgeführt werden.</div>');
+                        }
                     },
                     complete: function () {
                         refreshButtonEl.toggleClass('disabled', false);

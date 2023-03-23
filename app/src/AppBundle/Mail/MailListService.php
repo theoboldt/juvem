@@ -17,6 +17,7 @@ use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
+use Ddeboer\Imap\Exception\InvalidSearchCriteriaException;
 use Ddeboer\Imap\Message\Attachment;
 use Ddeboer\Imap\Message\EmailAddress;
 use Ddeboer\Imap\MessageInterface;
@@ -47,6 +48,13 @@ class MailListService
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
+
+    /**
+     * Marker is set to true if IMAP search for "Final-Recipient: rfc822" header fails 
+     * 
+     * @var bool 
+     */
+    private bool $hasImapFinalRecipientError = false;
     
     /**
      * MailListService constructor.
@@ -146,10 +154,27 @@ class MailListService
                 $search = new SearchExpression();
                 $search->addCondition(new From($emailAddress));
                 $result = array_merge($result, $this->fetchMessagesForSearch($search));
-                
-                $search = new SearchExpression();
-                $search->addCondition(new Text('Final-Recipient: rfc822; ' . $emailAddress));
-                $result = array_merge($result, $this->fetchMessagesForSearch($search));
+
+                try {
+                    $search = new SearchExpression();
+                    $search->addCondition(new Text('Final-Recipient: rfc822; ' . $emailAddress));
+                    $result = array_merge($result, $this->fetchMessagesForSearch($search));
+                } catch (InvalidSearchCriteriaException $e) {
+                    $this->hasImapFinalRecipientError = true;
+                    $this->logger->warning(
+                        'Failed to search for delivery failure related messages', []
+                    );
+                    $this->logger->warning(
+                        'Unable to search for delivery failure related messages for {email}. Exception in {file}:{line}. Message: {message}; Trace: {trace}',
+                        [
+                            'email'   => $emailAddress,
+                            'message' => $e->getMessage(),
+                            'file'    => $e->getFile(),
+                            'line'    => $e->getLine(),
+                            'trace'   => $e->getTraceAsString(),
+                        ]
+                    );
+                } 
                 
                 self::sortMailFragmentsDateDesc($result);
                 
@@ -157,7 +182,7 @@ class MailListService
             }
         );
     }
-    
+
     /**
      * Provide mail fragment for transmitted message identifiers
      *
@@ -339,5 +364,15 @@ class MailListService
         }
         
         return $fragmentAttachments;
+    }
+
+    /**
+     * Determine if marker is set to true if IMAP search for "Final-Recipient: rfc822" header fails
+     *
+     * @return bool
+     */
+    public function isHasImapFinalRecipientError(): bool
+    {
+        return $this->hasImapFinalRecipientError;
     }
 }

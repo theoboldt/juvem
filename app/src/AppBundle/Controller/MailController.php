@@ -12,6 +12,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
 use AppBundle\Entity\NewsletterSubscription;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\User;
@@ -21,17 +22,14 @@ use AppBundle\Mail\MailboxNotFoundException;
 use AppBundle\Mail\MailListService;
 use AppBundle\SerializeJsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Entity\ChangeTracking\EntityChange;
-use AppBundle\Entity\ChangeTracking\EntityChangeRepository;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class MailController
@@ -119,8 +117,14 @@ class MailController
         } else {
             $mails = $this->mailListService->findEmailsRelatedToEntity($className, $entityId);
         }
+        
+        $result = ['items' => $mails];
+
+        if ($this->mailListService->isHasImapFinalRecipientError()) {
+            $result['enableImapFinalRecipientWarning'] = true;
+        }
     
-        return new SerializeJsonResponse(['items' => $mails]);
+        return new SerializeJsonResponse($result);
     }
     
     /**

@@ -110,20 +110,27 @@ class EmailListingButton extends AbstractExtension
         <h4 class="modal-title">E-Mails</h4>
       </div>
       <div class="modal-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Beteilligte</th>
-              <th>Datum</th>
-              <th class="col-class">Betreff</th>
-              <th>Verzeichnis</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="5" class="loading-text text-center">(E-Mails werden abgerufen)</td></tr>
-          </tbody>
-        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="imap-final-recipient-warning"></div>
+            </div>
+          <div class="col-xs-12">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Beteilligte</th>
+                  <th>Datum</th>
+                  <th class="col-class">Betreff</th>
+                  <th>Verzeichnis</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="5" class="loading-text text-center">(E-Mails werden abgerufen)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <small style="float: left;">E-Mails, die vor August 2021 versendet wurden werden u.U. nicht angezeigt.</small>
