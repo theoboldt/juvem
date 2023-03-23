@@ -110,7 +110,7 @@ $(function () {
                             }
                             if (response.enableImapFullTextSearchError) {
                                 modalEl.find('.imap-final-recipient-error').html(
-                                    '<div class="alert alert-error">Aus technischen Gründen kann nicht nach zugehörigen E-Mails gesucht werden.</div>');
+                                    '<div class="alert alert-danger">Aus technischen Gründen kann nicht nach zugehörigen E-Mails gesucht werden.</div>');
                             }
                         }
                     },
