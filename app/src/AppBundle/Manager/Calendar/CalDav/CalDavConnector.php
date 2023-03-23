@@ -402,8 +402,8 @@ class CalDavConnector
         ?string         $publicUri = '',
         LoggerInterface $logger = null
     ): ?CalDavConnector {
-        $baseUri  = trim($baseUri);
-        $username = trim($username);
+        $baseUri  = $baseUri ? trim($baseUri) : null;
+        $username = $username ? trim($username) : null;
         $logger   = $logger ?? new NullLogger();
 
         if (empty($baseUri) || empty($username)) {

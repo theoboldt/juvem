@@ -112,14 +112,14 @@ class NextcloudManager
         ?LoggerInterface $logger = null
     ): ?NextcloudManager
     {
-        $baseUri         = trim($baseUri);
-        $username        = trim($username);
-        $folder          = trim(str_replace(['/', '\\'], '_', $folder));
-        $teamLabel       = trim(str_replace(['/', '\\'], '_', $teamLabel));
-        $managementLabel = trim(str_replace(['/', '\\'], '_', $managementLabel));
+        $baseUri  = $baseUri ? trim($baseUri) : null;
+        $username = $username ? trim($username) : null;
         if (empty($baseUri) || empty($username)) {
             return null;
         }
+        $folder          = trim(str_replace(['/', '\\'], '_', $folder));
+        $teamLabel       = trim(str_replace(['/', '\\'], '_', $teamLabel));
+        $managementLabel = trim(str_replace(['/', '\\'], '_', $managementLabel));
         return new self($baseUri, $username, $password, $folder, $teamLabel, $managementLabel, $logger);
     }
     
