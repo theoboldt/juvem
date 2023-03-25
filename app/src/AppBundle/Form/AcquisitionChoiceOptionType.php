@@ -36,7 +36,7 @@ class AcquisitionChoiceOptionType extends AbstractType
                 ]
             );
 
-        if ($isSystem) {
+        if (!$isSystem) {
             $builder
                 ->add(
                     'managementTitle',
