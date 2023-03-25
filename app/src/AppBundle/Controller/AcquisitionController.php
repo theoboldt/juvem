@@ -97,6 +97,7 @@ class AcquisitionController
         foreach ($attributeEntityList as $attribute) {
             $attributeList[] = [
                 'bid'                    => $attribute->getBid(),
+                'sort'                   => $attribute->getSort(),
                 'management_title'       => $attribute->getManagementTitle(),
                 'management_description' => $attribute->getManagementDescription(),
                 'type'                   => $attribute->getFieldType(true),
@@ -247,6 +248,10 @@ class AcquisitionController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->attributeManager->persistAndFlush($attribute);
+            if ($attribute->getSort() === Attribute::DEFAULT_SORT) {
+                $attribute->setSort($attribute->getBid()*10);
+                $this->attributeManager->persistAndFlush($attribute);
+            }
 
             return $this->redirectToRoute('acquisition_list');
         }

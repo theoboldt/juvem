@@ -1033,13 +1033,6 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
         bool $includePrivate = true,
         bool $includePublic = true
     ) {
-        if ($includeParticipationFields
-            && $includeParticipantFields
-            && $includeEmployeeFields
-            && $includePublic
-            && $includePrivate) {
-            return $this->acquisitionAttributes;
-        }
         $acquisitionAttributes = [];
 
         /** @var Attribute $acquisitionAttribute */
@@ -1058,6 +1051,13 @@ class Event implements SoftDeleteableInterface, AddressAwareInterface, ProvidesM
                 $acquisitionAttributes[$acquisitionAttribute->getCustomFieldName()] = $acquisitionAttribute;
             }
         }
+        
+        usort(
+            $acquisitionAttributes,
+            function (Attribute $a, Attribute $b) {
+                return $a->getSort() <=> $b->getSort();
+            }
+        );
 
         return $acquisitionAttributes;
     }

@@ -28,7 +28,7 @@ class AcquisitionType extends AbstractType
     {
         $data     = isset($options['data']) ? $options['data'] : null;
         $isSystem = $data instanceof Attribute && $data->isSystem();
-
+        
         if (!$isSystem) {
             $builder->add(
                 'managementTitle',
@@ -88,8 +88,16 @@ class AcquisitionType extends AbstractType
                 ]
             );
         }
-        
+        dump($data);
         $builder->add(
+            'sort',
+            NumberType::class,
+            [
+                'label'      => 'Position',
+                'required'   => $data !== null && $data->getId() !== null,
+                'empty_data' => ($data === null || $data->getId() === null) ? null : ($data->getId()*10),
+            ]
+        )->add(
             'useAtParticipation',
             CheckboxType::class,
             [

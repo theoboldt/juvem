@@ -34,6 +34,14 @@
                     {{ form_row(form.useAtParticipant) }}
                     {{ form_row(form.useAtEmployee) }}
                 </div>
+                <div class="form-group">
+                    {{ form_label(form.sort) }}
+                    <p class="help-block">
+                        Mit Bezug auf diesen Wert werden die Felder im Formular sortiert. So kann deren Reihenfolge beeinflusst werden.
+                    </p>
+                    {{ form_widget(form.sort) }}
+                    {{ form_errors(form.sort) }}
+                </div>
             </div>
             {% if form.offsetExists('isRequired') or form.offsetExists('isPublic') or form.offsetExists('isCommentEnabled') %}
                 <div class="col-xs-12 col-sm-6">

@@ -56,6 +56,8 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
 {
     use CreatedModifiedTrait, SoftDeleteTrait;
 
+    const DEFAULT_SORT = 99999;
+    
     const LABEL_FIELD_TEXT        = 'Textfeld (Einzeilig)';
     const LABEL_FIELD_TEXTAREA    = 'Textfeld (Mehrzeilig)';
     const LABEL_FIELD_CHOICE      = 'Auswahl';
@@ -108,6 +110,13 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
      */
     protected $fieldOptions = [];
 
+    /**
+     * Sort value
+     * 
+     * @ORM\Column(type="integer", name="sort", options={"unsigned":true,"default":99999})
+     */
+    protected int $sort = self::DEFAULT_SORT;
+    
     /**
      * @ORM\Column(name="use_at_participation", type="smallint", options={"unsigned":true,"default":0})
      *
@@ -822,6 +831,22 @@ class Attribute implements SoftDeleteableInterface, ProvidesModifiedInterface, P
     {
         $this->isPriceFormulaEnabled = $isPriceFormulaEnabled;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSort(): int
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param int $sort
+     */
+    public function setSort(int $sort): void
+    {
+        $this->sort = $sort;
     }
     
     /**
