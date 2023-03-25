@@ -12,14 +12,14 @@ $(function () {
         let el = $(this),
             elDiv = el.parent().parent(),
             description = eHtml(el.data('description')),
-            buttonHtml = ' <button type="button" class="btn btn-default btn-xs btn-round" tabIndex="-1" data-custom-option="checkbox-popover">' +
-                '<span class="glyphicon glyphicon-question-sign"></span></button>';
+            buttonHtml = ' <a tabindex="0" role="button" class="btn btn-default btn-xs btn-round" data-custom-option="checkbox-popover">' +
+                '<span class="glyphicon glyphicon-question-sign"></span></a>';
 
         elDiv.append(buttonHtml);
-        let elButton = elDiv.find('button');
+        let elButton = elDiv.find('a[data-custom-option=\'checkbox-popover\']');
         elButton.popover({
             content: description,
-            trigger: 'click|focus'
+            trigger: 'focus'
         });
     });
 
