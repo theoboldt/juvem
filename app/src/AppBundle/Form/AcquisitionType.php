@@ -88,7 +88,6 @@ class AcquisitionType extends AbstractType
                 ]
             );
         }
-        dump($data);
         $builder->add(
             'sort',
             NumberType::class,
