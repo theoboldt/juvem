@@ -147,6 +147,12 @@ class CustomFieldValuesType extends AbstractType
         } else {
             throw new \InvalidArgumentException('Unknown entity provided');
         }
+        /** @var Attribute $customField */
+        foreach ($customFields as $index => $customField) {
+            if ($customField->isDeleted()) {
+                unset($customFields[$index]);
+            }
+        }
 
         return $customFields;
     }
