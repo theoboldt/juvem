@@ -166,13 +166,10 @@ class FormulaVariableResolverTest extends TestCase
         $this->assertEquals(self::$attribute3, $dependencies[0]);
 
         $depending = $resolver->getAllDependingOn(self::$attribute3);
-        $this->markTestIncomplete('Result of getAllDependingOn is suspicious, needs to be checked');
-        /*
-        TODO add test
+
         $this->assertCount(1, $depending);
         $dependingEntry = reset($depending);
-        $this->assertEquals(self::$attribute2, $dependingEntry);
-        */
+        $this->assertEquals(self::$attribute3, $dependingEntry);
     }
 
     public function testDetectCircularDependency(): void
