@@ -103,7 +103,7 @@ class FeedbackQuestionnaireFillout implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $answers = [];
         /** @var FeedbackQuestionnaireAnswer $answer */

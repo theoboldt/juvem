@@ -141,7 +141,7 @@ class OpenStreetMapElement implements \JsonSerializable
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->raw;
     }

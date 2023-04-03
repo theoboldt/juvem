@@ -73,7 +73,7 @@ class OpenWeatherMapWeatherCondition implements WeatherConditionInterface, \Json
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }

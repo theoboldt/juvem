@@ -33,7 +33,7 @@ class WeatherForecastElementOpenWeatherMap implements \JsonSerializable, Climati
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->details;
     }

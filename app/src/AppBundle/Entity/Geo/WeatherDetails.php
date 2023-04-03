@@ -32,7 +32,7 @@ class WeatherDetails implements \JsonSerializable
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->details;
     }
