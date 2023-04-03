@@ -71,7 +71,7 @@ class PaymentSuggestionList implements \Countable, \IteratorAggregate
      * <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $this->sort();
         return new \ArrayIterator($this->suggestions);

@@ -15,8 +15,6 @@ use AppBundle\Entity\Audit\CreatedTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Manager\Geo\CoordinatesAwareInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -243,7 +241,7 @@ class WeatherForecast implements CoordinatesAwareInterface, ProvidesCreatedInter
     /**
      * @inheritDoc
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->getElements();
     }

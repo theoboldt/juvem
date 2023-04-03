@@ -131,9 +131,9 @@ class CustomFieldValueCollection implements \JsonSerializable, \IteratorAggregat
     }
 
     /**
-     * @return \ArrayIterator
+     * @return \Traversable
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->elements);
     }
