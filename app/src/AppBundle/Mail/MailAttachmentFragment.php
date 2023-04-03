@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation as Serialize;
  * MailFragment
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  */
 class MailAttachmentFragment
 {

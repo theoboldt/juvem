@@ -15,14 +15,13 @@ use AppBundle\Entity\Audit\CreatorTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesCreatorInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="participant_payment_event")
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  */
 class ParticipantPaymentEvent implements ProvidesCreatedInterface, ProvidesCreatorInterface
 {

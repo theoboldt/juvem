@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation as Serialize;
  * EntityCollectionChange
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  */
 class EntityCollectionChange
 {

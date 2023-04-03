@@ -7,15 +7,14 @@ use AppBundle\Entity\Audit\CreatedTrait;
 use AppBundle\Entity\Audit\CreatorTrait;
 use AppBundle\Entity\Audit\ProvidesCreatedInterface;
 use AppBundle\Entity\Audit\ProvidesCreatorInterface;
-use JMS\Serializer\Annotation as Serialize;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * Invoice
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="participation_invoice")

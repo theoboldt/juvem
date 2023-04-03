@@ -17,7 +17,7 @@ use JMS\Serializer\Annotation as Serialize;
  * Trait CreatedModifiedTrait
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  * @package AppBundle\Entity\Audit
  */
 trait CreatedModifiedTrait

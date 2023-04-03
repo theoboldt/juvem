@@ -18,7 +18,7 @@ use JMS\Serializer\Annotation as Serialize;
  * Trait CreatorTrait
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  */
 trait CreatorTrait
 {

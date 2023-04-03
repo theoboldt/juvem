@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  * @ORM\Entity
  * @ORM\Table(name="employee")
  * @ORM\HasLifecycleCallbacks()

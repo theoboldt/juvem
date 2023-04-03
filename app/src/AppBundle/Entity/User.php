@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  * @ORM\Entity
  * @ORM\Table(name="`user`")
  * @ORM\HasLifecycleCallbacks()

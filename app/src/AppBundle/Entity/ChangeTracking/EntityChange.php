@@ -12,13 +12,11 @@ namespace AppBundle\Entity\ChangeTracking;
 
 use AppBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  * @ORM\Entity
  * @ORM\Table(name="entity_change", indexes={
  *     @ORM\Index(name="index_related", columns={"related_id", "related_class"})

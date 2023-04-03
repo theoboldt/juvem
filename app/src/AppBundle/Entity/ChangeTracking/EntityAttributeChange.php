@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation as Serialize;
  * EntityAttributeChange
  *
  * @Serialize\ExclusionPolicy("all")
- * @Serialize\ReadOnly()
+ * @Serialize\ReadOnlyProperty()
  */
 class EntityAttributeChange
 {
