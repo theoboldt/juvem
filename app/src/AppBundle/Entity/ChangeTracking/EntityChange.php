@@ -264,7 +264,7 @@ class EntityChange implements \Countable
     /**
      * @inheritDoc
      */
-    public function count()
+    public function count(): int
     {
         return count($this->attributeChanges);
     }

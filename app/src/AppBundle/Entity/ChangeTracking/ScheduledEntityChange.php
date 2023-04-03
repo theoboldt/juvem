@@ -12,7 +12,6 @@ namespace AppBundle\Entity\ChangeTracking;
 
 
 use AppBundle\Entity\User;
-use AppBundle\Entity\ChangeTracking\EntityCollectionChange;
 
 class ScheduledEntityChange implements \Countable
 {
@@ -255,7 +254,7 @@ class ScheduledEntityChange implements \Countable
     /**
      * @inheritDoc
      */
-    public function count()
+    public function count(): int
     {
         return count($this->attributeChanges);
     }
