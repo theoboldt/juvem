@@ -115,7 +115,7 @@ class PdfConverterTest extends TestCase
     public function testConverterNotActuallyExisting(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectDeprecationMessage('Configured libreoffice binary inaccessible');
+        $this->expectExceptionMessage('Configured libreoffice binary inaccessible');
         $converter = new PdfConverterService(__DIR__ . '/not_existing_file', __DIR__ . '/../../../../var/tmp', null);
         $converter->convert(__DIR__ . '/original.docx');
     }
@@ -123,7 +123,7 @@ class PdfConverterTest extends TestCase
     public function testConverterNotActuallyExecutable(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectDeprecationMessage('Configured libreoffice binary not executable');
+        $this->expectExceptionMessage('Configured libreoffice binary not executable');
         $converter = new PdfConverterService(__DIR__ . '/original.docx', __DIR__ . '/../../../../var/tmp', null);
         $converter->convert(__DIR__ . '/original.docx');
     }
@@ -135,7 +135,7 @@ class PdfConverterTest extends TestCase
     {
         $input = __DIR__ . '/not_existing_file';
         $this->expectException(InputFileNotFoundException::class);
-        $this->expectDeprecationMessage(sprintf('Input file "%s" missing', $input));
+        $this->expectExceptionMessage(sprintf('Input file "%s" missing', $input));
 
         $libreofficePath = $this->provideLibreOfficePath();
 
