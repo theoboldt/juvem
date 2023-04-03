@@ -216,6 +216,13 @@ vich_uploader:
             inject_on_load:     true
             delete_on_update:   true
             delete_on_remove:   true
+        user_attachment:
+            uri_prefix:         /uploads/user_attachment
+            upload_destination: "%app.data.root.path%/uploads/user_attachment"
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     true
+            delete_on_update:   true
+            delete_on_remove:   true
 
 fos_user:
     db_driver: orm

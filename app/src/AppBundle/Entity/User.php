@@ -101,6 +101,12 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     protected $eventAssignments;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserAttachment", mappedBy="user", cascade={"remove"})
+     * @var \Doctrine\Common\Collections\Collection|UserAttachment[]
+     */
+    protected $attachments;
+
+    /**
      * @ORM\Column(type="string", length=40, options={"fixed" = true}, name="settings_hash")
      */
     protected $settingsHash = 'bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f';
@@ -135,6 +141,7 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
 
         $this->assignedParticipations = new ArrayCollection();
         $this->subscribedEvents       = new ArrayCollection();
+        $this->attachments            = new ArrayCollection();
 
         //ensure created is stored if pre persist annotation does not work
         if (!$this->createdAt) {
@@ -329,6 +336,38 @@ class User extends BaseUser implements ProvidesModifiedInterface, ProvidesCreate
     {
         return $this->eventAssignments;
     }
+
+    /**
+     * @return UserAttachment[]
+     */
+    public function getAttachments(): array
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param UserAttachment $attachment
+     * @return void
+     */
+    public function addAttachment(UserAttachment $attachment): void
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+            $attachment->setUser($this);
+        }
+    }
+
+    /**
+     * @param UserAttachment $attachment
+     * @return void
+     */
+    public function removeAttachment(UserAttachment $attachment): void
+    {
+        if ($this->attachments->contains($attachment)) {
+            $this->attachments->remove($attachment);
+        }
+    }
+    
 
     /**
      * Get user full name

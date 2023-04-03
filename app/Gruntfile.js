@@ -94,6 +94,7 @@ module.exports = function (grunt) {
                     '<%= assetsPath %>/js/bootstrap-table.js',
                     '<%= assetsPath %>/js/active-button.js',
                     '<%= assetsPath %>/js/markdown.js',
+                    '<%= assetsPath %>/js/area/user.js',
                     '<%= assetsPath %>/js/area/acquisition_and_event.js',
                     '<%= assetsPath %>/js/area/acquisition_only.js',
                     '<%= assetsPath %>/js/area/attendance.js',
