@@ -53,6 +53,7 @@ $icon-font-path: '../font/';
 @import '../shared/bootstrap-corrections';
 @import '../shared/print';
 @import '../shared/participation';
+@import '../shared/user';
 
 html, body {
   background-color: $brandPrimaryDark;

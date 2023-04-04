@@ -31,6 +31,7 @@ use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
 use AppBundle\Entity\ParticipationRepository;
 use AppBundle\Entity\User;
+use AppBundle\Entity\UserAttachment;
 use AppBundle\Form\AcquisitionAttribute\SpecifyEventSpecificVariableValuesForEventType;
 use AppBundle\Form\EventAddUserAssignmentsType;
 use AppBundle\Form\EventMailType;
@@ -52,6 +53,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -120,6 +122,13 @@ class AdminController
      */
     private CsrfTokenManagerInterface $csrfTokenManager;
     
+    /**
+     * event_dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
+    
     private MailGenerator $twigMailGenerator;
 
     /**
@@ -146,6 +155,7 @@ class AdminController
      * @param MailGenerator                 $twigMailGenerator
      * @param CsrfTokenManagerInterface     $csrfTokenManager
      * @param SessionInterface              $session
+     * @param EventDispatcherInterface      $eventDispatcher
      */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
@@ -163,7 +173,8 @@ class AdminController
         EventClearDataManager         $eventClearDataManager,
         MailGenerator                 $twigMailGenerator,
         CsrfTokenManagerInterface     $csrfTokenManager,
-        SessionInterface              $session
+        SessionInterface              $session,
+        EventDispatcherInterface      $eventDispatcher
     ) {
         $this->paymentManager          = $paymentManager;
         $this->priceManager            = $priceManager;
@@ -181,6 +192,7 @@ class AdminController
         $this->twig                    = $twig;
         $this->formFactory             = $formFactory;
         $this->session                 = $session;
+        $this->eventDispatcher         = $eventDispatcher;
     }
 
     /**
@@ -767,7 +779,8 @@ class AdminController
      * Get participants information used for age/gender distribution display
      *
      * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid"})
-     * @Route("/admin/event/{eid}/participant-distribution.json", requirements={"eid": "\d+"}, name="event_participant_distribution")
+     * @Route("/admin/event/{eid}/participant-distribution.json", requirements={"eid": "\d+"},
+     *                                                            name="event_participant_distribution")
      * @Security("is_granted('participants_read', event)")
      */
     public function participantDistribution(Event $event): JsonResponse
@@ -836,9 +849,20 @@ class AdminController
             $data      = $form->getData();
             $recipient = $data['recipient'];
             unset($data['recipient']);
+
+            $attachments = [];
+            /** @var UserAttachment $userAttachment */
+            foreach ($data['attachments'] as $userAttachment) {
+                if ($userAttachment->getFilenameOriginal()) {
+                    $attachments[$userAttachment->getFilenameOriginal()] = $userAttachment->getFile();
+                } else {
+                    $attachments[] = $userAttachment->getFile();
+                }
+            }
+            unset($data['attachments']);
             
             $participationManager = $this->participationManager;
-            $participationManager->mailEventParticipants($data, $event, $recipient);
+            $participationManager->mailEventParticipants($data, $event, $recipient, $attachments);
             $this->addFlash(
                 'info',
                 'Die Benachrichtigungs-Emails wurden versandt'

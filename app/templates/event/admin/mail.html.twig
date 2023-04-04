@@ -3,66 +3,102 @@
 {% block title %}E-Mail versenden ({{ event.title }}){% endblock %}
 
 {% block body %}
-    {% embed 'common/header/base-page-header.html.twig' with {'title': 'E-Mail', 'subtitle': 'versenden'} %}
-        {% block breadcrumb %}
-            <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
-            <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li class="active">E-Mail versenden</li>
-        {% endblock %}
-    {% endembed %}
-    <div class="container">
-        <div id="mail-form" data-event-title="{{ event.title }}" data-eid="{{ event.id }}">
-            {{ form_start(form) }}
-            <div class="row">
-                <div class="col-xs-12">
-                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
-                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-6">
-                    {{ form_row(form.recipient) }}
-                    {{ form_row(form.subject) }}
-                    {{ form_row(form.title) }}
-                    {{ form_row(form.lead) }}
-                    {{ form_row(form.content) }}
-                    <label class="control-label required" for="form-placeholders-panel">Platzhalter</label>
-
-                    <div class="panel panel-default" id="form-placeholders-panel">
-                        <div class="panel-body">
-                            <dl>
-                                <dt>{PARTICIPATION_SALUTATION}</dt>
-                                <dd>Anrede der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>,
-                                    <code>Herr</code>)
-                                </dd>
-                                <dt>{PARTICIPATION_NAME_LAST}</dt>
-                                <dd>Nachname der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
-                                <dt>{EVENT_TITLE}</dt>
-                                <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
-                                </dd>
-                            </dl>
-                            <p>Für die E-Mail können Platzhalter verwendet werden. Die Platzhalter können
-                                grundsätzlich überall und mehrfach eingesetzt werden.</p>
-
-                            <p>Mit einer Leerzeile im Hauptinhaltbereich können Absätze voneinander getrennt werden.</p>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
-                    <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
-                </div>
-                <div class="col-sm-6" id="mail-template">
-                    <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
-
-                    <div class="panel panel-default" id="mail-template-iframe-panel">
-                        <div class="panel-heading">Betreff der E-Mail</div>
-                        <div class="panel-body">
-                            <iframe src="{{ path('mail_template') }}" id="mail-template-iframe" name="mail-template-iframe"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{ form_end(form) }}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'E-Mail', 'subtitle': 'versenden'} %}
+    {% block breadcrumb %}
+      <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+      <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+      <li class="active">E-Mail versenden</li>
+    {% endblock %}
+  {% endembed %}
+  <div class="container">
+    <div id="mail-form" data-event-title="{{ event.title }}" data-eid="{{ event.id }}">
+      {{ form_start(form) }}
+      <div class="row">
+        <div class="col-xs-12">
+          <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
+          <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
         </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          {{ form_row(form.recipient) }}
+          {{ form_row(form.subject) }}
+          {{ form_row(form.title) }}
+          {{ form_row(form.lead) }}
+          {{ form_row(form.content) }}
+          <label class="control-label required" for="form-placeholders-panel">Platzhalter</label>
+
+          <div class="panel panel-default" id="form-placeholders-panel">
+            <div class="panel-body">
+              <dl>
+                <dt>{PARTICIPATION_SALUTATION}</dt>
+                <dd>Anrede der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Frau</code>,
+                  <code>Herr</code>)
+                </dd>
+                <dt>{PARTICIPATION_NAME_LAST}</dt>
+                <dd>Nachname der Person, welche die Anmeldung ausgefüllt hat (Beispiel: <code>Müller</code>)
+                <dt>{EVENT_TITLE}</dt>
+                <dd>Name der Veranstaltung (<code>{{ event.title }}</code>)
+                </dd>
+              </dl>
+              <p>Für die E-Mail können Platzhalter verwendet werden. Die Platzhalter können
+                grundsätzlich überall und mehrfach eingesetzt werden.</p>
+
+              <p>Mit einer Leerzeile im Hauptinhaltbereich können Absätze voneinander getrennt werden.</p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default btn-update-preview">Vorschau aktualisieren</button>
+          <input type="submit" class="btn btn-primary" value="E-Mail versenden"/>
+        </div>
+        <div class="col-sm-6" id="mail-template">
+          <label class="control-label required" for="mail-template-iframe-panel">Vorschau</label>
+
+          <div class="panel panel-default" id="mail-template-iframe-panel">
+            <div class="panel-heading">Betreff der E-Mail</div>
+            <div class="panel-body">
+              <iframe src="{{ path('mail_template') }}" id="mail-template-iframe" name="mail-template-iframe"></iframe>
+            </div>
+          </div>
+
+
+          <label class="control-label required" for="mail-attachment-panel">Dateianhänge
+            <span class="btn btn-xs btn-default" id="dropzone-user-attachment-reload">{{ 'refresh'|glyph }}</span>
+          </label>
+
+          <div class="panel panel-default" id="dropzone-user-attachment"
+               data-attachment-list-url="{{ path('user_attachment_list') }}"
+               data-attachment-upload-url="{{ path('user_attachment_upload') }}"
+               data-token="{{ csrf_token('user-attachment') }}">
+            <div class="panel-body">
+              <p>Um Dateianhänge auswählen zu können, Dateien hier hereinziehen. Nachdem sie hochgeladen sind, können
+                sie als Anhang ausgewählt werden. <span id="dropzone-user-attachment-speed"></span></p>
+              <table class="table table-striped table-condensed table-form">
+                <thead>
+                <tr>
+                  <td>Dateiname</td>
+                  <td class="text-right">Größe</td>
+                  <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td colspan="3" class="text-center loading-text">Dateianhänge werden geladen...</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr style="display:none;">
+                  <td>
+                    {{ form_row(form.attachments) }}
+                  </td>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
     </div>
+  </div>
 {% endblock %}

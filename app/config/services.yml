@@ -482,6 +482,11 @@ services:
       tags:
         - form.type
 
+    AppBundle\Form\UserAttachmentChoiceType:
+      autowire: true
+      tags:
+        - form.type        
+
     AppBundle\Form\Feedback\ImportQuestionsType:
       autowire: true
       tags:

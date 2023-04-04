@@ -131,13 +131,14 @@ class ParticipationManager
     /**
      * Send a participation email, containing participation and event information
      *
-     * @param array $data      The custom text for email
-     * @param Event $event     The event
-     * @param int   $recipient Code for recipient, either \AppBundle\Form\EventMailType::RECIPIENT_ALL,
-     *                         \AppBundle\Form\EventMailType::RECIPIENT_CONFIRMED,
-     *                         \AppBundle\Form\EventMailType::RECIPIENT_UNNFIRMED
+     * @param array          $data        The custom text for email
+     * @param Event          $event       The event
+     * @param int            $recipient   Code for recipient, either \AppBundle\Form\EventMailType::RECIPIENT_ALL,
+     *                                    \AppBundle\Form\EventMailType::RECIPIENT_CONFIRMED,
+     *                                    \AppBundle\Form\EventMailType::RECIPIENT_UNNFIRMED
+     * @param \SplFileInfo[] $attachments Attachments
      */
-    public function mailEventParticipants(array $data, Event $event, int $recipient)
+    public function mailEventParticipants(array $data, Event $event, int $recipient, array $attachments = [])
     {
         $dataText = [];
         $dataHtml = [];
@@ -189,6 +190,18 @@ class ParticipationManager
                 $message, Event::class, $event->getEid()
             );
 
+            foreach ($attachments as $attachmentName => $attachmentFile) {
+                if (is_numeric($attachmentName)) {
+                    $attachmentName = $attachmentFile->getFilename();
+                }
+                $attachment = \Swift_Attachment::fromPath($attachmentFile->getPathname());
+                $attachment->setFilename($attachmentName);
+                if ($attachmentFile->getType()) {
+                    $attachment->setContentType($attachmentFile->getType());
+                }
+                $message->attach($attachment);
+            }
+            
             $this->mailService->send($message);
         }
     }

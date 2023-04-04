@@ -4,18 +4,32 @@ $(function () {
      * USER Attachment
      */
     const dropzoneEl = $('#dropzone-user-attachment');
-    if (dropzoneEl) {
+    if (dropzoneEl && dropzoneEl.length) {
         const speedEl = $('#dropzone-user-attachment-speed'),
             attachmentTbodyEl = $('#dropzone-user-attachment table tbody'),
             attachmentTfootEl = $('#dropzone-user-attachment table tfoot'),
             loadAttachmentsBtn = $('#dropzone-user-attachment-reload'),
-            renderAttachments = function (attachments) {
+            formEl = dropzoneEl.find('input[type=checkbox]'),
+            formFieldName = formEl && formEl.length ? formEl.attr('name') : null;
+        
+        attachmentTfootEl.html(''); //clear form fields
+        
+        const renderAttachments = function (attachments) {
                 let tbodyHtml = '';
                 if (attachments) {
                     $.each(attachments, function (index, attachment) {
                         tbodyHtml += '<tr>';
-                        tbodyHtml += '<td></td>';
-                        tbodyHtml += '<td>' + eHtml(attachment.filename) + '</td>';
+                        tbodyHtml += '<td class="checkbox">';
+
+                        if (formFieldName) {
+                            tbodyHtml += '<label for="user-attachment-form-input-' + attachment.id + '">';
+                            tbodyHtml += '<input type="checkbox" id="user-attachment-form-input-' + attachment.id + '" name="event_mail[attachments][]" value="' + attachment.id + '" /> ';
+                        }
+                        tbodyHtml += eHtml(attachment.filename);
+                        if (formFieldName) {
+                            tbodyHtml += '</label>';
+                        }
+                        tbodyHtml += '</td>';
                         tbodyHtml += '<td class="text-right">' + filesize(attachment.filesize) + '</td>';
                         tbodyHtml += '<td>';
 
@@ -33,7 +47,7 @@ $(function () {
                     });
                 }
                 if (!attachments || attachments.length === 0) {
-                        tbodyHtml = '<tr><td colspan="4" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
+                        tbodyHtml = '<tr><td colspan="3" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
                 }
                 
                 attachmentTbodyEl.html(tbodyHtml);
@@ -76,7 +90,7 @@ $(function () {
                     },
                     error: function () {
                         attachmentTbodyEl.html(
-                            '<tr><td colspan="4" class="text-center">Die Dateianhänge konnten nicht geladen werden.</td></tr>'
+                            '<tr><td colspan="3" class="text-center">Die Dateianhänge konnten nicht geladen werden.</td></tr>'
                         );
                         $(document).trigger('add-alerts', {
                             message: 'Die Dateianhänge konnten nicht geladen werden',

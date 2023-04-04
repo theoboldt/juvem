@@ -21,7 +21,7 @@ class EventMailType extends AbstractType
     const RECIPIENT_ALL         = 1;
     const RECIPIENT_CONFIRMED   = 2;
     const RECIPIENT_UNCONFIRMED = 3;
-    
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -43,9 +43,16 @@ class EventMailType extends AbstractType
             ->add('title', TextType::class, ['label' => 'Titel'])
             ->add('lead', TextType::class, ['label' => 'Untertitel', 'required' => false])
             ->add(
+                'attachments',
+                UserAttachmentChoiceType::class,
+                [
+                    'label' => 'Dateianhänge',
+                ]
+            )
+            ->add(
                 'content', TextareaType::class,
                 ['label' => 'Hauptinhalt', 'attr' => ['class' => 'markdown-editable preview']]
             );
     }
-    
+
 }
