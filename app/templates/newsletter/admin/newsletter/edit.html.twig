@@ -9,6 +9,20 @@
             <li class="active">Nachricht bearbeiten</li>
         {% endblock %}
     {% endembed %}
+    {% if relatedToAnotherCount %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="alert alert-warning" role="alert">
+                  Andere Benutzer haben diesem
+                  Newsletter {% if relatedToAnotherCount == 1 %}1 Dateianhang{% else %}{{ relatedToAnotherCount }} Dateianhänge{% endif %}
+                  hinzugefügt.
+                  Wenn Sie diesen Newsletter versenden, werden diese fremden Anhänge nicht in der E-Mail enthalten sein.
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="container">
         <div id="mail-form-newsletter">
             {% include '/newsletter/admin/newsletter/form.html.twig' with { form: form, newsletter: newsletter} %}

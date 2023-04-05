@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Newsletter;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
+use AppBundle\Entity\User;
 use AppBundle\Entity\UserAttachment;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
@@ -591,8 +592,16 @@ class AdminController extends AbstractController
     {
         $this->dieIfNewsletterNotEnabled();
         $form = $this->createForm(NewsletterMailType::class, $newsletter);
-
+        
         $form->handleRequest($request);
+
+        $relatedToAnotherCount = 0;
+        $user                  = $this->getUser();
+        foreach ($newsletter->getUserAttachments() as $userAttachment) {
+            if ($user instanceof User && $userAttachment->getUser()->getUid() !== $user->getUid()) {
+                ++$relatedToAnotherCount;
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -609,7 +618,7 @@ class AdminController extends AbstractController
 
         return $this->render(
             'newsletter/admin/newsletter/edit.html.twig',
-            ['form' => $form->createView(), 'newsletter' => $newsletter]
+            ['form' => $form->createView(), 'newsletter' => $newsletter, 'relatedToAnotherCount' => $relatedToAnotherCount]
         );
     }
 }
