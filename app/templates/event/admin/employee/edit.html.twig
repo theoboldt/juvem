@@ -7,7 +7,7 @@
         {% block breadcrumb %}
             <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
             <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-            <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter:in</a></li>
+            <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter:innen</a></li>
             <li>
                 <a href="{{ path('admin_employee_detail', {'eid': event.eid, 'gid': employee.gid }) }}">{{ employee.fullname }}</a>
             </li>

@@ -1,15 +1,15 @@
 {% import _self as m %}
 {% extends 'base.html.twig' %}
 
-{% block title %}Mitarbeiter:in importieren ({{ event.title }})
+{% block title %}Mitarbeiter:innen importieren ({{ event.title }})
 {% endblock %}
 {% block body %}
-  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Mitarbeiter:in', 'subtitle': 'importieren'} %}
+  {% embed 'common/header/base-page-header.html.twig' with {'title': 'Mitarbeiter:innen', 'subtitle': 'importieren'} %}
     {% block breadcrumb %}
       <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
       <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
-      <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter:in</a></li>
-      <li class="active">Mitarbeiter:in importieren</li>
+      <li><a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}">Mitarbeiter:innen</a></li>
+      <li class="active">Mitarbeiter:innen importieren</li>
     {% endblock %}
   {% endembed %}
   <div class="container">
@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col-xs-12">
         <h3>Globale Änderungen</h3>
-        <p>Lege für alle zu importierenden Mitarbeiter:in bei den folgenden Feldern die folgenden Werte fest:</p>
+        <p>Lege für alle zu importierenden Mitarbeiter:innen bei den folgenden Feldern die folgenden Werte fest:</p>
         <div class="row" id="import-employee-actions">
           {% for acquisitionField in acquisitionFields %}
             <div class="col-xs-12 col-sm-6">
