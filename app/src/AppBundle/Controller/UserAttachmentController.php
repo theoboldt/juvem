@@ -135,14 +135,31 @@ class UserAttachmentController
             if ($errorMessage) {
                 $result['errors'][] = $errorMessage;
             } else {
-                $attachment = new UserAttachment($user, $file);
-                $attachment->setFilenameOriginal($file->getClientOriginalName());
-                $em->persist($attachment);
+                if (!in_array($file->guessClientExtension(), self::getAllowedExtensions())) {
+                    $result['errors'][] = 'Die angehängte Datei mit der Dateiendung "' .
+                                          substr($file->guessClientExtension(), 0, 8) .
+                                          '" wird nicht akzeptiert. Dateien müssen Dateiendung ' .
+                                          implode(', ', self::getAllowedExtensions()) . ' aufweisen.';
+                } else {
+                    $attachment = new UserAttachment($user, $file);
+                    $attachment->setFilenameOriginal(urldecode($file->getClientOriginalName()));
+                    $em->persist($attachment);
+                }
             }
         }
         $em->flush();
 
         return new JsonResponse(array_merge($result, ['attachments' => $this->fetchAttachmentList()]));
+    }
+
+    /**
+     * Provide allowed extensions
+     * 
+     * @return string[]
+     */
+    public static function getAllowedExtensions(): array
+    {
+        return ['zip', 'pdf', 'png', 'jpeg', 'jpg', 'doc', 'docx', 'xls', 'xlsx'];
     }
 
     /**
