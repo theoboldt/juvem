@@ -179,7 +179,12 @@ $(function () {
                             tbodyHtml += '</label>';
                         }
                         tbodyHtml += '</td>';
-                        tbodyHtml += '<td class="text-right">' + filesize(attachment.filesize) + '</td>';
+                        tbodyHtml += '<td class="text-right">';
+                        if (attachment.filesize > 2097152) {
+                            tbodyHtml += '<span class="glyphicon glyphicon-warning-sign" aria-hidden="true" title="Diese Datei ist als Anhang für eine E-Mail tendenziell zu groß"></span> ';
+                        }
+                        tbodyHtml += filesize(attachment.filesize);
+                        tbodyHtml += '</td>';
                         tbodyHtml += '<td>';
 
                         tbodyHtml += '<a href="' + attachment.download + '" target="_blank" title="Datei herunterladen" class="btn btn-xs btn-default">' + '<span class="glyphicon glyphicon-download" aria-hidden="true"></span>' +
