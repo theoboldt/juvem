@@ -200,6 +200,9 @@ $(function () {
                         tbodyHtml += '</tr>';
                     });
                 }
+                if (!attachments || attachments.length === 0) {
+                    tbodyHtml = '<tr><td colspan="3" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
+                }
                 attachmentTbodyEl.html(tbodyHtml);
 
                 attachmentTbodyEl.find('input[type=checkbox]').each(function () {
@@ -219,10 +222,6 @@ $(function () {
                         checkedAttachmentIds.push(attachmentId);
                     }
                 });
-
-                if (!attachments || attachments.length === 0) {
-                    tbodyHtml = '<tr><td colspan="3" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
-                }
 
                 attachmentTbodyEl.find('.attachment-delete').click(function () {
                     const el = $(this);
@@ -345,7 +344,6 @@ $(function () {
             uploadStarted: function (i, file, len) {
                 attachmentTfootEl.append(
                     '<tr id="file-attachment-progress-' + i + '">' +
-                    ' <td></td>' +
                     ' <td>' +
                     '  <div class="row">' +
                     '   <div class="col-xs-12">' +
