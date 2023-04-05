@@ -50,6 +50,7 @@ class MoveParticipationParticipationType extends AbstractType
                     'class'         => 'AppBundle:Participation',
                     'query_builder' => function (ParticipationRepository $er) use ($participation, $event) {
                         $builder = $er->createQueryBuilder('p')
+                                      ->select(['p', 'a'])
                                       ->leftJoin('p.participants', 'a', Join::WITH)
                                       ->andWhere('p.deletedAt IS NULL')
                                       ->addOrderBy('p.nameLast', 'ASC')
@@ -63,7 +64,7 @@ class MoveParticipationParticipationType extends AbstractType
                     'choice_label'  => function (Participation $p) {
                         $label        = $p->fullname() . ' ';
                         $participants = [];
-                        /* //todo deactivated
+                        //todo: It might be better to move this form in a separate page as it
                         foreach ($p->getParticipants() as $participant) {
                             if (!$participant->isWithdrawn()
                                 && !$participant->isRejected()
@@ -71,7 +72,6 @@ class MoveParticipationParticipationType extends AbstractType
                                 $participants[] = $participant;
                             }
                         } //foreach
-                        */
                         if (count($participants)) {
                             $label .= '[' . ParticipationsParticipantsNamesGrouped::combineNames($participants) . ']';
                         } else {
