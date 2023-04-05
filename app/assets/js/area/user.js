@@ -5,15 +5,20 @@ $(function () {
      */
     const dropzoneEl = $('#dropzone-user-attachment');
     if (dropzoneEl && dropzoneEl.length) {
-        const speedEl = $('#dropzone-user-attachment-speed'),
+        let speedEl = $('#dropzone-user-attachment-speed'),
             attachmentTbodyEl = $('#dropzone-user-attachment table tbody'),
             attachmentTfootEl = $('#dropzone-user-attachment table tfoot'),
             loadAttachmentsBtn = $('#dropzone-user-attachment-reload'),
             formEl = dropzoneEl.find('input[type=checkbox]'),
+            formElsChecked = dropzoneEl.find('input[type=checkbox]:checked'),
             formFieldName = formEl && formEl.length ? formEl.attr('name') : null;
-        
+        let checkedAttachmentIds = [];
+
+        formElsChecked.each(function () {
+            checkedAttachmentIds.push(parseInt(this.value));
+        });
         attachmentTfootEl.html(''); //clear form fields
-        
+
         const renderAttachments = function (attachments) {
                 let tbodyHtml = '';
                 if (attachments) {
@@ -23,7 +28,7 @@ $(function () {
 
                         if (formFieldName) {
                             tbodyHtml += '<label for="user-attachment-form-input-' + attachment.id + '">';
-                            tbodyHtml += '<input type="checkbox" id="user-attachment-form-input-' + attachment.id + '" name="event_mail[attachments][]" value="' + attachment.id + '" /> ';
+                            tbodyHtml += '<input type="checkbox" id="user-attachment-form-input-' + attachment.id + '" name="' + formFieldName + '" value="' + attachment.id + '" /> ';
                         }
                         tbodyHtml += eHtml(attachment.filename);
                         if (formFieldName) {
@@ -46,11 +51,30 @@ $(function () {
                         tbodyHtml += '</tr>';
                     });
                 }
-                if (!attachments || attachments.length === 0) {
-                        tbodyHtml = '<tr><td colspan="3" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
-                }
-                
                 attachmentTbodyEl.html(tbodyHtml);
+
+                attachmentTbodyEl.find('input[type=checkbox]').each(function () {
+                    if (checkedAttachmentIds.includes(parseInt(this.value))) {
+                        $(this).prop('checked', true);
+                    }
+                });
+                attachmentTbodyEl.find('input[type=checkbox]').change(function () {
+                    const el = $(this),
+                        attachmentId = parseInt(this.value),
+                        newValue = el.prop('checked');
+
+                    checkedAttachmentIds = jQuery.grep(checkedAttachmentIds, function (value) {
+                        return value !== attachmentId;
+                    });
+                    if (newValue) {
+                        checkedAttachmentIds.push(attachmentId);
+                    }
+                });
+
+                if (!attachments || attachments.length === 0) {
+                    tbodyHtml = '<tr><td colspan="3" class="text-center">Keine Dateianhänge hochgeladen.</td></tr>';
+                }
+
                 attachmentTbodyEl.find('.attachment-delete').click(function () {
                     const el = $(this);
                     if (el.hasClass('disabled')) {

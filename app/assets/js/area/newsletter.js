@@ -163,7 +163,13 @@ $(function () {
     var btnSendTest = $('#sendTestMessageButton');
     $('#sendTestMessageButton').click(function () {
         btnSendTest.prop('disabled', true);
-
+        
+        let attachments = [];
+        const attachmentEls = $('#dropzone-user-attachment input:checked');
+        attachmentEls.each(function () {
+            attachments.push(parseInt(this.value));
+        });
+        
         $.ajax({
             url: '/admin/newsletter/send_test',
             data: {
@@ -172,7 +178,8 @@ $(function () {
                 subject: $('*#newsletter_mail_subject').val(),
                 title: $('*#newsletter_mail_title').val(),
                 lead: $('*#newsletter_mail_lead').val(),
-                content: $('*#newsletter_mail_content').val()
+                content: $('*#newsletter_mail_content').val(),
+                attachments: attachments
             },
             success: function (response) {
                 btnSendTest.prop('disabled', false);

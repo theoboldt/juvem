@@ -144,6 +144,40 @@
                 <iframe id="mail-template-iframe" name="mail-template-iframe" src="{{ path('newsletter_preview') }}"></iframe>
             </div>
         </div>
+      <label class="control-label" for="mail-attachment-panel">Dateianhänge
+        <span class="btn btn-xs btn-default" id="dropzone-user-attachment-reload">{{ 'refresh'|glyph }}</span>
+      </label>
+
+      <div class="panel panel-default" id="dropzone-user-attachment"
+           data-attachment-list-url="{{ path('user_attachment_list') }}"
+           data-attachment-upload-url="{{ path('user_attachment_upload') }}"
+           data-token="{{ csrf_token('user-attachment') }}">
+        <div class="panel-body">
+          <p>Um Dateianhänge auswählen zu können, Dateien hier hereinziehen. Nachdem sie hochgeladen sind, können
+            sie als Anhang ausgewählt werden. <span id="dropzone-user-attachment-speed"></span></p>
+          <table class="table table-striped table-condensed table-form">
+            <thead>
+            <tr>
+              <td>Dateiname</td>
+              <td class="text-right">Größe</td>
+              <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td colspan="3" class="text-center loading-text">Dateianhänge werden geladen...</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr style="display:none;">
+              <td>
+                {{ form_row(form.userAttachments) }}
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
     </div>
 </div>
 {{ form_end(form) }}

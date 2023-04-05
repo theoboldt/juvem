@@ -131,6 +131,8 @@ class MailImapService
                     ]
                 );
             }
+        } else {
+            $this->logger->warning('Unable to fetch mailboxes because IMAP connection is unavailable');
         }
         return $this->mailboxes;
     }
@@ -152,6 +154,12 @@ class MailImapService
                 return $mailbox;
             }
         }
+        $this->logger->info(
+            'Mailbox {mailbox} not found',
+            [
+                'mailbox' => $mailboxName,
+            ]
+        );
         return null;
     }
     
@@ -172,6 +180,7 @@ class MailImapService
                 return $mailbox;
             }
         }
+        $this->logger->info('Sent mailbox not found');
         return null;
     }
     
@@ -282,6 +291,11 @@ class MailImapService
 
                 $mailDate = \DateTimeImmutable::createFromFormat('U', filemtime($mailFilePath));
                 $mailbox  = $this->getMailbox($mailboxName);
+                
+                if ($mailbox === null) {
+                    //can not store mail as mailbox is unavailable
+                    return false;
+                }
                 
                 return $mailbox->addMessage($mailFileContent, '\\Seen', $mailDate);
             }

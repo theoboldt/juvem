@@ -17,35 +17,45 @@ use AppBundle\Mail\MailSendService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class NewsletterManager
 {
-    
+
     /**
      * @var MailSendService
      */
     private MailSendService $mailService;
-    
+
+    /**
+     * security.token_storage
+     *
+     * @var TokenStorageInterface|null
+     */
+    private ?TokenStorageInterface $tokenStorage;
+
     /**
      * @var LoggerInterface
      */
     protected $logger;
-    
+
     /**
      * Initiate a participation manager service
      *
-     * @param MailSendService $mailService
-     * @param LoggerInterface|null $logger
+     * @param MailSendService            $mailService
+     * @param TokenStorageInterface|null $tokenStorage
+     * @param LoggerInterface|null       $logger
      */
     public function __construct(
-        MailSendService $mailService,
-        ?LoggerInterface $logger
-    )
-    {
-        $this->mailService = $mailService;
-        $this->logger      = $logger ?? new NullLogger();
+        MailSendService        $mailService,
+        ?TokenStorageInterface $tokenStorage,
+        ?LoggerInterface       $logger
+    ) {
+        $this->mailService  = $mailService;
+        $this->tokenStorage = $tokenStorage;
+        $this->logger       = $logger ?? new NullLogger();
     }
-    
+
     /**
      * Send a newsletter subscription request email
      *
@@ -88,7 +98,7 @@ class NewsletterManager
      */
     protected function mail(NewsletterSubscription $subscription, string $template)
     {
-        $message = $this->mailService->getTemplatedMessage(
+        $message  = $this->mailService->getTemplatedMessage(
             $template, ['subscription' => $subscription]
         );
         $nameLast = $subscription->getNameLast();
@@ -96,7 +106,7 @@ class NewsletterManager
         MailSendService::addRelatedEntityMessageHeader(
             $message, NewsletterSubscription::class, $subscription->getRid()
         );
-        
+
         return $this->mailService->send($message);
     }
 
@@ -112,11 +122,11 @@ class NewsletterManager
     {
         $data = [
             'subject' => $newsletter->getSubject(), 'title' => $newsletter->getTitle(),
-            'lead'    => $newsletter->getLead(), 'content' => $newsletter->getContent()
+            'lead'    => $newsletter->getLead(), 'content' => $newsletter->getContent(),
         ];
 
-        $dataText = array();
-        $dataHtml = array();
+        $dataText = [];
+        $dataHtml = [];
 
         $content = null;
         foreach ($data as $area => $content) {
@@ -129,10 +139,10 @@ class NewsletterManager
             'Going to send newsletter {lid} for {count} recipients',
             ['lid' => $newsletter->getLid(), 'count' => count($subscriptions)]
         );
-    
+
         $totalDuration = 0;
         $sentCount     = 0;
-        
+
         /** @var NewsletterSubscription $subscription */
         foreach ($subscriptions as $subscription) {
             $startTime = microtime(true);
@@ -151,11 +161,11 @@ class NewsletterManager
                 } else {
                     $dataHtml['calltoactioncontent'] = null;
                 }
-    
-                $dataBoth = [
+
+                $dataBoth     = [
                     'text'         => $dataText,
                     'html'         => $dataHtml,
-                    'subscription' => $subscription
+                    'subscription' => $subscription,
                 ];
                 $email        = $subscription->getEmail();
                 $firstName    = '';
@@ -185,6 +195,19 @@ class NewsletterManager
                     $message->setTo($email);
                 }
 
+                $user = $this->getUser();
+                foreach ($newsletter->getUserAttachments() as $userAttachment) {
+                    if ($user === null || $user->getId() === $userAttachment->getUser()->getId()) {
+                        $userAttachmentFile = $userAttachment->getFile();
+                        $attachment = \Swift_Attachment::fromPath($userAttachmentFile->getPathname());
+                        $attachment->setFilename($userAttachment->getFilenameOriginal());
+                        if ($userAttachmentFile->getMimeType()) {
+                            $attachment->setContentType($userAttachmentFile->getMimeType());
+                        }
+                        $message->attach($attachment);
+                    }
+                }
+
                 $abort       = false;
                 $resultCount = 0;
                 try {
@@ -198,7 +221,7 @@ class NewsletterManager
                             'file'    => $e->getFile(),
                             'line'    => $e->getLine(),
                             'message' => $e->getMessage(),
-                            'trace'   => $e->getTraceAsString()
+                            'trace'   => $e->getTraceAsString(),
                         ]
                     );
                     if (strpos($e->getMessage(), 'Connection could not be established with host') !== false
@@ -207,10 +230,10 @@ class NewsletterManager
                         $abort = true;
                     }
                 }
-                
-                $duration = round((microtime(true) - $startTime)*1000);
+
+                $duration      = round((microtime(true) - $startTime) * 1000);
                 $totalDuration += $duration;
-                
+
                 if ($resultCount) {
                     $this->logger->info(
                         'Sent newsletter to {rid} in {duration} ms',
@@ -230,12 +253,37 @@ class NewsletterManager
                 }
             }
         }
-        
+
         $this->logger->info(
             'Finished newsletter distribution within {duration} ms, sent {count} messages',
             ['count' => $sentCount, 'duration' => $totalDuration]
         );
 
         return $sentCount;
+    }
+
+    /**
+     * Get a user from the Security Token Storage if configured
+     *
+     * @return User|null
+     */
+    protected function getUser(): ?User
+    {
+        if (!$this->tokenStorage) {
+            return null;
+        }
+        if (null === $token = $this->tokenStorage->getToken()) {
+            return null;
+        }
+
+        if (!\is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
+            return null;
+        }
+        if (!$user instanceof User) {
+            throw new \InvalidArgumentException('User has unexpected class ' . get_class($user));
+        }
+
+        return $user;
     }
 }

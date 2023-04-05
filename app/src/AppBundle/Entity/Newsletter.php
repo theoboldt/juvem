@@ -84,14 +84,25 @@ class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface
     protected $recipients;
 
     /**
+     * Contains a list of subscriptions which received this newsletter
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\UserAttachment")
+     * @ORM\JoinTable(name="newsletter_user_attachment",
+     *      joinColumns={@ORM\JoinColumn(name="lid", referencedColumnName="lid", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_attachment_id", referencedColumnName="id", onDelete="CASCADE")})
+     */
+    protected $userAttachments;
+
+    /**
      * Construct
      */
     public function __construct()
     {
-        $this->events        = new ArrayCollection();
-        $this->recipients    = new ArrayCollection();
-        $this->ageRangeBegin = 6;
-        $this->ageRangeEnd   = 13;
+        $this->events          = new ArrayCollection();
+        $this->recipients      = new ArrayCollection();
+        $this->userAttachments = new ArrayCollection();
+        $this->ageRangeBegin   = 6;
+        $this->ageRangeEnd     = 13;
         parent::__construct();
     }
 
@@ -257,6 +268,32 @@ class Newsletter extends NewsletterAbstract implements ProvidesModifiedInterface
     public function getRecipients()
     {
         return $this->recipients;
+    }
+
+    /**
+     * @param UserAttachment $attachment
+     * @return void
+     */
+    public function addUserAttachment(UserAttachment $attachment): void
+    {
+        $this->userAttachments->add($attachment);
+    }
+
+    /**
+     * @param UserAttachment $attachment
+     * @return void
+     */
+    public function removeUserAttachment(UserAttachment $attachment): void
+    {
+        $this->userAttachments->removeElement($attachment);
+    }
+
+    /**
+     * @return \Traversable|UserAttachment[]
+     */
+    public function getUserAttachments(): \Traversable
+    {
+        return $this->userAttachments;
     }
     
     public function getId(): ?int

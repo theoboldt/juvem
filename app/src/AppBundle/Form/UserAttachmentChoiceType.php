@@ -50,8 +50,6 @@ class UserAttachmentChoiceType extends EntityType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $user = $this->getUser();
-
         $options['class']        = UserAttachment::class;
         $options['choice_label'] = 'filenameOriginal';
         $options['expanded']     = true;

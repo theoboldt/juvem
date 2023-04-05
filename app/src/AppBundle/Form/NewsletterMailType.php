@@ -62,6 +62,15 @@ class NewsletterMailType extends AbstractType
                     'multiple'      => true,
                     'required'      => false
                 )
+            )
+            ->add(
+                'userAttachments',
+                UserAttachmentChoiceType::class,
+                [
+                    'label'        => 'Dateianhänge',
+                    'mapped'       => true,
+                    'by_reference' => true,
+                ]
             );
     }
 

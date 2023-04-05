@@ -28,4 +28,18 @@ class UserAttachmentRepository extends EntityRepository
                     ->findBy(['user' => $user], ['filenameOriginal' => 'ASC', 'createdAt' => 'ASC']);
     }
 
+    /**
+     * Find attachments for transmitted user
+     *
+     * @param User $user
+     * @param int  $attachmentId
+     * @return UserAttachment|null
+     */
+    public function findByUserAndId(User $user, int $attachmentId): ?UserAttachment
+    {
+        return $this->getEntityManager()
+                    ->getRepository(UserAttachment::class)
+                    ->findOneBy(['user' => $user, 'id' => $attachmentId]);
+    }
+
 }

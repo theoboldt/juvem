@@ -26,6 +26,7 @@ use AppBundle\Form\MoveParticipationEventType;
 use AppBundle\Mail\MailSendService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ParticipationManager
 {
@@ -196,8 +197,8 @@ class ParticipationManager
                 }
                 $attachment = \Swift_Attachment::fromPath($attachmentFile->getPathname());
                 $attachment->setFilename($attachmentName);
-                if ($attachmentFile->getType()) {
-                    $attachment->setContentType($attachmentFile->getType());
+                if ($attachmentFile instanceof File && $attachmentFile->getMimeType()) {
+                    $attachment->setContentType($attachmentFile->getMimeType());
                 }
                 $message->attach($attachment);
             }

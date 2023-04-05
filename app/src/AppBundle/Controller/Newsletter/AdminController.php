@@ -14,6 +14,7 @@ namespace AppBundle\Controller\Newsletter;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Newsletter;
 use AppBundle\Entity\NewsletterSubscription;
+use AppBundle\Entity\UserAttachment;
 use AppBundle\Form\NewsletterMailType;
 use AppBundle\Form\NewsletterSubscriptionType;
 use AppBundle\Http\Annotation\CloseSessionEarly;
@@ -517,6 +518,17 @@ class AdminController extends AbstractController
                    ->setTitle($title)
                    ->setLead($lead)
                    ->setContent($content);
+
+        $user = $this->getUser();
+        if ($user) {
+            $userAttachmentRepository = $this->getDoctrine()->getRepository(UserAttachment::class);
+            foreach ($request->get('attachments') as $attachmentId) {
+                $attachment = $userAttachmentRepository->findByUserAndId($user, (int)$attachmentId);
+                if ($attachment) {
+                    $newsletter->addUserAttachment($attachment);
+                }
+            }
+        }
 
         $recipient = new NewsletterSubscription();
         $recipient->setEmail($email)
