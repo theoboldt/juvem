@@ -174,7 +174,11 @@ class PublicEmployeeController
             $em = $this->getDoctrine()->getManager();
             $em->persist($employee);
             $em->flush();
-
+            $this->addFlash(
+                'success',
+                'Sie sind als Mitarbeiter:in registriert. Eine Bestätigung per E-Mail erfolgt nicht.'
+            );
+            
             return $this->redirectToRoute('event_public_detail', ['eid' => $eid]);
         } else {
             if ($employee->getAddressStreetNumber() === null) {
