@@ -95,7 +95,7 @@
         <div class="btn-toolbar attendance-list-toolbar" role="toolbar">
           <div class="btn-group">
             <a href="{{ path('event_attendance_list_edit', {eid: event.eid, tid: list.tid}) }}"
-               class="btn btn-default btn-never-lock">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span></a>
+               class="btn btn-default btn-never-lock">{{ 'pencil'|glyph }}<span class="hidden-xs"> Bearbeiten</span> {{ caretRightDouble() }}</a>
             {% if list.startDate %}
               <a href="{{ path('event_attendance_followup', {eid: event.eid, tid: list.tid}) }}"
                  class="btn btn-default btn-never-lock">{{ 'share-alt'|glyph }}<span class="hidden-xs"> Nachfolger erstellen...</span></a>
@@ -244,9 +244,12 @@
           <tbody>
           {% for participant in participants %}
             <tr data-aid="{{ participant.aid }}" id="participant-row-{{ participant.aid }}"
-                {% for fillout in participant.acquisitionAttributeFillouts %}
-                  {% if fillout.attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
-                    data-group-{{ fillout.attribute.bid }}="{{ fillout.value.getGroupId() }}"
+                {% for attribute in event.acquisitionAttributes %}
+                  {% if attribute.fieldType == 'AppBundle\\Form\\GroupType' %}
+                    {% set customFieldValueContainer = participant.customFieldValues.get(attribute.bid, false) %}
+                    {% if customFieldValueContainer and customFieldValueContainer.value %}
+                      data-group-{{ attribute.bid }}="{{ customFieldValueContainer.getValue() }}"
+                    {% endif %}
                   {% endif %}
                 {% endfor %}
             >
