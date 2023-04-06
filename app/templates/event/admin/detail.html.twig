@@ -39,6 +39,7 @@
                                class="btn btn-default">{{ 'list'|glyph }} <span class="hidden-xs">{{ participantsCount }} Teilnehmer:innen
                                     {% if event.participantsUnconfirmedCount -%}
                                         <span class="badge">{{- event.participantsUnconfirmedCount }}</span>{%- endif -%}</span>
+                                {{ caretRightDouble() }}
                             </a>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
