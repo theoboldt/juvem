@@ -116,14 +116,28 @@ class RecipeIngredientFeedbackType extends AbstractType implements DataMapperInt
         }
 
         /** @var FormInterface[] $forms */
-        $forms = iterator_to_array($forms);
-
-        $forms['recipeIngredientId']->setData($viewData->getRecipeIngredientId());
-        $forms['amountOriginal']->setData($viewData->getAmountOriginal());
-        $forms['unitIdOriginal']->setData($viewData->getUnitIdOriginal());
-        $forms['ingredientFeedback']->setData($viewData->getIngredientFeedback());
-        $forms['amountCorrected']->setData($viewData->getAmountCorrected());
-        $forms['unitIdCorrected']->setData($viewData->getUnitIdCorrected());
+        foreach ($forms as $formElementName => $form) {
+            switch ($formElementName) {
+                case 'recipeIngredientId':
+                    $form->setData($viewData->getRecipeIngredientId());
+                    break;
+                case 'amountOriginal':
+                    $form->setData($viewData->getAmountOriginal());
+                    break;
+                case 'unitIdOriginal':
+                    $form->setData($viewData->getUnitIdOriginal());
+                    break;
+                case 'ingredientFeedback':
+                    $form->setData($viewData->getIngredientFeedback());
+                    break;
+                case 'amountCorrected':
+                    $form->setData($viewData->getAmountCorrected());
+                    break;
+                case 'unitIdCorrected':
+                    $form->setData($viewData->getUnitIdCorrected());
+                    break;
+            }
+        }
     }
 
     /**
