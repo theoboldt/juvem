@@ -111,17 +111,17 @@
         <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
           <div class="form-group">
             <button class="btn btn-primary" data-toggle="modal" data-target="#dialogModalInvoiceCreate"
-                    title="Rechnungen erstellen...">{{ 'credit-card'|glyph }} Erstellen… <span class="caret-right"></span>
+                    title="Rechnungen erstellen...">{{ 'credit-card'|glyph }} Erstellen… {{ caretRight() }}
             </button>
             <button class="btn btn-default" data-toggle="modal" data-target="#dialogModalInvoiceSend"
-                    title="Rechnungen verschicken">{{ 'envelope'|glyph }} Verschicken… <span class="caret-right"></span>
+                    title="Rechnungen verschicken">{{ 'envelope'|glyph }} Verschicken… {{ caretRight() }}
             </button>
             <div class="btn-group" role="group">
               <a href="{{ path('event_invoice_download_package', {eid: event.eid, filter: 'current'}) }}"
                  class="btn btn-default btn-download">{{ 'compressed'|glyph }} herunterladen</a>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                       aria-haspopup="true" aria-expanded="false">
-                  <span class="caret"></span>
+                  {{ caret() }}
                   <span class="sr-only">Menü erweitern</span>
               </button>
               <ul class="dropdown-menu">

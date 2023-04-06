@@ -207,7 +207,7 @@ HTML;
                    ' data-type="' . get_class($entity) . '"' .
                    ' data-id="' . $entity->getId() . '"' .
                    ' title="Zugehörige E-Mails auflisten">' .
-                   '<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><span class="hidden-xs"> E-Mails</span> <span class="caret-right"></span></button>';
+                   '<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><span class="hidden-xs"> E-Mails</span> '.Caret::caretRight().'</span></button>';
         return $result;
     }
 }

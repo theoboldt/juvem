@@ -58,25 +58,22 @@
                             {% if not acquisition.isArchived %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="archive">
-                                    {{ 'folder-close'|glyph }}<span class="hidden-xs"> Archivieren</span> <span
-                                        class="caret-right"></span>
+                                    {{ 'folder-close'|glyph }}<span class="hidden-xs"> Archivieren</span> {{ caretRight() }}
                                 </button>
                             {% elseif not acquisition.isDeleted %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="delete">
-                                    {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span> <span
-                                        class="caret-right"></span>
+                                    {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb</span> {{ caretRight() }}
                                 </button>
                             {% else %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="restore">
-                                    {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen </span> <span
-                                        class="caret-right"></span>
+                                    {{ 'repeat'|glyph }}<span class="hidden-xs"> Wiederherstellen </span> {{ caretRight() }}
                                 </button>
                             {% endif %}
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
-                                <span class="caret"></span>
+                                {{ caret() }}
                                 <span class="sr-only">Archivieren oder in Papierkorb verschieben…</span>
                             </button>
                             <ul class="dropdown-menu">
@@ -84,13 +81,11 @@
                                     {% if acquisition.isDeleted %}
                                         <a href="#" data-toggle="modal" data-target="#dialogModal"
                                            data-action="restore">
-                                            {{ 'repeat'|glyph }} aus Papierkorb zurückholen <span
-                                                class="caret-right"></span>
+                                            {{ 'repeat'|glyph }} aus Papierkorb zurückholen {{ caretRight() }}
                                         </a>
                                     {% else %}
                                         <a href="#" data-toggle="modal" data-target="#dialogModal" data-action="delete">
-                                            {{ 'trash'|glyph }} in Papierkorb verschieben <span
-                                                class="caret-right"></span>
+                                            {{ 'trash'|glyph }} in Papierkorb verschieben {{ caretRight() }}
                                         </a>
                                     {% endif %}
                                 </li>
@@ -98,13 +93,12 @@
                                     {% if acquisition.isArchived %}
                                         <a href="#" data-toggle="modal" data-target="#dialogModal"
                                            data-action="unarchive">
-                                            {{ 'folder-open'|glyph }} aus dem Archiv zurückholen <span
-                                                class="caret-right"></span>
+                                            {{ 'folder-open'|glyph }} aus dem Archiv zurückholen {{ caretRight() }}
                                         </a>
                                     {% else %}
                                         <a href="#" data-toggle="modal" data-target="#dialogModal"
                                            data-action="archive">
-                                            {{ 'folder-close'|glyph }} archivieren <span class="caret-right"></span>
+                                            {{ 'folder-close'|glyph }} archivieren {{ caretRight() }}
                                         </a>
                                     {% endif %}
                                 </li>

@@ -9,6 +9,10 @@ services:
         autowire: true
         autoconfigure: true
 
+    AppBundle\Twig\Extension\Caret:
+        public: false
+        tags:
+            - { name: twig.extension }
     app.twig_extension_glyph:
         class: AppBundle\Twig\Extension\BootstrapGlyph
         public: false

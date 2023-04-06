@@ -7,10 +7,10 @@
             </button>
             <input type="submit" class="btn btn-primary" value="Speichern" formaction="" formtarget="_self"/>
             <button type="button" id="openDialogSend" class="btn btn-default {% if not newsletter.lid %} disabled{% endif %}"
-                    data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden… <span class="caret-right"></span>
+                    data-toggle="modal" data-target="#dialogSend">{{ 'send'|glyph }} Versenden… {{ caretRight() }}
             </button>
             <button type="button" id="openDialogSendTest" class="btn btn-default"
-                    data-toggle="modal" data-target="#dialogSendTest">{{ 'flash'|glyph }} Test E-Mail versenden… <span class="caret-right"></span>
+                    data-toggle="modal" data-target="#dialogSendTest">{{ 'flash'|glyph }} Test E-Mail versenden… {{ caretRight() }}
             </button>
             {% if newsletter and newsletter.lid %}
                 {{ newsletter|emailListingButton(false) }}

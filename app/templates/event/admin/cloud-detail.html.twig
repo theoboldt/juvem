@@ -98,17 +98,17 @@
                     <label id="btnDisableCloud" {% if event.hasShareDirectoryRoot() %}data-toggle="modal"
                            data-target="#dialogModalDisableCloud"{% endif %}
                            class="btn btn-default {% if not event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
-                      <span class="hidden-xs">Dateifreigaben </span>nicht verwenden <span class="caret-right"></span>
+                      <span class="hidden-xs">Dateifreigaben </span>nicht verwenden {{ caretRight() }}
                     </label>
                     <label id="btnEnableCloud" {% if not event.hasShareDirectoryRoot() %}data-toggle="modal"
                            data-target="#dialogModalEnableCloud"{% endif %}
                            class="btn btn-default {% if event.hasShareDirectoryRoot() %}active{% endif %}">{{ 'cloud'|glyph }}
-                      <span class="hidden-xs">Dateifreigaben </span>verwenden <span class="caret-right"></span>
+                      <span class="hidden-xs">Dateifreigaben </span>verwenden {{ caretRight() }}
                     </label>
                   </div>
                   <label id="btnSyncUsers" data-toggle="modal" data-target="#dialogModalSyncUsers"
                          class="btn btn-default">{{ 'refresh'|glyph }}
-                    Cloud-Nutzer aktualisieren <span class="caret-right"></span>
+                    Cloud-Nutzer aktualisieren {{ caretRight() }}
                   </label>
                 </div>
               </div>
@@ -123,7 +123,7 @@
                   <button type="button" class="btn btn-default" data-toggle="modal"
                           data-target="#addUserAssignmentModal" id="addUserAssignmentButton"
                           title="Weitere Benutzer zuweisen">
-                    {{ 'plus'|glyph }} Weitere Benutzer für Cloud-Zugriff hinzufügen <span class="caret-right"></span>
+                    {{ 'plus'|glyph }} Weitere Benutzer für Cloud-Zugriff hinzufügen {{ caretRight() }}
                   </button>
                   <div class="modal fade" id="addUserAssignmentModal" tabindex="-1" role="dialog"
                        aria-labelledby="addUserAssignmentButton">

@@ -104,7 +104,7 @@ class BootstrapTableFilter extends AbstractExtension
     <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="filter-%1$s"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         %3$s<span class="description">%4$s</span>
-        <span class="caret"></span>
+        '.Caret::caret().'
     </button>
     <ul class="dropdown-menu" aria-labelledby="filter-%1$s">
         %5$s

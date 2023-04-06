@@ -100,7 +100,7 @@
                             <div class="btn-group" role="group">
                               <a href="#{{ template.id }}" class="btn btn-default" data-action="apply-process">Anwenden & Export erstellen</a>
                               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                      aria-haspopup="true" aria-expanded="false"><span class="caret"></span>
+                                      aria-haspopup="true" aria-expanded="false">{{ caret() }}
                               </button>
                               <ul class="dropdown-menu">
                                 <li>
@@ -114,7 +114,7 @@
                                   </a>
                                 </li>
                                 <li>
-                                  <a data-action="edit-meta" data-toggle="modal" data-target="#dialogEditTemplate" href="#{{ template.id }}">Titel & Beschreibung bearbeiten... <span class="caret-right"></span></a>
+                                  <a data-action="edit-meta" data-toggle="modal" data-target="#dialogEditTemplate" href="#{{ template.id }}">Titel & Beschreibung bearbeiten... {{ caretRight() }}</a>
                                 </li>
                                 <li>
                                   <a data-action="delete" data-toggle="modal" data-target="#dialogDeleteTemplate" href="#{{ template.id }}">Vorlage löschen...</a>

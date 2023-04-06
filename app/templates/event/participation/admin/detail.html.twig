@@ -115,7 +115,7 @@
                                                 {% if loop.length > 2 and loop.index == 2 %}
                                                   <div class="btn-group" role="group">
                                                     <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                      Mehr <span class="caret"></span>
+                                                      Mehr {{ caret() }}
                                                     </span>
                                                     <ul class="dropdown-menu">
                                                 {% endif %}
@@ -197,7 +197,7 @@
                                             {% if loop.length > 3 and loop.index == 3 %}
                                               <div class="btn-group" role="group">
                                                 <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                  Mehr <span class="caret"></span>
+                                                  Mehr {{ caret() }}
                                                 </span>
                                                 <ul class="dropdown-menu">
                                             {% endif %}
@@ -435,7 +435,7 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">{{ 'check'|glyph }}
-                                Bestätigung… <span class="caret"></span>
+                                Bestätigung… {{ caret() }}
                             </button>
                             <ul class="dropdown-menu">
                                 {% if unconfirmedParticipants|length %}
@@ -454,7 +454,7 @@
                                         <i class="hidden-xs">{{ confirmedParticipants|humansgrouped() }}</i> zurücknehmen</a></li>
                                 {#<li role="separator" class="divider"></li>#}
                                 {% endif %}
-                                {#<li><a href="#">Selektiv bestätigen <span class="caret-right"></span></a></li>#}
+                                {#<li><a href="#">Selektiv bestätigen {{ caretRight() }}</a></li>#}
                             </ul>
                         </div>
                         {% if participation.rejected %}
@@ -480,7 +480,7 @@
                             </button>
                         {% endif %}
                         <button type="button" class="btn btn-default {% if paymentManager is null %}disabled"{% else%}" data-toggle="modal" data-target="#dialogPriceConfiguration"{% endif %} data-aids="{{ participation.participantsIdList|join(';') }}" data-title="{{ participation|participantsgrouped(true) }}">
-                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung <span class="caret-right"></span></span>
+                            {{ 'credit-card'|glyph }}<span class="hidden-xs"> Zahlungsverwaltung {{ caretRight() }}</span>
                         </button>
                         {{ participation|changeTrackingButton(false) }}
                         {{ participation|emailListingButton(false) }}
@@ -493,7 +493,7 @@
                         <div class="btn-group" role="group">
                             <a href="{{ path('event_participation_move', {'eid': event.eid, pid: participation.pid}) }}"
                                class="btn btn-default">
-                                {{ 'level-up'|glyph }} Verschieben… <span class="caret-right"></span>
+                                {{ 'level-up'|glyph }} Verschieben… {{ caretRightDouble() }}</span>
                             </a>
                             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#dialogModal"
                                     data-action="delete">

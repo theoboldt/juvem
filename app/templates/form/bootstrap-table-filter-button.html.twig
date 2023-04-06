@@ -2,7 +2,7 @@
     <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="{{ buttonId }}"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="description">ohne zurückgezogene</span>
-        <span class="caret"></span>
+        {{ caret() }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="filterWithdrawn">
         <li><a href="#" data-filter="1">nur zurückgezogene</a></li>

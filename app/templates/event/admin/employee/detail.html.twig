@@ -158,28 +158,28 @@
                         <div class="btn-group" role="group" aria-label="Daten bearbeiten">
                             <button type="button" class="btn btn-default" data-toggle="modal"
                                     data-target="#dialogModalMoveEmployee">
-                                {{ 'arrow-right'|glyph }} Mitarbeiter:in verschieben <span class="caret-right"></span>
+                                {{ 'arrow-right'|glyph }} Mitarbeiter:in verschieben {{ caretRight() }}
                             </button>
                             {% if employee.isDeleted %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="restore">
-                                    {{ 'repeat'|glyph }} wiederherstellen <span class="caret-right"></span>
+                                    {{ 'repeat'|glyph }} wiederherstellen {{ caretRight() }}
                                 </button>
                             {% else %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="delete">
-                                    {{ 'trash'|glyph }} in Papierkorb <span class="caret-right"></span>
+                                    {{ 'trash'|glyph }} in Papierkorb {{ caretRight() }}
                                 </button>
                             {% endif %}
                             {% if employee.isConfirmed %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="unconfirm">
-                                    {{ 'unchecked'|glyph }} Bestätigung zurücknehmen <span class="caret-right"></span>
+                                    {{ 'unchecked'|glyph }} Bestätigung zurücknehmen {{ caretRight() }}
                                 </button>
                             {% else %}
                                 <button type="button" class="btn btn-default" data-toggle="modal"
                                         data-target="#dialogModal" data-action="confirm">
-                                    {{ 'check'|glyph }} bestätigen <span class="caret-right"></span>
+                                    {{ 'check'|glyph }} bestätigen {{ caretRight() }}
                                 </button>
                             {% endif %}
                         </div>

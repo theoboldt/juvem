@@ -165,7 +165,7 @@ HTML;
                 if ($changes) {
                     $btnTitle = ' <span class="hidden-xs">' .
                                 $changes . '&nbsp;Änderung' . (($changes > 1) ? 'en' : '') .
-                                ' <span class="caret-right"></span></span>';
+                                ' '.Caret::caretRight().'</span>';
                 } else {
                     $btnTitle = '<span class="hidden-xs">Keine Änderungen</span>';
                 }
