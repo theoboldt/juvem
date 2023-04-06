@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anmeldung ({{ event.title }}){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{{ path('homepage') }}">{{ appTitle }}</a></li>
+                    <li><a href="{{ path('event_list') }}">Veranstaltungen</a></li>
+                    <li><a href="{{ path('event', {'eid': event.eid }) }}">{{ event.title }}</a></li>
+                    <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">Teilnehmer:innen</a></li>
+                    <li>
+                        <a href="{{ path('event_participation_detail', {'eid': event.eid, 'pid': participation.pid }) }}">{{ participation|participantsgrouped() }}</a>
+                    </li>
+                    <li class="active">Anmeldung verschieben</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-header">
+                    <h1>Anmeldung verschieben <small>{{ participation|participantsgrouped }}</small></h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#dialogModalMoveParticipationEvent" aria-controls="dialogModalMoveParticipationEvent"
+                           role="tab" data-toggle="tab">
+                            In andere Veranstaltung verschieben
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#dialogModalMoveParticipationParticipation"
+                           aria-controls="dialogModalMoveParticipationParticipation" role="tab"
+                           data-toggle="tab">
+                            In andere Anmeldung derselben Veranstaltung verschieben
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="dialogModalMoveParticipationEvent">
+                        {{ form_start(formMoveParticipationEvent) }}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    Falls die Anmeldung irrtümlich für die falsche Veranstaltung abgegeben wurde, kann
+                                    sie verschoben werden. Dabei wird sie in die Ziel-Veranstaltung kopiert und mit
+                                    einem Kommentar versehen.
+                                    Die Anmeldung hier wird mit einem Kommentar versehen und in den Papierkorb
+                                    verschoben. Der Text der Kommentare kann unten angepasst werden. Zusätzliche Daten
+                                    wie Kommentare oder der festgelegte Preis oder Zahlungen werden nicht verschoben.
+                                </p>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationEvent.targetEvent) }}
+                                    {{ form_widget(formMoveParticipationEvent.targetEvent) }}
+                                    {{ form_errors(formMoveParticipationEvent.targetEvent) }}
+                                    <p class="help-block">Zur Auswahl stehen nur im Moment aktive Veranstaltungen.</p>
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationEvent.commentOldParticipation) }}
+                                    {{ form_widget(formMoveParticipationEvent.commentOldParticipation) }}
+                                    {{ form_errors(formMoveParticipationEvent.commentOldParticipation) }}
+                                    <p class="help-block">Der Platzhalter <code>{EVENT_NEW}</code> wird durch den Namen
+                                        der oben gewählten Veranstaltung ersetzt. <code>{PID_NEW}</code> wird durch die
+                                        neue Anmeldungsnummer ersetzt.</p>
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationEvent.commentNewParticipation) }}
+                                    {{ form_widget(formMoveParticipationEvent.commentNewParticipation) }}
+                                    {{ form_errors(formMoveParticipationEvent.commentNewParticipation) }}
+                                    <p class="help-block">Der Platzhalter <code>{EVENT_OLD}</code> wird durch
+                                        <i>{{ event.title }}</i> ersetzt. <code>{PID_OLD}</code> wird durch die alte
+                                        Anmeldungsnummer <i>{{ participation.pid }}</i> ersetzt.</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                                <input type="submit" class="btn btn-primary"
+                                       value="Anmeldung in Veranstaltung verschieben"/>
+                            </div>
+                        </div>
+                        {{ form_end(formMoveParticipationEvent) }}
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="dialogModalMoveParticipationParticipation">
+                        {{ form_start(formMoveParticipationParticipation) }}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    Falls <u>alle</u> Teilnehmer:innen ({{ participation|participantsgrouped() }})
+                                    dieser Anmeldung eigentlich zu einer anderen gehören, können sie verschoben werden.
+                                    Dabei werden sie in die Ziel-Anmeldung kopiert und mit einem Kommentar versehen. Die
+                                    Anmeldung hier wird mit einem Kommentar versehen und als zurückgezogen markiert. Der
+                                    Text der Kommentare kann unten angepasst werden. Zusätzliche Daten wie Kommentare
+                                    oder der festgelegte Preis oder Zahlungen werden nicht verschoben.
+                                </p>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationParticipation.targetParticipation) }}
+                                    {{ form_widget(formMoveParticipationParticipation.targetParticipation) }}
+                                    {{ form_errors(formMoveParticipationParticipation.targetParticipation) }}
+                                    <p class="help-block">Zur Auswahl stehen nur Anmeldungen die nicht gelöscht worden
+                                        sind. In eckigen Klammern stehen die aktiven Teilnehmer:innen der
+                                        Veranstaltung.</p>
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationParticipation.commentOld) }}
+                                    {{ form_widget(formMoveParticipationParticipation.commentOld) }}
+                                    {{ form_errors(formMoveParticipationParticipation.commentOld) }}
+                                    <p class="help-block">Der Platzhalter <code>{PID_NEW}</code> wird durch die neue
+                                        Anmeldungsnummer ersetzt.</p>
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(formMoveParticipationParticipation.commentNew) }}
+                                    {{ form_widget(formMoveParticipationParticipation.commentNew) }}
+                                    {{ form_errors(formMoveParticipationParticipation.commentNew) }}
+                                    <p class="help-block">Der Platzhalter <code>{PID_OLD}</code> wird durch die alte
+                                        Anmeldungsnummer <i>{{ participation.pid }}</i> ersetzt.</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                                <input type="submit" class="btn btn-primary" value="Teilnehmer:innen verschieben"/>
+                            </div>
+                        </div>
+                        {{ form_end(formMoveParticipationParticipation) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -189,6 +189,85 @@ class AdminSingleController
             ['eid' => $event->getEid(), 'pid' => $participant->getParticipation()->getPid()]
         );
     }
+
+    /**
+     * Provide options to move participation
+     *
+     * @Route("/admin/event/{eid}/participation/{pid}/move", requirements={"eid": "\d+", "pid": "\d+"}, name="event_participation_move")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
+     */
+    public function participationMoveAction(Request $request)
+    {
+        $participationRepository = $this->getDoctrine()->getRepository(Participation::class);
+
+        /** @var Participation $participation */
+        $participation = $participationRepository->findDetailed($request->get('pid'));
+        if (!$participation) {
+            throw new BadRequestHttpException('Requested participation event not found');
+        }
+        $event = $participation->getEvent();
+        $this->denyAccessUnlessGranted('participants_read', $event);
+
+        $formMoveParticipationEvent = $this->createForm(
+            MoveParticipationEventType::class, null, [MoveParticipationEventType::PARTICIPATION_OPTION => $participation]
+        );
+        $formMoveParticipationEvent->handleRequest($request);
+        if ($formMoveParticipationEvent->isSubmitted() && $formMoveParticipationEvent->isValid()) {
+            $user = $this->getUser();
+            $participationNew = $this->participationManager->moveParticipationEvent(
+                $participation,
+                $formMoveParticipationEvent->get('targetEvent')->getData(),
+                $formMoveParticipationEvent->get('commentOldParticipation')->getData(),
+                $formMoveParticipationEvent->get('commentNewParticipation')->getData(),
+                $user instanceof User ? $user : null
+            );
+            return $this->redirectToRoute(
+                'event_participation_detail',
+                [
+                    'eid' => $participationNew->getEvent()->getEid(),
+                    'pid' => $participationNew->getPid(),
+                ]
+            );
+        }
+
+        $formMoveParticipationParticipation = $this->createForm(
+            MoveParticipationParticipationType::class,
+            null,
+            [
+                MoveParticipationParticipationType::PARTICIPATION_OPTION => $participation
+            ]
+        );
+        $formMoveParticipationParticipation->handleRequest($request);
+        if ($formMoveParticipationParticipation->isSubmitted() && $formMoveParticipationParticipation->isValid()) {
+            $user = $this->getUser();
+            $participantsNew = $this->participationManager->moveParticipationParticipation(
+                $participation,
+                $formMoveParticipationParticipation->get('targetParticipation')->getData(),
+                $formMoveParticipationParticipation->get('commentOld')->getData(),
+                $formMoveParticipationParticipation->get('commentNew')->getData(),
+                $user instanceof User ? $user : null
+            );
+            /** @var Participant $participantNew */
+            $participantNew = reset($participantsNew);
+            return $this->redirectToRoute(
+                'event_participation_detail',
+                [
+                    'eid' => $participantNew->getEvent()->getEid(),
+                    'pid' => $participantNew->getParticipation()->getPid(),
+                ]
+            );
+        }
+        
+        return $this->render(
+            'event/participation/admin/move.html.twig',
+            [
+                'event'                              => $event,
+                'participation'                      => $participation,
+                'formMoveParticipationEvent'         => $formMoveParticipationEvent->createView(),
+                'formMoveParticipationParticipation' => $formMoveParticipationParticipation->createView(),
+            ]
+        );        
+    }
     
     /**
      * Details of one participation including all participants
@@ -247,58 +326,7 @@ class AdminSingleController
                 $participationChanged = true;
             }
         }
-
-        $formMoveParticipationEvent = $this->createForm(
-            MoveParticipationEventType::class, null, [MoveParticipationEventType::PARTICIPATION_OPTION => $participation]
-        );
-        $formMoveParticipationEvent->handleRequest($request);
-        if ($formMoveParticipationEvent->isSubmitted() && $formMoveParticipationEvent->isValid()) {
-            $user = $this->getUser();
-            $participationNew = $this->participationManager->moveParticipationEvent(
-                $participation,
-                $formMoveParticipationEvent->get('targetEvent')->getData(),
-                $formMoveParticipationEvent->get('commentOldParticipation')->getData(),
-                $formMoveParticipationEvent->get('commentNewParticipation')->getData(),
-                $user instanceof User ? $user : null
-            );
-            return $this->redirectToRoute(
-                'event_participation_detail',
-                [
-                    'eid' => $participationNew->getEvent()->getEid(),
-                    'pid' => $participationNew->getPid(),
-                ]
-            );
-        }
-
-        $formMoveParticipationParticipation = $this->createForm(
-            MoveParticipationParticipationType::class,
-            null,
-            [
-                MoveParticipationParticipationType::PARTICIPATION_OPTION => $participation
-            ]
-        );
-        $formMoveParticipationParticipation->handleRequest($request);
-        if ($formMoveParticipationParticipation->isSubmitted() && $formMoveParticipationParticipation->isValid()) {
-            $user = $this->getUser();
-            $participantsNew = $this->participationManager->moveParticipationParticipation(
-                $participation,
-                $formMoveParticipationParticipation->get('targetParticipation')->getData(),
-                $formMoveParticipationParticipation->get('commentOld')->getData(),
-                $formMoveParticipationParticipation->get('commentNew')->getData(),
-                $user instanceof User ? $user : null
-            );
-            /** @var Participant $participantNew */
-            $participantNew = reset($participantsNew);
-            return $this->redirectToRoute(
-                'event_participation_detail',
-                [
-                    'eid' => $participantNew->getEvent()->getEid(),
-                    'pid' => $participantNew->getParticipation()->getPid(),
-                ]
-            );
-        }
         
-
         $em = $this->getDoctrine()->getManager();
 
         $formRelated = $this->createForm(
@@ -435,8 +463,6 @@ class AdminSingleController
                 'formAction'                         => $formAction->createView(),
                 'formAssignUser'                     => $formUser->createView(),
                 'formRelated'                        => $formRelated->createView(),
-                'formMoveParticipationEvent'         => $formMoveParticipationEvent->createView(),
-                'formMoveParticipationParticipation' => $formMoveParticipationParticipation->createView(),
             ]
         );
     }
