@@ -40,7 +40,9 @@
                             </div>
                             <div class="col-xs-2 text-right">
                                 <a href="{{ path('public_edit_participation', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten" data-toggle="tooltip">
+                                    {{ 'pencil'|glyph }} {{ caretRightDouble() }}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -97,7 +99,9 @@
                             </div>
                             <div class="col-xs-2 text-right">
                                 <a href="{{ path('public_edit_phonenumbers', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Telefonnummern bearbeiten" data-toggle="tooltip">
+                                    {{ 'pencil'|glyph }} {{ caretRightDouble() }}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -125,9 +129,13 @@
                                 </div>
                                 <div class="col-xs-3 text-right">
                                 <a href="{{ path('public_add_participant', {'pid': participation.pid}) }}"
-                                   class="btn btn-default btn-xs" title="Neue Teilnehmer:in hinzufügen" data-toggle="tooltip">{{ 'plus'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Neue Teilnehmer:in hinzufügen" data-toggle="tooltip">
+                                    {{ 'plus'|glyph }} {{ caretRightDouble() }}
+                                </a>
                                 <a href="{{ path('public_edit_participant', {'pid': participation.pid, 'aid': participant.aid}) }}"
-                                   class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">
+                                    {{ 'pencil'|glyph }} {{ caretRightDouble() }}
+                                </a>
                                 </div>
                             </div>
                         </div>

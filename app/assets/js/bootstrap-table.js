@@ -334,7 +334,7 @@ $(function () {
      * NEWSLETTER: newsletters
      */
     $('#newsletterNewsletterTable').on('click-row.bs.table', function (e, row, $element) {
-        openInNewTabOnMetaKey(row.lid + '/edit');
+        openInNewTabOnMetaKey('newsletter/' + row.lid + '/edit');
     });
 
     /**

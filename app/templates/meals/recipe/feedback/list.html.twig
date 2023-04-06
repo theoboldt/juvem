@@ -16,8 +16,8 @@
       <div class="col-md-12">
         <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
           <div class="form-group">
-            <a class="btn btn-primary" href="{{ path('meals_feedback_new', {'id': recipe.id }) }}">{{ 'plus'|glyph }}
-              Neu</a>
+            <a class="btn btn-primary" href="{{ path('meals_feedback_new', {'id': recipe.id }) }}">
+              {{ 'plus'|glyph }} Neu {{ caretRightDouble() }}</a>
           </div>
         </div>
         <table id="recipeFeedbackList" class="table table-striped table-remote-content" data-id-field="bid"

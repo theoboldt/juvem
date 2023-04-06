@@ -21,11 +21,11 @@
                     </div>
                     <div class="btn-group" role="group">
                         <a href="{{ path('fos_user_profile_show') }}"
-                           class="btn btn-default">Änderungen verwerfen</a>
+                           class="btn btn-default">Änderungen verwerfen {{ caretRightDouble() }}</a>
                     </div>
                     <div class="btn-group" role="group">
                         <a href="{{ path('fos_user_change_password') }}"
-                           class="btn btn-default">{{ 'wrench'|glyph }} Passwort <span class="hidden-xs">ändern</span></a>
+                           class="btn btn-default">{{ 'wrench'|glyph }} Passwort <span class="hidden-xs">ändern</span> {{ caretRightDouble() }}</a>
                     </div>
 
                     <button type="button" class="btn btn-default" data-element="activebutton" data-entity="User"

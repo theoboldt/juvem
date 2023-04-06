@@ -523,10 +523,10 @@
                                 {% if is_granted('participants_edit', event) -%}
                                 <a href="{{ path('admin_edit_phonenumbers', {'eid': event.eid, 'pid': participation.pid}) }}"
                                    class="btn btn-default btn-xs" title="Telefonnummern bearbeiten"
-                                   data-toggle="tooltip">{{ 'phone-alt'|glyph }}</a>
+                                   data-toggle="tooltip">{{ 'phone-alt'|glyph }} {{ caretRightDouble() }}</a>
                                 <a href="{{ path('admin_edit_participation', {'eid': event.eid, 'pid': participation.pid}) }}"
                                    class="btn btn-default btn-xs" title="Anmeldungsdaten bearbeiten"
-                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   data-toggle="tooltip">{{ 'pencil'|glyph }} {{ caretRightDouble() }}</a>
                                 {% endif -%}
                                 {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                 <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs"
@@ -601,7 +601,7 @@
                                             data-button-disable-label="Anmeldung von {{ participant.nameFirst }} reaktivieren"
                                             data-button-disable-glyph="retweet">{{ 'option-horizontal'|glyph }}</button>
                                     <a href="{{ path('admin_edit_participant', {'eid': event.eid, 'pid': participation.pid, 'aid': participant.aid}) }}"
-                                       class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                       class="btn btn-default btn-xs" title="Teilnehmer:in {{ participant.nameFirst }} bearbeiten" data-toggle="tooltip">{{ 'pencil'|glyph }} {{ caretRightDouble() }}</a>
                                     {% endif -%}
                                     {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                     <button class="btn btn-default btn-xs" type="button" data-toggle="collapse"

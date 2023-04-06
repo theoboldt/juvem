@@ -16,11 +16,11 @@
         <div class="btn-toolbar btn-toolbar-spacer" role="toolbar">
           <div class="btn-group" role="group">
             <a href="{{ path('meals_recipes_edit', {'id': recipe.id }) }}" title="Rezept bearbeiten"
-               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+               class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span> {{ caretRightDouble() }}</a>
           </div>
           <div class="btn-group" role="group">
             <a href="{{ path('meals_feedback_new', {'id': recipe.id }) }}" title="Neue Rückmeldung erfassen"
-               class="btn btn-default">{{ 'plus'|glyph }} <span class="hidden-xs">Rückmeldung erfassen</span></a>
+               class="btn btn-default">{{ 'plus'|glyph }} <span class="hidden-xs">Rückmeldung erfassen</span> {{ caretRightDouble() }}</a>
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
               {{ caret() }}
@@ -28,9 +28,9 @@
             </button>
             <ul class="dropdown-menu">
               <li><a href="{{ path('meals_feedback_list', {'id': recipe.id }) }}">{{ 'list'|glyph }} Rückmeldungen
-                  verwalten</a></li>
+                  verwalten {{ caretRightDouble() }}</a></li>
               <li><a href="{{ path('meals_feedback_new', {'id': recipe.id }) }}"
-                     title="Neue Rückmeldung erfassen">{{ 'plus'|glyph }} Rückmeldung erfassen</a></li>
+                     title="Neue Rückmeldung erfassen">{{ 'plus'|glyph }} Rückmeldung erfassen {{ caretRightDouble() }}</a></li>
             </ul>
           </div>
         </div>

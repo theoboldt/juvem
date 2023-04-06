@@ -22,7 +22,9 @@
                                     {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
                                         (wenig Plätze frei)
                                     {%- endif -%}
-                                {%- endif -%}</a>
+                                {%- endif -%}
+                                 {{ caretRightDouble() }}
+                        </a>
                     {% elseif event.hasLink() %}
                       <a href="{{ event.linkUrl }}" rel="noopener" target="_blank" style="float: right;"
                          class="btn btn-default glyphicon-size-75">{{ event.linkTitle }} {{ 'new-window'|glyph }}</a>
@@ -40,7 +42,9 @@
                     {% if is_granted('ROLE_ADMIN_EVENT') %}
                         {% if event.isActive %}
                             <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
-                               class="btn btn-default" role="button">Teilnehmen</a>
+                               class="btn btn-default" role="button">
+                                Teilnehmen {{ caretRightDouble() }}
+                            </a>
                         {% endif %}
                         <a href="{{ path('event', {eid: event.eid}) }}" class="btn btn-primary">Verwalten</a>
                     {% else %}
@@ -53,6 +57,7 @@
                                         (wenig Plätze frei)
                                     {%- endif -%}
                                 {%- endif -%}
+                                {{ caretRightDouble() }}
                             </a>
                         {% endif %}
                     {% endif %}

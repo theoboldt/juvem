@@ -82,6 +82,7 @@
                                                                     (wenig Plätze frei)
                                                                 {%- endif -%}
                                                             {%- endif -%}
+                                                            {{ caretRightDouble() }}
                                                         </a>
                                                         <button type="button" class="btn btn-primary dropdown-toggle"
                                                                 data-toggle="dropdown"
@@ -92,12 +93,12 @@
                                                         <ul class="dropdown-menu">
                                                             <li>
                                                                 <a href="{{ path('event_public_participate', {'eid': event.eid }) }}">Leere
-                                                                    Anmeldung ausfüllen</a></li>
+                                                                    Anmeldung ausfüllen {{ caretRightDouble() }}</a></li>
                                                             <li{% if not participations|length %} class="disabled"{% endif %}>
                                                                 <a href="#" role="button"
-                                                                        {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}>Anmeldung
-                                                                    mit früheren Daten vorausfüllen
-                                                                </a></li>
+                                                                        {% if participations|length %} data-toggle="modal" data-target="#modalPrefillParticipation{{ event.eid }}"{% endif %}>Anmeldung mit früheren Daten vorausfüllen {{ caretRightDouble() }}
+                                                                </a>
+                                                            </li>
                                                         </ul>
                                                     </div>
                                                 {% else %}
@@ -117,18 +118,21 @@
                                           {% if event.isActiveRegistrationEmployee %}
                                             <a role="button"
                                                href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
-                                               class="btn btn-default">Mitarbeiten
+                                               class="btn btn-default">Mitarbeiten {{ caretRightDouble() }}
                                             </a>
                                           {% endif %}
                                             {% if is_granted('read', event) %}
                                                 <a role="button" href="{{ path('event', {'eid': event.eid }) }}"
                                                    class="btn btn-default">Verwalten{% if event.participantsUnconfirmedCount %}
                                                     <span class="badge">{{ event.participantsUnconfirmedCount }}</span>{% endif %}
+                                                    {{ caretRightDouble() }}
                                                 </a>
                                             {% endif %}
                                             <a role="button"
                                                href="{{ path('event_public_detail', {'eid': event.eid }) }}"
-                                               class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">Details</a>
+                                               class="btn btn-{% if event.isActive %}default{% else %}primary{% endif %}">
+                                                Details {{ caretRightDouble() }}
+                                            </a>
                                             {% if event.hasLink() %}
                                                 <a role="button" href="{{ event.linkUrl }}" rel="noopener"
                                                    target="_blank"

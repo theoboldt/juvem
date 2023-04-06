@@ -17,9 +17,9 @@
     <div class="col-xs-12">
       <div class="btn-toolbar" role="toolbar">
         <a href="{{ path('meals_recipes_detail', {'id': recipe.id }) }}"
-           class="btn btn-default">{{ 'book'|glyph }} zum Rezept</a>
+           class="btn btn-default">{{ 'book'|glyph }} zum Rezept {{ caretRightDouble() }}</a>
         <a href="{{ path('meals_feedback_edit', {'fid': feedback.id, 'rid': recipe.id}) }}"
-           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+           class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span> {{ caretRightDouble() }}</a>
       </div>
     </div>
   </div>

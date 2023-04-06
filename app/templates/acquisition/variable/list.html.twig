@@ -13,7 +13,7 @@
             <div class="col-md-12">
                 <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
                     <div class="form-group">
-                        <a class="btn btn-primary" href="{{ path('admin_variable_new') }}">{{ 'plus'|glyph }} Neu</a>
+                        <a class="btn btn-primary" href="{{ path('admin_variable_new') }}">{{ 'plus'|glyph }} Neu {{ caretRightDouble() }}</a>
                     </div>
                     <div class="btn-group" role="group">
                         {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöschte', 'ohne gelöschte', 'mit und ohne gelöschte') }}

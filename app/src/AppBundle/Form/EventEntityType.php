@@ -84,9 +84,9 @@ class EventEntityType extends AbstractType implements DataTransformerInterface
                                ->addOrderBy('e.startTime', 'DESC')
                                ->addOrderBy('e.title');
                             
-                            $result = $qb->getQuery()->execute();
+                            $qbResult = $qb->getQuery()->execute();
                             $titles = [];
-                            foreach ($result as $eventData) {
+                            foreach ($qbResult as $eventData) {
                                 if (isset($titles[$eventData['title']])) {
                                     ++$titles[$eventData['title']];
                                 } else {
@@ -94,7 +94,8 @@ class EventEntityType extends AbstractType implements DataTransformerInterface
                                 }
                             }
                             
-                            foreach ($result as $eid => $eventData) {
+                            $result = [];
+                            foreach ($qbResult as $eid => $eventData) {
                                 $eventTitle = $eventData['title'];
                                 $year       = $eventData['startDate']->format('Y');
                                 
@@ -108,8 +109,10 @@ class EventEntityType extends AbstractType implements DataTransformerInterface
                                 if ($titles[$eventTitle] > 1) {
                                     $eventTitle .= ' [' . $date . ']';
                                 }
-                                yield $eventTitle => $eid;
+                                $result[$eventTitle] = $eid;
                             }
+                            
+                            return $result;
                         }
                     );
                 },

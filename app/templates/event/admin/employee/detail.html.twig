@@ -205,7 +205,7 @@
                                 {% if is_granted('employees_edit', event) -%}
                                 <a href="{{ path('admin_employee_edit', {'eid': event.eid, 'gid': employee.gid}) }}"
                                    class="btn btn-default btn-xs" title="Daten bearbeiten"
-                                   data-toggle="tooltip">{{ 'pencil'|glyph }}</a>
+                                   data-toggle="tooltip">{{ 'pencil'|glyph }} {{ caretRightDouble() }}</a>
                                 {% endif -%}
                                 {% if is_granted('comment_add', event) or is_granted('comment_read', event) -%}
                                 <button title="Anmerkungen anzeigen und hinzufügen" class="btn btn-default btn-xs"

@@ -195,9 +195,7 @@ class AdminController extends AbstractController
     public function listNewsletterAction()
     {
         $this->dieIfNewsletterNotEnabled();
-        return $this->render(
-            'newsletter/admin/newsletter/list.html.twig'
-        );
+        return $this->redirectToRoute('newsletter_admin_overview');
     }
 
     /**

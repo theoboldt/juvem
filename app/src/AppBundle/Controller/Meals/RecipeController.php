@@ -30,6 +30,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -44,9 +45,9 @@ class RecipeController
      * @var FoodService
      */
     private FoodService $foodService;
-    
+
     use DoctrineAwareControllerTrait, RoutingControllerTrait, RenderingControllerTrait, FormAwareControllerTrait, AuthorizationAwareControllerTrait, FlashBagAwareControllerTrait;
-    
+
     /**
      * AdminGroupController constructor.
      *
@@ -55,6 +56,7 @@ class RecipeController
      * @param FormFactoryInterface $formFactory
      * @param AuthorizationCheckerInterface $authorizationChecker
      * @param TokenStorageInterface $tokenStorage
+     * @param SessionInterface|null $session
      * @param RouterInterface $router
      * @param FoodService $foodService
      */
@@ -64,6 +66,7 @@ class RecipeController
         FormFactoryInterface $formFactory,
         AuthorizationCheckerInterface $authorizationChecker,
         TokenStorageInterface $tokenStorage,
+        ?SessionInterface $session,
         RouterInterface $router,
         FoodService $foodService
     )
@@ -75,6 +78,7 @@ class RecipeController
         $this->tokenStorage         = $tokenStorage;
         $this->router               = $router;
         $this->foodService          = $foodService;
+        $this->session              = $session;
     }
     
     /**

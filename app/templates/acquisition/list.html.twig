@@ -14,7 +14,7 @@
 
                 <div id="bootstrap-table-toolbar" class="form-inline bootstrap-table-toolbar">
                     <div class="form-group">
-                        <a class="btn btn-primary" href="{{ path('acquisition_new') }}">{{ 'plus'|glyph }} Neu</a>
+                        <a class="btn btn-primary" href="{{ path('acquisition_new') }}">{{ 'plus'|glyph }} Neu {{ caretRightDouble() }}</a>
                     </div>
                     <div class="btn-group" role="group">
                         {{ 'is_deleted'|tableFilterButtonTri(1, 'nur gelöscht', 'ohne gelöschte', 'mit und ohne gelöschte') }}

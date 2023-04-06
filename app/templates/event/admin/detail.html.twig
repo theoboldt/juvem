@@ -46,29 +46,29 @@
                                 <span class="sr-only">Menü erweitern</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer:innen verwalten</a></li>
-                                <li><a href="{{ path('event_participants_changes', {'eid': event.eid }) }}">{{ 'time'|glyph }} Änderungen untersuchen</a></li>
-                                <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">{{ 'transfer'|glyph }} {{ groupCount }} Einteilungsfeld{% if groupCount != 1 %}er{% endif %} verwalten</a></li>
+                                <li><a href="{{ path('event_participants_list', {'eid': event.eid }) }}">{{ 'list'|glyph }} Teilnehmer:innen verwalten {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_participants_changes', {'eid': event.eid }) }}">{{ 'time'|glyph }} Änderungen untersuchen {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_admin_groups', {'eid': event.eid }) }}">{{ 'transfer'|glyph }} {{ groupCount }} Einteilungsfeld{% if groupCount != 1 %}er{% endif %} verwalten {{ caretRightDouble() }}</a></li>
                                 {% if numberFieldCount > 0 %}
                                     <li><a href="{{ path('event_admin_order', {'eid': event.eid }) }}">{{ 'sort-by-order'|glyph }}
-                                            Reihenfolge festlegen</a></li>
+                                            Reihenfolge festlegen {{ caretRightDouble() }}</a></li>
                                 {% endif %}
-                                <li><a href="{{ path('event_admin_dependencies_overview', {'eid': event.eid }) }}">{{ 'random'|glyph }} Beziehungsübersicht</a></li>
-                                <li><a href="{{ path('event_participants_list_specific_age', {'eid': event.eid }) }}">{{ 'calendar'|glyph }} Stichtagsliste erstellen</a></li>
-                                <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten</a></li>
+                                <li><a href="{{ path('event_admin_dependencies_overview', {'eid': event.eid }) }}">{{ 'random'|glyph }} Beziehungsübersicht {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_participants_list_specific_age', {'eid': event.eid }) }}">{{ 'calendar'|glyph }} Stichtagsliste erstellen {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_attendance_lists', {'eid': event.eid }) }}">{{ 'check'|glyph }} Anwesenheitslisten {{ caretRightDouble() }}</a></li>
                                 {%- if is_granted('participants_edit', event) -%}
-                                <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden…</a></li>
+                                <li><a href="{{ path('event_mail', {'eid': event.eid }) }}">{{ 'send'|glyph }} E-Mail versenden… {{ caretRightDouble() }}</a></li>
                                 {%- endif %}
-                                <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten</a></li>
-                                <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer:innen-Herkunft untersuchen</a></li>
+                                <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer:innen-Herkunft untersuchen {{ caretRightDouble() }}</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer:innen exportieren…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren…</a></li>
-                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren…</a></li>
-                                <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussantrag exportieren (alt) {{ 'new-window'|glyph }}</a></li>
-                                <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren {{ 'new-window'|glyph }}</a></li>
+                                <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren… {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen… {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#participants">{{ 'user'|glyph }} Teilnehmer:innen exportieren… {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#phone_list">{{ 'phone-alt'|glyph }} Telefonliste exportieren… {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}#letter">{{ 'envelope'|glyph }} Für Serienbrief exportieren… {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_participants_birthday_address_export', {'eid': event.eid }) }}">Für Zuschussantrag exportieren (alt) {{ caretRightDouble() }}</a></li>
+                                <li><a href="{{ path('event_participations_export', {'eid': event.eid }) }}">Anmeldungen exportieren {{ caretRightDouble() }}</a></li>
                             </ul>
                         </div>
                     {%- endif %}
@@ -76,15 +76,15 @@
                         <div class="btn-group" role="group">
                             {% if not event.isCleared %}
                                 <a href="{{ path('admin_event_employee_list', {'eid': event.eid }) }}"
-                                class="btn btn-default" title="Mitarbeiter:innen verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter:innen</span></a>
+                                class="btn btn-default" title="Mitarbeiter:innen verwalten">{{ 'heart'|glyph }} <span class="hidden-xs">{{ employeeCount }} Mitarbeiter:innen</span> {{ caretRightDouble() }}</a>
                             {% endif %}
                             <a href="{{ path('event_user_admin', {'eid': event.eid }) }}"
-                               class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span></a>
+                               class="btn btn-default" title="Benutzerzuweisung bearbeiten">{{ 'user'|glyph }} <span class="hidden-xs">{{ event.userAssignments|length }} Benutzer</span> {{ caretRightDouble() }}</a>
                         </div>
                         {% if not event.isCleared %}
                             <div class="btn-group" role="group">
                                 <a href="{{ path('event_edit', {'eid': event.eid }) }}"
-                                   class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span></a>
+                                   class="btn btn-primary">{{ 'pencil'|glyph }} <span class="hidden-xs">Bearbeiten</span> {{ caretRightDouble() }}</a>
                                 <button type="button" class="btn btn-default" data-element="activebutton" data-entity="Event"
                                         data-property="isVisible" data-entity-id="{{ event.eid }}"
                                         data-token="{{ csrf_token('Event' ~ 'isVisible' ~ event.eid ) }}"
@@ -102,19 +102,19 @@
                     {% endif -%}
                     <div class="btn-group" role="group">
                         <a href="{{ path('event_gallery_admin', {'eid': event.eid }) }}"
-                           class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span></a>
+                           class="btn btn-default" title="Bildergalerie verwalten">{{ 'picture'|glyph }} <span class="hidden-xs">Bildergalerie</span> {{ caretRightDouble() }}</a>
                         {%- if is_granted('edit', event) and featureCloud %}
                         <a href="{{ path('admin_event_cloud', {'eid': event.eid }) }}"
-                           class="btn btn-default feature-cloud" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span></a>
+                           class="btn btn-default feature-cloud" title="Dateifreigaben verwalten">{{ 'cloud'|glyph }} <span class="hidden-xs">Cloud</span> {{ caretRightDouble() }}</a>
                         {% endif %}
                         {% if event.feedbackQuestionnaireEnabled %}
                             <a href="{{ path('admin_feedback_event', {'eid': event.eid }) }}"
-                               class="btn btn-default feature-feedback" title="Feedback verwalten">{{ 'stats'|glyph }} <span class="hidden-xs">Feedback</span></a>
+                               class="btn btn-default feature-feedback" title="Feedback verwalten">{{ 'stats'|glyph }} <span class="hidden-xs">Feedback</span> {{ caretRightDouble() }}</a>
                         {% endif %}
                     </div>
 
                     <a href="{{ path('admin_event_variable', {'eid': event.eid }) }}"
-                       class="btn btn-default" title="Veranstaltungsspezifische Variablen verwalten">{{ 'equalizer'|glyph }} <span class="hidden-xs">Variablen</span></a>
+                       class="btn btn-default" title="Veranstaltungsspezifische Variablen verwalten">{{ 'equalizer'|glyph }} <span class="hidden-xs">Variablen</span> {{ caretRightDouble() }}</a>
                     {{ event|changeTrackingButton }}
 
                     {%- if is_granted('edit', event) and not event.isCleared -%}
@@ -142,7 +142,7 @@
                                         {{ 'trash'|glyph }}<span class="hidden-xs"> Papierkorb…</span>
                                     </a>
                                 </li>
-                                <li><a href="{{ path('event_admin_clear', {'eid': event.eid }) }}">{{ 'remove-circle'|glyph }} Alle zugehörigen Anmeldedaten löschen…</a></li>
+                                <li><a href="{{ path('event_admin_clear', {'eid': event.eid }) }}">{{ 'remove-circle'|glyph }} Alle zugehörigen Anmeldedaten löschen… {{ caretRightDouble() }}</a></li>
                             </ul>
                         </div>
                         {%- endif -%}
