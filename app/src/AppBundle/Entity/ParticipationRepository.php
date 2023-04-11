@@ -88,7 +88,7 @@ class ParticipationRepository extends EntityRepository
         }
 
         if ($search->getParticipantLastName()) {
-            $qb->andWhere('a.nameFirst LIKE :participantLastName');
+            $qb->andWhere('a.nameLast LIKE :participantLastName');
             $qb->setParameter('participantLastName', '%' . $search->getParticipantLastName() . '%');
         }
         if ($search->getParticipantFirstName()) {
