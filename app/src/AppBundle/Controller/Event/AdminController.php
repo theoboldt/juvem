@@ -26,6 +26,7 @@ use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\CustomField\NumberCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventAcquisitionAttributeUnavailableException;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\EventUserAssignment;
 use AppBundle\Entity\Participant;
 use AppBundle\Entity\Participation;
@@ -48,6 +49,7 @@ use AppBundle\Manager\ParticipationManager;
 use AppBundle\Manager\Payment\PaymentManager;
 use AppBundle\Manager\Payment\PriceManager;
 use AppBundle\Manager\UploadImageManager;
+use AppBundle\Twig\Extension\BootstrapGlyph;
 use AppBundle\Twig\MailGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
@@ -434,6 +436,109 @@ class AdminController
             ]
         );
     }
+    
+    /**
+     * List of participants celebrating birthday during event
+     *
+     * @ParamConverter("event", class="AppBundle:Event", options={"id" = "eid", "include" = "participants"})
+     * @Route("/admin/event/{eid}/birthday.json", requirements={"eid": "\d+"}, name="admin_event_birthday_data")
+     * @Security("is_granted('ROLE_ADMIN_EVENT')")
+     */
+    public function eventBirthdayListAction(Event $event)
+    {
+        $this->denyAccessUnlessGranted('read', $event);
+        
+        $participants = [];
+        
+        /** @var Participation $participation */
+        foreach ($event->getParticipations() as $participation) {
+            /** @var Participant $participant */
+            foreach ($participation->getParticipants() as $participant) {
+                if (!$participant->isDeleted() 
+                    && !$participant->isWithdrawn()
+                    && !$participant->isRejected()
+                    && $participant->hasBirthdayAtEvent()
+                ) {
+                    $participants[] = $participant;
+                }
+            }
+        }
+        usort($participants, function(Participant $a, Participant $b) {
+            return $a->getNameFirst() <=> $b->getNameFirst();
+        });
+        
+        $eventStartDate = $event->getStartDate();
+        if ($eventStartDate instanceof \DateTime) {
+            $eventStartDate = \DateTimeImmutable::createFromMutable($eventStartDate);
+        }
+        $eventStartDate = $eventStartDate->setTime(0, 0, 0);
+        if ($event->hasEndDate()) {
+            $eventEndDate = $event->getEndDate();
+            if ($eventEndDate instanceof \DateTime) {
+                $eventEndDate = \DateTimeImmutable::createFromMutable($eventEndDate);
+            }
+        } else {
+            $eventEndDate = clone $eventStartDate;
+        }
+        $eventEndDate = $eventEndDate->setTime(23, 59, 59);
+        
+        $result = [];
+        foreach ($participants as $participant) {
+            $participantBirthdayAtEvent = null;
+            $testDate = $eventStartDate;
+            $leapBirthdayWarning = false;
+                
+            while ($testDate < $eventEndDate) {
+                $participantBirthdayMonth = (int)$participant->getBirthday()->format('m');
+                $participantBirthdayDay = (int)$participant->getBirthday()->format('d');
+                
+                $leapBirthdayWarning = false;
+                if ($testDate->format('L') === '0'
+                    && $participantBirthdayMonth === 2
+                    && $participantBirthdayDay === 29
+                ) {
+                    //move to next day because otherwise no birthday would be calculated
+                    $participantBirthdayMonth = 3;
+                    $participantBirthdayDay = 1;
+                    $leapBirthdayWarning = true;
+                }
+                if ($participantBirthdayMonth === (int)$testDate->format('m')
+                    && $participantBirthdayDay === (int)$testDate->format('d')
+                ) {
+                    $participantBirthdayAtEvent = clone $testDate;
+                }
+                
+                $testDate = $testDate->modify('+1 day');
+            }
+            
+            if (!$participantBirthdayAtEvent) {
+                throw new \RuntimeException(
+                    'Failed to specify birthday for aid ' . $participant->getAid() . ' birthday at ' . $participant->getBirthday()->format('Y-m-d')
+                );
+            }
+            
+            $rowBirthdayAtEvent = $participantBirthdayAtEvent->format(Event::DATE_FORMAT_DATE);
+            if ($leapBirthdayWarning) {
+                $rowBirthdayAtEvent .= ' '.BootstrapGlyph::bootstrapGlyph(
+                    'warning-sign', $participant->getGenderTerm(false).' hat eigentlich am 29. Februar Geburtstag'
+                );
+            }
+            
+            $result[] = [
+                'pid' => $participant->getParticipation()->getPid(),
+                'eid' => $event->getEid(),
+                'aid' => $participant->getAid(),
+                'name' => $participant->fullname(),
+                'url' => $this->generateUrl('admin_participant_detail', ['eid' => $event->getEid(), 'aid' => $participant->getAid()]),
+                'date_of_birth' => $participant->getBirthday()->format(Event::DATE_FORMAT_DATE),
+                'date_of_birthday_at_event' => $rowBirthdayAtEvent,
+                'age_at_birthday_at_event' => EventRepository::yearsOfLife($participant->getBirthday(), $participantBirthdayAtEvent->setTime(23, 59, 59)) . '. Geburtstag',
+            ];
+        }
+        
+        return new JsonResponse($result);
+    }
+    
     
     /**
      * Detail page for one single event

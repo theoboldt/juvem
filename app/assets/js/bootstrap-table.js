@@ -434,6 +434,13 @@ $(function () {
     $('#recipeFeedbackList').on('click-row.bs.table', function (e, row, $element) {
         openInNewTabOnMetaKey('feedback/' + row.id);
     });
+    
+    /**
+     * EVENT: Admin event birthday overview list
+     */
+    $('#eventParticipantBirthdayList').on('click-row.bs.table', function (e, row, $element) {
+        openInNewTabOnMetaKey(row.eid + 'participation/' + row.pid);
+    });
 
 })
 ;

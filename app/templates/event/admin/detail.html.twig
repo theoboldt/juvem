@@ -30,6 +30,48 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalBirthday" tabindex="-1" role="dialog" aria-labelledby="modalBirthdayLabel">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalBirthdayLabel">Geburtstage <small>während der Veranstaltung</small></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="bootstrap-birthday-table-toolbar" class="form-inline bootstrap-table-toolbar"></div>
+                        <table id="eventParticipantBirthdayList" class="table table-striped table-remote-content"
+                               data-id-field="aid"
+                               data-toggle="table" data-cache="true" data-pagination="true"
+                               data-side-pagination="client" data-show-refresh="true" data-show-columns="true"
+                               data-search-align="right" data-toolbar="#bootstrap-birthday-table-toolbar" data-striped="true"
+                               data-show-filter="true" data-search="true"
+                               data-url="{{ path('admin_event_birthday_data', {'eid': event.eid}) }}">
+                            <thead>
+                            <tr>
+                                <th data-field="aid" data-sortable="true" data-visible="false">#T</th>
+                                <th data-field="pid" data-sortable="true" data-visible="false">#A</th>
+                                <th data-field="name" data-sortable="true" data-order="asc">Teilnehmer:in</th>
+                                <th data-field="date_of_birth" data-sortable="true" data-sorter="germanDateTimeSorter">
+                                    <small>Geburtsdatum</small>
+                                </th>
+                                <th data-field="date_of_birthday_at_event" data-sortable="true" data-sorter="germanDateTimeSorter">
+                                    <small><abbr title="Tag des Geburtstags bei Veranstaltung">bei Veranstaltung</abbr></small>
+                                </th>
+                                <th data-field="age_at_birthday_at_event" data-sortable="true" data-class="text-right" data-align="right">
+                                    <abbr title="Alter, welches die Teilnehmer:in am Geburtstag erreicht">Feier</abbr>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-xs-12">
                 <div class="btn-toolbar" role="toolbar" aria-label="Veranstaltung bearbeiten">
@@ -62,6 +104,7 @@
                                 {%- endif %}
                                 <li><a href="{{ path('event_invoices_list', {'eid': event.eid }) }}">{{ 'credit-card'|glyph }} Rechnungen verwalten {{ caretRightDouble() }}</a></li>
                                 <li><a href="{{ path('event_participants_location', {'eid': event.eid }) }}">{{ 'map-marker'|glyph }} Teilnehmer:innen-Herkunft untersuchen {{ caretRightDouble() }}</a></li>
+                                <li><a href="#modalBirthday" data-toggle="modal" data-target="#modalBirthday">{{ 'gift'|glyph }} Geburstage untersuchen {{ caretRight() }}</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('event_profiles_generator', {'eid': event.eid}) }}">{{ 'book'|glyph }} Steckbriefe exportieren… {{ caretRightDouble() }}</a></li>
                                 <li><a href="{{ path('event_export_generator', {'eid': event.eid }) }}">{{ 'export'|glyph }} Excel-Export erstellen… {{ caretRightDouble() }}</a></li>

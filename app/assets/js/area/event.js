@@ -1253,13 +1253,18 @@ $(function () {
                         html = '';
                         html += '<small>';
                         if (birthdayAtEvent === 0) {
-                            html = 'Niemand hat während der Veranstaltung Geburtstag.';
+                            html += 'Niemand hat während der Veranstaltung Geburtstag.';
                         } else {
                             html += '<span class="glyphicon glyphicon-gift" aria-hidden="true"></span> ';
+                            html += '<a href="#modalBirthday" data-toggle="modal" data-target="#modalBirthday">';
                             if (birthdayAtEvent === 1) {
-                                html += '1 Teilnehmer:in hat während der Veranstaltung Geburtstag.';
+                                html += '1 Teilnehmer:in'; 
+                                html += '</a> ';
+                                html += 'hat während der Veranstaltung Geburtstag.';
                             } else {
-                                html += birthdayAtEvent + ' Teilnehmer:innen haben während der Veranstaltung Geburtstag.';
+                                html += birthdayAtEvent + ' Teilnehmer:innen';
+                                html += ' <span class="caret-right"></span></a> ';
+                                html += 'haben während der Veranstaltung Geburtstag.';
                             }
                         }
                         html += '</small>';
