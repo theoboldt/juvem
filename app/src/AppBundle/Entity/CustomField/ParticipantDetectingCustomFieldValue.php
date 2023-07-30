@@ -52,30 +52,30 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     private ?string $relatedLastName;
 
     /**
-     * Aid of @see Participant if one was selected for this user
+     * Aid of {@see Participant} if one was selected for this user
      *
      * @var int|null
      */
     private ?int $participantAid = null;
 
     /**
-     * First name of @see Participant
+     * First name of selected {@see Participant}
      *
      * @var null|string
      */
     private ?string $participantFirstName = null;
 
     /**
-     * Last name of @see Participant
+     * Last name of selected {@see Participant}
      *
      * @var null|string
      */
     private ?string $participantLastName = null;
 
     /**
-     * List of @see Participant ids which are proposed to be related to this user
+     * List of {@see Participant} ids which are proposed to be related to this user
      *
-     * List of @see Participant ids which are proposed to be related to this user. @see null if not initialized
+     * List of {@see Participant} ids which are proposed to be related to this user. Use null if not initialized
      *
      * @var int[]|null
      */
@@ -132,6 +132,8 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     }
 
     /**
+     * Textual original first name value of participant
+     * 
      * @return string|null
      */
     public function getRelatedFirstName(): ?string
@@ -140,6 +142,8 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     }
 
     /**
+     * Textual original last name value of participant
+     * 
      * @return string|null
      */
     public function getRelatedLastName(): ?string
@@ -148,6 +152,8 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     }
 
     /**
+     * Aid of {@see Participant} if one was selected for this user
+     *
      * @return int|null
      */
     public function getParticipantAid(): ?int
@@ -156,6 +162,8 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     }
 
     /**
+     * First name of {@see Participant} if one was selected for this user
+     *
      * @return string|null
      */
     public function getParticipantFirstName(): ?string
@@ -164,6 +172,8 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     }
 
     /**
+     * Last name of {@see Participant} if one was selected for this user
+     * 
      * @return string|null
      */
     public function getParticipantLastName(): ?string
