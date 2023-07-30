@@ -15,6 +15,7 @@ use AppBundle\Entity\CustomField\CustomFieldValueCollection;
 use AppBundle\Entity\CustomField\CustomFieldValueContainer;
 use AppBundle\Entity\CustomField\ParticipantDetectingCustomFieldValue;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Manager\RelatedParticipantsLocker;
 use Doctrine\ORM\EntityManager;
 
@@ -24,13 +25,15 @@ abstract class AbstractRelatedParticipantResetListener extends RelatedParticipan
     /**
      * Reset proposed participants for an complete event
      *
-     * @param EntityManager $em      Entity manage
-     * @param Event         $event   Related event
-     * @param int           $maxWait If defined, specifies maximum time to wait for lock
-     * @throws \Doctrine\DBAL\ConnectionException
-     * @throws \Doctrine\DBAL\DBALException
+     * @param EntityManager $em                   Entity manage
+     * @param Event $event                        Related event
+     * @param int $maxWait                        If defined, specifies maximum time to wait for lock
+     * @param Participant|null $updateParticipant If defined, all participant links relating to this participant are
+     *                                            updated; Bad interface, should be improved later
      */
-    protected function resetProposedParticipantsForEvent(EntityManager $em, Event $event, int $maxWait = 30)
+    protected function resetProposedParticipantsForEvent(
+        EntityManager $em, Event $event, int $maxWait = 30, ?Participant $updateParticipant = null
+    ): void
     {
         $lockHandle = $this->lock($event);
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
@@ -85,6 +88,12 @@ abstract class AbstractRelatedParticipantResetListener extends RelatedParticipan
                         if ($customFieldValue instanceof ParticipantDetectingCustomFieldValue) {
                             $customFieldValue->setProposedParticipants(null);
                             $collectionModified = true;
+
+                            if ($updateParticipant !== null
+                                && $customFieldValue->getParticipantAid() === $updateParticipant->getAid()) {
+                                $customFieldValue->setParticipantFirstName($updateParticipant->getNameFirst());
+                                $customFieldValue->setParticipantLastName($updateParticipant->getNameLast());
+                            }
                         }
                     }
                     if ($collectionModified) {

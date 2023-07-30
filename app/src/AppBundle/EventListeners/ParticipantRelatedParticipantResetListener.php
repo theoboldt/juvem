@@ -28,7 +28,7 @@ class ParticipantRelatedParticipantResetListener extends AbstractRelatedParticip
     {
         if ($event->hasChangedField('nameLast') || $event->hasChangedField('nameFirst')) {
             $this->resetProposedParticipantsForEvent(
-                $event->getEntityManager(), $participant->getParticipation()->getEvent()
+                $event->getEntityManager(), $participant->getParticipation()->getEvent(), 30, $participant
             );
         }
     }
