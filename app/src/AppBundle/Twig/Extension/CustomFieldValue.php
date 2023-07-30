@@ -242,10 +242,10 @@ class CustomFieldValue extends AbstractExtension
                     '<a href="%s" data-toggle="tooltip" title="Original: %s">%s %s</a> ',
                     $url,
                     twig_escape_filter(
-                        $env, $value->getParticipantFirstName() . ' ' . $value->getParticipantLastName(), 'html_attr'
+                        $env, $value->getRelatedFirstName() . ' ' . $value->getRelatedLastName(), 'html_attr'
                     ),
-                    twig_escape_filter($env, $value->getRelatedFirstName()),
-                    twig_escape_filter($env, $value->getRelatedLastName())
+                    twig_escape_filter($env, $value->getParticipantFirstName()),
+                    twig_escape_filter($env, $value->getParticipantLastName())
                 );
                 if ($value->isSystemSelection()) {
                     $html .= BootstrapGlyph::bootstrapGlyph('flash', 'automatisch');
