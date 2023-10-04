@@ -22,3 +22,4 @@ parameters:
     app.gender.exclude: ''
     mailer_imap_host: null
     feature.registration: true
+    required_participation_phone_number_count: 1

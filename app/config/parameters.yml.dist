@@ -61,3 +61,6 @@ parameters:
 
     # Set to true to enable newsletter feature
     feature.newsletter: true
+    
+    # Specify amount of phone numbers required per participation
+    required_participation_phone_number_count: 1

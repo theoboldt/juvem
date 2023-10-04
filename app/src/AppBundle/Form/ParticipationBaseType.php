@@ -19,9 +19,13 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
 
 class ParticipationBaseType extends AbstractType
 {
+    
+    const PHONE_NUMBER_MIN_COUNT = 'phoneNumberMinCount';
+    
     const ACQUISITION_FIELD_PUBLIC = 'acquisitionFieldPublic';
 
     const ACQUISITION_FIELD_PRIVATE = 'acquisitionFieldPrivate';
@@ -30,6 +34,17 @@ class ParticipationBaseType extends AbstractType
     {
         /** @var Participation $participation */
         $participation = $options['data'] ?? null;
+        
+        if ($options[self::PHONE_NUMBER_MIN_COUNT] > 1) {
+            $phoneNumberConstraints = [
+                new Count([
+                  'min' => $options[self::PHONE_NUMBER_MIN_COUNT],
+                  'minMessage' => 'Es müssen mindestens '.(int)$options[self::PHONE_NUMBER_MIN_COUNT].' Telefonnummern angegeben werden',
+                ])
+            ];
+        } else {
+            $phoneNumberConstraints = [];
+        }
 
         $builder
             ->add(
@@ -90,6 +105,7 @@ class ParticipationBaseType extends AbstractType
                     'allow_delete' => true,
                     'attr'         => ['aria-describedby' => 'help-info-phone-numbers'],
                     'required'     => true,
+                    'constraints'  => $phoneNumberConstraints
                 ]
             )
             ->add(
@@ -130,6 +146,10 @@ class ParticipationBaseType extends AbstractType
         $resolver->setRequired(self::ACQUISITION_FIELD_PRIVATE);
         $resolver->setAllowedTypes(self::ACQUISITION_FIELD_PRIVATE, 'bool');
 
+        $resolver->setRequired(self::PHONE_NUMBER_MIN_COUNT);
+        $resolver->setDefault(self::PHONE_NUMBER_MIN_COUNT, 1);
+        $resolver->setAllowedTypes(self::PHONE_NUMBER_MIN_COUNT, 'int');
+        
         $resolver->setDefaults(
             [
                 'data_class'         => Participation::class,

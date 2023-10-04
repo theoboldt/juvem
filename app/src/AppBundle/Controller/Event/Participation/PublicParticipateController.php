@@ -52,6 +52,11 @@ class PublicParticipateController
      * @var bool
      */
     private bool $featureRegistration;
+
+    /**
+     * @var int 
+     */
+    private int $requiredParticipationPhoneNumberCount;
     
     /**
      * app.participation_manager
@@ -72,6 +77,7 @@ class PublicParticipateController
      * @param SessionInterface $session
      * @param string $featureNewsletter
      * @param string $featureRegistration
+     * @param string $requiredParticipationPhoneNumberCount
      * @param ParticipationManager $participationManager
      */
     public function __construct(
@@ -84,6 +90,7 @@ class PublicParticipateController
         SessionInterface $session,
         string $featureNewsletter,
         string $featureRegistration,
+        string $requiredParticipationPhoneNumberCount,
         ParticipationManager $participationManager
     )
     {
@@ -97,6 +104,7 @@ class PublicParticipateController
         $this->featureNewsletter    = $featureNewsletter;
         $this->featureRegistration  = $featureRegistration;
         $this->participationManager = $participationManager;
+        $this->requiredParticipationPhoneNumberCount = (int)$requiredParticipationPhoneNumberCount;
     }
     
     /**
@@ -132,6 +140,7 @@ class PublicParticipateController
             [
                 ParticipationType::ACQUISITION_FIELD_PUBLIC  => true,
                 ParticipationType::ACQUISITION_FIELD_PRIVATE => false,
+                ParticipationType::PHONE_NUMBER_MIN_COUNT    => $this->requiredParticipationPhoneNumberCount,
             ]
         );
 

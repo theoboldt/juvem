@@ -704,6 +704,7 @@ services:
         arguments:
             $featureRegistration: "%feature.registration%"
             $featureNewsletter: '%feature.newsletter%'
+            $requiredParticipationPhoneNumberCount: '%required_participation_phone_number_count%'
         tags: [ 'controller.service_arguments' ]
 
     AppBundle\Controller\UserController:
