@@ -39,26 +39,27 @@
                 <div itemprop="description">{{ event.getDescription|markdown_shifted }}</div>
                 <hr>
                 <p>
-                    {% if event.isActive %}
-                        <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary">Teilnehmen
-                            {% if event.hasWaitingListThreshold() -%}
-                                {%- if event.participantsCount >= event.waitingListThreshold -%}
-                                    (Warteliste)
-                                {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
-                                    (wenig Plätze frei)
-                                {%- endif -%}
-                            {%- endif -%}
-                            {{ caretRightDouble() }}
-                        </a>
-                    {% endif %}
-                    {% if event.isActiveRegistrationEmployee %}
-                        <a role="button"
-                           href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
-                           class="btn btn-default">Mitarbeiten {{ caretRightDouble() }}
-                        </a>
-                    {% endif %}
                     {% if is_granted('ROLE_ADMIN_EVENT') %}
+                        {% if event.isActive %}
+                            <a href="{{ path('event_public_participate', {'eid': event.eid }) }}"
+                               class="btn btn-default" role="button">
+                                Teilnehmen {{ caretRightDouble() }}
+                            </a>
+                        {% endif %}
                         <a href="{{ path('event', {eid: event.eid}) }}" class="btn btn-primary">Verwalten</a>
+                    {% else %}
+                        {% if event.isActive %}
+                            <a role="button" href="{{ path('event_public_participate', {'eid': event.eid }) }}" class="btn btn-primary">Teilnehmen
+                                {% if event.hasWaitingListThreshold() -%}
+                                    {%- if event.participantsCount >= event.waitingListThreshold -%}
+                                        (Warteliste)
+                                    {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
+                                        (wenig Plätze frei)
+                                    {%- endif -%}
+                                {%- endif -%}
+                                {{ caretRightDouble() }}
+                            </a>
+                        {% endif %}
                     {% endif %}
                   {% if event.hasLink() %}
                     <a href="{{ event.linkUrl }}" rel="noopener" target="_blank"
