@@ -46,6 +46,12 @@
                                 Teilnehmen {{ caretRightDouble() }}
                             </a>
                         {% endif %}
+                        {% if event.isActiveRegistrationEmployee %}
+                            <a role="button"
+                               href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
+                               class="btn btn-default">Mitarbeiten {{ caretRightDouble() }}
+                            </a>
+                        {% endif %}
                         <a href="{{ path('event', {eid: event.eid}) }}" class="btn btn-primary">Verwalten</a>
                     {% else %}
                         {% if event.isActive %}
@@ -60,13 +66,13 @@
                                 {{ caretRightDouble() }}
                             </a>
                         {% endif %}
+                        {% if event.isActiveRegistrationEmployee %}
+                            <a role="button"
+                               href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
+                               class="btn btn-default">Mitarbeiten {{ caretRightDouble() }}
+                            </a>
+                        {% endif %}
                     {% endif %}
-                {% if event.isActiveRegistrationEmployee %}
-                    <a role="button"
-                       href="{{ path('event_public_employee_register', {'eid': event.eid }) }}"
-                       class="btn btn-default">Mitarbeiten {{ caretRightDouble() }}
-                    </a>
-                {% endif %}
                   {% if event.hasLink() %}
                     <a href="{{ event.linkUrl }}" rel="noopener" target="_blank"
                        class="btn btn-default glyphicon-size-75">{{ event.linkTitle }} {{ 'new-window'|glyph }}</a>
