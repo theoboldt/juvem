@@ -41,3 +41,6 @@
 /backup/
 /phpunit.xml
 .phpunit.result.cache
+/app/docker/.env
+/app/docker/app.crt
+/app/docker/app.key

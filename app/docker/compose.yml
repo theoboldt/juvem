@@ -1,0 +1,53 @@
+services:
+  database:
+    container_name: "${COMPOSE_PROJECT_NAME}-database"
+    image: mariadb:11.6.2
+    command:
+      - "--collation-server=utf8mb4_general_ci"
+      - "--character-set-server=utf8mb4"
+      - "--max_allowed_packet=64M"
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - "${PORT_PREFIX}3306:3306"
+    networks:
+      - default
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MARIADB_AUTO_UPGRADE: 1
+      MARIADB_INITDB_SKIP_TZINFO: 1
+
+  php:
+    container_name: "${COMPOSE_PROJECT_NAME}-php"
+    image: "${REPOSITORY_URL}/php:${APP_VERSION}"
+    build:
+      context: ./build/php-apache
+      target: development
+    volumes:
+      - ../../:/var/www/juvem:delegated
+    tmpfs:
+      - /var/www/juvem/var/cache:size=300m,uid=33,gid=33
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200K"
+        max-file: "5"
+    networks:
+      - default
+    environment:
+      PHP_IDE_CONFIG: '${PHP_IDE_CONFIG}'
+      XDEBUG_MODE: '${XDEBUG_MODE}'
+    ports:
+      - "${PORT_PREFIX}8080:80"
+      - "${PORT_PREFIX}4430:443"
+
+volumes:
+  database:
+    external: false
+
+networks:
+  default:
