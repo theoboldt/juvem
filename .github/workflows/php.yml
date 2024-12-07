@@ -89,7 +89,7 @@ jobs:
       - name: Run Tests
         run: php app/bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover.xml
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: phpunit-result-clover
           path: ./phpunit-result-clover.xml
