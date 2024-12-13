@@ -57,6 +57,28 @@
                     </div>
                 </div>
             </div>
+
+            {% if not user.role(constant('AppBundle\\Entity\\User::ROLE_ADMIN')) and
+                (user.role(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT'))
+                or user.role(constant('AppBundle\\Entity\\User::ROLE_ADMIN_EVENT_GLOBAL'))
+                or user.role(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER'))
+                or user.role(constant('AppBundle\\Entity\\User::ROLE_ADMIN_NEWSLETTER'))
+                or user.role(constant('AppBundle\\Entity\\User::ROLE_EMPLOYEE'))
+                ) %}
+                <div class="alert alert-warning" role="alert">
+                    <p>
+                        Dem Benutzer ist eine Administrations-Rolle zugewiesen, der Zugriff auf den Verwaltungsbereich
+                        ist in der aktuellen Konfiguration jedoch nicht gestattet. Der Benutzer kann die Rollen nur
+                        nutzen und auf den Verwaltungsbereich zugreifen, wenn die Rolle
+                        <i>{{ constant('AppBundle\\Entity\\User::ROLE_ADMIN_LABEL') }}</i> zugewiesen ist.
+                        Überprüfen Sie die
+                        <a href="#roleAssignmentModal" data-toggle="modal" data-target="#roleAssignmentModal"
+                           data-action="restore">Rollenzuweisung</a>.
+                    </p>
+                </div>
+            {% endif %}
+
+
             <div class="form-horizontal">
 
                 <div class="form-group">
