@@ -91,3 +91,18 @@ COPY php_dev.ini $PHP_INI_DIR/conf.d/99-dev.ini
 WORKDIR /var/www/juvem
 
 FROM baseimage AS production
+
+FROM development AS testing
+RUN <<EOF
+# ERROR HANDLING
+set -o pipefail # trace ERR through pipes
+set -o errtrace # trace ERR through 'time command' and other functions
+set -o nounset  ## set -u : exit the script if you try to use an uninitialised variable
+set -o errexit  # stop on non zero return code
+trap "exit" SIGHUP SIGINT SIGQUIT SIGABRT SIGTERM
+
+
+# libfcgi-bin: needed for healthcheck with cgi-fcgi
+apt install -y openjdk-8-jre openjdk-8-jre-headless libreoffice-core libreoffice-writer libreoffice-java-common --no-install-recommends
+
+EOF
