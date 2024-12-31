@@ -92,13 +92,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: phpunit-result-clover
-          path: ./phpunit-result-clover.xml
+          path: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./phpunit-result-clover.xml
+          file: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
           flags: unittests
           name: clover-coverage
           fail_ci_if_error: false
@@ -109,4 +109,4 @@ jobs:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
           coverageLocations: |
-            ./phpunit-result-clover.xml:clover
+            ./phpunit-result-clover.xml-${{ matrix.php-versions }}:clover
