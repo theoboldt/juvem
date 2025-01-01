@@ -61,7 +61,7 @@ jobs:
       - name: Cache composer dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
+          path: $GITHUB_OUTPUT
           key: ${{ runner.os }}-composer-${{ hashFiles('**/app/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
