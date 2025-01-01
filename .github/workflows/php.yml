@@ -91,12 +91,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: phpunit-result-clover-${{ matrix.php-versions }}
+          name: phpunit-result-clover-${{ matrix.php-versions }}.xml
           path: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
 
       - uses: actions/upload-artifact@v4
         with:
-          name: phpunit-result-junit-${{ matrix.php-versions }}
+          name: phpunit-result-junit-${{ matrix.php-versions }}.xml
           path: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
 
       - name: Upload junit results to Codecov
