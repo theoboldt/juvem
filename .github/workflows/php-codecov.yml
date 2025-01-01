@@ -8,8 +8,6 @@ on:
 
 jobs:
   build:
-    name: PHP ${{ matrix.php-versions }}
-
     runs-on: ubuntu-latest
 
     services:
@@ -23,11 +21,6 @@ jobs:
             - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    strategy:
-      fail-fast: false
-      matrix:
-        php-versions: ['8.1']
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,7 +28,7 @@ jobs:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: 8.2
           extensions: exif, json, ctype, fileinfo, iconv, intl, mbstring, xml, xmlwriter, pdo, mysql, zip
           coverage: xdebug #optional
 
@@ -87,15 +80,15 @@ jobs:
         run: cp phpunit.xml.dist phpunit.xml
 
       - name: Run Tests
-        run: php app/bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover-${{ matrix.php-versions }}.xml --log-junit ./phpunit-result-junit-${{ matrix.php-versions }}.xml
+        run: php app/bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover.xml --log-junit ./phpunit-result-junit.xml
 
       - name: Upload junit results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
-          file: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
-          flags: unittests-php-${{ matrix.php-versions }}
-          name: clover-results-${{ matrix.php-versions }}
+          file: ./phpunit-result-junit.xml
+          flags: unittests-php
+          name: clover-results
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -103,17 +96,18 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
-          flags: unittests-php-${{ matrix.php-versions }}
-          name: clover-coverage-${{ matrix.php-versions }}
+          file: ./phpunit-result-clover.xml
+          flags: unittests-php
+          name: clover-coverage
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to codeclimate
-        uses: paambaati/codeclimate-action@v2.7.4
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
+          coverageCommand: ls
           coverageLocations: |
-            ./phpunit-result-clover-${{ matrix.php-versions }}.xml:clover
+            ./phpunit-result-clover.xml:clover
