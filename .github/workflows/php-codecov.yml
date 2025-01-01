@@ -1,4 +1,4 @@
-name: Dependencies and Tests
+name: Test report upload
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2']
+        php-versions: ['8.1']
 
     steps:
       - name: Checkout
@@ -89,12 +89,31 @@ jobs:
       - name: Run Tests
         run: php app/bin/phpunit --coverage-text --coverage-clover ./phpunit-result-clover-${{ matrix.php-versions }}.xml --log-junit ./phpunit-result-junit-${{ matrix.php-versions }}.xml
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload junit results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          name: phpunit-result-clover-${{ matrix.php-versions }}.xml
-          path: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
+          file: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
+          flags: unittests-php-${{ matrix.php-versions }}
+          name: clover-results-${{ matrix.php-versions }}
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          name: phpunit-result-junit-${{ matrix.php-versions }}.xml
-          path: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
+          file: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
+          flags: unittests-php-${{ matrix.php-versions }}
+          name: clover-coverage-${{ matrix.php-versions }}
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage to codeclimate
+        uses: paambaati/codeclimate-action@v2.7.4
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        with:
+          coverageLocations: |
+            ./phpunit-result-clover-${{ matrix.php-versions }}.xml:clover
