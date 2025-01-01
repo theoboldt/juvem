@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2']
+        php-versions: ['8.2']
 
     steps:
       - name: Checkout
@@ -99,15 +99,6 @@ jobs:
           name: phpunit-result-junit-${{ matrix.php-versions }}
           path: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
-          flags: unittests-php-${{ matrix.php-versions }}
-          name: clover-coverage
-          fail_ci_if_error: false
-
       - name: Upload junit results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
@@ -115,6 +106,16 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./phpunit-result-junit-${{ matrix.php-versions }}.xml
           flags: unittests-php-${{ matrix.php-versions }}
+          name: clover-results-${{ matrix.php-versions }}
+          fail_ci_if_error: false
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./phpunit-result-clover-${{ matrix.php-versions }}.xml
+          flags: unittests-php-${{ matrix.php-versions }}
+          name: clover-coverage-${{ matrix.php-versions }}
           fail_ci_if_error: false
 
       - name: Upload coverage to codeclimate
