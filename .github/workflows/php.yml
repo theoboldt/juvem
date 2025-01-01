@@ -108,6 +108,8 @@ jobs:
           flags: unittests-php-${{ matrix.php-versions }}
           name: clover-results-${{ matrix.php-versions }}
           fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -117,6 +119,8 @@ jobs:
           flags: unittests-php-${{ matrix.php-versions }}
           name: clover-coverage-${{ matrix.php-versions }}
           fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to codeclimate
         uses: paambaati/codeclimate-action@v2.7.4
