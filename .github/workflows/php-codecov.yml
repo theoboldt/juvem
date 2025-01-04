@@ -84,13 +84,14 @@ jobs:
 
       - name: Upload junit results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5.0.5
+        uses: codecov/test-results-action@v1
         with:
-          files: ./phpunit-result-junit.xml
+          file: ./phpunit-result-junit.xml
           flags: unittests-php
           name: clover-results
           fail_ci_if_error: false
           verbose: true
+          slug: juvem
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
