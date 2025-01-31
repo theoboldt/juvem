@@ -57,16 +57,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.4",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1"
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/bc0593537a463e55cadf45fd938d23b75095b7e1",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
                 "shasum": ""
             },
             "require": {
@@ -113,7 +113,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.4"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.5"
             },
             "funding": [
                 {
@@ -129,7 +129,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-27T15:35:25+00:00"
+            "time": "2025-01-08T16:17:16+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
@@ -203,6 +203,85 @@
                 }
             ],
             "time": "2022-01-17T14:14:24+00:00"
+        },
+        {
+            "name": "composer/pcre",
+            "version": "3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/pcre.git",
+                "reference": "b2bed4734f0cc156ee1fe9c0da2550420d99a21e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/pcre/zipball/b2bed4734f0cc156ee1fe9c0da2550420d99a21e",
+                "reference": "b2bed4734f0cc156ee1fe9c0da2550420d99a21e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan": "<1.11.10"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.12 || ^2",
+                "phpstan/phpstan-strict-rules": "^1 || ^2",
+                "phpunit/phpunit": "^8 || ^9"
+            },
+            "type": "library",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Pcre\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "PCRE wrapping library that offers type-safe preg_* replacements.",
+            "keywords": [
+                "PCRE",
+                "preg",
+                "regex",
+                "regular expression"
+            ],
+            "support": {
+                "issues": "https://github.com/composer/pcre/issues",
+                "source": "https://github.com/composer/pcre/tree/3.3.2"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-11-12T16:29:46+00:00"
         },
         {
             "name": "ddeboer/imap",
@@ -1592,16 +1671,16 @@
         },
         {
             "name": "doctrine/sql-formatter",
-            "version": "1.5.1",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/sql-formatter.git",
-                "reference": "b784cbde727cf806721451dde40eff4fec3bbe86"
+                "reference": "d6d00aba6fd2957fe5216fe2b7673e9985db20c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/sql-formatter/zipball/b784cbde727cf806721451dde40eff4fec3bbe86",
-                "reference": "b784cbde727cf806721451dde40eff4fec3bbe86",
+                "url": "https://api.github.com/repos/doctrine/sql-formatter/zipball/d6d00aba6fd2957fe5216fe2b7673e9985db20c8",
+                "reference": "d6d00aba6fd2957fe5216fe2b7673e9985db20c8",
                 "shasum": ""
             },
             "require": {
@@ -1611,8 +1690,7 @@
                 "doctrine/coding-standard": "^12",
                 "ergebnis/phpunit-slow-test-detector": "^2.14",
                 "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^10.5",
-                "vimeo/psalm": "^5.24"
+                "phpunit/phpunit": "^10.5"
             },
             "bin": [
                 "bin/sql-formatter"
@@ -1642,9 +1720,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/sql-formatter/issues",
-                "source": "https://github.com/doctrine/sql-formatter/tree/1.5.1"
+                "source": "https://github.com/doctrine/sql-formatter/tree/1.5.2"
             },
-            "time": "2024-10-21T18:21:57+00:00"
+            "time": "2025-01-24T11:45:48+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -2134,16 +2212,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.52",
+            "version": "8.13.54",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "cc9a82b237d79a85be47c0b06e3943f75ab35c32"
+                "reference": "42d3a03d4f47fcb784666743f4323a7b87a2b2ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/cc9a82b237d79a85be47c0b06e3943f75ab35c32",
-                "reference": "cc9a82b237d79a85be47c0b06e3943f75ab35c32",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/42d3a03d4f47fcb784666743f4323a7b87a2b2ba",
+                "reference": "42d3a03d4f47fcb784666743f4323a7b87a2b2ba",
                 "shasum": ""
             },
             "require": {
@@ -2207,7 +2285,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2024-12-13T09:08:43+00:00"
+            "time": "2025-01-31T14:50:26+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2806,16 +2884,16 @@
         },
         {
             "name": "jms/serializer",
-            "version": "3.32.1",
+            "version": "3.32.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/serializer.git",
-                "reference": "b4285f4197a5b961d365e2c756b144d7af24a7fd"
+                "reference": "fa7ab39504c24d76107ba16c00aafa5da3605971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/b4285f4197a5b961d365e2c756b144d7af24a7fd",
-                "reference": "b4285f4197a5b961d365e2c756b144d7af24a7fd",
+                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/fa7ab39504c24d76107ba16c00aafa5da3605971",
+                "reference": "fa7ab39504c24d76107ba16c00aafa5da3605971",
                 "shasum": ""
             },
             "require": {
@@ -2892,7 +2970,7 @@
             ],
             "support": {
                 "issues": "https://github.com/schmittjoh/serializer/issues",
-                "source": "https://github.com/schmittjoh/serializer/tree/3.32.1"
+                "source": "https://github.com/schmittjoh/serializer/tree/3.32.2"
             },
             "funding": [
                 {
@@ -2900,7 +2978,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-03T22:30:06+00:00"
+            "time": "2025-01-03T22:43:29+00:00"
         },
         {
             "name": "jms/serializer-bundle",
@@ -3775,19 +3853,20 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.29.7",
+            "version": "1.29.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "02c8625411dcb96e1f63d58c47460284e15b2e80"
+                "reference": "ffb47b639649fc9c8a6fa67977a27b756592ed85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/02c8625411dcb96e1f63d58c47460284e15b2e80",
-                "reference": "02c8625411dcb96e1f63d58c47460284e15b2e80",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/ffb47b639649fc9c8a6fa67977a27b756592ed85",
+                "reference": "ffb47b639649fc9c8a6fa67977a27b756592ed85",
                 "shasum": ""
             },
             "require": {
+                "composer/pcre": "^3.3",
                 "ext-ctype": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
@@ -3874,9 +3953,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.7"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.9"
             },
-            "time": "2024-12-27T05:10:37+00:00"
+            "time": "2025-01-26T04:55:00+00:00"
         },
         {
             "name": "phpoffice/phpword",
