@@ -21,9 +21,8 @@
                                         (Warteliste)
                                     {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
                                         (wenig Plätze frei)
-                                    {%- endif -%}
-                                {%- endif -%}
-                                 {{ caretRightDouble() }}
+                                    {%- endif %}
+                                {%- endif %} {{ caretRightDouble() }}
                         </a>
                     {% elseif event.hasLink() %}
                       <a href="{{ event.linkUrl }}" rel="noopener" target="_blank" style="float: right;"
@@ -61,9 +60,8 @@
                                         (Warteliste)
                                     {%- elseif (event.participantsCount+3) >= event.waitingListThreshold -%}
                                         (wenig Plätze frei)
-                                    {%- endif -%}
-                                {%- endif -%}
-                                {{ caretRightDouble() }}
+                                    {%- endif %}
+                                {%- endif %} {{ caretRightDouble() }}
                             </a>
                         {% endif %}
                         {% if event.isActiveRegistrationEmployee %}
