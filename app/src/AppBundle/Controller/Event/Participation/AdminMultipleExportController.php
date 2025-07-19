@@ -666,10 +666,6 @@ class AdminMultipleExportController
                         break;
                 }
 
-                if ($participant->isDeleted()) {
-                    $include = false;
-                }
-
                 return $include;
             }
         );
