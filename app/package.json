@@ -9,15 +9,15 @@
     "grunt-contrib-copy": "^1.0",
     "grunt-contrib-cssmin": "^3.0",
     "grunt-contrib-jshint": "^3.2.0",
-    "grunt-contrib-sass": "^1.0",
+    "grunt-contrib-sass": "^2.0",
     "grunt-contrib-uglify-es": "^3.3",
     "grunt-contrib-watch": "^1.1",
     "sass": ">=1.25.0"
   },
   "dependencies": {
     "async": ">=2.6.4",
-    "bootstrap-3-typeahead": "^4.0",
-    "bootstrap-sass": "^3.4.1",
+    "bootstrap-3-typeahead": "^4.0.2",
+    "bootstrap-sass": "^3.4.3",
     "bootstrap-table": "^1.18.3",
     "easymde": "^2.15.0",
     "ekko-lightbox": "^5.3.0",
@@ -36,8 +36,8 @@
     "npm": "^8.12.1",
     "owfont": "git://github.com/websygen/owfont.git#d7c52f6b21e1052b9ec02f586ab8060164e33d72",
     "shelljs": ">=0.8.5",
-    "tar": "^4.4",
-    "trim-newlines": ">=3.0.1",
+    "tar": "^6.2.1",
+    "trim-newlines": "^5.0",
     "vis-network": "^9.1"
   }
 }
