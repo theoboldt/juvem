@@ -299,7 +299,7 @@ class ParticipationRepository extends EntityRepository
         $aid       = $baseParticipant->getAid();
         $firstName = trim($baseParticipant->getNameFirst());
         $lastName  = trim($baseParticipant->getNameLast());
-    
+
         $relatedList = [];
         $eventTitles = [
             $baseParticipant->getEvent()->getTitle() => 1
@@ -307,9 +307,12 @@ class ParticipationRepository extends EntityRepository
     
         /** @var Participant $participant */
         foreach ($query->execute() as $participant) {
+            $firstNameSimilar = levenshtein($firstName, trim($participant->getNameFirst())) < 5;
+            $lastNameSimilar = levenshtein($lastName, trim($participant->getNameLast())) < 5;
             if ($aid != $participant->getAid()
-                && levenshtein($firstName, trim($participant->getNameFirst())) < 5
-                && levenshtein($lastName, trim($participant->getNameLast())) < 5
+                && $baseParticipant->getParticipation()->getPid() != $participant->getParticipation()->getPid()
+                && $firstNameSimilar
+                && $lastNameSimilar
             ) {
                 $relatedList[] = new RelatedParticipant($participant);
                 $eventTitle    = $participant->getEvent()->getTitle();
