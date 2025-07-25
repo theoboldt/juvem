@@ -145,17 +145,20 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                     }
                     /** @var ParticipantDetectingCustomFieldValue $customFieldValue */
                     $customFieldValue = $customFieldValueContainer->getValue();
+                    $customFieldValueProposed = $customFieldValue->getProposedParticipants();
+                    $change = false;
 
                     $qualified = $this->calculateProposedParticipantsForCustomFieldValue(
                         $customFieldValueContainer, $participants
                     );
 
                     if ($customFieldValue->getParticipantAid() === null) {
-                        //check for exact match
+                        //check if there is an exact match
                         foreach ($qualified as $relatedParticipant) {
                             if ($relatedParticipant->getNameFirst() === $customFieldValue->getRelatedFirstName()
                                 && $relatedParticipant->getNameLast() === $customFieldValue->getRelatedLastName()
                             ) {
+                                $change = true;
                                 $customFieldValue->setParticipantAid($relatedParticipant->getAid());
                                 $customFieldValue->setParticipantFirstName($relatedParticipant->getNameFirst());
                                 $customFieldValue->setParticipantLastName($relatedParticipant->getNameLast());
@@ -169,8 +172,14 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                     foreach ($qualified as $qualifiedParticipant) {
                         $proposedIds[] = $qualifiedParticipant->getAid();
                     }
-                    $customFieldValue->setProposedParticipants($proposedIds);
-                    $this->em->persist($participant);
+
+                    if ($change
+                        || $customFieldValueProposed === null
+                        || array_diff($proposedIds, $customFieldValueProposed) !== array_diff($customFieldValueProposed, $proposedIds)
+                    ) {
+                        $customFieldValue->setProposedParticipants($proposedIds);
+                        $this->em->persist($participant);
+                    }
                 }
             }
             $startFlush = microtime(true);
