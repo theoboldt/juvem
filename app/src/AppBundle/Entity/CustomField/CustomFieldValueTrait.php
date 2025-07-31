@@ -27,16 +27,22 @@ trait CustomFieldValueTrait
     private $customFieldValues = [];
 
     /**
+     * Custom field value collection in order to prevent entity change is detected all the time
+     *
+     * @var array|null|CustomFieldValueCollection
+     */
+    private ?CustomFieldValueCollection $customFieldValueCollection = null;
+    /**
      * Get custom field value collection
      *
      * @return CustomFieldValueCollection
      */
     public function getCustomFieldValues(): CustomFieldValueCollection
     {
-        if (!$this->customFieldValues instanceof CustomFieldValueCollection) {
-            $this->customFieldValues = CustomFieldValueCollection::createFromArray($this->customFieldValues);
+        if (!$this->customFieldValueCollection instanceof CustomFieldValueCollection) {
+            $this->customFieldValueCollection = CustomFieldValueCollection::createFromArray($this->customFieldValues);
         }
-        return $this->customFieldValues;
+        return $this->customFieldValueCollection;
     }
 
     /**
@@ -50,7 +56,8 @@ trait CustomFieldValueTrait
         ) {
             throw new \InvalidArgumentException('Unexpected type');
         }
-        $this->customFieldValues = $customFieldValues;
+        $this->customFieldValueCollection = $customFieldValues;
+        $this->customFieldValues = $customFieldValues->jsonSerialize();
     }
 
     /**
