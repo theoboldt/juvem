@@ -38,9 +38,9 @@
                 <td><a href="mailto:{{ employee.email }}">{{ employee.email }}</a></td>
                 <td>
                   {% for phoneNumber in employee.phoneNumbers %}
-                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}"
+                    <a href="tel:{{ phoneNumber.number|phone_number_format(constant('\\libphonenumber\\PhoneNumberFormat::INTERNATIONAL')) }}"
                        {% if phoneNumber.description %}title="{{ phoneNumber.description }}"{% endif %}
-                    >{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
+                    >{{ phoneNumber.number|phone_number_format(constant('\\libphonenumber\\PhoneNumberFormat::INTERNATIONAL')) }}</a>
                   {% endfor %}
                 </td>
                 <td>

@@ -233,7 +233,7 @@
                             <dd class="phone-container">
                             {% for phoneNumber in employee.phoneNumbers %}
                                 <div>
-                                    <a href="tel:{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}">{{ phoneNumber.number|phone_number_format('INTERNATIONAL') }}</a>
+                                    <a href="tel:{{ phoneNumber.number|phone_number_format(constant('\\libphonenumber\\PhoneNumberFormat::INTERNATIONAL')) }}">{{ phoneNumber.number|phone_number_format(constant('\\libphonenumber\\PhoneNumberFormat::INTERNATIONAL')) }}</a>
                                     {% if phoneNumber.description %}
                                     <br>
                                     <i>{{ phoneNumber.description }}</i>

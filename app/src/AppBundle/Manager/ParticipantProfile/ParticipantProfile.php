@@ -987,7 +987,7 @@ class ParticipantProfile
                     $cellImage = $row->addCell(12);
                     $codePath  = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
-                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL')),
+                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL)),
                         $this->getStyleSetting('phone_qr_code_size')
                     );
                     $cellImage->addImage(
@@ -1003,7 +1003,7 @@ class ParticipantProfile
             
                     $cellText = $row->addCell(null, ['rightFromText' => 12]);
                     $textrun  = $cellText->addTextRun();
-                    $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), 'INTERNATIONAL'));
+                    $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL));
                     if ($phoneNumber->getDescription()) {
                         $textrun->addTextBreak();
                         $textrun->addText($phoneNumber->getDescription());
