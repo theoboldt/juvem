@@ -327,10 +327,6 @@ class MailListService
      */
     private function convertMailboxEmailToMailFragment(MessageInterface $message, string $mailboxName): MailFragment
     {
-        if (preg_match('/(?:[^\/]+)/i', $mailboxName) !== false) {
-            throw new \InvalidArgumentException('Mailbox name "' . $mailboxName . '" must match /(?:[^\/]+)/i to be converted to URL later. Check configuration of email server to prevent nested folders');
-        }
-
         $fromList    = [];
         $messageFrom = $message->getFrom();
         if ($messageFrom instanceof EmailAddress) {
