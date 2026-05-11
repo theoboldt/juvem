@@ -62,8 +62,29 @@ class MailboxPlacementQueueManager
         if ($path === false) {
             throw new \InvalidArgumentException('Failed to generate tmpname for mail ' . $message->getSubject());
         }
-        if (file_put_contents($path, $message->toString()) === false) {
+
+        $messageContent = $message->toString();
+        if (mb_strlen($messageContent) < 5) {
+            $this->logger->error(
+                'Mail content empty, skipping mail {subject} for mailbox {mailbox}',
+                ['mailbox' => $mailboxName, 'subject' => $message->getSubject()]
+            );
+            if (!unlink($path)) {
+                throw new \InvalidArgumentException('Failed to remove file ' . $message->getSubject());
+            }
+            return;
+        }
+
+        $writeResult    = file_put_contents($path, $messageContent);
+        if ($writeResult === false) {
             throw new \InvalidArgumentException('Failed to store mail ' . $message->getSubject());
+        }
+        if ($writeResult === 0) {
+            if (unlink($path)) {
+                throw new \InvalidArgumentException('Zero bytes written to mail file. File is removed to prevent further errors. ' . $message->getSubject());
+            } else {
+                throw new \InvalidArgumentException('Zero bytes written to mail file. Failed to remove file ' . $message->getSubject());
+            }
         }
         $messageTime = (int)$message->getDate()->format('U');
         touch($path, $messageTime, $messageTime);
