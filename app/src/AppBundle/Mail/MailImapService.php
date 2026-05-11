@@ -130,9 +130,9 @@ class MailImapService
                         'duration'  => round(microtime(true) - $timeBegin)
                     ]
                 );
+            } else {
+                $this->logger->warning('Unable to fetch mailboxes because IMAP connection is unavailable');
             }
-        } else {
-            $this->logger->warning('Unable to fetch mailboxes because IMAP connection is unavailable');
         }
         return $this->mailboxes;
     }
