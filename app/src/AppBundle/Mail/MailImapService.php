@@ -286,7 +286,7 @@ class MailImapService
                 $mailFileContent = file_get_contents($mailFilePath);
                 
                 if (mb_strlen($mailFileContent) < 5) {
-                    throw new \InvalidArgumentException('Empty mail occurred');
+                    throw new \InvalidArgumentException('Mail "'.$mailFilePath.'" is empty');
                 }
 
                 $mailDate = \DateTimeImmutable::createFromFormat('U', filemtime($mailFilePath));
