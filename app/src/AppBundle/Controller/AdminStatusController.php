@@ -38,6 +38,7 @@ class AdminStatusController extends AbstractController
                 'ext_xsl' => phpversion('xsl'),
                 'ext_fileinfo' => phpversion('fileinfo'),
                 'ext_openssl' => phpversion('openssl'),
+                'ext_imap' => phpversion('imap'),
             ]
         );
     }
