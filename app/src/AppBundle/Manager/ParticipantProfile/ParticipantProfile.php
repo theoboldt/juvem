@@ -54,6 +54,7 @@ class ParticipantProfile
     const STYLE_FONT_LIST_END      = 'ListEndF';
 
     const STYLE_FONT_NEGATIVE_LABEL = 'LabelNegativeF';
+    const STYLE_FONT_NEGATIVE_LABEL_STRIKETHROUGH = 'LabelNegativeStrikeF';
     const STYLE_LIST_NEGATIVE       = 'ListNegativeL';
     const STYLE_FONT_NEGATIVE       = 'NegativeP';
 
@@ -414,6 +415,15 @@ class ParticipantProfile
                 'color'         => '333333',
                 'bgColor'       => 'CCCCCC',
                 'boldt'         => true,
+            ]
+        );
+        $document->addFontStyle(
+            self::STYLE_FONT_NEGATIVE_LABEL_STRIKETHROUGH,
+            [
+                'size'          => $this->getStyleSetting('description_font_size'),
+                'color'         => '333333',
+                'bgColor'       => 'CCCCCC',
+                'boldt'         => true,
                 'strikethrough' => true,
                 'italic'        => true,
             ]
@@ -640,7 +650,7 @@ class ParticipantProfile
                                 if (!$this->isConfigurationEnabled('choices', 'includeNotSelected')) {
                                     continue;
                                 }
-                                $fontStyleLabel     = self::STYLE_FONT_NEGATIVE_LABEL;
+                                $fontStyleLabel     = self::STYLE_FONT_NEGATIVE_LABEL_STRIKETHROUGH;
                                 $listStyle          = self::STYLE_LIST_NEGATIVE;
                                 $listParagraphStyle = self::STYLE_PARAGRAPH_LIST;
                                 $fontStyle          = self::STYLE_FONT_NEGATIVE;
@@ -864,6 +874,60 @@ class ParticipantProfile
 
             $this->addDatum($section, 'Geschlecht', $participant->getGender());
 
+            $this->addDatumTitle($section, 'Status', null);
+            $statusTextRun = $section->addTextRun();
+
+            if ($participant->isDeleted()) {
+                $statusTextRun->addText(
+                    " \u{1F5D1} " . 'gelöscht' . " ", self::STYLE_FONT_LABEL
+                );
+                $statusTextRun->addText(' ');
+            }
+            if ($participant->isConfirmed()) {
+                $statusTextRun->addText(
+                    " " . 'bestätigt' . " ", self::STYLE_FONT_LABEL
+                );
+                $statusTextRun->addText(' ');
+            } else {
+                $statusTextRun->addText(
+                    " " . 'unbestätigt' . " ", self::STYLE_FONT_NEGATIVE_LABEL
+                );
+                $statusTextRun->addText(' ');
+            }
+            if ($participant->isWithdrawn()) {
+                $text = 'zurückgezogen';
+                if ($participant->isWithdrawRequested()) {
+                    $text .= ' (angefragt)';
+                }
+                $statusTextRun->addText(
+                    " \u{238C} " . $text . " ", self::STYLE_FONT_LABEL
+                );
+                $statusTextRun->addText(' ');
+            }
+            if ($participant->isRejected()) {
+                $statusTextRun->addText(
+                    " \u{1F6AB} " . 'abgelehnt' . " ", self::STYLE_FONT_LABEL
+                );
+                $statusTextRun->addText(' ');
+            }
+            if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
+                $participantPaymentRequired = $this->paymentManager->isParticipantRequiringPayment($participant);
+                if ($participantPaymentRequired === null) {
+                    $statusTextRun->addText(
+                        " " . 'kein Preis' . " ", self::STYLE_FONT_LABEL
+                    );
+                } elseif ($participantPaymentRequired) {
+                    $statusTextRun->addText(
+                        " " . 'Zahlung offen' . " ", self::STYLE_FONT_NEGATIVE_LABEL
+                    );
+                } else {
+                    $statusTextRun->addText(
+                        " " . 'bezahlt' . " ", self::STYLE_FONT_LABEL
+                    );
+                }
+                $statusTextRun->addText(' ');
+            }
+
             $linkPath = $this->temporaryBarCodeGenerator->createCode(
                 'url:' . $this->urlGenerator->generate(
                     'admin_participant_detail',
@@ -899,15 +963,17 @@ class ParticipantProfile
                 ]
             );
             if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
-                $this->addDatum(
-                    $section, 'Preis',
-                    number_format(
-                        $this->paymentManager->getEntityPriceTag($participant)->getPrice(true),
-                        2,
-                        ',',
-                        '.'
-                    ) . ' €'
-                );
+                $this->addDatumTitle($section, 'Preis', null);
+                if ($this->paymentManager->getEntityPriceTag($participant)->hasSummands()) {
+                    $section->addText(number_format(
+                            $this->paymentManager->getEntityPriceTag($participant)->getPrice(true),
+                            2,
+                            ',',
+                            '.'
+                        ) . ' €');
+                } else {
+                    $section->addText('(Kein Preis)', self::STYLE_FONT_NONE);
+                }
             }
             if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
                 $this->addDatum(

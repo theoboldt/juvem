@@ -62,6 +62,16 @@ class EntityPriceTag
     }
 
     /**
+     * Check if summands are attached
+     *
+     * @return bool
+     */
+    public function hasSummands():bool
+    {
+        return count($this->summands);
+    }
+
+    /**
      * Get price tag
      *
      * @param bool $inEuro If set to true, value is returned in euro
