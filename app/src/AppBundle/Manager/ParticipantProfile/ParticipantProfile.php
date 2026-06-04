@@ -806,6 +806,67 @@ class ParticipantProfile
         
         return null;
     }
+
+    /**
+     * Add status labels to transmitted section
+     *
+     * @param Participant $participant
+     * @param TextRun $statusTextRun
+     * @return void
+     */
+    private function addStatusLabelsToTextRun(Participant $participant, TextRun $statusTextRun)
+    {
+        if ($participant->isDeleted()) {
+            $statusTextRun->addText(
+                " \u{1F5D1} " . 'gelöscht' . " ", self::STYLE_FONT_LABEL
+            );
+            $statusTextRun->addText(' ');
+        }
+        if ($participant->isConfirmed()) {
+            $statusTextRun->addText(
+                " " . 'bestätigt' . " ", self::STYLE_FONT_LABEL
+            );
+            $statusTextRun->addText(' ');
+        } else {
+            $statusTextRun->addText(
+                " " . 'unbestätigt' . " ", self::STYLE_FONT_NEGATIVE_LABEL
+            );
+            $statusTextRun->addText(' ');
+        }
+        if ($participant->isWithdrawn()) {
+            $text = 'zurückgezogen';
+            if ($participant->isWithdrawRequested()) {
+                $text .= ' (angefragt)';
+            }
+            $statusTextRun->addText(
+                " \u{238C} " . $text . " ", self::STYLE_FONT_LABEL
+            );
+            $statusTextRun->addText(' ');
+        }
+        if ($participant->isRejected()) {
+            $statusTextRun->addText(
+                " \u{1F6AB} " . 'abgelehnt' . " ", self::STYLE_FONT_LABEL
+            );
+            $statusTextRun->addText(' ');
+        }
+        if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
+            $participantPaymentRequired = $this->paymentManager->isParticipantRequiringPayment($participant);
+            if ($participantPaymentRequired === null) {
+                $statusTextRun->addText(
+                    " " . 'kein Preis' . " ", self::STYLE_FONT_LABEL
+                );
+            } elseif ($participantPaymentRequired) {
+                $statusTextRun->addText(
+                    " " . 'Zahlung offen' . " ", self::STYLE_FONT_NEGATIVE_LABEL
+                );
+            } else {
+                $statusTextRun->addText(
+                    " " . 'bezahlt' . " ", self::STYLE_FONT_LABEL
+                );
+            }
+            $statusTextRun->addText(' ');
+        }
+    }
     
     /**
      * Generate document, provide export file path
@@ -819,7 +880,11 @@ class ParticipantProfile
         foreach ($participants as $participant) {
             $section    = $this->addSection($document, ['breakType' => 'nextPage'], $participant);
             $section->addTitle($participant->fullname(), 2);
-    
+
+            //$this->configuration['general']['layout'] ?? Configuration::LAYOUT_SMALL;
+//            $this->addStatusLabelsToTextRun($participant, $titleTextRun);
+
+
             //header
             if ($this->getStyleSetting('has_header')) {
                 $header = $section->addHeader();
@@ -874,58 +939,10 @@ class ParticipantProfile
 
             $this->addDatum($section, 'Geschlecht', $participant->getGender());
 
-            $this->addDatumTitle($section, 'Status', null);
-            $statusTextRun = $section->addTextRun();
-
-            if ($participant->isDeleted()) {
-                $statusTextRun->addText(
-                    " \u{1F5D1} " . 'gelöscht' . " ", self::STYLE_FONT_LABEL
-                );
-                $statusTextRun->addText(' ');
-            }
-            if ($participant->isConfirmed()) {
-                $statusTextRun->addText(
-                    " " . 'bestätigt' . " ", self::STYLE_FONT_LABEL
-                );
-                $statusTextRun->addText(' ');
-            } else {
-                $statusTextRun->addText(
-                    " " . 'unbestätigt' . " ", self::STYLE_FONT_NEGATIVE_LABEL
-                );
-                $statusTextRun->addText(' ');
-            }
-            if ($participant->isWithdrawn()) {
-                $text = 'zurückgezogen';
-                if ($participant->isWithdrawRequested()) {
-                    $text .= ' (angefragt)';
-                }
-                $statusTextRun->addText(
-                    " \u{238C} " . $text . " ", self::STYLE_FONT_LABEL
-                );
-                $statusTextRun->addText(' ');
-            }
-            if ($participant->isRejected()) {
-                $statusTextRun->addText(
-                    " \u{1F6AB} " . 'abgelehnt' . " ", self::STYLE_FONT_LABEL
-                );
-                $statusTextRun->addText(' ');
-            }
-            if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
-                $participantPaymentRequired = $this->paymentManager->isParticipantRequiringPayment($participant);
-                if ($participantPaymentRequired === null) {
-                    $statusTextRun->addText(
-                        " " . 'kein Preis' . " ", self::STYLE_FONT_LABEL
-                    );
-                } elseif ($participantPaymentRequired) {
-                    $statusTextRun->addText(
-                        " " . 'Zahlung offen' . " ", self::STYLE_FONT_NEGATIVE_LABEL
-                    );
-                } else {
-                    $statusTextRun->addText(
-                        " " . 'bezahlt' . " ", self::STYLE_FONT_LABEL
-                    );
-                }
-                $statusTextRun->addText(' ');
+            if ($this->configuration['general']['layout'] === Configuration::LAYOUT_LARGE) {
+                $this->addDatumTitle($section, 'Status', null);
+                $statusTextRun = $section->addTextRun();
+                $this->addStatusLabelsToTextRun($participant, $statusTextRun);
             }
 
             $linkPath = $this->temporaryBarCodeGenerator->createCode(
@@ -962,6 +979,13 @@ class ParticipantProfile
                     'colsSpace' => $this->getStyleSetting('main_column_space'),
                 ]
             );
+
+            if ($this->configuration['general']['layout'] === Configuration::LAYOUT_SMALL) {
+                $this->addDatumTitle($section, 'Status', null);
+                $statusTextRun = $section->addTextRun();
+                $this->addStatusLabelsToTextRun($participant, $statusTextRun);
+            }
+
             if ($this->paymentManager && $this->isConfigurationEnabled('general', 'includePrice')) {
                 $this->addDatumTitle($section, 'Preis', null);
                 if ($this->paymentManager->getEntityPriceTag($participant)->hasSummands()) {
