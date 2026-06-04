@@ -960,7 +960,6 @@ class ParticipantProfile
             $section->addTitle('Telefonnummern', 3);
 
             $phoneNumbers = $participation->getPhoneNumbers()->toArray();
-            $columns      = 0;
             if (count($phoneNumbers)) {
                 $table = $section->addTable(
                     [
@@ -968,50 +967,70 @@ class ParticipantProfile
                         'width' => 100 * 50,
                     ]
                 );
-                $row   = $table->addRow();
+
+                $cells = 0;
+                $row = null;
 
                 /** @var PhoneNumber $phoneNumber */
                 foreach ($phoneNumbers as $phoneNumber) {
-                    if ($columns === 3) {
-                        if (isset($cellImage)) {
-                            //add additional vertical space to be make qr code usable
-                            $textrun = $cellImage->addTextRun();
-                            $textrun->addTextBreak();
-                            $textrun->addTextBreak();
-                            $textrun->addTextBreak();
-                        }
-                        $columns = 0;
-                        $row     = $table->addRow();
+                    if ($cells % 3 === 0) {
+                        //twip to point factor *20
+
+                        //narrow row if
+                        $rowHeight = ($cells === 0 && count($phoneNumbers) <= 3 || count($phoneNumbers) - $cells <= 3)
+                            ? ($this->getStyleSetting('phone_qr_code_image_size') + 3) * 20
+                            : ($this->getStyleSetting('phone_qr_code_image_size') + 15) * 20;
+
+                        $row = $table->addRow($rowHeight, []);
                     }
-            
-                    $cellImage = $row->addCell(12);
-                    $codePath  = $this->temporaryBarCodeGenerator->createCode(
+                    if (!$row) {
+                        throw new \RuntimeException('Row not initialized');
+                    }
+
+                    $cellContent = $row->addCell(33, ['unit' => TblWidth::PERCENT]);
+                    $cellTextRun = $cellContent->addTextRun();
+                    $codePath = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
                         str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL)),
                         $this->getStyleSetting('phone_qr_code_size')
                     );
-                    $cellImage->addImage(
+
+                    $cellTextRun->addImage(
                         $codePath,
                         [
-                            'width'         => $this->getStyleSetting('phone_qr_code_image_size'),
-                            'height'        => $this->getStyleSetting('phone_qr_code_image_size'),
-                            'marginTop'     => -1,
-                            'marginLeft'    => -1,
-                            'wrappingStyle' => 'square',
+                            'alignment' => Jc::START,
+                            'width' => $this->getStyleSetting('phone_qr_code_image_size'),
+                            'height' => $this->getStyleSetting('phone_qr_code_image_size'),
+                            'marginLeft' => -5,
+                            'marginTop' => 0,
+                            'wrappingStyle' => Frame::WRAP_TIGHT,
+                            'wrapDistanceBottom' => 3,
+                            'wrapDistanceRight' => 3,
+                            'positioning' => Image::POS_RELATIVE,
                         ]
                     );
-            
-                    $cellText = $row->addCell(null, ['rightFromText' => 12]);
-                    $textrun  = $cellText->addTextRun();
-                    $textrun->addText($this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL));
+
+                    $cellTextRun->addText($this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL));
                     if ($phoneNumber->getDescription()) {
-                        $textrun->addTextBreak();
-                        $textrun->addText($phoneNumber->getDescription());
+                        $cellTextRun->addTextBreak();
+                        $cellTextRun->addText($phoneNumber->getDescription());
                     }
-        
-                    ++$columns;
+
+                    ++$cells;
                 }
 
+                //add empty column
+                if ($cells > 3) {
+                    switch ($cells%3) {
+                        case 2:
+                            $row->addCell(12);
+                            break;
+                        case 1:
+                            $row->addCell(12);
+                            $row->addCell(12);
+                            break;
+                    }
+                }
 
             } else {
                 $section->addText(
