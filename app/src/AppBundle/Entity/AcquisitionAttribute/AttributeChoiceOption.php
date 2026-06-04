@@ -155,15 +155,27 @@ class AttributeChoiceOption implements SoftDeleteableInterface
      * @param bool $fallback If set to true, short title is automatically generated
      * @return string|null
      */
-    public function getShortTitle($fallback = false)
+    public function getShortTitle(bool $fallback = false)
     {
         if ($this->shortTitle === null && $fallback) {
-            $words = explode(' ', $this->getManagementTitle(true));
-            $title = '';
-            foreach ($words as $w) {
-                $title .= mb_strtoupper($w[0]);
+            $managementTitleSplit = mb_str_split($this->getManagementTitle(true));
+            $managementTitle = '';
+            foreach ($managementTitleSplit as $index => $char) {
+                if (is_numeric($char)) {
+                    if(isset($managementTitleSplit[$index-1]) && !is_numeric($managementTitleSplit[$index-1])) {
+                        $managementTitle .= ' ';
+                    }
+                }
+                $managementTitle .= $char;
             }
-            return $title;
+
+            $shortTitle = '';
+            $words = preg_split('/[\s,]+/', $managementTitle);
+            foreach ($words as $word) {
+                $shortTitle .= mb_strtoupper($word[0]);
+            }
+
+            return $shortTitle;
         }
 
         return $this->shortTitle;
