@@ -1,4 +1,4 @@
-FROM php:8.2-apache AS baseimage
+FROM php:8.3-apache AS baseimage
 
 SHELL ["/bin/bash", "-c"]
 
