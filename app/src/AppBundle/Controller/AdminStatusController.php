@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class StatusController extends AbstractController
+class AdminStatusController extends AbstractController
 {
     /**
      * @CloseSessionEarly
