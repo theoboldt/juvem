@@ -19,9 +19,13 @@ use AppBundle\Entity\CustomField\EntityHavingCustomFieldValueInterface;
 use AppBundle\Entity\CustomField\GroupCustomFieldValue;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
+use AppBundle\Entity\ParticipantComment;
+use AppBundle\Entity\ParticipationComment;
 use AppBundle\Entity\PhoneNumber;
 use AppBundle\Manager\CommentManager;
 use AppBundle\Manager\Payment\PaymentManager;
+use InvalidArgumentException;
+use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\Element\Text;
@@ -33,6 +37,8 @@ use PhpOffice\PhpWord\SimpleType\VerticalJc;
 use PhpOffice\PhpWord\Style\Frame;
 use PhpOffice\PhpWord\Style\Image;
 use PhpOffice\PhpWord\Style\Language;
+use PhpOffice\PhpWord\Writer\EPub3\Part;
+use RuntimeException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ParticipantProfile
@@ -328,7 +334,14 @@ class ParticipantProfile
         //comment style
         $document->addParagraphStyle(
             self::STYLE_PARAGRAPH_COMMENT,
-            array_merge($defaultParagraphStyle, ['keepNext' => false])
+            array_merge(
+                $defaultParagraphStyle,
+                [
+                    'keepNext' => false,
+                    'spaceAfter' => 80,
+                    'widowControl' => true,
+                ]
+            )
         );
 
         //list styles
@@ -471,7 +484,7 @@ class ParticipantProfile
             );
             $table->addRow();
             if ($this->logoPath) {
-                $cell = $table->addCell(null, ['vAlign' => VerticalJc::BOTTOM]);
+                $cell = $table->addCell(8, ['vAlign' => VerticalJc::BOTTOM]);
                 $cell->addImage(
                     $this->logoPath,
                     [
@@ -485,7 +498,7 @@ class ParticipantProfile
             }
             if (!$this->getStyleSetting('has_header')) {
                 if ($participant) {
-                    $cell    = $table->addCell(null, ['vAlign' => VerticalJc::BOTTOM]);
+                    $cell    = $table->addCell(41, ['vAlign' => VerticalJc::BOTTOM]);
                     $textrun = $cell->addTextRun();
                     $textrun->addText($participant->fullname());
                 
@@ -499,12 +512,12 @@ class ParticipantProfile
                     }
                 }
             
-                $cell    = $table->addCell(null, ['vAlign' => VerticalJc::BOTTOM]);
+                $cell    = $table->addCell(41, ['vAlign' => VerticalJc::BOTTOM]);
                 $textrun = $cell->addTextRun(['alignment' => Jc::CENTER]);
                 $textrun->addText($this->getEvent()->getTitle(true));
             }
         
-            $cell = $table->addCell(null, ['vAlign' => VerticalJc::BOTTOM]);
+            $cell = $table->addCell(10, ['vAlign' => VerticalJc::BOTTOM]);
             $cell->addPreserveText('{PAGE}/{NUMPAGES}', [], ['alignment' => Jc::END]);
         }
 
@@ -705,12 +718,19 @@ class ParticipantProfile
     /**
      * Add comment section
      *
+     * @param Participant $participant
      * @param array|CommentBase[] $comments Comments to add
-     * @param Section $section              Section to add comments to
-     * @param string $commentTarget         Target  description text
+     * @param Section $section Section to add comments to
      */
-    private function addCommentsToSection(array $comments, Section $section, string $commentTarget): void
+    private function addCommentsToSection(Participant $participant, array $comments, Section $section): void
     {
+        usort(
+            $comments,
+            function (CommentBase $a, CommentBase $b) {
+                return $b->getCreatedAt() <=> $a->getCreatedAt();
+            }
+        );
+
         /** @var CommentBase $comment */
         foreach ($comments as $comment) {
             if ($comment->getDeletedAt()) {
@@ -723,7 +743,26 @@ class ParticipantProfile
                              ($comment->getCreatedBy() ? $comment->getCreatedBy()->fullname() : 'SYSTEM') .
                              ' am  ' . $comment->getModifiedAt()->format(Event::DATE_FORMAT_DATE_TIME);
             }
-            $metaText .= $commentTarget;
+
+            if ($comment instanceof ParticipantComment) {
+                switch ($participant->getGender()) {
+                    case Participant::LABEL_GENDER_FEMALE:
+                    case Participant::LABEL_GENDER_FEMALE_ALIKE:
+                        $metaText .= ' zur Teilnehmerin';
+                        break;
+                    case Participant::LABEL_GENDER_MALE:
+                    case Participant::LABEL_GENDER_MALE_ALIKE:
+                        $metaText .= ' zum Teilnehmer';
+                        break;
+                    default:
+                        $metaText .= ' zur teilnehmende Person ';
+                        break;
+                }
+            } elseif ($comment instanceof ParticipationComment)  {
+                $metaText .= ' zur Anmeldung ';
+            }
+
+
             $section->addText($metaText, self::STYLE_FONT_DESCRIPTION, self::STYLE_PARAGRAPH_DESCRIPTION);
             $section->addText($comment->getContent(), [], self::STYLE_PARAGRAPH_COMMENT);
         }
@@ -1074,14 +1113,14 @@ class ParticipantProfile
                         $row = $table->addRow($rowHeight, []);
                     }
                     if (!$row) {
-                        throw new \RuntimeException('Row not initialized');
+                        throw new RuntimeException('Row not initialized');
                     }
 
                     $cellContent = $row->addCell(33, ['unit' => TblWidth::PERCENT]);
                     $cellTextRun = $cellContent->addTextRun();
                     $codePath = $this->temporaryBarCodeGenerator->createCode(
                         'tel:' .
-                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL)),
+                        str_replace(' ', '', $this->phoneUtil->format($phoneNumber->getNumber(), PhoneNumberFormat::INTERNATIONAL)),
                         $this->getStyleSetting('phone_qr_code_size')
                     );
 
@@ -1100,7 +1139,7 @@ class ParticipantProfile
                         ]
                     );
 
-                    $cellTextRun->addText($this->phoneUtil->format($phoneNumber->getNumber(), \libphonenumber\PhoneNumberFormat::INTERNATIONAL));
+                    $cellTextRun->addText($this->phoneUtil->format($phoneNumber->getNumber(), PhoneNumberFormat::INTERNATIONAL));
                     if ($phoneNumber->getDescription()) {
                         $cellTextRun->addTextBreak();
                         $cellTextRun->addText($phoneNumber->getDescription());
@@ -1134,38 +1173,26 @@ class ParticipantProfile
                 $section = $this->addSection(
                     $document,
                     [
-                        'colsNum'   => $this->getStyleSetting('main_columns'),
-                        'colsSpace' => $this->getStyleSetting('main_column_space'),
+                        'vAlign'    => VerticalJc::TOP,
+                        'breakType' => 'continuous',
+                        'colsNum'   => 2,
+                        'colsSpace' => 175,
                     ]
                 );
-                if (!$this->commentManager->countForParticipation($participation)
-                    && !$this->commentManager->countForParticipant($participant)) {
+
+                $comments = array_merge(
+                    $this->commentManager->forParticipation($participation),
+                    $this->commentManager->forParticipant($participant),
+                );
+                if (count($comments)) {
+                    $this->addCommentsToSection(
+                        $participant, $comments, $section
+                    );
+
+                } else {
                     $section->addText(
                         'Keine Anmerkungen gespeichert.', self::STYLE_FONT_DESCRIPTION,
                         self::STYLE_PARAGRAPH_DESCRIPTION
-                    );
-                } else {
-                    $this->addCommentsToSection(
-                        $this->commentManager->forParticipation($participation), $section, ' zur Anmeldung'
-                    );
-
-                    switch ($participant->getGender()) {
-                        case Participant::LABEL_GENDER_FEMALE:
-                        case Participant::LABEL_GENDER_FEMALE_ALIKE:
-                            $commentTarget = ' zur Teilnehmerin';
-                            break;
-                        case Participant::LABEL_GENDER_MALE:
-                        case Participant::LABEL_GENDER_MALE_ALIKE:
-                            $commentTarget = ' zum Teilnehmer';
-                            break;
-                        default:
-                            $commentTarget = ' zur teilnehmende Person ';
-                            break;
-                    }
-                    $this->addCommentsToSection(
-                        $this->commentManager->forParticipant($participant),
-                        $section,
-                        $commentTarget
                     );
                 }
             }
