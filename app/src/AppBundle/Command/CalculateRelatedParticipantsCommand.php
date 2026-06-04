@@ -11,6 +11,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Participant;
 use AppBundle\Manager\RelatedParticipantsFinder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
@@ -74,6 +75,8 @@ class CalculateRelatedParticipantsCommand extends Command
             $events = $repository->findBy(['isActive' => true]);
         }
 
+        $this->fixupParticipantsModifiedAtByAuditLog($input, $output);
+
         $output->writeln(
             sprintf("\nGoing to calculate for <info>%d</info> events...", count($events))
         );
@@ -94,5 +97,65 @@ class CalculateRelatedParticipantsCommand extends Command
         );
 
         return 0;
+    }
+
+    protected function fixupParticipantsModifiedAtByAuditLog(InputInterface $input, OutputInterface $output){
+
+        /** ## FIXUP modifiedAt dates for participants */
+        $sql  = 'SELECT aid, modified_at
+                     FROM participant
+                     WHERE YEAR(modified_at) > 2023';
+        $participantList = $this->provideAidModifiedAtList($sql);
+        $sql  = 'SELECT related_id, MAX(occurrence_date)
+                     FROM entity_change
+                    WHERE related_class = "AppBundle\\\\Entity\\\\Participant"
+                 GROUP BY related_id';
+        $changeOccurrenceList = $this->provideAidModifiedAtList($sql);
+
+        $output->writeln(
+            sprintf("\nGoing to fixup modified dates for <info>%d</info> participants...", count($participantList))
+        );
+
+        $progress = new ProgressBar($output, count($participantList));
+        $progress->start();
+
+        $time = microtime(true);
+        $fixed = 0;
+        foreach ($participantList as $aid => $participantModifiedAt) {
+            if (isset($changeOccurrenceList[$aid]) && $changeOccurrenceList[$aid] < $participantModifiedAt) {
+                $this->doctrine->getConnection()->executeQuery(
+                    'UPDATE participant SET modified_at = ? WHERE aid = ?',
+                    [$changeOccurrenceList[$aid]->format('Y-m-d H:i:s'), $aid]
+                );
+                ++$fixed;
+            }
+            $progress->advance();
+        }
+
+        $progress->finish();
+        $duration = round((microtime(true) - $time) * 1000);
+
+        $output->writeln(
+            sprintf("\nFixed modified date for <info>%d</info> participants within <info>%d</info> ms", $fixed, $duration)
+        );
+    }
+
+    /**
+     * Retrieves a list of aid IDs and their corresponding modification dates, converting the dates to DateTimeImmutable objects.
+     *
+     * @param string $sql The SQL query to execute in order to fetch the aid IDs and their modification dates.
+     * @return array An associative array where the keys are aid IDs and the values are DateTimeImmutable objects representing the modification dates.
+     */
+    function provideAidModifiedAtList(string $sql): array
+    {
+        $modifiedAt = null;
+        $aidModifiedAt = $this->doctrine->getConnection()->executeQuery(
+            $sql, []
+        )->fetchAllKeyValue();
+        foreach ($aidModifiedAt as $aid => &$modifiedAt) {
+            $modifiedAt = new \DateTimeImmutable($modifiedAt);
+        }
+        unset($modifiedAt);
+        return $aidModifiedAt;
     }
 }
