@@ -55,6 +55,7 @@
                 {% if is_granted(constant('AppBundle\\Entity\\User::ROLE_ADMIN_USER')) %}
                     <li><a href="{{ path('user_list') }}">Benutzer verwalten</a></li>
                 {% endif %}
+                <li><a href="{{ path('admin_status_main') }}">Status überprüfen</a></li>
             </ul>
         </div>
     </div>

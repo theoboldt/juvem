@@ -1,0 +1,157 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Systemstatus überprüfen{% endblock %}
+
+{% block body %}
+    {% embed 'common/header/base-page-header.html.twig' with {'title': 'Systemstatus', 'subtitle': 'überprüfen'} %}
+        {% block breadcrumb %}
+            <li class="active">Systemstatus</li>
+        {% endblock %}
+    {% endembed %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">PHP</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{{ php_version }}</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">ZIP</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_zip %}
+                                    {{ ext_zip }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">EXIF</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_exif %}
+                                    {{ ext_exif }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">JSON</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_json %}
+                                    {{ ext_json }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Multibyte String</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_mbstring %}
+                                    {{ ext_mbstring }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">PDO</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_pdo %}
+                                    {{ ext_pdo }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">XML Writer</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_xmlwriter %}
+                                    {{ ext_xmlwriter }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">SimpleXML</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_simplexml %}
+                                    {{ ext_simplexml }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">XSL</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_xsl %}
+                                    {{ ext_xsl }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">FileInfo</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_fileinfo %}
+                                    {{ ext_fileinfo }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">OpenSSL</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">
+                                {% if ext_openssl %}
+                                    {{ ext_openssl }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> fehlt</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
