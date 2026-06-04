@@ -131,7 +131,8 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
         if ($lockHandle !== false && flock($lockHandle, LOCK_EX)) {
             $start = microtime(true);
             /** @var Participant[] $participants */
-            $participants  = $this->repository->participantsList($event, null, true, true);
+            $participants = $this->repository->participantsList($event, null, true, true);
+            $participantChangedAids = [];
             $durationFetch = round((microtime(true) - $start) * 1000);
 
             /** @var Participant $participant */
@@ -178,7 +179,13 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                         || array_diff($proposedIds, $customFieldValueProposed) !== array_diff($customFieldValueProposed, $proposedIds)
                     ) {
                         $customFieldValue->setProposedParticipants($proposedIds);
+                        $this->logger->debug('Refreshed participant {aid}', ['aid' => $participant->getAid()]);
                         $this->em->persist($participant);
+                        $participantChangedAids[] = $participant->getAid();
+                    } elseif(!in_array($participant->getAid(), $participantChangedAids, true)) {
+                        //prevent modifiedAt being automatically set because customField collection changed
+                        $this->logger->debug('Refreshed participant {aid}', ['aid' => $participant->getAid()]);
+                        $this->em->refresh($participant);
                     }
                 }
             }
