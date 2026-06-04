@@ -68,6 +68,13 @@ class DumpAnonymizer
                     if (in_array($columnName, $jsonColumns)
                         || ($tableName === 'weather_current' && $columnName === 'details')
                         || ($tableName === 'weather_forecast' && $columnName === 'details')
+                        || ($tableName === 'event' && $columnName === 'feedback_questionnaire')
+                        || ($tableName === 'feedback_questionnaire_fillout' && $columnName === 'feedback_questionnaire')
+                        || ($tableName === 'location_description' && $columnName === 'details')
+                        || ($tableName === 'weather_current' && $columnName === 'details')
+                        || ($tableName === 'weather_forecast' && $columnName === 'details')
+                        || ($tableName === 'recipe_feedback' && $columnName === 'feedback')
+                        || ($tableName === 'export_template' && $columnName === 'configuration')
                     ) {
                         $cell = json_decode($cell, true);
                     }
