@@ -61,7 +61,7 @@
         "knplabs/knp-time-bundle": "^1.7",
         "yellowskies/qr-code-bundle": "^1.2",
         "guzzlehttp/guzzle": "^6.3",
-        "phpoffice/phpword": "^0.18",
+        "phpoffice/phpword": "^1.4",
         "phpoffice/phpspreadsheet": "^1.9",
         "jms/serializer-bundle": "^3.4",
         "ifsnop/mysqldump-php": "^2.9",
