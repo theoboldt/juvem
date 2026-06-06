@@ -14,6 +14,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Participant;
 use AppBundle\Manager\RelatedParticipantsFinder;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,15 +38,25 @@ class CalculateRelatedParticipantsCommand extends Command
     private RelatedParticipantsFinder $relatedParticipantsFinder;
 
     /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * CleanupUserRegistrationRequestsCommand constructor.
      *
-     * @param ManagerRegistry           $doctrine
+     * @param ManagerRegistry $doctrine
      * @param RelatedParticipantsFinder $relatedParticipantsFinder
      */
-    public function __construct(ManagerRegistry $doctrine, RelatedParticipantsFinder $relatedParticipantsFinder)
+    public function __construct(
+        ManagerRegistry $doctrine,
+        RelatedParticipantsFinder $relatedParticipantsFinder,
+        LoggerInterface $logger
+    )
     {
-        $this->doctrine                  = $doctrine;
+        $this->doctrine = $doctrine;
         $this->relatedParticipantsFinder = $relatedParticipantsFinder;
+        $this->logger = $logger;
         parent::__construct();
     }
 
@@ -127,9 +138,14 @@ class CalculateRelatedParticipantsCommand extends Command
         $fixed = 0;
         foreach ($participantList as $aid => $participantModifiedAt) {
             if (isset($changeOccurrenceList[$aid]) && $changeOccurrenceList[$aid] < $participantModifiedAt) {
+                $modifiedDate = $changeOccurrenceList[$aid]->format('Y-m-d H:i:s');
+                $this->logger->warning(
+                    'Needed to fix modified date to {modified_at} for participant {aid}',
+                    ['modified_at' => $modifiedDate, 'aid' => $aid]
+                );
                 $this->doctrine->getConnection()->executeQuery(
                     'UPDATE participant SET modified_at = ? WHERE aid = ?',
-                    [$changeOccurrenceList[$aid]->format('Y-m-d H:i:s'), $aid]
+                    [$modifiedDate, $aid]
                 );
                 ++$fixed;
             }
