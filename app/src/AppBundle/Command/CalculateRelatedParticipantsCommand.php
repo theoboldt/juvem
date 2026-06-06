@@ -75,7 +75,7 @@ class CalculateRelatedParticipantsCommand extends Command
             $events = $repository->findBy(['isActive' => true]);
         }
 
-        $this->fixupParticipantsModifiedAtByAuditLog($input, $output);
+        $this->fixupParticipantsModifiedAtByAuditLog($output);
 
         $output->writeln(
             sprintf("\nGoing to calculate for <info>%d</info> events...", count($events))
@@ -99,7 +99,11 @@ class CalculateRelatedParticipantsCommand extends Command
         return 0;
     }
 
-    protected function fixupParticipantsModifiedAtByAuditLog(InputInterface $input, OutputInterface $output){
+    /**
+     * @param OutputInterface $output
+     * @return void
+     */
+    protected function fixupParticipantsModifiedAtByAuditLog(OutputInterface $output){
 
         /** ## FIXUP modifiedAt dates for participants */
         $sql  = 'SELECT aid, modified_at
