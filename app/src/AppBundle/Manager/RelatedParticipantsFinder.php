@@ -179,7 +179,14 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                         || array_diff($proposedIds, $customFieldValueProposed) !== array_diff($customFieldValueProposed, $proposedIds)
                     ) {
                         $customFieldValue->setProposedParticipants($proposedIds);
-                        $this->logger->debug('Refreshed participant {aid}', ['aid' => $participant->getAid()]);
+                        $this->logger->info(
+                            'Persist participant {aid}, previously {previously_count}, now {new_count} others proposed',
+                            [
+                                'aid' => $participant->getAid(),
+                                'previously_count' => count($customFieldValueProposed),
+                                'new_count' => count($proposedIds),
+                            ]
+                        );
                         $this->em->persist($participant);
                         $participantChangedAids[] = $participant->getAid();
                     } elseif(!in_array($participant->getAid(), $participantChangedAids, true)) {

@@ -215,6 +215,8 @@ class CustomFieldValueContainerChangeDetector
                           . $customFieldValue->getRelatedLastName()
                           . ' [nicht verknüpft]';
             }
+            $result .= ', '.count($customFieldValue->getProposedParticipants()).' Vorschläge';
+
         } else {
             throw new \InvalidArgumentException('Unknown class ' . get_class($customFieldValue) . ' occurred');
         }

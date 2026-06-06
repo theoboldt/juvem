@@ -346,6 +346,7 @@ class ParticipantDetectingCustomFieldValue implements CustomFieldValueInterface
     {
         return (
             $other instanceof self
+            && $this->getProposedParticipants() === $other->getProposedParticipants()
             && $this->isSystemSelection() === $other->isSystemSelection()
             && $this->getParticipantAid() === $other->getParticipantAid()
             && $this->getRelatedLastName() === $other->getRelatedLastName()
