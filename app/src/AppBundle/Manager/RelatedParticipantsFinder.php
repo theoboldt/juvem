@@ -183,7 +183,7 @@ class RelatedParticipantsFinder extends RelatedParticipantsLocker
                             'Persist participant {aid}, previously {previously_count}, now {new_count} others proposed',
                             [
                                 'aid' => $participant->getAid(),
-                                'previously_count' => count($customFieldValueProposed),
+                                'previously_count' => $customFieldValueProposed === null ? 'none' : count($customFieldValueProposed),
                                 'new_count' => count($proposedIds),
                             ]
                         );
