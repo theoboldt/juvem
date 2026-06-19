@@ -419,6 +419,21 @@ class DefaultController
             $response
         );
     }
+
+    /**
+     * Provide gzipped sitemap
+     *
+     * @CloseSessionEarly
+     * @Route("/sitemap.xml.gz")
+     */
+    public function sitemapCompressedAction()
+    {
+        $response = $this->sitemapAction();
+        $response->setContent(gzencode($response->getContent(), 9));
+        $response->headers->set('Content-Encoding', 'gzip');
+
+        return $response;
+    }
     
     /**
      * @CloseSessionEarly
