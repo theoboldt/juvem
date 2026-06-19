@@ -181,6 +181,15 @@ class DefaultController
      * @Route("apple-touch-icon-{a}x{b}{c}.png", requirements={"a" = "\d+", "b" = "\d+", "c" = "-precomposed|"})
      * @Route("/safari-pinned-tab.svg")
      * @Route("/HNAP1")
+     * @Route("/.well-known/traffic-advice")
+     * @Route("/wp-(plugin|json|admin)/.*")
+     * @Route("/ip)
+     * @Route("/license.txt")
+     * @Route("/humans.txt")
+     * @Route("/llms.txt")
+     * @Route("/livewire/.*")
+     * @Route("/mcp")
+     * @Route("/sse")
      */
     public function ressourceUnavailableAction()
     {
