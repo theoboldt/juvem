@@ -23,9 +23,10 @@
       }
     },
     "require": {
-        "php": ">=8.2 <=8.3",
+        "php": ">=8.2 <8.4",
         "ext-zip": "*",
         "ext-exif": "*",
+        "ext-zlib": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
