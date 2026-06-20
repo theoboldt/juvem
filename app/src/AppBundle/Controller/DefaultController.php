@@ -183,7 +183,7 @@ class DefaultController
      * @Route("/HNAP1")
      * @Route("/.well-known/traffic-advice")
      * @Route("/wp-(plugin|json|admin)/.*")
-     * @Route("/ip)
+     * @Route("/ip")
      * @Route("/license.txt")
      * @Route("/humans.txt")
      * @Route("/llms.txt")
